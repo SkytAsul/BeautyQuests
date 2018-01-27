@@ -9,4 +9,4 @@ This plugin is elaborate to look pretty and to simplify the quests for the playe
 Can be downloaded only from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**
 
 ## Wiki :
-You can find the wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)
+### _You can find the wiki_ [here](https://github.com/SkytAsul/BeautyQuests/wiki)
