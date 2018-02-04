@@ -1,5 +1,9 @@
 # BeautyQuests
-A quests plugin based on a simple-to-use graphical interface (Minecraft)
+What is **BeautyQuests** ?
+* BeautyQuests is a quests plugin based on a simple-to-use graphical interface for Minecraft.
+* It's more than 10 thousands lines of Java code.
+* It's a plugin absolutely free, with a full technical documentation.
+* It's a collaborative work, if you have ideas, submit them to me, and I'll try to add them !
 
 ## Overview :
 BeautyQuests is a plugin who allows you to create quests very simply with a graphical user interface created with the Minecraft inventories, not in the tchat like the plugin Quests.
