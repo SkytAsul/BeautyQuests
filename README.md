@@ -14,7 +14,7 @@ Can be downloaded only from **[SpigotMC](https://www.spigotmc.org/resources/beau
 
 ### _You can find the wiki_ [here](https://github.com/SkytAsul/BeautyQuests/wiki)
 
-
+***
 
 ### Source code ?
 I'll not release the source code for the moment, but maybe later, why not ?
