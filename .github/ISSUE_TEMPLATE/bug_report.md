@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us fix your problem
 
 ---
 
@@ -23,3 +23,5 @@ Are you using a protocol hack (like ViaVersion) ?
 
 **Additional context**
 Add any other context about the problem here.
+
+(FR: Si vous êtes plus facilement compréhensible en français, écrivez dans cette langue car il s'agit de ma langue natale)

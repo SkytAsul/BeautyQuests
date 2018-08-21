@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest an idea for BeautyQuests
 
 ---
 
@@ -15,3 +15,5 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+(FR: Si vous êtes plus facilement compréhensible en français, écrivez dans cette langue car il s'agit de ma langue natale)
