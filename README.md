@@ -13,9 +13,15 @@ This plugin is elaborate to look pretty and to simplify the quests for the playe
 ## Download :
 Can be downloaded only from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**
 
-### _You can find the wiki_ [here](https://github.com/SkytAsul/BeautyQuests/wiki)
+## Wiki :
+You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**
 
 ***
 
 ### Source code ?
 I'll not release the source code for the moment, but maybe later, why not ?
+
+***
+
+## Discord
+If you need help, I opened a [Discord server](https://discord.gg/H8fXrkD) where peoples can help you and where you can discuss about bugs, etc.
