@@ -1,0 +1,284 @@
+msg:
+  quest:
+    started: You start the quest §o{0}
+    created: §aCongratulations! You have created the quest "§e{0}§a", who includes
+      {1} steps!
+    cancelling: §cProcess of quest creation cancelled.
+    edited: §aCongratulations! You have edited the quest "§e{0}§a", who includes
+      now {1} steps!
+    editCancelling: §cProcess of quest edition cancelled.
+    createCancelled: §cThe creation (or the edition) has been cancelled by another
+      plugin, sorry...
+    invalidID: §cThe quests with ID {0} does not exist.
+    finished:
+      base: §aCongratulations! You have finished the quest §o§6{0}§r§a!
+      obtain: §aYou obtain {0}!
+  quests:
+    nopStep: §cThis quest doesn't have any step... prevent an administrator :-)
+    updated: §7Quest {0} updated!
+    wait: §cWait a bit before start again this quest!
+  writeNPCText: Write the text will be said to the player by the NPC. Type \"help\"
+    to get some help. (all commands are without /)
+  writeStageText: Write the text will be transmitted to the player at the beggining
+    of the step.
+  writeRegionName: Write the name of the region required for the step.
+  writeXPGain: 'Write the amount of experience points that the player will be obtain.
+    Last gain: §a{0}'
+  experience:
+    edited: 'Experience gain edited: {0}pts. to {1}pts.'
+  npc:
+    remove: §7NPC deleted.
+    talk: §7Go talk to a NPC named §o{0}§r§7.
+    used: §cThis NPC is already used for a quest.\nPlease choose another or type "cancel"
+      to come back at the details GUI.
+  regionDoesntExists: §cThis region doesn't exists...
+  number:
+    negative: §cYou must enter a positive number!
+    invalid: §c"{0}" isn't an valid number.
+    zero: §cYou must enter a number other than 0!
+  errorOccured: §cAn error occured... prevent an administrator :-)
+  commandsDisabled: §cYou can't do command for this moment.
+  bringBackObjects: Bring me back {0}.
+  command:
+    playerNeeded: §cYou must be a player to do this command.
+    incorrectSyntax: §cIncorrect syntax.
+    noPermission: §cYou don't have the permission required to do this command.
+    invalidCommand:
+      quests: §cThis command doesn't exists, type §o/quests help
+      simple: §cThis command doesn't exist, type §ohelp (without /)
+    removed: §aThe quest {0} has been succesfully removed.
+    leaveAll: §eYou have forced the end of {0} quests. §c{1} error(s).
+    resetPlayer:
+      player: §eAll datas of your quests ({0}) has been deleted by {1}.
+      remover: §eThe datas of quests of {0} has been deleted. ({1})
+    help:
+      header: §e§lBeautyQuests - §6help§r
+      create: '§e/quests create: §acreate a quest'
+      edit: '§e/quests edit: §aedit a quest'
+      remove: '§e/quests remove [id]: §adelete the quest with id [id] or by clicking
+        on his NPC if not specified'
+      finishAll: '§e/quests finishAll: §afinish all quests in progress'
+      resetPlayer: '§e/quests resetPlayer <name>: §aremove all datas of a player'
+      seePlayer: '§e/quests seePlayer <name>: §asee datas of a player'
+      reload: '§e/quests reload: §asave and reload the configuration and data files
+        - §c§odeprecated'
+      version: '§e/quests version: §asee the plugin version'
+      list: '§e/quests list: §asee the quests list (for supported versions)'
+      resetPlayerQuest: '§e/quests resetPlayerQuest <name> <id>: §adelete datas of
+        only one quest for a player'
+      save: '§e/quests save: §amake a manual save of datas'
+    seePlayer:
+      header: '§eDatas of player §6{0} §e:'
+      inProgress: '§eQuests in progress:'
+      finished: '§eQuests finished:'
+    resetPlayerQuest:
+      player: §eDatas of quest {0} has been deleted by {1}.
+  editor:
+    already: §cYou are already in an editor.
+    npc:
+      enter: §aClick on a NPC.
+      choseStarter: §3Choose the NPC who starts the quest.
+      notStarter: §cThis NPC isn't a quest starter...
+    text:
+      argNotSupported: §cArgument {0} not supported.
+      chooseLvlRequired: §eType the quantity of levels required.
+      chooseJobRequired: §eType name of the wanted job.
+      choosePermissionRequired: §eEnter required permissions to start the quest.
+      chooseFactionRequired: §eEnter required faction's name.
+    dialog:
+      syntaxNPC: '§cCorrect sytax: npc <message>'
+      syntaxPlayer: '§cCorrect sytax: player <message>'
+      syntaxRemove: '§cCorrect sytax: remove <id>'
+      messageAdded: §aMessage {0} added for the {1}.
+      messageRemoved: §aMessage {0} removed.
+      syntax: '§cCorrect syntax : {0}{1} <message>'
+      soundAdded: §aSound {0} added for message {1}.
+    mythicmobs:
+      list: '§aList of all MythocMobs:'
+      isntMythicMob: §cThis MythicMob doesn't exist.
+      disabled: §cMythicMob is disabled.
+    textList:
+      syntax: '§cCorrect syntax: '
+      added: §aText {0} added.
+      removed: §aText {0} removed.
+    itemCreator:
+      itemType: §eType wanted item type. (ID or name)
+      itemData: §eType wanted item data. (0-15)
+      itemName: §eType item name.
+      itemLore: §eModify the item lore. Type "help" to get some help.
+      unknownItemType: §cUnknown item type.
+      invalidItemType: §cInvalid item type (it must be an item and not a block).
+  trick:
+    text: Type {0} or {1}
+    cancel: '"cancel" to come back at the last text'
+    nul: '"null" to say nothing'
+  stageMobs:
+    noMobs: §cThis stage doesn't need any mobs to kill... prevent an administrator
+      :-)
+    listMobs: §aYou must kill {0}.
+  writeMobAmount: Write the amount of the mobs to kill.
+  playerNeverConnected: §cUnable to find datas from player {0}.
+  writeEndMessage: Write the message sent at the end of the quest or at the end of
+    the stage.
+  moveToTeleportPoint: Go to wanted teleport point.
+  writeNpcName: Write the name of the NPC.
+  writeNpcSkinName: Write the name of the skin of the NPC.
+  writeQuestName: Write the name of your quest!
+  inventoryFull: §cYour inventory is full, the item has been dropped on floor.
+  factionDoesntExist: §cThis faction does not exist...
+  objectDoesntExist: §cSpecified item (ID {0}) does not exist.
+  writeCommand: Write wanted command. (without / at the beggining) You can use {PLAYER},
+    it will be remplaced by the executor player's name.
+  writeDescriptionText: Write the text who describe the goal of the step.
+  requirements:
+    quest: §eYou must have finished the quest "{0}"§r§e!
+    level: §eYou must be at least level {0}!
+    job: §eYou must be at least level {0} for the job {1}!
+inv:
+  validate: §b§lValidate
+  create:
+    name: §8Create a §b§lquest§r§8!
+    stageCreate: §aCreate a new step
+    stageRemove: §cDelete this step
+    findNPC: §aFind a NPC
+    bringBack: §aBring back items
+    findRegion: §aFind a region
+    NPCText: §eEdit the text of the NPC
+    selectItems: §bChoose the required items
+    selectRegion: §7Choose the region
+    stageStartMsg: §eEdit the starting message
+    killMobs: §aKill mobs
+    editMobsKill: §eEdit the mobs to kill
+    mobsKillFromAFar: Kill from a far
+  details:
+    name: §8Last details of quest
+    questName: §aEdit the name of the quest
+    setItemsRewards: §7Edit items gains
+    setXPRewards: §eEdit experience gains
+    createStarterNPC: §eCreate the NPC starter
+    selectStarterNPC: §6Select the NPC starter
+    createQuest:
+      itemName: Create the quest
+      itemLore: Must one NPC selected/created\nAnd have chosen a name for the quest
+    editQuest:
+      itemName: Edit the quest
+    multipleTime:
+      itemName: Toggle the several-use
+      itemLore: Is the quest can be done\n several times?
+    createStageNPC: §eCreate the stage NPC
+    selectStageNPC: §6Select the stage NPC
+    setPermReward: §eEdit the gain of permission
+    setMoneyReward: §eEdit the gain of money
+    endMessage: §aEdit the end message
+    startDialog: §eEdit the start dialog
+    editRequirements: §eEdit requirements
+  itemsSelect:
+    name: §8Edit the items
+    none: §aMove an item here or\n§aclick to open item editor
+  npcCreate:
+    name: §5Create your own NPC!
+    setName: §aEdit the name of the NPC
+    setSkin: §eEdit the skin of the NPC
+    setType: §aEdit the type of the NPC
+    move:
+      itemName: §6Move
+      itemLore: Move to another place
+    moveItem: Validate the place
+  npcSelect:
+    name: §8Select or create?
+    createStageNPC: §eCreate the NPC
+    selectStageNPC: §6Select an existing NPC
+  npcType:
+    name: §5Chose the type of the NPC
+  listBook:
+    questName: Name
+    questStarter: Starter
+    questRewards: Rewards
+    questMultiple: Several times
+    questStages: Stages
+    noQuests: No quests has been previously created
+    requirements: Requirements
+  entityType:
+    name: §5Choose the type of entity
+  chooseQuest:
+    name: §5What quest?
+  mobs:
+    name: §5Choose the mobs!
+    none: §aClick here to add a mob
+    click: §bLeft click to edit\nRight click to delete
+  mobSelect:
+    name: §8Select the mob
+    bukkitEntityType: §eSelect a type of entity
+    mythicMob: §6Select a Mythic Mob
+  stages:
+    name: §8Create the stages
+    nextPage: §eNext page
+    laterPage: §ePrevious page
+    endingItem: §6End rewards
+    descriptionTextItem: §eEdit description text
+  stageEnding:
+    name: §8End of the step
+    locationTeleport: §aEdit the teleport point
+    skillExperience: §aEdit SkillAPI experience gain
+    command: §aEdit executed command
+  requirements:
+    name: §8Requirements
+  itemCreator:
+    name: §8Item creator
+    itemType: §bItem type
+    itemFlags: Toggle item flags
+    itemName: §bItem name
+    itemLore: §bItem lore
+    isQuestItem: '§bQuest item:'
+  command:
+    name: §8Command
+    value: §bCommand
+    console: Console
+  listAllQuests:
+    name: §8Quests
+  listPlayerQuests:
+    name: §8{0}'s Quests
+  listQuests:
+    notStarted: Not started Quests
+    finished: Finished Quests
+    inProgress: Quests in progress
+  chooseAccount:
+    name: §5What account?
+  cancel: §c§lCancel
+  rewards:
+    name: §8Rewards
+misc:
+  stageType:
+    region: Find a region
+    npc: Find a NPC
+    items: Bring back items
+    mobs: Kill mobs
+  unknown: unknown
+  and: and
+  cancel: cancel
+  nul: 'null'
+  or: or
+  type: Type
+  items: items
+  'yes': true
+  'no': false
+  enabled: Enabled
+  disabled: Disabled
+  amount: Amount
+  format:
+    prefix: §6<§e§lQuests§r§6> §o
+    npcText: §e§l{0}:§r§e {1}
+    selfText: §e§l{0}:§r§e {1}
+    offText: §r§e {0}
+  expPoints: experience points
+scoreboard:
+  noLaunched: §cNo quests in progress.
+  stage:
+    region: §eFind the region §6{0}
+    npc: §eTalk to the NPC §6{0}
+    items: '§eFind items for §6{0} §e:'
+    mobs: §eKill §6{0}
+  name: §6§lQuests
+advancement:
+  finished: Finished
+  notStarted: Not started
