@@ -23,5 +23,10 @@ I'll not release the source code for the moment, but maybe later, why not ?
 
 ***
 
+## Want to help ?
+You can pull your languages files into the **[lang](https://github.com/SkytAsul/BeautyQuests/tree/master/lang)** directory !
+
+***
+
 ## Discord
 If you need help, I opened a [Discord server](https://discord.gg/H8fXrkD) where peoples can help you and where you can discuss about bugs, etc.
