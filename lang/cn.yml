@@ -1,0 +1,336 @@
+msg:
+  quest:
+    started: 你接受了任务 §o{0}
+    created: §a你成功地创建了 "§e{0}§a" 任务, 包含 {1} 个阶段!
+    cancelling: §c已取消创建任务.
+    edited: §aC你成功地修改了 "§e{0}§a", 包含 {1} 个阶段!
+    editCancelling: §c任务进度编辑已取消.
+    createCancelled: §c抱歉，任务创建/编辑已被其他插件取消...
+    invalidID: §cID为 {0} 的任务不存在.
+    finished:
+      base: §a恭喜你完成了任务 §o§6{0}§r§a!
+      obtain: §a你获得了 {0}!
+  quests:
+    nopStep: §c这个任务没有任何阶段...  :-)
+    updated: §7已更新任务 {0} !
+  writeNPCText: 输入玩家需要对NPC说的话. 输入 \"help\" 来获取帮助. (指令不需要输入 /)
+  writeStageText: 写下的消息将在任务阶段开始时中发送给玩家.
+  writeRegionName: 输入任务阶段所需前往的区域名.
+  writeXPGain: '输入玩家获得的经验点. 最终获得: §a{0}'
+  experience:
+    edited: '已编辑获得的经验: {0}pts. 改为 {1}pts.'
+  npc:
+    remove: §7已删除NPC.
+    talk: §7和 §o{0}§r§7 谈话.
+  regionDoesntExists: §c这个区域不存在...
+  number:
+    negative: §c你必须输入正数!
+    invalid: §c"{0}" 不是有效的数字.
+    zero: §c你必须输入大于0的数!
+  errorOccured: §c出现了错误...  :-)
+  commandsDisabled: §c你不能在这时输入指令.
+  bringBackObjects: 把 {0} 带回给我.
+  command:
+    playerNeeded: §c你必须是玩家才能使用这个指令.
+    incorrectSyntax: §c错误用法.
+    noPermission: §c你没有权限输入这个指令.
+    invalidCommand:
+      quests: §c指令不存在, 输入 §o/quests help 查看帮助
+      simple: §c指令不存在, 输入 §ohelp 查看帮助(不需要 /)
+    removed: §a已删除任务 {0} .
+    leaveAll: §e你强制结束了 {0} 个任务. §c出现了 {1} 个错误.
+    resetPlayer:
+      player: §e你的所有任务数据 ({0}) 被 {1} 删除了.
+      remover: §e已删除 {0} 的任务数据. ({1})
+    help:
+      header: §e§lBeautyQuests - §6帮助§r
+      create: '§e/{0} create: §a创建任务'
+      edit: '§e/{0} quests edit: §a编辑任务'
+      remove: '§e/{0} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
+      finishAll: '§e/{0} finishAll: §a结束所有进行中的任务'
+      resetPlayer: '§e/{0} resetPlayer <name>: §a删除一名玩家的所有任务数据'
+      seePlayer: '§e/{0} seePlayer <name>: §a查看玩家的任务数据'
+      reload: '§e/{0} reload: §a重载配置 - §c§o不推荐使用'
+      version: '§e/{0} version: §a查看插件版本'
+      list: '§e/{0} list: §a查看任务列表'
+      resetPlayerQuest: '§e/{0} resetPlayerQuest <name> [id]: §a删除一名玩家的一个任务数据'
+      save: '§e/{0} save: §a手动保存数据'
+      start: '§e/{0} start <player> [id] : §a强制玩家接受任务'
+      setStage: '§e/{0} setStage <player> <quest> [newStage] : §a结束一名玩家的任务阶段'
+    seePlayer:
+      header: '§e玩家 §6{0} 的任务数据§e:'
+      inProgress: '§e进行中的任务:'
+      finished: '§e完成的任务:'
+    resetPlayerQuest:
+      player: §e任务数据 {0} 已被 {1} 删除.
+    startQuest: §e你接受了任务 {0} (UUID {1}).
+  editor:
+    already: §c你已在编辑器中.
+    npc:
+      enter: §a点击一个NPC.
+      choseStarter: §3选择接受任务的NPC.
+      notStarter: §c这个NPC没有可以接受的任务...
+    text:
+      argNotSupported: §c不支持 {0} 参数.
+      chooseLvlRequired: §e输入所需等级.
+      chooseJobRequired: §e输入工作名.
+      choosePermissionRequired: §e输入开始任务所需权限.
+      chooseFactionRequired: §e输入派系名.
+      reward:
+        permission: §e编辑获得的权限.
+        money: §e输入获得的钱数.
+      chooseClassesRequired: §e输入接受任务所需职介名.
+      choosePermissionMessage: §e输入没有权限时显示的消息. (输入 "null" 来跳过这一步)
+    dialog:
+      syntaxNPC: '§c正确用法: npc <消息>'
+      syntaxPlayer: '§c正确用法: player <消息>'
+      syntaxRemove: '§c正确用法: remove <id>'
+      messageAdded: §a已为{1} 添加消息 {0}.
+      messageRemoved: §a已删除 {0} .
+      syntax: '§c正确用法 : {0}{1} <消息>'
+      soundAdded: §a已为{1}添加音效{0}.
+      help: |-
+        §anpc <消息> : 添加一条由NPC说出的话
+        player <消息> : 添加一条由玩家说出的话
+        nothing <消息> : 添加一条没有前缀的话
+        remove <id> : 删除一条对话
+        list : 查看所有对话
+        npcinsert <id> <消息> : 插入一条由NPC说的话
+        playerinsert <id> <消息> : 插入一条由玩家说的话
+        nothinginsert <id> <消息> : 插入一条没有前缀的话
+        addsound <id> <音效名> : 给选中对话添加音效
+        clear : 删除所有对话
+        close : 确认并退出对话编辑
+      cleared: §a{0} 已删除对话.
+    mythicmobs:
+      list: '§a所有的MythocMobs:'
+      isntMythicMob: §c这个MythicMob不存在.
+      disabled: §cMythicMob已关闭.
+    textList:
+      syntax: '§c正确用法: '
+      added: §a已添加 {0}.
+      removed: §a已删除 {0} .
+    itemCreator:
+      itemType: §e输入物品类型名.
+      itemData: §e输入物品数据. (0-15)
+      itemName: §e输入物品名.
+      itemLore: §e修改物品描述. 输入 "help" 查看帮助.
+      unknownItemType: §c未知的物品类型.
+      invalidItemType: §c无效的物品类型 (必须是物品而不能是方块).
+    epicBossDoesntExist: §cThis EpicBoss does not exist.
+  trick:
+    text: 输入 {0} 或 {1}
+    cancel: '"cancel" 来返回到上一条消息'
+    nul: '"null" 来留空'
+  stageMobs:
+    noMobs: §c这个任务阶段没有要杀的怪物 :-)
+    listMobs: §a你需要杀死 {0}.
+  writeMobAmount: 输入要击杀的怪物数.
+  playerNeverConnected: §c找不到玩家 {0} 的数据.
+  writeEndMessage: 输入任务阶段结束语.
+  moveToTeleportPoint: 前往传送点.
+  writeNpcName: 输入NPC名.
+  writeNpcSkinName: 输入NPC皮肤名.
+  writeQuestName: 输入任务名!
+  inventoryFull: §c你的背包已满, 任务奖励已掉落在地上.
+  factionDoesntExist: §c派系不存在...
+  objectDoesntExist: §c特定物品 (ID {0}) 不存在.
+  writeCommand: 输入你想要玩家输入的指令. (不需要输入 / ) 你可以用 {PLAYER}代替玩家名.
+  writeDescriptionText: 输入任务目标描述.
+  requirements:
+    quest: §e你必须先完成任务 "{0}"§r§e!
+    level: §e你必须达到 {0} 级!
+    job: §e你必须达到 {0} 级才能应聘工作 {1}!
+    wait: §c你必须等待 {0} 秒才能再次接受任务!
+  writeChatMessage: 输入让玩家输入的消息 (在开头添加{SLASH} 来使用指令).
+  classDoesntExist: §c这个职介不存在.
+  writeHologramText: 输入显示的全息文字. (输入 "none" 来取消, 输入 "null" 显示默认文字)
+  writeQuestTimer: 输入再次接受任务的冷却时间. (输入 "null"来使用默认冷却时间)
+  selectNPCToKill: 选择要杀死的NPC.
+  indexOutOfBounds: §c数字({0}) 大于 [{1}, {2}[
+  playerNotOnline: §c玩家 {0} 不在线.
+inv:
+  validate: §b§l确认
+  create:
+    name: §8创建一个 §b§l任务§r§8!
+    stageCreate: §a创建新的阶段
+    stageRemove: §c删除这一阶段
+    findNPC: §a寻找一个NPC
+    bringBack: §a带回物品
+    findRegion: §a找到一片区域
+    NPCText: §e编辑NPC对话
+    selectItems: §b选择任务所需物品
+    selectRegion: §7选择区域
+    stageStartMsg: §e编辑开场白
+    killMobs: §a击杀怪物
+    editMobsKill: §e编辑要击杀的怪物
+    mobsKillFromAFar: 击杀
+    mineBlocks: §a破坏方块
+    hideClues: 隐藏标志 (粒子和悬浮文字)
+    talkChat: §a在聊天框内输入
+    editBlocksMine: §e编辑破坏的方块
+    editMessageType: §e编辑要玩家说的话
+    cancelMessage: 取消发送消息
+  details:
+    name: §8最终设置
+    questName: §a编辑任务名
+    setItemsRewards: §7编辑获得的物品
+    setXPRewards: §e编辑获得的经验
+    createStarterNPC: §e创建接受任务的NPC
+    selectStarterNPC: §6选择接受任务的NPC
+    createQuest:
+      itemName: 创建任务
+      itemLore: 必须先选择/创建一个NPC\n来开始任务
+    editQuest:
+      itemName: 编辑任务
+    multipleTime:
+      itemName: 重复任务
+      itemLore: 任务是否\n 可以重复接受?
+    createStageNPC: §e创建阶段 NPC
+    selectStageNPC: §6选择这一阶段的NPC
+    setPermReward: §e编辑权限奖励
+    setMoneyReward: §e编辑获得的钱数
+    endMessage: §a编辑任务结束语
+    startDialog: §e编辑任务开场白
+    editRequirements: §e编辑任务需求
+    scoreboardItem: 启用计分版
+    hideItem: 隐藏任务 (菜单和卫星地图)
+    bypassLimit: 忽略任务上限
+    startRewards: §6开始任务的奖励
+    hologramText: §e全息文字
+    timer: §b任务冷却时间
+    requirements: '{0} 个任务需求'
+    rewards: '{0} 个奖励'
+  itemsSelect:
+    name: §8编辑物品
+    none: §a把物品放到这里或\n§a点击打开物品编辑器
+  npcCreate:
+    name: §5创建属于你的NPC!
+    setName: §a编辑NPC名称
+    setSkin: §e编辑NPC皮肤
+    setType: §a编辑NPC类型
+    move:
+      itemName: §6传送
+      itemLore: 传送到其他地方
+    moveItem: 确认前往
+  npcSelect:
+    name: §8选择还是创建NPC?
+    createStageNPC: §e创建 NPC
+    selectStageNPC: §6选择 NPC
+  npcType:
+    name: §5选择NPC类型
+  listBook:
+    questName: 任务名
+    questStarter: 任务NPC
+    questRewards: 任务奖励
+    questMultiple: 是否可重复接受
+    questStages: 任务类型
+    noQuests: 目前没有任务
+    requirements: 任务需求
+  entityType:
+    name: §5选择生物类型
+  chooseQuest:
+    name: §5哪种任务?
+  mobs:
+    name: §5选择这种怪物!
+    none: §a点击这里添加怪物
+    click: §b左击编辑\n右击删除
+  mobSelect:
+    name: §8选择怪物
+    bukkitEntityType: §e选择生物类型
+    mythicMob: §6选择MythicMob
+    epicBoss: §6Select an Epic Boss
+  stages:
+    name: §8创建任务
+    nextPage: §e下一页
+    laterPage: §e上一页
+    endingItem: §6结束奖励
+    descriptionTextItem: §e编辑文本描述
+  stageEnding:
+    name: §8结束这一任务阶段
+    locationTeleport: §a编辑传送点
+    skillExperience: §a编辑获得的SkillAPI经验
+    command: §a编辑执行的指令
+  requirements:
+    name: §8任务需求
+  itemCreator:
+    name: §8物品编辑器
+    itemType: §b物品类型
+    itemFlags: 开关flags显示
+    itemName: §b物品名
+    itemLore: §b物品描述
+    isQuestItem: '§b任务物品:'
+  command:
+    name: §8指令
+    value: §b指令
+    console: 控制台
+  listAllQuests:
+    name: §8任务
+  listPlayerQuests:
+    name: §8{0}的任务
+  listQuests:
+    notStarted: 没有已开始的任务
+    finished: 已完成的任务
+    inProgress: 进行中的任务
+    loreCancel: §c§o点击取消任务
+    timeToWait: §3§o你需要等待{0} 分钟才能再次接受任务
+    canRedo: §3§o你可以再次接受这个任务!
+  chooseAccount:
+    name: §5选择哪一个帐号?
+  cancel: §c§l取消
+  rewards:
+    name: §8任务奖励
+  confirm:
+    name: §8你确认?
+    'yes': §a确认
+    'no': §c取消
+misc:
+  stageType:
+    region: 寻找区域
+    npc: 寻找 NPC
+    items: 找回物品
+    mobs: 击杀怪物
+    mine: 破坏方块
+    chat: 说话
+  unknown: 未知
+  and: 和
+  nul: 无效
+  or: 或
+  type: 类型
+  items: 物品
+  'yes': 是
+  'no': 否
+  enabled: 已启用
+  disabled: 已关闭
+  amount: 数量
+  format:
+    prefix: §6<§e§l任务§r§6> §o
+    npcText: §e§l{0}:§r§e {1}
+    selfText: §e§l{0}:§r§e {1}
+    offText: §r§e {0}
+  expPoints: 点经验
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  requirement:
+    class: §b所需职介
+    faction: §b所需派系
+    jobLevel: §b所需职业等级
+    experienceLevel: §b所需经验等级
+    permissions: §3所需权限
+    quest: §a所需前置任务
+  unused: §e§l未设置
+  used: §6§l已设置
+  remove: §e§o点击鼠标中键删除
+  entityType: '实体类型: {0}'
+scoreboard:
+  noLaunched: §c没有进行中的任务.
+  stage:
+    region: §e找到 §6{0}
+    npc: §e和NPC §6{0} 谈话
+    items: '§e给 §6{0} 找到物品§e:'
+    mobs: §e杀死 §6{0}
+    mine: §e挖掘 §6{0}
+    chat: §e说出 §6{0}
+  name: §6§l任务
+advancement:
+  finished: 已完成
+  notStarted: 未接受
