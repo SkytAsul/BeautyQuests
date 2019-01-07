@@ -1,0 +1,54 @@
+redoMinuts: 5
+lang: en
+minecraftTranslationsFile: null
+checkUpdates: true
+enablePrefix: true
+saveCycle: 15
+firstQuest: -1
+maxLaunchedQuests: 0
+
+debug: false
+
+scoreboards: true
+showEmptyScoreboard: false
+
+playerQuestUpdateMessage: true
+playerStageStartMessage: true
+allowPlayerCancelQuest: false
+sounds: true
+fireworks: true
+mobsProgressBar: false
+progressBarTimeoutSeconds: 15
+
+skillAPIoverride: true
+accountsHook: false
+splittedAdvancementPlaceholderMax: 3
+disableTextHologram: false
+hologramsHeight: 0.0
+holoLaunchItemName: BOOK
+holoTalkItemName: COAL
+dynmap:
+  markerSetName: "Quests"
+  markerIcon: "bookshelf"
+
+item: BOOK
+pageItem: ARROW
+questItem: "§e§oQuest Item"
+itemNameColor: "§6"
+itemAmountColor: "§e"
+
+particles: true
+start:
+  particleEffect: redstone
+  particleColor:
+    RED: 255
+    BLUE: 0
+    GREEN: 255
+  particleShape: point
+talk:
+  particleEffect: redstone
+  particleColor:
+    RED: 255
+    BLUE: 0
+    GREEN: 255
+  particleShape: point

@@ -1,0 +1,235 @@
+package fr.skytasul.quests.stages;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.ParticleEffect;
+import fr.skytasul.quests.utils.ParticleEffect.ParticleLocation;
+import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
+import fr.skytasul.quests.utils.types.Dialog;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.npc.NPC;
+
+public class StageNPC extends AbstractStage{
+	
+	protected NPC npc;
+	protected Dialog di = null;
+	private boolean hide = false;
+	
+	protected StageBringBack bringBack = null;
+	
+	private Map<Player, Integer> dialogs = new HashMap<>();
+	private BukkitTask task;
+	
+	private List<PlayerAccount> cached = new ArrayList<>();
+	private Object holo;
+	
+	public StageNPC(StageManager manager, NPC npc){
+		super(manager);
+		this.npc = npc;
+	}
+	
+	private void launchRefreshTask(){
+		if (npc == null) return;
+		task = new BukkitRunnable() {
+			List<Player> tmp = new ArrayList<>();
+			public void run() {
+				Entity en = npc.getEntity();
+				if (en == null) return;
+				if (!en.getType().isAlive()) return;
+				Location lc = en.getLocation();
+				tmp.clear();
+				for (PlayerAccount acc : cached) {
+					if (!acc.isCurrent()) continue;
+					Player p = acc.getPlayer();
+					if (p.getWorld() != lc.getWorld()) continue;
+					if (lc.distance(p.getLocation()) > 50) continue;
+					tmp.add(p);
+				}
+				
+				if (QuestsConfiguration.getHoloTalkItem() != null && HolographicDisplays.hasProtocolLib()) {
+					if (holo == null) createHoloLaunch();
+					try {
+						HolographicDisplays.setPlayersVisible(holo, tmp);
+					}catch (ReflectiveOperationException e) {
+						e.printStackTrace();
+					}
+					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 2));
+				}
+				
+				if (QuestsConfiguration.doParticles()) {
+					if (tmp.isEmpty()) return;
+					if (!QuestsConfiguration.doCustomParticles(ParticleLocation.TALK)){
+						ParticleEffect.VILLAGER_HAPPY.display(0.01f, 0.15f, 0.01f, 0.1f, 3, ((LivingEntity) en).getEyeLocation().add(0, 1, 0), tmp);
+					}else QuestsConfiguration.getParticleShape().send((LivingEntity) en, tmp);
+				}
+			}
+		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);
+	}
+	
+	private void createHoloLaunch(){
+		holo = HolographicDisplays.createHologram(npc.getStoredLocation(), false);
+		HolographicDisplays.appendItem(holo, QuestsConfiguration.getHoloTalkItem());
+	}
+	
+	private void removeHoloLaunch(){
+		HolographicDisplays.delete(holo);
+		holo = null;
+	}
+
+	public NPC getNPC(){
+		return npc;
+	}
+	
+	public void setDialog(Object obj){
+		if (obj == null) return;
+		if (obj instanceof Dialog){
+			this.di = (Dialog) obj;
+		}else {
+			setDialog(Dialog.deserialize((Map<String, Object>) obj));
+		}
+	}
+	
+	public void setDialog(Dialog dialog){
+		this.di = dialog;
+	}
+	
+	public boolean hasDialog(){
+		return di != null;
+	}
+	
+	public Dialog getDialog(){
+		return di;
+	}
+
+	public boolean isHid(){
+		return hide;
+	}
+
+	public void setHid(boolean hide){
+		this.hide = hide;
+	}
+
+	public String descriptionLine(PlayerAccount acc){
+		return Utils.format(Lang.SCOREBOARD_NPC.toString(), (npc != null) ? npc.getName() : "§c§lerror");
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onClick(NPCRightClickEvent e){
+		Player p = e.getClicker();
+		if (e.isCancelled()) return;
+		if (e.getNPC() != npc) return;
+		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this)) return;
+		
+		e.setCancelled(true);
+		
+		if (di != null){ // dialog exists
+			if (dialogs.containsKey(p)){ // Already started
+				int id = dialogs.get(p) + 1;
+				// next dialog
+				di.send(p, id);
+				dialogs.replace(p, id);
+				
+				test(p, id);// end
+				return;
+				
+				// dialog not started
+			}else if (bringBack != null){ // if bringback has not required items
+				if (!bringBack.checkItems(p, true)) return;
+				bringBack.removeItems(p);
+			}
+			if (Utils.startDialog(p, di)){
+				dialogs.put(p, 0);
+				test(p, 0);
+				return;
+			}
+		}else if (bringBack != null){ // no dialog but bringback
+			if (!bringBack.checkItems(p, true)){ // not required items
+				return;
+			}else { // required items present - so remove items
+				bringBack.removeItems(p);
+			}
+		}
+		finishStage(p);
+	}
+	
+	private void test(Player p, int id){
+		if (id+1 == di.messages.valuesSize()){ // end
+			dialogs.remove(p);
+			finishStage(p);
+		}
+	}
+	
+	
+	public void start(PlayerAccount account){
+		super.start(account);
+		cached.add(account);
+	}
+	
+	
+	public void end(PlayerAccount account){
+		super.end(account);
+		cached.remove(account);
+	}
+	
+	
+	public void launch(Player p) {
+		super.launch(p);
+		if (manager.getID(this) == 0 && sendStartMessage() && bringBack != null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
+	}
+	
+	
+	public void unload() {
+		super.unload();
+		if (task !=null) task.cancel();
+		if (holo != null) removeHoloLaunch();
+	}
+	
+	
+	public void load(){
+		super.load();
+		if (QuestsConfiguration.doParticles() || QuestsConfiguration.getHoloTalkItem() != null){
+			if (!hide) launchRefreshTask();
+		}
+	}
+	
+	protected void loadDatas(Map<String, Object> map) {
+		setDialog(map.get("msg"));
+		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
+	}
+
+	
+	public Map<String, Object> serialize(Map<String, Object> map){
+		//Quests.getInstance().getLogger().info("DEBUG : " + (map == null) + " " + (npc == null));
+		if (npc != null) map.put("npcID", npc.getId());
+		if (di != null) map.put("msg", di.serialize());
+		if (hide) map.put("hid", true);
+		return map;
+	}
+	
+	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
+		StageNPC st = new StageNPC(manager, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
+		st.loadDatas(map);
+		return st;
+	}
+
+}
