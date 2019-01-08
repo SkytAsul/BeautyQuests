@@ -84,6 +84,7 @@ public enum Lang{
 	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player", "§eDatas of quest {0} has been deleted by {1}."),
 	DATA_REMOVED_INFO("msg.command.resetPlayer.remover", "§eThe quests datas of {0} has been deleted. ({1})"),
 	START_QUEST("msg.command.startQuest", "§eYou have forced starting of quest {0} (UUID {1})."),
+	CANCEL_QUEST("msg.command.cancelQuest", "§eYou have cancelled the quest {0}."),
 	SEE_PLAYER("msg.command.seePlayer.header", "§eDatas of player §6{0} §e"),
 	SEE_PLAYER_INPROGRESS("msg.command.seePlayer.inProgress", "§eQuests in progress:"),
 	SEE_PLAYER_FINISHED("msg.command.seePlayer.finished", "§eQuests finished:"),

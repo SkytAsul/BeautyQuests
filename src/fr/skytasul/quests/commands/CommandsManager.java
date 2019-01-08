@@ -21,21 +21,18 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.Pair;
 import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class CommandsManager implements CommandExecutor, TabCompleter{
 
-	public final Map<String, Pair<Cmd, Method>> commands = new HashMap<>();
+	public final Map<String, InternalCommand> commands = new HashMap<>();
 	private RunnableObj noArgs;
-	private Object commandsClass;
 	
 	/**
 	 * @param noArgs RunnableObj(player) who'll be ran if the command is executed without any arguments <i>(can be null)</i>
 	 */
 	public CommandsManager(RunnableObj noArgs){
 		this.noArgs = noArgs;
-		this.commandsClass = commands;
 	}
 	
 	/**
@@ -46,8 +43,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			if (method.isAnnotationPresent(Cmd.class)){
 				Cmd cmd = method.getDeclaredAnnotation(Cmd.class);
 				if (method.getParameterCount() == 1){
-					if (method.getParameterTypes()[0] == CommandContext[].class){
-						this.commands.put(method.getName().toLowerCase(), new Pair<Cmd, Method>(cmd, method));
+					if (method.getParameterTypes()[0] == CommandContext.class){
+						this.commands.put(method.getName().toLowerCase(), new InternalCommand(cmd, method, commandsClassInstance));
 						continue;
 					}
 				}
@@ -64,13 +61,13 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			return false;
 		}
 		
-		Pair<Cmd, Method> pair = commands.get(args[0].toLowerCase());
-		if (pair == null){
+		InternalCommand internal = commands.get(args[0].toLowerCase());
+		if (internal == null){
 			Lang.COMMAND_DOESNT_EXIST.sendWP(sender);
 			return false;
 		}
 		
-		Cmd cmd = pair.getKey();
+		Cmd cmd = internal.cmd;
 		if (cmd.player() && !(sender instanceof Player)){
 			Lang.MUST_PLAYER.sendWP(sender);
 			return false;
@@ -89,7 +86,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		Object[] argsCmd = new Object[args.length - 1];
 		for (int i = 1; i < args.length; i++){
 			String arg = args[i];
-			String type = cmd.args()[i];
+			String type = cmd.args()[i-1];
 			if (type.equals("PLAYERS")){
 				Player target = Bukkit.getPlayerExact(arg);
 				if (target == null){
@@ -112,7 +109,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		}
 		
 		try {
-			pair.getValue().invoke(commandsClass, new CommandContext(this, sender, argsCmd, label));
+			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
 		}catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			Lang.ERROR_OCCURED.send(sender, " command executing");
 			e.printStackTrace();
@@ -127,17 +124,17 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		String sel = args[0];
 		
 		if (args.length == 1){
-			for (Entry<String, Pair<Cmd, Method>> en : commands.entrySet()){ // PERMISSIONS
-				String perm = en.getValue().getKey().permission();
+			for (Entry<String, InternalCommand> en : commands.entrySet()){ // PERMISSIONS
+				String perm = en.getValue().cmd.permission();
 				if (perm != null && sender.hasPermission(perm)) find.add(en.getKey());
 			}
 		}else if (args.length >= 2){
 			int index = args.length-2;
 			if (!commands.containsKey(sel)) return tmp;
-			Pair<Cmd, Method> pair = commands.get(sel);
-			String[] needed = pair.getKey().args();
+			InternalCommand internal = commands.get(sel);
+			String[] needed = internal.cmd.args();
 			if (needed.length <= index) return tmp;
-			if (!pair.getKey().permission().isEmpty() && !hasPermission(sender, pair.getKey().permission())) return tmp;
+			if (!internal.cmd.permission().isEmpty() && !hasPermission(sender, internal.cmd.permission())) return tmp;
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("QUESTSID")){
@@ -157,6 +154,18 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 	
 	public static boolean hasPermission(CommandSender sender, String cmd){
 		return sender.hasPermission(("beautyquests.command." + cmd));
+	}
+	
+	public class InternalCommand{
+		Cmd cmd;
+		Method method;
+		Object commands;
+		
+		InternalCommand(Cmd cmd, Method method, Object commandsClass){
+			this.cmd = cmd;
+			this.method = method;
+			this.commands = commandsClass;
+		}
 	}
 	
 }

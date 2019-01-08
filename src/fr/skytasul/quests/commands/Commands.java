@@ -259,13 +259,13 @@ public class Commands {
 			gui.run = (obj) -> {
 				Quest qu = (Quest) obj;
 				qu.cancelPlayer(acc);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+				Lang.CANCEL_QUEST.send(cmd.sender, qu.getName());
 			};
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
 				Quest qu = (Quest) cmd.args[1];
 				qu.cancelPlayer(acc);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+				Lang.CANCEL_QUEST.send(cmd.sender, qu.getName());
 		}else {
 			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 		}
@@ -298,7 +298,9 @@ public class Commands {
 		for (Lang l : Lang.values()){
 			if (l.getPath().startsWith("msg.command.help.")){
 				String command = l.getPath().substring(17);
-				if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command).getKey().permission())) cmd.sender.sendMessage(l.format(cmd.label));
+				if (command.equals("header")){
+					cmd.sender.sendMessage(l.toString());
+				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) cmd.sender.sendMessage(l.format(cmd.label));
 			}
 		}
 	}
