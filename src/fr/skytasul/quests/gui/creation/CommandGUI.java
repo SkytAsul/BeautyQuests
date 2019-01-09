@@ -14,7 +14,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.Pair;
+import fr.skytasul.quests.utils.types.Command;
 import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class CommandGUI implements CustomInventory {
@@ -43,6 +43,12 @@ public class CommandGUI implements CustomInventory {
 		return inv;
 	}
 
+	public void setFromExistingCommand(Command cmd){
+		if (cmd == null) return;
+		this.cmd = cmd.label;
+		this.console = cmd.console;
+		inv.getItem(2).setType(Material.DIAMOND);
+	}
 	
 	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
@@ -56,21 +62,12 @@ public class CommandGUI implements CustomInventory {
 			break;
 			
 		case 4:
-			/*if (current.getDurability() == 8){
-				current.setDurability((short) 10);
-				ItemUtils.name(current, "§a" + Lang.console.toString());
-				console = true;
-			}else {
-				current.setDurability((short) 8);
-				ItemUtils.name(current, "§8" + Lang.console.toString());
-				console = false;
-			}*/
 			console = ItemUtils.toggle(current);
 			break;
 			
 		case 2:
 			if (current.getType() == Material.DIAMOND){
-				run.run(new Pair<String, Boolean>(cmd, console));
+				run.run(new Command(cmd, console));
 			}
 			break;
 			

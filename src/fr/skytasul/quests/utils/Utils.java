@@ -36,13 +36,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.rewards.CommandReward;
-import fr.skytasul.quests.rewards.ItemReward;
-import fr.skytasul.quests.rewards.MessageReward;
-import fr.skytasul.quests.rewards.MoneyReward;
-import fr.skytasul.quests.rewards.PermissionReward;
-import fr.skytasul.quests.rewards.TeleportationReward;
-import fr.skytasul.quests.rewards.XPReward;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
 import fr.skytasul.quests.utils.types.Dialog;
@@ -353,7 +346,7 @@ public class Utils{
 		return ls;
 	}
 	
-	@Deprecated
+	/*@Deprecated
 	public static List<AbstractReward> convertFromOldRewards(Map<String, Object> map){
 		List<AbstractReward> rewards = new ArrayList<>();
 		
@@ -381,7 +374,7 @@ public class Utils{
 		}
 		
 		return rewards;
-	}
+	}*/
 	
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
 	public static DateFormat getDateFormat(){

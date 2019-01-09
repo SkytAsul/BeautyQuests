@@ -539,8 +539,8 @@ class CreateArea implements StageCreationRunnables{
 		fr.skytasul.quests.stages.StageArea st = (fr.skytasul.quests.stages.StageArea) stage;
 		datas.put("region", st.getRegion().getId());
 		datas.put("world", WorldGuard.getWorld(st.getRegion().getId()).getName());
-		ItemUtils.name(datas.getLine().getItem(6), st.getRegion().getId());
 		setItem(datas.getLine(), datas.getGUI());
+		ItemUtils.name(datas.getLine().getItem(6), st.getRegion().getId());
 	}
 }
 

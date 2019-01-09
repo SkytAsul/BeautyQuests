@@ -1,51 +1,54 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.utils.types.Command;
 
 public class CommandReward extends AbstractReward {
 
-	public String cmd;
-	public boolean console;
+	public List<Command> commands = new ArrayList<>();
 	
 	public CommandReward(){
 		super("commandReward");
 	}
-	
-	public CommandReward(String cmd, boolean console){
-		this();
-		this.cmd = cmd;
-		this.console = console;
-	}
 
 	
-	public String give(Player p){
-		if (cmd == null) return null;
-		String formattedcmd = this.cmd.replace("{PLAYER}", p.getName());
-		if (console){
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), formattedcmd);
-		}else p.performCommand(formattedcmd);
-		return null;
+	public CommandReward(List<Command> list){
+		this();
+		this.commands = list;
 	}
-	
-	public String toString(){
-		return "/" + cmd + " (" + (console ? "console" : "player") + ")";
+
+	public String give(Player p){
+		if (commands.isEmpty()) return null;
+		for (Command cmd : commands){
+			cmd.execute(p);
+		}
+		return null;
 	}
 
 	
 	protected void save(Map<String, Object> datas){
-		datas.put("command", cmd);
-		datas.put("console", console);
+		List<Map<String, Object>> list = new ArrayList<>();
+		for (Command cmd : commands){
+			list.add(cmd.serialize());
+		}
+		datas.put("commands", list);
 	}
 
 	
 	protected void load(Map<String, Object> savedDatas){
-		cmd = (String) savedDatas.get("command");
-		console = (boolean) savedDatas.get("console");
+		if (savedDatas.containsKey("command")){ // TODO: remove (edited since 0.14)
+			commands.add(new Command((String) savedDatas.get("command"), (boolean) savedDatas.get("console")));
+		}else {
+			for (Map<String, Object> map : (List<Map<String, Object>>) savedDatas.get("commands")){
+				commands.add(Command.deserialize(map));
+			}
+		}
 	}
 
 }

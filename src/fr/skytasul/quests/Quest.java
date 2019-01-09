@@ -650,10 +650,6 @@ public class Quest{
 				}
 			}
 		}
-
-		if (map.containsKey("rewards")){ // TODO: remove after
-			qu.rewards = Utils.convertFromOldRewards((Map<String, Object>) map.get("rewards"));
-		}
 		
 		return qu;
 	}

@@ -22,12 +22,13 @@ import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.PermissionsEditor;
-import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.misc.ListGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.rewards.CommandReward;
 import fr.skytasul.quests.rewards.ItemReward;
@@ -41,7 +42,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
-import fr.skytasul.quests.utils.types.Pair;
+import fr.skytasul.quests.utils.types.Command;
 import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class RewardsGUI implements CustomInventory {
@@ -181,34 +182,45 @@ public class RewardsGUI implements CustomInventory {
 /*                         RUNNABLES                    */
 class CommandR implements RewardCreationRunnables{
 
-
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
-		Inventories.create(p, new CommandGUI((obj) -> {
-			Pair<String, Boolean> pair = (Pair<String, Boolean>) obj;
-			datas.put("cmd", pair.getKey());
-			datas.put("console", pair.getValue());
-			ItemUtils.lore(clicked, "Command : " + pair.getKey() + " | Console : " + pair.getValue());
-			gui.reopen(p, true);
-		}));
+		if (!datas.containsKey("commands")) datas.put("commands", new ArrayList<>());
+		Inventories.create(p, new ListGUI<Command>((List<Command>) datas.get("commands")) {
+			public void click(Command existing){
+				Inventories.create(p, new CommandGUI((obj) -> {
+					Command cmd = (Command) obj;
+					this.finishItem(cmd);
+				})).setFromExistingCommand(existing);
+			}
+
+			public String name(){
+				return "Commands list";
+			}
+
+			public void finish(){
+				gui.reopen(p, true);
+			}
+
+			public ItemStack getItemStack(Command cmd){
+				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, "§d§oCommand : " + cmd.label, "Console : " + cmd.console);
+			}
+		});
 	}
 
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack item){
 		CommandReward rew = (CommandReward) reward;
-		datas.put("cmd", rew.cmd);
-		datas.put("console", rew.console);
-		ItemUtils.lore(item, "Command : " + rew.cmd + " | Console : " + rew.console);
+		datas.put("cmd", new ArrayList<>(rew.commands));
+		ItemUtils.lore(item, "Commands : " + rew.commands.size());
 	}
 
 
 	public CommandReward finish(Map<String, Object> datas){
-		return new CommandReward((String) datas.get("cmd"), (boolean) datas.get("console"));
+		return new CommandReward((List<Command>) datas.get("commands"));
 	}
 
 }
 
 class ItemR implements RewardCreationRunnables{
-
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		ItemsGUI r = (ItemsGUI) Inventories.create(p, new ItemsGUI((obj) -> {

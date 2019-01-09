@@ -28,7 +28,7 @@ import net.citizensnpcs.api.trait.trait.MobType;
 
 public class MobsListGUI implements CustomInventory{
 	
-	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.none.toString());
+	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.mobsNone.toString());
 	
 	public Map<Integer, Mob> mobs = new HashMap<>();
 	

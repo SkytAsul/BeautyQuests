@@ -189,22 +189,18 @@ public abstract class AbstractStage implements Listener{
 			AbstractStage st = (AbstractStage) m.invoke(null, map, manager);
 			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-			if (map.containsKey("end")){ // TODO REMOVE FIRST IF (NOT ELSE) ON 0.13
-				st.rewards = Utils.convertFromOldEnding((Map<String, Object>) map.get("end"));
-			}else {
-				for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
-					try {
-						AbstractReward reward = AbstractReward.deserialize(rew, manager.getQuest());
-						st.rewards.add(reward);
-						if (reward.isAsync()) st.asyncEnd = true;
-					}catch (InstantiationException | ClassNotFoundException e) {
-						BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
-						e.printStackTrace();
-						continue;
-					}
+			for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
+				try {
+					AbstractReward reward = AbstractReward.deserialize(rew, manager.getQuest());
+					st.rewards.add(reward);
+					if (reward.isAsync()) st.asyncEnd = true;
+				}catch (InstantiationException | ClassNotFoundException e) {
+					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
+					e.printStackTrace();
+					continue;
 				}
 			}
-			
+
 			return st;
 		}catch (NoSuchMethodException e){
 			BeautyQuests.getInstance().getLogger().severe("No deserialize method for the class " + type.stageClass.getName() + ". Prevent SkytAsul on SpigotMC.org");

@@ -250,7 +250,7 @@ public enum Lang{
 	INVENTORY_CHOOSE("inv.chooseQuest.name", "§5Which quest?"),
 	
 	INVENTORY_MOBS("inv.mobs.name", "§5Choose the mobs!"),
-	none("inv.mobs.none", "§aClick here to add a mob"),
+	mobsNone("inv.mobs.none", "§aClick here to add a mob"),
 	click("inv.mobs.click", "§bLeft click to edit\\nRight click to delete"),
 
 	INVENTORY_MOBSELECT("inv.mobSelect.name", "§8Select the mob"),
