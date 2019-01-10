@@ -20,6 +20,7 @@ fireworks: true
 mobsProgressBar: false
 progressBarTimeoutSeconds: 15
 
+gps: false
 skillAPIoverride: true
 accountsHook: false
 splittedAdvancementPlaceholderMax: 3

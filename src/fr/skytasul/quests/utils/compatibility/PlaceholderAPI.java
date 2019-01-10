@@ -23,7 +23,7 @@ public class PlaceholderAPI {
 		return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(p, text);
 	}
 	
-	public static void registerPlaceholders(){
+	static void registerPlaceholders(){
 		me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook("BeautyQuests", new PlaceholderHook() {
 			Map<Player, List<Quest>> ordered = new HashMap<>();
 			Map<Player, List<String>> split = new HashMap<>();

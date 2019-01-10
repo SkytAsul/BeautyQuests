@@ -29,6 +29,7 @@ public class QuestsConfiguration {
 	private static int maxLaunchedQuests = 0;
 	private static boolean sounds = true;
 	private static boolean fireworks = true;
+	private static boolean gps = false;
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
 	private static boolean emptyScoreboard = false;
@@ -89,6 +90,7 @@ public class QuestsConfiguration {
 		particles = BeautyQuests.versionValid && config.getBoolean("particles");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
+		gps = Dependencies.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
 		emptyScoreboard = config.getBoolean("showEmptyScoreboard");
@@ -197,6 +199,10 @@ public class QuestsConfiguration {
 	
 	public static int getProgressBarTimeout(){
 		return progressBarTimeoutSeconds;
+	}
+	
+	public static boolean handleGPS(){
+		return gps;
 	}
 	
 	public static boolean xpOverridedSkillAPI(){

@@ -22,6 +22,7 @@ public class Dependencies {
 	public static boolean dyn = true; //	dynmap
 	public static boolean par = true; //		Parties
 	public static boolean eboss = true; //	EpicBosses
+	public static boolean gps = true; //		GPS
 	//public static boolean elib = true; //	EffectLib
 	
 	public static void initialize(PluginManager pman, Logger logger){
@@ -73,6 +74,9 @@ public class Dependencies {
 			//logger.info("Parties isn't loaded on this server. Some features are not enabled because of that.");
 			eboss = false;
 		}else pman.registerEvents(new EpicBosses(), BeautyQuests.getInstance());
+		if (!pman.isPluginEnabled("GPS")){
+			gps = false;
+		}else GPS.init();
 		/*if (!getServer().getPluginManager().isPluginEnabled("EffectLib")){
 			logger.warning("EffectLib isn't loaded on this server. Some features are not enabled because of that.");
 			elib = false;

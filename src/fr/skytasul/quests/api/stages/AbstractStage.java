@@ -93,6 +93,20 @@ public abstract class AbstractStage implements Listener{
 		return asyncEnd;
 	}
 	
+	private void checkAsync(){
+		for(AbstractReward rew : rewards){
+			if (rew.isAsync()) asyncEnd = true;
+		}
+	}
+	
+	public int getID(){
+		return manager.getID(this);
+	}
+	
+	protected final void finishStage(Player p) {
+		manager.next(p);
+	}
+	
 	public void launch(Player p){
 		if (startMessage != null){
 			if (startMessage.length() > 0){
@@ -106,18 +120,8 @@ public abstract class AbstractStage implements Listener{
 		start(PlayersManager.getPlayerAccount(p));
 	}
 	
-	private void checkAsync(){
-		for(AbstractReward rew : rewards){
-			if (rew.isAsync()) asyncEnd = true;
-		}
-	}
-	
-	public int getID(){
-		return manager.getID(this);
-	}
-	
-	protected final void finishStage(Player p) {
-		manager.next(p);
+	public void finish(Player p){
+		end(PlayersManager.getPlayerAccount(p));
 	}
 	
 	public void start(PlayerAccount account){}

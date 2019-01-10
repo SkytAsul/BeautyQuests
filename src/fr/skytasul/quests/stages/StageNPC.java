@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -23,6 +24,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleLocation;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
@@ -180,6 +182,14 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e){
+		if (!QuestsConfiguration.handleGPS()) return;
+		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), this)) return;
+		GPS.launchCompass(e.getPlayer(), npc);
+	}
+	
+	
 	public void start(PlayerAccount account){
 		super.start(account);
 		cached.add(account);
@@ -194,7 +204,13 @@ public class StageNPC extends AbstractStage{
 	
 	public void launch(Player p) {
 		super.launch(p);
-		if (manager.getID(this) == 0 && sendStartMessage() && bringBack != null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
+		if (manager.getID(this) == 0 && sendStartMessage() && bringBack != /*? tester*/ null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
+		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
+	}
+	
+	public void finish(Player p){
+		super.finish(p);
+		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
 	
