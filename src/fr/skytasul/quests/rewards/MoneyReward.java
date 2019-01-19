@@ -23,7 +23,6 @@ public class MoneyReward extends AbstractReward {
 		this.money = money;
 	}
 
-	
 	public String give(Player p){
 		if (money > 0){
 			Vault.depositPlayer(p, money);
@@ -36,7 +35,6 @@ public class MoneyReward extends AbstractReward {
 		datas.put("money", money);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas){
 		money = (int) savedDatas.get("money");
 	}

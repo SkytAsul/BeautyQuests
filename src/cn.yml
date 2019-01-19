@@ -3,7 +3,7 @@ msg:
     started: 你接受了任务 §o{0}
     created: §a你成功地创建了 "§e{0}§a" 任务, 包含 {1} 个阶段!
     cancelling: §c已取消创建任务.
-    edited: §aC你成功地修改了 "§e{0}§a", 包含 {1} 个阶段!
+    edited: §a你成功地修改了 "§e{0}§a", 包含 {1} 个阶段!
     editCancelling: §c任务进度编辑已取消.
     createCancelled: §c抱歉，任务创建/编辑已被其他插件取消...
     invalidID: §cID为 {0} 的任务不存在.
@@ -53,10 +53,10 @@ msg:
       reload: '§e/{0} reload: §a重载配置 - §c§o不推荐使用'
       version: '§e/{0} version: §a查看插件版本'
       list: '§e/{0} list: §a查看任务列表'
-      resetPlayerQuest: '§e/{0} resetPlayerQuest <name> [id]: §a删除一名玩家的一个任务数据'
+      resetPlayerQuest: '§e/{0} resetPlayerQuest <玩家名> [id]: §a删除一名玩家的一个任务数据'
       save: '§e/{0} save: §a手动保存数据'
       start: '§e/{0} start <player> [id] : §a强制玩家接受任务'
-      setStage: '§e/{0} setStage <player> <quest> [newStage] : §a结束一名玩家的任务阶段'
+      setStage: '§e/{0} setStage <玩家名> <任务名> [新的任务阶段] : §a结束一名玩家的任务阶段'
     seePlayer:
       header: '§e玩家 §6{0} 的任务数据§e:'
       inProgress: '§e进行中的任务:'
@@ -117,7 +117,7 @@ msg:
       itemLore: §e修改物品描述. 输入 "help" 查看帮助.
       unknownItemType: §c未知的物品类型.
       invalidItemType: §c无效的物品类型 (必须是物品而不能是方块).
-    epicBossDoesntExist: §cThis EpicBoss does not exist.
+    epicBossDoesntExist: §c这个EpicBoss不存在.
   trick:
     text: 输入 {0} 或 {1}
     cancel: '"cancel" 来返回到上一条消息'
@@ -141,7 +141,7 @@ msg:
     quest: §e你必须先完成任务 "{0}"§r§e!
     level: §e你必须达到 {0} 级!
     job: §e你必须达到 {0} 级才能应聘工作 {1}!
-    wait: §c你必须等待 {0} 秒才能再次接受任务!
+    wait: §c你必须等待 {0} 分钟才能再次接受任务!
   writeChatMessage: 输入让玩家输入的消息 (在开头添加{SLASH} 来使用指令).
   classDoesntExist: §c这个职介不存在.
   writeHologramText: 输入显示的全息文字. (输入 "none" 来取消, 输入 "null" 显示默认文字)
@@ -239,7 +239,7 @@ inv:
     name: §8选择怪物
     bukkitEntityType: §e选择生物类型
     mythicMob: §6选择MythicMob
-    epicBoss: §6Select an Epic Boss
+    epicBoss: §6选择一个EpicBoss
   stages:
     name: §8创建任务
     nextPage: §e下一页

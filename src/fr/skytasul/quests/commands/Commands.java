@@ -168,7 +168,7 @@ public class Commands {
 		for (Quest q : BeautyQuests.getInstance().getQuests()){
 			if (q.resetPlayer(acc)) i++;
 		}
-		if (acc.abstractAcc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), i, cmd.sender.getName());
+		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), i, cmd.sender.getName());
 		Lang.DATA_REMOVED_INFO.send(cmd.sender, target.getName(), i);
 	}
 	

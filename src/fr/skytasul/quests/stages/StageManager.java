@@ -178,10 +178,11 @@ public class StageManager{
 	}
 	
 	public void finishStage(PlayerAccount acc, AbstractStage stage) {
-		stage.end(acc);
+		if (acc.isCurrent()){
+			stage.finish(acc.getPlayer());
+		}else stage.end(acc);
 		playerStage.put(acc, null);
-		Player p = acc.getPlayer();
-		if (p != null) Utils.giveRewards(p, stage.getRewards());
+		if (acc.isCurrent()) Utils.giveRewards(acc.getPlayer(), stage.getRewards());
 	}
 	
 	public void setStage(PlayerAccount acc, int id, boolean launchStage){

@@ -187,8 +187,8 @@ public class StageMobs extends AbstractStage{
 	}
 	
 	private boolean remainingAdd(PlayerAccount acc){
-		Player p = acc.getPlayer();
-		if (mobs.isEmpty()){
+		if (mobs.isEmpty() && acc.isCurrent()){
+			Player p = acc.getPlayer();
 			Utils.sendMessage(p, Lang.STAGE_NOMOBS.toString());
 			finishStage(p);
 			return false;

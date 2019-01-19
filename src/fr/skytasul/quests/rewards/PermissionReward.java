@@ -20,18 +20,11 @@ public class PermissionReward extends AbstractReward {
 		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
 	}
 	
-	@Deprecated
-	public PermissionReward(String perm) {
-		this();
-		permissions.put(perm, false);
-	}
-	
 	public PermissionReward(Map<String, Boolean> perms){
 		this();
 		this.permissions = perms;
 	}
 
-	
 	public String give(Player p){
 		for (Entry<String, Boolean> en : permissions.entrySet()) {
 			Vault.changePermission(p, en.getKey(), en.getValue());
@@ -44,7 +37,6 @@ public class PermissionReward extends AbstractReward {
 		datas.put("permissions", permissions);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas){
 		if (savedDatas.containsKey("perm")) {
 			permissions.put((String) savedDatas.get("perm"), false);

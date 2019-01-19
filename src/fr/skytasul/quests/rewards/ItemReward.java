@@ -24,7 +24,6 @@ public class ItemReward extends AbstractReward {
 		this.items = items;
 	}
 
-	
 	public String give(Player p){
 		int amount = 0;
 		for (ItemStack is : items){
@@ -43,7 +42,6 @@ public class ItemReward extends AbstractReward {
 		datas.put("items", ls);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas){
 		List<Map<String, Object>> ls = (List<Map<String, Object>>) savedDatas.get("items");
 		for (Map<String, Object> m : ls){

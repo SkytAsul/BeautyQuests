@@ -1,10 +1,10 @@
 name: BeautyQuests
 author: SkytAsul
-version: 0.14_PRE8
+version: 0.14_PRE9
 api-version: 1.13
 description: Quests system with a simple graphical interface.
 depend: [Citizens]
-softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS]
+softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS, mcMMO]
 main: fr.skytasul.quests.BeautyQuests
 website: https://www.spigotmc.org/resources/beautyquests.39255/
 commands:

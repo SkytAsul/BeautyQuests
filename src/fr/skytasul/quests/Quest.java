@@ -142,7 +142,7 @@ public class Quest{
 	
 	private void launchHologramTask(){
 		if (npcStarter == null) return;
-		/*tasks.add(*/holoTask = new BukkitRunnable() {
+		holoTask = new BukkitRunnable() {
 			public void run() {
 				if (removed){
 					removeHoloAll();
@@ -493,7 +493,6 @@ public class Quest{
 	
 	public void unloadAll(){
 		manager.remove();
-        //for (BukkitTask task : tasks) task.cancel();
         if (holoTask != null) holoTask.cancel();
 		if (holoAll != null) removeHoloAll();
         if (holoLaunch != null) removeHoloLaunch();

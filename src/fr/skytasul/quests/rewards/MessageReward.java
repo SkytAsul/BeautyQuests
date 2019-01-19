@@ -20,7 +20,6 @@ public class MessageReward extends AbstractReward {
 		this.text = text;
 	}
 
-	
 	public String give(Player p){
 		Utils.sendOffMessage(p, text);
 		return null;
@@ -31,7 +30,6 @@ public class MessageReward extends AbstractReward {
 		datas.put("text", text);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas){
 		text = (String) savedDatas.get("text");
 	}

@@ -45,6 +45,7 @@ public enum Lang{
 	REQUIREMENT_QUEST("msg.requirements.quest", "§eYou must have finished the quest \"{0}\"§r§e!"),
 	REQUIREMENT_LEVEL("msg.requirements.level", "§eYou must be at least level {0}!"),
 	REQUIREMENT_JOB("msg.requirements.job", "§eYou must be at least level {0} for the job {1}!"),
+	REQUIREMENT_SKILL("msg.requirements.skill", "§eYou must be at least level {0} for the skill {1}!"),
 	QUEST_WAIT("msg.requirements.wait", "§cYou must wait {0} minuts before starting this quest again!"),
 	
 	XP_EDITED("msg.experience.edited", "Experience gain edited: {0}pts. to {1}pts."),
@@ -125,6 +126,7 @@ public enum Lang{
 	CHOOSE_CLASSES_REQUIRED("msg.editor.text.chooseClassesRequired", "§eEnter names of required classes to start the quest."),
 	CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER("msg.editor.text.choosePlaceholderRequired.identifier", "§eEnter the name of placeholder required (§lwithout %%§r§e)."),
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value", "§eEnter required value of the placeholder §o%{0}%."),
+	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired", "§eType name of the wanted skill."),
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission", "§eEdit gained or retired permissions."),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money", "§eType the amount of money gained."),
@@ -332,6 +334,7 @@ public enum Lang{
 	RPermissions("misc.requirement.permissions", "§3Permission(s) requiered"),
 	RPlaceholder("misc.requirement.placeholder", "§bPlaceholder value required"),
 	RQuest("misc.requirement.quest", "§aQuest required"),
+	RSkillLvl("misc.requirement.mcMMOSkillLevel", "§dSkill level required"),
 	HologramText("misc.hologramText", "§8§lQuest NPC"),
 	MobsProgression("misc.mobsProgression", "§6§l{0}: §r§e{1}/{2}"),
 	Entity_Type("misc.entityType", "Type d'entité : {0}"),

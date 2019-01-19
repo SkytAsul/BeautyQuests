@@ -14,12 +14,10 @@ public class LevelRequirement extends AbstractRequirement {
 	public LevelRequirement() {
 		super("levelRequired");
 	}
-
 	
 	public boolean test(Player p) {
 		return p.getLevel() >= level;
 	}
-
 	
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_LEVEL.send(p, level);
@@ -29,7 +27,6 @@ public class LevelRequirement extends AbstractRequirement {
 	protected void save(Map<String, Object> datas) {
 		datas.put("level", level);
 	}
-
 	
 	protected void load(Map<String, Object> savedDatas) {
 		level = (int) savedDatas.get("level");

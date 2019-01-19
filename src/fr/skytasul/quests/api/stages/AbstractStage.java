@@ -107,6 +107,11 @@ public abstract class AbstractStage implements Listener{
 		manager.next(p);
 	}
 	
+	/**
+	 * Called when the player is online at the moment the stage starts</br>
+	 * {@link #start(PlayerAccount)} will be called then
+	 * @param p Player who starts the stage
+	 */
 	public void launch(Player p){
 		if (startMessage != null){
 			if (startMessage.length() > 0){
@@ -120,14 +125,28 @@ public abstract class AbstractStage implements Listener{
 		start(PlayersManager.getPlayerAccount(p));
 	}
 	
+	/**
+	 * Called when the player is online at the moment the stage ends</br>
+	 * {@link #end(PlayerAccount)} will be called then
+	 * @param p Player who ends the stage
+	 */
 	public void finish(Player p){
 		end(PlayersManager.getPlayerAccount(p));
 	}
 	
+	/**
+	 * Called when the stage starts (player can be offline)
+	 * @param account PlayerAccount for which the stage starts
+	 */
 	public void start(PlayerAccount account){}
+	
+	/**
+	 * Called when the stage ends (player can be offline)
+	 * @param account PlayerAccount for which the stage ends
+	 */
 	public void end(PlayerAccount account){}
 	
-	public String getDescriptionLine(PlayerAccount acc, boolean menu){
+	public final String getDescriptionLine(PlayerAccount acc, boolean menu){
 		if (customText != null) return "§e" + customText;
 		String s;
 		try{
@@ -142,13 +161,27 @@ public abstract class AbstractStage implements Listener{
 		return s;
 	}
 	
+	/**
+	 * @param acc PlayerAccount who has the stage in progress
+	 * @return the progress of the stage for the player
+	 */
 	protected abstract String descriptionLine(PlayerAccount acc);
+	/**
+	 * @param acc PlayerAccount who has the stage in progress
+	 * @return the progress of the stage for the player. Message only viewable on the Menu GUI, can be null (if null, {@link #descriptionLine(PlayerAccount)} will be called instead)
+	 */
 	protected String descriptionMenu(PlayerAccount acc) {return null;}
 	
+	/**
+	 * Called when the stage has to be unloaded
+	 */
 	public void unload(){
         HandlerList.unregisterAll(this);
 	}
 	
+	/**
+	 * Called when the stage loads
+	 */
 	public void load() {}
 	
 	protected abstract Map<String, Object> serialize(Map<String, Object> map);

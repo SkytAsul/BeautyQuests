@@ -33,6 +33,7 @@ import fr.skytasul.quests.requirements.ClassRequirement;
 import fr.skytasul.quests.requirements.FactionRequirement;
 import fr.skytasul.quests.requirements.JobLevelRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
+import fr.skytasul.quests.requirements.McMMOSkillRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
@@ -173,6 +174,7 @@ public class RequirementsGUI implements CustomInventory {
 		if (Dependencies.fac) QuestsAPI.registerRequirement(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), new FactionR());
 		if (Dependencies.skapi) QuestsAPI.registerRequirement(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), new ClassR());
 		if (Dependencies.papi) QuestsAPI.registerRequirement(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), new PlaceholderR());
+		if (Dependencies.mmo) QuestsAPI.registerRequirement(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RJobLvl.toString()), new SkillLevelR());
 	}
 	
 }
@@ -396,5 +398,37 @@ class PlaceholderR implements RequirementCreationRunnables{
 		PlaceholderRequirement req = (PlaceholderRequirement) requirement;
 		datas.put("placeholder", req.getPlaceholder());
 		datas.put("value", req.getValue());
+	}
+}
+
+class SkillLevelR implements RequirementCreationRunnables{
+	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+		Lang.CHOOSE_SKILL_REQUIRED.send(p);
+		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+			if (datas.containsKey("skill")){
+				datas.remove("lvl");
+				datas.remove("skill");
+			}
+			datas.put("skill", obj);
+			Lang.CHOOSE_XP_REQUIRED.send(p);
+			Editor.enterOrLeave(p, new TextEditor(p, (lvl) -> {
+				datas.put("lvl", (int) lvl);
+				gui.reopen(p, false);
+			}, new NumberParser(Integer.class, true)));
+		}));
+	}
+
+	
+	public AbstractRequirement finish(Map<String, Object> datas) {
+		McMMOSkillRequirement req = new McMMOSkillRequirement();
+		req.level = (int) datas.get("lvl");
+		req.skillName = (String) datas.get("skill");
+		return req;
+	}
+	
+	
+	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+		datas.put("lvl", ((McMMOSkillRequirement) requirement).level);
+		datas.put("skill", ((McMMOSkillRequirement) requirement).skillName);
 	}
 }

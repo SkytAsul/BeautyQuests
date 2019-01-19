@@ -23,11 +23,10 @@ public class Dependencies {
 	public static boolean par = true; //		Parties
 	public static boolean eboss = true; //	EpicBosses
 	public static boolean gps = true; //		GPS
-	//public static boolean elib = true; //	EffectLib
+	public static boolean mmo = true; //	mcMMO
 	
 	public static void initialize(PluginManager pman, Logger logger){
 		if (!pman.isPluginEnabled("WorldGuard")){
-			//logger.info("WorldGuard isn't loaded on this server. Some features are not enabled because of that.");
 			wg = false;
 		}
 		if (!pman.isPluginEnabled("MythicMobs")){
@@ -43,7 +42,6 @@ public class Dependencies {
 			papi = false;
 		}else PlaceholderAPI.registerPlaceholders();
 		if (!pman.isPluginEnabled("SkillAPI")){
-			//logger.info("SkillAPI isn't loaded on this server. Some features are not enabled because of that.");
 			skapi = false;
 		}
 		if (!pman.isPluginEnabled("HolographicDisplays")){
@@ -59,7 +57,6 @@ public class Dependencies {
 			fac = false;
 		}
 		if (!pman.isPluginEnabled("AccountsHook")){
-			//logger.info("Accounts isn't loaded on this server. Some features are not enabled because of that.");
 			acc = false;
 		}else new Accounts();
 		if (!pman.isPluginEnabled("dynmap")){
@@ -67,20 +64,18 @@ public class Dependencies {
 			dyn = false;
 		}
 		if (!pman.isPluginEnabled("Parties")){
-			//logger.info("Parties isn't loaded on this server. Some features are not enabled because of that.");
-			par = false;
+			par = false; // not used currently
 		}
 		if (!pman.isPluginEnabled("EpicBosses")){
-			//logger.info("Parties isn't loaded on this server. Some features are not enabled because of that.");
 			eboss = false;
 		}else pman.registerEvents(new EpicBosses(), BeautyQuests.getInstance());
 		if (!pman.isPluginEnabled("GPS")){
 			gps = false;
 		}else GPS.init();
-		/*if (!getServer().getPluginManager().isPluginEnabled("EffectLib")){
-			logger.warning("EffectLib isn't loaded on this server. Some features are not enabled because of that.");
-			elib = false;
-		}else EffectLib.initialize();*/
+		if (!pman.isPluginEnabled("mcMMO")){
+			logger.info("mcMMO isn't loaded on this server. Some features are not enabled because of that.");
+			mmo = false;
+		}
 	}
 	
 }

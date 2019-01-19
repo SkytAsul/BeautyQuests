@@ -18,7 +18,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 		super("permissionRequired");
 	}
 
-	
 	public boolean test(Player p) {
 		for (String perm : permissions){
 			if (!p.hasPermission(perm)) return false;
@@ -35,7 +34,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 		datas.put("permissions", permissions);
 		if (message != null) datas.put("message", message);
 	}
-
 	
 	protected void load(Map<String, Object> savedDatas) {
 		permissions = (List<String>) savedDatas.get("permissions");

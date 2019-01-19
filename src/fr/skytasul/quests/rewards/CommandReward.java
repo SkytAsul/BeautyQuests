@@ -17,7 +17,6 @@ public class CommandReward extends AbstractReward {
 		super("commandReward");
 	}
 
-	
 	public CommandReward(List<Command> list){
 		this();
 		this.commands = list;
@@ -40,7 +39,6 @@ public class CommandReward extends AbstractReward {
 		datas.put("commands", list);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas){
 		if (savedDatas.containsKey("command")){ // TODO: remove (edited since 0.14)
 			commands.add(new Command((String) savedDatas.get("command"), (boolean) savedDatas.get("console")));

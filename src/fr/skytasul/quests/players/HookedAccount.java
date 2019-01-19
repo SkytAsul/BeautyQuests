@@ -2,6 +2,7 @@ package fr.skytasul.quests.players;
 
 import org.apache.commons.lang3.Validate;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import fr.skytasul.accounts.Account;
 
@@ -18,6 +19,10 @@ public class HookedAccount extends AbstractAccount {
 		return hook.getOfflinePlayer();
 	}
 
+	public Player getPlayer(){
+		return hook.getPlayer();
+	}
+	
 	public boolean isCurrent(){
 		return hook.isCurrent();
 	}

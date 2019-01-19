@@ -35,7 +35,6 @@ public class FactionRequirement extends AbstractRequirement {
 		factions.add((Faction) faction);
 	}
 	
-	
 	public boolean test(Player p) {
 		if (factions.isEmpty()) return true;
 		for (Faction fac : factions){
@@ -53,7 +52,6 @@ public class FactionRequirement extends AbstractRequirement {
 		datas.put("factions", factions);
 	}
 
-	
 	protected void load(Map<String, Object> savedDatas) {
 		for (String s : (List<String>) savedDatas.get("factions")){
 			if (!FactionColl.get().containsId(s)){

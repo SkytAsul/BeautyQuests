@@ -109,15 +109,17 @@ public class QuestsConfiguration {
 			holoLaunchItem = ItemStack.deserialize(BeautyQuests.data.getConfigurationSection("launchItem").getValues(false));
 		}else if (!StringUtils.isEmpty(config.getString("holoLaunchItemName"))){
 			XMaterial xmat = XMaterial.fromString(config.getString("holoLaunchItemName"));
-			if (xmat == null) xmat = XMaterial.BOOK;
-			holoLaunchItem = xmat.parseItem();
+			if (xmat == null){
+				holoLaunchItem = null;
+			}else holoLaunchItem = xmat.parseItem();
 		}
 		if (BeautyQuests.data.contains("talkItem")){
 			holoTalkItem = ItemStack.deserialize(BeautyQuests.data.getConfigurationSection("talkItem").getValues(false));
 		}else if (!StringUtils.isEmpty(config.getString("holoTalkItemName"))){
 			XMaterial xmat = XMaterial.fromString(config.getString("holoTalkItemName"));
-			if (xmat == null) xmat = XMaterial.COAL;
-			holoTalkItem = xmat.parseItem();
+			if (xmat == null){
+				holoTalkItem = null;
+			}else holoTalkItem = xmat.parseItem();
 		}
 		questLore = config.getString("questItem");
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");

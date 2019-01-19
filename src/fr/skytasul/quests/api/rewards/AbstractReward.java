@@ -17,6 +17,11 @@ public abstract class AbstractReward {
 		this.name = name;
 	}
 	
+	/**
+	 * Called when the reward should be given to the player
+	 * @param p Player to give the reward
+	 * @return title of the reward (for instance : "4 gold")
+	 */
 	public abstract String give(Player p);
 	
 	protected abstract void save(Map<String, Object> datas);

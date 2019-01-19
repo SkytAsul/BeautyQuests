@@ -9,11 +9,7 @@ public abstract class AbstractAccount {
 	
 	public abstract OfflinePlayer getOfflinePlayer();
 	
-	public Player getPlayer(){
-		OfflinePlayer off = getOfflinePlayer();
-		if (off != null) return off.getPlayer();
-		return null;
-	}
+	public abstract Player getPlayer();
 	
 	public abstract boolean isCurrent();
 	

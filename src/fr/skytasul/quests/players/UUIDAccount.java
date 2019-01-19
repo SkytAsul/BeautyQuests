@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 public class UUIDAccount extends AbstractAccount{
 
@@ -15,6 +16,10 @@ public class UUIDAccount extends AbstractAccount{
 	
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(id);
+	}
+
+	public Player getPlayer(){
+		return Bukkit.getPlayer(id);
 	}
 
 	public String getIdentifier() {

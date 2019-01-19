@@ -33,7 +33,6 @@ public class ClassRequirement extends AbstractRequirement {
 		classes.add((RPGClass) classe);
 	}
 	
-	
 	public boolean test(Player p) {
 		if (classes.isEmpty()) return true;
 		for (RPGClass classe : classes){
@@ -51,7 +50,6 @@ public class ClassRequirement extends AbstractRequirement {
 		}
 		datas.put("classes", ls);
 	}
-
 	
 	protected void load(Map<String, Object> savedDatas) {
 		if (!savedDatas.containsKey("classes")){

@@ -23,7 +23,6 @@ public class ScoreboardManager{
 	public static void initialize(){
 		if (!QuestsConfiguration.showScoreboards()) return;
 		new BukkitRunnable() {
-			
 			public void run() {
 				for (Player p : Bukkit.getOnlinePlayers()){
 					try{

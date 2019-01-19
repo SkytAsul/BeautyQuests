@@ -83,7 +83,7 @@ public class StageMine extends AbstractStage {
 	}
 	
 	private boolean remainingAdd(PlayerAccount acc){
-		if (blocks.isEmpty()){
+		if (blocks.isEmpty() && acc.isCurrent()){
 			Player p = acc.getPlayer();
 			Utils.sendMessage(p, "§cThis stage doesn't need any blocks to mine... prevent an administrator :-)");
 			manager.next(p);
