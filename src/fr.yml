@@ -51,6 +51,7 @@ msg:
     job: §eVous devez avoir au moins le niveau {0} du job {1} !
     wait: §cVous devez encore attendre {0} minutes avant de pouvoir refaire cette
       quête.
+    skill: §eVous devez être au moins niveau {0} de la compétence {1}!
   experience:
     edited: 'Gain d''éxpérience modifié : {0}pts. à {1}pts.'
   selectNPCToKill: Sélectionnez le NPC à tuer.
@@ -113,6 +114,10 @@ msg:
       version: '§e/{0} version : §avoir la version du plugin'
       save: '§e/{0} save: §afaire une sauvegarde manuelles des données'
       list: '§e/{0} list : §avoir la liste des quêtes'
+      setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme dans le fichier de données'
+    needItem: §cVous devez tenir un item dans votre main principale.
+    itemChanged: §aL'item a été modifié. Le changement prendra effet après redémarrage.
+    cancelQuest: §eVous avez annulé la quête {0}.
   editor:
     already: §cVous êtes déjà dans un éditeur.
     npc:
@@ -135,6 +140,10 @@ msg:
       reward:
         permission: §eModifiez les permissions gagnées ou retirées.
         money: §eEntrez la quantité de monnaie gagnée.
+      choosePlaceholderRequired:
+        identifier: §eEntrez le nom du palceholder requis (§lsans %%§r§e).
+        value: §eEntrez la valeur requise pour le placeholder §o%{0}%.
+      chooseSkillRequired: §eEntrez le nom de la compétence requise.
     itemCreator:
       itemType: §eEntrez le nom du type d'item voulu.
       itemData: §eEntrez la donnée de l'item voulu. (0-15)
@@ -171,6 +180,7 @@ msg:
       syntax: '§cSyntaxe correcte : '
       added: §aTexte {0} ajouté.
       removed: §aTexte {0} supprimé.
+    selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
 advancement:
   finished: Terminée
   notStarted: Pas commencée
@@ -200,6 +210,9 @@ inv:
     selectItems: §bChoisis les items nécessaires
     selectRegion: §7Choisir la région
     stageStartMsg: §eModifier le message de départ
+    interact: §aCliquez sur un bloc
+    selectBlockLocation: §6Sélectionner quel bloc
+    leftClick: Clic gauche
   stages:
     name: §8Créer les étapes
     nextPage: §ePage suivante
@@ -315,6 +328,7 @@ scoreboard:
     mobs: §eTue {0}
     mine: §eMine {0}
     chat: §eEcrivez §6{0}
+    interact: §eCliquez sur le bloc à §6{0}
 misc:
   format:
     prefix: §6<§e§lQuêtes§r§6> §o
@@ -328,6 +342,7 @@ misc:
     mobs: Tuer des mobs
     mine: Casser des blocs
     chat: Parler dans le chat
+    interact: Intéragir avec un bloc
   requirement:
     class: §bClasse(s) requise(s)
     faction: §bFaction(s) requise(s)
@@ -335,7 +350,9 @@ misc:
     experienceLevel: §bNiveau d'expérience requis
     permissions: §3Permission(s) requise(s)
     quest: §aQuête requise
-  hologramText: '§8§lNPC de Quête'
+    placeholder: §bPlaceholder requis
+    mcMMOSkillLevel: §dNiveau de compétence requis
+  hologramText: §8§lNPC de Quête
   mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: 'Type d''entité : {0}'
   enabled: Activé
