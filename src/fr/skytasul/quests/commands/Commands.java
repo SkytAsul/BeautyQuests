@@ -1,7 +1,6 @@
 package fr.skytasul.quests.commands;
 
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -190,14 +189,10 @@ public class Commands {
 		}else Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
 	}
 	
-	@Cmd(permission = "seePlayer", player = true, min = 1, args = {})
+	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
-		OfflinePlayer op = Utils.getOfflinePlayer((String) cmd.args[0]);
-		if (op == null){
-			Lang.PLAYER_NEVER_CONNECTED.send(cmd.sender, cmd.args[0]);
-			return;
-		}
-		Inventories.create(cmd.player, new ChooseAccountGUI(op.getUniqueId(), (obj) -> {
+		Player target = (Player) cmd.args[0];
+		Inventories.create(cmd.player, new ChooseAccountGUI(target.getUniqueId(), (obj) -> {
 			Inventories.create(cmd.player, new PlayerListGUI((PlayerAccount) obj));
 		}));
 	}
@@ -206,11 +201,12 @@ public class Commands {
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		if (cmd.isPlayer()){
-			boolean no = false;
 			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "start")) no = true;
-			}else if (!CommandsManager.hasPermission(cmd.player, "start.other")) no = true;
-			if (no){
+				if (!CommandsManager.hasPermission(cmd.player, "start")){
+					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start");
+					return;
+				}
+			}else if (!CommandsManager.hasPermission(cmd.player, "start.other")){
 				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start.other");
 				return;
 			}
@@ -241,11 +237,12 @@ public class Commands {
 	public void cancel(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		if (cmd.isPlayer()){
-			boolean no = false;
 			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "cancel")) no = true;
-			}else if (!CommandsManager.hasPermission(cmd.player, "cancel.other")) no = true;
-			if (no){
+				if (!CommandsManager.hasPermission(cmd.player, "cancel")){
+					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel");
+					return;
+				}
+			}else if (!CommandsManager.hasPermission(cmd.player, "cancel.other")){
 				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel.other");
 				return;
 			}
@@ -303,6 +300,11 @@ public class Commands {
 				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) cmd.sender.sendMessage(l.format(cmd.label));
 			}
 		}
+	}
+	
+	@Cmd(permission = "reload")
+	public void removeDuplicate(CommandContext cmd){
+		PlayersManager.debugDuplicate(cmd.sender);
 	}
 	
 	

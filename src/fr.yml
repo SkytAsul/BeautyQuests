@@ -78,7 +78,7 @@ msg:
   command:
     playerNeeded: §cVous devez être un joueur pour effectuer cette commande.
     incorrectSyntax: §cSyntaxe incorrecte.
-    noPermission: §cVous n'avez pas la permission pour effectuer cette commande.
+    noPermission: §cVous n'avez pas la permission pour effectuer cette commande. ({0})
     invalidCommand:
       quests: §cCette commande n'existe pas, tapez §o/quests help
       simple: §cCette commande n'existe pas, tapez §ohelp (sans /)

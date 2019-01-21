@@ -85,7 +85,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		Object[] argsCmd = new Object[args.length - 1];
 		for (int i = 1; i < args.length; i++){
-			if (i >= cmd.args().length){
+			if (i > cmd.args().length){
 				Lang.INCORRECT_SYNTAX.sendWP(sender);
 				return false;
 			}
