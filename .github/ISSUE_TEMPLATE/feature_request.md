@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Suggest an idea for BeautyQuests
-title: ''
-labels: ''
+title: "<feature> "
+labels: enhancement
 assignees: ''
 
 ---
