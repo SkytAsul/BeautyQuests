@@ -317,8 +317,8 @@ public enum Lang{
 	/* Misc */
 	
 	Prefix("misc.format.prefix", "§6<§e§lQuests§r§6> §o"),
-	NpcText("misc.format.npcText", "§e§l{0}:§r§e {1}"),
-	SelfText("misc.format.selfText", "§e§l{0}:§r§e {1}"),
+	NpcText("misc.format.npcText", "§6[{2}/{3}] §e§l{0}:§r§e {1}"),
+	SelfText("misc.format.selfText", "§6[{2}/{3}] §e§l{0}:§r§e {1}"),
 	OffText("misc.format.offText", "§r§e {0}"),
 	Find("misc.stageType.region", "Find a region"),
 	Talk("misc.stageType.npc", "Find a NPC"),

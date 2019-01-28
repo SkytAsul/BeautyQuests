@@ -332,8 +332,8 @@ scoreboard:
 misc:
   format:
     prefix: §6<§e§lQuêtes§r§6> §o
-    npcText: §e§l{0} :§r§e {1}
-    selfText: §e§l{0} :§r§e {1}
+    npcText: §6[{2}/{3}] §e§l{0} :§r§e {1}
+    selfText: §6[{2}/{3}] §e§l{0} :§r§e {1}
     offText: §r§e {0}
   stageType:
     region: Trouver une region

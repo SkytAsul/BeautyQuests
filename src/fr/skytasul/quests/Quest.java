@@ -458,8 +458,8 @@ public class Quest{
 				Utils.sendMessage(p, Lang.FINISHED_BASE.format(name) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
 				
 				if (endMessage != null){
-					if (manager.getStages().getLast().getType().id.equals("NPC")){
-						Utils.sendNPCMessage(p, endMessage, ((StageNPC) manager.getStages().getLast()).getNPC());
+					if (manager.getStages().getLast() instanceof StageNPC){
+						Utils.sendNPCMessage(p, endMessage, ((StageNPC) manager.getStages().getLast()).getNPC(), 1, 1);
 					}else {
 						Utils.sendOffMessage(p, endMessage);
 					}

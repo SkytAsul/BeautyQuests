@@ -326,9 +326,8 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private void launchSaveCycle(){
 		if (QuestsConfiguration.saveCycle > 0){
-			int cycle = QuestsConfiguration.saveCycle * 60 *20;
+			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
 			saveTask = new BukkitRunnable() {
-				
 				public void run() {
 					try {
 						logger.info(saveAllConfig(false) + " quests saved ~ periodic save");
@@ -343,8 +342,9 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	private void stopSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0){
+		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
 			saveTask.cancel();
+			saveTask = null;
 			logger.info("Periodic saves task stopped.");
 		}
 	}

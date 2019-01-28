@@ -124,6 +124,14 @@ public class StageManager{
 		return new ArrayList<>(playerStage.keySet());
 	}
 	
+	public Map<PlayerAccount, Integer> getPlayersStage(){
+		return playerStage;
+	}
+	
+	public void setPlayersStage(Map<PlayerAccount, Integer> players){
+		this.playerStage = players;
+	}
+	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
 		if (!playerStage.containsKey(acc)) return false;
 		AbstractStage ps = getPlayerStage(acc);

@@ -115,22 +115,22 @@ public class Utils{
 		IsendMessage(sender, "§6" + format(msg, replace), false);
 	}
 	
-	public static void sendNPCMessage(Player p, String msg, NPC npc, Object... replace){
+	public static void sendNPCMessage(Player p, String msg, NPC npc, int index, int max, Object... replace){
 		if (replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
 				msg = format(msg, i, replace[i].toString());
 			}
 		}
-		IsendMessage(p, Lang.NpcText.format(npc.getName(), msg), true);
+		IsendMessage(p, Lang.NpcText.format(npc.getName(), msg, index, max), true);
 	}
 	
-	public static void sendSelfMessage(Player p, String msg, Object... replace){
+	public static void sendSelfMessage(Player p, String msg, int index, int max, Object... replace){
 		if (replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
 				msg = format(msg, i, replace[i].toString());
 			}
 		}
-		IsendMessage(p, Lang.SelfText.format(p.getName(), msg), true);
+		IsendMessage(p, Lang.SelfText.format(p.getName(), msg, index, max), true);
 	}
 	
 	public static void IsendMessage(CommandSender sender, String text, boolean playerName){

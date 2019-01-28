@@ -26,7 +26,7 @@ public class PlayerAccount {
 	}
 	
 	/**
-	 * @return the Player instance who own this account. If the account is not which in use by the player, this will return null. 
+	 * @return the Player instance who own this account. If the account is not which in use by the player ({@link #isCurrent()}), this will return null.
 	 */
 	public Player getPlayer(){
 		return abstractAcc.getPlayer();

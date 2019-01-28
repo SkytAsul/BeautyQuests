@@ -1,7 +1,9 @@
 package fr.skytasul.quests.gui.creation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +34,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
+import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -84,6 +87,7 @@ public class FinishGUI implements CustomInventory{
 	private Player p;
 
 	private boolean editing = false;
+	private boolean stagesEdited = false;
 	private Quest edited;
 
 	private boolean finished = false;
@@ -286,7 +290,9 @@ public class FinishGUI implements CustomInventory{
 
 	private void finish(Inventory inv){
 		Quest qu;
+		Map<PlayerAccount, Integer> players = null;
 		if (editing){
+			if (!stagesEdited) players = new HashMap<>(edited.getStageManager().getPlayersStage());
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
 			qu.copyFinished(edited);
@@ -310,6 +316,7 @@ public class FinishGUI implements CustomInventory{
 				continue;
 			}
 		}
+		if (!stagesEdited) qu.getStageManager().setPlayersStage(players);
 		qu.setBypassLimit(bypassLimit);
 		qu.setTimer(timer);
 		qu.setRewards(rewards);
@@ -360,7 +367,8 @@ public class FinishGUI implements CustomInventory{
 		Utils.sendMessage(p, ((!editing) ? Lang.QUEST_CANCEL : Lang.QUEST_EDIT_CANCEL).toString());
 	}
 
-	public void setFromQuest(Quest qu){
+	public void setFromQuest(Quest qu, boolean stagesEdited){
+		this.stagesEdited = stagesEdited;
 		editing = true;
 		edited = qu;
 		name = qu.getName();

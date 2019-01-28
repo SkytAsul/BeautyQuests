@@ -33,7 +33,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
+		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
 		return false;
 	}
 	
@@ -58,7 +58,7 @@ public class StageBringBack extends StageNPC{
 
 	public void launch(Player p){
 		super.launch(p);
-		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
+		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
 	}
 	
 	

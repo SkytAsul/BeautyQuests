@@ -39,10 +39,10 @@ public class Dialog{
 		String text = msg.text.replace("{PLAYER}", p.getName());
 		switch(msg.sender){
 		case PLAYER:
-			Utils.sendSelfMessage(p, text);
+			Utils.sendSelfMessage(p, text, id+1, messages.valuesSize());
 			break;
 		case NPC:
-			Utils.sendNPCMessage(p, text, npc);
+			Utils.sendNPCMessage(p, text, npc, id+1, messages.valuesSize());
 			break;
 		case NOTHING:
 			Utils.IsendMessage(p, text, true);

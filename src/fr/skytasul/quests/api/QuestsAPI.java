@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -106,7 +107,7 @@ public class QuestsAPI {
 
 	public static List<Quest> getQuestsAssigneds(NPC npc){
 		NPCStarter starter = BeautyQuests.npcs.get(npc);
-		return starter == null ? new ArrayList<>() : starter.getQuests();
+		return starter == null ? Collections.emptyList() : starter.getQuests();
 	}
 
 	public static boolean hasQuestStarted(Player p, NPC npc){

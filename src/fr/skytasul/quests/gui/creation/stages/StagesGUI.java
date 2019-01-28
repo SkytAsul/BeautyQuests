@@ -69,7 +69,9 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
 
 	private List<Line> lines = new ArrayList<>();
+	
 	private Quest edit;
+	private boolean stagesEdited = false;
 
 	private FinishGUI finish = null;
 
@@ -262,6 +264,7 @@ public class StagesGUI implements CustomInventory {
 				}
 			}
 		}else {
+			stagesEdited = true;
 			Line line = getLine(Line.getLineNumber(slot)/9 +5*page);
 			line.click(slot, p, current);
 		}
@@ -288,7 +291,7 @@ public class StagesGUI implements CustomInventory {
 	private void finish(Player p){
 		if (finish == null){
 			finish = Inventories.create(p, new FinishGUI(this));
-			if (edit != null) finish.setFromQuest(edit);
+			if (edit != null) finish.setFromQuest(edit, stagesEdited);
 		}else Inventories.create(p, finish);
 	}
 

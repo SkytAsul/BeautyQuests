@@ -116,7 +116,7 @@ public abstract class AbstractStage implements Listener{
 		if (startMessage != null){
 			if (startMessage.length() > 0){
 				if (manager.getID(this) == 0){
-					Utils.sendNPCMessage(p, startMessage, manager.getQuest().getStarter());
+					Utils.sendNPCMessage(p, startMessage, manager.getQuest().getStarter(), 1, 1);
 				}else {
 					Utils.sendOffMessage(p, startMessage);
 				}
