@@ -337,10 +337,13 @@ public class Quest{
 	public int getID(){
 		return id;
 	}
+
+	public List<PlayerAccount> getFinished(){
+		return finished;
+	}
 	
-	public void copyFinished(Quest quest){
-		finished.clear();
-		finished.addAll(quest.finished);
+	public Map<PlayerAccount, Long> getInTimer(){
+		return inTimer;
 	}
 	
 	public int getTimeLeft(PlayerAccount acc){

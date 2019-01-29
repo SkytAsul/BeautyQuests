@@ -295,7 +295,8 @@ public class FinishGUI implements CustomInventory{
 			if (!stagesEdited) players = new HashMap<>(edited.getStageManager().getPlayersStage());
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
-			qu.copyFinished(edited);
+			qu.getFinished().addAll(edited.getFinished());
+			qu.getInTimer().putAll(edited.getInTimer());
 		}else {
 			qu = new Quest(name, startNPC, ++BeautyQuests.lastID);
 		}
@@ -316,7 +317,7 @@ public class FinishGUI implements CustomInventory{
 				continue;
 			}
 		}
-		if (!stagesEdited) qu.getStageManager().setPlayersStage(players);
+		if (editing && !stagesEdited) qu.getStageManager().setPlayersStage(players);
 		qu.setBypassLimit(bypassLimit);
 		qu.setTimer(timer);
 		qu.setRewards(rewards);
