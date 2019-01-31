@@ -47,30 +47,13 @@ public class StageMobs extends AbstractStage{
 		if (shoot && e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE) return;
 		Player p = e.getKiller();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (manager.hasStageLaunched(acc, this)){                                                            
+		if (manager.hasStageLaunched(acc, this)){
 			PlayerDatas player = remaining.get(acc);
 			List<Mob> playerMobs = player.remaining;
+			boolean hasChanged = false;
 			for (Mob m : playerMobs){
-				/*if (m.hasBukkitMob()){
-					
-				}else if (m.hasMythicMob()){
-					if (((ActiveMob) e.getPluginMob()).getType().equals(m.getMythicMob())){
-						m.amount--;
-						if (m.amount == 0){
-							playerMobs.remove(m);
-							break;
-						}
-					}
-				}else if (m.hasEpicBoss()){
-					if (e.getPluginMob().equals(m.getBossName())){
-						m.amount--;
-						if (m.amount == 0){
-							playerMobs.remove(m);
-							break;
-						}
-					}
-				}*/
 				if (m.equalsMob(e.getPluginMob())){
+					hasChanged = true;
 					m.amount--;
 					if (m.amount == 0){
 						playerMobs.remove(m);
@@ -78,61 +61,9 @@ public class StageMobs extends AbstractStage{
 					}
 				}
 			}
-			finalTest(p, playerMobs, player);
+			if (hasChanged) finalTest(p, playerMobs, player);
 		}
 	}
-	
-	/*@EventHandler
-	public void onNPCKilled(NPCDeathEvent e){
-		Entity en = e.getNPC().getEntity();
-		if (!(en instanceof LivingEntity)) return;
-		if (shoot && en.getLastDamageCause().getCause() != DamageCause.PROJECTILE) return;
-		Player p = ((LivingEntity) en).getKiller();
-		if (p == null) return;
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (manager.hasStageLaunched(acc, this)){
-			if (!remaining.containsKey(acc)) remainingAdd(acc);
-			Pair<List<Mob>, Object> pair = remaining.get(acc);
-			List<Mob> playerMobs = pair.getKey();
-			for (Mob m : playerMobs){
-				if (!m.hasNPC()) continue;
-				if (e.getNPC().equals(e.getNPC())){
-					m.amount--;
-					if (m.amount == 0){
-						playerMobs.remove(m);
-					}
-					break;
-				}
-			}
-			finalTest(p, playerMobs, pair.getValue());
-		}
-	}*/
-	
-	/*@EventHandler
-	public void onEntityKilled(EntityDeathEvent e){
-		LivingEntity en = e.getEntity();
-		if (en.getKiller() == null) return;
-		if (!(en.getKiller() instanceof Player)) return;
-		if (shoot && en.getLastDamageCause().getCause() != DamageCause.PROJECTILE) return;
-		Player p = en.getKiller();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (manager.hasStageLaunched(acc, this)){
-			if (!remaining.containsKey(acc)) remainingAdd(acc);
-			Pair<List<Mob>, Object> pair = remaining.get(acc);
-			List<Mob> playerMobs = pair.getKey();
-			for (Mob m : playerMobs){
-				if (!m.hasBukkitMob()) continue;
-				if (e.getEntityType() == m.getBukkitMob()){
-					m.amount--;
-					if (m.amount == 0){
-						playerMobs.remove(m);
-					}
-					break;
-				}
-			}
-			finalTest(p, playerMobs, pair.getValue());
-		}
-	}*/
 	
 	public void finalTest(Player p, List<Mob> playerMobs, PlayerDatas datas){
 		if (playerMobs.isEmpty()){
@@ -150,7 +81,6 @@ public class StageMobs extends AbstractStage{
 				i = i + m.amount;
 			}
 			updateAmount(datas, i);
-			//Utils.sendMessage(p, Lang.STAGE_MOBSREM.toString(), i);
 		}
 	}
 	
@@ -173,7 +103,7 @@ public class StageMobs extends AbstractStage{
 			Mob m = list.get(i);
 			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount);
 		}
-		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), (str.length != 0) ? Utils.itemsToFormattedString(str) : Lang.Unknown.toString());
+		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), (str.length != 0) ? Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()) : Lang.Unknown.toString());
 	}
 	
 	protected String descriptionMenu(PlayerAccount acc){
@@ -223,7 +153,7 @@ public class StageMobs extends AbstractStage{
 	}
 	
 	private void timerBar(PlayerDatas datas){
-		if (QuestsConfiguration.getProgressBarTimeout() > 0)
+		if (QuestsConfiguration.getProgressBarTimeout() <= 0) return;
 		if (datas.task != null) datas.task.cancel();
 		datas.task = new BukkitRunnable() {
 			public void run(){
@@ -255,10 +185,10 @@ public class StageMobs extends AbstractStage{
 			String[] str = new String[mobs.size()];
 			for (int i = 0; i < mobs.size(); i++){
 				Mob m = mobs.get(i);
-				str[i] = Utils.getStringFromNameAndAmount(m.getName(), ChatColor.YELLOW.toString(), m.amount) + "§a";
+				str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), ChatColor.GREEN.toString(), m.amount);
 			}
 			if (sendStartMessage()) {
-				Utils.sendMessage(p, Lang.STAGE_MOBSLIST.toString(), Utils.itemsToFormattedString(str));
+				Utils.sendMessage(p, Lang.STAGE_MOBSLIST.toString(), Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
 			}
 		}
 	}
@@ -282,11 +212,11 @@ public class StageMobs extends AbstractStage{
 	}
 
 	protected Map<String, Object> serialize(Map<String, Object> map){
-		map.put("mobs", fromMobs(mobs));
+		map.put("mobs", serializeMobsList(mobs));
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
 		for (Entry<PlayerAccount, PlayerDatas> m : remaining.entrySet()){
-			re.put(m.getKey().getIndex(), fromMobs(m.getValue().remaining));
+			re.put(m.getKey().getIndex(), serializeMobsList(m.getValue().remaining));
 		}
 		map.put("remaining", re);
 		if (shoot) map.put("shoot", true);
@@ -295,14 +225,14 @@ public class StageMobs extends AbstractStage{
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageMobs st = new StageMobs(manager, fromMapList((List<Map<String, Object>>) map.get("mobs")));
+		StageMobs st = new StageMobs(manager, fromSerializedMobList((List<Map<String, Object>>) map.get("mobs")));
 		
 		Map<String, List<Map<String, Object>>> re = (Map<String, List<Map<String, Object>>>) map.get("remaining");
 		if (re != null){
 			for (Entry<String, List<Map<String, Object>>> en : re.entrySet()){
 				PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
 				if (acc == null) continue;
-				List<Mob> list = fromMapList(en.getValue());
+				List<Mob> list = fromSerializedMobList(en.getValue());
 				if (list.isEmpty()){
 					DebugUtils.debugMessage(null, "Player " + en.getKey() + " unused for StageMobs");
 				}else{
@@ -326,7 +256,7 @@ public class StageMobs extends AbstractStage{
 		return size;
 	}
 	
-	private static List<Map<String, Object>> fromMobs(List<Mob> mobs){
+	private static List<Map<String, Object>> serializeMobsList(List<Mob> mobs){
 		List<Map<String, Object>> smobs = new ArrayList<>();
 		for (Mob m : mobs){
 			smobs.add(m.serialize());
@@ -334,7 +264,7 @@ public class StageMobs extends AbstractStage{
 		return smobs;
 	}
 	
-	private static List<Mob> fromMapList(List<Map<String, Object>> ls){
+	private static List<Mob> fromSerializedMobList(List<Map<String, Object>> ls){
 		List<Mob> t = new ArrayList<>();
 		for (Map<String, Object> m : ls){
 			Mob mob = Mob.deserialize(m);

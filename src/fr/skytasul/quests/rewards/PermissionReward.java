@@ -13,7 +13,7 @@ import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class PermissionReward extends AbstractReward {
 	
-	public Map<String, Boolean> permissions = new HashMap<>();
+	public final Map<String, Boolean> permissions = new HashMap<>();
 
 	public PermissionReward(){
 		super("permReward");
@@ -22,7 +22,7 @@ public class PermissionReward extends AbstractReward {
 	
 	public PermissionReward(Map<String, Boolean> perms){
 		this();
-		this.permissions = perms;
+		this.permissions.putAll(perms);
 	}
 
 	public String give(Player p){
@@ -40,7 +40,7 @@ public class PermissionReward extends AbstractReward {
 	protected void load(Map<String, Object> savedDatas){
 		if (savedDatas.containsKey("perm")) {
 			permissions.put((String) savedDatas.get("perm"), false);
-		}else permissions = (Map<String, Boolean>) savedDatas.get("permissions");
+		}else permissions.putAll((Map<String, Boolean>) savedDatas.get("permissions"));
 	}
 
 }

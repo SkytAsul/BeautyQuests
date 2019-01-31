@@ -38,11 +38,9 @@ public class StageMine extends AbstractStage {
 		List<BlockData> list = remaining.get(acc);
 		for (int i = 0; i < list.size(); i++){
 			BlockData b = list.get(i);
-			/*String name = b.type.name().toLowerCase();
-			name = name.substring(0, 1).toUpperCase() + name.substring(1);*/
 			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(MinecraftNames.getMaterialName(b.type), QuestsConfiguration.getItemAmountColor(), b.amount);
 		}
-		return Lang.SCOREBOARD_MINE.format((str.length != 0) ? Utils.itemsToFormattedString(str) : Lang.Unknown.toString());
+		return Lang.SCOREBOARD_MINE.format((str.length != 0) ? Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()) : Lang.Unknown.toString());
 	}
 	
 	protected String descriptionMenu(PlayerAccount acc){

@@ -1,6 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -15,21 +14,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.RunnableObj;
-import net.citizensnpcs.api.npc.NPC;
 
 public class ChooseQuestGUI implements CustomInventory{
 	
 	private RunnableObj run;
 	public final List<Quest> quests;
-	private boolean ol;
 	
 	public Inventory inv;
-	
 	private boolean finish = false;
 	
 	public CustomInventory openLastInv(Player p) {
@@ -37,28 +32,12 @@ public class ChooseQuestGUI implements CustomInventory{
 		return this;
 	}
 	
-	public ChooseQuestGUI(Player p, NPC npc, RunnableObj run, boolean onlyLauncheable){
-		Validate.notNull(npc, "NPC cannot be null");
-		Validate.isTrue(BeautyQuests.npcs.containsKey(npc), "NPC specified is not a quest launcher");
-		
+	public ChooseQuestGUI(List<Quest> quests, RunnableObj run){
+		Validate.notNull(quests, "Quests cannot be null");
 		Validate.notNull(run, "Runnable cannot be null");
+		
 		this.run = run;
-		
-		this.ol = onlyLauncheable;
-		
-		List<Quest> qus = QuestsAPI.getQuestsAssigneds(npc);
-		quests = new ArrayList<>();
-		
-		if (ol){
-			for (Quest qu : qus){
-				if (qu.isInDialog(p)) {
-					quests.clear();
-					quests.add(qu);
-					break;
-				}
-				if (qu.isLauncheable(p, true)) quests.add(qu);
-			}
-		}else this.quests.addAll(qus);
+		this.quests = quests;
 	}
 	
 	public Inventory open(Player p){

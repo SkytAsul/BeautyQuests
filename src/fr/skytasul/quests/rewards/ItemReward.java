@@ -13,7 +13,7 @@ import fr.skytasul.quests.utils.Utils;
 
 public class ItemReward extends AbstractReward {
 
-	public List<ItemStack> items = new ArrayList<>();
+	public final List<ItemStack> items = new ArrayList<>();
 	
 	public ItemReward(){
 		super("itemReward");
@@ -21,7 +21,7 @@ public class ItemReward extends AbstractReward {
 	
 	public ItemReward(List<ItemStack> items){
 		this();
-		this.items = items;
+		this.items.addAll(items);
 	}
 
 	public String give(Player p){

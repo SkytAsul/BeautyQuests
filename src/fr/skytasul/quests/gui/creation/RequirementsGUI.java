@@ -198,13 +198,13 @@ class QuestR implements RequirementCreationRunnables{
 				NPC npc = (NPC) obj;
 				if (BeautyQuests.npcs.containsKey(npc)){
 					//quR = Quests.npcs.get(npc);
-					Inventories.create(p, new ChooseQuestGUI(p, npc, (quest) -> {
+					Inventories.create(p, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quest) -> {
 							if (quest != null){
 								if (datas.containsKey("id")) datas.remove("id");
 								datas.put("id", ((Quest) quest).getID());
 							}else gui.remove((int) datas.get("slot"));
 							gui.reopen(p, true);
-					}, false));
+					}));
 				}else {
 					Utils.sendMessage(p, Lang.NPC_NOT_QUEST.toString());
 					gui.reopen(p, true);

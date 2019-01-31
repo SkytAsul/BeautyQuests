@@ -221,13 +221,13 @@ public class StageManager{
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new LinkedHashMap<>();
 		
-		Map<String, Object>[] st = new Map[stages.size()];
-		for (Entry<Integer, AbstractStage> en : stages.entrySet()){
+		List<Map<String, Object>> st = new ArrayList<>();
+		for (AbstractStage stage : stages.values()){
 			try{
-				Map<String, Object> stage = en.getValue().serialize();
-				if (stage != null) st[en.getKey()] = stage;
+				Map<String, Object> datas = stage.serialize(); // TODO A TESTER
+				if (datas != null) st.add(datas);
 			}catch (Throwable ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + en + " for the quest " + quest.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + quest.getName());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;

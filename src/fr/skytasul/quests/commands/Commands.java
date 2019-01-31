@@ -39,10 +39,10 @@ public class Commands {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (BeautyQuests.npcs.containsKey(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(cmd.player, npc, (quObj) -> {
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						if (quObj == null) return;
 						Inventories.create(cmd.player, new StagesGUI()).edit((Quest) quObj);
-				}, false));
+				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
 			}
@@ -69,11 +69,11 @@ public class Commands {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (BeautyQuests.npcs.containsKey(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(cmd.player, npc, (quObj) -> {
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						Quest qu = (Quest) quObj;
 						qu.remove(true);
 						Lang.SUCCESFULLY_REMOVED.send(cmd.sender, qu.getName());
-				}, false));
+				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);
 			}

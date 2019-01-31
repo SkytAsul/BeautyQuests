@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.requirements;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.Quest;
@@ -42,6 +43,7 @@ public abstract class AbstractRequirement {
 	}
 	
 	public static AbstractRequirement deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
+		Validate.notNull(quest, "Quest cannot be null");
 		AbstractRequirement req = (AbstractRequirement) Class.forName((String) map.get("class")).newInstance();
 		req.quest = quest;
 		req.load(map);

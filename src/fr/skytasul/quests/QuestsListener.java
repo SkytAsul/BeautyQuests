@@ -1,5 +1,9 @@
 package fr.skytasul.quests;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,8 +18,10 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
+import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
@@ -34,17 +40,38 @@ public class QuestsListener implements Listener{
 		if (Inventories.isInSystem(p)) return;
 		
 		NPC npc = e.getNPC();
-		if (BeautyQuests.npcs.containsKey(npc)){
+		if (BeautyQuests.npcs.containsKey(npc)){ // TODO A TESTER
+			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+			
+			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
+			quests = quests.stream().filter(qu -> !qu.getStageManager().contains(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
+			if (quests.isEmpty()) return;
+			
+			List<Quest> launcheable = new ArrayList<>();
+			List<Quest> requirements = new ArrayList<>();
+			List<Quest> timer = new ArrayList<>();
+			for (Quest qu : quests){
+				if (!qu.testRequirements(p, acc, false)){
+					requirements.add(qu);
+				}else if (!qu.testTimer(p, acc, false)){
+					timer.add(qu);
+				}else launcheable.add(qu);
+			}
+			
 			e.setCancelled(true);
-			ChooseQuestGUI ci = new ChooseQuestGUI(p, npc, (obj) -> {
-				Inventories.remove(p);
-				if (obj == null) return;
-				((Quest) obj).launchStartDialog(p);
-			}, true);
-			if (ci.quests.size() >= 2){
+			if (launcheable.isEmpty()){
+				if (requirements.isEmpty()){
+					timer.get(0).testTimer(p, acc, true);
+				}else {
+					requirements.get(0).testRequirements(p, acc, true);
+				}
+				e.setCancelled(false);
+			}else {
+				ChooseQuestGUI ci = new ChooseQuestGUI(launcheable, (obj) -> {
+					if (obj == null) return;
+					((Quest) obj).clickNPC(p);
+				});
 				Inventories.create(p, ci);
-			}else if (ci.quests.size() == 1){
-				ci.open(p);
 			}
 		}
 	}

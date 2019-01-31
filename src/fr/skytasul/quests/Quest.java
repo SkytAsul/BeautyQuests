@@ -379,14 +379,12 @@ public class Quest{
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)) return false;
 		if (!repeatable && finished.contains(acc)) return false;
-		if (repeatable && inTimer.containsKey(acc)){
-			long time = inTimer.get(acc);
-			if (time > System.currentTimeMillis()){
-				if (sendMessage) if (QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
-				return false;
-			}
-			inTimer.remove(acc);
-		}
+		if (!testTimer(p, acc, sendMessage)) return false;
+		if (!testRequirements(p, acc, sendMessage)) return false;
+		return true;
+	}
+	
+	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !bypassLimit) {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}
@@ -399,12 +397,24 @@ public class Quest{
 		return true;
 	}
 	
+	public boolean testTimer(Player p, PlayerAccount acc, boolean sendMessage){
+		if (repeatable && inTimer.containsKey(acc)){
+			long time = inTimer.get(acc);
+			if (time > System.currentTimeMillis()){
+				if (sendMessage) if (QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
+				return false;
+			}
+			inTimer.remove(acc);
+		}
+		return true;
+	}
+	
 	public boolean isInDialog(Player p) {
 		return dgPlayers.containsKey(p);
 	}
 	
-	public void launchStartDialog(Player p){
-		if (!isLauncheable(p, true)) return;
+	public void clickNPC(Player p){
+		//if (!isLauncheable(p, true)) return;
 		if (sendDialog(p)) start(p);
 	}
 	

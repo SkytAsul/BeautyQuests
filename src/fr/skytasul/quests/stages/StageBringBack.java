@@ -33,7 +33,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
+		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()));
 		return false;
 	}
 	
@@ -49,7 +49,7 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public String descriptionLine(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())), (npc != null) ? npc.getName() : "§c§lerror");
+		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()), (npc != null) ? npc.getName() : "§c§lerror");
 	}
 	
 	protected String descriptionMenu(PlayerAccount acc){
@@ -58,7 +58,7 @@ public class StageBringBack extends StageNPC{
 
 	public void launch(Player p){
 		super.launch(p);
-		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor())));
+		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()));
 	}
 	
 	

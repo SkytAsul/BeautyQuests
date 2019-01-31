@@ -11,7 +11,7 @@ import fr.skytasul.quests.utils.types.Command;
 
 public class CommandReward extends AbstractReward {
 
-	public List<Command> commands = new ArrayList<>();
+	public final List<Command> commands = new ArrayList<>();
 	
 	public CommandReward(){
 		super("commandReward");
@@ -19,7 +19,7 @@ public class CommandReward extends AbstractReward {
 
 	public CommandReward(List<Command> list){
 		this();
-		this.commands = list;
+		if (list != null) this.commands.addAll(list);
 	}
 
 	public String give(Player p){

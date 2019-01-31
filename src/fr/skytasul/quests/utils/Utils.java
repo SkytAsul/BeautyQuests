@@ -89,20 +89,20 @@ public class Utils{
 		return msg;
 	}
 
-	public static String getStringFromItemStack(ItemStack is, String xColor){
-		return getStringFromNameAndAmount(ItemUtils.getName(is, true), xColor, is.getAmount());
+	public static String getStringFromItemStack(ItemStack is, String amountColor){
+		return getStringFromNameAndAmount(ItemUtils.getName(is, true), amountColor, is.getAmount());
 	}
 
-	public static String[] getStringArrayFromItemStackArray(ItemStack[] items, String xColor, String nColor){
+	public static String[] getStringArrayFromItemStackArray(ItemStack[] items, String amountColor, String itemColor){
 		String[] str = new String[items.length];
 		for (int i = 0; i < items.length; i++){
-			str[i] = nColor + getStringFromItemStack(items[i], xColor);
+			str[i] = itemColor + getStringFromItemStack(items[i], amountColor);
 		}
 		return str;
 	}
 	
-	public static String getStringFromNameAndAmount(String name, String xColor, int amount){
-		return "§o" + name + ((amount > 1) ? "§r" + xColor + " x" + amount : "");
+	public static String getStringFromNameAndAmount(String name, String amountColor, int amount){
+		return "§o" + name + ((amount > 1) ? "§r" + amountColor + " x" + amount : "");
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
@@ -177,9 +177,13 @@ public class Utils{
 	}
 	
 	public static String itemsToFormattedString(String[] items){
+		return itemsToFormattedString(items, "");
+	}
+	
+	public static String itemsToFormattedString(String[] items, String separator){
 		if (items.length == 0) return "";
 		if (items.length == 1) return items[0];
-		if (items.length == 2) return items[0] + " " + Lang.And.toString() + " " + items[1];
+		if (items.length == 2) return items[0] + " " + separator + Lang.And.toString() + " " + ChatColor.getLastColors(items[0]) + items[1];
 		StringBuilder stb = new StringBuilder("§e" + items[0] + ", ");
 		for (int i = 1; i < items.length - 1; i++){
 			stb.append(items[i] + ((i == items.length - 2) ? "" : ", "));
