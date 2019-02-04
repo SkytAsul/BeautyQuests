@@ -76,6 +76,13 @@ public class Dependencies {
 			logger.info("mcMMO isn't loaded on this server. Some features are not enabled because of that.");
 			mmo = false;
 		}
+		
+		// Citizens initialization - stand-by, waiting for a reply from Citizens developpers
+		/*TraitInfo trait = TraitInfo.create(DisplayName.class);
+		if (CitizensAPI.getTraitFactory().getTrait("displayname") != null){
+			CitizensAPI.getTraitFactory().deregisterTrait(trait);
+		}
+		CitizensAPI.getTraitFactory().registerTrait(trait);*/
 	}
 	
 }

@@ -224,7 +224,7 @@ public class StageManager{
 		List<Map<String, Object>> st = new ArrayList<>();
 		for (AbstractStage stage : stages.values()){
 			try{
-				Map<String, Object> datas = stage.serialize(); // TODO A TESTER
+				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Throwable ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + quest.getName());

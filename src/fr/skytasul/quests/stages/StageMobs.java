@@ -49,6 +49,11 @@ public class StageMobs extends AbstractStage{
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (manager.hasStageLaunched(acc, this)){
 			PlayerDatas player = remaining.get(acc);
+			if (player == null){
+				BeautyQuests.logger.warning("Player " + p.getName() + " had corrupted datas ; skipping mobs stage for quest " + manager.getQuest().getID());
+				finishStage(p);
+				return;
+			}
 			List<Mob> playerMobs = player.remaining;
 			boolean hasChanged = false;
 			for (Mob m : playerMobs){
@@ -235,6 +240,7 @@ public class StageMobs extends AbstractStage{
 				List<Mob> list = fromSerializedMobList(en.getValue());
 				if (list.isEmpty()){
 					DebugUtils.debugMessage(null, "Player " + en.getKey() + " unused for StageMobs");
+					st.remaining.put(acc, new PlayerDatas(null, new ArrayList<>(), null));
 				}else{
 					PlayerDatas datas = new PlayerDatas(acc, list, null);
 					st.remaining.put(acc, datas);

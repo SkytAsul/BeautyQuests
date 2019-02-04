@@ -107,14 +107,20 @@ public class ItemsGUI implements CustomInventory{
 		}
 	}
 	
-	private void addItem(ItemStack is){
-		for (ItemStack item : items){
-			if (item.isSimilar(is)){
-				item.setAmount(item.getAmount() + is.getAmount());
-				return;
+	private void addItem(ItemStack add){
+		for (ItemStack exist : items){
+			if (exist.isSimilar(add)){
+				int maxAdding = exist.getMaxStackSize() - exist.getAmount();
+				if (maxAdding < exist.getAmount()){
+					exist.setAmount(exist.getMaxStackSize());
+					add.setAmount(add.getAmount() - maxAdding);
+				}else {
+					exist.setAmount(exist.getAmount() + add.getAmount());
+					return;
+				}
 			}
 		}
-		items.add(is);
+		items.add(add);
 	}
 	
 	public boolean cancelClick(){

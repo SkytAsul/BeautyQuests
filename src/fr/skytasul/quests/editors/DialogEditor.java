@@ -41,11 +41,7 @@ public class DialogEditor extends Editor{
 			return;
 		}
 		if (args.length > 1){
-			StringBuilder stb = new StringBuilder();
-			for (int i = 1; i < args.length; i++){
-				stb.append(args[i] + ((i == args.length - 1) ? "" : " "));
-			}
-			msg = stb.toString();
+			msg = Utils.buildFromArray(args, 1);
 			hasMsg = true;
 		}
 		Command comd = Command.valueOf(cmd.toUpperCase());
@@ -91,11 +87,7 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			try{
-				StringBuilder stb = new StringBuilder();
-				for (int i = 2; i < args.length; i++){
-					stb.append(args[i] + ((i == args.length - 1) ? "" : " "));
-				}
-				msg = stb.toString();
+				msg = Utils.buildFromArray(args, 2);
 				Sender sender = Sender.valueOf(comd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Utils.sendMessage(p, Lang.DIALOG_MSG_ADDED.toString(), msg, sender.name().toLowerCase());

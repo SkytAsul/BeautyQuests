@@ -295,8 +295,7 @@ public class FinishGUI implements CustomInventory{
 			if (!stagesEdited) players = new HashMap<>(edited.getStageManager().getPlayersStage());
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
-			qu.getFinished().addAll(edited.getFinished());
-			qu.getInTimer().putAll(edited.getInTimer());
+			qu.copyFinished(edited);
 		}else {
 			qu = new Quest(name, startNPC, ++BeautyQuests.lastID);
 		}

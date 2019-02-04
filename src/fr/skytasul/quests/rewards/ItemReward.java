@@ -30,6 +30,7 @@ public class ItemReward extends AbstractReward {
 			Utils.giveItem(p, is);
 			amount += is.getAmount();
 		}
+		if (amount == 0) return null;
 		return amount + " " + Lang.Item.toString();
 	}
 

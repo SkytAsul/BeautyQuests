@@ -22,6 +22,8 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.RunnableObj;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class CommandsManager implements CommandExecutor, TabCompleter{
 
@@ -85,12 +87,12 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		Object[] argsCmd = new Object[args.length - 1];
 		for (int i = 1; i < args.length; i++){
-			if (i > cmd.args().length){
+			/*if (i > cmd.args().length){
 				Lang.INCORRECT_SYNTAX.sendWP(sender);
 				return false;
-			}
+			}*/
 			String arg = args[i];
-			String type = cmd.args()[i-1];
+			String type = i > cmd.args().length ? "" : cmd.args()[i-1];
 			if (type.equals("PLAYERS")){
 				Player target = Bukkit.getPlayerExact(arg);
 				if (target == null){
@@ -107,6 +109,15 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 					return false;
 				}
 				argsCmd[i-1] = qu;
+			}else if (type.equals("NPCSID")){
+				Integer id = Utils.parseInt(sender, arg);
+				if (id == null) return false;
+				NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+				if (npc == null){
+					Lang.NPC_DOESNT_EXIST.send(sender, id);
+					return false;
+				}
+				argsCmd[i-1] = npc;
 			}else {
 				argsCmd[i-1] = arg;
 			}
@@ -145,6 +156,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 				for (Quest quest : QuestsAPI.getQuests()) find.add(quest.getID() + "");
 			}else if (key.equals("PLAYERS")){
 				return null;
+			}else if (key.equals("NPCSID")){
+				for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) find.add(npc.getId() + "");
 			}else{
 				find = new ArrayList<>(Arrays.asList(key.split("\\|")));
 			}
@@ -160,7 +173,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		return sender.hasPermission(("beautyquests.command." + cmd));
 	}
 	
-	public class InternalCommand{
+	class InternalCommand{
 		Cmd cmd;
 		Method method;
 		Object commands;

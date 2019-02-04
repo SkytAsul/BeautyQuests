@@ -69,7 +69,7 @@ msg:
     invalid: §c"{0}" n'est pas un nombre valide.
   errorOccured: |-
     §cUne erreur est survenue... prévenez un administrateur :-)
-    §4§lCode :
+    §4§lCode : {0}
   commandsDisabled: §cTu ne peux pas effectuer de commande pour l'instant.
   indexOutOfBounds: §cLe nombre précisé ({0}) est hors des limites [{1}, {2}[
   bringBackObjects: Rapporte-moi {0}.

@@ -283,6 +283,15 @@ public class Commands {
 		Lang.ITEM_CHANGED.send(cmd.sender);
 	}
 	
+	/*@Cmd(permission = "setName", min = 2, args = {"NPCSID", ""}) //		Stand-by
+	public void setName(CommandContext cmd){
+		NPC npc = (NPC) cmd.args[0];
+		String name = Utils.buildFromArray(cmd.args, 1);
+		if (!npc.hasTrait(DisplayName.class)) npc.addTrait(DisplayName.class);
+		npc.getTrait(DisplayName.class).name = name;
+		Lang.TRAIT_NAME.send(cmd.sender);
+	}*/
+	
 	@Cmd(permission = "list", player = true)
 	public void list(CommandContext cmd){
 		if (BeautyQuests.versionValid){

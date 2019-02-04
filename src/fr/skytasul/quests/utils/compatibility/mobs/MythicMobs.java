@@ -1,6 +1,7 @@
 package fr.skytasul.quests.utils.compatibility.mobs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +22,10 @@ public class MythicMobs implements Listener{
 	
 	public static MythicMob getMythicMob(String name){
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(name);
+	}
+	
+	public static boolean isMythicMob(Entity en){
+		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().isActiveMob(en.getUniqueId());
 	}
 	
 	public static void sendMythicMobsList(Player p){

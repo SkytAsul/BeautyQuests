@@ -102,7 +102,12 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	public void onEnable(){
-		Dependencies.initialize(getServer().getPluginManager(), logger);
+		try{
+			Dependencies.initialize(getServer().getPluginManager(), logger);
+		}catch (Throwable ex){
+			logger.severe("Error when initializing compatibilities. Consider restarting.");
+			ex.printStackTrace();
+		}
 		
 		new BukkitRunnable() {
 			public void run(){

@@ -103,6 +103,10 @@ public abstract class AbstractStage implements Listener{
 		return manager.getID(this);
 	}
 	
+	/**
+	 * Called internally when a player finish stage's objectives
+	 * @param p Player who finish the stage
+	 */
 	protected final void finishStage(Player p) {
 		manager.next(p);
 	}
@@ -127,7 +131,7 @@ public abstract class AbstractStage implements Listener{
 	
 	/**
 	 * Called when the player is online at the moment the stage ends</br>
-	 * {@link #end(PlayerAccount)} will be called then
+	 * {@link #end(PlayerAccount)} will be called after that
 	 * @param p Player who ends the stage
 	 */
 	public void finish(Player p){

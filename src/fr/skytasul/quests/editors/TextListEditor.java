@@ -42,11 +42,7 @@ public class TextListEditor extends Editor{
 			return;
 		}
 		if (args.length > 1){
-			StringBuilder stb = new StringBuilder();
-			for (int i = 1; i < args.length; i++){
-				stb.append(args[i] + ((i == args.length - 1) ? "" : " "));
-			}
-			msg = stb.toString();
+			msg = Utils.buildFromArray(args, 1);
 			hasMsg = true;
 		}
 		Command comd = Command.valueOf(cmd.toUpperCase());

@@ -121,7 +121,8 @@ public class Utils{
 				msg = format(msg, i, replace[i].toString());
 			}
 		}
-		IsendMessage(p, Lang.NpcText.format(npc.getName(), msg, index, max), true);
+		String npcName = /*npc.hasTrait(DisplayName.class) ? npc.getTrait(DisplayName.class).getDisplayName() : */npc.getName();
+		IsendMessage(p, Lang.NpcText.format(npcName, msg, index, max), true);
 	}
 	
 	public static void sendSelfMessage(Player p, String msg, int index, int max, Object... replace){
@@ -165,15 +166,6 @@ public class Utils{
 			tmp.add(value.name());
 		}
 		return tmp;
-	}
-	
-	public static String getStringFromStringArray(String[] args){
-		if (args == null || args.length == 0) return ""; 
-		StringBuilder stb = new StringBuilder();
-		for (int i = 0; i < args.length; i++){
-			stb.append(args[i] + (i+1 == args.length ? "" : " "));
-		}
-		return stb.toString();
 	}
 	
 	public static String itemsToFormattedString(String[] items){
@@ -298,6 +290,15 @@ public class Utils{
 		String tmp = new String(msg);
 		tmp = tmp.replace("{" + i + "}", replace);
 		return tmp;
+	}
+	
+	public static String buildFromArray(Object[] array, int start){
+		if (array == null || array.length == 0) return ""; 
+		StringBuilder stb = new StringBuilder();
+		for (int i = start; i < array.length; i++){
+			stb.append(array[i] + ((i == array.length - 1) ? "" : " "));
+		}
+		return stb.toString();
 	}
 	
 	public static Integer parseInt(CommandSender sender, String arg){

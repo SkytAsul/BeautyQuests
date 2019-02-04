@@ -40,7 +40,7 @@ public class QuestsListener implements Listener{
 		if (Inventories.isInSystem(p)) return;
 		
 		NPC npc = e.getNPC();
-		if (BeautyQuests.npcs.containsKey(npc)){ // TODO A TESTER
+		if (BeautyQuests.npcs.containsKey(npc)){
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
