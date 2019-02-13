@@ -137,7 +137,7 @@ public class BeautyQuests extends JavaPlugin{
 				nms = new NullNMS();
 				ex.printStackTrace();
 			}
-		}
+		}else nms = new NullNMS();
 		getLogger().info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Current accepted versions : 1.11, 1.12");
 
 		

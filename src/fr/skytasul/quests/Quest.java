@@ -158,8 +158,8 @@ public class Quest{
 				}
 				if (hologramAll && holoAll == null) createHoloAll();
 				if (hologramLaunch && holoLaunch == null) createHoloLaunch();
-				if (hologramAll) HolographicDisplays.teleport(holoAll, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 1));
-				if (hologramLaunch) HolographicDisplays.teleport(holoLaunch, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 2));
+				if (hologramAll) HolographicDisplays.teleport(holoAll, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 0));
+				if (hologramLaunch) HolographicDisplays.teleport(holoLaunch, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 1));
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 1L, 1L);
 	}

@@ -2,6 +2,7 @@ package fr.skytasul.quests.utils.nms;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -14,6 +15,8 @@ public interface NMS{
 	public Object bookPacket(ByteBuf buf);
 
 	public Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt, Object paramData);
+	
+	public double entityNameplateHeight(LivingEntity en);
 	
 	public default Object newPacket(String name, Object... params){
 		try {

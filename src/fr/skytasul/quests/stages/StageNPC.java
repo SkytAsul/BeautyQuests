@@ -75,7 +75,7 @@ public class StageNPC extends AbstractStage{
 					}catch (ReflectiveOperationException e) {
 						e.printStackTrace();
 					}
-					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 2));
+					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 1));
 				}
 				
 				if (QuestsConfiguration.doParticles()) {

@@ -38,6 +38,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
+import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.Dialog;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -197,7 +198,7 @@ public class Utils{
 	}
 	
 	public static Location upLocationForEntity(LivingEntity en, double value) {
-		return en.getEyeLocation().add(0, QuestsConfiguration.getHologramsHeight() + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
+		return en.getLocation().add(0, QuestsConfiguration.getHologramsHeight() + NMS.getNMS().entityNameplateHeight(en) + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
 	}
 	
 	public static void removeItems(Inventory inv, ItemStack i){

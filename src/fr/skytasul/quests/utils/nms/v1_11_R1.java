@@ -2,7 +2,9 @@ package fr.skytasul.quests.utils.nms;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.v1_11_R1.CraftParticle;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -27,6 +29,10 @@ public class v1_11_R1 implements NMS{
 	public void sendPacket(Player p, Object packet){
 		Validate.isTrue(packet instanceof Packet, "The object specified is not a packet.");
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket((Packet<?>) packet);
+	}
+
+	public double entityNameplateHeight(LivingEntity en){
+		return ((CraftLivingEntity) en).getHandle().length;
 	}
 	
 }

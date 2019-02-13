@@ -3,11 +3,13 @@ package fr.skytasul.quests.stages;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -57,7 +59,9 @@ public class StageChat extends AbstractStage{
 	private boolean check(String message, Player p) {
 		if (!message.equals(text)) return false;
 		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this)) return false;
-		finishStage(p);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(BeautyQuests.getInstance(), () -> {
+			finishStage(p);
+		});
 		return true;
 	}
 

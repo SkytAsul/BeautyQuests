@@ -69,6 +69,7 @@ public class MobsListGUI implements CustomInventory{
 			MythicMob mm = mob.getMythicMob();
 			String typeName = mm.getEntityType();
 			if (typeName.contains("baby_")) typeName = typeName.substring(5);
+			if (typeName.equalsIgnoreCase("mpet")) typeName = mm.getConfig().getString("MPet.Anchor");
 			EntityType type = EntityType.fromName(typeName);
 			if (type == null) type = EntityType.valueOf(typeName.toUpperCase());
 			//name = mm.getDisplayName();

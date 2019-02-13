@@ -104,7 +104,7 @@ public class QuestsConfiguration {
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
-		hologramsHeight = config.getDouble("hologramsHeight");
+		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		if (BeautyQuests.data.contains("launchItem")){
 			holoLaunchItem = ItemStack.deserialize(BeautyQuests.data.getConfigurationSection("launchItem").getValues(false));
 		}else if (!StringUtils.isEmpty(config.getString("holoLaunchItemName"))){
