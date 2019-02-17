@@ -57,10 +57,6 @@ msg:
       save: '§e/{0} save: §a手动保存数据'
       start: '§e/{0} start <player> [id] : §a强制玩家接受任务'
       setStage: '§e/{0} setStage <玩家名> <任务名> [新的任务阶段] : §a结束一名玩家的任务阶段'
-    seePlayer:
-      header: '§e玩家 §6{0} 的任务数据§e:'
-      inProgress: '§e进行中的任务:'
-      finished: '§e完成的任务:'
     resetPlayerQuest:
       player: §e任务数据 {0} 已被 {1} 删除.
     startQuest: §e你接受了任务 {0} (UUID {1}).
@@ -247,9 +243,7 @@ inv:
     endingItem: §6结束奖励
     descriptionTextItem: §e编辑文本描述
   stageEnding:
-    name: §8结束这一任务阶段
     locationTeleport: §a编辑传送点
-    skillExperience: §a编辑获得的SkillAPI经验
     command: §a编辑执行的指令
   requirements:
     name: §8任务需求

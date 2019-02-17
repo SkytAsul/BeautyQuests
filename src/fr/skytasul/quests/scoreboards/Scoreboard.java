@@ -21,7 +21,6 @@ import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -85,7 +84,7 @@ public class Scoreboard implements Listener{
 					
 					secondsLeft--;
 				}catch (Throwable ex){
-					DebugUtils.sendStackTrace(player, ex, "Error when updating scoreboard. Please report it to the administrators. Quest : " + quest.getName() + ", stage " + quest.getStageManager().getPlayerStageID(acc));
+					Utils.sendMessage(p, "An error occured when updating scoreboard. Please report it to the administrators. Quest : " + quest.getName() + ", stage " + quest.getStageManager().getPlayerStageID(acc));
 					cancel();
 					sb.destroy();
 					ex.printStackTrace();

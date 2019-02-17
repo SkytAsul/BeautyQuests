@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.ReflectUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -15,7 +14,7 @@ import fr.skytasul.quests.utils.nms.NMS;
  * @author zyuiop, SkytAsul
  */
 public class ScoreboardSigns {
-	private static ReflectUtils nms = BeautyQuests.nms.getNMSReflect();
+	private static ReflectUtils nms = NMS.getNMS().getNMSReflect();
 	
 	private boolean created = false;
 	private final VirtualTeam[] lines = new VirtualTeam[15];
@@ -40,8 +39,8 @@ public class ScoreboardSigns {
 			return;
 
 		try {
-			BeautyQuests.nms.sendPacket(player, createObjectivePacket(0, objectiveName));
-			BeautyQuests.nms.sendPacket(player, setObjectiveSlot());
+			NMS.getNMS().sendPacket(player, createObjectivePacket(0, objectiveName));
+			NMS.getNMS().sendPacket(player, setObjectiveSlot());
 			int i = 0;
 			while (i < lines.length)
 				sendLine(i++);
@@ -61,10 +60,10 @@ public class ScoreboardSigns {
 			return;
 
 		try {
-			BeautyQuests.nms.sendPacket(player, createObjectivePacket(1, null));
+			NMS.getNMS().sendPacket(player, createObjectivePacket(1, null));
 			for (VirtualTeam team : lines)
 				if (team != null)
-					BeautyQuests.nms.sendPacket(player, team.removeTeam());
+					NMS.getNMS().sendPacket(player, team.removeTeam());
 
 			created = false;
 		}catch (ClassNotFoundException e) {
@@ -80,7 +79,7 @@ public class ScoreboardSigns {
 	public void setObjectiveName(String name) throws ClassNotFoundException {
 		this.objectiveName = name;
 		if (created)
-			BeautyQuests.nms.sendPacket(player, createObjectivePacket(2, name));
+			NMS.getNMS().sendPacket(player, createObjectivePacket(2, name));
 	}
 
 	/**
@@ -94,7 +93,7 @@ public class ScoreboardSigns {
 			String old = team.getCurrentPlayer();
 
 			if (old != null && created)
-				BeautyQuests.nms.sendPacket(player, removeLine(old));
+				NMS.getNMS().sendPacket(player, removeLine(old));
 
 			team.setValue(value);
 			sendLine(line);
@@ -113,8 +112,8 @@ public class ScoreboardSigns {
 		String old = team.getCurrentPlayer();
 
 		if (old != null && created) {
-			BeautyQuests.nms.sendPacket(player, removeLine(old));
-			BeautyQuests.nms.sendPacket(player, team.removeTeam());
+			NMS.getNMS().sendPacket(player, removeLine(old));
+			NMS.getNMS().sendPacket(player, team.removeTeam());
 		}
 
 		lines[line] = null;
@@ -157,9 +156,9 @@ public class ScoreboardSigns {
 		int score = (15 - line);
 		VirtualTeam val = getOrCreateTeam(line);
 		for (Object packet : val.sendLine()) {
-			BeautyQuests.nms.sendPacket(player, packet);
+			NMS.getNMS().sendPacket(player, packet);
 		}
-		BeautyQuests.nms.sendPacket(player, sendScore(val.getCurrentPlayer(), score));
+		NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), score));
 		//System.out.println("AFTER PA");
 		val.reset();
 	}
@@ -175,7 +174,7 @@ public class ScoreboardSigns {
 		Factories
 		 */
 	private Object createObjectivePacket(int mode, String displayName) throws ClassNotFoundException {
-		Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardObjective");
+		Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardObjective");
 		// Nom de l'objectif
 		setField(packet, "a", player.getName());
 
@@ -186,7 +185,7 @@ public class ScoreboardSigns {
 		setField(packet, "d", mode);
 
 		if (mode == 0 || mode == 2) {
-			setField(packet, "b", BeautyQuests.MCversion < 13 ? displayName : NMS.getNMS().getIChatBaseComponent(displayName));
+			setField(packet, "b", NMS.getMCVersion() < 13 ? displayName : NMS.getNMS().getIChatBaseComponent(displayName));
 			setField(packet, "c", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("IScoreboardCriteria"), "EnumScoreboardHealthDisplay"), 0));
 		}
 
@@ -194,7 +193,7 @@ public class ScoreboardSigns {
 	}
 
 	private Object setObjectiveSlot() {
-		Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardDisplayObjective");
+		Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardDisplayObjective");
 		// Slot
 		setField(packet, "a", 1);
 		setField(packet, "b", player.getName());
@@ -204,13 +203,13 @@ public class ScoreboardSigns {
 
 	private Object sendScore(String line, int score) throws ClassNotFoundException {
 		Object packet;
-		if (BeautyQuests.MCversion < 13){
-			packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardScore", line);
+		if (NMS.getMCVersion() < 13){
+			packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore", line);
 			setField(packet, "b", player.getName());
 			setField(packet, "c", score);
 			setField(packet, "d", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("PacketPlayOutScoreboardScore"), "EnumScoreboardAction"), 0));
 		}else {
-			packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardScore");
+			packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore");
 			setField(packet, "a", line);
 			setField(packet, "b", player.getName());
 			setField(packet, "c", score);
@@ -220,10 +219,10 @@ public class ScoreboardSigns {
 	}
 
 	private Object removeLine(String line) throws ClassNotFoundException {
-		if (BeautyQuests.MCversion < 13){
-			return BeautyQuests.nms.newPacket("PacketPlayOutScoreboardScore", line);
+		if (NMS.getMCVersion() < 13){
+			return NMS.getNMS().newPacket("PacketPlayOutScoreboardScore", line);
 		}
-		Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardScore");
+		Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore");
 		setField(packet, "a", line);
 		setField(packet, "d", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("ScoreboardServer"), "Action"), 1));
 		return packet;
@@ -279,15 +278,15 @@ public class ScoreboardSigns {
 
 		private Object createPacket(int mode) {
 			//System.out.println("pre" + prefix);
-			Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardTeam");
+			Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardTeam");
 			setField(packet, "a", name);
 			setField(packet, "i", mode);
-			setField(packet, "b", BeautyQuests.MCversion < 13 ? "" : NMS.getNMS().getIChatBaseComponent(""));
-			setField(packet, "c", BeautyQuests.MCversion < 13 ? prefix : NMS.getNMS().getIChatBaseComponent(prefix));
-			setField(packet, "d", BeautyQuests.MCversion < 13 ? suffix : NMS.getNMS().getIChatBaseComponent(suffix));
+			setField(packet, "b", NMS.getMCVersion() < 13 ? "" : NMS.getNMS().getIChatBaseComponent(""));
+			setField(packet, "c", NMS.getMCVersion() < 13 ? prefix : NMS.getNMS().getIChatBaseComponent(prefix));
+			setField(packet, "d", NMS.getMCVersion() < 13 ? suffix : NMS.getNMS().getIChatBaseComponent(suffix));
 			setField(packet, "j", 0);
 			setField(packet, "e", "always");
-			setField(packet, "g", BeautyQuests.MCversion < 13 ? 0 : NMS.getNMS().getEnumChatFormat(0));
+			setField(packet, "g", NMS.getMCVersion() < 13 ? 0 : NMS.getNMS().getEnumChatFormat(0));
 
 			return packet;
 		}
@@ -301,7 +300,7 @@ public class ScoreboardSigns {
 		}
 
 		public Object removeTeam() {
-			Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardTeam");
+			Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardTeam");
 			setField(packet, "a", name);
 			setField(packet, "i", 1);
 			first = true;
@@ -348,7 +347,7 @@ public class ScoreboardSigns {
 		}
 
 		public Object addOrRemovePlayer(int mode, String playerName) {
-			Object packet = BeautyQuests.nms.newPacket("PacketPlayOutScoreboardTeam");
+			Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardTeam");
 			setField(packet, "a", name);
 			setField(packet, "i", mode);
 

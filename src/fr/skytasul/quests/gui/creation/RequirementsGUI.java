@@ -33,6 +33,7 @@ import fr.skytasul.quests.requirements.ClassRequirement;
 import fr.skytasul.quests.requirements.FactionRequirement;
 import fr.skytasul.quests.requirements.JobLevelRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
+import fr.skytasul.quests.requirements.McCombatLevelRequirement;
 import fr.skytasul.quests.requirements.McMMOSkillRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.PlaceholderRequirement;
@@ -175,6 +176,7 @@ public class RequirementsGUI implements CustomInventory {
 		if (Dependencies.skapi) QuestsAPI.registerRequirement(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), new ClassR());
 		if (Dependencies.papi) QuestsAPI.registerRequirement(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), new PlaceholderR());
 		if (Dependencies.mmo) QuestsAPI.registerRequirement(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RJobLvl.toString()), new SkillLevelR());
+		if (Dependencies.mclvl) QuestsAPI.registerRequirement(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), new CombatLevelR());
 	}
 	
 }
@@ -196,8 +198,7 @@ class QuestR implements RequirementCreationRunnables{
 					return;
 				}
 				NPC npc = (NPC) obj;
-				if (BeautyQuests.npcs.containsKey(npc)){
-					//quR = Quests.npcs.get(npc);
+				if (QuestsAPI.isQuestStarter(npc)){
 					Inventories.create(p, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quest) -> {
 							if (quest != null){
 								if (datas.containsKey("id")) datas.remove("id");
@@ -430,5 +431,28 @@ class SkillLevelR implements RequirementCreationRunnables{
 	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
 		datas.put("lvl", ((McMMOSkillRequirement) requirement).level);
 		datas.put("skill", ((McMMOSkillRequirement) requirement).skillName);
+	}
+}
+
+class CombatLevelR implements RequirementCreationRunnables{
+	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+		Lang.CHOOSE_XP_REQUIRED.send(p);
+		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+			if (datas.containsKey("lvl")) datas.remove("lvl");
+			datas.put("lvl", (int) obj);
+			gui.reopen(p, false);
+		}, new NumberParser(Integer.class, true)));
+	}
+	
+	
+	public AbstractRequirement finish(Map<String, Object> datas) {
+		McCombatLevelRequirement req = new McCombatLevelRequirement();
+		req.level = (int) datas.get("lvl");
+		return req;
+	}
+
+	
+	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+		datas.put("lvl", ((McCombatLevelRequirement) requirement).level);
 	}
 }

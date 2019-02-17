@@ -9,12 +9,14 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.ParticleEffect;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.server.v1_11_R1.EnumChatFormat;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.Packet;
 import net.minecraft.server.v1_11_R1.PacketDataSerializer;
 import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_11_R1.PacketPlayOutWorldParticles;
 
-public class v1_11_R1 implements NMS{
+public class v1_11_R1 extends NMS{
 	
 	public Object bookPacket(ByteBuf buf){
 		return new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(buf));
@@ -33,6 +35,14 @@ public class v1_11_R1 implements NMS{
 
 	public double entityNameplateHeight(LivingEntity en){
 		return ((CraftLivingEntity) en).getHandle().length;
+	}
+
+	public Object getIChatBaseComponent(String text){
+		return IChatBaseComponent.ChatSerializer.b(text);
+	}
+
+	public Object getEnumChatFormat(int value){
+		return EnumChatFormat.a(value);
 	}
 	
 }

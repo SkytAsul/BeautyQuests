@@ -91,10 +91,6 @@ msg:
     resetPlayerQuest:
       player: §eLes données de la quête {0} ont été supprimées par {1}.
     startQuest: §eVous avez forcé le début de la quête {0} (UUID {1}).
-    seePlayer:
-      header: '§eDonnées du joueur §6{0} §e:'
-      inProgress: '§eQuêtes en cours :'
-      finished: '§eQuêtes terminées :'
     help:
       header: §e§lBeautyQuests - §6aide§r
       create: '§e/{0} create : §acréer une quête'
@@ -278,9 +274,7 @@ inv:
     mythicMob: §6Sélectionner un Mythic Mob
     epicBoss: §6Sélectionner un Epic Boss
   stageEnding:
-    name: §8Fin de l'étape
     locationTeleport: §aModifier le point de téléportation
-    skillExperience: §aModifier le gain d'expérience SkillAPI
     command: §aModifier la commande exécutée
   requirements:
     name: §8Nécessités

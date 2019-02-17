@@ -23,6 +23,7 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.stages.StageManager;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.nms.NMS;
 import net.citizensnpcs.api.npc.NPC;
 
 public class Commands {
@@ -38,7 +39,7 @@ public class Commands {
 		new SelectNPC(cmd.player, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
-			if (BeautyQuests.npcs.containsKey(npc)){
+			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						if (quObj == null) return;
 						Inventories.create(cmd.player, new StagesGUI()).edit((Quest) quObj);
@@ -68,7 +69,7 @@ public class Commands {
 		new SelectNPC(cmd.player, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
-			if (BeautyQuests.npcs.containsKey(npc)){
+			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						Quest qu = (Quest) quObj;
 						qu.remove(true);
@@ -98,7 +99,7 @@ public class Commands {
 			BeautyQuests.logger.info(amount + " quests saved ~ manual save from " + cmd.sender.getName());
 		} catch (Throwable e) {
 			e.printStackTrace();
-			cmd.sender.sendMessage("Error when saving the data file.");
+			cmd.sender.sendMessage("Error while saving the data file.");
 		}
 	}
 	
@@ -279,22 +280,34 @@ public class Commands {
 			Lang.MUST_HOLD_ITEM.send(cmd.sender);
 			return;
 		}
-		BeautyQuests.data.set(((String) cmd.args[0]).toLowerCase() + "Item", item.serialize());
+		BeautyQuests.getInstance().getDataFile().set(((String) cmd.args[0]).toLowerCase() + "Item", item.serialize());
 		Lang.ITEM_CHANGED.send(cmd.sender);
 	}
 	
-	/*@Cmd(permission = "setName", min = 2, args = {"NPCSID", ""}) //		Stand-by
-	public void setName(CommandContext cmd){
-		NPC npc = (NPC) cmd.args[0];
-		String name = Utils.buildFromArray(cmd.args, 1);
-		if (!npc.hasTrait(DisplayName.class)) npc.addTrait(DisplayName.class);
-		npc.getTrait(DisplayName.class).name = name;
-		Lang.TRAIT_NAME.send(cmd.sender);
-	}*/
+	@Cmd(permission = "reload", min = 1, args = "save|force")
+	public void backup(CommandContext cmd){
+		if (cmd.args[0].equals("save")){
+			save(cmd);
+		}else if (!cmd.args[0].equals("force")){
+			Lang.INCORRECT_SYNTAX.send(cmd.sender);
+			return;
+		}
+		
+		boolean success = true;
+		if (!BeautyQuests.getInstance().createFolderBackup(cmd.sender.getName() + "'s manual command.")){
+			Lang.BACKUP_QUESTS_FAILED.send(cmd.sender);
+			success = false;
+		}
+		if (!BeautyQuests.getInstance().createDataBackup(cmd.sender.getName() + "'s manual command.")){
+			Lang.BACKUP_PLAYERS_FAILED.send(cmd.sender);
+			success = false;
+		}
+		if (success) Lang.BACKUP_CREATED.send(cmd.sender);
+	}
 	
 	@Cmd(permission = "list", player = true)
 	public void list(CommandContext cmd){
-		if (BeautyQuests.versionValid){
+		if (NMS.isValid()){
 			ListBook.openQuestBook(cmd.player);
 		}else Utils.sendMessage(cmd.sender, "Version not supported");
 	}

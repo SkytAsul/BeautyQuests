@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -26,12 +24,8 @@ public class TextListEditor extends Editor{
 		this.texts = texts;
 	}
 
-	@EventHandler
-	public void onTchat(AsyncPlayerChatEvent e){
-		if (p != e.getPlayer()) return;
-		e.setCancelled(true);
-		e.setMessage(e.getMessage().replaceAll("&", "§"));
-		String[] args = e.getMessage().split(" ");
+	public void chat(String message){
+		String[] args = message.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
 		String cmd = args[0];

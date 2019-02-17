@@ -40,7 +40,7 @@ public class QuestsListener implements Listener{
 		if (Inventories.isInSystem(p)) return;
 		
 		NPC npc = e.getNPC();
-		if (BeautyQuests.npcs.containsKey(npc)){
+		if (BeautyQuests.getInstance().getNPCs().containsKey(npc)){
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
@@ -78,7 +78,7 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onNPCRemove(NPCRemoveEvent e){
-		if (BeautyQuests.npcs.containsKey(e.getNPC())) BeautyQuests.npcs.get(e.getNPC()).delete();
+		if (BeautyQuests.getInstance().getNPCs().containsKey(e.getNPC())) BeautyQuests.getInstance().getNPCs().get(e.getNPC()).delete();
 	}
 	
 	@EventHandler
@@ -93,7 +93,7 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
-		if (BeautyQuests.firstQuest != null && !e.getPlayer().hasPlayedBefore()) BeautyQuests.firstQuest.start(e.getPlayer());
+		if (QuestsConfiguration.firstQuest != null && !e.getPlayer().hasPlayedBefore()) QuestsConfiguration.firstQuest.start(e.getPlayer());
 		PlayersManager.getPlayerAccount(e.getPlayer());
 		ScoreboardManager.onJoin(e);
 	}

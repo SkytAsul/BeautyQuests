@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -23,12 +21,8 @@ public class PermissionsEditor extends Editor{
 		this.perms = permissions;
 	}
 
-	@EventHandler
-	public void onTchat(AsyncPlayerChatEvent e){
-		if (p != e.getPlayer()) return;
-		e.setCancelled(true);
-		e.setMessage(e.getMessage().replaceAll("&", "§"));
-		String[] args = e.getMessage().split(" ");
+	public void chat(String message){
+		String[] args = message.split(" ");
 		String cmd = args[0];
 		try{
 			Command.valueOf(cmd.toUpperCase());

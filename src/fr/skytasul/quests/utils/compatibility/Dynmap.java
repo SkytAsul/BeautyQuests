@@ -38,10 +38,14 @@ public class Dynmap {
 	}
 	
 	public static void unload(){
-		markers.deleteMarkerSet();
+		if (markers != null){
+			markers.deleteMarkerSet();
+			markers = null;
+		}
 	}
 	
 	public static void addMarker(Quest quest){
+		if (markers == null) return;
 		if (quest.getStarter() == null) return;
 		if (quest.isHid()) {
 			DebugUtils.logMessage("No marker created for quest " + quest.getID() + " : quest is hid");
@@ -57,6 +61,7 @@ public class Dynmap {
 	}
 	
 	public static void removeMarker(Quest quest){
+		if (markers == null) return;
 		if (quest.isHid()) return;
 		Marker marker = markers.findMarker("qu_" + quest.getID());
 		if (marker == null) {

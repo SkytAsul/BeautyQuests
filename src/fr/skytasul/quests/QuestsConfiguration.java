@@ -21,6 +21,7 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
 
@@ -61,6 +62,8 @@ public class QuestsConfiguration {
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 
+	public static Quest firstQuest;
+
 	static int saveCycle = 15;
 	static int firstQuestID = -1;
 
@@ -72,7 +75,7 @@ public class QuestsConfiguration {
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
-			if (BeautyQuests.MCversion >= 13) {
+			if (NMS.getMCVersion() >= 13) {
 				if (!MinecraftNames.intialize(minecraftTranslationsFile)) {
 					BeautyQuests.logger.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
 					minecraftTranslationsFile = null;
@@ -87,7 +90,7 @@ public class QuestsConfiguration {
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
-		particles = BeautyQuests.versionValid && config.getBoolean("particles");
+		particles = NMS.isValid() && config.getBoolean("particles");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = Dependencies.gps && config.getBoolean("gps");
@@ -100,21 +103,21 @@ public class QuestsConfiguration {
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		itemNameColor = config.getString("itemNameColor");
 		itemAmountColor = config.getString("itemAmountColor");
-		mobsProgressBar = BeautyQuests.versionValid && config.getBoolean("mobsProgressBar");
+		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		if (BeautyQuests.data.contains("launchItem")){
-			holoLaunchItem = ItemStack.deserialize(BeautyQuests.data.getConfigurationSection("launchItem").getValues(false));
+		if (BeautyQuests.getInstance().getDataFile().contains("launchItem")){
+			holoLaunchItem = ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection("launchItem").getValues(false));
 		}else if (!StringUtils.isEmpty(config.getString("holoLaunchItemName"))){
 			XMaterial xmat = XMaterial.fromString(config.getString("holoLaunchItemName"));
 			if (xmat == null){
 				holoLaunchItem = null;
 			}else holoLaunchItem = xmat.parseItem();
 		}
-		if (BeautyQuests.data.contains("talkItem")){
-			holoTalkItem = ItemStack.deserialize(BeautyQuests.data.getConfigurationSection("talkItem").getValues(false));
+		if (BeautyQuests.getInstance().getDataFile().contains("talkItem")){
+			holoTalkItem = ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection("talkItem").getValues(false));
 		}else if (!StringUtils.isEmpty(config.getString("holoTalkItemName"))){
 			XMaterial xmat = XMaterial.fromString(config.getString("holoTalkItemName"));
 			if (xmat == null){
@@ -212,7 +215,7 @@ public class QuestsConfiguration {
 	}
 
 	public static boolean showScoreboards(){
-		return scoreboard && BeautyQuests.versionValid;
+		return scoreboard && NMS.isValid();
 	}
 
 	public static boolean showEmptyScoreboards(){

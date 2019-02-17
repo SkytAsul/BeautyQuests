@@ -27,7 +27,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -55,24 +54,21 @@ public class Utils{
 		buf.setByte(0, (byte) 0);
 		buf.writerIndex(1);
 
-		BeautyQuests.nms.sendPacket(p, BeautyQuests.nms.bookPacket(buf));
+		NMS.getNMS().sendPacket(p, NMS.getNMS().bookPacket(buf));
 		p.getInventory().setItem(slot, old);
 	}
 	
 	
 	public static void spawnFirework(Location lc) {
 		if (!QuestsConfiguration.doFireworks()) return;
-		BukkitRunnable run = new BukkitRunnable() {
-			public void run(){
-				Firework f = (Firework) lc.getWorld().spawnEntity(lc, EntityType.FIREWORK);
-				f.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
-				FireworkMeta fm = f.getFireworkMeta();
-				fm.addEffect(FireworkEffect.builder().with(Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
-				fm.setPower(1);
-				f.setFireworkMeta(fm);
-			}
-		};
-		run.runTask(BeautyQuests.getInstance());
+		runSync(() -> {
+			Firework f = (Firework) lc.getWorld().spawnEntity(lc, EntityType.FIREWORK);
+			f.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
+			FireworkMeta fm = f.getFireworkMeta();
+			fm.addEffect(FireworkEffect.builder().with(Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
+			fm.setPower(1);
+			f.setFireworkMeta(fm);
+		});
 	}
 	
 	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) {
@@ -122,7 +118,7 @@ public class Utils{
 				msg = format(msg, i, replace[i].toString());
 			}
 		}
-		String npcName = /*npc.hasTrait(DisplayName.class) ? npc.getTrait(DisplayName.class).getDisplayName() : */npc.getName();
+		String npcName = npc.getName();
 		IsendMessage(p, Lang.NpcText.format(npcName, msg, index, max), true);
 	}
 	
@@ -350,6 +346,14 @@ public class Utils{
 		}
 		
 		return ls;
+	}
+	
+	public static void runSync(Runnable run){
+		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+	}
+	
+	public static void runAsync(Runnable run){
+		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
 	/*@Deprecated

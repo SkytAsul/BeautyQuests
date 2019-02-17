@@ -3,7 +3,6 @@ package fr.skytasul.quests.editors;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -19,7 +18,7 @@ public class SelectNPC extends InventoryClear{
 		this.run = end;
 	}
 	
-	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.LOW)
 	public void onNPCClick(NPCRightClickEvent e){
 		if (e.getClicker() != p) return;
 		e.setCancelled(true);
@@ -27,12 +26,10 @@ public class SelectNPC extends InventoryClear{
 		run.run(e.getNPC());
 	}
 	
-	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onTchat(AsyncPlayerChatEvent e){
-		if (e.getPlayer() != p) return;
-		if (e.getMessage().equals("cancel")){
-			e.setCancelled(true);
-			leave(e.getPlayer());
+	//@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
+	public void chat(String msg){
+		if (msg.equals("cancel")){
+			leave(p);
 			run.run(null);
 		}
 	}

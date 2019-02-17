@@ -74,7 +74,7 @@ public class NPCStarter {
 			qu.remove(true);
 		}
 		quests = null;
-		BeautyQuests.npcs.remove(npc);
+		BeautyQuests.getInstance().getNPCs().remove(npc);
 		refreshTask.cancel();
 	}
 	

@@ -40,12 +40,13 @@ public enum Lang{
 	QUEST_NAME("msg.writeQuestName", "Write the name of your quest!"),
 	COMMAND("msg.writeCommand", "Write wanted command. (without / at the beggining) You can use {PLAYER}, it will be remplaced by the executor player's name."),
 	HOLOGRAM_TEXT("msg.writeHologramText", "Write text of the hologram. (type \"none\" if you do not want a hologram, and \"null\" if you want default text)"),
-	TIMER("msg.writeQuestTimer", "Write required time before you can restart the quest. (type \"null\" if you want default timer)"),
+	TIMER("msg.writeQuestTimer", "Write required time (in minuts) before you can restart the quest. (type \"null\" if you want default timer)"),
 	
 	REQUIREMENT_QUEST("msg.requirements.quest", "§eYou must have finished the quest \"{0}\"§r§e!"),
 	REQUIREMENT_LEVEL("msg.requirements.level", "§eYou must be at least level {0}!"),
 	REQUIREMENT_JOB("msg.requirements.job", "§eYou must be at least level {0} for the job {1}!"),
 	REQUIREMENT_SKILL("msg.requirements.skill", "§eYou must be at least level {0} for the skill {1}!"),
+	REQUIREMENT_COMBAT_LEVEL("msg.requirements.combatLevel", "§eYou must be at least combat level {0}!"),
 	QUEST_WAIT("msg.requirements.wait", "§cYou must wait {0} minuts before starting this quest again!"),
 	
 	XP_EDITED("msg.experience.edited", "Experience gain edited: {0}pts. to {1}pts."),
@@ -88,9 +89,9 @@ public enum Lang{
 	DATA_REMOVED_INFO("msg.command.resetPlayer.remover", "§eThe quests datas of {0} has been deleted. ({1})"),
 	START_QUEST("msg.command.startQuest", "§eYou have forced starting of quest {0} (UUID {1})."),
 	CANCEL_QUEST("msg.command.cancelQuest", "§eYou have cancelled the quest {0}."),
-	SEE_PLAYER("msg.command.seePlayer.header", "§eDatas of player §6{0} §e"),
-	SEE_PLAYER_INPROGRESS("msg.command.seePlayer.inProgress", "§eQuests in progress:"),
-	SEE_PLAYER_FINISHED("msg.command.seePlayer.finished", "§eQuests finished:"),
+	BACKUP_CREATED("msg.command.backupCreated", "§eYou have successfully created backups of quests and players datas."),
+	BACKUP_PLAYERS_FAILED("msg.command.backupPlayersFailed", "§cPlayers datas backup creation has failed."),
+	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed", "§cQuests backup creation has failed."),
 	
 	COMMAND_HELP("msg.command.help.header", "§e§lBeautyQuests - §6help§r"),
 	COMMAND_HELP_CREATE("msg.command.help.create", "§e/{0} create: §acreate a quest"),
@@ -262,9 +263,7 @@ public enum Lang{
 	mythicMob("inv.mobSelect.mythicMob", "§6Select a Mythic Mob"),
 	epicBoss("inv.mobSelect.epicBoss", "§6Select an Epic Boss"),
 	
-	INVENTORY_STAGEENDING("inv.stageEnding.name", "§8End of the step"), // TODO check if useful (les 4)
 	location("inv.stageEnding.locationTeleport", "§aEdit the teleport point"),
-	skillexp("inv.stageEnding.skillExperience", "§aEdit SkillAPI experience gain"),
 	command("inv.stageEnding.command", "§aEdit executed command"),
 	
 	INVENTORY_REQUIREMENTS("inv.requirements.name", "§8Requirements"),
@@ -332,6 +331,7 @@ public enum Lang{
 	RClass("misc.requirement.class", "§bClass(es) required"),
 	RFaction("misc.requirement.faction", "§bFaction(s) required"),
 	RJobLvl("misc.requirement.jobLevel", "§bJob level required"),
+	RCombatLvl("misc.requirement.combatLevel", "§bCombat level required"),
 	RLevel("misc.requirement.experienceLevel", "§bExperience level required"),
 	RPermissions("misc.requirement.permissions", "§3Permission(s) requiered"),
 	RPlaceholder("misc.requirement.placeholder", "§bPlaceholder value required"),

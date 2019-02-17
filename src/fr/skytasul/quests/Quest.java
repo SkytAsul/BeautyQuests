@@ -572,8 +572,8 @@ public class Quest{
 		}catch (Throwable e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 	
 	static Quest deserialize(Map<String, Object> map){

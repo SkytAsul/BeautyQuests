@@ -11,13 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -47,35 +46,27 @@ import fr.skytasul.quests.utils.SpigotUpdater;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.nms.NMS;
-import fr.skytasul.quests.utils.nms.NullNMS;
 import net.citizensnpcs.api.npc.NPC;
 
 public class BeautyQuests extends JavaPlugin{
 
 	private static BeautyQuests instance;
-
-	public static Quest firstQuest;
 	private BukkitRunnable saveTask;
 
 	public static String lastVersion;
 	
-	private static FileConfiguration config;
-	public static YamlConfiguration data;
-	private static File dataFile;
+	private FileConfiguration config;
+	private YamlConfiguration data;
+	private File dataFile;
 	public static QuestsLogger logger;
 	static File saveFolder;
 	
 	/* ------------------ */
 
 	private List<Quest> quests = new ArrayList<>();
-	public static Map<NPC, NPCStarter> npcs = new HashMap<>();
+	private Map<NPC, NPCStarter> npcs = new HashMap<>();
 	
 	/* ------------------ */
-
-	public static boolean versionValid = false;
-	public static NMS nms;
-	public static int MCversion;
-	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2");
 
 	private static boolean disable = false;
 	public static boolean loadingFailure = false;
@@ -125,23 +116,11 @@ public class BeautyQuests extends JavaPlugin{
 
 		loadResource("config.yml");
 
-		
-		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
-		if (validVersions.contains(version)){
-			try{
-				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
-				versionValid = true;
-				MCversion = Integer.parseInt(version.split("_")[1]);
-			}catch (Throwable ex){
-				versionValid = false;
-				nms = new NullNMS();
-				ex.printStackTrace();
-			}
-		}else nms = new NullNMS();
-		getLogger().info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Current accepted versions : 1.11, 1.12");
-
+		NMS.intializeNMS();
 		
 		config = getConfig();
+		saveFolder = new File(getDataFolder(), "quests");
+		if (!saveFolder.exists()) saveFolder.mkdirs();
 		dataFile = new File(getDataFolder(), "data.yml");
 		if (!dataFile.exists()){
 			try {
@@ -160,6 +139,10 @@ public class BeautyQuests extends JavaPlugin{
 		
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
+			if (!lastVersion.equals(getDescription().getVersion())){
+				createFolderBackup("You are using a new version for the first time.");
+				createDataBackup("You are using a new version for the first time.");
+			}
 		}else lastVersion = getDescription().getVersion();
 		data.options().header("Do not edit ANYTHING here.");
 		data.options().copyHeader(true);
@@ -248,31 +231,42 @@ public class BeautyQuests extends JavaPlugin{
 		if (disable) return 666;
 		
 		ScoreboardManager.initialize();
-		if (Dependencies.dyn) Dynmap.intitialize();
+		if (Dependencies.dyn){
+			try{
+				Dynmap.intitialize();
+			}catch (Throwable ex){
+				getLogger().severe("An error occured while initializing dynmap integration.");
+				ex.printStackTrace();
+				Dynmap.unload();
+			}
+		}
 		
 		quests.clear();
-		saveFolder = new File(getDataFolder(), "quests");
-		if (!saveFolder.exists()) saveFolder.mkdirs();
 		lastID = data.getInt("lastID");
 
 		
-		PlayersManager.load(data);
+		try{
+			PlayersManager.load(data);
+		}catch (Throwable ex){
+			createDataBackup("Error when loading player datas.");
+			ex.printStackTrace();
+		}
 
 		for (File file : saveFolder.listFiles()){
 			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml")) continue;
+			loadingFailure = false;
 			try{
 				Quest quest = Quest.loadFromFile(file);
 				if (quest != null) {
 					addQuest(quest);
 				}else logger.severe("Quest from file " + file.getName() + " not activated");
+				if (loadingFailure) createQuestBackup(quest, "Error when loading quest.");
 			}catch (Throwable ex){
-				loadingFailure = true;
 				ex.printStackTrace();
 				continue;
 			}
 		}
-		//}
-		firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
+		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
 		
 		getServer().getPluginManager().registerEvents(new QuestsListener(), this);
 		
@@ -284,24 +278,22 @@ public class BeautyQuests extends JavaPlugin{
 			ScoreboardManager.unload();
 		}
 		
-		savingFailure = false;
 		int amount = 0;
 		for (Quest qu : quests){
+			savingFailure = false;
 			try{
 				File file = qu.file;
 				if (!file.exists()) file.createNewFile();
 				YamlConfiguration fc = YamlConfiguration.loadConfiguration(file);
 				List<Map<String, Object>> ls = new ArrayList<>();
 				ls.add(qu.serialize());
+				if (savingFailure) createQuestBackup(qu, "Error when saving quest.");
 				fc.set("quest", ls);
 				fc.save(file);
 				amount++;
 				
-				if (unload){
-					qu.unloadAll();
-				}
+				if (unload) qu.unloadAll();
 			}catch (Throwable ex){
-				savingFailure = true;
 				getLogger().warning("Error when saving quest ID " + qu.getID());
 				ex.printStackTrace();
 				continue;
@@ -310,10 +302,13 @@ public class BeautyQuests extends JavaPlugin{
 		data.set("lastID", lastID);
 		data.set("version", getDescription().getVersion());
 		
-		PlayersManager.save(data);
-		//if (savingFailure) createBackup("An error occured while saving.");
-		
-		data.save(new File(getDataFolder(), "data.yml"));
+		try{
+			PlayersManager.save(data);
+		}catch (Throwable ex){
+			createDataBackup("Error when saving player datas.");
+			ex.printStackTrace();
+		}
+		data.save(dataFile);
 		
 		if (unload){
 			resetDatas();
@@ -325,8 +320,8 @@ public class BeautyQuests extends JavaPlugin{
 	private void resetDatas(){
 		quests.clear();
 		npcs.clear();
-		if (Dependencies.dyn) Dynmap.unload();
 		HandlerList.unregisterAll(this);
+		if (Dependencies.dyn) Dynmap.unload();
 	}
 	
 	private void launchSaveCycle(){
@@ -354,10 +349,49 @@ public class BeautyQuests extends JavaPlugin{
 		}
 	}
 	
-	@Deprecated
-	public void createBackup(String msg) throws IOException{
-		getLogger().warning(msg + " Creating backup...");
-		getLogger().info("Backup created at " + Files.copy(dataFile.toPath(), new File(getDataFolder(), "data-backup" + new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss").format(new Date()) + ".yml").toPath()));
+	public boolean createFolderBackup(String msg){
+		getLogger().info(msg + " Creating backup...");
+		try {
+			File backupDir = backupDir();
+			FileUtils.copyDirectory(saveFolder, backupDir);
+			getLogger().info("Quests backup created in " + backupDir.getName());
+			return true;
+		}catch (Exception e) {
+			getLogger().severe("An error occured while creating the backup.");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean createDataBackup(String msg){
+		getLogger().info(msg + " Creating backup...");
+		try{
+			getLogger().info("Datas backup created in " + Files.copy(dataFile.toPath(), new File(backupDir(), "data.yml").toPath()).getParent().getFileName());
+			return true;
+		}catch (Exception e) {
+			getLogger().severe("An error occured while creating the backup.");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean createQuestBackup(Quest quest, String msg){
+		getLogger().info(msg + " Creating backup...");
+		try{
+			getLogger().info("Quest backup created at " + Files.copy(quest.file.toPath(), new File(saveFolder, quest.getID() + "-backup" + format.format(new Date()) + ".yml").toPath()).getFileName());
+			return true;
+		}catch (Exception e) {
+			getLogger().severe("An error occured while creating the backup.");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
+	private File backupDir(){
+		File f = new File(getDataFolder(), "backup-" + format.format(new Date()));
+		if (!f.exists()) f.mkdir();
+		return f;
 	}
 
 	private File loadResource(String resource) {
@@ -453,7 +487,7 @@ public class BeautyQuests extends JavaPlugin{
 		new BukkitRunnable() {
 			public void run() {
 				try {
-					BeautyQuests.data = YamlConfiguration.loadConfiguration(BeautyQuests.dataFile);
+					data = YamlConfiguration.loadConfiguration(dataFile);
 					sender.sendMessage("§a " + BeautyQuests.getInstance().loadAllDatas() + " quests loaded");
 					sender.sendMessage("§a§lPlugin entierely reloaded from files !");
 				} catch (Throwable e) {
@@ -486,6 +520,14 @@ public class BeautyQuests extends JavaPlugin{
 		return quests;
 	}
 
+	public Map<NPC, NPCStarter> getNPCs(){
+		return npcs;
+	}
+	
+	public FileConfiguration getDataFile(){
+		return data;
+	}
+	
 
 	public static BeautyQuests getInstance(){
 		return instance;

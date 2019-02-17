@@ -24,6 +24,7 @@ public class Dependencies {
 	public static boolean eboss = true; //	EpicBosses
 	public static boolean gps = true; //		GPS
 	public static boolean mmo = true; //	mcMMO
+	public static boolean mclvl = true; //	McCombatLevel
 	
 	public static void initialize(PluginManager pman, Logger logger){
 		if (!pman.isPluginEnabled("WorldGuard")){
@@ -76,13 +77,10 @@ public class Dependencies {
 			logger.info("mcMMO isn't loaded on this server. Some features are not enabled because of that.");
 			mmo = false;
 		}
-		
-		// Citizens initialization - stand-by, waiting for a reply from Citizens developpers
-		/*TraitInfo trait = TraitInfo.create(DisplayName.class);
-		if (CitizensAPI.getTraitFactory().getTrait("displayname") != null){
-			CitizensAPI.getTraitFactory().deregisterTrait(trait);
+		if (!pman.isPluginEnabled("McCombatLevel")){
+			logger.info("McCombatLevel isn't loaded on this server. Some features are not enabled because of that.");
+			mclvl = false;
 		}
-		CitizensAPI.getTraitFactory().registerTrait(trait);*/
 	}
 	
 }

@@ -1,9 +1,6 @@
 package fr.skytasul.quests.editors;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import fr.skytasul.quests.editors.checkers.AbstractParser;
 import fr.skytasul.quests.utils.Lang;
@@ -38,31 +35,26 @@ public class TextEditor extends Editor{
 		this.nul = nul;
 	}
 
-	@EventHandler (priority = EventPriority.LOWEST)
-	public void onTchat(AsyncPlayerChatEvent e){
-		if (p != e.getPlayer()) return;
-		e.setMessage(e.getMessage().replaceAll("&", "§"));
-		e.setCancelled(true);
-		
-		if (e.getMessage().equals("cancel")){
+	public void chat(String msg){
+		if (msg.equals("cancel")){
 			if (cancel == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "cancel");
 			}else {
-				leave(e.getPlayer());
+				leave(p);
 				cancel.run();
 			}
 			return;
-		}else if (e.getMessage().equals("null")){
+		}else if (msg.equals("null")){
 			if (nul == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "null");
 			}else {
-				leave(e.getPlayer());
+				leave(p);
 				nul.run();
 			}
 			return;
 		}
 		
-		Object returnment = e.getMessage();
+		Object returnment = msg;
 		boolean invalid = false;
 		/*if (integer){
 			try{
@@ -80,21 +72,21 @@ public class TextEditor extends Editor{
 		}*/
 		if (parser != null){
 			try{
-				Object tmp = parser.parse(p, e.getMessage());
+				Object tmp = parser.parse(p, msg);
 				if (tmp == null){
 					invalid = true;
 				}else {
 					returnment = tmp;
 				}
 			}catch (Throwable ex){
-				Lang.ERROR_OCCURED.send(p, e.getMessage() + " parsingText");
+				Lang.ERROR_OCCURED.send(p, msg + " parsingText");
 				invalid = true;
 				ex.printStackTrace();
 			}
 		}
 
 		if (!invalid){
-			leave(e.getPlayer());
+			leave(p);
 			run.run(returnment);
 		}
 	}

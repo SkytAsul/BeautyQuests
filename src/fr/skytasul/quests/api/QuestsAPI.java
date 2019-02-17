@@ -106,8 +106,12 @@ public class QuestsAPI {
 	}
 
 	public static List<Quest> getQuestsAssigneds(NPC npc){
-		NPCStarter starter = BeautyQuests.npcs.get(npc);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		return starter == null ? Collections.emptyList() : starter.getQuests();
+	}
+	
+	public static boolean isQuestStarter(NPC npc){
+		return BeautyQuests.getInstance().getNPCs().containsKey(npc);
 	}
 
 	public static boolean hasQuestStarted(Player p, NPC npc){

@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
+import fr.skytasul.quests.utils.nms.NMS;
 
 /**
  * <b>ParticleEffect Library</b>
@@ -154,12 +154,12 @@ public enum ParticleEffect {
 	 * @return Whether the particle effect is supported or not
 	 */
 	public boolean isSupported() {
-		if (!BeautyQuests.versionValid) return false;
+		if (!NMS.isValid()) return false;
 		/*if (BeautyQuests.MCversion >= 13){
 			if (fieldName.equals("0") || properties.contains(ParticleProperty.REQUIRES_DATA)) return false;
 		}*/
-		if (min != 0 && min > BeautyQuests.MCversion) return false;
-		if (max != 0 && max < BeautyQuests.MCversion) return false;
+		if (min != 0 && min > NMS.getMCVersion()) return false;
+		if (max != 0 && max < NMS.getMCVersion()) return false;
 		if (bukkitParticle == null) return false;
 		return true;
 	}
@@ -207,7 +207,7 @@ public enum ParticleEffect {
 	 * @return Whether the data type is correct or not
 	 */
 	private static boolean isDataCorrect(ParticleEffect effect, Object data) {
-		return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && (BeautyQuests.MCversion < 13 ? data instanceof MaterialData : Post1_13.equalBlockData(data))) || (effect == ITEM_CRACK && data instanceof ItemStack);
+		return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && (NMS.getMCVersion() < 13 ? data instanceof MaterialData : Post1_13.equalBlockData(data))) || (effect == ITEM_CRACK && data instanceof ItemStack);
 	}
 
 	/**
@@ -782,7 +782,7 @@ public enum ParticleEffect {
 		 */
 		public static void initialize() {
 			if (initialized) return;
-			if (!BeautyQuests.versionValid) return;
+			if (!NMS.isValid()) return;
 			initialized = true;
 		}
 
@@ -808,7 +808,7 @@ public enum ParticleEffect {
 			try {
 				//int tmpAmount = amount;
 				if (effect.hasProperty(ParticleProperty.COLORABLE) && data instanceof ParticleColor){
-					if (BeautyQuests.MCversion < 13 || data instanceof NoteColor){
+					if (NMS.getMCVersion() < 13 || data instanceof NoteColor){
 						ParticleColor color = (ParticleColor) data;
 						offsetX = color.getValueX();
 						offsetY = color.getValueY();
@@ -819,11 +819,11 @@ public enum ParticleEffect {
 						if (color instanceof OrdinaryColor && ((OrdinaryColor) color).getRed() == 0) {
 							offsetX = Float.MIN_NORMAL;
 						}
-					}else if (BeautyQuests.MCversion >= 13 && data instanceof OrdinaryColor){
+					}else if (NMS.getMCVersion() >= 13 && data instanceof OrdinaryColor){
 						data = Post1_13.getDustColor((OrdinaryColor) data, size);
 					}
 				}
-				this.packet = BeautyQuests.nms.worldParticlePacket(/*enumParticle.getEnumConstants()[effect.getId()]*/effect, longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, /*paramArray*/data);
+				this.packet = NMS.getNMS().worldParticlePacket(/*enumParticle.getEnumConstants()[effect.getId()]*/effect, longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, /*paramArray*/data);
 			} catch (Throwable exception) {
 				throw new PacketInstantiationException("Packet instantiation failed", exception);
 			}
@@ -841,8 +841,8 @@ public enum ParticleEffect {
 			initializePacket(center);
 			try {
 				if (timesSending == 1) {
-					BeautyQuests.nms.sendPacket(player, packet);
-				}else for (int i = 0; i < timesSending; i++) BeautyQuests.nms.sendPacket(player, packet);
+					NMS.getNMS().sendPacket(player, packet);
+				}else for (int i = 0; i < timesSending; i++) NMS.getNMS().sendPacket(player, packet);
 				//sendPacket.invoke(playerConnection.get(getHandle.invoke(player)), packet);
 				//((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
 			} catch (Throwable exception) {

@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -39,6 +42,17 @@ public abstract class Editor implements Listener{
 
 	public <T extends Editor> T enterOrLeave(Player p){
 		return (T) enterOrLeave(p, this);
+	}
+	
+	public void chat(String message){}
+	
+	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onChat(AsyncPlayerChatEvent e){
+		if (e.getPlayer() != p) return;
+		e.setCancelled(true);
+		if (e.isAsynchronous()){
+			Utils.runSync(() -> chat(ChatColor.translateAlternateColorCodes('&', e.getMessage())));
+		}else chat(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
 	}
 	
 	private static void enter(Player p, Editor editor){
