@@ -112,7 +112,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	/**
-	 * Called when the player is online at the moment the stage starts</br>
+	 * Called when the player is online at the moment the stage starts<br>
 	 * {@link #start(PlayerAccount)} will be called then
 	 * @param p Player who starts the stage
 	 */
@@ -130,7 +130,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	/**
-	 * Called when the player is online at the moment the stage ends</br>
+	 * Called when the player is online at the moment the stage ends<br>
 	 * {@link #end(PlayerAccount)} will be called after that
 	 * @param p Player who ends the stage
 	 */

@@ -78,7 +78,7 @@ public class Dependencies {
 			mmo = false;
 		}
 		if (!pman.isPluginEnabled("McCombatLevel")){
-			logger.info("McCombatLevel isn't loaded on this server. Some features are not enabled because of that.");
+			if (mmo) logger.info("McCombatLevel isn't loaded on this server. Some features are not enabled because of that.");
 			mclvl = false;
 		}
 	}

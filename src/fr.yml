@@ -52,6 +52,7 @@ msg:
     wait: §cVous devez encore attendre {0} minutes avant de pouvoir refaire cette
       quête.
     skill: §eVous devez être au moins niveau {0} de la compétence {1}!
+    combatLevel: §eVous devez au moins avoir le niveau de combat {0}!
   experience:
     edited: 'Gain d''éxpérience modifié : {0}pts. à {1}pts.'
   selectNPCToKill: Sélectionnez le NPC à tuer.
@@ -110,10 +111,14 @@ msg:
       version: '§e/{0} version : §avoir la version du plugin'
       save: '§e/{0} save: §afaire une sauvegarde manuelles des données'
       list: '§e/{0} list : §avoir la liste des quêtes'
-      setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme dans le fichier de données'
+      setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme
+        dans le fichier de données'
     needItem: §cVous devez tenir un item dans votre main principale.
     itemChanged: §aL'item a été modifié. Le changement prendra effet après redémarrage.
     cancelQuest: §eVous avez annulé la quête {0}.
+    backupCreated: §eVous avez créé une sauvegarde des quêtes et des données joueurs.
+    backupPlayersFailed: '§cLa création d''une sauvegarde des données joueur a échoué.'
+    backupQuestsFailed: '§cLa création d''une sauvegarde des quêtes a échoué.'
   editor:
     already: §cVous êtes déjà dans un éditeur.
     npc:
@@ -176,7 +181,8 @@ msg:
       syntax: '§cSyntaxe correcte : '
       added: §aTexte {0} ajouté.
       removed: §aTexte {0} supprimé.
-    selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
+    selectWantedBlock: §aCliquez avec le bâton sur le bloc voulu pour l'étape.
+  npcDoesntExist: '§cLe NPC avec l''ID {0} n''existe pas.'
 advancement:
   finished: Terminée
   notStarted: Pas commencée
@@ -346,6 +352,7 @@ misc:
     quest: §aQuête requise
     placeholder: §bPlaceholder requis
     mcMMOSkillLevel: §dNiveau de compétence requis
+    combatLevel: §bNiveau de combat requis
   hologramText: §8§lNPC de Quête
   mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: 'Type d''entité : {0}'

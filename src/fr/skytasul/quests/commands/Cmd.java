@@ -32,7 +32,7 @@ public @interface Cmd {
 	public String[] args() default {};
 	
 	/**
-	 * Needed permission to execute this command (if empty, no permission will be required)</br>
+	 * Needed permission to execute this command (if empty, no permission will be required)<br>
 	 * Final permission will be : <b>beautyquests.command.XXXX</b>
 	 */
 	public String permission() default "";

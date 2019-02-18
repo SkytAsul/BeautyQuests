@@ -80,7 +80,6 @@ public enum Lang{
 	COMMAND_DOESNT_EXIST("msg.command.invalidCommand.quests", "§cThis command doesn't exist, type §o/quests help"),
 	COMMAND_DOESNT_EXIST_NOSLASH("msg.command.invalidCommand.simple", "§cThis command doesn't exist, type §ohelp (without /)"),
 	MUST_HOLD_ITEM("msg.command.needItem", "§cYou must hold an item in your main hand."),
-	TRAIT_NAME("msg.command.traitNameChanged", "§aDisplay name of NPC has been edited."),
 	ITEM_CHANGED("msg.command.itemChanged", "§aItem has been edited. The changement will be effective after restart."),
 	SUCCESFULLY_REMOVED("msg.command.removed", "§aThe quest {0} has been successfully removed."),
 	LEAVE_ALL_RESULT("msg.command.leaveAll", "§eYou have forced the end of {0} quests. §c{1} error(s)."),
