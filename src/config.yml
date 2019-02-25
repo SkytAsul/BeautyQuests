@@ -47,9 +47,9 @@ start:
     GREEN: 255
   particleShape: point
 talk:
-  particleEffect: redstone
+  particleEffect: villager_happy
   particleColor:
     RED: 255
     BLUE: 0
     GREEN: 255
-  particleShape: point
+  particleShape: bar

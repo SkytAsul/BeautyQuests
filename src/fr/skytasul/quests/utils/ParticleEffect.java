@@ -2,18 +2,18 @@ package fr.skytasul.quests.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -102,7 +102,7 @@ public enum ParticleEffect {
 	WATER_WAKE,
 	;
 	
-	private Particle bukkitParticle;
+	private org.bukkit.Particle bukkitParticle;
 	private final List<ParticleProperty> properties;
 	private int min, max;
 
@@ -119,13 +119,13 @@ public enum ParticleEffect {
 		this.min = min;
 		this.max = max;
 		try{
-			bukkitParticle = Particle.valueOf(this.name());
+			bukkitParticle = org.bukkit.Particle.valueOf(this.name());
 		}catch (IllegalArgumentException ex){
 			bukkitParticle = null;
 		}
 	}
 	
-	public Particle getBukkitParticle(){
+	public org.bukkit.Particle getBukkitParticle(){
 		return bukkitParticle;
 	}
 
@@ -177,7 +177,7 @@ public enum ParticleEffect {
 				return effect;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("ParticleEffect " + name + " doesn't exist.");
 	}
 
 	/**
@@ -587,13 +587,34 @@ public enum ParticleEffect {
 
 	public static enum ParticleShape{
 		POINT, NEAR, BAR, EXCLAMATION;
+	}
+	
+	public static class Particle{
 		private static Random random = new Random();
+		
+		private ParticleEffect effect;
+		private ParticleShape shape;
+		private OrdinaryColor color;
+		
+		private byte typeCode;
+		
+		public Particle(ParticleEffect effect, ParticleShape shape, OrdinaryColor color){
+			this.effect = effect;
+			this.shape = shape;
+			this.color = color;
+			
+			this.typeCode = (byte) (effect == ParticleEffect.NOTE ? 2 : (effect.hasProperty(ParticleProperty.COLORABLE) ? 1 : 0));
+		}
+		
+		public String toString(){
+			return effect.name() + " in shape " + shape.name() + (typeCode != 0 ? " with color \"R" + (typeCode == 1 ? color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") + "\"": "");
+		}
 		
 		public void send(LivingEntity en, List<Player> p){
 			if (p.isEmpty()) return;
-			//System.out.println((random == null) + " " + (p == null) + " " + (en.getEyeLocation() == null));
+			
 			Location lc = en.getEyeLocation();
-			switch (this){
+			switch (shape){
 			case POINT:
 				sendParticle(lc.add(0, 1, 0), p, 0.1, 0.1, 0.1, 1);
 				break;
@@ -611,36 +632,23 @@ public enum ParticleEffect {
 		}
 		
 		private void sendParticle(Location lc, List<Player> p, double offX, double offY, double offZ, int amount){
-			switch(QuestsConfiguration.particleTypeCode){
+			switch(typeCode){
 			case 1:
-				QuestsConfiguration.getParticleEffect().display(QuestsConfiguration.getParticleColor(), offX, offY, offZ, amount, lc, /*p.getPlayer(),*/ p);
+				effect.display(color, offX, offY, offZ, amount, lc, p);
 				break;
 			case 2:
 				ParticleEffect.NOTE.display(new ParticleEffect.NoteColor(random.nextInt(24)), offX, offY, offZ, amount, lc, /*p.getPlayer(),*/ p);
 				break;
 			case 0:
-				QuestsConfiguration.getParticleEffect().display(offX, offY, offZ, 0.001, amount, lc, /*p.getPlayer(),*/ p);
+				effect.display(offX, offY, offZ, 0.001, amount, lc, p);
 				break;
 			}
 		}
 		
-		public static ParticleShape fromName(String name){
-			for (ParticleShape v : values()){
-				//Bukkit.broadcastMessage(v.name() + " " + name);
-				if (v.name().equalsIgnoreCase(name)) return v;
-			}
-			throw new IllegalArgumentException("ParticleShape with name " + name + " does not exist");
+		public static Particle deserialize(Map<String, Object> map){
+			return new Particle(ParticleEffect.fromName((String) map.get("particleEffect")), ParticleShape.valueOf(((String) map.get("particleShape")).toUpperCase()), new OrdinaryColor(Color.deserialize(((MemorySection) map.get("particleColor")).getValues(false))));
 		}
 	}
-	
-	public static enum ParticleLocation{
-		START, TALK;
-		
-		public void a(){
-			super.name();
-		}
-	}
-	
 	
 	/**
 	 * Represents a runtime exception that is thrown either if the displayed particle effect requires data and has none or vice-versa or if the data type is incorrect

@@ -39,6 +39,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 	
 	/**
 	 * Register all available commands from an instance of a Class
+	 * @param commandsClassInstance Instance of the Class
 	 */
 	public void registerCommandsClass(Object commandsClassInstance){
 		for(Method method : commandsClassInstance.getClass().getDeclaredMethods()){

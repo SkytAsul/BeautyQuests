@@ -12,11 +12,13 @@ public @interface Cmd {
 
 	/**
 	 * If true, the command will not be executed if the executor is not a Player
+	 * @return true if the command <i>need</i> to be executed by a player
 	 */
 	public boolean player() default false;
 	
 	/**
 	 * If arguments amount is lower than this value, the command will not be executed
+	 * @return minimal amount of arguments for the command to be executed
 	 */
 	public int min() default 0;
 	
@@ -28,12 +30,14 @@ public @interface Cmd {
 	 * <li> xxx|yyy|zzz : <i>available values, separated by a pipe (|)</i>
 	 * </ul>
 	 * In the case of PLAYERS and QUESTSID, they will be directly replaced by an instance of Player or Quest when command executing (no need for String parsing)
+	 * @return String array of possibles arguments
 	 */
 	public String[] args() default {};
 	
 	/**
 	 * Needed permission to execute this command (if empty, no permission will be required)<br>
 	 * Final permission will be : <b>beautyquests.command.XXXX</b>
+	 * @return name of the permission
 	 */
 	public String permission() default "";
 	

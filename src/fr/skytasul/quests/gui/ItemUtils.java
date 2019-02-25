@@ -160,7 +160,7 @@ public class ItemUtils {
 	/**
 	 * Add a string at the end of the name of an ItemStack instance
 	 * @param is ItemStack instance to edit
-	 * @param name String to add at the end of existant name
+	 * @param add String to add at the end of existant name
 	 * @return same ItemStack instance with edited name
 	 */
 	public static ItemStack nameAdd(ItemStack is, String add) {

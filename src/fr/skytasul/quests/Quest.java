@@ -29,7 +29,6 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.stages.StageManager;
 import fr.skytasul.quests.stages.StageNPC;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.ParticleEffect.ParticleLocation;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
@@ -69,7 +68,7 @@ public class Quest{
 	private Object holoLaunch;
 	
 	private BukkitTask holoTask;
-	private boolean particle = QuestsConfiguration.doCustomParticles(ParticleLocation.START);
+	private boolean particle = QuestsConfiguration.doParticles();
 	private boolean hologramLaunch = Dependencies.holod && QuestsConfiguration.getHoloLaunchItem() != null;
 	private boolean hologramAll = Dependencies.holod && !StringUtils.isEmpty(getHologramText());
 	
@@ -136,7 +135,7 @@ public class Quest{
 			if (launcheable.isEmpty()) return;
 			particles.clear();
 			particles.addAll(launcheable);
-			QuestsConfiguration.getParticleShape().send(en, particles);
+			QuestsConfiguration.getParticleStart().send(en, particles);
 		}
 	}
 	

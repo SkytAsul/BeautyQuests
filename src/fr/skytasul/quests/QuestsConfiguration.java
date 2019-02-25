@@ -1,11 +1,7 @@
 package fr.skytasul.quests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Color;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,11 +10,8 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.OrdinaryColor;
-import fr.skytasul.quests.utils.ParticleEffect.ParticleColor;
-import fr.skytasul.quests.utils.ParticleEffect.ParticleLocation;
-import fr.skytasul.quests.utils.ParticleEffect.ParticleProperty;
+import fr.skytasul.quests.utils.ParticleEffect.Particle;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -51,11 +44,13 @@ public class QuestsConfiguration {
 	private static boolean hookAcounts = false;
 	private static int splittedAdvancementPlaceholderMax = 3;
 	private static boolean particles = true;
-	private static ParticleEffect particle;
+	/*private static ParticleEffect particle;
 	private static OrdinaryColor particleColor;
 	public static byte particleTypeCode;
 	private static ParticleShape particleShape;
-	private static List<ParticleLocation> particleLocations = new ArrayList<>();
+	private static List<ParticleLocation> particleLocations = new ArrayList<>();*/
+	private static ParticleEffect.Particle particleStart;
+	private static ParticleEffect.Particle particleTalk;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean playerCancelQuest = false;
@@ -135,22 +130,19 @@ public class QuestsConfiguration {
 		effectEnabled = effect.getBoolean("enabled");*/
 		if (particles){
 			try{
-				particle = ParticleEffect.fromName(config.getString("particleEffect"));
-				particleColor = new ParticleEffect.OrdinaryColor(Color.deserialize(((MemorySection) config.get("particleColor")).getValues(false)));
-				particleTypeCode = (byte) (particle == ParticleEffect.NOTE ? 2 : (particle.hasProperty(ParticleProperty.COLORABLE) ? 1 : 0));
-				particleShape = ParticleShape.fromName(config.getString("particleShape"));
-				particleLocations.clear();
-				for (String s : config.getStringList("particleConfigLocations")) particleLocations.add(ParticleLocation.valueOf(s));
-			}catch (Throwable ex){
-				BeautyQuests.logger.warning("Invalid particle, color or shape.");
-				particle = ParticleEffect.REDSTONE;
-				particleColor = new ParticleEffect.OrdinaryColor(Color.YELLOW);
-				particleTypeCode = 1;
-				particleShape = ParticleShape.POINT;
-				particleLocations.clear();
-				particleLocations.add(ParticleLocation.START);
+				particleStart = Particle.deserialize(config.getConfigurationSection("start").getValues(false));
+			}catch (Exception ex){
+				BeautyQuests.logger.warning("Loading of start particles failed: Invalid particle, color or shape.");
+				particleStart = new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW));
 			}
-			BeautyQuests.logger.info("Loaded particles (for location(s) " + Utils.itemsToFormattedString(Utils.arrayFromEnumList(particleLocations)) + "): \"" + particle.name() + "\" in shape \"" + particleShape.name().toLowerCase() + "\"" + (particleTypeCode != 0 ? " with color \"R" + (particleTypeCode == 1 ? particleColor.getRed() + " G" + particleColor.getGreen() + " B" + particleColor.getBlue() : "random") + "\"": ""));
+			BeautyQuests.logger.info("Loaded start particles: " + particleStart.toString());
+			try{
+				particleTalk = Particle.deserialize(config.getConfigurationSection("talk").getValues(false));
+			}catch (Exception ex){
+				BeautyQuests.logger.warning("Loading of talk particles failed: Invalid particle, color or shape.");
+				particleTalk = new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, new OrdinaryColor(Color.GREEN));
+			}
+			BeautyQuests.logger.info("Loaded talk particles: " + particleTalk.toString());
 		}
 		
 	}
@@ -181,14 +173,13 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean doParticles(){
-		//if (nms == null) return false;
 		return particles;
 	}
 	
-	public static boolean doCustomParticles(ParticleLocation loc){
+	/*public static boolean doCustomParticles(ParticleLocation loc){
 		if (!particles) return false;
 		return particleLocations.contains(loc);
-	}
+	}*/
 
 	public static boolean playSounds(){
 		return sounds;
@@ -242,7 +233,7 @@ public class QuestsConfiguration {
 		return itemNameColor;
 	}
 	
-	public static ParticleEffect getParticleEffect(){
+	/*public static ParticleEffect getParticleEffect(){
 		return particle;
 	}
 	
@@ -252,6 +243,14 @@ public class QuestsConfiguration {
 	
 	public static ParticleShape getParticleShape(){
 		return particleShape;
+	}*/
+	
+	public static ParticleEffect.Particle getParticleStart(){
+		return particleStart;
+	}
+	
+	public static ParticleEffect.Particle getParticleTalk(){
+		return particleTalk;
 	}
 	
 	public static double getHologramsHeight(){

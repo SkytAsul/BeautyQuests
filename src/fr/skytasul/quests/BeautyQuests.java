@@ -19,7 +19,6 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -135,6 +134,7 @@ public class BeautyQuests extends JavaPlugin{
 				return;
 			}
 		}
+		DebugUtils.logMessage("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
 		data = YamlConfiguration.loadConfiguration(dataFile);
 		
 		if (data.contains("version")){
@@ -159,7 +159,7 @@ public class BeautyQuests extends JavaPlugin{
 		}
 	}
 
-	public FileConfiguration getConfig(){
+	/*public FileConfiguration getConfig(){
 		//return YamlConfiguration.loadConfiguration(loadResource("config.yml"));
 		FileConfiguration config = null;
 		try{
@@ -179,7 +179,7 @@ public class BeautyQuests extends JavaPlugin{
 			disable = true;
 		}
 		return config;
-	}
+	}*/
 
 	public void onDisable(){
 		Editor.leaveAll();

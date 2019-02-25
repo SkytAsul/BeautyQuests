@@ -21,8 +21,6 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.ParticleEffect;
-import fr.skytasul.quests.utils.ParticleEffect.ParticleLocation;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
@@ -80,9 +78,7 @@ public class StageNPC extends AbstractStage{
 				
 				if (QuestsConfiguration.doParticles()) {
 					if (tmp.isEmpty()) return;
-					if (!QuestsConfiguration.doCustomParticles(ParticleLocation.TALK)){
-						ParticleEffect.VILLAGER_HAPPY.display(0.01f, 0.15f, 0.01f, 0.1f, 3, ((LivingEntity) en).getEyeLocation().add(0, 1, 0), tmp);
-					}else QuestsConfiguration.getParticleShape().send((LivingEntity) en, tmp);
+					QuestsConfiguration.getParticleTalk().send((LivingEntity) en, tmp);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);

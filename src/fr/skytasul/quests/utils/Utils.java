@@ -198,13 +198,14 @@ public class Utils{
 	}
 	
 	public static void removeItems(Inventory inv, ItemStack i){
-		for(ItemStack item : inv.getContents()) {
-			if (i.getAmount() <= 0) return;
+		if (i.getAmount() <= 0) return;
+		ItemStack[] items = inv.getContents();
+		for (int slot = 0; slot < items.length; slot++){
+			ItemStack item = items[slot];
 			if (item == null) continue;
 			if (item.isSimilar(i)){
 				if (item.getAmount() == i.getAmount()) {
-                    int first = inv.first(i);
-                    if (first != -1) inv.setItem(first, new ItemStack(Material.AIR));
+					inv.setItem(slot, new ItemStack(Material.AIR));
                     return;
                 } else {
                     if(item.getAmount() > i.getAmount()){
@@ -212,12 +213,7 @@ public class Utils{
                         return;
                     }else if(item.getAmount() < i.getAmount()){
                         i.setAmount(i.getAmount() - item.getAmount());
-                        int first = inv.first(item);
-                        if (first == -1){
-                        	BeautyQuests.getInstance().getLogger().warning("Unexpected error -1 on removeItems in fr.skytasul.quests.utils.Utils. Please report this to SkytAsul on SpigotMC.");
-                        	continue;
-                        }
-                        inv.setItem(first, new ItemStack(Material.AIR));
+                        inv.setItem(slot, new ItemStack(Material.AIR));
                     }
                 }
 			}
@@ -323,6 +319,7 @@ public class Utils{
 			return ls;
 		}
 		
+		minSize--;
 		for (String str : StringUtils.splitByWholeSeparator(string, "\\n")) {
 			int lastI = 0;
 			int ic = 0;
