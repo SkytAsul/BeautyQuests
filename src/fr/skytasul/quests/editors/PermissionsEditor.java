@@ -21,14 +21,14 @@ public class PermissionsEditor extends Editor{
 		this.perms = permissions;
 	}
 
-	public void chat(String message){
+	public boolean chat(String message){
 		String[] args = message.split(" ");
 		String cmd = args[0];
 		try{
 			Command.valueOf(cmd.toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
-			return;
+			return false;
 		}
 		Command comd = Command.valueOf(cmd.toUpperCase());
 		switch (comd){
@@ -72,6 +72,7 @@ public class PermissionsEditor extends Editor{
 			break;
 
 		}
+		return true;
 	}
 
 	private enum Command{

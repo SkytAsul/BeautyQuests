@@ -35,6 +35,10 @@ public class StageChat extends AbstractStage{
 		return Lang.SCOREBOARD_CHAT.format(text);
 	}
 	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		return new String[]{text};
+	}
+	
 	public String getText() {
 		return text;
 	}

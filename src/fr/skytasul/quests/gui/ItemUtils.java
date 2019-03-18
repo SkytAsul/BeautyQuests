@@ -171,9 +171,15 @@ public class ItemUtils {
 		return getName(is, false);
 	}
 	
+	/**
+	 * Get the name of an ItemStack (if no custom name, then it will return the material name)
+	 * @param is ItemStack instance
+	 * @param format true if the material name should be translated using the Vanilla Translations System
+	 * @return the name of the ItemStack
+	 */
 	public static String getName(ItemStack is, boolean format) {
 		if (is == null) return null;
-		if (!is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(XMaterial.fromItemStack(is)) : is.getType().name();
+		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(XMaterial.fromItemStack(is)) : is.getType().name();
 		return is.getItemMeta().getDisplayName();
 	}
 	
@@ -196,11 +202,19 @@ public class ItemUtils {
 	}
 	
 
-	public static ItemStack itemLaterPage(String... lore){
+	/**
+	 * Get a ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
+	 * @return ItemStack instance of a "previous page" item
+	 */
+	public static ItemStack itemLaterPage(){
 		return item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString());
 	}
-	
-	public static ItemStack itemNextPage(String... lore){
+
+	/**
+	 * Get a ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
+	 * @return ItemStack instance of a "next page" item
+	 */
+	public static ItemStack itemNextPage(){
 		return item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString());
 	}
 	

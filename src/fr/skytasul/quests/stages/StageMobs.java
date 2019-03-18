@@ -102,23 +102,28 @@ public class StageMobs extends AbstractStage{
 	}
 
 	public String descriptionLine(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
+	}
+	
+	protected String descriptionMenu(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), str.length == 0 ? Lang.Unknown.toString() : Utils.buildFromArray(str, 0, "\\n"));
+	}
+	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return new String[]{str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor())};
+	}
+	
+	private String[] buildRemainingArray(PlayerAccount acc){
 		List<Mob> list = remaining.get(acc).remaining;
 		String[] str = new String[list.size()];
 		for (int i = 0; i < list.size(); i++){
 			Mob m = list.get(i);
 			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount);
 		}
-		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), (str.length != 0) ? Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()) : Lang.Unknown.toString());
-	}
-	
-	protected String descriptionMenu(PlayerAccount acc){
-		List<Mob> list = remaining.get(acc).remaining;
-		String str = "";
-		for (int i = 0; i < list.size(); i++){
-			Mob m = list.get(i);
-			str = str + "\\n" + QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount);
-		}
-		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), list.isEmpty() ? Lang.Unknown.toString() : "") + str;
+		return str;
 	}
 	
 	private boolean remainingAdd(PlayerAccount acc){

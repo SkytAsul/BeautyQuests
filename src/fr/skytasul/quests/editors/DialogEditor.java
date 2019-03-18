@@ -23,7 +23,7 @@ public class DialogEditor extends Editor{
 		this.d = dialog;
 	}
 
-	public void chat(String message){
+	public boolean chat(String message){
 		String[] args = message.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
@@ -32,10 +32,10 @@ public class DialogEditor extends Editor{
 			Command.valueOf(cmd.toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
-			return;
+			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(args, 1);
+			msg = Utils.buildFromArray(args, 1, " ");
 			hasMsg = true;
 		}
 		Command comd = Command.valueOf(cmd.toUpperCase());
@@ -81,7 +81,7 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			try{
-				msg = Utils.buildFromArray(args, 2);
+				msg = Utils.buildFromArray(args, 2, " ");
 				Sender sender = Sender.valueOf(comd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Utils.sendMessage(p, Lang.DIALOG_MSG_ADDED.toString(), msg, sender.name().toLowerCase());
@@ -130,6 +130,7 @@ public class DialogEditor extends Editor{
 			break;
 
 		}
+		return true;
 	}
 
 	private enum Command{

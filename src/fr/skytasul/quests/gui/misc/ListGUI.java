@@ -13,6 +13,12 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.XMaterial;
 
+/**
+ * An inventory who has 8 slots to store items. Each item is linked in a list to an instance of type T.
+ * @author SkytAsul
+ *
+ * @param <T> type of objects stocked in the list
+ */
 public abstract class ListGUI<T> implements CustomInventory {
 	
 	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c");
@@ -75,11 +81,26 @@ public abstract class ListGUI<T> implements CustomInventory {
 		inv.setItem(objects.size() - 1, getItemStack(object));
 	}
 	
+	/**
+	 * @return Inventory's name
+	 */
 	public abstract String name();
 	
+	/**
+	 * @param object
+	 * @return ItemStack who represents the object
+	 */
+	
 	public abstract ItemStack getItemStack(T object);
+	/**
+	 * Called when an object is clicked
+	 * @param existing clicked object
+	 */
 	public abstract void click(T existing);
 	
+	/**
+	 * Called when the player hit the finish button
+	 */
 	public abstract void finish();
 	
 }

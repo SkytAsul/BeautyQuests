@@ -24,7 +24,7 @@ public class TextListEditor extends Editor{
 		this.texts = texts;
 	}
 
-	public void chat(String message){
+	public boolean chat(String message){
 		String[] args = message.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
@@ -33,10 +33,10 @@ public class TextListEditor extends Editor{
 			Command.valueOf(cmd.toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
-			return;
+			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(args, 1);
+			msg = Utils.buildFromArray(args, 1, " ");
 			hasMsg = true;
 		}
 		Command comd = Command.valueOf(cmd.toUpperCase());
@@ -87,6 +87,7 @@ public class TextListEditor extends Editor{
 			break;
 
 		}
+		return true;
 	}
 
 	private enum Command{

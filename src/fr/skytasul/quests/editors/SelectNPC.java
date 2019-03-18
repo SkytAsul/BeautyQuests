@@ -27,11 +27,13 @@ public class SelectNPC extends InventoryClear{
 	}
 	
 	//@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
-	public void chat(String msg){
+	public boolean chat(String msg){
 		if (msg.equals("cancel")){
 			leave(p);
 			run.run(null);
+			return true;
 		}
+		return false;
 	}
 
 	public void begin(){

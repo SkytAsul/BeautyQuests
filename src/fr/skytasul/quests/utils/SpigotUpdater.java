@@ -14,12 +14,10 @@ import org.json.simple.parser.ParseException;
 import fr.skytasul.quests.BeautyQuests;
 
 /**
- * @author inventivetalent ( https://inventivetalent.org/ ), SkytAsul
+ * @author <a href="https://inventivetalent.org">inventivetalent</a>, SkytAsul
  */
 public class SpigotUpdater extends Thread {
 	private final Plugin plugin;
-	@SuppressWarnings("unused")
-	private final int id;
 	private boolean enabled;
 	private URL url;
 
@@ -31,7 +29,6 @@ public class SpigotUpdater extends Thread {
 			throw new IllegalArgumentException("Resource ID cannot be null (0)");
 		} else {
 			this.plugin = plugin;
-			this.id = resourceID;
 			this.url = new URL("https://api.inventivetalent.org/spigot/resource-simple/" + resourceID);
 			this.enabled = BeautyQuests.getInstance().getConfig().getBoolean("checkUpdates");
 			super.start();
@@ -75,14 +72,7 @@ public class SpigotUpdater extends Thread {
 						}
 					}
 
-					if (currentVersion == null) {
-						/*if (this.log) {
-							this.plugin.getLogger().warning("[Updater] Invalid response received.");
-							this.plugin.getLogger().warning("[Updater] Either the author of this plugin has configured the updater wrong, or the API is experiencing some issues.");
-						}*/
-
-						return;
-					}
+					if (currentVersion == null) return;
 
 					String v = this.plugin.getDescription().getVersion();
 					if (v.contains("_")){
@@ -111,24 +101,8 @@ public class SpigotUpdater extends Thread {
 						}catch (Throwable ex){
 							sendNewVersionMessage("Found another online version: " + currentVersion + "!");
 						}
-						//this.plugin.getLogger().info("[Updater] Download here: http://www.spigotmc.org/resources/" + this.id);
-					}/* else if (this.log) {
-						this.plugin.getLogger().info("[Updater] Plugin is up-to-date.");
-					}*/
-				} catch (IOException var10) {
-					/*if (this.log) {
-						if (connection != null) {
-							try {
-								int e1 = connection.getResponseCode();
-								this.plugin.getLogger().warning("[Updater] API connection returned response code " + e1);
-							} catch (IOException var8) {
-								;
-							}
-						}
-
-						var10.printStackTrace();
-					}*/
-				}
+					}
+				} catch (IOException var10) {}
 
 			}
 		}

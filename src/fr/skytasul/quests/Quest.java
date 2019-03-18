@@ -85,49 +85,11 @@ public class Quest{
 	}
 	
 	public void create() {
-		/*if (particle || hologramLaunch){
-			launchRefreshTask();
-		}*/
 		if (hologramAll || hologramLaunch){
 			launchHologramTask();
 		}
 		if (Dependencies.dyn) Dynmap.addMarker(this);
 	}
-	
-	/*private void launchRefreshTask(){
-		if (npcStarter == null) return;
-		tasks.add(new BukkitRunnable() {
-			public void run() {
-				Entity en = npcStarter.getEntity();
-				if (en == null) return;
-				if (!en.getType().isAlive()) return;
-				
-				List<Quest> assigned = QuestsAPI.getQuestsAssigneds(npcStarter);
-				boolean others = assigned.size() > 1 && assigned.get(0) != Quest.this;
-				Location lc = en.getLocation();
-				launcheable.clear();
-				players: for (Player p : en.getWorld().getPlayers()){
-					if (p instanceof NPCHolder) continue;
-					if (lc.distance(p.getLocation()) > 50) continue;
-					try{
-						for (Quest quest : assigned) {
-							if (quest.launcheable.contains(p)) continue players;
-						}
-						if (isLauncheable(p, false)){
-							if (!QuestsAPI.hasQuestStarted(p, npcStarter)) launcheable.add(p);
-						}
-					}catch (NullPointerException ex){continue;}
-				}
-				if (hologramLaunch) updateHoloLaunchVisibility();
-				if (particle) {
-					if (launcheable.isEmpty()) return;
-					particles.clear();
-					particles.addAll(launcheable);
-					QuestsConfiguration.getParticleShape().send((LivingEntity) en, particles);
-				}
-			}
-		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L));
-	}*/
 	
 	void updateLauncheable(LivingEntity en) {
 		if (hologramLaunch) updateHoloLaunchVisibility();
@@ -373,7 +335,10 @@ public class Quest{
 	
 	public boolean isLauncheable(Player p, boolean sendMessage){
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (hasStarted(acc)) return false;
+		if (hasStarted(acc)){
+			if (sendMessage) Lang.ALREADY_STARTED.send(p);
+			return false;
+		}
 		if (!repeatable && finished.contains(acc)) return false;
 		if (!testTimer(p, acc, sendMessage)) return false;
 		if (!testRequirements(p, acc, sendMessage)) return false;
@@ -436,9 +401,14 @@ public class Quest{
 	
 	public void start(Player p){
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (hasStarted(acc)){
+			Lang.ALREADY_STARTED.send(p);
+			return;
+		}
 		QuestLaunchEvent event = new QuestLaunchEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
+		BeautyQuests.logger.write(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
 		inTimer.remove(acc);
 		Lang.STARTED_QUEST.send(p, name);
@@ -460,6 +430,7 @@ public class Quest{
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		QuestFinishEvent event = new QuestFinishEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
+		BeautyQuests.logger.write(p.getName() + " completed the quest " + id);
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
@@ -506,6 +477,12 @@ public class Quest{
 		if (holoAll != null) removeHoloAll();
         if (holoLaunch != null) removeHoloLaunch();
 		if (Dependencies.dyn) Dynmap.removeMarker(this);
+		for (AbstractReward rew : rewards){
+			rew.unload();
+		}
+		for (AbstractRequirement req : requirements){
+			req.unload();
+		}
 	}
 	
 	public String toString(){

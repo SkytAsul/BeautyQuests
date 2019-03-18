@@ -25,6 +25,7 @@ import fr.skytasul.quests.utils.XMaterial;
 public class PlayerListGUI implements CustomInventory {
 
 	private Inventory inv;
+	private Player open;
 	private PlayerAccount acc;
 	
 	private int page = 0;
@@ -37,6 +38,7 @@ public class PlayerListGUI implements CustomInventory {
 	
 	
 	public Inventory open(Player p) {
+		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
 
 		setBarItem(0, ItemUtils.itemLaterPage());
@@ -81,7 +83,7 @@ public class PlayerListGUI implements CustomInventory {
 						lore = new String[]{Lang.timeWait.format(timeLeft)};
 					}
 				}
-				setMainItem(i - page * 35, ItemUtils.item(QuestsConfiguration.getItemMaterial(), "§6§l§o" + qu.getName(), lore));
+				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
 			break;
 		
@@ -95,7 +97,7 @@ public class PlayerListGUI implements CustomInventory {
 					desc.add(null);
 					desc.add(Lang.cancelLore.toString());
 				}
-				setMainItem(i - page * 35, ItemUtils.item(QuestsConfiguration.getItemMaterial(), "§6§l§o" + qu.getName(), desc.toArray(new String[0])));
+				setMainItem(i - page * 35, createQuestItem(qu, desc.toArray(new String[0])));
 			}
 			break;
 			
@@ -104,7 +106,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				setMainItem(i - page * 35, ItemUtils.item(QuestsConfiguration.getItemMaterial(), "§6§l§o" + qu.getName(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName())));
+				setMainItem(i - page * 35, createQuestItem(qu, Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName())));
 			}
 			break;
 		}
@@ -121,6 +123,10 @@ public class PlayerListGUI implements CustomInventory {
 		int slot = barSlot * 9 + 8;
 		inv.setItem(slot, is);
 		return slot;
+	}
+	
+	private ItemStack createQuestItem(Quest qu, String... lore){
+		return ItemUtils.item(QuestsConfiguration.getItemMaterial(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
 	}
 	
 	private void toggleCategoryEnchanted(){

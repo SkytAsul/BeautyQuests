@@ -21,10 +21,8 @@ import fr.skytasul.quests.stages.StageManager;
 import fr.skytasul.quests.utils.Utils;
 
 /**
- * <b> Do not forget to create the <i>deserialize</i> method</b><br>
- * <br>
- * 
- * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
+ * <h1> Do not forget to create the <i>deserialize</i> method:</h1>
+ * > <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
  * @author SkytAsul
  */
 public abstract class AbstractStage implements Listener{
@@ -151,7 +149,7 @@ public abstract class AbstractStage implements Listener{
 	public void end(PlayerAccount account){}
 	
 	public final String getDescriptionLine(PlayerAccount acc, boolean menu){
-		if (customText != null) return "§e" + customText;
+		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc));
 		String s;
 		try{
 			if (menu) {
@@ -175,12 +173,21 @@ public abstract class AbstractStage implements Listener{
 	 * @return the progress of the stage for the player. Message only viewable on the Menu GUI, can be null (if null, {@link #descriptionLine(PlayerAccount)} will be called instead)
 	 */
 	protected String descriptionMenu(PlayerAccount acc) {return null;}
+	/**
+	 * Will be called only if there is a {@link #customText}
+	 * @param acc PlayerAccount who has the stage in progress
+	 * @return all strings that can be used to format the custom description text
+	 */
+	protected Object[] descriptionFormat(PlayerAccount acc) {return null;}
 	
 	/**
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
         HandlerList.unregisterAll(this);
+        for (AbstractReward rew : rewards){
+        	rew.unload();
+        }
 	}
 	
 	/**

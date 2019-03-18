@@ -34,23 +34,28 @@ public class StageMine extends AbstractStage {
 	}
 	
 	public String descriptionLine(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return Lang.SCOREBOARD_MINE.format(str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
+	}
+	
+	protected String descriptionMenu(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return Lang.SCOREBOARD_MINE.format(str.length == 0 ? Lang.Unknown.toString() : Utils.buildFromArray(str, 0, "\\n"));
+	}
+	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		String[] str = buildRemainingArray(acc);
+		return new String[]{str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor())};
+	}
+	
+	private String[] buildRemainingArray(PlayerAccount acc){
 		String[] str = new String[remaining.get(acc).size()];
 		List<BlockData> list = remaining.get(acc);
 		for (int i = 0; i < list.size(); i++){
 			BlockData b = list.get(i);
 			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(MinecraftNames.getMaterialName(b.type), QuestsConfiguration.getItemAmountColor(), b.amount);
 		}
-		return Lang.SCOREBOARD_MINE.format((str.length != 0) ? Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()) : Lang.Unknown.toString());
-	}
-	
-	protected String descriptionMenu(PlayerAccount acc){
-		String str = "";
-		List<BlockData> list = remaining.get(acc);
-		for (int i = 0; i < list.size(); i++){
-			BlockData b = list.get(i);
-			str = str + "\\n" + QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(MinecraftNames.getMaterialName(b.type), QuestsConfiguration.getItemAmountColor(), b.amount);
-		}
-		return Lang.SCOREBOARD_MINE.format(list.isEmpty() ? Lang.Unknown.toString() : "") + str;
+		return str;
 	}
 	
 	@EventHandler

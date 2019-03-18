@@ -49,16 +49,24 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public String descriptionLine(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()), (npc != null) ? npc.getName() : "§c§lerror");
+		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + descString(), npcName());
 	}
 	
 	protected String descriptionMenu(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + "\\n" + Utils.itemsToString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), "\\n"), (npc != null) ? npc.getName() : "§c§lerror");
+		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + "\\n" + Utils.itemsToString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), "\\n"), npcName());
+	}
+	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		return new String[]{descString(), npcName()};
 	}
 
 	public void launch(Player p){
 		super.launch(p);
-		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()));
+		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, descString());
+	}
+	
+	private String descString(){
+		return Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor());
 	}
 	
 	

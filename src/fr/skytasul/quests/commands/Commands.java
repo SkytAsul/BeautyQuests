@@ -10,6 +10,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
@@ -303,6 +304,11 @@ public class Commands {
 			success = false;
 		}
 		if (success) Lang.BACKUP_CREATED.send(cmd.sender);
+	}
+	
+	@Cmd(player = true)
+	public void editor(CommandContext cmd){
+		Editor.leave(cmd.player);
 	}
 	
 	@Cmd(permission = "list", player = true)

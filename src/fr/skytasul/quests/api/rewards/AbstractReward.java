@@ -27,6 +27,11 @@ public abstract class AbstractReward {
 	protected abstract void save(Map<String, Object> datas);
 	protected abstract void load(Map<String, Object> savedDatas);
 	
+	/**
+	 * Called when the reward is unloaded
+	 */
+	public void unload(){}
+	
 	public String getName(){
 		return name;
 	}

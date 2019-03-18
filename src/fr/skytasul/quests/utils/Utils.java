@@ -43,6 +43,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.citizensnpcs.api.npc.NPC;
 
+/**
+ * A bunch of static methods who can be useful
+ * @author SkytAsul
+ */
 public class Utils{
 	
 	public static void openBook(Player p, ItemStack book){
@@ -285,11 +289,11 @@ public class Utils{
 		return tmp;
 	}
 	
-	public static String buildFromArray(Object[] array, int start){
+	public static String buildFromArray(Object[] array, int start, String insert){
 		if (array == null || array.length == 0) return ""; 
 		StringBuilder stb = new StringBuilder();
 		for (int i = start; i < array.length; i++){
-			stb.append(array[i] + ((i == array.length - 1) ? "" : " "));
+			stb.append(array[i] + ((i == array.length - 1) ? "" : insert));
 		}
 		return stb.toString();
 	}

@@ -17,6 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public abstract class Editor implements Listener{
 
@@ -29,6 +30,12 @@ public abstract class Editor implements Listener{
 	
 	public void begin(){
 		Inventories.closeWithoutExit(p);
+		if (NMS.getMCVersion() > 11){
+			p.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
+		}else {
+			Lang.ENTER_EDITOR_TITLE.send(p);
+			Lang.ENTER_EDITOR_SUB.send(p);
+		}
 	}
 
 	public void end(){}
@@ -44,15 +51,28 @@ public abstract class Editor implements Listener{
 		return (T) enterOrLeave(p, this);
 	}
 	
-	public void chat(String message){}
+	/**
+	 * Happens when the player in the editor type somthing in the chat
+	 * @param message
+	 * @return false if the plugin needs to send an help message to the player
+	 */
+	public boolean chat(String message){
+		return false;
+	}
+	
+	private final void callChat(String rawText){
+		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText))){
+			Lang.CHAT_EDITOR.send(p);
+		}
+	}
 	
 	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;
 		e.setCancelled(true);
 		if (e.isAsynchronous()){
-			Utils.runSync(() -> chat(ChatColor.translateAlternateColorCodes('&', e.getMessage())));
-		}else chat(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
+			Utils.runSync(() -> callChat(e.getMessage()));
+		}else callChat(e.getMessage());
 	}
 	
 	private static void enter(Player p, Editor editor){

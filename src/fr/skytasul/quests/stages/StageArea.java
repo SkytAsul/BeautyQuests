@@ -48,6 +48,10 @@ public class StageArea extends AbstractStage{
 		return Utils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
 	}
 	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		return new String[]{region.getId()};
+	}
+	
 	public ProtectedRegion getRegion(){
 		return region;
 	}

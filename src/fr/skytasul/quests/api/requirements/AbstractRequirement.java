@@ -33,6 +33,11 @@ public abstract class AbstractRequirement {
 	protected abstract void save(Map<String, Object> datas);
 	protected abstract void load(Map<String, Object> savedDatas);
 	
+	/**
+	 * Called when the requirement is unloaded
+	 */
+	public void unload(){}
+	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		

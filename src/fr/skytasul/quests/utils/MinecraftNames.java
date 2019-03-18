@@ -17,8 +17,8 @@ public class MinecraftNames {
 
 	private static Map<String, Object> map;
 	
-	private static Map<String, Object> cachedEntities = new HashMap<>();
-	private static Map<String, Object> cachedMaterials = new HashMap<>();
+	private static Map<EntityType, String> cachedEntities = new HashMap<>();
+	private static Map<XMaterial, String> cachedMaterials = new HashMap<>();
 	
 	public static boolean intialize(String fileName){
 		try {
@@ -35,15 +35,16 @@ public class MinecraftNames {
 			map = new GsonBuilder().create().fromJson(new FileReader(file), new HashMap<String, Object>().getClass());
 			BeautyQuests.logger.info("Loaded vanilla translation file for language: " + map.get("language.name") + ". Sorting values.");
 			for (Entry<String, Object> en : map.entrySet()) {
-				if (en.getKey().startsWith("entity.minecraft.")) {
-					cachedEntities.put(en.getKey().substring(17), en.getValue());
-				}else if (en.getKey().startsWith("block.minecraft.")) {
-					cachedMaterials.put(en.getKey().substring(16), en.getValue());
-				}else if (en.getKey().startsWith("item.minecraft.")) {
-					cachedMaterials.put(en.getKey().substring(15), en.getValue());
-				}
+				String key = en.getKey();
+				if (key.startsWith("entity.minecraft.")) {
+					cachedEntities.put(EntityType.fromName(key.substring(17)), (String) en.getValue());
+				}else if (key.startsWith("block.minecraft.")) {
+					cachedMaterials.put(XMaterial.fromString(key.substring(16)), (String) en.getValue());
+				}else if (key.startsWith("item.minecraft.")) {
+					cachedMaterials.put(XMaterial.fromString(key.substring(15)), (String) en.getValue());
+				} //TODO test en 1.13
 			}
-		}catch (Throwable e) {
+		}catch (Exception e) {
 			BeautyQuests.logger.severe("Problem when loading Minecraft Translations.");
 			e.printStackTrace();
 		}
@@ -55,17 +56,21 @@ public class MinecraftNames {
 	}
 	
 	public static String getEntityName(EntityType type) {
-		if (map == null) return type.getName().toLowerCase().replace("_", " ");
-		String name = (String) cachedEntities.get(type.getName().toLowerCase());
-		if (name == null) return type.getName().toLowerCase().replace("_", " ");
+		if (map == null) return defaultFormat(type.getName());
+		String name = cachedEntities.get(type);
+		if (name == null) return defaultFormat(type.getName());
 		return name;
 	}
 	
 	public static String getMaterialName(XMaterial type) {
-		if (map == null) return type.name().toLowerCase().replace("_", " ");
-		String name = (String) cachedMaterials.get(type.name().toLowerCase());
-		if (name == null) return type.name().toLowerCase().replace("_", " ");
+		if (map == null) return defaultFormat(type.name());
+		String name = cachedMaterials.get(type);
+		if (name == null) return defaultFormat(type.name());
 		return name;
+	}
+	
+	public static String defaultFormat(String value){
+		return value.toLowerCase().replace("_", "");
 	}
 	
 }

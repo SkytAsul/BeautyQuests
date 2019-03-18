@@ -35,41 +35,29 @@ public class TextEditor extends Editor{
 		this.nul = nul;
 	}
 
-	public void chat(String msg){
+	public boolean chat(String msg){
 		if (msg.equals("cancel")){
 			if (cancel == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "cancel");
+				return false;
 			}else {
 				leave(p);
 				cancel.run();
+				return true;
 			}
-			return;
 		}else if (msg.equals("null")){
 			if (nul == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "null");
+				return false;
 			}else {
 				leave(p);
 				nul.run();
+				return true;
 			}
-			return;
 		}
 		
 		Object returnment = msg;
 		boolean invalid = false;
-		/*if (integer){
-			try{
-				int i = Integer.parseInt(e.getMessage());
-				if (positive && i < 0){
-					Lang.NUMBER_NEGATIVE.send(p);
-					invalid = true;
-				}else {
-					returnment = i;
-				}
-			}catch (NumberFormatException ex){
-				Lang.NUMBER_INVALID.send(p, e.getMessage());
-				invalid = true;
-			}
-		}*/
 		if (parser != null){
 			try{
 				Object tmp = parser.parse(p, msg);
@@ -88,7 +76,9 @@ public class TextEditor extends Editor{
 		if (!invalid){
 			leave(p);
 			run.run(returnment);
+			return true;
 		}
+		return false;
 	}
 	
 }

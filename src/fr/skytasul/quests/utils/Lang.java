@@ -16,6 +16,7 @@ public enum Lang{
 	QUEST_CANCEL("msg.quest.cancelling", "§cProcess of quest creation cancelled."),
 	QUEST_EDIT_CANCEL("msg.quest.editCancelling", "§cProcess of quest edition cancelled."),
 	QUEST_INVALID("msg.quest.invalidID", "§cThe quests with ID {0} does not exist."),
+	ALREADY_STARTED("msg.quest.alreadyStarted", "§cYou	 are already doing this quest !"),
 	
 	QUEST_NOSTEPS("msg.quests.nopStep", "§cThis quest doesn't have any step... prevent an administrator :-)"),
 	QUEST_UPDATED("msg.quests.updated", "§7Quest {0} updated!"),
@@ -94,7 +95,7 @@ public enum Lang{
 	
 	COMMAND_HELP("msg.command.help.header", "§e§lBeautyQuests - §6help§r"),
 	COMMAND_HELP_CREATE("msg.command.help.create", "§e/{0} create: §acreate a quest"),
-	COMMAND_HELP_EDIT("msg.command.help.edit", "§e/{0} quests edit: §aedit a quest"),
+	COMMAND_HELP_EDIT("msg.command.help.edit", "§e/{0} edit: §aedit a quest"),
 	COMMAND_HELP_REMOVE("msg.command.help.remove", "§e/{0} remove [id]: §adelete the quest with id [id] or by clicking on his NPC if not specified"),
 	COMMAND_HELP_FINISH("msg.command.help.finishAll", "§e/{0} finishAll: §afinish all quests in progress"),
 	COMMAND_HELP_STAGE("msg.command.help.setStage", "§e/{0} setStage <player> <quest> [newStage] : §afinish a stage for a player"),
@@ -110,6 +111,9 @@ public enum Lang{
 	
 	// * Editors *
 	ALREADY_EDITOR("msg.editor.already", "§cYou are already in an editor."),
+	ENTER_EDITOR_TITLE("msg.editor.enter.title", "§6~ editor mode ~"),
+	ENTER_EDITOR_SUB("msg.editor.enter.subtitle", "§eType \"/quests editor\" to force leaving."),
+	CHAT_EDITOR("msg.editor.chat", "§eYou are currently in the editor mode. Type \"/quests editor\" to force leaving the editor (highly not recommended, consider using keywords such as \"close\" or \"cancel\" to come back to the previous inventory)."),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter", "§aClick on a NPC, or type \"cancel\"."),
 
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported", "§cArgument {0} not supported."),
@@ -277,6 +281,8 @@ public enum Lang{
 	cancelLore("inv.listQuests.loreCancel", "§c§oClick to cancel the quest"),
 	timeWait("inv.listQuests.timeToWait", "§3§o{0} minuts before you can restart this quest"),
 	canRedo("inv.listQuests.canRedo", "§3§oYou can restart this quest!"),
+	formatNormal("inv.listQuests.format.normal", "§6§l§o{0}"),
+	formatId("inv.listQuests.format.withId", "§6§l§o{0}§r      §e#{1}"),
 	
 	INVENTORY_CREATOR("inv.itemCreator.name", "§8Item creator"),
 	itemType("inv.itemCreator.itemType", "§bItem type"),

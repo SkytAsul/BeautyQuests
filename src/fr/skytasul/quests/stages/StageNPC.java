@@ -128,7 +128,11 @@ public class StageNPC extends AbstractStage{
 	}
 
 	public String descriptionLine(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_NPC.toString(), (npc != null) ? npc.getName() : "§c§lerror");
+		return Utils.format(Lang.SCOREBOARD_NPC.toString(), npcName());
+	}
+	
+	protected Object[] descriptionFormat(PlayerAccount acc){
+		return new String[]{npcName()};
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -177,6 +181,10 @@ public class StageNPC extends AbstractStage{
 		}
 	}
 	
+	protected String npcName(){
+		return (npc != null) ? npc.getName() : "§c§lerror";
+	}
+	
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
@@ -185,18 +193,15 @@ public class StageNPC extends AbstractStage{
 		GPS.launchCompass(e.getPlayer(), npc);
 	}
 	
-	
 	public void start(PlayerAccount account){
 		super.start(account);
 		cached.add(account);
 	}
 	
-	
 	public void end(PlayerAccount account){
 		super.end(account);
 		cached.remove(account);
 	}
-	
 	
 	public void launch(Player p) {
 		super.launch(p);
@@ -209,13 +214,11 @@ public class StageNPC extends AbstractStage{
 		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
-	
 	public void unload() {
 		super.unload();
 		if (task !=null) task.cancel();
 		if (holo != null) removeHoloLaunch();
 	}
-	
 	
 	public void load(){
 		super.load();
