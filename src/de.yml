@@ -41,7 +41,7 @@ msg:
   writeNpcName: Definiere den namen des NPCs.
   writeNpcSkinName: Definiere den Namen des Skins den der NPC haben soll.
   writeQuestName: Definiere den Namen der Quest!
-  writeCommand: Definire den gewünschten Befehl. (ohne / am Anfang) Du kannst die Variable {PLAYER} verwenden.
+  writeCommand: Definiere den gewünschten Befehl. (ohne / am Anfang) Du kannst die Variable {PLAYER} verwenden.
      Diese wird mit dem Namen dies Spielers ersetzt der den Befehl ausführt.
   writeHologramText: Definiere den Namen des Holograms. (Schreibe "none" wenn du kein Hologram
      möchtest, und "null" für den standard Text)
@@ -147,14 +147,14 @@ msg:
     selectWantedBlock: §aKlicke mit einem Stock auf den gewünschten Block für diesen Schritt.
     itemCreator:
       itemType: §eDefiniere den Namen des gewünschten Gegenstands.
-      itemName: §eDefiniere den Namen des Gegestands.
+      itemName: §eDefiniere den Namen des Gegenstands.
       itemLore: §eÄndere die Beschreibung des Gegenstands. Schreibe "help" um Hilfe zu bekommen.
       unknownItemType: §cUnbekannter Gegenstand.
       invalidItemType: §cUngültiger Gegenstand (es muss ein Gegenstand sein und kein Block).
     dialog:
       syntax: '§cKorrekter syntax : {0}{1} <Nachricht>'
-      syntaxRemove: '§cKorrekter sytax: remove <id>'
-      messageAdded: §anachricht {0} für {1} hinzugefügt.
+      syntaxRemove: '§cKorrekter syntax: remove <id>'
+      messageAdded: §aNachricht {0} für {1} hinzugefügt.
       messageRemoved: §aNachricht {0} entfernt.
       soundAdded: §aSound {0} für Nachricht {1} hinzugefügt.
       cleared: §a{0} entfernte Nachrichten.
