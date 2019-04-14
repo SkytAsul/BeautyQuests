@@ -1,0 +1,368 @@
+msg:
+  quest:
+    finished:
+      base: §aGlückwunsch! Du hast die Quest §o§6{0}§r§a abgeschlossen!
+      obtain: §aDu bekommst {0}!
+    started: Du hast die Quest §o{0} gestartet
+    created: §aGlückwunsch! Du hast die Quest "§e{0}§a" erstellt, welche 
+      {1} Schritte enthält!
+    edited: §aGlückwunsch! Du hast die Quest "§e{0}§a" verändert, welche nun
+      {1} Schritte enthält!
+    createCancelled: §cDas Erstellen (oder das Verändern) wurde von einem anderen Plugin
+      abgebrochen, sorry...
+    cancelling: §cErstellen der Quest abgebrochen.
+    editCancelling: §cVerändern der Quest abgebrochen.
+    invalidID: §cDie Quest mit der ID {0} existiert nicht.
+  quests:
+    nopStep: §cDiese Quest enthält keine Schritte... Wende dich an einen Administrator :-)
+    updated: §7Quest {0} geupdatet!
+  stageMobs:
+    noMobs: §cDu musst bei diesem Schritt keine Mobs töten... Wende dich an einen Administrator
+     :-)
+    listMobs: §aDu musst {0} töten.
+  trick:
+    text: Schreibe {0} oder {1}
+    cancel: '"cancel" um zum letzten Text zurückzukehren'
+    nul: '"null" um nichts zu sagen'
+  writeNPCText: Der hier geschriebene Text wird vom NPC zum Spieler gesprochen. Schreibe \"help\"
+     um Hilfe zu bekommen. (alle Befehls sind ohne /)
+  writeRegionName: Definiere den Namen der Region die für den nächsten Schritt benötigt ist.
+  writeXPGain: 'Definiere die Menge an XP die der Spieler bekommen wird.
+    Last gain: §a{0}'
+  writeMobAmount: Definiere die Anzahl der zu tötenten Mobs.
+  writeChatMessage: Definiere die zu schreibende Nachricht (füge ein " / " am Anfang hinzu wenn es ein
+     Befehl sein soll).
+  writeEndMessage: Definiere die Nachricht die beim beenden einer Quest oder Stufe angezeigt
+     werden soll.
+  writeDescriptionText: Definiere den Text der das Ziel des Schrittes beschreibt.
+  writeStageText: Definiere die Nachricht der dem Spieler beim Starten einer Quest gezeigt
+     wird.
+  moveToTeleportPoint: Gehe zum gewünschten Teleportations Punkt.
+  writeNpcName: Definiere den namen des NPCs.
+  writeNpcSkinName: Definiere den Namen des Skins den der NPC haben soll.
+  writeQuestName: Definiere den Namen der Quest!
+  writeCommand: Definire den gewünschten Befehl. (ohne / am Anfang) Du kannst die Variable {PLAYER} verwenden.
+     Diese wird mit dem Namen dies Spielers ersetzt der den Befehl ausführt.
+  writeHologramText: Definiere den Namen des Holograms. (Schreibe "none" wenn du kein Hologram
+     möchtest, und "null" für den standard Text)
+  writeQuestTimer: Definiere die benötigte Zeit (in Minuten) bevor man die Quest neustarten kann.
+     (Schreibe "null" wenn der standard Timer verwendet werden soll.)
+  requirements:
+    quest: §eDu musst die Quest "{0}" erledigt haben§r§e!
+    level: §eDu musst mindestens {0} Level haben!
+    job: §eu musst mindestens {0} Level für den Job {1} haben!
+    skill: §eDu musst mindestens {0} Level für den Skill {1} haben!
+    combatLevel: §eDu musst mindestens Combat Level {0} sein!
+    wait: §cDu musst noch {0} bevor du die Quest wieder starten kannst!
+  experience:
+    edited: 'Zu erhaltende XP geändert: Von {0}XP auf {1}XP'
+  selectNPCToKill: Wähle den zu tötenden NPC.
+  npc:
+    remove: §7NPC gelöscht.
+    talk: §7Rede mit dem NPC §o{0}§r§7.
+  regionDoesntExists: §cDiese Region existiert nicht... (du musst dich in der selben Welt
+     wie die gewünschte Region befinden)
+  factionDoesntExist: §cDiese Fraktion existert nicht...
+  npcDoesntExist: §cDer NPC mit der ID {0} existiert nicht.
+  classDoesntExist: §cDiese Klasse existiert nicht...
+  objectDoesntExist: §cDas gewählte Item (ID {0}) exisitert nicht.
+  number:
+    negative: §cDu musst eine positive Nummer eingeben!
+    zero: §cDu musst eine Nummer angeben die nicht 0 ist!
+    invalid: §c"{0}" ist keine gültige Nummer.
+  errorOccured: |-
+    §cEin Fehler ist aufgetreten... Wende dich an einen Administrator :-)
+    §4§lFehler Code:{0}
+  commandsDisabled: §cDu kannst diesen Befehl im Moment nicht verwenden.
+  indexOutOfBounds: §cDie angegebene Nummer ({0}) ist außerhalb des Bereichs [{1}, {2}[
+  bringBackObjects: Bringe mir {0} zurück.
+  inventoryFull: §cDein Inventar ist voll! Das Item wird auf den Boden geworfen.
+  playerNeverConnected: §cFinden von Daten des Spielers {0} nicht möglich.
+  playerNotOnline: §cDer Spieler {0} ist nicht online.
+  command:
+    playerNeeded: §cDu musst ein Spieler sein um diesen Befehl ausführen zu können.
+    incorrectSyntax: §cFalscher syntax.
+    noPermission: §cDu hast nicht die nötigen Rechte um diesen Befehl auszuführen. ({0})
+    invalidCommand:
+      quests: §cDieser Befehl existiert nicht, schreibe §o/quests help
+      simple: §cDieser Befehl existiert nicht, schreibe §ohelp (ohne /)
+    needItem: §cDu musst einen Gegenstand in deiner Haupthand halten.
+    itemChanged: §aDer Gegenstand wurde bearbeitet. Die Änderung tritt nach Neustart in Kraft.
+    removed: §aDie Quest {0} wurde erfolgreich entfernt.
+    leaveAll: §eDu hast das Ende von {0} Quests erzwungen. §c{1} Fehler.
+    resetPlayer:
+      player: §eAlle Daten deiner Quests ({0}) wurden von {1} gelöscht.
+      remover: §eDie Questdaten von {0} wurden gelöscht. ({1})
+    resetPlayerQuest:
+      player: §eDaten der Quest {0} wurden von {1} gelöscht.
+    startQuest: §eDu hast das Starten der Quest {0} erzwungen. (UUID {1})
+    cancelQuest: §eDu hast die Quest {0} abgebrochen
+    backupCreated: §eDu hast erfolgreich Backups von Quests und Spielerdaten erstellt.
+    backupPlayersFailed: §cDas Sichern von Spielerdaten ist fehlgeschlagen.
+    backupQuestsFailed: §cDas Sichern von Quests ist fehlgeschlagen.
+    help:
+      header: §e§lBeautyQuests - §6help§r
+      create: '§e/{0} create: §aErstelle eine Quest'
+      edit: '§e/{0} quests edit: §aEditiere eine Quest'
+      remove: '§e/{0} remove [id]: §aLösche eine Quest mit id [id] oder klicke
+         auf den NPC wenn nicht Festgelegt'
+      finishAll: '§e/{0} finishAll: §aBeende alle laufenden Quests'
+      setStage: '§e/{0} setStage <player> <quest> [newStage] : §aBeende einen Schritt
+         von einem Spieler'
+      resetPlayer: '§e/{0} resetPlayer <name>: §aLösche alle Daten eines Spielers'
+      resetPlayerQuest: '§e/{0} resetPlayerQuest <name> [id]: §aLösche die Daten von
+         nur einer Quest eines Spielers'
+      seePlayer: '§e/{0} seePlayer <name>: §aSehe die Daten eines Spielers'
+      reload: '§e/{0} reload: §aSpeichere Daten / Configurationen und lade sie neu -
+        §c§oVeraltet'
+      start: '§e/{0} start <player> [id] : §aErzwinge das Starten einer Quest'
+      setItem: '§e/{0} setItem <talk|launch> : §aSpeichere das Item des Golograms in der Daten
+         Datei'
+      version: '§e/{0} version: §aAnzeigen der Plugin Version'
+      save: '§e/{0} save: §aManuelles Speichern der Daten'
+      list: '§e/{0} list: §asee the quests list (for supported versions)'
+  editor:
+    already: §cDu befindest dich bereits in einem Editor.
+    npc:
+      enter: §aKlicke auf einen NPC oder schreibe "cancel".
+      choseStarter: §3Wähle den NPC der die Quest startet.
+      notStarter: §cDieser NPC ist kein Queststarter...
+    text:
+      argNotSupported: §cArgument {0} nicht unterstützt.
+      chooseLvlRequired: §eNenne die Anzahl der benötigten Level.
+      chooseJobRequired: §eNenne den Namen des benötigten Jobs.
+      choosePermissionRequired: §eDefiniere das benötigte Recht um die Quest zu starten.
+      choosePermissionMessage: §eDu kannst den Spieler benachrichtigen, wenn dieser nicht über
+         das benötigte Recht verfügt. (um diesen Schritt zu übersoringen, schreibe "null" und
+         keine Nachricht wird angezeigt)
+      chooseFactionRequired: §eNenne den Fraktionsnamen.
+      chooseClassesRequired: §eNenne den Namen der benötigten Klasse um die Quest zu starten.
+      choosePlaceholderRequired:
+        identifier: §eNenne den Namen des benötigten Platzhalters (§lwithout %%§r§e).
+        value: §eNenne den Wert des Platzhalters §o%{0}%.
+      chooseSkillRequired: §eDefiniere den Namen des benötigten Skills.
+      reward:
+        permission: §eBearbeite die gewonnenen oder verlorenen Rechte.
+        money: §eDefiniere die zu bekommende Menge and Geld.
+    selectWantedBlock: §aKlicke mit einem Stock auf den gewünschten Block für diesen Schritt.
+    itemCreator:
+      itemType: §eDefiniere den Namen des gewünschten Gegenstands.
+      itemName: §eDefiniere den Namen des Gegestands.
+      itemLore: §eÄndere die Beschreibung des Gegenstands. Schreibe "help" um Hilfe zu bekommen.
+      unknownItemType: §cUnbekannter Gegenstand.
+      invalidItemType: §cUngültiger Gegenstand (es muss ein Gegenstand sein und kein Block).
+    dialog:
+      syntax: '§cKorrekter syntax : {0}{1} <Nachricht>'
+      syntaxRemove: '§cKorrekter sytax: remove <id>'
+      messageAdded: §anachricht {0} für {1} hinzugefügt.
+      messageRemoved: §aNachricht {0} entfernt.
+      soundAdded: §aSound {0} für Nachricht {1} hinzugefügt.
+      cleared: §a{0} entfernte Nachrichten.
+      help: |-
+        §anpc <message>: Füge eine Nachricht, gesprochen vom NPC gesendet wurde.
+        player <message>: Füge eine Nachricht hinzu, die vom Spieler gesendet wurde.
+        nothing <message>: Füge eine Nachricht ohne Prefix hinzu
+        remove <id>: Entferne eine Nachricht
+        list: alle Nachrichten anzeigen
+        npcinsert <id> <message>: füge eine Nachricht ein, die vom NPC gesagt wird.
+        playerinsert <id> <message>: füge eine Nachricht ein, die vom Spieler gesagt wird.
+        nothinginsert <id> <message>: füge eine Nachricht ohne Prefix ein
+        addsound <id> <sound>: Hinzufügen eines Sounds zur ausgewählten Nachricht
+        clear: Lösche alle Nachrichten
+        close: Speichere Nachrichten und verlasse den Editor
+    mythicmobs:
+      list: '§aListe aller MythicMobs:'
+      isntMythicMob: §cDieser MythicMob exisitert nicht.
+      disabled: §cMythicMob ist deaktiviert.
+    epicBossDoesntExist: §cDieser EpicBoss exisitert nicht.
+    textList:
+      syntax: '§cKorrekter syntax: '
+      added: §aText {0} hinzugefügt.
+      removed: §aText {0} entfernt.
+advancement:
+  finished: Abgeschlossen
+  notStarted: Nicht gestartet
+inv:
+  validate: §b§lValidieren
+  cancel: §c§lAbbrechen
+  confirm:
+    name: §8Bist du sicher?
+    'yes': §aBestätigen
+    'no': §cAbbrechen
+  create:
+    stageCreate: §aErstelle einen neuen Schritt
+    stageRemove: §cLösche diesen Schritt
+    findNPC: §aFinde einen NPC
+    bringBack: §aGegenstände zurückbringen
+    findRegion: §aFinde eine Region
+    killMobs: §aTöte Kreaturen
+    mineBlocks: §aZerstöre Blöcke
+    talkChat: §aSchreibe etwas in den Chat
+    interact: §aInteragiere mit Blöcken
+    NPCText: §eEditiere den Text eines NPCs
+    hideClues: Verstecke Indikatoren (Partikel, Hologramme)
+    editMobsKill: §eEditiere die zu tötenden Kreaturen
+    mobsKillFromAFar: Töte eine Kreatur aus der Entfernung
+    editBlocksMine: §eVeränder die zu zerstörenden Blöcke
+    editMessageType: §eEditiere die zu schreibende Nachricht
+    cancelMessage: Schreiben der Nachricht abbrechen
+    selectItems: §bWähle die benötigten Gegenstände
+    selectRegion: §7Wähle eine Region
+    stageStartMsg: §eEditiere die Startnachricht
+    selectBlockLocation: §6Blockposition auswählen
+    leftClick: Links Klick
+  stages:
+    name: §8Erstelle die Schritte
+    nextPage: §eNächste Seite
+    laterPage: §eVorherige Seite
+    endingItem: §aAbschluss Belohnung
+    descriptionTextItem: §eEditiere die Beschreibung
+  details:
+    name: §8Letzten Details des Quest
+    multipleTime:
+      itemName: Umschalten der Mehrfachverwendung
+      itemLore: Kann die Quest mehrmals abgeschlossen werden?
+    scoreboardItem: Anzeigetafel aktivieren
+    hideItem: Verstecke QUest (Menü und Dynmap)
+    bypassLimit: Questlimit nicht zählen
+    questName: §a§lÄndere den Namen der Quest
+    setItemsRewards: §7Editiere Gegenstandsbelohnungen
+    setXPRewards: §eEditiere XP Belohnungen
+    setPermReward: §eEditiere Rechte
+    setMoneyReward: §eEditiere den Gewinn von Geld
+    createStarterNPC: §e§lErstelle den NPC starter
+    selectStarterNPC: §6§lWähle den NPC starter
+    createQuest:
+      itemName: §lErstelle eine Quest
+      itemLore: Ein NPC muss erstellt/ausgewählt werden\nEs muss ein Namen für die Quest gesetzt sein
+    editQuest:
+      itemName: §lEditiere die Quest
+    endMessage: §aEditiere die Nachricht nach Abschließen der Quest
+    startDialog: §eEditiere den Start-Dialog
+    editRequirements: §eEditiere die Anforderungen
+    startRewards: §6Quest-start Belohnungen
+    hologramText: §eHologramm Text
+    timer: §bZeit bevor man die Quest erneut starten kann.
+    requirements: '{0} Anforderungen'
+    rewards: '{0} Belohnungen'
+  itemsSelect:
+    name: §8Editieren der Gegenstände
+    none: §aBewege ein Gegenstand hier hier oder\n§aklicke hier un den Editor zu öffnen
+  npcCreate:
+    name: §5Erstelle deinen eigenen NPC!
+    setName: Editiere den Namen des NPCs
+    setSkin: §eEditiere den Skin Namen des NPCs
+    setType: §aEditiere die Art des NPCs
+    move:
+      itemName: §6Bewegen
+      itemLore: An einen anderen Ort bewegen
+    moveItem: Bestätige den Ort
+  npcSelect:
+    name: §8Auswählen oder Erstellen?
+    selectStageNPC: §6Wähle einen existierenden NPC
+    createStageNPC: §eErstelle einen NPC
+  entityType:
+    name: §5Wähle die Art des Objekts
+  chooseQuest:
+    name: §5Welche Quest?
+  mobs:
+    name: §5Wähle die Kreatur!
+    none: §aKlicke hier um eine Kreatur hinzuzufügen
+    click: §bLinks Klick zum Editieren\nRechtsklick zum Entfernen
+  mobSelect:
+    name: §8Wähle eine Kreatur
+    bukkitEntityType: §eWähle die Art des Objekts
+    mythicMob: §6Wähle einen Mythic Mob
+    epicBoss: §6Wähle einen Epic Boss
+  stageEnding:
+    locationTeleport: §aEdit den Ort der Teleportation
+    command: §aEditiere ausgeführten Command
+  requirements:
+    name: §8Vorraussetzungen
+  rewards:
+    name: §8Belohnugen
+  listAllQuests:
+    name: §8Quests
+  listPlayerQuests:
+    name: §8{0}'s Quests
+  listQuests:
+    notStarted: Nicht gestartete Quests
+    finished: Abgeschlossene Quests
+    inProgress: Laufende Quests
+    loreCancel: §c§oKlicken um die Quest abzubrechen
+    timeToWait: §3§o{0} bevor du die Quest erneut starten kannst.
+    canRedo: §3§oDu kannst die Quest erneut starten!
+  itemCreator:
+    name: §8Gegenstands Ersteller
+    itemType: §bGegenstandsart
+    itemFlags: Umschalten der Item-Flags
+    itemName: §bItem Name
+    itemLore: §bItem Beschreibung
+    isQuestItem: '§bQuest item:'
+  command:
+    name: §8Command
+    value: §bCommand
+    console: Konsole
+  chooseAccount:
+    name: §5Welcher Account?
+  listBook:
+    questName: Name
+    questStarter: Starter
+    questRewards: Belohnungen
+    questMultiple: Mehrfachverwendung
+    requirements: Vorraussetzungen
+    questStages: Schritte
+    noQuests: Es wurden zuvor keine Quests erstellt
+scoreboard:
+  name: §6§lQuests
+  noLaunched: §cKeine laufenden Quests.
+  stage:
+    region: §eFinde die Region §6{0}
+    npc: §eSprich mit dem NPC §6{0}
+    items: '§eSuche die Gegenstände für §6{0} §e:'
+    mobs: §eTöte §6{0}
+    mine: §eFarme {0}
+    chat: §eSchreibe §6{0}
+    interact: §eKlicke auf den Block bei §6{0}
+misc:
+  format:
+    prefix: §6<§e§lQuests§r§6> §o
+    npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
+    selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
+    offText: §r§e {0}
+  stageType:
+    region: Finde die Region
+    npc: Finde den NPC
+    items: Bringe die Gegenstände zurück
+    mobs: Töte Kreaturen
+    mine: Farme Blöcke
+    chat: Schreibe im Chat
+    interact: Interagiere mit einem Block
+  requirement:
+    class: §bKlasse(n) vorrausgesetzt
+    faction: §bFracktion(en) vorrausgesetzt
+    jobLevel: §bJob level vorrausgesetzt
+    combatLevel: §bCombat Level vorrausgesetzt
+    experienceLevel: §bXP Level vorrausgesetzt
+    permissions: §3Recht(e) vorrausgesetzt
+    placeholder: §bPlatzhalter Wert vorrausgesetzt
+    quest: §aQuest vorrausgesetzt
+    mcMMOSkillLevel: §dSkill level vorrausgesetzt
+  hologramText: §8§lQuest NPC
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  entityType: 'Art des Gegenstands: {0}'
+  enabled: Aktiviert
+  disabled: Deaktiviert
+  unknown: unbekannt
+  unused: §e§lNicht verwendet
+  used: §6§lVerwendet
+  remove: §e§oMausrad Klick zum Entfernen
+  nul: 'null'
+  or: oder
+  amount: Menge
+  type: Art
+  items: Gegenstände
+  expPoints: XP
+  'yes': 'wahr'
+  'no': 'nein'
+  and: und
