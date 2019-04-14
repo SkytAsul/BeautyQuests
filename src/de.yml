@@ -15,7 +15,7 @@ msg:
     invalidID: §cDie Quest mit der ID {0} existiert nicht.
   quests:
     nopStep: §cDiese Quest enthält keine Schritte... Wende dich an einen Administrator :-)
-    updated: §7Quest {0} geupdatet!
+    updated: §7Quest {0} geupdated!
   stageMobs:
     noMobs: §cDu musst bei diesem Schritt keine Mobs töten... Wende dich an einen Administrator
      :-)
