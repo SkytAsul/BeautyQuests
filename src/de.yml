@@ -159,8 +159,8 @@ msg:
       soundAdded: §aSound {0} für Nachricht {1} hinzugefügt.
       cleared: §a{0} entfernte Nachrichten.
       help: |-
-        §anpc <message>: Füge eine Nachricht, gesprochen vom NPC gesendet wurde.
-        player <message>: Füge eine Nachricht hinzu, die vom Spieler gesendet wurde.
+        §anpc <message>: Füge eine Nachricht hinzu, die vom NPC gesendet wird.
+        player <message>: Füge eine Nachricht hinzu, die vom Spieler gesendet wird.
         nothing <message>: Füge eine Nachricht ohne Prefix hinzu
         remove <id>: Entferne eine Nachricht
         list: alle Nachrichten anzeigen
@@ -210,7 +210,7 @@ inv:
     selectRegion: §7Wähle eine Region
     stageStartMsg: §eEditiere die Startnachricht
     selectBlockLocation: §6Blockposition auswählen
-    leftClick: Links Klick
+    leftClick: Links-Klick
   stages:
     name: §8Erstelle die Schritte
     nextPage: §eNächste Seite
@@ -218,12 +218,12 @@ inv:
     endingItem: §aAbschluss Belohnung
     descriptionTextItem: §eEditiere die Beschreibung
   details:
-    name: §8Letzten Details des Quest
+    name: §8Letzten Details der Quest
     multipleTime:
       itemName: Umschalten der Mehrfachverwendung
       itemLore: Kann die Quest mehrmals abgeschlossen werden?
     scoreboardItem: Anzeigetafel aktivieren
-    hideItem: Verstecke QUest (Menü und Dynmap)
+    hideItem: Verstecke Quest (Menü und Dynmap)
     bypassLimit: Questlimit nicht zählen
     questName: §a§lÄndere den Namen der Quest
     setItemsRewards: §7Editiere Gegenstandsbelohnungen
@@ -264,7 +264,7 @@ inv:
   entityType:
     name: §5Wähle die Art des Objekts
   chooseQuest:
-    name: §5Welche Quest?
+    name: §5Welche Quest möchtest du starten?
   mobs:
     name: §5Wähle die Kreatur!
     none: §aKlicke hier um eine Kreatur hinzuzufügen
@@ -363,6 +363,6 @@ misc:
   type: Art
   items: Gegenstände
   expPoints: XP
-  'yes': 'wahr'
+  'yes': 'yes'
   'no': 'nein'
   and: und
