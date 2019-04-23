@@ -18,6 +18,8 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -84,6 +86,11 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		if (args.length - 1 < cmd.min()){
 			Lang.INCORRECT_SYNTAX.sendWP(sender);
 			return false;
+		}
+		
+		if (cmd.player() && cmd.noEditorInventory() && (Inventories.isInSystem((Player) sender) || Editor.hasEditor((Player) sender))){
+			Lang.ALREADY_EDITOR.send(sender);
+			return true;
 		}
 		
 		Object[] argsCmd = new Object[args.length - 1];

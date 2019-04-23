@@ -19,8 +19,10 @@ import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
+import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.stages.StageManager;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -29,12 +31,12 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class Commands {
 	
-	@Cmd(permission = "create", player = true)
+	@Cmd(permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){
 		Inventories.create(cmd.player, new StagesGUI());
 	}
 	
-	@Cmd(permission = "edit", player = true)
+	@Cmd(permission = "edit", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, (obj) -> {
@@ -306,6 +308,11 @@ public class Commands {
 		if (success) Lang.BACKUP_CREATED.send(cmd.sender);
 	}
 	
+	@Cmd(permission = "adminMode", player = true)
+	public void adminMode(CommandContext cmd){
+		AdminMode.toggle(cmd.player);
+	}
+	
 	@Cmd(player = true)
 	public void editor(CommandContext cmd){
 		Editor.leave(cmd.player);
@@ -318,14 +325,59 @@ public class Commands {
 		}else Utils.sendMessage(cmd.sender, "Version not supported");
 	}
 	
+	@Cmd(permission = "scoreboard", min = 2, args = {"PLAYERS", "setline|removeline|resetline|resetall"})
+	public void scoreboard(CommandContext cmd){
+		Player p = (Player) cmd.args[0];
+		Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+		switch (((String) cmd.args[1]).toLowerCase()){
+		case "setline":
+			if (cmd.args.length < 4){
+				Lang.INCORRECT_SYNTAX.send(cmd.sender);
+				break;
+			}
+			Integer id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+			if (id == null) return;
+			board.setCustomLine(id, Utils.buildFromArray(cmd.args, 3, " "));
+			Lang.COMMAND_SCOREBOARD_LINESET.send(cmd.sender, id);
+			break;
+		case "removeline":
+			if (cmd.args.length < 3){
+				Lang.INCORRECT_SYNTAX.send(cmd.sender);
+				break;
+			}
+			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+			if (id == null) return;
+			if (board.removeLine(id)){
+				Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(cmd.sender, id);
+			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+			break;
+		case "resetline":
+			if (cmd.args.length < 3){
+				Lang.INCORRECT_SYNTAX.send(cmd.sender);
+				break;
+			}
+			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+			if (id == null) return;
+			if (board.resetLine(id)){
+				Lang.COMMAND_SCOREBOARD_LINERESET.send(cmd.sender, id);
+			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+			break;
+		case "resetall":
+			BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(p);
+			BeautyQuests.getInstance().getScoreboardManager().create(p);
+			Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
+			break;
+		}
+	}
+	
 	@Cmd(permission = "help")
 	public void help(CommandContext cmd){
 		for (Lang l : Lang.values()){
 			if (l.getPath().startsWith("msg.command.help.")){
 				String command = l.getPath().substring(17);
 				if (command.equals("header")){
-					cmd.sender.sendMessage(l.toString());
-				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) cmd.sender.sendMessage(l.format(cmd.label));
+					l.send(cmd.sender);
+				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.send(cmd.sender, cmd.label);
 			}
 		}
 	}

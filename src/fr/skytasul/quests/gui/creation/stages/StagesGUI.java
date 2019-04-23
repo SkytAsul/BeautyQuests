@@ -39,6 +39,7 @@ import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
 import fr.skytasul.quests.stages.StageChat;
+import fr.skytasul.quests.stages.StageFish;
 import fr.skytasul.quests.stages.StageInteract;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
@@ -58,11 +59,6 @@ public class StagesGUI implements CustomInventory {
 
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
 	private static final ItemStack stageRemove = ItemUtils.item(XMaterial.BARRIER, Lang.stageRemove.toString());
-
-	/*static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
-	static final ItemStack stageItems = ItemUtils.item(XMaterial.DIAMOND_SWORD, Lang.stageItems.toString());
-	static final ItemStack regionName = ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString());
-	static final ItemStack editMobs = ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString());*/
 
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
 	private static final ItemStack descMessage = ItemUtils.item(XMaterial.SIGN, Lang.descMessage.toString());
@@ -120,7 +116,7 @@ public class StagesGUI implements CustomInventory {
 	private void setStageCreate(Line line){
 		line.removeItems();
 		line.setFirst(stageCreate.clone(), new StageRunnable() {
-			public void run(Player p, LineData data, ItemStack item) {
+			public void run(Player p, LineData datas, ItemStack item) {
 				line.setFirst(null, null);
 				int i = 0;
 				for (Entry<StageType, StageCreator> en : StageCreator.getCreators().entrySet()){
@@ -130,7 +126,7 @@ public class StagesGUI implements CustomInventory {
 							en.getValue().runnables.start(p, datas);
 						}
 					}, true, false);
-					data.put(i + "", en.getKey());
+					datas.put(i + "", en.getKey());
 					i++;
 				}
 				line.setItems(0);
@@ -332,6 +328,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageMine = ItemUtils.item(XMaterial.WOODEN_PICKAXE, Lang.stageMine.toString());
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
 	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.OAK_PLANKS, Lang.stageInteract.toString());
+	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
 
 	public static void initialize(){
 		DebugUtils.broadcastDebugMessage("Initlializing default stage types.");
@@ -343,6 +340,7 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("MINE", StageMine.class, Lang.Mine.name()), stageMine, new CreateMine());
 		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, new CreateChat());
 		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, new CreateInteract());
+		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new CreateFish());
 	}
 }
 
@@ -381,25 +379,25 @@ class CreateNPC implements StageCreationRunnables{
 		}, true, true);
 	}
 
-	public static void setFinish(fr.skytasul.quests.stages.StageNPC stage, LineData datas) {
+	public static void setFinish(StageNPC stage, LineData datas) {
 		if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
 		if (datas.containsKey("hide")) stage.setHid((boolean) datas.get("hide"));
 	}
 
-	public static void setEdit(fr.skytasul.quests.stages.StageNPC stage, LineData datas) {
+	public static void setEdit(StageNPC stage, LineData datas) {
 		if (stage.getDialog() != null) datas.put("npcText", new Dialog(stage.getDialog().getNPC(), stage.getDialog().messages.clone()));
 		if (stage.isHid()) datas.put("hide", true);
 		npcDone(stage.getNPC(), datas.getGUI(), datas.getLine(), datas);
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		fr.skytasul.quests.stages.StageNPC stage = new fr.skytasul.quests.stages.StageNPC(qu.getStageManager(), (NPC) datas.get("npc"));
+		StageNPC stage = new StageNPC(qu.getStageManager(), (NPC) datas.get("npc"));
 		setFinish(stage, datas);
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		fr.skytasul.quests.stages.StageNPC st = (fr.skytasul.quests.stages.StageNPC) stage;
+		StageNPC st = (StageNPC) stage;
 		setEdit(st, datas);
 	}
 }
@@ -417,33 +415,30 @@ class CreateBringBack implements StageCreationRunnables{
 			sg.reopen(p, true);
 			if (obj != null) CreateNPC.npcDone((NPC) obj, sg, line, datas);
 		});
-		ItemsGUI itemsGUI = new ItemsGUI((obj) -> {
+		ItemsGUI itemsGUI = new ItemsGUI(() -> {
 			Inventories.create(p, npcGUI);
-		});
-		itemsGUI.items = items;
+		}, items);
 		Inventories.create(p, itemsGUI);
 	}
 
 	public static void setItem(Line line, StagesGUI sg){
 		line.setItem(6, stageItems.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
-				ItemsGUI r = new ItemsGUI((obj) -> {
+				Inventories.create(p, new ItemsGUI(() -> {
 					sg.reopen(p, true);
-				});
-				Inventories.create(p, r);
-				r.setItemsFromRew((List<ItemStack>) datas.get("items"));
+				}, (List<ItemStack>) datas.get("items")));
 			}
 		});
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		fr.skytasul.quests.stages.StageBringBack stage = new fr.skytasul.quests.stages.StageBringBack(qu.getStageManager(), (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		StageBringBack stage = new StageBringBack(qu.getStageManager(), (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 		CreateNPC.setFinish(stage, datas);
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		fr.skytasul.quests.stages.StageBringBack st = (fr.skytasul.quests.stages.StageBringBack) stage;
+		StageBringBack st = (StageBringBack) stage;
 		CreateNPC.setEdit(st, datas);
 		datas.put("items", new ArrayList<>());
 		((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(st.getItems()));
@@ -483,13 +478,13 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		fr.skytasul.quests.stages.StageMobs stage = new fr.skytasul.quests.stages.StageMobs(qu.getStageManager(), ((List<Mob>) datas.get("mobs")));
+		StageMobs stage = new StageMobs(qu.getStageManager(), ((List<Mob>) datas.get("mobs")));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		fr.skytasul.quests.stages.StageMobs st = (fr.skytasul.quests.stages.StageMobs) stage;
+		StageMobs st = (StageMobs) stage;
 		datas.put("mobs", new ArrayList<>(st.getMobs()));
 		datas.put("shoot", st.isShoot());
 		setItems(datas.getLine(), datas.getGUI(), datas);
@@ -534,12 +529,12 @@ class CreateArea implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		fr.skytasul.quests.stages.StageArea stage = new fr.skytasul.quests.stages.StageArea(qu.getStageManager(), (String) datas.get("region"), (String) datas.get("world"));
+		StageArea stage = new StageArea(qu.getStageManager(), (String) datas.get("region"), (String) datas.get("world"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		fr.skytasul.quests.stages.StageArea st = (fr.skytasul.quests.stages.StageArea) stage;
+		StageArea st = (StageArea) stage;
 		datas.put("region", st.getRegion().getId());
 		datas.put("world", WorldGuard.getWorld(st.getRegion().getId()).getName());
 		setItem(datas.getLine(), datas.getGUI());
@@ -552,33 +547,41 @@ class CreateMine implements StageCreationRunnables{
 		StagesGUI sg = datas.getGUI();
 		BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
 		blocks.run = (obj) -> {
-			/*Inventories.put(p, */sg.reopen(p, true)/*, sg.inv)*/;
-			setItem(datas.getLine(), sg);
+			sg.reopen(p, true);
 			datas.put("blocks", obj);
+			datas.put("prevent", false);
+			setItems(datas.getLine(), datas);
 		};
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
 		StageMine stage = new StageMine(qu.getStageManager(), (List<BlockData>) datas.get("blocks"));
+		stage.setPlaceCancelled((boolean) datas.get("prevent"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
 		StageMine st = (StageMine) stage;
 		datas.put("blocks", new ArrayList<>(st.getBlocks()));
-		setItem(datas.getLine(), datas.getGUI());
+		datas.put("prevent", st.isPlaceCancelled());
+		setItems(datas.getLine(), datas);
 	}
 
-	public static void setItem(Line line, StagesGUI sg){
+	public static void setItems(Line line, LineData datas){
 		line.setItem(5, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
 				blocks.setBlocksFromList(blocks.lastInv, (List<BlockData>) datas.get("blocks"));
 				blocks.run = (obj) -> {
 					Inventories.closeWithoutExit(p);
-					/*Inventories.put(p, */sg.reopen(p, true)/*, sg.inv)*/;
+					datas.getGUI().reopen(p, true);
 					datas.put("blocks", obj);
 				};
+			}
+		});
+		line.setItem(4, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), (boolean) datas.get("prevent")), new StageRunnable() {
+			public void run(Player p, LineData datas, ItemStack item) {
+				datas.put("prevent", ItemUtils.toggle(item));
 			}
 		});
 	}
@@ -665,4 +668,35 @@ class CreateInteract implements StageCreationRunnables{
 		return new StageInteract(qu.getStageManager(), (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
 	}
 	
+}
+
+class CreateFish implements StageCreationRunnables{
+	public void start(Player p, LineData datas){
+		List<ItemStack> items = new ArrayList<>();
+		datas.put("items", items);
+		Inventories.create(p, new ItemsGUI(() -> {
+			datas.getGUI().reopen(p, true);
+			setItem(datas.getLine(), datas.getGUI());
+		}, items));
+	}
+
+	public AbstractStage finish(LineData datas, Quest qu){
+		StageFish stage = new StageFish(qu.getStageManager(), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		return stage;
+	}
+
+	public void edit(LineData datas, AbstractStage stage){
+		datas.put("items", new ArrayList<>(Arrays.asList(((StageFish) stage).getFishes())));
+		setItem(datas.getLine(), datas.getGUI());
+	}
+
+	public static void setItem(Line line, StagesGUI sg){
+		line.setItem(5, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
+			public void run(Player p, LineData datas, ItemStack item) {
+				Inventories.create(p, new ItemsGUI(() -> {
+					datas.getGUI().reopen(p, true);
+				}, (List<ItemStack>) datas.get("items")));
+			}
+		});
+	}
 }

@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 
 public class StageInteract extends AbstractStage {
@@ -38,20 +38,19 @@ public class StageInteract extends AbstractStage {
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (!e.getClickedBlock().getLocation().equals(lc)) return;
-		if (manager.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), getThis())){
+		if (hasStarted(e.getPlayer())){
 			if (left) e.setCancelled(true);
 			finishStage(e.getPlayer());
 		}
 	}
 	
-	protected String descriptionLine(PlayerAccount acc){
+	protected String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_INTERACT.format(lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
 	}
 
-	protected Map<String, Object> serialize(Map<String, Object> map){
+	protected void serialize(Map<String, Object> map){
 		map.put("leftClick", left);
 		map.put("location", lc.serialize());
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){

@@ -16,23 +16,23 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class ItemsGUI implements CustomInventory{
 	
 	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
 	
-	public List<ItemStack> items;
+	private List<ItemStack> items;
 	
 	public Inventory inv;
-	private RunnableObj run;
+	private Runnable run;
 	
 	private boolean cancel = true;
 	
 	private boolean closeNoDelete = false;
 	
-	public ItemsGUI(RunnableObj run) {
+	public ItemsGUI(Runnable run, List<ItemStack> items) {
 		this.run = run;
+		this.items = items;
 	}
 	
 	public CustomInventory openLastInv(Player p) {
@@ -44,14 +44,14 @@ public class ItemsGUI implements CustomInventory{
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_ITEMS.toString());
 		
 		inv.setItem(8, ItemUtils.itemDone());
-		for (int i = 0; i < 8; i++) inv.setItem(i, none);
+		setItemsFromRew();
+		for (int i = items.size(); i < 8; i++) inv.setItem(i, none);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
 	}
 	
-	public void setItemsFromRew(List<ItemStack> list){
-		this.items = list;
+	private void setItemsFromRew(){
 		int id = 0;
 		for (int slot = 0; slot < 8; slot++){
 			if (items.size() == id) break;
@@ -89,7 +89,7 @@ public class ItemsGUI implements CustomInventory{
 					}
 				}
 			}
-			run.run(null);
+			run.run();
 		}else {
 			if (current.equals(none)){
 				Inventories.create(p, new ItemCreatorGUI((obj) -> {

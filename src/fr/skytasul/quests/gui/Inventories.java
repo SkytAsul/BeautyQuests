@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -92,6 +93,14 @@ public class Inventories{
 	
 	public static void remove(Player p){
 		g.remove(p);
+	}
+	
+	public static void closeAll(){
+		for (Iterator<Player> iterator = g.keySet().iterator(); iterator.hasNext();) {
+			Player p = (Player) iterator.next();
+			iterator.remove();
+			p.closeInventory();
+		}
 	}
 	
 	public static void put(Player p, CustomInventory cinv, Inventory inv){

@@ -13,6 +13,7 @@ public abstract class PlayerAccountQuestEvent extends Event {
 
 	public PlayerAccountQuestEvent(PlayerAccount account, Quest quest) {
 		this.acc = account;
+		this.qu = quest;
 	}
 
 	public Quest getQuest() {

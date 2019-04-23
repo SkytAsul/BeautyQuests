@@ -5,6 +5,10 @@ import java.util.List;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.players.PlayerAccount;
 
+/**
+ * Called when a quest is removed<br>
+ * <b>May be called in a quest editing</b>
+ */
 public class QuestRemoveEvent extends QuestEvent{
 
 	private List<PlayerAccount> launched;

@@ -12,7 +12,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.WorldGuard;
@@ -37,18 +37,18 @@ public class StageArea extends AbstractStage{
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
-		if (manager.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), getThis())){
+		if (hasStarted(e.getPlayer())){
 			if (WorldGuard.isInRegion(region, e.getTo())){
 				finishStage(e.getPlayer());
 			}
 		}
 	}
 
-	public String descriptionLine(PlayerAccount acc){
+	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
 	}
 	
-	protected Object[] descriptionFormat(PlayerAccount acc){
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{region.getId()};
 	}
 	
@@ -62,10 +62,9 @@ public class StageArea extends AbstractStage{
 	
 
 	
-	public Map<String, Object> serialize(Map<String, Object> map){
+	public void serialize(Map<String, Object> map){
 		map.put("region", region.getId());
 		map.put("world", world.getName());
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){

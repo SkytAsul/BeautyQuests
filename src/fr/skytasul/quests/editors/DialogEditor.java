@@ -121,7 +121,7 @@ public class DialogEditor extends Editor{
 					+ "playerinsert <id> <message> : insert a message said by player\n"
 					+ "addsound <id> <sound> : add a sound on message selected\n"
 					+ "close : validate messages");*/
-			Lang.DIALOG_HELP.send(p);
+			Lang.DIALOG_HELP.sendWP(p);
 			break;
 
 		case CLOSE:

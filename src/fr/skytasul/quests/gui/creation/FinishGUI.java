@@ -38,6 +38,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -95,7 +96,12 @@ public class FinishGUI implements CustomInventory{
 	public Inventory open(Player p){
 		this.p = p;
 		if (inv == null){
-			inv = Bukkit.createInventory(null, 27, Lang.INVENTORY_DETAILS.toString());
+			String invName = Lang.INVENTORY_DETAILS.toString();
+			if (editing){
+				invName = invName + " ID: " + edited.getID();
+				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
+			}
+			inv = Bukkit.createInventory(null, 27, invName);
 
 			inv.setItem(0, multiple.clone());
 			inv.setItem(1, scoreboard.clone());
@@ -262,12 +268,10 @@ public class FinishGUI implements CustomInventory{
 			break;
 
 		case 21: // 						Later page
-			stop();
 			Inventories.create(p, stages);
 			break;
 
 		case 23: //						Finish
-			//refresh();
 			if (current.getType() == Material.GOLD_INGOT){
 				finish(inv);
 			}
@@ -281,7 +285,6 @@ public class FinishGUI implements CustomInventory{
 		if (name != null && startNPC != null) {
 			item.setType(Material.GOLD_INGOT);
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
-			//ItemUtils.lore(inv.getItem(8), ItemUtils.getLore(create));
 		}else{
 			item.setType(XMaterial.NETHER_BRICK.parseMaterial());
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§6", "§5"));
@@ -341,7 +344,6 @@ public class FinishGUI implements CustomInventory{
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 		}
 		finished = true;
-		stop();
 		p.closeInventory();
 	}
 
@@ -352,12 +354,7 @@ public class FinishGUI implements CustomInventory{
 		return true;
 	}
 
-	public void stop(){
-		//timer.cancel();
-	}
-
 	public void cancelAll(Player p){
-		stop();
 		if (startNPC != null && createdNPC != null){
 			if (startNPC == createdNPC){
 				startNPC.destroy();

@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -31,11 +31,11 @@ public class StageChat extends AbstractStage{
 		this.cancel = cancel;
 	}
 
-	public String descriptionLine(PlayerAccount acc){
+	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_CHAT.format(text);
 	}
 	
-	protected Object[] descriptionFormat(PlayerAccount acc){
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{text};
 	}
 	
@@ -61,17 +61,16 @@ public class StageChat extends AbstractStage{
 	
 	private boolean check(String message, Player p) {
 		if (!message.equals(text)) return false;
-		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this)) return false;
+		if (!hasStarted(p)) return false;
 		Utils.runSync(() -> finishStage(p));
 		return true;
 	}
 
 	
-	public Map<String, Object> serialize(Map<String, Object> map){
+	public void serialize(Map<String, Object> map){
 		Validate.notNull(text, "Text cannot be null");
 		map.put("writeText", text);
 		if (cancel) map.put("cancel", true);
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){

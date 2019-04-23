@@ -6,6 +6,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.bukkit.entity.Player;
+
+import fr.skytasul.quests.Quest;
+import net.citizensnpcs.api.npc.NPC;
+
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Cmd {
@@ -15,6 +20,12 @@ public @interface Cmd {
 	 * @return true if the command <i>need</i> to be executed by a player
 	 */
 	public boolean player() default false;
+	
+	/**
+	 * Need {@link #player()} to be true
+	 * @return if the player must not be in an inventory/editor system to execute the command
+	 */
+	public boolean noEditorInventory() default false;
 	
 	/**
 	 * If arguments amount is lower than this value, the command will not be executed
@@ -27,9 +38,10 @@ public @interface Cmd {
 	 * <ul>
 	 * <li> PLAYERS : <i>list of players online</i>
 	 * <li> QUESTSID : <i>list of all quests IDs</i>
+	 * <li> NPCSID : <i>list of all NPCs IDs</i>
 	 * <li> xxx|yyy|zzz : <i>available values, separated by a pipe (|)</i>
 	 * </ul>
-	 * In the case of PLAYERS and QUESTSID, they will be directly replaced by an instance of Player or Quest when command executing (no need for String parsing)
+	 * In the case of PLAYERS QUESTSID and NPCSID, they will be directly replaced by an instance of {@link Player}/{@link Quest}/{@link NPC} when command executing (no need for String parsing)
 	 * @return String array of possibles arguments
 	 */
 	public String[] args() default {};

@@ -51,6 +51,14 @@ public class Dialog{
 		if (msg.sound != null) p.playSound(p.getLocation(), msg.sound, 1, 1);
 	}
 	
+	public boolean start(Player p){
+		if (!messages.isEmpty()){
+			send(p, 0);
+			return true;
+		}
+		return false;
+	}
+	
 	public NPC getNPC(){
 		return npc;
 	}
@@ -65,21 +73,6 @@ public class Dialog{
 	
 	public void insert(String msg, Sender sender, int id){
 		messages.insert(id, new Message(msg, sender));
-		/*if (id > messages.getLast() - 1){
-			add(msg, sender);
-			return;
-		}
-		HashMap<Integer, Message> map = new HashMap<>();
-		for (Entry<Integer, Message> en : messages.entrySet()){
-			int idd = en.getKey();
-			if (idd < id){
-				map.put(idd, en.getValue());
-			}else {
-				map.put(idd + 1, en.getValue());
-			}
-		}
-		messages = map;
-		messages.put(id, new Message(msg, sender));*/
 	}
 	
 	public Map<String, Object> serialize(){

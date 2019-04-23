@@ -5,6 +5,9 @@ import org.bukkit.event.Cancellable;
 
 import fr.skytasul.quests.Quest;
 
+/**
+ * Called when a quest is created
+ */
 public class QuestCreateEvent extends PlayerQuestEvent implements Cancellable{
 
 	private boolean cancel, edit = false;

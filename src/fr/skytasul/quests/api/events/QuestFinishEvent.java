@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 
+/**
+ * Called when a player finish a quest
+ */
 public class QuestFinishEvent extends PlayerQuestEvent{
 
 	private List<AbstractReward> rewards;

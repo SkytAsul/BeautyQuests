@@ -24,6 +24,7 @@ import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.stages.StageManager;
@@ -320,13 +321,13 @@ public class Quest{
 	}
 	
 	public boolean cancelPlayer(PlayerAccount acc){
-		return manager.remove(acc);
+		return manager.remove(acc, true);
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
 		if (acc == null) return false;
 		boolean c = false;
-		if (manager.remove(acc)) c = true;
+		if (manager.remove(acc, true)) c = true;
 		if (finished.remove(acc)) c = true;
 		if (inTimer.remove(acc) != null) c = true;
 		if (acc.isCurrent() && dgPlayers.remove(acc.getPlayer()) != null) c = true;
@@ -408,7 +409,7 @@ public class Quest{
 		QuestLaunchEvent event = new QuestLaunchEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
-		BeautyQuests.logger.write(p.getName() + " started the quest " + id);
+		AdminMode.broadcast(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
 		inTimer.remove(acc);
 		Lang.STARTED_QUEST.send(p, name);
@@ -430,7 +431,7 @@ public class Quest{
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		QuestFinishEvent event = new QuestFinishEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
-		BeautyQuests.logger.write(p.getName() + " completed the quest " + id);
+		AdminMode.broadcast(p.getName() + " completed the quest " + id);
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
@@ -444,7 +445,7 @@ public class Quest{
 						Utils.sendOffMessage(p, endMessage);
 					}
 				}
-				manager.remove(acc);
+				manager.remove(acc, false);
 				if (!finished.contains(acc)) finished.add(acc);
 				if (repeatable){
 					Calendar cal = Calendar.getInstance();
@@ -452,7 +453,7 @@ public class Quest{
 					inTimer.put(acc, cal.getTime().getTime());
 				}
 				Utils.spawnFirework(p.getLocation());
-				Utils.playPluginSound(p, "ENTITY_PLAYER_LEVELUP", 1);
+				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
 			}
 		};
 		if (asyncEnd){

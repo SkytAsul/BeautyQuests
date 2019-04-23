@@ -223,11 +223,10 @@ class CommandR implements RewardCreationRunnables{
 class ItemR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
-		ItemsGUI r = (ItemsGUI) Inventories.create(p, new ItemsGUI((obj) -> {
-			gui.reopen(p, true);
-		}));
 		if (!datas.containsKey("items")) datas.put("items", new ArrayList<>());
-		r.setItemsFromRew((List<ItemStack>) datas.get("items"));
+		Inventories.create(p, new ItemsGUI(() -> {
+			gui.reopen(p, true);
+		}, (List<ItemStack>) datas.get("items")));
 	}
 
 

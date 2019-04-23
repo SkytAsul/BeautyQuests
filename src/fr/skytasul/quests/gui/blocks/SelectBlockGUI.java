@@ -78,10 +78,7 @@ public class SelectBlockGUI implements CustomInventory{
 			Inventories.closeWithoutExit(p);
 			Utils.sendMessage(p, "Write the name of the block to mine.");
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				XMaterial type = /*XMaterial.fromString((String) obj);
-					if (type == null){
-						Utils.sendMessage(p, "§cBlock type doesn't exist.");
-					}else*/(XMaterial) obj; block.type = type;
+				XMaterial type = (XMaterial) obj; block.type = type;
 					openLastInv(p);
 					updateItems();
 			}, new MaterialParser(false)));

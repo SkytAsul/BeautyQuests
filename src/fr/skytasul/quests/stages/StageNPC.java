@@ -20,6 +20,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.GPS;
@@ -127,11 +128,11 @@ public class StageNPC extends AbstractStage{
 		this.hide = hide;
 	}
 
-	public String descriptionLine(PlayerAccount acc){
+	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_NPC.toString(), npcName());
 	}
 	
-	protected Object[] descriptionFormat(PlayerAccount acc){
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{npcName()};
 	}
 	
@@ -140,7 +141,7 @@ public class StageNPC extends AbstractStage{
 		Player p = e.getClicker();
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
-		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this)) return;
+		if (!hasStarted(p)) return;
 		
 		e.setCancelled(true);
 		
@@ -159,7 +160,7 @@ public class StageNPC extends AbstractStage{
 				if (!bringBack.checkItems(p, true)) return;
 				bringBack.removeItems(p);
 			}
-			if (Utils.startDialog(p, di)){
+			if (di.start(p)){
 				dialogs.put(p, 0);
 				test(p, 0);
 				return;
@@ -233,12 +234,10 @@ public class StageNPC extends AbstractStage{
 	}
 
 	
-	public Map<String, Object> serialize(Map<String, Object> map){
-		//Quests.getInstance().getLogger().info("DEBUG : " + (map == null) + " " + (npc == null));
+	public void serialize(Map<String, Object> map){
 		if (npc != null) map.put("npcID", npc.getId());
 		if (di != null) map.put("msg", di.serialize());
 		if (hide) map.put("hid", true);
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){

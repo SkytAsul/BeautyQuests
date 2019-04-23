@@ -35,10 +35,10 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
 import fr.skytasul.quests.utils.nms.NMS;
-import fr.skytasul.quests.utils.types.Dialog;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.citizensnpcs.api.npc.NPC;
@@ -90,20 +90,12 @@ public class Utils{
 		return msg;
 	}
 
-	public static String getStringFromItemStack(ItemStack is, String amountColor){
-		return getStringFromNameAndAmount(ItemUtils.getName(is, true), amountColor, is.getAmount());
-	}
-
-	public static String[] getStringArrayFromItemStackArray(ItemStack[] items, String amountColor, String itemColor){
-		String[] str = new String[items.length];
-		for (int i = 0; i < items.length; i++){
-			str[i] = itemColor + getStringFromItemStack(items[i], amountColor);
-		}
-		return str;
+	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne){
+		return getStringFromNameAndAmount(ItemUtils.getName(is, true), amountColor, is.getAmount(), showXOne);
 	}
 	
-	public static String getStringFromNameAndAmount(String name, String amountColor, int amount){
-		return "§o" + name + ((amount > 1) ? "§r" + amountColor + " x" + amount : "");
+	public static String getStringFromNameAndAmount(String name, String amountColor, int amount, boolean showXOne){
+		return "§o" + name + ((amount > 1 || showXOne) ? "§r" + amountColor + " x" + amount : "");
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
@@ -135,38 +127,18 @@ public class Utils{
 		IsendMessage(p, Lang.SelfText.format(p.getName(), msg, index, max), true);
 	}
 	
-	public static void IsendMessage(CommandSender sender, String text, boolean playerName){
+	public static String finalFormat(CommandSender sender, String text, boolean playerName){
 		if (Dependencies.papi && sender instanceof Player) text = PlaceholderAPI.setPlaceholders((Player) sender, text);	
 		if (playerName) text = text.replace("{PLAYER}", sender.getName());
-		sender.sendMessage(text);
+		return text;
 	}
 	
-	public static boolean startDialog(Player p, Dialog di){
-		if (!di.messages.isEmpty()){
-			di.send(p, 0);
-			return true;
-		}
-		return false;
+	public static void IsendMessage(CommandSender sender, String text, boolean playerName){
+		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName), "{nl}"));
 	}
 	
 	public static void sendOffMessage(Player p, String msg){
 		IsendMessage(p, Lang.OffText.format(msg), true);
-	}
-	
-	public static String[] arrayFromEnumList(List<? extends Enum<?>> list){
-		String[] array = new String[list.size()];
-		for(int i = 0; i < list.size(); i++){
-			array[i] = ((Enum<?>) list.get(i)).name();
-		}
-		return array;
-	}
-	
-	public static List<String> stringListFromEnumList(List<? extends Enum<?>> list){
-		List<String> tmp = new ArrayList<>();
-		for (Enum<?> value : list){
-			tmp.add(value.name());
-		}
-		return tmp;
 	}
 	
 	public static String itemsToFormattedString(String[] items){
@@ -183,14 +155,6 @@ public class Utils{
 		}
 		stb.append(" " + Lang.And.toString() + " " + items[items.length - 1]);
 		return stb.toString();
-	}
-	
-	public static String itemsToString(String[] items, String separator){
-		String string = "";
-		for (int i = 0; i < items.length; i++) {
-			string = string + (i != 0 ? separator + items[i] : items[i]);
-		}
-		return string;
 	}
 
 	public static String locationToString(Location lc, boolean world){
@@ -275,7 +239,7 @@ public class Utils{
 	}
 	
 	public static String format(String msg, Object... replace){
-		if (replace.length != 0){
+		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
 				msg = format(msg, i, (replace[i] != null) ? replace[i].toString() : "null");
 			}
@@ -316,15 +280,15 @@ public class Utils{
 	}
 	
 	public static List<String> splitOnSpace(String string, int minSize){
-		if (string == null || string.isEmpty()) return null; 
+		if (string == null) return null; 
 		List<String> ls = new ArrayList<>();
-		if (string.length() <= minSize){
-			ls.add(string);
+		if (string.isEmpty()){
+			ls.add("");
 			return ls;
 		}
 		
 		minSize--;
-		for (String str : StringUtils.splitByWholeSeparator(string, "\\n")) {
+		for (String str : StringUtils.splitByWholeSeparator(string, ("{nl}"))) {
 			int lastI = 0;
 			int ic = 0;
 			for (int i = 0; i < str.length(); i++){
@@ -357,36 +321,6 @@ public class Utils{
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
-	/*@Deprecated
-	public static List<AbstractReward> convertFromOldRewards(Map<String, Object> map){
-		List<AbstractReward> rewards = new ArrayList<>();
-		
-		List<ItemStack> ls = new ArrayList<>();
-		for (Map<String, Object> m : (List<Map<String, Object>>) map.get("items")){
-			ls.add(ItemStack.deserialize(m));
-		}
-		if (ls.size() > 0) rewards.add(new ItemReward(ls));
-		if ((int) map.get("xp") > 0) rewards.add(new XPReward((int) map.get("xp")));
-		if (map.containsKey("perm")) rewards.add(new PermissionReward((String) map.get("perm")));
-		if (map.containsKey("money")) rewards.add(new MoneyReward((int) map.get("money")));
-		
-		return rewards;
-	}
-	
-	@Deprecated
-	public static List<AbstractReward> convertFromOldEnding(Map<String, Object> map){
-		List<AbstractReward> rewards = map.containsKey("rew") ? convertFromOldRewards((Map<String, Object>) map.get("rew")) : new ArrayList<>();
-
-		if (map.containsKey("tp")) rewards.add(new TeleportationReward(Location.deserialize((Map<String, Object>) map.get("tp"))));
-		if (map.containsKey("text")) rewards.add(new MessageReward((String) map.get("text")));
-		if (map.containsKey("cmd")){
-			Map<String, Object> cmd = (Map<String, Object>) map.get("cmd");
-			rewards.add(new CommandReward((String) cmd.get("command"), (boolean) cmd.get("console")));
-		}
-		
-		return rewards;
-	}*/
-	
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
 	public static DateFormat getDateFormat(){
 		return cachedFormat;
@@ -410,10 +344,19 @@ public class Utils{
 		}
 	}
 	
-	public static void deserializeAccountsList(List<PlayerAccount> list, List<String> strings){
-		for (String id : strings){
+	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){
+		for (String id : from){
 			PlayerAccount acc = PlayersManager.getByIndex(id);
-			if (acc != null) list.add(acc);
+			if (acc != null) to.add(acc);
+		}
+	}
+	
+	public static String descriptionLines(Source source, String... elements){
+		if (elements.length == 0) return Lang.Unknown.toString();
+		if (QuestsConfiguration.splitDescription(source)){
+			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
+		}else {
+			return " " + itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 		}
 	}
 	

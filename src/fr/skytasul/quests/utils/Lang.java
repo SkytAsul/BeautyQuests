@@ -4,10 +4,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+
+/**
+ * Stores all string paths in the language file and the default english translation.
+ */
 public enum Lang{
 	
 	/* Messages */
-	FINISHED_BASE("msg.quest.finished.base", "§aCongratulations! You have finished the quest §o§6{0}§r§a!" /*{1} points d'expérience et {2} items !"*/),
+	FINISHED_BASE("msg.quest.finished.base", "§aCongratulations! You have finished the quest §o§6{0}§r§a!"),
 	FINISHED_OBTAIN("msg.quest.finished.obtain", "§aYou obtain {0}!"),
 	STARTED_QUEST("msg.quest.started", "You start the quest §o{0}"),
 	SUCCESFULLY_CREATED("msg.quest.created", "§aCongratulations! You have created the quest \"§e{0}§a\", who includes {1} steps!"),
@@ -31,24 +35,24 @@ public enum Lang{
 	REGION_NAME("msg.writeRegionName", "Write the name of the region required for the step."),
 	XP_GAIN("msg.writeXPGain", "Write the amount of experience points that the player will be obtain. Last gain: §a{0}"),
 	MOB_AMOUNT("msg.writeMobAmount", "Write the amount of the mobs to kill."),
-	CHAT_MESSAGE("msg.writeChatMessage", "Write requisite message (add {SLASH} at the beggining if you want a command)."),
+	CHAT_MESSAGE("msg.writeChatMessage", "Write requisite message (add {SLASH} at the beginning if you want a command)."),
 	END_MESSAGE("msg.writeEndMessage", "Write the message sent at the end of the quest or at the end of the stage."),
 	DESC_MESSAGE("msg.writeDescriptionText", "Write the text who describe the goal of the stage."),
-	START_TEXT("msg.writeStageText", "Write the text will be sent to the player at the beggining of the step."),
+	START_TEXT("msg.writeStageText", "Write the text will be sent to the player at the beginning of the step."),
 	MOVE_TELEPORT_POINT("msg.moveToTeleportPoint", "Go to wanted teleport point."),
 	NPC_NAME("msg.writeNpcName", "Write the name of the NPC."), 
 	NPC_SKIN("msg.writeNpcSkinName", "Write the name of the skin of the NPC."), 
 	QUEST_NAME("msg.writeQuestName", "Write the name of your quest!"),
-	COMMAND("msg.writeCommand", "Write wanted command. (without / at the beggining) You can use {PLAYER}, it will be remplaced by the executor player's name."),
+	COMMAND("msg.writeCommand", "Write wanted command. (without / at the beginning) You can use {PLAYER}, it will be replaced by the executor player's name."),
 	HOLOGRAM_TEXT("msg.writeHologramText", "Write text of the hologram. (type \"none\" if you do not want a hologram, and \"null\" if you want default text)"),
-	TIMER("msg.writeQuestTimer", "Write required time (in minuts) before you can restart the quest. (type \"null\" if you want default timer)"),
+	TIMER("msg.writeQuestTimer", "Write required time (in minutes) before you can restart the quest. (type \"null\" if you want default timer)"),
 	
 	REQUIREMENT_QUEST("msg.requirements.quest", "§eYou must have finished the quest \"{0}\"§r§e!"),
 	REQUIREMENT_LEVEL("msg.requirements.level", "§eYou must be at least level {0}!"),
 	REQUIREMENT_JOB("msg.requirements.job", "§eYou must be at least level {0} for the job {1}!"),
 	REQUIREMENT_SKILL("msg.requirements.skill", "§eYou must be at least level {0} for the skill {1}!"),
 	REQUIREMENT_COMBAT_LEVEL("msg.requirements.combatLevel", "§eYou must be at least combat level {0}!"),
-	QUEST_WAIT("msg.requirements.wait", "§cYou must wait {0} minuts before starting this quest again!"),
+	QUEST_WAIT("msg.requirements.wait", "§cYou must wait {0} minutes before starting this quest again!"),
 	
 	XP_EDITED("msg.experience.edited", "Experience gain edited: {0}pts. to {1}pts."),
 	SELECT_KILL_NPC("msg.selectNPCToKill", "Select NPC to kill."),
@@ -64,7 +68,7 @@ public enum Lang{
 	NUMBER_NEGATIVE("msg.number.negative", "§cYou must enter a positive number!"),
 	NUMBER_ZERO("msg.number.zero", "§cYou must enter a number other than 0!"),
 	NUMBER_INVALID("msg.number.invalid", "§c\"{0}\" isn't an valid number."),
-	ERROR_OCCURED("msg.errorOccured", "§cAn error occured... prevent an administrator :-)\n§4§lError code :{0}"),
+	ERROR_OCCURED("msg.erroroccurred", "§cAn error occurred... prevent an administrator :-)\n§4§lError code :{0}"),
 	CANT_COMMAND("msg.commandsDisabled", "§cYou can't do command for this moment."),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds", "§cNumber specified ({0}) is out of bounds [{1}, {2}["),
 	
@@ -81,7 +85,7 @@ public enum Lang{
 	COMMAND_DOESNT_EXIST("msg.command.invalidCommand.quests", "§cThis command doesn't exist, type §o/quests help"),
 	COMMAND_DOESNT_EXIST_NOSLASH("msg.command.invalidCommand.simple", "§cThis command doesn't exist, type §ohelp (without /)"),
 	MUST_HOLD_ITEM("msg.command.needItem", "§cYou must hold an item in your main hand."),
-	ITEM_CHANGED("msg.command.itemChanged", "§aItem has been edited. The changement will be effective after restart."),
+	ITEM_CHANGED("msg.command.itemChanged", "§aItem has been edited. The changes will be in effective after restart."),
 	SUCCESFULLY_REMOVED("msg.command.removed", "§aThe quest {0} has been successfully removed."),
 	LEAVE_ALL_RESULT("msg.command.leaveAll", "§eYou have forced the end of {0} quests. §c{1} error(s)."),
 	DATA_REMOVED("msg.command.resetPlayer.player", "§eAll datas of your quests ({0}) has been deleted by {1}."),
@@ -92,6 +96,13 @@ public enum Lang{
 	BACKUP_CREATED("msg.command.backupCreated", "§eYou have successfully created backups of quests and players datas."),
 	BACKUP_PLAYERS_FAILED("msg.command.backupPlayersFailed", "§cPlayers datas backup creation has failed."),
 	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed", "§cQuests backup creation has failed."),
+	ADMIN_MODE_ENTERED("msg.command.adminModeEntered", "§eYou have entered the admin-mode."),
+	ADMIN_MODE_LEFT("msg.command.adminModeLeft", "§eYou have left the admin-mode."),
+	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet", "§eYou have successfully edited the line {0}."),
+	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset", "§eYou have successfully reset the line {0}."),
+	COMMAND_SCOREBOARD_LINEREMOVE("msg.command.scoreboard.lineRemoved", "§eYou have successfully removed the line {0}."),
+	COMMAND_SCOREBOARD_LINENOEXIST("msg.command.scoreboard.lineInexistant", "§cThe line {0} does not exist."),
+	COMMAND_SCOREBOARD_RESETALL("msg.command.scoreboard.resetAll", "§eYou have successfully reset the scoreboard of player {0}."),
 	
 	COMMAND_HELP("msg.command.help.header", "§e§lBeautyQuests - §6help§r"),
 	COMMAND_HELP_CREATE("msg.command.help.create", "§e/{0} create: §acreate a quest"),
@@ -105,6 +116,7 @@ public enum Lang{
 	COMMAND_HELP_RELOAD("msg.command.help.reload", "§e/{0} reload: §asave and reload the configuration and data files - §c§odeprecated"),
 	COMMAND_HELP_START("msg.command.help.start", "§e/{0} start <player> [id] : §aforce starting of a quest"),
 	COMMAND_HELP_SETITEM("msg.command.help.setItem", "§e/{0} setItem <talk|launch> : §asave the hologram item in the data file"),
+	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", "§e/{0} adminMode : §atoggle the admin-mode (displaying of messages)"),
 	COMMAND_HELP_VERSION("msg.command.help.version", "§e/{0} version: §asee the plugin version"),
 	COMMAND_HELP_SAVE("msg.command.help.save", "§e/{0} save: §amake a manual save of datas"),
 	COMMAND_HELP_LIST("msg.command.help.list", "§e/{0} list: §asee the quests list (for supported versions)"),
@@ -134,7 +146,7 @@ public enum Lang{
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value", "§eEnter required value of the placeholder §o%{0}%."),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired", "§eType name of the wanted skill."),
 	// rewards
-	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission", "§eEdit gained or retired permissions."),
+	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission", "§eEdit gained or retired permissions with \"add <permission> [remove]\" (type \"help\" to see other commands)"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money", "§eType the amount of money gained."),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType", "§eType the name of the wanted item type."),
@@ -193,11 +205,13 @@ public enum Lang{
 	stageMine("inv.create.mineBlocks", "§aBreak blocks"),
 	stageChat("inv.create.talkChat", "§aWrite in the chat"),
 	stageInteract("inv.create.interact", "§aInteract with block"),
+	stageFish("inv.create.fish", "§aCatch fishes"),
 	stageText("inv.create.NPCText", "§eEdit the text of the NPC"),
 	stageHide("inv.create.hideClues", "Hide indications (particles, holograms)"),
 	editMobs("inv.create.editMobsKill", "§eEdit the mobs to kill"),
 	mobsKillType("inv.create.mobsKillFromAFar", "Kill from a far"),
 	editBlocks("inv.create.editBlocksMine", "§eEdit blocks to break"),
+	preventBlockPlace("inv.create.preventBlockPlace", "Prevent player to break his own blocks"),
 	editMessage("inv.create.editMessageType", "§eEdit message to write"),
 	cancelEvent("inv.create.cancelMessage", "Cancel sending"),
 	stageItems("inv.create.selectItems", "§bChoose the required items"),
@@ -205,6 +219,7 @@ public enum Lang{
 	startMsg("inv.create.stageStartMsg", "§eEdit the starting message"),
 	blockLocation("inv.create.selectBlockLocation", "§6Select block location"),
 	leftClick("inv.create.leftClick", "Left click"),
+	editFishes("inv.create.editFishes", "§eEdit fishes to catch"),
 	
 	INVENTORY_STAGES("inv.stages.name", "§8Create the stages"),
 	nextPage("inv.stages.nextPage", "§eNext page"),
@@ -279,7 +294,7 @@ public enum Lang{
 	finisheds("inv.listQuests.finished", "Finished Quests"),
 	inProgress("inv.listQuests.inProgress", "Quests in progress"),
 	cancelLore("inv.listQuests.loreCancel", "§c§oClick to cancel the quest"),
-	timeWait("inv.listQuests.timeToWait", "§3§o{0} minuts before you can restart this quest"),
+	timeWait("inv.listQuests.timeToWait", "§3§o{0} minutes before you can restart this quest"),
 	canRedo("inv.listQuests.canRedo", "§3§oYou can restart this quest!"),
 	formatNormal("inv.listQuests.format.normal", "§6§l§o{0}"),
 	formatId("inv.listQuests.format.withId", "§6§l§o{0}§r      §e#{1}"),
@@ -312,6 +327,8 @@ public enum Lang{
 	
 	SCOREBOARD_NAME("scoreboard.name", "§6§lQuests"),
 	SCOREBOARD_NONE("scoreboard.noLaunched", "§cNo quests in progress."),
+	SCOREBOARD_NONE_NAME("scoreboard.noLaunchedName", "§c§l- x -"),
+	SCOREBOARD_NONE_DESC("scoreboard.noLaunchedDescription", "§c§ox"),
 	SCOREBOARD_REG("scoreboard.stage.region", "§eFind the region §6{0}"),
 	SCOREBOARD_NPC("scoreboard.stage.npc", "§eTalk to the NPC §6{0}"),
 	SCOREBOARD_ITEMS("scoreboard.stage.items", "§eFind items for §6{0} §e:"),
@@ -319,6 +336,7 @@ public enum Lang{
 	SCOREBOARD_MINE("scoreboard.stage.mine", "§eMine {0}"),
 	SCOREBOARD_CHAT("scoreboard.stage.chat", "§eWrite §6{0}"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact", "§eClick on the block at §6{0}"),
+	SCOREBOARD_FISH("scoreboard.stage.fish", "§eFish §6{0}"),
 	
 	/* Misc */
 	
@@ -326,6 +344,7 @@ public enum Lang{
 	NpcText("misc.format.npcText", "§6[{2}/{3}] §e§l{0}:§r§e {1}"),
 	SelfText("misc.format.selfText", "§6[{2}/{3}] §e§l{0}:§r§e {1}"),
 	OffText("misc.format.offText", "§r§e {0}"),
+	
 	Find("misc.stageType.region", "Find a region"),
 	Talk("misc.stageType.npc", "Find a NPC"),
 	Items("misc.stageType.items", "Bring back items"),
@@ -333,6 +352,8 @@ public enum Lang{
 	Mine("misc.stageType.mine", "Break blocks"),
 	Chat("misc.stageType.chat", "Talk in the chat"),
 	Interact("misc.stageType.interact", "Interact with block"),
+	Fish("misc.stageType.Fish", "Catch fishes"),
+	
 	RClass("misc.requirement.class", "§bClass(es) required"),
 	RFaction("misc.requirement.faction", "§bFaction(s) required"),
 	RJobLvl("misc.requirement.jobLevel", "§bJob level required"),

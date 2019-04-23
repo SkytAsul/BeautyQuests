@@ -19,6 +19,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -101,27 +102,22 @@ public class StageMobs extends AbstractStage{
 		this.shoot = shoot;
 	}
 
-	public String descriptionLine(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
-		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
+	public String descriptionLine(PlayerAccount acc, Source source){
+		String[] str = buildRemainingArray(acc, source);
+		return Lang.SCOREBOARD_MOBS.format(Utils.descriptionLines(source, str));
 	}
 	
-	protected String descriptionMenu(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
-		return Utils.format(Lang.SCOREBOARD_MOBS.toString(), str.length == 0 ? Lang.Unknown.toString() : Utils.buildFromArray(str, 0, "\\n"));
-	}
-	
-	protected Object[] descriptionFormat(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+		String[] str = buildRemainingArray(acc, source);
 		return new String[]{str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor())};
 	}
 	
-	private String[] buildRemainingArray(PlayerAccount acc){
+	private String[] buildRemainingArray(PlayerAccount acc, Source source){
 		List<Mob> list = remaining.get(acc).remaining;
 		String[] str = new String[list.size()];
 		for (int i = 0; i < list.size(); i++){
 			Mob m = list.get(i);
-			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount);
+			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount, QuestsConfiguration.showDescriptionItemsXOne(source));
 		}
 		return str;
 	}
@@ -192,12 +188,12 @@ public class StageMobs extends AbstractStage{
 	public void launch(Player p){
 		if (remainingAdd(PlayersManager.getPlayerAccount(p))){
 			super.launch(p);
-			String[] str = new String[mobs.size()];
-			for (int i = 0; i < mobs.size(); i++){
-				Mob m = mobs.get(i);
-				str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), ChatColor.GREEN.toString(), m.amount);
-			}
 			if (sendStartMessage()) {
+				String[] str = new String[mobs.size()];
+				for (int i = 0; i < mobs.size(); i++){
+					Mob m = mobs.get(i);
+					str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), ChatColor.GREEN.toString(), m.amount, false);
+				}
 				Utils.sendMessage(p, Lang.STAGE_MOBSLIST.toString(), Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
 			}
 		}
@@ -222,7 +218,7 @@ public class StageMobs extends AbstractStage{
 		}
 	}
 
-	protected Map<String, Object> serialize(Map<String, Object> map){
+	protected void serialize(Map<String, Object> map){
 		map.put("mobs", serializeMobsList(mobs));
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
@@ -231,8 +227,6 @@ public class StageMobs extends AbstractStage{
 		}
 		map.put("remaining", re);
 		if (shoot) map.put("shoot", true);
-		
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
@@ -245,7 +239,7 @@ public class StageMobs extends AbstractStage{
 				if (acc == null) continue;
 				List<Mob> list = fromSerializedMobList(en.getValue());
 				if (list.isEmpty()){
-					DebugUtils.debugMessage(null, "Player " + en.getKey() + " unused for StageMobs");
+					DebugUtils.logMessage("Player " + en.getKey() + " unused for StageMobs");
 					st.remaining.put(acc, new PlayerDatas(null, new ArrayList<>(), null));
 				}else{
 					PlayerDatas datas = new PlayerDatas(acc, list, null);

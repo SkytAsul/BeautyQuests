@@ -6,6 +6,9 @@ import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.stages.StageManager;
 
+/**
+ * Called when a player finish a stage
+ */
 public class NextStageEvent extends PlayerQuestEvent{
 
 	AbstractStage last, next;

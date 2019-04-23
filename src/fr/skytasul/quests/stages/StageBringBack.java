@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.CitizensAPI;
@@ -17,11 +18,25 @@ import net.citizensnpcs.api.npc.NPC;
 public class StageBringBack extends StageNPC{
 	
 	private ItemStack[] items;
+	private String splitted;
+	private String line;
 	
 	public StageBringBack(StageManager manager, NPC npc, ItemStack[] items) {
 		super(manager, npc);
 		this.bringBack = this;
 		this.items = items;
+
+		String[] array = new String[items.length]; // create messages on beginning
+		for (int i = 0; i < array.length; i++){
+			array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT));
+		}
+		splitted = Utils.descriptionLines(Source.FORCESPLIT, array);
+		if (QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT)){
+			for (int i = 0; i < array.length; i++){
+				array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), false);
+			}
+		}
+		line = Utils.descriptionLines(Source.FORCELINE, array);
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -33,7 +48,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor()));
+		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, line);
 		return false;
 	}
 	
@@ -48,32 +63,23 @@ public class StageBringBack extends StageNPC{
 		return items;
 	}
 
-	public String descriptionLine(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + descString(), npcName());
+	public String descriptionLine(PlayerAccount acc, Source source){
+		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfiguration.splitDescription(source) ? splitted : line), npcName());
 	}
 	
-	protected String descriptionMenu(PlayerAccount acc){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + "\\n" + Utils.itemsToString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), "\\n"), npcName());
-	}
-	
-	protected Object[] descriptionFormat(PlayerAccount acc){
-		return new String[]{descString(), npcName()};
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
 	}
 
 	public void launch(Player p){
 		super.launch(p);
-		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, descString());
-	}
-	
-	private String descString(){
-		return Utils.itemsToFormattedString(Utils.getStringArrayFromItemStackArray(items, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.getItemNameColor()), QuestsConfiguration.getItemAmountColor());
+		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, line);
 	}
 	
 	
-	public Map<String, Object> serialize(Map<String, Object> map) {
-		map = super.serialize(map);
+	public void serialize(Map<String, Object> map) {
+		super.serialize(map);
 		map.put("items", items);
-		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){

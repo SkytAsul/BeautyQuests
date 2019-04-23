@@ -37,7 +37,7 @@ public class BlocksGUI implements CustomInventory {
 
 	static ItemStack fromBlock(BlockData block){
 		if (block == null) return null;
-		ItemStack is = item(block.type, "§aBlock: " + block.type.name());
+		ItemStack is = item(block.type, "§aBlock: §b" + block.type.name() + "§a | Amount: §b" + block.amount);
 		return is;
 	}
 	

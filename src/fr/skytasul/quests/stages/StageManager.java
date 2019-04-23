@@ -20,6 +20,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.NextStageEvent;
 import fr.skytasul.quests.api.events.PlayerStageResetEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -75,14 +76,17 @@ public class StageManager{
 		return stages.get(id);
 	}
 	
-	/*public AbstractStage getPlayerStage(OfflinePlayer op){
-		return getPlayerStage(op.getUniqueId());
-	}*/
-	public String getDescriptionLine(PlayerAccount account, boolean menu){
-		if (!playerStage.containsKey(account)) return null;
+	public String getDescriptionLine(PlayerAccount account, Source source){
+		if (!playerStage.containsKey(account)) throw new IllegalArgumentException("Account does not have this stage launched");
 		AbstractStage stage = getPlayerStage(account);
 		if (stage == null) return "§efinishing";
-		return stage.getDescriptionLine(account, menu);
+		return stage.getDescriptionLine(account, source);
+	}
+	/**
+	 * Where do the description request come from
+	 */
+	public static enum Source{
+		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE;
 	}
 	
 	public int getPlayerStageID(PlayerAccount account){
@@ -93,15 +97,6 @@ public class StageManager{
 		if (playerStage.get(account) == null) return null;
 		return getStage(playerStage.get(account));
 	}
-	
-	/*public List<OfflinePlayer> getPlayersForStage(AbstractStage stage){
-		List<OfflinePlayer> ls = new ArrayList<>();
-		for (Entry<PlayerAccount, Integer> en : playerStage.entrySet()){
-			if (!getStage(en.getValue()).equals(stage)) continue;
-			ls.add(en.getKey().getOfflinePlayer());
-		}
-		return ls;
-	}*/
 	
 	public List<PlayerAccount> getPlayersForStage(AbstractStage stage){
 		List<PlayerAccount> ls = new ArrayList<>();
@@ -147,10 +142,10 @@ public class StageManager{
 		}
 	}
 	
-	public boolean remove(PlayerAccount acc){
+	public boolean remove(PlayerAccount acc, boolean forced){
 		if (!playerStage.containsKey(acc)) return false;
 		removePlayerStage(acc);
-		Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, quest));
+		if (forced) Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, quest));
 		return true;
 	}
 	
@@ -161,8 +156,9 @@ public class StageManager{
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (playerStage.containsKey(acc)){
-			DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
 			int last = playerStage.get(acc);
+			DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
+			AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + last + " of quest " + quest.getID());
 			AbstractStage stage = getStage(last);
 			BukkitRunnable run = new BukkitRunnable() {
 				public void run(){
@@ -204,9 +200,8 @@ public class StageManager{
 			playerStage.put(acc, id);
 			if (p != null && launchStage){
 				stage.launch(p);
-			}else {
-				stage.start(acc);
 			}
+			stage.start(acc);
 		}
 	}
 	

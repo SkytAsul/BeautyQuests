@@ -49,30 +49,31 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class BeautyQuests extends JavaPlugin{
 
+	public static QuestsLogger logger;
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
-
-	public static String lastVersion;
 	
+	/* --------- YAML --------- */
+	
+	private String lastVersion;
 	private FileConfiguration config;
 	private YamlConfiguration data;
 	private File dataFile;
-	public static QuestsLogger logger;
 	static File saveFolder;
 	
-	/* ------------------ */
+	/* --------- Datas --------- */
 
 	private List<Quest> quests = new ArrayList<>();
 	private Map<NPC, NPCStarter> npcs = new HashMap<>();
+	private ScoreboardManager scoreboards;
+	public static int lastID = 0;
 	
-	/* ------------------ */
+	/* ---------- Operations -------- */
 
 	private static boolean disable = false;
 	public static boolean loadingFailure = false;
 	public static boolean savingFailure = false;
 	
-	public static int lastID = 0;
-
 	/* ---------------------------------------------- */
 
 	public void onLoad(){
@@ -92,6 +93,13 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	public void onEnable(){
+		if (!getServer().getPluginManager().isPluginEnabled("Citizens")){
+			logger.severe("Citizens plugin is not installed.");
+			logger.severe("This is a fatal error. Now disabling.");
+			disable = true;
+			setEnabled(false);
+			return;
+		}
 		try{
 			Dependencies.initialize(getServer().getPluginManager(), logger);
 		}catch (Throwable ex){
@@ -183,6 +191,7 @@ public class BeautyQuests extends JavaPlugin{
 
 	public void onDisable(){
 		Editor.leaveAll();
+		Inventories.closeAll();
 		stopSaveCycle();
 		
 		try {
@@ -223,14 +232,15 @@ public class BeautyQuests extends JavaPlugin{
 		}catch (Exception ex){
 			getLogger().severe("Error when loading.");
 			ex.printStackTrace();
-			//getLogger().severe(DebugUtils.stackTraceMessage(ex, "Error when loading.", true));
 		}
 	}
 			
 	private int loadAllDatas() throws Throwable{
 		if (disable) return 666;
 		
-		ScoreboardManager.initialize();
+		File scFile = new File(getDataFolder(), "scoreboard.yml");
+		if (!scFile.exists()) saveResource("scoreboard.yml", true);
+		scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
 		if (Dependencies.dyn){
 			try{
 				Dynmap.intitialize();
@@ -253,14 +263,14 @@ public class BeautyQuests extends JavaPlugin{
 		}
 
 		for (File file : saveFolder.listFiles()){
-			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml")) continue;
+			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml") || file.getName().contains("backup")) continue;
 			loadingFailure = false;
 			try{
 				Quest quest = Quest.loadFromFile(file);
 				if (quest != null) {
 					addQuest(quest);
 				}else logger.severe("Quest from file " + file.getName() + " not activated");
-				if (loadingFailure) createQuestBackup(quest, "Error when loading quest.");
+				if (loadingFailure) createQuestBackup(file, file.getName().substring(0, file.getName().lastIndexOf(".")), "Error when loading quest.");
 			}catch (Throwable ex){
 				ex.printStackTrace();
 				continue;
@@ -275,7 +285,7 @@ public class BeautyQuests extends JavaPlugin{
 
 	public int saveAllConfig(boolean unload) throws Throwable{
 		if (unload){
-			ScoreboardManager.unload();
+			if (scoreboards != null) scoreboards.unload();
 		}
 		
 		int amount = 0;
@@ -287,7 +297,7 @@ public class BeautyQuests extends JavaPlugin{
 				YamlConfiguration fc = YamlConfiguration.loadConfiguration(file);
 				List<Map<String, Object>> ls = new ArrayList<>();
 				ls.add(qu.serialize());
-				if (savingFailure) createQuestBackup(qu, "Error when saving quest.");
+				if (savingFailure) createQuestBackup(qu.file, qu.getID() + "", "Error when saving quest.");
 				fc.set("quest", ls);
 				fc.save(file);
 				amount++;
@@ -325,7 +335,7 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	private void launchSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0){
+		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
 			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
 			saveTask = new BukkitRunnable() {
 				public void run() {
@@ -375,10 +385,10 @@ public class BeautyQuests extends JavaPlugin{
 		}
 	}
 
-	public boolean createQuestBackup(Quest quest, String msg){
+	public boolean createQuestBackup(File file, String id, String msg){
 		getLogger().info(msg + " Creating backup...");
 		try{
-			getLogger().info("Quest backup created at " + Files.copy(quest.file.toPath(), new File(saveFolder, quest.getID() + "-backup" + format.format(new Date()) + ".yml").toPath()).getFileName());
+			getLogger().info("Quest backup created at " + Files.copy(file.toPath(), new File(saveFolder, id + "-backup" + format.format(new Date()) + ".yml").toPath()).getFileName());
 			return true;
 		}catch (Exception e) {
 			getLogger().severe("An error occured while creating the backup.");
@@ -435,6 +445,7 @@ public class BeautyQuests extends JavaPlugin{
 				getLogger().severe("This is a fatal error. Now disabling.");
 				disable = true;
 				this.setEnabled(false);
+				return null;
 			}
 		}
 		YamlConfiguration conf = YamlConfiguration.loadConfiguration(lang);
@@ -526,6 +537,10 @@ public class BeautyQuests extends JavaPlugin{
 	
 	public FileConfiguration getDataFile(){
 		return data;
+	}
+	
+	public ScoreboardManager getScoreboardManager(){
+		return scoreboards;
 	}
 	
 

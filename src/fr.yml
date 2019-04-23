@@ -47,7 +47,7 @@ msg:
     (tapez "null" si vous voulez le timer par défaut)
   requirements:
     quest: §eVous devez avoir terminé la quête "{0}"§r§e !
-    level: §eVous devenez être au moins niveau {0} !
+    level: §eVous devez être au moins niveau {0} !
     job: §eVous devez avoir au moins le niveau {0} du job {1} !
     wait: §cVous devez encore attendre {0} minutes avant de pouvoir refaire cette
       quête.

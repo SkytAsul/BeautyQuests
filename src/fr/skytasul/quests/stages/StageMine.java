@@ -9,11 +9,15 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
@@ -23,6 +27,7 @@ public class StageMine extends AbstractStage {
 
 	private List<BlockData> blocks = new ArrayList<>();
 	private Map<PlayerAccount, List<BlockData>> remaining = new HashMap<>();
+	private boolean placeCancelled;
 	
 	public StageMine(StageManager manager, List<BlockData> blocks) {
 		super(manager);
@@ -33,27 +38,30 @@ public class StageMine extends AbstractStage {
 		return blocks;
 	}
 	
-	public String descriptionLine(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
-		return Lang.SCOREBOARD_MINE.format(str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
+	public boolean isPlaceCancelled() {
+		return placeCancelled;
+	}
+
+	public void setPlaceCancelled(boolean cancelPlaced) {
+		this.placeCancelled = cancelPlaced;
+	}
+
+	public String descriptionLine(PlayerAccount acc, Source source){
+		String[] str = buildRemainingArray(acc, source);
+		return Lang.SCOREBOARD_MINE.format(Utils.descriptionLines(source, str));
 	}
 	
-	protected String descriptionMenu(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
-		return Lang.SCOREBOARD_MINE.format(str.length == 0 ? Lang.Unknown.toString() : Utils.buildFromArray(str, 0, "\\n"));
-	}
-	
-	protected Object[] descriptionFormat(PlayerAccount acc){
-		String[] str = buildRemainingArray(acc);
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+		String[] str = buildRemainingArray(acc, source);
 		return new String[]{str.length == 0 ? Lang.Unknown.toString() : Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor())};
 	}
 	
-	private String[] buildRemainingArray(PlayerAccount acc){
+	private String[] buildRemainingArray(PlayerAccount acc, Source source){
 		String[] str = new String[remaining.get(acc).size()];
 		List<BlockData> list = remaining.get(acc);
 		for (int i = 0; i < list.size(); i++){
 			BlockData b = list.get(i);
-			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(MinecraftNames.getMaterialName(b.type), QuestsConfiguration.getItemAmountColor(), b.amount);
+			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(MinecraftNames.getMaterialName(b.type), QuestsConfiguration.getItemAmountColor(), b.amount, QuestsConfiguration.showDescriptionItemsXOne(source));
 		}
 		return str;
 	}
@@ -64,6 +72,10 @@ public class StageMine extends AbstractStage {
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (manager.hasStageLaunched(acc, this)){
+			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
+				System.out.println("metadata");
+				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+			}
 			List<BlockData> playerBlocks = remaining.get(acc);
 			if (playerBlocks == null) {
 				Utils.sendMessage(p, "Error : playerBlocks is null");
@@ -81,6 +93,25 @@ public class StageMine extends AbstractStage {
 			if (playerBlocks.isEmpty()){
 				remaining.remove(acc);
 				finishStage(p);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlace(BlockPlaceEvent e){
+		if (!placeCancelled) return;
+		Player p = e.getPlayer();
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (!manager.hasStageLaunched(acc, this));
+		List<BlockData> playerBlocks = remaining.get(acc);
+		if (playerBlocks == null) {
+			Utils.sendMessage(p, "Error : playerBlocks is null");
+			return;
+		}
+		for (BlockData b : playerBlocks){
+			if (b.type.isSameMaterial(e.getBlock())){
+				e.getBlock().setMetadata("playerInStage", new FixedMetadataValue(BeautyQuests.getInstance(), p.getName()));
+				return;
 			}
 		}
 	}
@@ -106,7 +137,7 @@ public class StageMine extends AbstractStage {
 		}
 	}
 
-	protected Map<String, Object> serialize(Map<String, Object> map){
+	protected void serialize(Map<String, Object> map){
 		map.put("blocks", fromBlocks(blocks));
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
@@ -114,7 +145,7 @@ public class StageMine extends AbstractStage {
 			re.put(b.getKey().getIndex(), fromBlocks(b.getValue()));
 		}
 		map.put("remaining", re);
-		return map;
+		if (placeCancelled) map.put("placeCancelled", placeCancelled);
 	}
 	
 	private static List<Map<String, Object>> fromBlocks(List<BlockData> blocks){
@@ -143,6 +174,8 @@ public class StageMine extends AbstractStage {
 				st.remaining.put(PlayersManager.getByIndex(en.getKey()), fromMapList(en.getValue()));
 			}
 		}
+		
+		if (map.containsKey("placeCancelled")) st.placeCancelled = (boolean) map.get("placeCancelled");
 		
 		return st;
 	}

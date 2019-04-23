@@ -87,8 +87,6 @@ public abstract class Editor implements Listener{
 		Editor edit = (Editor) players.get(p);
 		if (edit == null){
 			enter(p, editor);
-		}else if (edit.getClass() == editor.getClass()){
-			leave(p);
 		}else{
 			Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
 		}

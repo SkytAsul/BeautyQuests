@@ -10,12 +10,12 @@ maxLaunchedQuests: 0
 debug: false
 
 scoreboards: true
-showEmptyScoreboard: false
 
 playerQuestUpdateMessage: true
 playerStageStartMessage: true
 allowPlayerCancelQuest: false
 sounds: true
+finishSound: ENTITY_PLAYER_LEVELUP
 fireworks: true
 mobsProgressBar: false
 progressBarTimeoutSeconds: 15
@@ -37,6 +37,10 @@ pageItem: ARROW
 questItem: "§e§oQuest Item"
 itemNameColor: "§6"
 itemAmountColor: "§e"
+stageDescriptionItemsSplit:
+  prefix: "§e- §6"
+  showXOne: true
+  sources: [SCOREBOARD, MENU]
 
 particles: true
 start:

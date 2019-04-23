@@ -38,7 +38,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	private String name;
 	private List<String> lore = new ArrayList<>();
 	private boolean quest = false;
-	private boolean flags = true;
+	private boolean flags = false;
 
 
 	public Inventory open(Player p) {
@@ -46,7 +46,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
 
 		inv.setItem(0, ItemUtils.item(XMaterial.ARROW, Lang.itemType.toString()));
-		inv.setItem(1, ItemUtils.itemSwitch(Lang.itemFlags.toString(), true));
+		inv.setItem(1, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
 		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
 		inv.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
 		inv.setItem(6, ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
@@ -78,38 +78,13 @@ public class ItemCreatorGUI implements CustomInventory {
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 				type = (XMaterial) obj;
 				reopen();
-			}, new MaterialParser(true)));/*new AbstractParser() {
-
-				public Object parse(Player p, String msg) throws Throwable {
-					XMaterial tmp = XMaterial.fromString(msg);
-					if (tmp == null){
-						Material mat = Material.matchMaterial(msg);
-						if (mat != null) tmp = XMaterial.fromString(mat.name());
-						if (tmp == null) Lang.UNKNOWN_ITEM_TYPE.send(p);
-					}else if (BeautyQuests.MCversion >= 13 && !Update1_13.isItem(tmp.parseMaterial())){
-						Lang.INVALID_ITEM_TYPE.send(p);
-						return null;
-					}
-					return tmp;
-				}
-			}))*/;
+			}, new MaterialParser(true)));;
 			break;
 
 		case 1:
 			flags = ItemUtils.toggle(current);
 			refresh();
 			break;
-
-			/*case 1:
-			Lang.CHOOSE_ITEM_DATA.send(p);
-			Editor.enterOrLeave(p, new WaitText(p, new RunnableObj() {
-
-				public void run(Object obj) {
-					data = (short) obj;
-					reopen();
-				}
-			}, new NumberParser(Short.class, true)));
-		break;*/
 
 		case 3:
 			Lang.CHOOSE_ITEM_NAME.send(p);
@@ -159,7 +134,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	}
 
 	private ItemStack build(){
-		ItemStack is = /*ItemUtils.item(type, name, lore.toArray(new String[0]));*/ type.parseItem();
+		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		if (name != null) im.setDisplayName(name);
 		if (flags) im.addItemFlags(ItemFlag.values());

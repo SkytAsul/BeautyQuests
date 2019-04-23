@@ -1,6 +1,7 @@
 package fr.skytasul.quests;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -70,8 +71,8 @@ public class NPCStarter {
 	}
 	
 	public void delete() {
-		for (Quest qu : quests) {
-			qu.remove(true);
+		for (Iterator<Quest> iterator = quests.iterator(); iterator.hasNext();) {
+			iterator.next().remove(true);
 		}
 		quests = null;
 		BeautyQuests.getInstance().getNPCs().remove(npc);

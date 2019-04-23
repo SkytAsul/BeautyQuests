@@ -11,13 +11,33 @@ import fr.skytasul.quests.utils.ReflectUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 
 /**
+ * A simple tool to manage scoreboards in minecraft (lines up to 48 characters !).</br>
+ * Edited by me to permit more flexibility
+ * @see <a href="https://gist.github.com/zyuiop/8fcf2ca47794b92d7caa">Original file on GitHub</a>
  * @author zyuiop, SkytAsul
  */
 public class ScoreboardSigns {
-	private static ReflectUtils nms = NMS.getNMS().getNMSReflect();
+	private static Object objectiveC;
+	private static Object scoreD12;
+	private static Object scoreD13;
+	private static Object removeLineD13;
+	static {
+		try {
+			ReflectUtils nms = NMS.getNMS().getNMSReflect();
+			objectiveC = ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("IScoreboardCriteria"), "EnumScoreboardHealthDisplay"), 0);
+			if (NMS.getMCVersion() < 13){
+				scoreD12 = ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("PacketPlayOutScoreboardScore"), "EnumScoreboardAction"), 0);
+			}else{
+				removeLineD13 = ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("ScoreboardServer"), "Action"), 1);
+				scoreD13 = ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("ScoreboardServer"), "Action"), 0);
+			}
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private boolean created = false;
-	private final VirtualTeam[] lines = new VirtualTeam[15];
+	private final ArrayList<VirtualTeam> lines = new ArrayList<>(15);
 	private final Player player;
 	private String objectiveName;
 
@@ -42,7 +62,7 @@ public class ScoreboardSigns {
 			NMS.getNMS().sendPacket(player, createObjectivePacket(0, objectiveName));
 			NMS.getNMS().sendPacket(player, setObjectiveSlot());
 			int i = 0;
-			while (i < lines.length)
+			while (i < lines.size())
 				sendLine(i++);
 
 			created = true;
@@ -87,7 +107,7 @@ public class ScoreboardSigns {
 	 * @param line the number of the line (0 &#60;= line &#60; 15)
 	 * @param value the new value for the scoreboard line
 	 */
-	public void setLine(int line, String value) {
+	public VirtualTeam setLine(int line, String value) {
 		try {
 			VirtualTeam team = getOrCreateTeam(line);
 			String old = team.getCurrentPlayer();
@@ -97,28 +117,53 @@ public class ScoreboardSigns {
 
 			team.setValue(value);
 			sendLine(line);
+			return team;
 		}catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	/**
 	 * Remove a given scoreboard line
 	 * @param line the line to remove
-	 * @throws ClassNotFoundException reflection problem
 	 */
-	public void removeLine(int line) throws ClassNotFoundException {
-		VirtualTeam team = getOrCreateTeam(line);
-		String old = team.getCurrentPlayer();
+	public void removeLine(int line){
+		try{
+			VirtualTeam team = getOrCreateTeam(line);
+			String old = team.getCurrentPlayer();
 
-		if (old != null && created) {
-			NMS.getNMS().sendPacket(player, removeLine(old));
-			NMS.getNMS().sendPacket(player, team.removeTeam());
+			if (old != null && created) {
+				NMS.getNMS().sendPacket(player, removeLine(old));
+				NMS.getNMS().sendPacket(player, team.removeTeam());
+			}
+
+			lines.remove(line);
+			for (int i = line; i < lines.size(); i++){
+				VirtualTeam val = getOrCreateTeam(i);
+				NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - /*line ?*/ i));
+			}
+		}catch (ClassNotFoundException ex){
+			ex.printStackTrace();
 		}
-
-		lines[line] = null;
 	}
 
+	public void moveLines(int start, int amount){
+		try {
+			int newSize = lines.size() + amount;
+			for (int i = start; i < newSize; i++){ // from the start line to the end of the final list
+				if (i < start + amount){ // insert null values to make space
+					lines.add(start, null);
+				}else { // refresh scores of the next lines
+					VirtualTeam val = getOrCreateTeam(i);
+					NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - i));
+				}
+			}
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Get the current value for a line
 	 * @param line the line
@@ -144,6 +189,15 @@ public class ScoreboardSigns {
 			return null;
 		return getOrCreateTeam(line);
 	}
+	
+	/**
+	 * Get the line assigned to a team
+	 * @param team
+	 * @return the line number assigned to the specified team
+	 */
+	public int getTeamLine(VirtualTeam team){
+		return lines.indexOf(team);
+	}
 
 	private void sendLine(int line) throws ClassNotFoundException {
 		if (line > 14)
@@ -159,15 +213,20 @@ public class ScoreboardSigns {
 			NMS.getNMS().sendPacket(player, packet);
 		}
 		NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), score));
-		//System.out.println("AFTER PA");
 		val.reset();
 	}
 
+	private int last = 0;
 	private VirtualTeam getOrCreateTeam(int line) {
-		if (lines[line] == null)
-			lines[line] = new VirtualTeam("__fakeScore" + line);
+		if (lines.size() <= line){
+			lines.add(new VirtualTeam("__fakeScore" + last));
+			last++;
+		}else if (lines.get(line) == null){
+			lines.set(line, new VirtualTeam("__fakeScore" + last));
+			last++;
+		}
 
-		return lines[line];
+		return lines.get(line);
 	}
 
 	/*
@@ -186,7 +245,7 @@ public class ScoreboardSigns {
 
 		if (mode == 0 || mode == 2) {
 			setField(packet, "b", NMS.getMCVersion() < 13 ? displayName : NMS.getNMS().getIChatBaseComponent(displayName));
-			setField(packet, "c", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("IScoreboardCriteria"), "EnumScoreboardHealthDisplay"), 0));
+			setField(packet, "c", objectiveC);
 		}
 
 		return packet;
@@ -207,13 +266,13 @@ public class ScoreboardSigns {
 			packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore", line);
 			setField(packet, "b", player.getName());
 			setField(packet, "c", score);
-			setField(packet, "d", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("PacketPlayOutScoreboardScore"), "EnumScoreboardAction"), 0));
+			setField(packet, "d", scoreD12);
 		}else {
 			packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore");
 			setField(packet, "a", line);
 			setField(packet, "b", player.getName());
 			setField(packet, "c", score);
-			setField(packet, "d", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("ScoreboardServer"), "Action"), 0));
+			setField(packet, "d", scoreD13);
 		}
 		return packet;
 	}
@@ -224,7 +283,7 @@ public class ScoreboardSigns {
 		}
 		Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore");
 		setField(packet, "a", line);
-		setField(packet, "d", ReflectUtils.fromEnum(ReflectUtils.getClassDotClass(nms.fromName("ScoreboardServer"), "Action"), 1));
+		setField(packet, "d", removeLineD13);
 		return packet;
 	}
 
@@ -277,7 +336,6 @@ public class ScoreboardSigns {
 		}
 
 		private Object createPacket(int mode) {
-			//System.out.println("pre" + prefix);
 			Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardTeam");
 			setField(packet, "a", name);
 			setField(packet, "i", mode);
@@ -379,7 +437,6 @@ public class ScoreboardSigns {
 				setPrefix(value.substring(0, 16));
 				setPlayer(value.substring(16));
 				setSuffix("");
-				//System.out.println("pre : " + prefix + " | player : " + currentPlayer);
 			} else if (value.length() <= 48) {
 				setPrefix(value.substring(0, 16));
 				setPlayer(value.substring(16, 32));

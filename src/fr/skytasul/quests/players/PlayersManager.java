@@ -20,7 +20,7 @@ import fr.skytasul.quests.utils.types.NumberedList;
 import net.citizensnpcs.npc.ai.NPCHolder;
 
 public class PlayersManager {
-
+	
 	private static NumberedList<PlayerAccount> accounts = new NumberedList<>();
 	private static Map<UUID, List<PlayerAccount>> playerAccounts = /*Collections.synchronizedMap(*/new HashMap<>();
 	
@@ -29,21 +29,16 @@ public class PlayersManager {
 		UUID id = p.getUniqueId();
 		List<PlayerAccount> playerList = getPlayerAccounts(id);
 		
-		//already created verification
-		//System.out.println(ls.size());
 		for (PlayerAccount acc : playerList){
 			if (acc.abstractAcc.isCurrent()) return acc;
 		}
-		//System.out.println("not in list (size" + ls.size() + ")");
-		//not in list
 		synchronized (accounts) {
 			AbstractAccount absacc = createAbstractAccount(p);
 			PlayerAccount acc = new PlayerAccount(absacc);
 			playerList.add(acc);
 			int index = accounts.add(acc);
 			
-			//StackTraceElement st = Thread.currentThread().getStackTrace()[2];
-			DebugUtils.logMessage("New account registered for " + p.getName() + " (" + acc.abstractAcc.getIdentifier() + "), index " + index + " via " + /*st.getClassName() + "." + st.getMethodName()*/DebugUtils.stackTraces(2, 4));
+			DebugUtils.logMessage("New account registered for " + p.getName() + " (" + acc.abstractAcc.getIdentifier() + "), index " + index + " via " + DebugUtils.stackTraces(2, 4));
 			return acc;
 		}
 	}
@@ -55,15 +50,6 @@ public class PlayersManager {
 	public static PlayerAccount getByIndex(String index){
 		try{
 			return accounts.get(Integer.parseInt(index));
-		/*}catch (NumberFormatException ex){ //remove after 2 versions (0.11)
-			UUID id = UUID.fromString(index);
-			AbstractAccount absacc = QuestsConfiguration.hookAccounts() ? Accounts.createAccountFromUUID(id) : new UUIDAccount(id);
-			if (absacc == null) return null;
-			PlayerAccount acc = new PlayerAccount(absacc);
-			
-			getPlayerAccounts(id).add(acc);
-			accounts.add(acc);
-			return acc;*/
 		}catch (IndexOutOfBoundsException ex){
 			return null;
 		}
@@ -86,16 +72,10 @@ public class PlayersManager {
 		PlayerAccount acc = new PlayerAccount(abs);
 		UUID id = acc.abstractAcc.getOfflinePlayer().getUniqueId();
 		getPlayerAccounts(id).add(acc);
-		//DebugUtils.logMessage("New player account created from identifier : " + identifier);
 		return acc;
 	}
 	
 	private static AbstractAccount createAbstractAccount(Player p){
-		/*System.out.println(p.getClass().getName());
-		for (Class<?> clazz : p.getClass().getInterfaces()) {
-			System.out.println("inter: " + clazz.getName());
-		}
-		System.out.println("superclass: " + p.getClass().getSuperclass().getName());*/
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 	
@@ -176,7 +156,6 @@ public class PlayersManager {
 			list.put(en.getKey(), en.getValue().abstractAcc.getIdentifier());
 		}
 		config.set("players", list);
-		//DebugUtils.logMessage(list.size() + " datas saved");
 	}
 	
 }

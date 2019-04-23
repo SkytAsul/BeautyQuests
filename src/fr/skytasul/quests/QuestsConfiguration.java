@@ -1,10 +1,15 @@
 package fr.skytasul.quests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Color;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
@@ -26,7 +31,7 @@ public class QuestsConfiguration {
 	private static boolean gps = false;
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
-	private static boolean emptyScoreboard = false;
+	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
 	private static XMaterial item = XMaterial.BOOK;
 	private static XMaterial pageItem = XMaterial.ARROW;
 	private static String itemNameColor;
@@ -44,11 +49,6 @@ public class QuestsConfiguration {
 	private static boolean hookAcounts = false;
 	private static int splittedAdvancementPlaceholderMax = 3;
 	private static boolean particles = true;
-	/*private static ParticleEffect particle;
-	private static OrdinaryColor particleColor;
-	public static byte particleTypeCode;
-	private static ParticleShape particleShape;
-	private static List<ParticleLocation> particleLocations = new ArrayList<>();*/
 	private static ParticleEffect.Particle particleStart;
 	private static ParticleEffect.Particle particleTalk;
 	private static boolean sendUpdate = true;
@@ -56,6 +56,10 @@ public class QuestsConfiguration {
 	private static boolean playerCancelQuest = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
+	// stageDescription
+	private static String descPrefix = "{nl}§e- §6";
+	private static boolean descXOne = true;
+	private static List<Source> descSources = new ArrayList<>();
 
 	public static Quest firstQuest;
 
@@ -91,7 +95,6 @@ public class QuestsConfiguration {
 		gps = Dependencies.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		emptyScoreboard = config.getBoolean("showEmptyScoreboard");
 		item = XMaterial.fromString(config.getString("item"));
 		pageItem = XMaterial.fromString(config.getString("pageItem"));
 		if (item == null) item = XMaterial.BOOK;
@@ -126,8 +129,27 @@ public class QuestsConfiguration {
 		dSetName = config.getString("dynmap.markerSetName");
 		if (dSetName == null || dSetName.isEmpty()) Dependencies.dyn = false;
 		dIcon = config.getString("dynmap.markerIcon");
+		finishSound = config.getString("finishSound");
+		try{
+			Sound.valueOf(finishSound);
+		}catch (IllegalArgumentException ex){
+			BeautyQuests.logger.warning("Sound " + finishSound + " is not a valid Bukkit sound.");
+		}
 		/*effect = config.getConfigurationSection("effectLib");
 		effectEnabled = effect.getBoolean("enabled");*/
+		
+		// stageDescription
+		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
+		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
+		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
+			try{
+				descSources.add(Source.valueOf(s));
+			}catch (IllegalArgumentException ex){
+				BeautyQuests.logger.warning("Loading of description splitted sources failed : source " + s + " does not exist");
+				continue;
+			}
+		}
+		
 		if (particles){
 			try{
 				particleStart = Particle.deserialize(config.getConfigurationSection("start").getValues(false));
@@ -175,11 +197,6 @@ public class QuestsConfiguration {
 	public static boolean doParticles(){
 		return particles;
 	}
-	
-	/*public static boolean doCustomParticles(ParticleLocation loc){
-		if (!particles) return false;
-		return particleLocations.contains(loc);
-	}*/
 
 	public static boolean playSounds(){
 		return sounds;
@@ -209,10 +226,6 @@ public class QuestsConfiguration {
 		return scoreboard && NMS.isValid();
 	}
 
-	public static boolean showEmptyScoreboards(){
-		return emptyScoreboard;
-	}
-
 	public static XMaterial getItemMaterial(){
 		return item;
 	}
@@ -232,18 +245,6 @@ public class QuestsConfiguration {
 	public static String getItemNameColor() {
 		return itemNameColor;
 	}
-	
-	/*public static ParticleEffect getParticleEffect(){
-		return particle;
-	}
-	
-	public static ParticleColor getParticleColor(){
-		return particleColor;
-	}
-	
-	public static ParticleShape getParticleShape(){
-		return particleShape;
-	}*/
 	
 	public static ParticleEffect.Particle getParticleStart(){
 		return particleStart;
@@ -289,6 +290,24 @@ public class QuestsConfiguration {
 	
 	public static boolean isMinecraftTranslationsEnabled() {
 		return minecraftTranslationsFile != null;
+	}
+	
+	public static String getDescriptionItemPrefix(){
+		return descPrefix;
+	}
+	
+	public static boolean showDescriptionItemsXOne(Source source){
+		return splitDescription(source) && descXOne;
+	}
+	
+	public static boolean splitDescription(Source source){
+		if (source == Source.FORCESPLIT) return true;
+		if (source == Source.FORCELINE) return false;
+		return descSources.contains(source);
+	}
+	
+	public static String getFinishSound(){
+		return finishSound;
 	}
 	
 	/*public static boolean isEffectLibEnabled(){

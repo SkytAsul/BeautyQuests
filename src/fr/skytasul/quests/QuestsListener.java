@@ -23,7 +23,6 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
@@ -95,7 +94,7 @@ public class QuestsListener implements Listener{
 	public void onJoin(PlayerJoinEvent e){
 		if (QuestsConfiguration.firstQuest != null && !e.getPlayer().hasPlayedBefore()) QuestsConfiguration.firstQuest.start(e.getPlayer());
 		PlayersManager.getPlayerAccount(e.getPlayer());
-		ScoreboardManager.onJoin(e);
+		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}
 	
 	@EventHandler

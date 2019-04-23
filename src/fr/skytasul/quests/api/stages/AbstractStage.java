@@ -18,6 +18,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.stages.StageManager;
+import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Utils;
 
 /**
@@ -104,14 +105,24 @@ public abstract class AbstractStage implements Listener{
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
+	 * @see StageManager#next(Player)
 	 */
 	protected final void finishStage(Player p) {
 		manager.next(p);
 	}
 	
 	/**
+	 * Called internally to test if a player has the stage started
+	 * @param p Player to test
+	 * @see StageManager#hasStageLaunched(PlayerAccount, AbstractStage)
+	 */
+	protected final boolean hasStarted(Player p){
+		return manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this);
+	}
+	
+	/**
 	 * Called when the player is online at the moment the stage starts<br>
-	 * {@link #start(PlayerAccount)} will be called then
+	 * {@link #start(PlayerAccount)} is called just after
 	 * @param p Player who starts the stage
 	 */
 	public void launch(Player p){
@@ -124,7 +135,6 @@ public abstract class AbstractStage implements Listener{
 				}
 			}
 		}
-		start(PlayersManager.getPlayerAccount(p));
 	}
 	
 	/**
@@ -137,7 +147,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	/**
-	 * Called when the stage starts (player can be offline)
+	 * Called when the stage starts/player data is loaded (player can be offline)
 	 * @param account PlayerAccount for which the stage starts
 	 */
 	public void start(PlayerAccount account){}
@@ -148,37 +158,28 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void end(PlayerAccount account){}
 	
-	public final String getDescriptionLine(PlayerAccount acc, boolean menu){
-		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc));
-		String s;
+	public final String getDescriptionLine(PlayerAccount acc, Source source){
+		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
 		try{
-			if (menu) {
-				s = descriptionMenu(acc);
-				if (s != null) return s;
-			}
-			s = descriptionLine(acc);
-		}catch (Throwable ex){
-			s = "§a" + type.name;
+			return descriptionLine(acc, source);
+		}catch (Exception ex){
+			return "§a" + type.name;
 		}
-		return s;
 	}
 	
 	/**
 	 * @param acc PlayerAccount who has the stage in progress
+	 * @param source source of the description request
 	 * @return the progress of the stage for the player
 	 */
-	protected abstract String descriptionLine(PlayerAccount acc);
-	/**
-	 * @param acc PlayerAccount who has the stage in progress
-	 * @return the progress of the stage for the player. Message only viewable on the Menu GUI, can be null (if null, {@link #descriptionLine(PlayerAccount)} will be called instead)
-	 */
-	protected String descriptionMenu(PlayerAccount acc) {return null;}
+	protected abstract String descriptionLine(PlayerAccount acc, Source source);
 	/**
 	 * Will be called only if there is a {@link #customText}
 	 * @param acc PlayerAccount who has the stage in progress
+	 * @param source source of the description request
 	 * @return all strings that can be used to format the custom description text
 	 */
-	protected Object[] descriptionFormat(PlayerAccount acc) {return null;}
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {return null;}
 	
 	/**
 	 * Called when the stage has to be unloaded
@@ -195,9 +196,9 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void load() {}
 	
-	protected abstract Map<String, Object> serialize(Map<String, Object> map);
+	protected abstract void serialize(Map<String, Object> map);
 	
-	public Map<String, Object> serialize(){
+	public final Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
 		map.put("order", manager.getID(this));
@@ -211,15 +212,8 @@ public abstract class AbstractStage implements Listener{
 		}
 		map.put("rewards", rewls);
 		
-		return serialize(map);
-		/*try{
-			map = serialize(map);
-		}catch (Exception ex){
-			ex.printStackTrace();
-			map = null;
-			return map;
-		}
-		return map;*/
+		serialize(map);
+		return map;
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
@@ -227,7 +221,8 @@ public abstract class AbstractStage implements Listener{
 		if (type == null){
 			BeautyQuests.getInstance().getLogger().warning("Unknown stage type : " + map.get("stageType"));
 			return null;
-		}else if (type.dependCode != null && !Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
+		}
+		if (type.dependCode != null && !Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
 			BeautyQuests.getInstance().getLogger().warning("The plugin " + type.dependCode + " is not enabled but needed.");
 			return null;
 		}
