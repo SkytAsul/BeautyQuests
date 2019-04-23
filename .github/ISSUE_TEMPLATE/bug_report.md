@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help me fix it
+about: Create a bug report for BeautyQuests.
 title: "<bug> "
 labels: bug
 assignees: ''
@@ -8,23 +8,27 @@ assignees: ''
 ---
 
 **Describe the bug**	
-A clear and concise description of what the bug is.	
+A clear and concise description of what the bug is and how it occurs.
 
-**To Reproduce**	
-Steps to reproduce the behavior:	
+**Reproduction**
+Steps to reproduce the behavior.
 
-**Expected behavior**	
-A clear and concise description of what you expected to happen.	
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
-**Screenshots, errors**	
-If applicable, add screenshots to help explain your problem.	
-Is there stacktraces in the console ?	
+**Screenshots, error messages**
+If applicable, add screenshots to help explain your problem.
+Are there error messages in the console?
 
-**Softwares (please complete the following information):**	
-BeautyQuests version (X.X.X, not "latest"), Game version, Server version	
-Are you using a protocol hack (like ViaVersion) ?	
+**Softwares**
+BeautyQuests version:
+Game version:
+Server version:
+Server type (e.g. PaperSpigot):
+Are you using a protocol hack (like ViaVersion)?
 
-**Additional context**	
-Add any other context about the problem here.	
+**Additional context (optional)**
+Add any other context about the problem here.
+
 
 (FR: Si vous êtes plus facilement compréhensible en français, écrivez dans cette langue car il s'agit de ma langue natale)
