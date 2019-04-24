@@ -1,7 +1,6 @@
 package fr.skytasul.quests.stages;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,13 @@ public class StageFish extends AbstractStage{
 	public void launch(Player p){
 		super.launch(p);
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!players.containsKey(acc)) players.put(acc, new ArrayList<>(Arrays.asList(fishes)));
+		if (!players.containsKey(acc)){
+			List<ItemStack> playerFishes = new ArrayList<>();
+			for (ItemStack fish : fishes){
+				playerFishes.add(fish.clone());
+			}
+			players.put(acc, playerFishes);
+		}
 	}
 	
 	public void end(PlayerAccount account) {

@@ -18,7 +18,6 @@ public class Line {
 	
 	NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
 	Pair<ItemStack, StageRunnable> first = new Pair<>(null, null);
-	//private StageRunnable all;
 
 	LineData data;
 	
@@ -57,7 +56,10 @@ public class Line {
 		}
 		maxPage = (int) Math.ceil(items.getLast() * 1.0D / 6.0D);
 		if (maxPage == 0) maxPage = 1;
-		if (refresh) setItems(activePage);
+		if (refresh){
+			activePage = 0;
+			setItems(activePage);
+		}
 	}
 	
 	/**
@@ -77,7 +79,7 @@ public class Line {
 	 * @return ItemStack in the gui if showed, or ItemStack stocked
 	 */
 	public ItemStack getItem(int slot){
-		if (line >= data.getGUI().page * 5 && line < (data.getGUI().page+1)*5) return inv.getItem(line*9 - data.getGUI().page*5*9 + 1 + (slot - activePage*6));
+		if (line >= data.getGUI().page * 5 && line < (data.getGUI().page+1)*5) return inv.getItem(line*9 - data.getGUI().page*5*9 + 1 + (slot - activePage*7));
 		return items.get(slot).getKey();
 	}
 	
@@ -112,12 +114,11 @@ public class Line {
 	 */
 	public void setItems(int page){
 		if (!isInGUIPage()) return;
-		//System.out.println(line + " setItems");
 		clearLine();
 		this.activePage = page;
 		if (first != null) RsetItem(0, first.getKey());
 		for (int i = 0; i < 7; i++){
-			int id = page*6+i;
+			int id = page*7+i;
 			if (id == items.getLast() + 1){
 				break;
 			}
@@ -162,12 +163,7 @@ public class Line {
 				setItems(activePage);
 			}
 		}else {
-			/*if (all != null){
-				data.put("slot", slot - 1);
-				all.run(p, data);
-				data.remove("slot");
-			}*/
-			int item = activePage * 6 + slot - 1;
+			int item = activePage * 7 + slot - 1;
 			if (items.get(item) == null) return;
 			if (items.get(item).getValue() == null) return;
 			items.get(item).getValue().run(p, data, is);
@@ -203,7 +199,6 @@ public class Line {
 	}
 	
 	private void RsetItem(int Rslot, ItemStack is){
-		//System.out.println(line * 9 + Rslot);
 		inv.setItem(getRSlot(Rslot), is);
 	}
 	
@@ -214,13 +209,6 @@ public class Line {
 	 * @return line number, first slot of the line
 	 */
 	public static int getLineNumber(int slot){
-		//return (int) Math.floor(slot * 1D / 9D);
-		/*for (int i = 0; i <= 45; i += 9) {
-			if ((slot - i < 9) && (slot - i >= 0)) {
-				return i;
-			}
-		}
-		return 0;*/
 		return slot - slot % 9;
 	}
 	

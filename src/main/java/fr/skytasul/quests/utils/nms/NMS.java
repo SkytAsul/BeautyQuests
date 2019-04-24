@@ -67,7 +67,7 @@ public abstract class NMS{
     private static boolean versionValid = false;
 	private static NMS nms;
 	private static int MCversion;
-	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2");
+	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1");
 	
 	public static void intializeNMS(){
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);

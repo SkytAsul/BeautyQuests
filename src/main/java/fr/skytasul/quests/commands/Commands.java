@@ -15,6 +15,7 @@ import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ChooseAccountGUI;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
@@ -57,9 +58,7 @@ public class Commands {
 	public void remove(CommandContext cmd){	
 		if (cmd.args.length >= 1){
 			try{
-				Quest qu = (Quest) cmd.args[0];
-				qu.remove(true);
-				Lang.SUCCESFULLY_REMOVED.send(cmd.sender, qu.getName());
+				remove(cmd.sender, (Quest) cmd.args[0]);
 			}catch (NumberFormatException ex){
 				Lang.NUMBER_INVALID.send(cmd.sender, cmd.args[1]);
 			}
@@ -74,9 +73,7 @@ public class Commands {
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						Quest qu = (Quest) quObj;
-						qu.remove(true);
-						Lang.SUCCESFULLY_REMOVED.send(cmd.sender, qu.getName());
+						remove(cmd.sender, (Quest) quObj);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);
@@ -392,6 +389,20 @@ public class Commands {
 		qu.resetPlayer(acc);
 		Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());
 		Lang.DATA_REMOVED_INFO.send(sender, target.getName(), qu.getName());
+	}
+	
+	private static void remove(CommandSender sender, Quest quest){
+		if (sender instanceof Player){
+			Inventories.create((Player) sender, new ConfirmGUI(() -> {
+				quest.remove(true);
+				Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
+			}, () -> {
+				((Player) sender).closeInventory();
+			}));
+		}else {
+			quest.remove(true);
+			Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
+		}
 	}
 	
 }

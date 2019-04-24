@@ -18,7 +18,7 @@ public class AdminMode {
 		if (players.contains(p)){
 			players.remove(p);
 			Lang.ADMIN_MODE_LEFT.send(p);
-			if (NMS.isValid()) ParticleEffect.SMOKE_NORMAL.display(1, 1, 1, 0.1, 15, p.getEyeLocation(), players);
+			if (NMS.isValid() && !players.isEmpty()) ParticleEffect.SMOKE_NORMAL.display(1, 1, 1, 0.1, 15, p.getEyeLocation(), players);
 		}else {
 			players.add(p);
 			Lang.ADMIN_MODE_ENTERED.send(p);

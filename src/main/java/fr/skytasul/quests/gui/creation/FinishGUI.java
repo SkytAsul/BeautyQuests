@@ -62,10 +62,6 @@ public class FinishGUI implements CustomInventory{
 
 	private final StagesGUI stages;
 
-	public FinishGUI(StagesGUI gui){
-		stages = gui;
-	}
-
 	/* Temporary quest datas */
 	private String name = null;
 	private NPC startNPC = null;
@@ -92,6 +88,17 @@ public class FinishGUI implements CustomInventory{
 	private Quest edited;
 
 	private boolean finished = false;
+	
+	public FinishGUI(StagesGUI gui){
+		stages = gui;
+	}
+	
+	public FinishGUI(StagesGUI gui, Quest edited, boolean stagesEdited){
+		stages = gui;
+		this.edited = edited;
+		this.stagesEdited = stagesEdited;
+		editing = true;
+	}
 
 	public Inventory open(Player p){
 		this.p = p;
@@ -121,6 +128,8 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(23, create.clone());
 
 			inv.setItem(21, ItemUtils.itemLaterPage());
+			
+			if (editing) setFromQuest();
 		}
 
 		inv = p.openInventory(inv).getTopInventory();
@@ -364,29 +373,26 @@ public class FinishGUI implements CustomInventory{
 		Utils.sendMessage(p, ((!editing) ? Lang.QUEST_CANCEL : Lang.QUEST_EDIT_CANCEL).toString());
 	}
 
-	public void setFromQuest(Quest qu, boolean stagesEdited){
-		this.stagesEdited = stagesEdited;
-		editing = true;
-		edited = qu;
-		name = qu.getName();
+	private void setFromQuest(){
+		name = edited.getName();
 		ItemUtils.name(inv.getItem(17), name);
-		rewards = qu.getRewards();
+		rewards = edited.getRewards();
 		ItemUtils.lore(inv.getItem(12), Lang.rewards.format(rewards.size()));
-		rewardsStart = qu.getStartRewards();
+		rewardsStart = edited.getStartRewards();
 		ItemUtils.lore(inv.getItem(14), Lang.rewards.format(rewardsStart.size()));
-		startNPC = qu.getStarter();
+		startNPC = edited.getStarter();
 		ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
-		hologramText = qu.getRawHologramText();
-		isRepeatable = ItemUtils.set(inv.getItem(0), qu.isRepeatable());
-		timer = qu.getRawTimer();
+		hologramText = edited.getRawHologramText();
+		isRepeatable = ItemUtils.set(inv.getItem(0), edited.isRepeatable());
+		timer = edited.getRawTimer();
 		if (isRepeatable) inv.setItem(9, timerItem);
-		hasScoreboard = ItemUtils.set(inv.getItem(1), qu.isScoreboardEnabled());
-		isHid = ItemUtils.set(inv.getItem(2), qu.isHid());
-		bypassLimit = ItemUtils.set(inv.getItem(3), qu.canBypassLimit());
-		endMsg = qu.getEndMessage();
-		dialog = qu.getStartDialog();
+		hasScoreboard = ItemUtils.set(inv.getItem(1), edited.isScoreboardEnabled());
+		isHid = ItemUtils.set(inv.getItem(2), edited.isHid());
+		bypassLimit = ItemUtils.set(inv.getItem(3), edited.canBypassLimit());
+		endMsg = edited.getEndMessage();
+		dialog = edited.getStartDialog();
 		inv.setItem(23, edit.clone());
-		requirements = new ArrayList<>(qu.getRequirements());
+		requirements = new ArrayList<>(edited.getRequirements());
 		ItemUtils.lore(inv.getItem(11), Lang.requirements.format(requirements.size()));
 		refreshFinish(inv);
 	}

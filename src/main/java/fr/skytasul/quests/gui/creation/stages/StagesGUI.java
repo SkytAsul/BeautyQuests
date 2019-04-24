@@ -286,8 +286,7 @@ public class StagesGUI implements CustomInventory {
 
 	private void finish(Player p){
 		if (finish == null){
-			finish = Inventories.create(p, new FinishGUI(this));
-			if (edit != null) finish.setFromQuest(edit, stagesEdited);
+			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
 		}else Inventories.create(p, finish);
 	}
 
