@@ -2,7 +2,7 @@ package fr.skytasul.quests.scoreboards;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 
 public class ScoreboardLine {
 

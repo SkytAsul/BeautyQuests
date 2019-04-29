@@ -3,7 +3,7 @@ package fr.skytasul.quests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -131,7 +131,7 @@ public class QuestsConfiguration {
 		dIcon = config.getString("dynmap.markerIcon");
 		finishSound = config.getString("finishSound");
 		try{
-			Sound.valueOf(finishSound);
+			Sound.valueOf(finishSound.toUpperCase());
 		}catch (IllegalArgumentException ex){
 			BeautyQuests.logger.warning("Sound " + finishSound + " is not a valid Bukkit sound.");
 		}

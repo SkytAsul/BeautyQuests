@@ -34,15 +34,15 @@ public class StageNPC extends AbstractStage{
 	
 	protected NPC npc;
 	protected Dialog di = null;
-	private boolean hide = false;
+	protected boolean hide = false;
 	
 	protected StageBringBack bringBack = null;
 	
-	private Map<Player, Integer> dialogs = new HashMap<>();
+	protected Map<Player, Integer> dialogs = new HashMap<>();
 	private BukkitTask task;
 	
 	private List<PlayerAccount> cached = new ArrayList<>();
-	private Object holo;
+	protected Object holo;
 	
 	public StageNPC(StageManager manager, NPC npc){
 		super(manager);

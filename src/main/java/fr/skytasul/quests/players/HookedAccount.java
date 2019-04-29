@@ -1,6 +1,6 @@
 package fr.skytasul.quests.players;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,8 @@ public class HookedAccount extends AbstractAccount {
 	
 	@Deprecated
 	public HookedAccount(Account acc){
-		this.hook = Validate.notNull(acc, "Account is null");
+		Validate.notNull(acc, "Account is null");
+		this.hook = acc;
 	}
 
 	public OfflinePlayer getOfflinePlayer() {

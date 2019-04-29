@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
@@ -37,6 +39,13 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		line = Utils.descriptionLines(Source.FORCELINE, array);
+	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e){
+		if (super.dialogs.containsKey(e.getPlayer())){ // if the player has started the dialog (so items has been removed from his inventory)
+			e.getPlayer().getInventory().addItem(items);
+		}
 	}
 	
 	public boolean checkItems(Player p, boolean msg){

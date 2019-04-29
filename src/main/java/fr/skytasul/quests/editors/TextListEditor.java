@@ -2,7 +2,7 @@ package fr.skytasul.quests.editors;
 
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;

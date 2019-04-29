@@ -61,7 +61,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageRemove = ItemUtils.item(XMaterial.BARRIER, Lang.stageRemove.toString());
 
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
-	private static final ItemStack descMessage = ItemUtils.item(XMaterial.SIGN, Lang.descMessage.toString());
+	private static final ItemStack descMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
 	private static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
 
 	private List<Line> lines = new ArrayList<>();
@@ -320,7 +320,7 @@ public class StagesGUI implements CustomInventory {
 
 
 
-	private static final ItemStack stageNPC = ItemUtils.item(XMaterial.SIGN, Lang.stageNPC.toString());
+	private static final ItemStack stageNPC = ItemUtils.item(XMaterial.OAK_SIGN, Lang.stageNPC.toString());
 	private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageBring.toString());
 	private static final ItemStack stageArea = ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString());
 	private static final ItemStack stageMobs = ItemUtils.item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString());
