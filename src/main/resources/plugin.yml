@@ -1,0 +1,107 @@
+name: BeautyQuests
+author: SkytAsul
+version: 0.15_PRE1
+api-version: 1.13
+description: Quests system with a simple graphical interface.
+depend: [Citizens]
+softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS, mcMMO, McCombatLevel]
+main: fr.skytasul.quests.BeautyQuests
+website: https://www.spigotmc.org/resources/beautyquests.39255/
+commands:
+  beautyquests:
+    description: Main command for quests
+    permission: beautyquests.command
+    aliases: [bquests, quests, beautyquests, bq, quetes, quest]
+    
+permissions:
+  beautyquests.*:
+    description: Give access to BeautyQuests whole
+    children:
+      beautyquests.command: true
+      beautyquests.command.*: true
+      beautyquests.seeId: true
+  beautyquests.command:
+    description: Give access to "/quests"
+    default: true
+  beautyquests.command.*:
+    description: Give access to all subcommands of "/quests"
+    children:
+      beautyquests.command.listPlayer: true
+      beautyquests.command.create: true
+      beautyquests.command.edit: true
+      beautyquests.command.list: true
+      beautyquests.command.help: true
+      beautyquests.command.remove: true
+      beautyquests.command.reload: true
+      beautyquests.command.finish: true
+      beautyquests.command.finishAll: true
+      beautyquests.command.setStage: true
+      beautyquests.command.setName: true
+      beautyquests.command.resetPlayer: true
+      beautyquests.command.seePlayer: true
+      beautyquests.command.adminMode: true
+      beautyquests.command.start: true
+      beautyquests.command.start.other: true
+      beautyquests.command.cancel: true
+      beautyquests.command.cancel.other: true
+      beautyquests.command.scoreboard: true
+  beautyquests.command.listPlayer:
+    decription: Give access to the menu inventory
+    default: true
+  beautyquests.command.create:
+    decription: Give access to "/quests create"
+    defauilt: op
+  beautyquests.command.edit:
+    decription: Give access to "/quests edit"
+    defauilt: op
+  beautyquests.command.list:
+    decription: Give access to "/quests list"
+    defauilt: op
+  beautyquests.command.help:
+    decription: Give access to "/quests help"
+    defauilt: true
+  beautyquests.command.remove:
+    decription: Give access to "/quests remove"
+    defauilt: op
+  beautyquests.command.reload:
+    decription: Give access to "/quests reload"
+    defauilt: op
+  beautyquests.command.finish:
+    decription: Give access to "/quests finish" and "finishAll"
+    defauilt: op
+  beautyquests.command.setStage:
+    decription: Give access to "/quests setStage"
+    defauilt: op
+  beautyquests.command.setName:
+    decription: Give access to "/quests setName"
+    defauilt: op
+  beautyquests.command.resetPlayer:
+    decription: Give access to "/quests resetPlayer" and "resetPlayerQuest"
+    defauilt: op
+  beautyquests.command.seePlayer:
+    decription: Give access to "/quests seePlayer"
+    defauilt: op
+  beautyquests.command.setItem:
+    decription: Give access to "/quests setItem"
+    defauilt: op
+  beautyquests.command.adminMode:
+    description: Give access to "/quests adminMode"
+    default: op
+  beautyquests.command.start:
+    description: Give access to "/quests start" only for myself
+    default: true
+  beautyquests.command.start.other:
+    description: Give access to "/quests start" for all players
+    default: op
+  beautyquests.command.cancel:
+    description: Give access to "/quests cancel" only for my own started quests
+    default: true
+  beautyquests.command.cancel.other:
+    description: Give access to "/quests cancel" for all players quests
+    default: op
+  beautyquests.command.scoreboard:
+    description: Give access to "/quests scoreboard"
+    default: op
+  beautyquests.seeId:
+    description: Allow player to see the quest's ID
+    default: op
