@@ -166,28 +166,6 @@ public class BeautyQuests extends JavaPlugin{
 		}
 	}
 
-	/*public FileConfiguration getConfig(){
-		//return YamlConfiguration.loadConfiguration(loadResource("config.yml"));
-		FileConfiguration config = null;
-		try{
-			config = new FileConfiguration(super.getConfig()) {
-				
-				public String saveToString() {return null;}
-				
-				public void loadFromString(String paramString) throws InvalidConfigurationException {}
-				
-				protected String buildHeader() {return null;}
-			};
-			config.load(loadResource("config.yml"));
-		} catch (IOException | InvalidConfigurationException e) {
-			e.printStackTrace();
-			getLogger().severe("Error when loading configuration file. Now disabling.");
-			this.setEnabled(false);
-			disable = true;
-		}
-		return config;
-	}*/
-
 	public void onDisable(){
 		Editor.leaveAll();
 		Inventories.closeAll();
