@@ -42,8 +42,8 @@ stageDescriptionItemsSplit:
   showXOne: true
   sources: [SCOREBOARD, MENU]
 
-particles: true
 start:
+  enabled: true
   particleEffect: redstone
   particleColor:
     RED: 255
@@ -51,9 +51,18 @@ start:
     GREEN: 255
   particleShape: point
 talk:
+  enabled: true
   particleEffect: villager_happy
   particleColor:
     RED: 255
     BLUE: 0
     GREEN: 255
   particleShape: bar
+next:
+  enabled: true
+  particleEffect: smoke_normal
+  particleColor:
+    RED: 255
+    BLUE: 0
+    GREEN: 255
+  particleShape: spot

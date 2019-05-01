@@ -1,6 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -25,7 +26,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.Utils;
 
 public class StageManager{
@@ -171,7 +171,7 @@ public class StageManager{
 						if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), quest.getName());
 						Bukkit.getPluginManager().callEvent(new NextStageEvent(p, quest, stage, getStage(last + 1)));
 						Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
-						if (QuestsConfiguration.doParticles()) ParticleEffect.SMOKE_NORMAL.display(0.2, 0.4, 0.2, 0.001, 15, p.getEyeLocation().add(0, 0.2, 0), 15);
+						if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
 					}
 				}
 			};

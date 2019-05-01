@@ -48,9 +48,9 @@ public class QuestsConfiguration {
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
 	private static int splittedAdvancementPlaceholderMax = 3;
-	private static boolean particles = true;
 	private static ParticleEffect.Particle particleStart;
 	private static ParticleEffect.Particle particleTalk;
+	private static ParticleEffect.Particle particleNext;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean playerCancelQuest = false;
@@ -89,7 +89,6 @@ public class QuestsConfiguration {
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
-		particles = NMS.isValid() && config.getBoolean("particles");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = Dependencies.gps && config.getBoolean("gps");
@@ -150,23 +149,23 @@ public class QuestsConfiguration {
 			}
 		}
 		
-		if (particles){
+		particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
+		particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
+		particleNext = loadParticles(config, "next", new Particle(ParticleEffect.SMOKE_NORMAL, ParticleShape.SPOT, null));
+	}
+	
+	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
+		if (NMS.isValid() && config.getBoolean(name + ".enabled")){
+			Particle particle;
 			try{
-				particleStart = Particle.deserialize(config.getConfigurationSection("start").getValues(false));
+				particle = Particle.deserialize(config.getConfigurationSection(name).getValues(false));
 			}catch (Exception ex){
-				BeautyQuests.logger.warning("Loading of start particles failed: Invalid particle, color or shape.");
-				particleStart = new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW));
+				BeautyQuests.logger.warning("Loading of " + name + " particles failed: Invalid particle, color or shape.");
+				particle = defaultParticle;
 			}
-			BeautyQuests.logger.info("Loaded start particles: " + particleStart.toString());
-			try{
-				particleTalk = Particle.deserialize(config.getConfigurationSection("talk").getValues(false));
-			}catch (Exception ex){
-				BeautyQuests.logger.warning("Loading of talk particles failed: Invalid particle, color or shape.");
-				particleTalk = new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, new OrdinaryColor(Color.GREEN));
-			}
-			BeautyQuests.logger.info("Loaded talk particles: " + particleTalk.toString());
-		}
-		
+			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
+			return particle;
+		}else return null;
 	}
 	
 
@@ -192,10 +191,6 @@ public class QuestsConfiguration {
 
 	public static boolean allowPlayerCancelQuest(){
 		return playerCancelQuest;
-	}
-	
-	public static boolean doParticles(){
-		return particles;
 	}
 
 	public static boolean playSounds(){
@@ -246,12 +241,28 @@ public class QuestsConfiguration {
 		return itemNameColor;
 	}
 	
+	public static boolean showStartParticles(){
+		return particleStart != null;
+	}
+	
 	public static ParticleEffect.Particle getParticleStart(){
 		return particleStart;
 	}
 	
+	public static boolean showTalkParticles(){
+		return particleTalk != null;
+	}
+	
 	public static ParticleEffect.Particle getParticleTalk(){
 		return particleTalk;
+	}
+	
+	public static boolean showNextParticles(){
+		return particleNext != null;
+	}
+	
+	public static ParticleEffect.Particle getParticleNext(){
+		return particleNext;
 	}
 	
 	public static double getHologramsHeight(){

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -363,7 +362,7 @@ public class BeautyQuests extends JavaPlugin{
 		getLogger().info(msg + " Creating backup...");
 		try {
 			File backupDir = backupDir();
-			FileUtils.copyDirectory(saveFolder, backupDir);
+			Files.copy(saveFolder.toPath(), backupDir.toPath());
 			getLogger().info("Quests backup created in " + backupDir.getName());
 			return true;
 		}catch (Exception e) {

@@ -77,7 +77,7 @@ public class StageNPC extends AbstractStage{
 					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 1));
 				}
 				
-				if (QuestsConfiguration.doParticles()) {
+				if (QuestsConfiguration.showTalkParticles()) {
 					if (tmp.isEmpty()) return;
 					QuestsConfiguration.getParticleTalk().send((LivingEntity) en, tmp);
 				}
@@ -223,7 +223,7 @@ public class StageNPC extends AbstractStage{
 	
 	public void load(){
 		super.load();
-		if (QuestsConfiguration.doParticles() || QuestsConfiguration.getHoloTalkItem() != null){
+		if (QuestsConfiguration.showTalkParticles() || QuestsConfiguration.getHoloTalkItem() != null){
 			if (!hide) launchRefreshTask();
 		}
 	}

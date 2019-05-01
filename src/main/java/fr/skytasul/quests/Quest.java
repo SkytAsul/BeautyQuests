@@ -69,7 +69,6 @@ public class Quest{
 	private Object holoLaunch;
 	
 	private BukkitTask holoTask;
-	private boolean particle = QuestsConfiguration.doParticles();
 	private boolean hologramLaunch = Dependencies.holod && QuestsConfiguration.getHoloLaunchItem() != null;
 	private boolean hologramAll = Dependencies.holod && !StringUtils.isEmpty(getHologramText());
 	
@@ -94,7 +93,7 @@ public class Quest{
 	
 	void updateLauncheable(LivingEntity en) {
 		if (hologramLaunch) updateHoloLaunchVisibility();
-		if (particle) {
+		if (QuestsConfiguration.showStartParticles()) {
 			if (launcheable.isEmpty()) return;
 			particles.clear();
 			particles.addAll(launcheable);

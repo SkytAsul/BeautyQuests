@@ -586,7 +586,7 @@ public enum ParticleEffect {
 	}
 
 	public static enum ParticleShape{
-		POINT, NEAR, BAR, EXCLAMATION;
+		POINT, NEAR, BAR, EXCLAMATION, SPOT;
 	}
 	
 	public static class Particle{
@@ -627,6 +627,9 @@ public enum ParticleEffect {
 			case EXCLAMATION:
 				sendParticle(lc.add(0, 0.9, 0), p, 0.001, 0.001, 0.001, 2); //		POINT
 				sendParticle(lc.add(0, 0.7, 0), p, 0.01, 0.2, 0.01, 4); //				BAR
+				break;
+			case SPOT:
+				sendParticle(lc.add(0, 0.2, 0), p, 0.2, 0.4, 0.2, 15);
 				break;
 			}
 		}
