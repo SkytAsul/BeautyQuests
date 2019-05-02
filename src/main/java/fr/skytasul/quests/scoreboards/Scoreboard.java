@@ -59,7 +59,8 @@ public class Scoreboard implements Listener{
 			int changeTime = 1;
 			public void run(){
 				changeTime--;
-				if (changeTime == 0 || nextId != -1){
+				boolean change = nextId != -1;
+				if (changeTime == 0 || change){
 					changeTime = manager.getQuestChangeTime();
 					nextId = -1;
 					
@@ -77,6 +78,7 @@ public class Scoreboard implements Listener{
 						int id = nextId == -1 ? launched.indexOf(showed)+1 : nextId;
 						if (id >= launched.size() || id == -1) id = 0;
 						showed = launched.get(id);
+						if (change && manager.refreshLines()) refreshQuestsLines();
 					}
 				}
 				if (sb == null) return;
@@ -132,6 +134,12 @@ public class Scoreboard implements Listener{
 			nextId = launched.indexOf(showed);
 		}
 		launched.remove(quest);
+	}
+	
+	public void refreshQuestsLines(){
+		for (Line line : lines){
+			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
+		}
 	}
 	
 	public void setCustomLine(int id, String value){
@@ -197,12 +205,28 @@ public class Scoreboard implements Listener{
 			timeLeft = param.refresh;
 		}
 		
+		/**
+		 * Refresh all lines, based on the first index of the previous lines
+		 */
 		public void refreshLines(){
 			setLines(firstLineIndex());
 		}
 		
+		/**
+		 * How it works:
+		 * <ol>
+		 * <li> If there is no custom value, the default text will be used
+		 * <li> If there is quests placeholders (<code>{questName}</code> or <code>{questDescription}</code>) they will be replaced by the appropriated value
+		 * <li> All other placeholders are replaced
+		 * <li> The final value is split into lines, depending of its length
+		 * <li> If there is less lines than the previous time, theses lines are removed
+		 * <li> If there is more lines than the previous time, all lines up are moved forward
+		 * <li> Finally, the lines are set in the scoreboard
+		 * </ol>
+		 * @param firstLine Scoreboard line where the first line will be placed
+		 */
 		public void setLines(int firstLine){
-			String text = customValue == null ? param.value : customValue;
+			String text = getValue();
 			if (text.contains("{questName}")){
 				text = showed == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", showed.getName());
 			}
@@ -264,6 +288,10 @@ public class Scoreboard implements Listener{
 		
 		public int lastLineIndex(){
 			return sb.getTeamLine(teams.get(teams.size() - 1));
+		}
+		
+		public String getValue(){
+			return customValue == null ? param.value : customValue;
 		}
 		
 	}

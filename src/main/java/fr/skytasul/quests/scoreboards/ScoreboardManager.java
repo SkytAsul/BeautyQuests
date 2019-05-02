@@ -16,17 +16,20 @@ import fr.skytasul.quests.utils.DebugUtils;
 
 public class ScoreboardManager{
 
+	// Config parameters
 	private List<ScoreboardLine> lines = new ArrayList<>();
-	private int changeTime = 11;
-	private boolean hide = true;
+	private int changeTime;
+	private boolean hide;
+	private boolean refreshLines;
 	
 	private Map<Player, Scoreboard> scoreboards = new HashMap<>();
 	
 	public ScoreboardManager(YamlConfiguration config){
 		if (!QuestsConfiguration.showScoreboards()) return;
 		
-		hide = config.getBoolean("quests.hideIfEmpty");
-		changeTime = config.getInt("quests.changeTime");
+		changeTime = config.getInt("quests.changeTime", 11);
+		hide = config.getBoolean("quests.hideIfEmpty", true);
+		refreshLines = config.getBoolean("quests.refreshLines", true);
 		
 		for (Map<?, ?> map : config.getMapList("lines")){
 			if (lines.size() == 15){
@@ -67,6 +70,10 @@ public class ScoreboardManager{
 	
 	public boolean hideEmtptyScoreboard(){
 		return hide;
+	}
+	
+	public boolean refreshLines(){
+		return refreshLines;
 	}
 	
 	public Scoreboard getPlayerScoreboard(Player p){

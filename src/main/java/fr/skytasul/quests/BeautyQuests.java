@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -340,7 +341,7 @@ public class BeautyQuests extends JavaPlugin{
 		getLogger().info(msg + " Creating backup...");
 		try {
 			File backupDir = backupDir();
-			Files.copy(saveFolder.toPath(), backupDir.toPath());
+			Files.copy(saveFolder.toPath(), backupDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			getLogger().info("Quests backup created in " + backupDir.getName());
 			return true;
 		}catch (Exception e) {

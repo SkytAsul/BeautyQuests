@@ -1,6 +1,7 @@
 quests:
   changeTime: 10
   hideIfEmpty: true
+  refreshLines: true
 lines:
 - value: ''
 - value: '&6{questName}'
