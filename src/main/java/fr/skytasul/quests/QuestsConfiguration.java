@@ -68,7 +68,7 @@ public class QuestsConfiguration {
 
 	
 	static void initConfiguration(FileConfiguration config) {
-		DebugUtils.debugMode = config.getBoolean("debug");
+		DebugUtils.debugMode = config.getBoolean("debug", false);
 		if (DebugUtils.debugMode) BeautyQuests.logger.warning("Warning ! You are in debug mode");
 		
 		timer = config.getInt("redoMinuts");

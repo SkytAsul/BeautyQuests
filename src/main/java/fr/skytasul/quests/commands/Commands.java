@@ -86,7 +86,7 @@ public class Commands {
 		BeautyQuests.getInstance().performReload(cmd.sender);
 	}
 	
-	@Cmd
+	@Cmd(permission = "version")
 	public void version(CommandContext cmd){
 		cmd.sender.sendMessage("§eBeautyQuests version : §6§l" + BeautyQuests.getInstance().getDescription().getVersion());
 	}
