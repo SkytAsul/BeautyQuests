@@ -23,5 +23,10 @@ You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**.
 
 ***
 
+## Crowdin
+If you want to help us translate BeautyQuests into your native language, join the [official BeautyQuests Crowdin project](https://crowdin.com/project/beautyquests) and let players in-game see your translations (read the project description for more informations).
+
+***
+
 ## Discord
 If you need help you can join my [Discord server](https://discord.gg/H8fXrkD) where people can help and discuss about bugs and more.

@@ -378,7 +378,7 @@ public class BeautyQuests extends JavaPlugin{
 	private YamlConfiguration loadLang() {
 		try {
 			String s = config.getString("lang", "en_US") + ".yml";
-			File file = new File(getDataFolder(), s);
+			File file = new File(new File(getDataFolder(), "locales"), s);
 			if (!file.exists()) saveResource(s, false);
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
 			Lang.setFile(conf);
