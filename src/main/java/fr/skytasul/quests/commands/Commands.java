@@ -180,12 +180,9 @@ public class Commands {
 			Quest qu = (Quest) cmd.args[1];
 			reset(cmd.sender, target, acc, qu);
 		}else if (cmd.isPlayer()){
-			QuestsListGUI gui = new QuestsListGUI();
-			gui.acc = acc;
-			gui.notStarted = false;
-			gui.run = (obj) -> {
+			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				reset(cmd.sender, target, acc, (Quest) obj);
-			};
+			}, acc, true, false, true);
 			Inventories.create(cmd.player, gui);
 		}else Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
 	}
@@ -214,16 +211,12 @@ public class Commands {
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
-			QuestsListGUI gui = new QuestsListGUI();
-			gui.acc = acc;
-			gui.finished = false;
-			gui.started = false;
-			gui.run = (obj) -> {
+			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				Quest qu = (Quest) obj;
 				if (!CommandsManager.hasPermission(cmd.player, "start.other") && !qu.isLauncheable(target, true)) return;
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
-			};
+			}, acc, false, true, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
 				Quest qu = (Quest) cmd.args[1];
@@ -250,15 +243,11 @@ public class Commands {
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
-			QuestsListGUI gui = new QuestsListGUI();
-			gui.acc = acc;
-			gui.notStarted = false;
-			gui.finished = false;
-			gui.run = (obj) -> {
+			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				Quest qu = (Quest) obj;
 				qu.cancelPlayer(acc);
 				Lang.CANCEL_QUEST.send(cmd.sender, qu.getName());
-			};
+			}, acc, true, false, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
 				Quest qu = (Quest) cmd.args[1];
