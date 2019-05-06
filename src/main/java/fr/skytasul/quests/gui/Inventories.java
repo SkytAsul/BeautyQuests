@@ -29,6 +29,7 @@ public class Inventories{
 	 * Open a CustomInventory to player, and insert it to the Inventories system.
 	 * @param p Player to open
 	 * @param inv CustomInventory instance to open
+	 * @param <T> Class who implements the CustomInventory interface
 	 * @return Same CustomInventory
 	 */
 	public static <T extends CustomInventory> T create(Player p, T inv) {

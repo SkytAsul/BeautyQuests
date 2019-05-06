@@ -11,7 +11,7 @@ import fr.skytasul.quests.utils.ReflectUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 
 /**
- * A simple tool to manage scoreboards in minecraft (lines up to 48 characters !).</br>
+ * A simple tool to manage scoreboards in minecraft (lines up to 48 characters !).<br>
  * Edited by me to permit more flexibility
  * @see <a href="https://gist.github.com/zyuiop/8fcf2ca47794b92d7caa">Original file on GitHub</a>
  * @author zyuiop, SkytAsul
@@ -106,6 +106,7 @@ public class ScoreboardSigns {
 	 * Change a scoreboard line and send the packets to the player. Can be called async.
 	 * @param line the number of the line (0 &#60;= line &#60; 15)
 	 * @param value the new value for the scoreboard line
+	 * @return VirtualTeam created or edited
 	 */
 	public VirtualTeam setLine(int line, String value) {
 		try {
@@ -192,7 +193,7 @@ public class ScoreboardSigns {
 	
 	/**
 	 * Get the line assigned to a team
-	 * @param team
+	 * @param team Team object to get index of
 	 * @return the line number assigned to the specified team
 	 */
 	public int getTeamLine(VirtualTeam team){

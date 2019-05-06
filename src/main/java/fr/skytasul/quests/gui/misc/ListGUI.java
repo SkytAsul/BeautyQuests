@@ -87,7 +87,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	public abstract String name();
 	
 	/**
-	 * @param object
+	 * @param object existing object to represent
 	 * @return ItemStack who represents the object
 	 */
 	

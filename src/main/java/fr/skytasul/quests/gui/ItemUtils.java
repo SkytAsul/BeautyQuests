@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -20,20 +19,6 @@ import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemUtils {
-	
-	/**
-	 * @deprecated see {@link #item(XMaterial, String, String...)}
-	 */
-	@Deprecated
-	public static ItemStack item(Material type, String name, int data, String... lore) {
-		ItemStack is = new ItemStack(type, 1, (short) data);
-		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(name);
-		im.addItemFlags(ItemFlag.values());
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
-		return is;
-	}
 	
 	/**
 	 * Create an ItemStack instance from a generic XMaterial

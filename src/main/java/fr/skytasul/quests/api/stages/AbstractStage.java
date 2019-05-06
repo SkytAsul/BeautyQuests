@@ -23,7 +23,7 @@ import fr.skytasul.quests.utils.Utils;
 
 /**
  * <h1> Do not forget to create the <i>deserialize</i> method:</h1>
- * > <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
+ * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
  * @author SkytAsul
  */
 public abstract class AbstractStage implements Listener{

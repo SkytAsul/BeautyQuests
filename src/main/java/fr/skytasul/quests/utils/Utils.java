@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.StringUtils;
@@ -348,6 +349,14 @@ public class Utils{
 		for (String id : from){
 			PlayerAccount acc = PlayersManager.getByIndex(id);
 			if (acc != null) to.add(acc);
+		}
+	}
+	
+	public static <T, R> void deserializeAccountsMap(Map<String, T> from, Map<PlayerAccount, R> to, Function<T, R> fun){
+		for (Entry<String, T> en : from.entrySet()){
+			PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
+			if (acc == null) continue;
+			to.put(acc, fun.apply(en.getValue()));
 		}
 	}
 	

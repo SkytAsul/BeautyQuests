@@ -168,12 +168,7 @@ public class StageMine extends AbstractStage {
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
 		StageMine st = new StageMine(manager, fromMapList((List<Map<String, Object>>) map.get("blocks")));
 		
-		Map<String, List<Map<String, Object>>> re = (Map<String, List<Map<String, Object>>>) map.get("remaining");
-		if (re != null){
-			for (Entry<String, List<Map<String, Object>>> en : re.entrySet()){
-				st.remaining.put(PlayersManager.getByIndex(en.getKey()), fromMapList(en.getValue()));
-			}
-		}
+		Utils.deserializeAccountsMap((Map<String, List<Map<String, Object>>>) map.get("remaining"), st.remaining, n -> fromMapList(n));
 		
 		if (map.containsKey("placeCancelled")) st.placeCancelled = (boolean) map.get("placeCancelled");
 		

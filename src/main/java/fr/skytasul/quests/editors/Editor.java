@@ -53,7 +53,7 @@ public abstract class Editor implements Listener{
 	
 	/**
 	 * Happens when the player in the editor type somthing in the chat
-	 * @param message
+	 * @param message Message typed
 	 * @return false if the plugin needs to send an help message to the player
 	 */
 	public boolean chat(String message){

@@ -87,9 +87,7 @@ public class StageFish extends AbstractStage{
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
 		StageFish stage = new StageFish(manager, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 
-		for (Entry<String, List<ItemStack>> en : ((Map<String, List<ItemStack>>) map.get("remaining")).entrySet()){
-			stage.players.put(PlayersManager.getByIndex(en.getKey()), en.getValue());
-		}
+		Utils.deserializeAccountsMap(((Map<String, List<ItemStack>>) map.get("remaining")), stage.players, n -> n);
 		
 		return stage;
 	}

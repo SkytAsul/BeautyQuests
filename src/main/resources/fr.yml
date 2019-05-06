@@ -13,6 +13,7 @@ msg:
     invalidID: §cLa quête d'ID {0} n'existe pas.
     cancelling: §cAnnulation du processus de création de quête.
     editCancelling: §cAnnulation du processus d'édition de la quête.
+    alreadyStarted: "§cVous avez déjà commencé cette quête !"
   quests:
     nopStep: §cCette quête n'a aucune étape... prévenez un administrateur :-)
     updated: §7Quête {0} actualisée !
@@ -113,12 +114,21 @@ msg:
       list: '§e/{0} list : §avoir la liste des quêtes'
       setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme
         dans le fichier de données'
+      adminMode: '§e/{0} adminMode : §amode administrateur (réception d''informations)'
     needItem: §cVous devez tenir un item dans votre main principale.
     itemChanged: §aL'item a été modifié. Le changement prendra effet après redémarrage.
     cancelQuest: §eVous avez annulé la quête {0}.
     backupCreated: §eVous avez créé une sauvegarde des quêtes et des données joueurs.
-    backupPlayersFailed: '§cLa création d''une sauvegarde des données joueur a échoué.'
-    backupQuestsFailed: '§cLa création d''une sauvegarde des quêtes a échoué.'
+    backupPlayersFailed: §cLa création d'une sauvegarde des données joueur a échoué.
+    backupQuestsFailed: §cLa création d'une sauvegarde des quêtes a échoué.
+    adminModeEntered: §eVous entrez dans le mode administrateur.
+    adminModeLeft: §eVous sortez du mode administrateur.
+    scoreboard:
+      lineSet: §eVous avez modifié la ligne {0}.
+      lineReset: §eVous avez réinitialisé la ligne {0}.
+      lineRemoved: §eVous avez supprimé la ligne {0}.
+      lineInexistant: '§cLa ligne {0} n''existe pas.'
+      resetAll: §eVous avez réinitialisé le scoreboard du joueur {0}.
   editor:
     already: §cVous êtes déjà dans un éditeur.
     npc:
@@ -182,7 +192,16 @@ msg:
       added: §aTexte {0} ajouté.
       removed: §aTexte {0} supprimé.
     selectWantedBlock: §aCliquez avec le bâton sur le bloc voulu pour l'étape.
-  npcDoesntExist: '§cLe NPC avec l''ID {0} n''existe pas.'
+    enter:
+      title: §6~ mode éditeur ~
+      subtitle: §eEntrez "/quests editor" pour forcer la sortie.
+    chat: '§eVous êtes actuellement dans le mode éditeur. Entrez "/quests editor" pour forcer la sortie
+      de ce mode (peu recommandé, préférez l''usage de mots-clés tels que "close"
+      ou "cancel" pour revenir à l''inventaire précédent).'
+  npcDoesntExist: §cLe NPC avec l'ID {0} n'existe pas.
+  erroroccurred: |-
+    §cUne erreur est survenue... prévenez un administrateur :-)
+    §4§lCode d'erreur :{0}
 advancement:
   finished: Terminée
   notStarted: Pas commencée
@@ -215,6 +234,9 @@ inv:
     interact: §aCliquez sur un bloc
     selectBlockLocation: §6Sélectionner quel bloc
     leftClick: Clic gauche
+    fish: §aPêcher
+    preventBlockPlace: Empêcher les joueurs d'utiliser leurs propres blocs
+    editFishes: §eModifier les poissons nécessaires
   stages:
     name: §8Créer les étapes
     nextPage: §ePage suivante
@@ -297,6 +319,9 @@ inv:
     loreCancel: §c§oCliquez pour annuler la quête
     timeToWait: §3§o{0} minutes avant de pouvoir refaire cette quête
     canRedo: §3§oVous pouvez refaire cette quête !
+    format:
+      normal: §6§l§o{0}
+      withId: §6§l§o{0}§r      §e#{1}
   itemCreator:
     name: §8Créateur d'item
     itemType: §bType d'item
@@ -329,6 +354,9 @@ scoreboard:
     mine: §eMine {0}
     chat: §eEcrivez §6{0}
     interact: §eCliquez sur le bloc à §6{0}
+    fish: §ePêchez §6{0}
+  noLaunchedName: §c§l- x -
+  noLaunchedDescription: §c§ox
 misc:
   format:
     prefix: §6<§e§lQuêtes§r§6> §o
@@ -343,6 +371,7 @@ misc:
     mine: Casser des blocs
     chat: Parler dans le chat
     interact: Intéragir avec un bloc
+    Fish: Pêcher
   requirement:
     class: §bClasse(s) requise(s)
     faction: §bFaction(s) requise(s)
