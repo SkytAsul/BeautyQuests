@@ -1,13 +1,8 @@
 package fr.skytasul.quests;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -25,8 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import com.google.common.io.ByteStreams;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.commands.Commands;
@@ -121,7 +114,7 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}.runTaskLater(this, 40L);
 
-		loadResource("config.yml");
+		saveDefaultConfig();
 
 		NMS.intializeNMS();
 		
@@ -382,80 +375,30 @@ public class BeautyQuests extends JavaPlugin{
 		return f;
 	}
 
-	private File loadResource(String resource) {
-        File folder = getDataFolder();
-        if (!folder.exists())
-            folder.mkdir();
-        File resourceFile = new File(folder, resource);
-        try {
-            if (!resourceFile.exists()) {
-                resourceFile.createNewFile();
-                try (InputStream in = getResource(resource);
-                     OutputStream out = new FileOutputStream(resourceFile)) {
-                    ByteStreams.copy(in, out);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resourceFile;
-    }
-	
 	private YamlConfiguration loadLang() {
-		String s = "en.yml";
-		if (config.getString("lang") != null) s = config.getString("lang") + ".yml";
-		File lang = new File(getDataFolder(), s);
-		if (!lang.exists()) {
-			try {
-				getDataFolder().mkdir();
-				lang.createNewFile();
-				InputStream defConfigStream = this.getResource(s);
-				if (defConfigStream != null) {
-					YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
-					defConfig.save(lang);
-					Lang.setFile(defConfig);
-					getLogger().info("Loaded language file " + s);
-					return defConfig;
-				}
-			} catch(IOException e) {
-				e.printStackTrace();
-				getLogger().severe("Couldn't create language file.");
-				getLogger().severe("This is a fatal error. Now disabling.");
-				disable = true;
-				this.setEnabled(false);
-				return null;
-			}
-		}
-		YamlConfiguration conf = YamlConfiguration.loadConfiguration(lang);
-		for(Lang item : Lang.values()) {
-			if (conf.getString(item.getPath()) == null) {
-				DebugUtils.logMessage("Copying default lang value to " + item.getPath());
-				conf.set(item.getPath(), item.getDefault());
-			}else {
-				/*if (!conf.getString(item.getPath()).equals(item.getDefault())){
-	        		System.out.println(item.getPath() + " new = " + item.getDefault());
-	        	}*/
-			}
-		}
-		Lang.setFile(conf);
-		File LANG_FILE = lang;
 		try {
-			conf.save(LANG_FILE);
-		} catch(IOException e) {
-			getLogger().warning("Failed to save lang.yml.");
-			getLogger().warning("Report this stack trace to SkytAsul on SpigotMC.");
+			String s = config.getString("lang", "en_US") + ".yml";
+			File file = new File(getDataFolder(), s);
+			if (!file.exists()) saveResource(s, false);
+			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+			Lang.setFile(conf);
+			getLogger().info("Loaded language file " + s);
+			return conf;
+		} catch(Exception e) {
 			e.printStackTrace();
+			getLogger().severe("Couldn't create language file.");
+			getLogger().severe("This is a fatal error. Now disabling.");
+			disable = true;
+			this.setEnabled(false);
+			return null;
 		}
-		getLogger().info("Loaded language file " + s);
-		return conf;
 	}
 	
 	public void performReload(CommandSender sender){
 		try {
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
-			sender.sendMessage("§a " + BeautyQuests.getInstance().saveAllConfig(true) + " quests saved");
-			BeautyQuests.getInstance().resetDatas();
-			//BeautyQuests.getInstance().stopSaveCycle();
+			sender.sendMessage("§a " + saveAllConfig(true) + " quests saved");
+			resetDatas();
 		} catch (Throwable e) {
 			sender.sendMessage("§cError when saving datas. §lInterrupting operation!");
 			e.printStackTrace();
@@ -463,8 +406,8 @@ public class BeautyQuests extends JavaPlugin{
 		}
 		
 		try{
-			BeautyQuests.getInstance().loadResource("config.yml");
-			BeautyQuests.getInstance().loadConfigParameters(false);
+			reloadConfig();
+			loadConfigParameters(false);
 			sender.sendMessage("§a Configuration parameters has been reloadeds.");
 		}catch (Throwable e){
 			sender.sendMessage("§cError when reloading configuration parameters. §lInterrupting operation!");
@@ -477,7 +420,7 @@ public class BeautyQuests extends JavaPlugin{
 			public void run() {
 				try {
 					data = YamlConfiguration.loadConfiguration(dataFile);
-					sender.sendMessage("§a " + BeautyQuests.getInstance().loadAllDatas() + " quests loaded");
+					sender.sendMessage("§a " + loadAllDatas() + " quests loaded");
 					sender.sendMessage("§a§lPlugin entierely reloaded from files !");
 				} catch (Throwable e) {
 					sender.sendMessage("§cError when loading the data file. §lOperation failed!");

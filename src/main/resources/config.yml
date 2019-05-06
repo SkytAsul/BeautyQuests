@@ -1,7 +1,7 @@
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr, en, cn
-lang: en
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN
+lang: en_US
 # > 1.13 Chosen Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
 minecraftTranslationsFile: null
 # Enable or disable update checking on the loading
