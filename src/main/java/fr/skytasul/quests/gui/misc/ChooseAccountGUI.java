@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -62,9 +63,14 @@ public class ChooseAccountGUI implements CustomInventory {
 	}
 
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
-		p.closeInventory();
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+		Inventories.closeAndExit(p);
 		run.run(accounts.get(slot));
+		return true;
+	}
+	
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.REMOVE;
 	}
 
 }

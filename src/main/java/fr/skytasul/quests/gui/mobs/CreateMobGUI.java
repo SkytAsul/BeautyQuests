@@ -7,9 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.editors.TextEditor;
@@ -65,7 +63,7 @@ public class CreateMobGUI implements CustomInventory{
 		return inv;
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 
 		case 0:
@@ -89,9 +87,7 @@ public class CreateMobGUI implements CustomInventory{
 					EntityType en = (EntityType) obj;
 					mob = new Mob(en, mob.amount);
 					
-					/*if (en == EntityType.PLAYER){
-						inv.setItem(slot, ItemUtils.skull(Lang.bukkitMob.toString(), null, "player"));
-					}else*/ inv.setItem(slot, ItemUtils.item(XMaterial.mobItem(en), Lang.bukkitMob.toString(), en.getName()));
+					inv.setItem(slot, ItemUtils.item(XMaterial.mobItem(en), Lang.bukkitMob.toString(), en.getName()));
 					
 					if (!done) inv.setItem(8, ItemUtils.itemDone());
 					done = true;
@@ -112,7 +108,7 @@ public class CreateMobGUI implements CustomInventory{
 			}).enterOrLeave(p);
 
 		case 5:
-			if (!Dependencies.mm) return;
+			if (!Dependencies.mm) break;
 			MythicMobs.sendMythicMobsList(p);
 			new TextEditor(p, (obj) -> {
 				openLastInv(p);
@@ -129,7 +125,7 @@ public class CreateMobGUI implements CustomInventory{
 			break;
 			
 		case 6:
-			if (!Dependencies.eboss) return;
+			if (!Dependencies.eboss) break;
 			new TextEditor(p, (obj) -> {
 				openLastInv(p);
 				reset();
@@ -145,12 +141,13 @@ public class CreateMobGUI implements CustomInventory{
 			
 		case 8:
 			if (current.getType() == Material.DIAMOND) {
-				Inventories.remove(p);
+				Inventories.closeAndExit(p);
 				run.run(mob);
 			}
 			break;
 			
 		}
+		return true;
 	}
 	
 	private void reset(){
@@ -163,15 +160,6 @@ public class CreateMobGUI implements CustomInventory{
 		}else if (mob.hasNPC()){
 			ItemUtils.lore(inv.getItem(3));
 		}
-	}
-
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
 	}
 
 }

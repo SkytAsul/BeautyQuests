@@ -21,8 +21,9 @@ public abstract interface CustomInventory {
 	 * @param current Item clicked
 	 * @param slot Slot of item clicked
 	 * @param click Type of click
+	 * @return Cancel click
 	 */
-	public abstract void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click);
+	public abstract boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click);
 	
 	/**
 	 * Called when clicking on an item <b>with something on the cursor</b>
@@ -41,12 +42,10 @@ public abstract interface CustomInventory {
 	 * @param inv Inventory closed
 	 * @return Remove player from inventories system
 	 */
-	public default boolean onClose(Player p, Inventory inv){return true;}
-	
-	/**
-	 * Called when clicking on an item (<b>after <i>onClick</i></b>)
-	 * @return Cancel click
-	 */
-	public default boolean cancelClick(){return true;}
+	public default CloseBehavior onClose(Player p, Inventory inv){return CloseBehavior.CONFIRM;}
 
+	public static enum CloseBehavior{
+		REOPEN, CONFIRM, REMOVE, NOTHING;
+	}
+	
 }

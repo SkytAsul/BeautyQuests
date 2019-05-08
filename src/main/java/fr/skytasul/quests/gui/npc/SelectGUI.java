@@ -5,9 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.CustomInventory;
@@ -45,34 +43,27 @@ public class SelectGUI implements CustomInventory{
 		return inv;
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 
 		case 6:
 			NPCGUI tmp = (NPCGUI) Inventories.create(p, new NPCGUI());
 			tmp.run = (obj) -> {
-				Inventories.put(p, openLastInv(p), inv);
-				run.run(obj);
+				if (obj == null){
+					Inventories.put(p, openLastInv(p), inv);
+				}else run.run(obj);
 			};
 			break;
 
 		case 7:
 			Editor.enterOrLeave(p, new SelectNPC(p, (obj) -> {
-				p.openInventory(inv);
-				if (obj != null) run.run(obj);
+				if (obj == null){
+					p.openInventory(inv);
+				}else run.run(obj);
 			}));
 			break;
 		}
-	}
-
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+		return true;
 	}
 
 }

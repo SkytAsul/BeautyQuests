@@ -12,9 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -127,16 +125,16 @@ public class RequirementsGUI implements CustomInventory {
 	}
 
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		if (slot == 4){
 			List<AbstractRequirement> req = new ArrayList<>();
 			LinkedList<RequirementCreator> ls = RequirementCreator.getCreators();
 			for (Entry<Integer, Map<String, Object>> data : datas.entrySet()){
 				req.add(ls.get((int) data.getValue().get("666DONOTREMOVE-id")).runnables.finish(data.getValue()));
 			}
-			Inventories.closeWithoutExit(p);
+			Inventories.closeAndExit(p);
 			end.run(req);	
-			return;
+			return true;
 		}
 		if (!datas.containsKey(slot)){
 			datas.put(slot, initDatas(slot - 9));
@@ -148,17 +146,7 @@ public class RequirementsGUI implements CustomInventory {
 				remove(slot);
 			}
 		}
-	}
-	
-	
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+		return true;
 	}
 
 	

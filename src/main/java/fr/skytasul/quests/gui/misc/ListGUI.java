@@ -55,7 +55,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 		}
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
 			finish();
 		}else {
@@ -71,6 +71,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 				click(obj);
 			}
 		}
+		return true;
 	}
 	
 	public void finishItem(T object){

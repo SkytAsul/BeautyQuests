@@ -26,10 +26,6 @@ public class ItemsGUI implements CustomInventory{
 	public Inventory inv;
 	private Runnable run;
 	
-	private boolean cancel = true;
-	
-	private boolean closeNoDelete = false;
-	
 	public ItemsGUI(Runnable run, List<ItemStack> items) {
 		this.run = run;
 		this.items = items;
@@ -77,9 +73,8 @@ public class ItemsGUI implements CustomInventory{
 		return false;
 	}
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
-			closeNoDelete = true;
 			items.clear();
 			for (int i = 0; i < 8; i++){
 				ItemStack is = inv.getItem(i);
@@ -89,6 +84,7 @@ public class ItemsGUI implements CustomInventory{
 					}
 				}
 			}
+			Inventories.closeAndExit(p);
 			run.run();
 		}else {
 			if (current.equals(none)){
@@ -97,14 +93,15 @@ public class ItemsGUI implements CustomInventory{
 						Inventories.put(p, openLastInv(p), inv);
 				}));
 			}else {
-				cancel = false;
 				new BukkitRunnable() {
 					public void run() {
 						inv.setItem(slot, none);
 					}
 				}.runTaskLaterAsynchronously(BeautyQuests.getInstance(), 1L);
+				return false;
 			}
 		}
+		return true;
 	}
 	
 	private void addItem(ItemStack add){
@@ -122,15 +119,9 @@ public class ItemsGUI implements CustomInventory{
 		}
 		items.add(add);
 	}
-	
-	public boolean cancelClick(){
-		boolean tmp = cancel;
-		cancel = true;
-		return tmp;
-	}
 
-	public boolean onClose(Player p, Inventory inv){
-		return !closeNoDelete;
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.CONFIRM;
 	}
 
 }

@@ -28,9 +28,7 @@ public enum Lang{
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
 	
-	TRICK_TEXT("msg.trick.text"),
-	TRICK_CANCEL("msg.trick.cancel"),
-	TRICK_NULL("msg.trick.nul"),
+	TYPE_CANCEL("msg.typeCancel"),
 	NPC_TEXT("msg.writeNPCText"),
 	REGION_NAME("msg.writeRegionName"),
 	XP_GAIN("msg.writeXPGain"),
@@ -359,7 +357,6 @@ public enum Lang{
 	Null("misc.nul"),
 	Or("misc.or"),
 	Amount("misc.amount"),
-	Type("misc.type"),
 	Item("misc.items"),
 	Exp("misc.expPoints"),
 	Yes("misc.yes"),

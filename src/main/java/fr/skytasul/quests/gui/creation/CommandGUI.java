@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -28,7 +29,6 @@ public class CommandGUI implements CustomInventory {
 	
 	private String cmd;
 	private boolean console = false;
-	
 	
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_COMMAND.toString());
@@ -50,7 +50,7 @@ public class CommandGUI implements CustomInventory {
 		inv.getItem(2).setType(Material.DIAMOND);
 	}
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 		case 0:
 			Lang.COMMAND.send(p);
@@ -67,11 +67,13 @@ public class CommandGUI implements CustomInventory {
 			
 		case 2:
 			if (current.getType() == Material.DIAMOND){
+				Inventories.closeAndExit(p);
 				run.run(new Command(cmd, console));
 			}
 			break;
 			
 		}
+		return true;
 	}
 
 }

@@ -37,7 +37,6 @@ public class PlayerListGUI implements CustomInventory {
 		this.acc = acc;
 	}
 	
-	
 	public Inventory open(Player p) {
 		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
@@ -142,7 +141,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		PlayerListGUI thiz = this;
 		switch (slot % 9){
 		case 8:
@@ -183,6 +182,11 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		}
+		return true;
+	}
+	
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.REMOVE;
 	}
 
 	enum Category{

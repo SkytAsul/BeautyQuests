@@ -3,11 +3,14 @@ package fr.skytasul.quests.gui.quests;
 import java.util.ArrayList;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.PagedGUI;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -34,8 +37,12 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	}
 
 	public void click(Quest existing){
-		p.closeInventory();
+		Inventories.closeAndExit(p);
 		run.run(existing);
+	}
+	
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.REMOVE;
 	}
 
 }

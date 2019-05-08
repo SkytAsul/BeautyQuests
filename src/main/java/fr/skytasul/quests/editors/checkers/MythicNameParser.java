@@ -12,7 +12,7 @@ public class MythicNameParser implements fr.skytasul.quests.editors.checkers.Abs
 	public Object parse(Player p, String msg) throws Throwable{
 		MythicMob mm = MythicMobs.inst().getMobManager().getMythicMob(msg);
 		if (mm == null){
-			Utils.sendMessage(p, Lang.MYTHICMOB_NOT_EXISTS.toString() + " " + Lang.Type.toString() + " " + Lang.TRICK_CANCEL.toString());
+			Utils.sendMessage(p, Lang.MYTHICMOB_NOT_EXISTS.toString() + " " + Lang.TYPE_CANCEL.toString());
 			return null;
 		}
 		return mm;

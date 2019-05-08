@@ -11,9 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -80,27 +78,18 @@ public class MobsListGUI implements CustomInventory{
 		}else if (mob.hasEpicBoss()){
 			return ItemUtils.item(XMaterial.mobItem(EpicBosses.getBossEntityType(mob.getBossName())), mob.getBossName(), lore, "", Lang.click.toString());
 		}else return null;
-		
-		/*ItemStack is = ItemUtils.item(XMaterial.mobItem(type), name);
-		if (mob.hasMythicMob()){
-			MythicMob mm = (MythicMob) mym;
-			ItemUtils.lore(is, lore, "Base Health : " + mm.getBaseHealth(), "Base Damage : " + mm.getBaseDamage(), "Base Armor : " + mm.getBaseArmor(), "", Lang.click.toString());
-		}else {
-			ItemUtils.lore(is, lore, "Entity Type : " + name, "", Lang.click.toString());
-		}
-		return is;*/
 	}
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
-			Inventories.remove(p);
+			Inventories.closeAndExit(p);
 			run.run(new ArrayList<>(mobs.values()));
-			return;
+			return true;
 		}
 		if (click.isRightClick()){
 			mobs.remove(slot);
 			inv.setItem(slot, none.clone());
-			return;
+			return true;
 		}
 		CreateMobGUI sm = Inventories.create(p, new CreateMobGUI());
 		sm.run = (obj) -> {
@@ -108,15 +97,7 @@ public class MobsListGUI implements CustomInventory{
 			inv.setItem(slot, fromMob((Mob) obj));
 			mobs.put(slot, (Mob) obj);
 		};
-	}
-
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+		return true;
 	}
 
 }

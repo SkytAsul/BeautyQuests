@@ -11,7 +11,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.utils.types.Pair;
 
 public class Inventories{
@@ -54,13 +57,10 @@ public class Inventories{
 		}
 
 		if (!inv.equals(g.get(p).getValue())) return;
-
+		
 		if (e.getCursor().getType() == Material.AIR) {
 			if (current == null || current.getType() == Material.AIR) return;
-			g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick());
-			if (g.containsKey(p))
-				if (g.get(p).getKey().cancelClick())
-					e.setCancelled(true);
+			if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
 		}else {
 			if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot()))
 				e.setCancelled(true);
@@ -75,8 +75,33 @@ public class Inventories{
 		}
 		if (g.containsKey(p)) {
 			if (!e.getInventory().equals(g.get(p).getValue())) return;
-			if (g.get(p).getKey().onClose(p, e.getInventory())) {
+			switch (g.get(p).getKey().onClose(p, e.getInventory())) {
+			case REMOVE:
 				remove(p);
+				break;
+			case REOPEN:
+				new BukkitRunnable() {
+					public void run(){
+						p.openInventory(e.getInventory());
+					}
+				}.runTaskLater(BeautyQuests.getInstance(), 1L);
+				break;
+			case CONFIRM:
+				Pair<CustomInventory, Inventory> pair = g.get(p);
+				new BukkitRunnable() {
+					public void run(){
+						create(p, new ConfirmGUI(() -> {
+							remove(p);
+							p.closeInventory();
+						}, () -> {
+							g.put(p, pair);
+							p.openInventory(e.getInventory());
+						}));
+					}
+				}.runTaskLater(BeautyQuests.getInstance(), 1L);
+				break;
+			case NOTHING:
+				break;
 			}
 		}
 	}
@@ -88,6 +113,11 @@ public class Inventories{
 			return;
 		}
 		close = true;
+		p.closeInventory();
+	}
+	
+	public static void closeAndExit(Player p){
+		remove(p);
 		p.closeInventory();
 	}
 	

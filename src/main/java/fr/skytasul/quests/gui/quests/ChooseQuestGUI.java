@@ -9,12 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.RunnableObj;
@@ -25,7 +24,6 @@ public class ChooseQuestGUI implements CustomInventory{
 	public final List<Quest> quests;
 	
 	public Inventory inv;
-	private boolean finish = false;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -60,24 +58,12 @@ public class ChooseQuestGUI implements CustomInventory{
 	}
 	
 	private void end(Player p, Quest c){
-		finish = true;
-		p.closeInventory();
+		if (inv != null) Inventories.closeAndExit(p);
 		run.run(c);
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-		if (slot > quests.size()) return;
-		end(p, quests.get(slot));
-	}
-
-	public boolean onClose(Player p, Inventory inv){
-		if (!finish){
-			new BukkitRunnable() {
-				public void run(){
-					run.run(null);
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		}
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+		if (slot < quests.size()) end(p, quests.get(slot));
 		return true;
 	}
 

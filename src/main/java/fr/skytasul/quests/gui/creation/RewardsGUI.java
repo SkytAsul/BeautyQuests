@@ -13,9 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
@@ -122,15 +120,15 @@ public class RewardsGUI implements CustomInventory {
 	}
 
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		if (slot == 4){
 			List<AbstractReward> req = new ArrayList<>();
 			for (Entry<Integer, Map<String, Object>> data : datas.entrySet()){
 				req.add(((RewardCreator) data.getValue().get("666DONOTREMOVE-creator")).runnables.finish(data.getValue()));
 			}
-			Inventories.closeWithoutExit(p);
+			Inventories.closeAndExit(p);
 			end.run(req);
-			return;
+			return true;
 		}
 		if (!datas.containsKey(slot)){
 			RewardCreator crea = RewardCreator.getCreators().get(slot - 9);
@@ -145,16 +143,7 @@ public class RewardsGUI implements CustomInventory {
 				RewardCreator.getCreators().get(slot - 9).runnables.itemClick(p, datas.get(slot), this, current);
 			}
 		}
-	}
-
-
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+		return true;
 	}
 
 

@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -65,7 +64,6 @@ public class FinishGUI implements CustomInventory{
 	/* Temporary quest datas */
 	private String name = null;
 	private NPC startNPC = null;
-	private NPC createdNPC = null;
 	private boolean isRepeatable = false;
 	private boolean hasScoreboard = true;
 	private boolean isHid = false;
@@ -86,8 +84,6 @@ public class FinishGUI implements CustomInventory{
 	private boolean editing = false;
 	private boolean stagesEdited = false;
 	private Quest edited;
-
-	private boolean finished = false;
 	
 	public FinishGUI(StagesGUI gui){
 		stages = gui;
@@ -141,7 +137,7 @@ public class FinishGUI implements CustomInventory{
 		return this;
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		switch(slot){
 
 		case 0:
@@ -200,7 +196,6 @@ public class FinishGUI implements CustomInventory{
 			tmp.run = (obj) -> {
 				if (obj != null) {
 					startNPC = (NPC) obj;
-					createdNPC = startNPC;
 					startNPC.spawn(p.getLocation().setDirection(new Vector(0, 0, 0)));
 					ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
 				}
@@ -287,6 +282,7 @@ public class FinishGUI implements CustomInventory{
 			break;
 
 		}
+		return true;
 	}
 
 	private void refreshFinish(Inventory inv) {
@@ -352,25 +348,7 @@ public class FinishGUI implements CustomInventory{
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 		}
-		finished = true;
-		p.closeInventory();
-	}
-
-	public boolean onClose(Player p, Inventory inv){
-		if (inv.getType() == InventoryType.CRAFTING || inv.getType() == InventoryType.CREATIVE) return false;
-		if (finished) return true;
-		cancelAll(p);
-		return true;
-	}
-
-	public void cancelAll(Player p){
-		if (startNPC != null && createdNPC != null){
-			if (startNPC == createdNPC){
-				startNPC.destroy();
-				Utils.sendMessage(p, Lang.NPC_REMOVE.toString());
-			}
-		}
-		Utils.sendMessage(p, ((!editing) ? Lang.QUEST_CANCEL : Lang.QUEST_EDIT_CANCEL).toString());
+		Inventories.closeAndExit(p);
 	}
 
 	private void setFromQuest(){

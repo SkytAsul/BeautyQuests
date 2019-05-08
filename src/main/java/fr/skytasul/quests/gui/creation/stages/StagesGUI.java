@@ -13,9 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -236,7 +234,7 @@ public class StagesGUI implements CustomInventory {
 		return null;
 	}
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		if (slot > 44) {
 			if (slot == 45) {
 				if (page > 0) {
@@ -264,17 +262,12 @@ public class StagesGUI implements CustomInventory {
 			Line line = getLine(Line.getLineNumber(slot)/9 +5*page);
 			line.click(slot, p, current);
 		}
+		return true;
 	}
 
-	public boolean onClose(Player p, Inventory inv){
-		if (!isActiveLine(getLine(0)) || stop) return true;
-		new BukkitRunnable() {
-			public void run() {
-				//finish(p);
-				reopen(p, false);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+	public CloseBehavior onClose(Player p, Inventory inv){
+		if (!isActiveLine(getLine(0)) || stop) return CloseBehavior.REMOVE;
+		return CloseBehavior.REOPEN;
 	}
 
 	private void refresh(Player p) {
@@ -499,7 +492,7 @@ class CreateArea implements StageCreationRunnables{
 		launchRegionEditor(p, line, sg, datas, true);
 	}
 	private static void launchRegionEditor(Player p, Line line, StagesGUI sg, LineData datas, boolean first){
-		Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.Type.toString() + " " + Lang.TRICK_CANCEL.toString()));
+		Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
 		TextEditor wt = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 			String msg = (String) obj;
 			if (WorldGuard.regionExists(msg, p.getWorld())) {
@@ -570,9 +563,8 @@ class CreateMine implements StageCreationRunnables{
 		line.setItem(5, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-				blocks.setBlocksFromList(blocks.lastInv, (List<BlockData>) datas.get("blocks"));
+				blocks.setBlocksFromList(blocks.inv, (List<BlockData>) datas.get("blocks"));
 				blocks.run = (obj) -> {
-					Inventories.closeWithoutExit(p);
 					datas.getGUI().reopen(p, true);
 					datas.put("blocks", obj);
 				};

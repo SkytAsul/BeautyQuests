@@ -7,9 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
@@ -30,7 +28,7 @@ public class SelectBlockGUI implements CustomInventory{
 	
 	public RunnableObj run;
 	
-	public Inventory lastInv;
+	public Inventory inv;
 	
 	BlockData block = new BlockData(XMaterial.STONE, 1);
 	
@@ -39,26 +37,25 @@ public class SelectBlockGUI implements CustomInventory{
 	}
 	
 	public CustomInventory openLastInv(Player p) {
-		p.openInventory(lastInv);
+		p.openInventory(inv);
 		return this;
 	}
 	
 	public Inventory open(Player p){
-		lastInv = Bukkit.createInventory(null, 9, name());
+		inv = Bukkit.createInventory(null, 9, name());
 		
-		lastInv.setItem(8, done.clone());
+		inv.setItem(8, done.clone());
 		updateItems();
 		
-		p.openInventory(lastInv);
-		return lastInv;
+		return inv = p.openInventory(inv).getTopInventory();
 	}
 
 	public void updateItems(){
-		lastInv.setItem(1, ItemUtils.nameAdd(amount.clone(), "" + block.amount));
-		lastInv.setItem(3, item(block.type, "Material: " + block.type.name()));
+		inv.setItem(1, ItemUtils.nameAdd(amount.clone(), "" + block.amount));
+		inv.setItem(3, item(block.type, "Material: " + block.type.name()));
 	}
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 
 		default:
@@ -85,20 +82,16 @@ public class SelectBlockGUI implements CustomInventory{
 			break;
 			
 		case 8:
+			Inventories.closeAndExit(p);
 			run.run(block);
 			break;
 			
 		}
-	} 
+		return true;
+	}
 
-	public boolean onClose(Player p, Inventory inv){
-		new BukkitRunnable() {
-			
-			public void run(){
-				p.openInventory(inv);
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		return false;
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.REOPEN;
 	}
 
 }

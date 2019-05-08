@@ -2,7 +2,10 @@ package fr.skytasul.quests;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -115,12 +118,139 @@ public class BeautyQuests extends JavaPlugin{
 		}.runTaskLater(this, 40L);
 
 		saveDefaultConfig();
-
 		NMS.intializeNMS();
-		
-		config = getConfig();
+		registerCommands();
+
 		saveFolder = new File(getDataFolder(), "quests");
 		if (!saveFolder.exists()) saveFolder.mkdirs();
+		loadDataFile();
+		loadConfigParameters(true);
+		
+		logger.launchFlushTimer();
+		try {
+			new SpigotUpdater(this, 39255);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public void onDisable(){
+		Editor.leaveAll();
+		Inventories.closeAll();
+		getServer().getScheduler().cancelTasks(this);
+		stopSaveCycle();
+		
+		try {
+			if (!disable) getLogger().info(saveAllConfig(true) + " quests saved");
+			if (logger != null) logger.close();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/* ---------- Various init ---------- */
+
+	private void registerCommands(){
+		CommandsManager questCommand = new CommandsManager((sender) -> {
+			if (!(sender instanceof Player)) return;
+			Player p = (Player) sender;
+			if (!p.hasPermission("beautyquests.command.listPlayer")){
+				Lang.INCORRECT_SYNTAX.send(p);
+			}else Inventories.create(p, new PlayerListGUI(PlayersManager.getPlayerAccount(p)));
+		});
+		PluginCommand cmd = getCommand("beautyquests");
+		cmd.setPermission("beautyquests.command");
+		cmd.setExecutor(questCommand);
+		cmd.setTabCompleter(questCommand);
+		questCommand.registerCommandsClass(new Commands());
+	}
+	
+	private void launchSaveCycle(){
+		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
+			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
+			saveTask = new BukkitRunnable() {
+				public void run() {
+					try {
+						logger.info(saveAllConfig(false) + " quests saved ~ periodic save");
+					}catch (Throwable e) {
+						logger.severe("Error when saving !");
+						e.printStackTrace();
+					}
+				}
+			};
+			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimer(this, cycle, cycle).getTaskId());
+		}
+	}
+	
+	private void stopSaveCycle(){
+		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
+			saveTask.cancel();
+			saveTask = null;
+			logger.info("Periodic saves task stopped.");
+		}
+	}
+	
+	/* ---------- YAML ---------- */
+	
+	private void loadConfigParameters(boolean init){
+		try{
+			config = getConfig();
+			/*				static initialization				*/
+			if (init){
+				if (loadLang() == null) return;
+				StagesGUI.initialize(); // 			initializing default stage types
+				RequirementsGUI.initialize(); //	initializing default requirements
+				RewardsGUI.initialize(); //			initializing default rewards
+			}
+			
+			QuestsConfiguration.initConfiguration(config);
+		}catch (Exception ex){
+			getLogger().severe("Error when loading.");
+			ex.printStackTrace();
+		}
+	}
+	
+	private YamlConfiguration loadLang() {
+		try {
+			String s = "locales/" + config.getString("lang", "en_US") + ".yml";
+			File file = new File(getDataFolder(), s);
+			InputStream res = getResource(s);
+			if (!file.exists()){
+				if (res == null){ // file and local resource do not exist: using en_US
+					logger.warning("Language file " + s + " does not exist. Using en_US.yml");
+					s = "locales/en_US.yml";
+					file = new File(getDataFolder(), s);
+				}
+				saveResource(s, false); // copying local resource
+			}
+			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+			if (res != null){ // if it's a local resource
+				YamlConfiguration def = YamlConfiguration.loadConfiguration(new InputStreamReader(res, StandardCharsets.UTF_8));
+				boolean changes = false;
+				for (String key : def.getKeys(true)){ // get all keys in resource
+					if (!def.isConfigurationSection(key)){ // if not a block
+						if (!conf.contains(key)){ // if string does not exist in the file
+							conf.set(key, def.get(key)); // copy string
+							changes = true;
+						}
+					}
+				}
+				if (changes) conf.save(file); // if there has been changes before, save the edited file
+			}
+			Lang.setFile(conf);
+			getLogger().info("Loaded language file " + s);
+			return conf;
+		} catch(Exception e) {
+			e.printStackTrace();
+			getLogger().severe("Couldn't create language file.");
+			getLogger().severe("This is a fatal error. Now disabling.");
+			disable = true;
+			this.setEnabled(false);
+			return null;
+		}
+	}
+	
+	private void loadDataFile(){
 		dataFile = new File(getDataFolder(), "data.yml");
 		if (!dataFile.exists()){
 			try {
@@ -147,65 +277,8 @@ public class BeautyQuests extends JavaPlugin{
 		}else lastVersion = getDescription().getVersion();
 		data.options().header("Do not edit ANYTHING here.");
 		data.options().copyHeader(true);
-
-		registerCommands();
-
-		loadConfigParameters(true);
-		
-		logger.launchFlushTimer();
-		try {
-			new SpigotUpdater(this, 39255);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
-	public void onDisable(){
-		Editor.leaveAll();
-		Inventories.closeAll();
-		stopSaveCycle();
-		
-		try {
-			if (!disable) getLogger().info(saveAllConfig(true) + " quests saved");
-			if (logger != null) logger.close();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void registerCommands(){
-		CommandsManager questCommand = new CommandsManager((sender) -> {
-			if (!(sender instanceof Player)) return;
-			Player p = (Player) sender;
-			if (!p.hasPermission("beautyquests.command.listPlayer")){
-				Lang.INCORRECT_SYNTAX.send(p);
-			}else Inventories.create(p, new PlayerListGUI(PlayersManager.getPlayerAccount(p)));
-		});
-		PluginCommand cmd = getCommand("beautyquests");
-		cmd.setPermission("beautyquests.command");
-		cmd.setExecutor(questCommand);
-		cmd.setTabCompleter(questCommand);
-		questCommand.registerCommandsClass(new Commands());
 	}
 	
-	private void loadConfigParameters(boolean init){
-		try{
-			config = getConfig();
-			/*				static initialization				*/
-			if (init){
-				loadLang();
-				StagesGUI.initialize(); // 			initializing default stage types
-				RequirementsGUI.initialize(); //	initializing default requirements
-				RewardsGUI.initialize(); //			initializing default rewards
-			}
-			
-			QuestsConfiguration.initConfiguration(config);
-		}catch (Exception ex){
-			getLogger().severe("Error when loading.");
-			ex.printStackTrace();
-		}
-	}
-			
 	private int loadAllDatas() throws Throwable{
 		if (disable) return 666;
 		
@@ -225,7 +298,6 @@ public class BeautyQuests extends JavaPlugin{
 		quests.clear();
 		lastID = data.getInt("lastID");
 
-		
 		try{
 			PlayersManager.load(data);
 		}catch (Throwable ex){
@@ -305,30 +377,7 @@ public class BeautyQuests extends JavaPlugin{
 		if (Dependencies.dyn) Dynmap.unload();
 	}
 	
-	private void launchSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
-			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
-			saveTask = new BukkitRunnable() {
-				public void run() {
-					try {
-						logger.info(saveAllConfig(false) + " quests saved ~ periodic save");
-					}catch (Throwable e) {
-						logger.severe("Error when saving !");
-						e.printStackTrace();
-					}
-				}
-			};
-			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimer(this, cycle, cycle).getTaskId());
-		}
-	}
-	
-	private void stopSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
-			saveTask.cancel();
-			saveTask = null;
-			logger.info("Periodic saves task stopped.");
-		}
-	}
+	/* ---------- Backups ---------- */
 	
 	public boolean createFolderBackup(String msg){
 		getLogger().info(msg + " Creating backup...");
@@ -374,25 +423,8 @@ public class BeautyQuests extends JavaPlugin{
 		if (!f.exists()) f.mkdir();
 		return f;
 	}
-
-	private YamlConfiguration loadLang() {
-		try {
-			String s = config.getString("lang", "en_US") + ".yml";
-			File file = new File(new File(getDataFolder(), "locales"), s);
-			if (!file.exists()) saveResource(s, false);
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-			Lang.setFile(conf);
-			getLogger().info("Loaded language file " + s);
-			return conf;
-		} catch(Exception e) {
-			e.printStackTrace();
-			getLogger().severe("Couldn't create language file.");
-			getLogger().severe("This is a fatal error. Now disabling.");
-			disable = true;
-			this.setEnabled(false);
-			return null;
-		}
-	}
+	
+	/* ---------- Various quests-related methods ---------- */
 	
 	public void performReload(CommandSender sender){
 		try {

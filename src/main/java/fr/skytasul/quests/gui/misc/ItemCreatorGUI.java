@@ -18,6 +18,7 @@ import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -34,7 +35,6 @@ public class ItemCreatorGUI implements CustomInventory {
 	}
 
 	private XMaterial type;
-	//private short data;
 	private String name;
 	private List<String> lore = new ArrayList<>();
 	private boolean quest = false;
@@ -71,7 +71,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	}
 
 
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 		case 0:
 			Lang.CHOOSE_ITEM_TYPE.send(p);
@@ -97,7 +97,6 @@ public class ItemCreatorGUI implements CustomInventory {
 		case 4:
 			Lang.CHOOSE_ITEM_LORE.send(p);
 			Editor.enterOrLeave(p, new TextListEditor(p, new RunnableObj() {
-
 				public void run(Object obj) {
 					lore = (List<String>) obj;
 					reopen();
@@ -117,11 +116,13 @@ public class ItemCreatorGUI implements CustomInventory {
 			break;
 
 		case 8:
+			Inventories.closeAndExit(p);
 			run.run(null);
 			break;
 
 		case 17: //VALIDATE
 			if (current.getType() == Material.DIAMOND){
+				Inventories.closeAndExit(p);
 				run.run(build());
 			}
 			break;
@@ -131,6 +132,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			break;
 
 		}
+		return true;
 	}
 
 	private ItemStack build(){

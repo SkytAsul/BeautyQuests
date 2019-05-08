@@ -72,7 +72,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	}
 
 	
-	public void onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot % 9){
 		case 8:
 			int barSlot = (slot - 8) / 9;
@@ -96,6 +96,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 			int line = (int) Math.floor(slot * 1D / 9D);
 			click(objects.get(slot - line*2 + page*35));
 		}
+		return true;
 	}
 	
 	/**

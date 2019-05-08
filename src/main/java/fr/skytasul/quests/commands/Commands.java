@@ -362,8 +362,8 @@ public class Commands {
 			if (l.getPath().startsWith("msg.command.help.")){
 				String command = l.getPath().substring(17);
 				if (command.equals("header")){
-					l.send(cmd.sender);
-				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.send(cmd.sender, cmd.label);
+					l.sendWP(cmd.sender);
+				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.sendWP(cmd.sender, cmd.label);
 			}
 		}
 	}

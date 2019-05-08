@@ -27,11 +27,11 @@ public class BlocksGUI implements CustomInventory {
 	
 	public Map<Integer, BlockData> blocks = new HashMap<>();
 	
-	public Inventory lastInv;
+	public Inventory inv;
 	public RunnableObj run;
 	
 	public CustomInventory openLastInv(Player p) {
-		p.openInventory(lastInv);
+		p.openInventory(inv);
 		return this;
 	}
 
@@ -51,35 +51,33 @@ public class BlocksGUI implements CustomInventory {
 
 	
 	public Inventory open(Player p) {
-		lastInv = Bukkit.createInventory(null, 9, "§5Choose blocks");
+		inv = Bukkit.createInventory(null, 9, "§5Choose blocks");
 		
-		lastInv.setItem(8, done);
-		for (int i = 0; i < 8; i++) lastInv.setItem(i, none.clone());
+		inv.setItem(8, done);
+		for (int i = 0; i < 8; i++) inv.setItem(i, none.clone());
 		
-		p.openInventory(lastInv);
-		return lastInv;
+		return inv = p.openInventory(inv).getTopInventory();
 	}
 
 	
-	public void onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
+	public boolean onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
 		if (slot == 8){
-			Inventories.closeWithoutExit(p);
+			Inventories.closeAndExit(p);
 			run.run(new ArrayList<>(blocks.values()));
-			return;
+			return true;
 		}
 		if (click.isRightClick()){
 			blocks.remove(slot);
 			inv.setItem(slot, none);
-			return;
+			return true;
 		}
 		SelectBlockGUI sm = Inventories.create(p, new SelectBlockGUI());
 		sm.run = (obj) -> {
-			Inventories.closeWithoutExit(p);
 			Inventories.put(p, openLastInv(p), inv);
-			lastInv.setItem(slot, fromBlock((BlockData) obj));
+			inv.setItem(slot, fromBlock((BlockData) obj));
 			blocks.put(slot, (BlockData) obj);
 		};
-
+		return true;
 	}
 
 }

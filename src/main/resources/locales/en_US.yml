@@ -1,94 +1,77 @@
 msg:
   quest:
     finished:
-      base: §aCongratulations! You have finished the quest §o§6{0}§r§a!
-      obtain: §aYou obtain {0}!
-    started: You start the quest §o{0}
-    created: §aCongratulations! You have created the quest "§e{0}§a", who includes
-      {1} steps!
-    edited: §aCongratulations! You have edited the quest "§e{0}§a", who includes now
-      {1} steps!
-    createCancelled: §cThe creation (or the edition) has been cancelled by another
-      plugin, sorry...
-    cancelling: §cProcess of quest creation cancelled.
-    editCancelling: §cProcess of quest edition cancelled.
-    invalidID: §cThe quests with ID {0} does not exist.
-    alreadyStarted: "§cYou\t are already doing this quest !"
+      base: '§aCongratulations! You have finished the quest §o§6{0}§r§a!'
+      obtain: '§aYou obtain {0}!'
+    started: 'You have started the quest §o{0}§r§a!'
+    created: '§aCongratulations! You have created the quest "§e{0}§a", which includes {1} step/s!'
+    edited: '§aCongratulations! You have edited the quest "§e{0}§a", which includes now {1} step/s!'
+    createCancelled: '§cThe creation or edition has been cancelled by another plugin!'
+    cancelling: '§cProcess of quest creation cancelled.'
+    editCancelling: '§cProcess of quest edition cancelled.'
+    invalidID: '§cThe quest with the id {0} doesn't exist.'
+    alreadyStarted: '§cYou have already started the quest!'
   quests:
-    nopStep: §cThis quest doesn't have any step... prevent an administrator :-)
-    updated: §7Quest {0} updated!
+    nopStep: '§cThis quest doesn't have any step.'
+    updated: '§7Quest {0} updated!'
   stageMobs:
-    noMobs: §cThis stage doesn't need any mobs to kill... prevent an administrator
-      :-)
-    listMobs: §aYou must kill {0}.
-  trick:
-    text: Type {0} or {1}
-    cancel: '"cancel" to come back at the last text'
-    nul: '"null" to say nothing'
-  writeNPCText: Write the dialog will be said to the player by the NPC. Type \"help\"
-    to get some help. (all commands are without /)
-  writeRegionName: Write the name of the region required for the step.
-  writeXPGain: 'Write the amount of experience points that the player will be obtain.
-    Last gain: §a{0}'
-  writeMobAmount: Write the amount of the mobs to kill.
-  writeChatMessage: Write requisite message (add {SLASH} at the beginning if you want
-    a command).
-  writeEndMessage: Write the message sent at the end of the quest or at the end of
-    the stage.
-  writeDescriptionText: Write the text who describe the goal of the stage.
-  writeStageText: Write the text will be sent to the player at the beginning of the
-    step.
-  moveToTeleportPoint: Go to wanted teleport point.
-  writeNpcName: Write the name of the NPC.
-  writeNpcSkinName: Write the name of the skin of the NPC.
-  writeQuestName: Write the name of your quest!
-  writeCommand: Write wanted command. (without / at the beginning) You can use {PLAYER},
-    it will be replaced by the executor player's name.
-  writeHologramText: Write text of the hologram. (type "none" if you do not want a
-    hologram, and "null" if you want default text)
-  writeQuestTimer: Write required time (in minutes) before you can restart the quest.
-    (type "null" if you want default timer)
+    noMobs: '§cThis stage doesn't need any mobs to kill.'
+    listMobs: '§aYou must kill {0}.'
+  writeNPCText: 'Write the dialog that will be said to the player by the NPC: (Type "help" to receive help.)'
+  writeRegionName: Write the name of the region required for the step:
+  writeXPGain: 'Write the amount of experience points that the player will obtain: (Last value: §a{0})'
+  writeMobAmount: Write the amount of the mobs to kill:
+  writeChatMessage: 'Write required message: (Add "{SLASH}" to the beginning if you want a command.)'
+  writeEndMessage: Write the message that will be sent at the end of the quest or the stage:
+  writeDescriptionText: Write the text which describes the goal of the stage:
+  writeStageText: Write the text that will be sent to the player at the beginning of the step:
+  moveToTeleportPoint: Go to the wanted teleport position.
+  writeNpcName: Write the name of the NPC:
+  writeNpcSkinName: Write the name of the skin of the NPC:
+  writeQuestName: Write the name of your quest:
+  writeCommand: 'Write the wanted command: (The command is without the "/" and the placeholder "{PLAYER}" is supported. It will be replaced with the name of the executor.)'
+  writeHologramText: 'Write text of the hologram: (Write "none" if you don't want a hologram and "null" if you want the default text.)'
+  writeQuestTimer: 'Write the required time (in minutes) before you can restart the quest. (Write "null" if you want the default timer)'
   requirements:
-    quest: §eYou must have finished the quest "{0}"§r§e!
+    quest: §eYou must have finished the quest §o§6{0}§r§e!
     level: §eYou must be at least level {0}!
     job: §eYou must be at least level {0} for the job {1}!
     skill: §eYou must be at least level {0} for the skill {1}!
     combatLevel: §eYou must be at least combat level {0}!
-    wait: §cYou must wait {0} minutes before starting this quest again!
+    wait: §cYou must wait {0} minutes before you can start this quest again!
   experience:
-    edited: 'Experience gain edited: {0}pts. to {1}pts.'
-  selectNPCToKill: Select NPC to kill.
+    edited: 'You have changed the experience gain from {0} to {1} points.'
+  selectNPCToKill: Select the NPC to kill.
   npc:
     remove: §7NPC deleted.
-    talk: §7Go talk to a NPC named §o{0}§r§7.
-  regionDoesntExists: §cThis region doesn't exists... (you must be in the same world
-    that the wanted region)
-  factionDoesntExist: §cThis faction does not exist...
-  npcDoesntExist: §cThe NPC with ID {0} does not exist.
-  classDoesntExist: §cThis class does not exist...
-  objectDoesntExist: §cSpecified item (ID {0}) does not exist.
+    talk: §7Go and talk to a NPC named §o{0}§r§7.
+  regionDoesntExists: '§cThis region doesn't exist. (You have to be in the same world.)'
+  factionDoesntExist: §cThis faction doesn't exist.
+  npcDoesntExist: §cThe NPC with the id {0} doesn't exist.
+  classDoesntExist: §cThis class doesn't exist.
+  objectDoesntExist: §cThe specified item with the id {0} doesn't exist.
   number:
     negative: §cYou must enter a positive number!
     zero: §cYou must enter a number other than 0!
-    invalid: §c"{0}" isn't an valid number.
+    invalid: '§c{0} isn't a valid number.'
   erroroccurred: |-
-    §cAn error occurred... prevent an administrator :-)
-    §4§lError code :{0}
-  commandsDisabled: §cYou can't do command for this moment.
-  indexOutOfBounds: §cNumber specified ({0}) is out of bounds [{1}, {2}[
-  bringBackObjects: Bring me back {0}.
-  inventoryFull: §cYour inventory is full, the item has been dropped on floor.
-  playerNeverConnected: §cUnable to find datas from player {0}.
-  playerNotOnline: §cThe player {0} is not online.
+    §cAn error occurred, contact an adminstrator!
+    §4§lError code: {0}
+  commandsDisabled: §cCurrently you aren't allowed to execute commands!
+  indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and {2}.
+  bringBackObjects: 'Bring me back: {0}.'
+  inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
+  playerNeverConnected: §cUnable to find informations about the player {0}.
+  playerNotOnline: §cThe player {0} is offline.
   command:
-    playerNeeded: §cYou must be a player to do this command.
+    playerNeeded: §cYou must be a player to execute this command!
     incorrectSyntax: §cIncorrect syntax.
-    noPermission: §cYou don't have the permission required to do this command. ({0})
+    noPermission: '§cYou haven't enough permissions to execute this command! (Required: {0})'
     invalidCommand:
-      quests: §cThis command doesn't exist, type §o/quests help
-      simple: §cThis command doesn't exist, type §ohelp (without /)
-    needItem: §cYou must hold an item in your main hand.
-    itemChanged: §aItem has been edited. The changes will be in effective after restart.
+      quests: §cThis command doesn't exist, write §o/quests help§r§c.
+      simple: §cThis command doesn't exist, write §ohelp§r§c.
+    needItem: §cYou must hold an item in your main hand!
+    itemChanged: §aThe item has been edited. The changes will affect after a restart.
     removed: §aThe quest {0} has been successfully removed.
     leaveAll: §eYou have forced the end of {0} quests. §c{1} error(s).
     resetPlayer:
@@ -113,32 +96,26 @@ msg:
       header: §e§lBeautyQuests - §6help§r
       create: '§e/{0} create: §acreate a quest'
       edit: '§e/{0} edit: §aedit a quest'
-      remove: '§e/{0} remove [id]: §adelete the quest with id [id] or by clicking
-        on his NPC if not specified'
+      remove: '§e/{0} remove [id]: §adelete the quest with id [id] or by clicking on his NPC if not specified'
       finishAll: '§e/{0} finishAll: §afinish all quests in progress'
-      setStage: '§e/{0} setStage <player> <quest> [newStage] : §afinish a stage for
-        a player'
+      setStage: '§e/{0} setStage <player> <quest> [newStage] : §afinish a stage for a player'
       resetPlayer: '§e/{0} resetPlayer <name>: §aremove all datas of a player'
-      resetPlayerQuest: '§e/{0} resetPlayerQuest <name> [id]: §adelete datas of only
-        one quest for a player'
+      resetPlayerQuest: '§e/{0} resetPlayerQuest <name> [id]: §adelete datas of only one quest for a player'
       seePlayer: '§e/{0} seePlayer <name>: §asee datas of a player'
-      reload: '§e/{0} reload: §asave and reload the configuration and data files -
-        §c§odeprecated'
+      reload: '§e/{0} reload: §asave and reload the configuration and data files - §c§odeprecated'
       start: '§e/{0} start <player> [id] : §aforce starting of a quest'
-      setItem: '§e/{0} setItem <talk|launch> : §asave the hologram item in the data
-        file'
+      setItem: '§e/{0} setItem <talk|launch> : §asave the hologram item in the data file'
       adminMode: '§e/{0} adminMode : §atoggle the admin-mode (displaying of messages)'
       version: '§e/{0} version: §asee the plugin version'
       save: '§e/{0} save: §amake a manual save of datas'
       list: '§e/{0} list: §asee the quests list (for supported versions)'
+  typeCanel: Type "cancel" to come back to the last text
   editor:
     already: §cYou are already in an editor.
     enter:
       title: §6~ editor mode ~
       subtitle: §eType "/quests editor" to force leaving.
-    chat: §eYou are currently in the editor mode. Type "/quests editor" to force leaving
-      the editor (highly not recommended, consider using keywords such as "close"
-      or "cancel" to come back to the previous inventory).
+    chat: §eYou are currently in the editor mode. Type "/quests editor" to force leaving the editor (highly not recommended, consider using keywords such as "close" or "cancel" to come back to the previous inventory).
     npc:
       enter: §aClick on a NPC, or type "cancel".
       choseStarter: §3Choose the NPC who starts the quest.
@@ -148,9 +125,7 @@ msg:
       chooseLvlRequired: §eType the quantity of levels required.
       chooseJobRequired: §eType name of the wanted job.
       choosePermissionRequired: §eEnter required permissions to start the quest.
-      choosePermissionMessage: §eYou can choose a rejection message if the player
-        does not have the required permission. (to skip this step, type "null" and
-        no message will be sent)
+      choosePermissionMessage: §eYou can choose a rejection message if the player does not have the required permission. (to skip this step, type "null" and no message will be sent)
       chooseFactionRequired: §eEnter required faction's name.
       chooseClassesRequired: §eEnter names of required classes to start the quest.
       choosePlaceholderRequired:
@@ -158,8 +133,7 @@ msg:
         value: §eEnter required value of the placeholder §o%{0}%.
       chooseSkillRequired: §eType name of the wanted skill.
       reward:
-        permission: §eEdit gained or retired permissions with "add <permission> [remove]"
-          (type "help" to see other commands)
+        permission: §eEdit gained or retired permissions with "add <permission> [remove]" (type "help" to see other commands)
         money: §eType the amount of money gained.
     selectWantedBlock: §aClick with the stick on the wanted block for the stage.
     itemCreator:
@@ -377,7 +351,7 @@ misc:
     mcMMOSkillLevel: §dSkill level required
   hologramText: §8§lQuest NPC
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
-  entityType: 'Type d''entité : {0}'
+  entityType: 'Entity type: {0}'
   enabled: Enabled
   disabled: Disabled
   unknown: unknown
@@ -387,7 +361,6 @@ misc:
   nul: 'null'
   or: or
   amount: Amount
-  type: Type
   items: items
   expPoints: experience points
   'yes': 'true'
