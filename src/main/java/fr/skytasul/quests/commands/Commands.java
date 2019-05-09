@@ -169,7 +169,7 @@ public class Commands {
 			if (q.resetPlayer(acc)) i++;
 		}
 		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), i, cmd.sender.getName());
-		Lang.DATA_REMOVED_INFO.send(cmd.sender, target.getName(), i);
+		Lang.DATA_REMOVED_INFO.send(cmd.sender, i, target.getName());
 	}
 	
 	@Cmd(permission = "resetPlayer", min = 1, args = {"PLAYERS", "QUESTSID"})
@@ -376,8 +376,8 @@ public class Commands {
 	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){
 		qu.resetPlayer(acc);
-		Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());
-		Lang.DATA_REMOVED_INFO.send(sender, target.getName(), qu.getName());
+		if (acc.isCurrent()) Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());
+		Lang.DATA_QUEST_REMOVED_INFO.send(sender, target.getName(), qu.getName());
 	}
 	
 	private static void remove(CommandSender sender, Quest quest){

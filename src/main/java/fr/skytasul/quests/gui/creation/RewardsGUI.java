@@ -344,7 +344,7 @@ class TeleportationR implements RewardCreationRunnables{
 class XPR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
-		String last = "" + (datas.containsKey("xp") ? datas.get("xp") : Lang.Null.toString());
+		String last = "" + (datas.containsKey("xp") ? datas.get("xp") : 0);
 		Utils.sendMessage(p, Lang.XP_GAIN.toString(), last);
 		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 			Utils.sendMessage(p, Lang.XP_EDITED.toString(), last, obj);

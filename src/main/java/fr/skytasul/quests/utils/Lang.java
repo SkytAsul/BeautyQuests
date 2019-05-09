@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 
 /**
- * Stores all string paths in the language file and the default english translation.
+ * Stores all string paths and methods to format and send them to players.
  */
 public enum Lang{
 	
@@ -86,8 +86,9 @@ public enum Lang{
 	SUCCESFULLY_REMOVED("msg.command.removed"),
 	LEAVE_ALL_RESULT("msg.command.leaveAll"),
 	DATA_REMOVED("msg.command.resetPlayer.player"),
-	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player"),
 	DATA_REMOVED_INFO("msg.command.resetPlayer.remover"),
+	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player"),
+	DATA_QUEST_REMOVED_INFO("msg.command.resetPlayerQuest.remover"),
 	START_QUEST("msg.command.startQuest"),
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	BACKUP_CREATED("msg.command.backupCreated"),
@@ -365,18 +366,22 @@ public enum Lang{
 	
 	
 	private String path;
-	private static YamlConfiguration LANG;
+	private String value;
 
-	private Lang(String path) {
+	private Lang(String path){
 		this.path = path;
 	}
-	public String getPath() {
-		return this.path;
-	}
-
 	
-	public String toString() {
-		return ChatColor.translateAlternateColorCodes('&', LANG.getString(this.path, "§cunknown message"))/*.replaceAll("\\\n", "\\n")*/;
+	public String getPath(){
+		return path;
+	}
+	
+	private void setValue(String value){
+		this.value = value;
+	}
+	
+	public String toString(){
+		return value;
 	}
 	
 	public String format(Object... replace){
@@ -393,8 +398,10 @@ public enum Lang{
 
 
 	
-	public static void setFile(YamlConfiguration config) {
-		LANG = config;
+	public static void loadStrings(YamlConfiguration config) {
+		for (Lang l : values()){
+			l.setValue(ChatColor.translateAlternateColorCodes('&', config.getString(l.path, "§cunknown string")));
+		}
 	}
 	
 }
