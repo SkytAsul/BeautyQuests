@@ -41,7 +41,7 @@ public class DialogEditor extends Editor{
 		Command comd = Command.valueOf(cmd.toUpperCase());
 		switch (comd){
 		
-		case NOTHING:
+		case NOSENDER:
 		case NPC:
 		case PLAYER:
 			if (!hasMsg){
@@ -49,7 +49,7 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			d.add(msg, Sender.valueOf(comd.name()));
-			Utils.sendMessage(p, Lang.DIALOG_MSG_ADDED.toString(), msg, comd.name().toLowerCase());
+			Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + comd.name()).toString(), msg, comd.name().toLowerCase());
 			break;
 
 		case REMOVE:
@@ -73,7 +73,7 @@ public class DialogEditor extends Editor{
 			}
 			break;
 			
-		case NOTHINGINSERT:
+		case NOSENDERINSERT:
 		case NPCINSERT:
 		case PLAYERINSERT:
 			if (args.length < 3){
@@ -84,7 +84,7 @@ public class DialogEditor extends Editor{
 				msg = Utils.buildFromArray(args, 2, " ");
 				Sender sender = Sender.valueOf(comd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
-				Utils.sendMessage(p, Lang.DIALOG_MSG_ADDED.toString(), msg, sender.name().toLowerCase());
+				Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + sender.name()).toString(), msg, sender.name().toLowerCase());
 			}catch (NumberFormatException ex){
 				Lang.NUMBER_INVALID.send(p, args[1]);
 			}
@@ -112,16 +112,9 @@ public class DialogEditor extends Editor{
 			break;
 
 		case HELP:
-			/*p.sendMessage("§anpc <message> : add a message said by NPC\n"
-					+ "player <message> : add a message said by player\n"
-					+ "nothing <message> : add a message without any prefix\n"
-					+ "remove <id> : remove a message\n"
-					+ "list : view all messages\n"
-					+ "npcinsert <id> <message> : insert a message said by NPC\n"
-					+ "playerinsert <id> <message> : insert a message said by player\n"
-					+ "addsound <id> <sound> : add a sound on message selected\n"
-					+ "close : validate messages");*/
-			Lang.DIALOG_HELP.sendWP(p);
+			for (Lang l : Lang.values()){
+				if (l.getPath().startsWith("msg.editor.dialog.help.")) l.sendWP(p);
+			}
 			break;
 
 		case CLOSE:
@@ -134,7 +127,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOTHING, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOTHINGINSERT, ADDSOUND, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, ADDSOUND, CLEAR;
 	}
 	
 }

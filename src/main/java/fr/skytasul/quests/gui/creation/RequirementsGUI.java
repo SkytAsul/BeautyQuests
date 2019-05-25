@@ -117,9 +117,8 @@ public class RequirementsGUI implements CustomInventory {
 	 */
 	public RequirementsGUI reopen(Player p, boolean reImplement){
 		if (p != null){
-			if (reImplement) Inventories.remove(p);
-			p.openInventory(inv);
 			if (reImplement) Inventories.put(p, this, inv);
+			p.openInventory(inv);
 		}
 		return this;
 	}

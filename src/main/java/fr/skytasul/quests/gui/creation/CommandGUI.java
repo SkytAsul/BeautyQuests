@@ -34,7 +34,7 @@ public class CommandGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_COMMAND.toString());
 		
 		inv.setItem(0, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.commandValue.toString()));
-		inv.setItem(4, ItemUtils.itemSwitch(Lang.console.toString(), false));
+		inv.setItem(4, ItemUtils.itemSwitch(Lang.commandConsole.toString(), false));
 
 		inv.setItem(2, ItemUtils.itemDone());
 		inv.getItem(2).setType(Material.COAL);

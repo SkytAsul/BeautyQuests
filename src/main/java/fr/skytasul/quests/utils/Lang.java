@@ -66,7 +66,7 @@ public enum Lang{
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
 	NUMBER_INVALID("msg.number.invalid"),
-	ERROR_OCCURED("msg.erroroccurred"),
+	ERROR_OCCURED("msg.errorOccurred"),
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
 	
@@ -132,6 +132,8 @@ public enum Lang{
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
 	
 	CLICK_BLOCK("msg.editor.selectWantedBlock"),
+	BLOCKS_AMOUNT("msg.editor.blocksToMineAmount"),
+	BLOCKS_NAME("msg.editor.blocksToMineName"),
 	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
@@ -155,11 +157,24 @@ public enum Lang{
 	
 	DIALOG_SYNTAX("msg.editor.dialog.syntax"),
 	DIALOG_REMOVE_SYNTAX("msg.editor.dialog.syntaxRemove"),
-	DIALOG_MSG_ADDED("msg.editor.dialog.messageAdded"),
+	DIALOG_MSG_ADDED_PLAYER("msg.editor.dialog.player"),
+	DIALOG_MSG_ADDED_NPC("msg.editor.dialog.npc"),
+	DIALOG_MSG_ADDED_NOSENDER("msg.editor.dialog.noSender"),
 	DIALOG_MSG_REMOVED("msg.editor.dialog.messageRemoved"),
 	DIALOG_SOUND_ADDED("msg.editor.dialog.soundAdded"),
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
-	DIALOG_HELP("msg.editor.dialog.help"),
+	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
+	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
+	DIALOG_HELP_PLAYER("msg.editor.dialog.help.player"),
+	DIALOG_HELP_NOTHING("msg.editor.dialog.help.nothing"),
+	DIALOG_HELP_REMOVE("msg.editor.dialog.help.remove"),
+	DIALOG_HELP_LIST("msg.editor.dialog.help.list"),
+	DIALOG_HELP_NPCINSERT("msg.editor.dialog.help.npcInsert"),
+	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert"),
+	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert"),
+	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
+	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
+	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
 	
 	MYTHICMOB_LIST("msg.editor.mythicmobs.list"),
 	MYTHICMOB_NOT_EXISTS("msg.editor.mythicmobs.isntMythicMob"),
@@ -169,13 +184,18 @@ public enum Lang{
 	TEXTLIST_SYNTAX("msg.editor.textList.syntax"),
 	TEXTLIST_TEXT_ADDED("msg.editor.textList.added"),
 	TEXTLIST_TEXT_REMOVED("msg.editor.textList.removed"),
+	TEXTLIST_TEXT_HELP_HEADER("msg.editor.textList.help.header"),
+	TEXTLIST_TEXT_HELP_ADD("msg.editor.textList.help.add"),
+	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove"),
+	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list"),
+	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close"),
 	
 	// * Quests lists*
 
 	Finished("advancement.finished"),
 	Not_Started("advancement.notStarted"),
 	
-	/* Inventaires */
+	/* Inventories */
 	done("inv.validate"),
 	cancel("inv.cancel"),
 	
@@ -272,6 +292,7 @@ public enum Lang{
 	INVENTORY_REQUIREMENTS("inv.requirements.name"),
 	
 	INVENTORY_REWARDS("inv.rewards.name"),
+	commands("inv.rewards.commands"),
 
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),
@@ -293,9 +314,20 @@ public enum Lang{
 	
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
-	console("inv.command.console"),
+	commandConsole("inv.command.console"),
+	
+	INVENTORY_COMMANDS_LIST("inv.commandsList.name"),
+	commandsListValue("inv.commandsList.value"),
+	commandsListConsole("inv.commandsList.console"),
 	
 	INVENTORY_CHOOSEACCOUNT("inv.chooseAccount.name"),
+	
+	INVENTORY_BLOCK("inv.block.name"),
+	materialName("inv.block.material"),
+	
+	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
+	
+	
 	
 	
 	BOOK_NAME("inv.listBook.questName"),
@@ -348,7 +380,8 @@ public enum Lang{
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	HologramText("misc.hologramText"),
 	MobsProgression("misc.mobsProgression"),
-	Entity_Type("misc.entityType"),
+	EntityType("misc.entityType"),
+	QuestItemLore("misc.questItemLore"),
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),
@@ -400,7 +433,9 @@ public enum Lang{
 	
 	public static void loadStrings(YamlConfiguration config) {
 		for (Lang l : values()){
-			l.setValue(ChatColor.translateAlternateColorCodes('&', config.getString(l.path, "§cunknown string")));
+			String value = config.getString(l.path, null);
+			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
+			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
 		}
 	}
 	

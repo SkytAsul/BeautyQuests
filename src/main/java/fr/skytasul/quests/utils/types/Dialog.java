@@ -44,7 +44,7 @@ public class Dialog{
 		case NPC:
 			Utils.sendNPCMessage(p, text, npc, id+1, messages.valuesSize());
 			break;
-		case NOTHING:
+		case NOSENDER:
 			Utils.IsendMessage(p, text, true);
 			break;
 		}

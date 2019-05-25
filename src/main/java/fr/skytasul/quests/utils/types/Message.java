@@ -22,16 +22,17 @@ public class Message{
 	}
 	
 	public static Message deserialize(Map<String, Object> map){
-		/**Sender sender;
-		if (map.containsKey("player")){
-			sender = (boolean) map.get("player") ? Sender.PLAYER : Sender.NPC;
-		}else sender = Sender.valueOf((String) map.get("sender"));*/
-		Message msg = new Message((String) map.get("text"), Sender.valueOf((String) map.get("sender")));
+		Message msg = new Message((String) map.get("text"), Sender.fromString((String) map.get("sender")));
 		if (map.containsKey("sound")) msg.sound = (String) map.get("sound");
 		return msg;
 	}
 
 	public static enum Sender{
-		PLAYER, NPC, NOTHING;
+		PLAYER, NPC, NOSENDER;
+		
+		public static Sender fromString(String string){
+			if (string.equalsIgnoreCase("NOTHING")) return NOSENDER;
+			return valueOf(string.toUpperCase());
+		}
 	}
 }

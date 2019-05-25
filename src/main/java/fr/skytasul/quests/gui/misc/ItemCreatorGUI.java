@@ -144,7 +144,7 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		if (lore != null) ItemUtils.lore(is, lore.toArray(new String[0]));
 
-		if (quest) ItemUtils.loreAdd(is, " ", QuestsConfiguration.getQuestItemLore());
+		if (quest) ItemUtils.loreAdd(is, " ", Lang.QuestItemLore.toString());
 		return is;
 	}
 

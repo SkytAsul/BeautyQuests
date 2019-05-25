@@ -34,31 +34,15 @@ public class BlocksGUI implements CustomInventory {
 		p.openInventory(inv);
 		return this;
 	}
-
-	static ItemStack fromBlock(BlockData block){
-		if (block == null) return null;
-		ItemStack is = item(block.type, "§aBlock: §b" + block.type.name() + "§a | Amount: §b" + block.amount);
-		return is;
-	}
-	
-	public void setBlocksFromList(Inventory inv, List<BlockData> m){
-		for (int i = 0; i < 8; i++){
-			if (m.size() == i) break;
-			blocks.put(i, m.get(i));
-			inv.setItem(i, fromBlock(m.get(i)));
-		}
-	}
-
 	
 	public Inventory open(Player p) {
-		inv = Bukkit.createInventory(null, 9, "§5Choose blocks");
+		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_BLOCKSLIST.toString());
 		
 		inv.setItem(8, done);
 		for (int i = 0; i < 8; i++) inv.setItem(i, none.clone());
 		
 		return inv = p.openInventory(inv).getTopInventory();
 	}
-
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
 		if (slot == 8){
@@ -78,6 +62,20 @@ public class BlocksGUI implements CustomInventory {
 			blocks.put(slot, (BlockData) obj);
 		};
 		return true;
+	}
+	
+	public void setBlocksFromList(Inventory inv, List<BlockData> m){
+		for (int i = 0; i < 8; i++){
+			if (m.size() == i) break;
+			blocks.put(i, m.get(i));
+			inv.setItem(i, fromBlock(m.get(i)));
+		}
+	}
+
+	static ItemStack fromBlock(BlockData block){
+		if (block == null) return null;
+		ItemStack is = item(block.type, Lang.materialName.format(block.type.name()), Lang.Amount.format(block.amount));
+		return is;
 	}
 
 }

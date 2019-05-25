@@ -34,7 +34,6 @@ public class CreateMobGUI implements CustomInventory{
 	private ItemStack bukkitMob = ItemUtils.item(XMaterial.WITHER_SKELETON_SPAWN_EGG, Lang.bukkitMob.toString());
 	private ItemStack mythicMob = ItemUtils.item(XMaterial.BLAZE_POWDER, Lang.mythicMob.toString());
 	private ItemStack epicBoss = ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.epicBoss.toString());
-	private ItemStack amount = ItemUtils.item(XMaterial.REDSTONE, "§a" + Lang.Amount.toString() + " : §b§l");
 	private ItemStack ndone = ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString());
 	
 	public RunnableObj run;
@@ -52,7 +51,7 @@ public class CreateMobGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_SELECT.toString());
 
-		inv.setItem(0, ItemUtils.nameAdd(amount.clone(), "" + 1));
+		inv.setItem(0, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
 		inv.setItem(1, bukkitMob);
 		inv.setItem(3, SelectGUI.selectNPC.clone());
 		if(Dependencies.mm) inv.setItem(5, mythicMob.clone());
@@ -74,7 +73,7 @@ public class CreateMobGUI implements CustomInventory{
 						Utils.sendMessage(p, Lang.NUMBER_ZERO.toString());
 					}else {
 						mob.amount = i;
-						inv.setItem(slot, ItemUtils.nameAdd(amount.clone(), "" + i));
+						inv.setItem(slot, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(i)));
 					}
 					openLastInv(p);
 			}, new NumberParser(Integer.class, true)));

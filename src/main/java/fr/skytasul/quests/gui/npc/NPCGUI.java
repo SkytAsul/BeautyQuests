@@ -86,8 +86,8 @@ public class NPCGUI implements CustomInventory{
 					Inventories.put(p, openLastInv(p), inv);
 					en = (EntityType) obj;
 					if (en == EntityType.PLAYER){
-						inv.setItem(7, ItemUtils.skull(Lang.name.toString(), null, "player"));
-					}else inv.setItem(7, ItemUtils.item(XMaterial.mobItem(en), Lang.name.toString(), en.getName()));
+						inv.setItem(5, ItemUtils.skull(Lang.name.toString(), null, "player"));
+					}else inv.setItem(5, ItemUtils.item(XMaterial.mobItem(en), Lang.name.toString(), en.getName()));
 			}));
 			break;
 			

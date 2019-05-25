@@ -304,6 +304,13 @@ public class Commands {
 		Editor.leave(cmd.player);
 	}
 	
+	@Cmd(player = true)
+	public void inventory(CommandContext cmd){
+		if (Inventories.isInSystem(cmd.player)){
+			Inventories.openInventory(cmd.player);
+		}
+	}
+	
 	@Cmd(permission = "list", player = true)
 	public void list(CommandContext cmd){
 		if (NMS.isValid()){

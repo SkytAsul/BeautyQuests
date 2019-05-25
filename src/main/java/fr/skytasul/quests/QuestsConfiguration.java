@@ -41,7 +41,6 @@ public class QuestsConfiguration {
 	private static boolean disableTextHologram = false;
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoTalkItem = null;
-	private static String questLore;
 	/*private static ConfigurationSection effect;
 	private static boolean effectEnabled;*/
 	private static boolean mobsProgressBar = false;
@@ -121,7 +120,6 @@ public class QuestsConfiguration {
 				holoTalkItem = null;
 			}else holoTalkItem = xmat.parseItem();
 		}
-		questLore = config.getString("questItem");
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
 		hookAcounts = Dependencies.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
@@ -277,10 +275,6 @@ public class QuestsConfiguration {
 	public static ItemStack getHoloTalkItem(){
 		if (!Dependencies.holod) return null;
 		return holoTalkItem;
-	}
-	
-	public static String getQuestItemLore(){
-		return questLore;
 	}
 	
 	public static boolean hookAccounts(){

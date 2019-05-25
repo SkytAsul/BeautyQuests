@@ -58,11 +58,11 @@ public class MobsListGUI implements CustomInventory{
 
 	static ItemStack fromMob(Mob mob){
 		if (mob == null) return null;
-		String lore = "§a" + Lang.Amount.toString() + " : " + mob.amount;
+		String lore = Lang.Amount.format(mob.amount);
 		if (mob.hasBukkitMob()){
 			String name = mob.getBukkitMob().getName();
 			if (name == null) name = "player";
-			return ItemUtils.item(XMaterial.mobItem(mob.getBukkitMob()), name, lore, Lang.Entity_Type.format(name), "", Lang.click.toString());
+			return ItemUtils.item(XMaterial.mobItem(mob.getBukkitMob()), name, lore, Lang.EntityType.format(name), "", Lang.click.toString());
 		}else if (mob.hasMythicMob()){
 			MythicMob mm = mob.getMythicMob();
 			String typeName = mm.getEntityType();

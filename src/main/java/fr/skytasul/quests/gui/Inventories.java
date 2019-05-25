@@ -122,7 +122,7 @@ public class Inventories{
 	}
 	
 	
-	public static void remove(Player p){
+	private static void remove(Player p){
 		g.remove(p);
 	}
 	
@@ -140,6 +140,10 @@ public class Inventories{
 	
 	public static boolean isInSystem(Player p){
 		return g.containsKey(p);
+	}
+	
+	public static void openInventory(Player p){
+		p.openInventory(g.get(p).getValue());
 	}
 
 }

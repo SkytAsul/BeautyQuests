@@ -346,6 +346,7 @@ public class Quest{
 	}
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
+		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !bypassLimit) {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}

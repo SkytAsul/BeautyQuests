@@ -78,7 +78,7 @@ public class StageMine extends AbstractStage {
 			}
 			List<BlockData> playerBlocks = remaining.get(acc);
 			if (playerBlocks == null) {
-				Utils.sendMessage(p, "Error : playerBlocks is null");
+				Lang.ERROR_OCCURED.send(p, "playerBlocks is null");
 				return;
 			}
 			for (BlockData b : playerBlocks){
@@ -102,10 +102,10 @@ public class StageMine extends AbstractStage {
 		if (!placeCancelled) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!manager.hasStageLaunched(acc, this));
+		if (!manager.hasStageLaunched(acc, this)) return;
 		List<BlockData> playerBlocks = remaining.get(acc);
 		if (playerBlocks == null) {
-			Utils.sendMessage(p, "Error : playerBlocks is null");
+			Lang.ERROR_OCCURED.send(p, "playerBlocks is null");
 			return;
 		}
 		for (BlockData b : playerBlocks){

@@ -75,10 +75,9 @@ public class TextListEditor extends Editor{
 			break;
 
 		case HELP:
-			p.sendMessage("§aadd <message> : add a text\n"
-					+ "remove <id> : remove a text\n"
-					+ "list : view all texts\n"
-					+ "close : validate");
+			for (Lang l : Lang.values()){
+				if (l.getPath().startsWith("msg.editor.textList.help.")) l.sendWP(p);
+			}
 			break;
 
 		case CLOSE:

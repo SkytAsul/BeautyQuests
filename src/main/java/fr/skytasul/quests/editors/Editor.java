@@ -66,6 +66,10 @@ public abstract class Editor implements Listener{
 		}
 	}
 	
+	protected String cancelWord(){
+		return null;
+	}
+	
 	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;

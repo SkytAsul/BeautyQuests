@@ -112,9 +112,8 @@ public class RewardsGUI implements CustomInventory {
 	 */
 	public RewardsGUI reopen(Player p, boolean reImplement){
 		if (p != null){
-			if (reImplement) Inventories.remove(p);
-			p.openInventory(inv);
 			if (reImplement) Inventories.put(p, this, inv);
+			p.openInventory(inv);
 		}
 		return this;
 	}
@@ -182,7 +181,7 @@ class CommandR implements RewardCreationRunnables{
 			}
 
 			public String name(){
-				return "Commands list";
+				return Lang.INVENTORY_COMMANDS_LIST.toString();
 			}
 
 			public void finish(){
@@ -190,7 +189,7 @@ class CommandR implements RewardCreationRunnables{
 			}
 
 			public ItemStack getItemStack(Command cmd){
-				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, "§d§oCommand : " + cmd.label, "Console : " + cmd.console);
+				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console));
 			}
 		});
 	}
@@ -199,7 +198,7 @@ class CommandR implements RewardCreationRunnables{
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack item){
 		CommandReward rew = (CommandReward) reward;
 		datas.put("cmd", new ArrayList<>(rew.commands));
-		ItemUtils.lore(item, "Commands : " + rew.commands.size());
+		ItemUtils.lore(item, Lang.commands.format(rew.commands.size()));
 	}
 
 

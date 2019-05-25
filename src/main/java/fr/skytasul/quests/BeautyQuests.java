@@ -231,6 +231,7 @@ public class BeautyQuests extends JavaPlugin{
 					if (!def.isConfigurationSection(key)){ // if not a block
 						if (!conf.contains(key)){ // if string does not exist in the file
 							conf.set(key, def.get(key)); // copy string
+							DebugUtils.logMessage("String copied from source file to " + s + ". Key: " + key);
 							changes = true;
 						}
 					}

@@ -20,6 +20,7 @@ permissions:
       beautyquests.command: true
       beautyquests.command.*: true
       beautyquests.seeId: true
+      beautyquests.start: true
   beautyquests.command:
     description: Gives access to "/quests"
     default: true
@@ -109,3 +110,6 @@ permissions:
   beautyquests.seeId:
     description: Allows player to see the quest's ID
     default: op
+  beautyquests.start:
+    description: Allows player to start quests
+    default: true

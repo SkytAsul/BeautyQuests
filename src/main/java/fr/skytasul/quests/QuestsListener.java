@@ -23,6 +23,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
@@ -99,10 +100,11 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
-		if (QuestsConfiguration.getQuestItemLore().isEmpty()) return;
+		String lore = Lang.QuestItemLore.toString();
+		if (lore.isEmpty()) return;
 		ItemStack is = e.getItemDrop().getItemStack();
 		if (is.getItemMeta().hasLore()){
-			if (is.getItemMeta().getLore().contains(QuestsConfiguration.getQuestItemLore())) e.setCancelled(true);
+			if (is.getItemMeta().getLore().contains(lore)) e.setCancelled(true);
 		}
 	}
 	

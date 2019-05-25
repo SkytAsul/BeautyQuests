@@ -14,16 +14,13 @@ import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BlockData;
 import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class SelectBlockGUI implements CustomInventory{
 	
-	private ItemStack amount = item(XMaterial.REDSTONE, "§a" + Lang.Amount.toString() + " : §b§l");
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
 	public RunnableObj run;
@@ -33,7 +30,7 @@ public class SelectBlockGUI implements CustomInventory{
 	BlockData block = new BlockData(XMaterial.STONE, 1);
 	
 	public String name() {
-		return Lang.INVENTORY_SELECT.toString();
+		return Lang.INVENTORY_BLOCK.toString();
 	}
 	
 	public CustomInventory openLastInv(Player p) {
@@ -51,8 +48,8 @@ public class SelectBlockGUI implements CustomInventory{
 	}
 
 	public void updateItems(){
-		inv.setItem(1, ItemUtils.nameAdd(amount.clone(), "" + block.amount));
-		inv.setItem(3, item(block.type, "Material: " + block.type.name()));
+		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(block.amount)));
+		inv.setItem(3, item(block.type, Lang.materialName.format(block.type.name())));
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -63,7 +60,7 @@ public class SelectBlockGUI implements CustomInventory{
 			
 		case 1:
 			Inventories.closeWithoutExit(p);
-			Utils.sendMessage(p, "Write the amount of blocks to mine.");
+			Lang.BLOCKS_AMOUNT.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 				block.amount = (int) obj;
 				openLastInv(p);
@@ -73,7 +70,7 @@ public class SelectBlockGUI implements CustomInventory{
 			
 		case 3:
 			Inventories.closeWithoutExit(p);
-			Utils.sendMessage(p, "Write the name of the block to mine.");
+			Lang.BLOCKS_NAME.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 				XMaterial type = (XMaterial) obj; block.type = type;
 					openLastInv(p);

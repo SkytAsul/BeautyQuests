@@ -37,8 +37,6 @@ progressBarTimeoutSeconds: 15
 item: BOOK
 # Page item material
 pageItem: ARROW
-# Lore added to a Quest Item (an item that players can't drop)
-questItem: "§e§oQuest Item"
 
 # - Dependencies -
 # Enable GPS integration

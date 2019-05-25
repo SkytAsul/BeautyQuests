@@ -19,19 +19,19 @@ msg:
     listMobs: '§aIl faut que vous tuiez {0}.'
   writeNPCText: 'Écrivez le dialogue qui sera dit au joueur par le NPC : (Tapez "help" pour recevoir de l''aide.)'
   writeRegionName: 'Ecrivez le nom de la région voulue pour l''étape :'
-  writeXPGain: 'Écrivez le nombre de points d’expérience que le joueur va remporter. (Ancien gain : §a{0})'
+  writeXPGain: 'Écrivez le nombre de points d’expérience que le joueur va remporter. (Ancien gain : §a{0}§6)'
   writeMobAmount: 'Ecrivez le nombre de mobs à tuer :'
   writeChatMessage: 'Écrivez le message requis (rajoutez {SLASH} au début pour en faire une commande.)'
   writeEndMessage: 'Écrivez le message qui sera envoyé à la fin de la quête ou de l''étape :'
   writeDescriptionText: 'Ecrivez le texte qui décrira le but de l''étape :'
   writeStageText: 'Ecrivez le texte qui sera transmis au joueur au début de l''étape :'
-  moveToTeleportPoint: Allez au lieu de téléportation désiré.
+  moveToTeleportPoint: 'Allez au lieu de téléportation désiré.'
   writeNpcName: 'Ecrivez le nom du NPC :'
   writeNpcSkinName: 'Ecrivez le nom du skin du NPC :'
   writeQuestName: 'Ecrivez le nom de votre quête :'
   writeCommand: 'Écrivez la commande : (n''écriez pas le "/" ; le placeholder "{PLAYER}" est pris en charge. Il sera remplacée par le nom du joueur exécuteur.)'
   writeHologramText: 'Ecrivez le texte de l''hologramme. (tapez "none" si vous ne voulez pas d''hologramme, et "null" si vous voulez le texte par défaut.)'
-  writeQuestTimer: 'Renseignez le temps nécessaire (en minutes) avant de pouvoir refaire la quête. (tapez "null" si vous voulez le temps par défaut)'
+  writeQuestTimer: 'Renseignez le temps nécessaire (en minutes) avant de pouvoir refaire la quête. (Tapez "null" si vous voulez le temps par défaut)'
   requirements:
     quest: '§eVous devez avoir terminé la quête "{0}"§r§e !'
     level: '§eVous devez être au moins niveau {0} !'
@@ -41,7 +41,7 @@ msg:
     wait: '§cVous devez encore attendre {0} minutes avant de pouvoir recommencer cette quête !'
   experience:
     edited: 'Vous avez changé le gain d''expérience de {0} à {1} points.'
-  selectNPCToKill: Sélectionnez le NPC à tuer.
+  selectNPCToKill: 'Sélectionnez le NPC à tuer.'
   npc:
     remove: '§7Suppression du NPC.'
     talk: '§7Va parler à un NPC nommé §o{0}§r§7.'
@@ -54,9 +54,7 @@ msg:
     negative: '§cTu dois entrer un nombre positif !'
     zero: '§cTu dois entrer un nombre autre que 0 !'
     invalid: '§c{0} n''est pas un nombre valide.'
-  erroroccurred: |-
-    §cUne erreur est survenue, prévenez un administrateur !
-    §4§lCode d'erreur :{0}
+  errorOccurred: '§cUne erreur est survenue, prévenez un administrateur ! §4§lCode d''erreur : {0}'
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
   bringBackObjects: 'Rapporte-moi {0}.'
@@ -73,12 +71,13 @@ msg:
     needItem: '§cVous devez tenir un item dans votre main principale !'
     itemChanged: '§aL''item a été modifié. Le changement prendra effet après redémarrage.'
     removed: '§aLa quête {0} a bien été supprimée.'
-    leaveAll: '§eVous avez forcé la fin de {0} quêtes. §c{1} erreur(s).'
+    leaveAll: '§eVous avez forcé la fin de {0} quête(s). §c{1} erreur(s).'
     resetPlayer:
-      player: '§eToutes vos données de quêtes ({0}) ont été supprimées par {1}.'
-      remover: '§eLes données de quête de {0} ont bien été supprimées. ({1})'
+      player: '§eLes données de vos {0} quêtes ont été supprimées par {1}.'
+      remover: '§eLes données de {0} quêtes pour le joueur {1} ont bien été supprimées.'
     resetPlayerQuest:
       player: '§eLes données de la quête {0} ont été supprimées par {1}.'
+      remover: '§eLes données de la quête {1} du joueur {0} ont bien été supprimées.'
     startQuest: '§eVous avez forcé le début de la quête {0} (UUID {1}).'
     cancelQuest: '§eVous avez annulé la quête {0}.'
     backupCreated: '§eVous avez créé une sauvegarde des quêtes et des données joueurs.'
@@ -93,23 +92,23 @@ msg:
       lineInexistant: '§cLa ligne {0} n''existe pas.'
       resetAll: '§eVous avez réinitialisé le scoreboard du joueur {0}.'
     help:
-      header: '§e§lBeautyQuests - §6aide§r'
-      create: '§e/{0} create : §acréer une quête'
-      edit: '§e/{0} edit : §amodifier une quête'
-      remove: '§e/{0} remove [id] : §asupprimer la quête avec l''id [id] ou en cliquant sur son NPC si non spécifié'
-      finishAll: '§e/{0} finishAll [player] : §afinir toutes les quêtes en cours'
-      setStage: '§e/{0} setStage <player> <quest> [newStage] : §afinir l''étape en cours d''un joueur'
-      resetPlayer: '§e/{0} resetPlayer <player> : §asupprimer les données d''un joueur'
-      resetPlayerQuest: '§e/{0} resetPlayerQuest <player> [id] : §asupprimer les données d''une seule quête pour un joueur'
-      seePlayer: '§e/{0} seePlayer <player> : §avoir les données d''un joueur'
-      reload: '§e/{0} reload : §asauvegarder et recharger les fichiers de configuration/sauvegarde - §c§odéconseillé'
-      start: '§e/{0} start <player> [id] : §aforcer le lancement d''une quête'
-      setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme dans le fichier de données'
-      adminMode: '§e/{0} adminMode : §amode administrateur (réception d''informations)'
-      version: '§e/{0} version : §avoir la version du plugin'
-      save: '§e/{0} save: §afaire une sauvegarde manuelles des données'
-      list: '§e/{0} list : §avoir la liste des quêtes'
-  typeCanel: Tapez "cancel" pour revenir à l'ancien texte
+      header: '§e§lBeautyQuests – §6aide§r'
+      create: '§e/{0} create : §acréer une quête.'
+      edit: '§e/{0} edit : §amodifier une quête.'
+      remove: '§e/{0} remove [id] : §asupprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
+      finishAll: '§e/{0} finishAll [player] : §afinir toutes les quêtes en cours.'
+      setStage: '§e/{0} setStage [player] [id] [newStage] : §afinir l''étape en cours d''un joueur.'
+      resetPlayer: '§e/{0} resetPlayer [player] : §asupprimer les données d''un joueur.'
+      resetPlayerQuest: '§e/{0} resetPlayerQuest <player> [id] : §asupprimer les données d''une seule quête pour un joueur.'
+      seePlayer: '§e/{0} seePlayer <player> : §avoir les données d''un joueur.'
+      reload: '§e/{0} reload : §asauvegarder et recharger les fichiers de configuration/sauvegarde. (§c§odéconseillé)'
+      start: '§e/{0} start <player> [id] : §aforcer le lancement d''une quête.'
+      setItem: '§e/{0} setItem <talk|launch> : §asauvegarder l''item de l''hologramme dans le fichier de données.'
+      adminMode: '§e/{0} adminMode : §amode administrateur (réception d''informations journal).'
+      version: '§e/{0} version : §avoir la version du plugin.'
+      save: '§e/{0} save: §afaire une sauvegarde manuelles des données.'
+      list: '§e/{0} list : §avoir la liste des quêtes (seulement pour les versions supportées).'
+  typeCanel: 'Tapez "cancel" pour revenir à l''ancien texte.'
   editor:
     already: '§cVous êtes déjà dans un éditeur.'
     enter:
@@ -119,27 +118,27 @@ msg:
     npc:
       enter: '§aCliquez sur un NPC, ou tapez "cancel" pour annuler.'
       choseStarter: '§eSélectionnez le NPC qui commence la quête'
-      notStarter: '§cCe NPC n''est pas lanceur de quête...'
+      notStarter: '§cCe NPC n''est pas lanceur de quête.'
     text:
       argNotSupported: '§cArgument {0} non supporté.'
       chooseLvlRequired: '§eEntrez la quantité de niveaux requise.'
-      chooseJobRequired: '§eEntrez nom du le métier voulu.'
-      choosePermissionRequired: '§eEntrez les permissions requises pour commencer la quête.'
+      chooseJobRequired: '§eEntrez le nom du le métier voulu:'
+      choosePermissionRequired: '§eEntrez les permissions requises pour commencer la quête:'
       choosePermissionMessage: '§eVous pouvez choisir un message de refus si le joueur n''a pas la permission requise. (pour passer cette étape, entrez "null" et aucun message ne sera envoyé)'
-      chooseFactionRequired: '§eEntrez le nom des factions requises pour commencer la quête.'
-      chooseClassesRequired: '§eEntrez le nom des classes requises pour commencer la quête.'
+      chooseFactionRequired: '§eEntrez le nom des factions requises pour commencer la quête :'
+      chooseClassesRequired: '§eEntrez le nom des classes requises pour commencer la quête :'
       choosePlaceholderRequired:
-        identifier: '§eEntrez le nom du palceholder requis (§lsans %%§r§e).'
-        value: '§eEntrez la valeur requise pour le placeholder §o%{0}%.'
-      chooseSkillRequired: '§eEntrez le nom de la compétence requise.'
+        identifier: '§eEntrez le nom du placeholder requis sans les pourcentages de début et de fin :'
+        value: '§eEntrez la valeur requise pour le placeholder §o%{0}%§r§e :'
+      chooseSkillRequired: '§eEntrez le nom de la compétence requise :'
       reward:
-        permission: '§eModifiez les permissions gagnées ou retirées.'
-        money: '§eEntrez la quantité de monnaie gagnée.'
+        permission: '§eModifiez les permissions gagnées ou retirées avec "add [permission] [remove: <true|false>]" (tapez "help" pour voir les autres commandes).'
+        money: '§eEntrez la quantité de monnaie gagnée :'
     selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
     itemCreator:
       itemType: '§eEntrez le nom du type d''item voulu.'
-      itemName: '§eEntrez le nom de l''item.'
-      itemLore: '§eModifiez la description de l''item. Tapez "help" pour obtenir de l''aide.'
+      itemName: '§eEntrez le nom de l''item :'
+      itemLore: '§eModifiez la description de l''item. (Tapez "help" pour obtenir de l''aide.)'
       unknownItemType: '§cType d''item inconnu.'
       invalidItemType: '§cType d''item invalide (il doit être un item et non un bloc).'
     dialog:
@@ -149,18 +148,19 @@ msg:
       messageRemoved: '§aMessage {0} supprimé.'
       soundAdded: '§aSon {0} ajouté pour le message {1}.'
       cleared: '§a{0} messages supprimés.'
-      help: |-
-        §anpc <message> : ajouter un message dit par le NPC
-        player <message> : ajouter un message dit par le joueur
-        nothing <message> : ajouter un message qui n'aura aucun préfixe
-        remove <id> : supprimer un message
-        list : voir tous les messages
-        npcinsert <id> <message> : insérer un message dit par le NPC
-        playerinsert <id> <message> : insérer un message dit par le joueur
-        nothinginsert <id> <message> : insérer un message qui n'aura aucun préfixe
-        addsound <id> <sound> : ajouter un son sur un certain message
-        clear : supprimer tous les messages
-        close : valider les messages
+      help:
+        header: '§e§lBeautyQuests – §6Aide de l''éditeur de dialogues'
+        npc: '§enpc [message] : §aajouter un message dit par le NPC.'
+        player: '§eplayer [message] : §aajouter un message dit par le joueur.'
+        nothing: '§enothing [message]: §aajouter un message sans préfixe.'
+        remove: '§eremove [id]: §asupprimer un message.'
+        list: '§elist: §avoir une liste des messages.'
+        npcInsert: '§enpcinsert [id] [message]: §ainsérer un message dit par le NPC.'
+        playerInsert: '§eplayerinsert [id] [message]: §ainsérer un message dit par le joueur.'
+        nothingInsert: '§enothinginsert [id] [message]: §aInsérer un message sans préfixe.'
+        addSound: '§eaddsound [id] [sound]: §aajouter un son sur un message.'
+        clear: '§eclear: §asupprimer tous les messages.'
+        close: '§eclose: §avalider les messages.'
     mythicmobs:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
@@ -171,8 +171,8 @@ msg:
       added: '§aTexte {0} ajouté.'
       removed: '§aTexte {0} supprimé.'
 advancement:
-  finished: Terminée
-  notStarted: Pas commencée
+  finished: 'Terminée'
+  notStarted: 'Pas commencée'
 inv:
   validate: '§b§lValider'
   cancel: '§c§lAnnuler'
@@ -192,18 +192,18 @@ inv:
     interact: '§aCliquez sur un bloc'
     fish: '§aPêcher'
     NPCText: '§eModifier le texte du NPC'
-    hideClues: Cacher les indications (particules, hologrammes)
+    hideClues: 'Cacher les particules et les hologrammes'
     editMobsKill: '§eModifier les mobs à tuer'
-    mobsKillFromAFar: Tuer à distance
+    mobsKillFromAFar: 'Tuer à distance'
     editBlocksMine: '§eModifier les blocs à casser'
-    preventBlockPlace: Empêcher les joueurs d'utiliser leurs propres blocs
+    preventBlockPlace: 'Empêcher les joueurs de casser leurs propres blocs'
     editMessageType: '§eModifier le message à écrire'
-    cancelMessage: Annuler l'envoi
-    selectItems: '§bChoisis les items nécessaires'
+    cancelMessage: 'Annuler l''envoi'
+    selectItems: '§bChoisir les items nécessaires'
     selectRegion: '§7Choisir la région'
     stageStartMsg: '§eModifier le message de départ'
     selectBlockLocation: '§6Sélectionner quel bloc'
-    leftClick: Clic gauche
+    leftClick: 'Clic gauche'
     editFishes: '§eModifier les poissons nécessaires'
   stages:
     name: '§8Créer les étapes'
@@ -214,11 +214,11 @@ inv:
   details:
     name: '§8Derniers détails de la quête'
     multipleTime:
-      itemName: Inverser la multi-utilisation
-      itemLore: La quête peut-elle\nêtre faite plusieurs fois ?
-    scoreboardItem: Activer le scoreboard
-    hideItem: Cacher la quête (menu et dynmap)
-    bypassLimit: Ne pas compter la limite de quêtes
+      itemName: 'Inverser la multi-utilisation'
+      itemLore: "La quête peut-elle\n être faite plusieurs fois ?"
+    scoreboardItem: 'Activer le scoreboard'
+    hideItem: 'Cacher la quête du menu et de la dynmap'
+    bypassLimit: 'Ne pas compter la limite de quêtes'
     questName: '§a§lModifier le nom de la quête'
     setItemsRewards: '§7Modifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
@@ -228,7 +228,7 @@ inv:
     selectStarterNPC: '§6§lSélectionner le NPC de départ'
     createQuest:
       itemName: '§lCréer la quête'
-      itemLore: Il te faut :\n- un NPC de sélectionné/créé\n- avoir choisi un nom de quête
+      itemLore: "Il te faut :\n- un NPC de sélectionné/créé\n- avoir choisi un nom de quête"
     editQuest:
       itemName: '§lModifier la quête'
     endMessage: '§aModifier le message de fin'
@@ -243,26 +243,26 @@ inv:
     name: '§8Modifier les items'
     none: "§aDéplacez un item ici ou \n §acliquez pour ouvrir l'éditeur d'item"
   npcCreate:
-    name: '§5Créé ton propre NPC !'
+    name: '§5Créer le NPC'
     setName: '§aModifier le nom du NPC'
     setSkin: '§eModifier le skin du NPC'
     setType: '§aModifier le type du NPC'
     move:
       itemName: '§6Bouger'
-      itemLore: Se déplacer à un autre endroit
-    moveItem: Valider l'endroit
+      itemLore: 'Se déplacer à un autre endroit.'
+    moveItem: 'Valider l''endroit'
   npcSelect:
     name: '§8Sélectionner ou créer ?'
     selectStageNPC: '§6Sélectionner un NPC existant'
     createStageNPC: '§eCréer le NPC'
   entityType:
-    name: '§5Choisis le type d''entité'
+    name: '§5Choisisez le type d''entité'
   chooseQuest:
     name: '§5Quelle quête ?'
   mobs:
-    name: '§5Choisis les mobs !'
+    name: '§5Choisissez les mobs'
     none: '§aCliquez pour ajouter un mob'
-    click: '§bCliquez gauche pour modifier\nCliquez droit pour supprimer'
+    click: "§bCliquez gauche pour modifier\nCliquez droit pour supprimer"
   mobSelect:
     name: '§8Sélectionner le mob'
     bukkitEntityType: '§eSélectionner un type de mob'
@@ -280,11 +280,11 @@ inv:
   listPlayerQuests:
     name: '§8Quêtes de {0}'
   listQuests:
-    notStarted: Quêtes non commencées
-    finished: Quêtes terminées
-    inProgress: Quêtes en cours
-    loreCancel: '§c§oCliquez pour annuler la quête'
-    timeToWait: '§3§o{0} minutes avant de pouvoir refaire cette quête'
+    notStarted: 'Quêtes non commencées'
+    finished: 'Quêtes terminées'
+    inProgress: 'Quêtes en cours'
+    loreCancel: '§c§oCliquez pour annuler la quête.'
+    timeToWait: '§3§o{0} minutes avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
     format:
       normal: '§6§l§o{0}'
@@ -292,24 +292,24 @@ inv:
   itemCreator:
     name: '§8Créateur d''item'
     itemType: '§bType d''item'
-    itemFlags: Flags d'item
+    itemFlags: 'Flags d''item'
     itemName: '§bNom de l''item'
     itemLore: '§bDescription de l''item'
     isQuestItem: '§bItem de quête :'
   command:
     name: '§8Commande'
     value: '§bCommande'
-    console: Console
+    console: 'Console'
   chooseAccount:
     name: '§5Quel compte ?'
   listBook:
-    questName: Nom
-    questStarter: NPC
-    questRewards: Récompenses
-    questMultiple: Plusieurs fois
-    requirements: Exigences
-    questStages: Etapes
-    noQuests: Aucune quête n'a été préalablement créée.
+    questName: 'Nom'
+    questStarter: 'NPC'
+    questRewards: 'Récompenses'
+    questMultiple: 'Plusieurs fois'
+    requirements: 'Exigences'
+    questStages: 'Etapes'
+    noQuests: 'Aucune quête n''a été préalablement créée.'
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -326,19 +326,19 @@ scoreboard:
     fish: '§ePêchez §6{0}'
 misc:
   format:
-    prefix: '§6<§e§lQuêtes§r§6> §o'
-    npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
-    selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
+    prefix: '§6<§e§lQuests§r§6> §o'
+    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e {0}'
   stageType:
-    region: Trouver une region
-    npc: Trouver un NPC
-    items: Rapporter des items
-    mobs: Tuer des mobs
-    mine: Casser des blocs
-    chat: Parler dans le chat
-    interact: Intéragir avec un bloc
-    Fish: Pêcher
+    region: 'Trouver une region'
+    npc: 'Trouver un NPC'
+    items: 'Rapporter des items'
+    mobs: 'Tuer des mobs'
+    mine: 'Casser des blocs'
+    chat: 'Parler dans le chat'
+    interact: 'Intéragir avec un bloc'
+    Fish: 'Pêcher'
   requirement:
     class: '§bClasse(s) requise(s)'
     faction: '§bFaction(s) requise(s)'
@@ -350,19 +350,19 @@ misc:
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
   hologramText: '§8§lNPC de Quête'
-  mobsProgression: '§6§l{0} : §r§e{1}/{2}'
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: 'Type d''entité : {0}'
-  enabled: Activé
-  disabled: Désactivé
-  unknown: inconnu
+  enabled: 'Activé'
+  disabled: 'Désactivé'
+  unknown: 'inconnu'
   unused: '§e§lInutilisé'
   used: '§6§lUtilisé'
   remove: '§e§oClic central pour supprimer'
   nul: 'null'
-  or: ou
-  amount: Quantité
-  items: objets
-  expPoints: points d'expérience
+  or: 'ou'
+  amount: 'Quantité'
+  items: 'objets'
+  expPoints: 'points d''expérience'
   'yes': 'oui'
   'no': 'non'
-  and: et
+  and: 'et'

@@ -74,6 +74,10 @@ public class PermissionsEditor extends Editor{
 		}
 		return true;
 	}
+	
+	protected String cancelWord(){
+		return "close";
+	}
 
 	private enum Command{
 		ADD, REMOVE, LIST, HELP, CLOSE;
