@@ -44,6 +44,15 @@ public abstract interface CustomInventory {
 	 */
 	public default CloseBehavior onClose(Player p, Inventory inv){return CloseBehavior.CONFIRM;}
 
+	/**
+	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, CustomInventory)}
+	 * @param p Player
+	 * @see Inventories#create(Player, CustomInventory)
+	 */
+	public default void create(Player p){
+		Inventories.create(p, this);
+	}
+	
 	public static enum CloseBehavior{
 		REOPEN, CONFIRM, REMOVE, NOTHING;
 	}

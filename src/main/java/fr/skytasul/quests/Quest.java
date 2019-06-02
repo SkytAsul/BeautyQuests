@@ -497,20 +497,15 @@ public class Quest{
 		map.put("id", id);
 		map.put("manager", manager.serialize());
 		map.put("starterID", npcStarter.getId());
-		if (repeatable) map.put("repeatable", repeatable);
 		map.put("scoreboard", scoreboard);
+		map.put("finished", Utils.serializeAccountsList(finished));
+		if (repeatable) map.put("repeatable", repeatable);
 		if (hologramText != null) map.put("hologramText", hologramText);
 		if (hid) map.put("hid", true);
 		if (endMessage != null) map.put("endMessage", endMessage);
 		if (dialog != null) map.put("startDialog", dialog.serialize());
 		if (bypassLimit) map.put("bypassLimit", bypassLimit);
 		if (timer > -1) map.put("timer", timer);
-		
-		List<String> list = new ArrayList<>();
-		for (PlayerAccount account : finished){
-			list.add(account.getIndex());
-		}
-		map.put("finished", list);
 		
 		if (!inTimer.isEmpty()){
 			Map<String, String> tmap = new HashMap<>();
@@ -520,23 +515,9 @@ public class Quest{
 			map.put("inTimer", tmap);
 		}
 		
-		List<Map<String, Object>> rlist = new ArrayList<>();
-		for (AbstractRequirement req : requirements){
-			rlist.add(req.serialize());
-		}
-		map.put("requirements", rlist);
-		
-		List<Map<String, Object>> rewls = new ArrayList<>();
-		for (AbstractReward reward : rewards){
-			rewls.add(reward.serialize());
-		}
-		map.put("rewardsList", rewls);
-		
-		List<Map<String, Object>> srewls = new ArrayList<>();
-		for (AbstractReward reward : startRewards){
-			srewls.add(reward.serialize());
-		}
-		map.put("startRewardsList", srewls);
+		map.put("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
+		map.put("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
+		map.put("startRewardsList", Utils.serializeList(startRewards, AbstractReward::serialize));
 		
 		return map;
 	}

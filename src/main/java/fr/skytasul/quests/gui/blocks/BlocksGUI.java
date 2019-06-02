@@ -22,7 +22,7 @@ import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class BlocksGUI implements CustomInventory {
 
-	private ItemStack none = item(XMaterial.RED_STAINED_GLASS_PANE, "§c", "§aClick to add a block");
+	private ItemStack none = item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.addBlock.toString());
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
 	public Map<Integer, BlockData> blocks = new HashMap<>();

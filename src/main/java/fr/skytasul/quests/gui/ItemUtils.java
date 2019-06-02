@@ -164,7 +164,7 @@ public class ItemUtils {
 	 */
 	public static String getName(ItemStack is, boolean format) {
 		if (is == null) return null;
-		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(XMaterial.fromItemStack(is)) : is.getType().name();
+		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(XMaterial.fromItemStack(is)) : XMaterial.fromMaterial(is.getType()).getLastName();
 		return is.getItemMeta().getDisplayName();
 	}
 	

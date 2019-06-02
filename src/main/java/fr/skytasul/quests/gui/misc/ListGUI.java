@@ -23,7 +23,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	
 	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c");
 
-	private List<T> objects;
+	protected List<T> objects;
 	protected Inventory inv;
 	protected Player p;
 	
@@ -63,10 +63,8 @@ public abstract class ListGUI<T> implements CustomInventory {
 				click(null);
 			}else if (click == ClickType.MIDDLE){
 				remove(slot);
-				//inv.setItem(slot, none);
 			}else {
 				T obj = objects.get(slot);
-				//objects.remove(slot);
 				remove(slot);
 				click(obj);
 			}
@@ -74,12 +72,19 @@ public abstract class ListGUI<T> implements CustomInventory {
 		return true;
 	}
 	
-	public void finishItem(T object){
+	/**
+	 * Call this when an object is ready to be inserted in the list
+	 * @param object Object to put
+	 * @return ItemStack created with {@link #getItemStack(Object)}
+	 */
+	public ItemStack finishItem(T object){
 		Inventories.closeWithoutExit(p);
 		inv = p.openInventory(inv).getTopInventory();
 		Inventories.put(p, this, inv);
 		objects.add(object);
-		inv.setItem(objects.size() - 1, getItemStack(object));
+		int slot = objects.size() - 1;
+		inv.setItem(slot, getItemStack(object));
+		return inv.getItem(slot);
 	}
 	
 	/**
@@ -95,7 +100,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	public abstract ItemStack getItemStack(T object);
 	/**
 	 * Called when an object is clicked
-	 * @param existing clicked object
+	 * @param existing clicked object (may be null if there was no previous object)
 	 */
 	public abstract void click(T existing);
 	

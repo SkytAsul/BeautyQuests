@@ -293,6 +293,7 @@ public enum Lang{
 	
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
+	teleportation("inv.rewards.teleportation"),
 
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),
@@ -326,7 +327,7 @@ public enum Lang{
 	materialName("inv.block.material"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
-	
+	addBlock("inv.blocksList.addBlock"),
 	
 	
 	

@@ -189,7 +189,7 @@ class CommandR implements RewardCreationRunnables{
 			}
 
 			public ItemStack getItemStack(Command cmd){
-				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console));
+				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
 			}
 		});
 	}
@@ -322,7 +322,7 @@ class TeleportationR implements RewardCreationRunnables{
 		Editor.enterOrLeave(p, new WaitClick(p, () -> {
 				Location lc = p.getLocation();
 				datas.put("loc", lc);
-				ItemUtils.lore(clicked, Utils.locationToString(lc, true));
+				ItemUtils.lore(clicked, Utils.locationToString(lc));
 				gui.reopen(p, false);
 		}, NPCGUI.validMove.clone()));
 	}
@@ -331,7 +331,7 @@ class TeleportationR implements RewardCreationRunnables{
 		TeleportationReward rew = (TeleportationReward) reward;
 		Location lc = rew.teleportation;
 		datas.put("loc", lc);
-		ItemUtils.lore(is, Utils.locationToString(lc, true));
+		ItemUtils.lore(is, Utils.locationToString(lc));
 	}
 
 	public AbstractReward finish(Map<String, Object> datas){
@@ -349,14 +349,14 @@ class XPR implements RewardCreationRunnables{
 			Utils.sendMessage(p, Lang.XP_EDITED.toString(), last, obj);
 			datas.put("xp", (int) obj);
 			gui.reopen(p, false);
-			ItemUtils.lore(clicked, obj + " xp");
+			ItemUtils.lore(clicked, obj + " " + Lang.Exp.toString());
 		}, new NumberParser(Integer.class, true)));
 	}
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is){
 		XPReward rew = (XPReward) reward;
 		datas.put("xp", rew.exp);
-		ItemUtils.lore(is, rew.exp + " xp");
+		ItemUtils.lore(is, rew.exp + " " + Lang.Exp.toString());
 	}
 
 	public AbstractReward finish(Map<String, Object> datas){

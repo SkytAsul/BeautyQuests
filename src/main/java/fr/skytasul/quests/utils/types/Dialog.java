@@ -98,10 +98,7 @@ public class Dialog{
 		List<Map<String, Object>> ls = (List<Map<String, Object>>) map.get("msgs");
 		for (Map<String, Object> tmp : ls){
 			int id = (int) tmp.get("id");
-			/*if (tmp.containsKey("msg")){ // LATER SYSTEM
-				di.messages.put(id,
-						new Message((String) tmp.get("msg"), (boolean) map.get("player") ? Sender.PLAYER : Sender.NPC));
-			}else */di.messages.set(id, Message.deserialize((Map<String, Object>) tmp.get("message")));
+			di.messages.set(id, Message.deserialize((Map<String, Object>) tmp.get("message")));
 		}
 		
 		return di;

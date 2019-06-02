@@ -36,18 +36,11 @@ public class ItemReward extends AbstractReward {
 
 	
 	protected void save(Map<String, Object> datas){
-		List<Map<String, Object>> ls = new ArrayList<>();
-		for (ItemStack is : items){
-			ls.add(is.serialize());
-		}
-		datas.put("items", ls);
+		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
 	}
 
 	protected void load(Map<String, Object> savedDatas){
-		List<Map<String, Object>> ls = (List<Map<String, Object>>) savedDatas.get("items");
-		for (Map<String, Object> m : ls){
-			items.add(ItemStack.deserialize(m));
-		}
+		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
 	}
 
 }

@@ -1,6 +1,6 @@
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, de_DE
 lang: en_US
 # > 1.13 Chosen Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
 minecraftTranslationsFile: null
@@ -22,7 +22,7 @@ playerQuestUpdateMessage: true
 # Enable or disable default messages when a stage starts
 playerStageStartMessage: true
 # Allows player to cancel quests they have started with the GUI
-allowPlayerCancelQuest: false
+allowPlayerCancelQuest: true
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest

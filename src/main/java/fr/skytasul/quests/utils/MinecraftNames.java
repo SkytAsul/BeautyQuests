@@ -42,7 +42,7 @@ public class MinecraftNames {
 					cachedMaterials.put(XMaterial.fromString(key.substring(16)), (String) en.getValue());
 				}else if (key.startsWith("item.minecraft.")) {
 					cachedMaterials.put(XMaterial.fromString(key.substring(15)), (String) en.getValue());
-				} //TODO test en 1.13
+				}
 			}
 		}catch (Exception e) {
 			BeautyQuests.logger.severe("Problem when loading Minecraft Translations.");

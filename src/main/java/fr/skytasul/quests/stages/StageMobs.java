@@ -219,25 +219,25 @@ public class StageMobs extends AbstractStage{
 	}
 
 	protected void serialize(Map<String, Object> map){
-		map.put("mobs", serializeMobsList(mobs));
+		map.put("mobs", Utils.serializeList(mobs, Mob::serialize));
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
 		for (Entry<PlayerAccount, PlayerDatas> m : remaining.entrySet()){
-			re.put(m.getKey().getIndex(), serializeMobsList(m.getValue().remaining));
+			re.put(m.getKey().getIndex(), Utils.serializeList(m.getValue().remaining, Mob::serialize));
 		}
 		map.put("remaining", re);
 		if (shoot) map.put("shoot", true);
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageMobs st = new StageMobs(manager, fromSerializedMobList((List<Map<String, Object>>) map.get("mobs")));
+		StageMobs st = new StageMobs(manager, Utils.deserializeList((List<Map<String, Object>>) map.get("mobs"), Mob::deserialize));
 		
 		Map<String, List<Map<String, Object>>> re = (Map<String, List<Map<String, Object>>>) map.get("remaining");
 		if (re != null){
 			for (Entry<String, List<Map<String, Object>>> en : re.entrySet()){
 				PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
 				if (acc == null) continue;
-				List<Mob> list = fromSerializedMobList(en.getValue());
+				List<Mob> list = Utils.deserializeList(en.getValue(), Mob::deserialize);
 				if (list.isEmpty()){
 					DebugUtils.logMessage("Player " + en.getKey() + " unused for StageMobs");
 					st.remaining.put(acc, new PlayerDatas(null, new ArrayList<>(), null));
@@ -260,23 +260,6 @@ public class StageMobs extends AbstractStage{
 			size += mob.amount;
 		}
 		return size;
-	}
-	
-	private static List<Map<String, Object>> serializeMobsList(List<Mob> mobs){
-		List<Map<String, Object>> smobs = new ArrayList<>();
-		for (Mob m : mobs){
-			smobs.add(m.serialize());
-		}
-		return smobs;
-	}
-	
-	private static List<Mob> fromSerializedMobList(List<Map<String, Object>> ls){
-		List<Mob> t = new ArrayList<>();
-		for (Map<String, Object> m : ls){
-			Mob mob = Mob.deserialize(m);
-			if (mob != null) t.add(mob);
-		}
-		return t;
 	}
 	
 	static class PlayerDatas{

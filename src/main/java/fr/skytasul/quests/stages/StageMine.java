@@ -138,37 +138,20 @@ public class StageMine extends AbstractStage {
 	}
 
 	protected void serialize(Map<String, Object> map){
-		map.put("blocks", fromBlocks(blocks));
+		map.put("blocks", Utils.serializeList(blocks, BlockData::serialize));
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
 		for (Entry<PlayerAccount, List<BlockData>> b : remaining.entrySet()){
-			re.put(b.getKey().getIndex(), fromBlocks(b.getValue()));
+			re.put(b.getKey().getIndex(), Utils.serializeList(blocks, BlockData::serialize));
 		}
 		map.put("remaining", re);
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);
 	}
 	
-	private static List<Map<String, Object>> fromBlocks(List<BlockData> blocks){
-		List<Map<String, Object>> sblocks = new ArrayList<>();
-		for (BlockData b : blocks){
-			sblocks.add(b.serialize());
-		}
-		return sblocks;
-	}
-	
-	private static List<BlockData> fromMapList(List<Map<String, Object>> ls){
-		List<BlockData> t = new ArrayList<>();
-		for (Map<String, Object> b : ls){
-			BlockData block = BlockData.deserialize(b);
-			if (block != null) t.add(block);
-		}
-		return t;
-	}
-	
 	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageMine st = new StageMine(manager, fromMapList((List<Map<String, Object>>) map.get("blocks")));
+		StageMine st = new StageMine(manager, Utils.deserializeList((List<Map<String, Object>>) map.get("blocks"), BlockData::deserialize));
 		
-		Utils.deserializeAccountsMap((Map<String, List<Map<String, Object>>>) map.get("remaining"), st.remaining, n -> fromMapList(n));
+		Utils.deserializeAccountsMap((Map<String, List<Map<String, Object>>>) map.get("remaining"), st.remaining, n -> Utils.deserializeList(n, BlockData::deserialize));
 		
 		if (map.containsKey("placeCancelled")) st.placeCancelled = (boolean) map.get("placeCancelled");
 		

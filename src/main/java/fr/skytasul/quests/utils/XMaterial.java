@@ -185,7 +185,7 @@ public enum XMaterial {
 	COBWEB("WEB", 0),
 	COCOA("COCOA", 0),
 	COCOA_BEANS("INK_SACK", 3),
-	COD("RAW_FISH", 0),
+	COD("RAW_FISH", 0, "raw fish"),
 	COD_BUCKET("BUCKET", 0),
 	COD_SPAWN_EGG("MONSTER_EGG", 0),
 	COMMAND_BLOCK("COMMAND", 0),
@@ -774,7 +774,7 @@ public enum XMaterial {
 	ROSE_RED("INK_SACK", 1),
 	ROTTEN_FLESH("ROTTEN_FLESH", 0),
 	SADDLE("SADDLE", 0),
-	SALMON("RAW_FISH", 1),
+	SALMON("RAW_FISH", 1, "raw salmon"),
 	SALMON_BUCKET("BUCKET", 0),
 	SALMON_SPAWN_EGG("MONSTER_EGG", 0),
 	SAND("SAND", 0),
@@ -894,7 +894,7 @@ public enum XMaterial {
 	TRIDENT(),
 	TRIPWIRE("TRIPWIRE", 0),
 	TRIPWIRE_HOOK("TRIPWIRE_HOOK", 0),
-	TROPICAL_FISH("RAW_FISH", 0),
+	TROPICAL_FISH("RAW_FISH", 0, "clownfish"),
 	TROPICAL_FISH_BUCKET("BUCKET", 0),
 	TROPICAL_FISH_SPAWN_EGG("MONSTER_EGG", 0),
 	TUBE_CORAL(),
@@ -967,6 +967,7 @@ public enum XMaterial {
 	String m;
 	short data;
 	boolean item;
+	String lastName;
 	
 	XMaterial(){ // post 1.13
 		this("STONE", 0, false);
@@ -976,10 +977,19 @@ public enum XMaterial {
 		this(m, data, false);
 	}
 	
+	XMaterial(String m, int data, String lastName){
+		this(m, data, false);
+		this.lastName = lastName;
+	}
+	
 	XMaterial(String m, int data, boolean item){
 		this.m = m;
 		this.data = (short) data;
 		this.item = item;
+	}
+	
+	public String getLastName(){
+		return lastName == null ? name() : lastName;
 	}
 	
 	public ItemStack parseItem(){

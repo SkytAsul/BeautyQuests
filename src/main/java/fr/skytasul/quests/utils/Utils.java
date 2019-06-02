@@ -158,8 +158,8 @@ public class Utils{
 		return stb.toString();
 	}
 
-	public static String locationToString(Location lc, boolean world){
-		return "X: " + lc.getBlockX() + " | Y: " + lc.getBlockY() + " | Z:" + lc.getBlockZ() + (world ? " | World: " + lc.getWorld().getName() : "");
+	public static String locationToString(Location lc){
+		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName());
 	}
 	
 	public static Location upLocationForEntity(LivingEntity en, double value) {
@@ -322,6 +322,22 @@ public class Utils{
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
+	public static <T> List<Map<String, Object>> serializeList(List<T> objects, Function<T, Map<String, Object>> serialize){
+		List<Map<String, Object>> ls = new ArrayList<>();
+		for (T obj : objects){
+			ls.add(serialize.apply(obj));
+		}
+		return ls;
+	}
+	
+	public static <T> List<T> deserializeList(List<Map<String, Object>> serialized, Function<Map<String, Object>, T> deserialize){
+		List<T> ls = new ArrayList<>();
+		for (Map<String, Object> map : serialized){
+			ls.add(deserialize.apply(map));
+		}
+		return ls;
+	}
+	
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
 	public static DateFormat getDateFormat(){
 		return cachedFormat;
@@ -343,6 +359,14 @@ public class Utils{
 		}catch (Throwable ex){
 			lc.getWorld().playSound(lc, sound, volume, 1);
 		}
+	}
+	
+	public static List<String> serializeAccountsList(List<PlayerAccount> from){
+		List<String> to = new ArrayList<>();
+		for (PlayerAccount acc : from){
+			to.add(acc.getIndex());
+		}
+		return to;
 	}
 	
 	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){

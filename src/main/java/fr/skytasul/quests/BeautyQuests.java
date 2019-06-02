@@ -212,16 +212,20 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private YamlConfiguration loadLang() {
 		try {
-			String s = "locales/" + config.getString("lang", "en_US") + ".yml";
-			File file = new File(getDataFolder(), s);
-			InputStream res = getResource(s);
+			for (String language : new String[]{"en_US", "fr_FR", "zh_CN", "de_DE"}){
+				File file = new File(getDataFolder(), "locales/" + language + ".yml");
+				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
+			}
+			
+			String language = "locales/" + config.getString("lang", "en_US") + ".yml";
+			File file = new File(getDataFolder(), language);
+			InputStream res = getResource(language);
+			boolean created = false;
 			if (!file.exists()){
-				if (res == null){ // file and local resource do not exist: using en_US
-					logger.warning("Language file " + s + " does not exist. Using en_US.yml");
-					s = "locales/en_US.yml";
-					file = new File(getDataFolder(), s);
-				}
-				saveResource(s, false); // copying local resource
+				logger.warning("Language file " + language + " does not exist. Using default english strings.");
+				file.createNewFile();
+				res = getResource("locales/en_US.yml");
+				created = true;
 			}
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
 			if (res != null){ // if it's a local resource
@@ -231,7 +235,7 @@ public class BeautyQuests extends JavaPlugin{
 					if (!def.isConfigurationSection(key)){ // if not a block
 						if (!conf.contains(key)){ // if string does not exist in the file
 							conf.set(key, def.get(key)); // copy string
-							DebugUtils.logMessage("String copied from source file to " + s + ". Key: " + key);
+							if (!created) DebugUtils.logMessage("String copied from source file to " + language + ". Key: " + key);
 							changes = true;
 						}
 					}
@@ -240,7 +244,7 @@ public class BeautyQuests extends JavaPlugin{
 			}
 			long lastMillis = System.currentTimeMillis();
 			Lang.loadStrings(conf);
-			getLogger().info("Loaded language file " + s + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
+			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 			return conf;
 		} catch(Exception e) {
 			e.printStackTrace();

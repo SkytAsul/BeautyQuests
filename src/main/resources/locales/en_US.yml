@@ -108,11 +108,13 @@ msg:
       version: '§6/{0} version: §eSee the current plugin version.'
       save: '§6/{0} save: §eMake a manual plugin save.'
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
-  typeCancel: 'Write "cancel" to come back to the last text.'
+  typeCancel: '§aWrite "cancel" to come back to the last text.'
   editor:
-    already: '§cYou are already in an editor.'
+    blocksToMineAmount: '§aWrite the amount of blocks to mine:'
+    blocksToMineName: '§aWrite the name of the block to mine:'
+    already: '§cYou are already in the editor.'
     enter:
-      title: '§6~ Editor Mode ~'
+      title: '§6Editor Mode'
       subtitle: '§6Write "/quests editor" to force leaving.'
     chat: '§6You are currently in the Editor Mode. Write "/quests editor" to force leaving the editor. (Highly not recommended, consider using commands such as "close" or "cancel" to come back to the previous inventory.)'
     npc:
@@ -172,6 +174,12 @@ msg:
       syntax: '§cCorrect syntax: '
       added: '§aText "{0}" added.'
       removed: '§aText "{0}" removed.'
+      help:
+        header: '§6§lBeautyQuests — Item lore editor help'
+        add: '§6add [message]: §eAdd a text.'
+        remove: '§6remove [id]: §eRemove a text.'
+        list: '§6list: §eView all added texts.'
+        close: '§6close: §eValidate the added texts.'
 advancement:
   finished: 'Finished'
   notStarted: 'Not started'
@@ -201,14 +209,14 @@ inv:
     preventBlockPlace: 'Prevent players to break their own blocks'
     editMessageType: '§eEdit message to write'
     cancelMessage: 'Cancel sending'
-    selectItems: '§bChoose required items'
+    selectItems: '§eEdit required items'
     selectRegion: '§7Choose region'
     stageStartMsg: '§eEdit starting message'
     selectBlockLocation: '§6Select block location'
     leftClick: 'Left-click'
     editFishes: '§eEdit fishes to catch'
   stages:
-    name: '§8Create stages'
+    name: 'Create stages'
     nextPage: '§eNext page'
     laterPage: '§ePrevious page'
     endingItem: '§eEdit end rewards'
@@ -242,7 +250,7 @@ inv:
     requirements: '{0} requirement/s'
     rewards: '{0} reward/s'
   itemsSelect:
-    name: '§8Edit items'
+    name: 'Edit items'
     none: '§aMove an item to here or\nclick to open the item editor.'
   npcCreate:
     name: '§5Create NPC'
@@ -254,7 +262,7 @@ inv:
       itemLore: 'Move to another place.'
     moveItem: '§l§aValidate place'
   npcSelect:
-    name: '§8Select or create?'
+    name: 'Select or create?'
     selectStageNPC: '§e§lSelect existing NPC'
     createStageNPC: '§e§lCreate NPC'
   entityType:
@@ -262,7 +270,7 @@ inv:
   chooseQuest:
     name: '§5Which quest?'
   mobs:
-    name: '§5Choose mobs'
+    name: 'Select mobs'
     none: '§aClick to add mob'
     click: '§7Left-click to edit.\nRight-click to delete.'
   mobSelect:
@@ -276,7 +284,8 @@ inv:
   requirements:
     name: '§8Requirements'
   rewards:
-    name: '§8Rewards'
+    name: 'Rewards'
+    commands: 'Commands: {0}'
   listAllQuests:
     name: '§8Quests'
   listPlayerQuests:
@@ -292,7 +301,7 @@ inv:
       normal: '§6§l§o{0}'
       withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
-    name: '§8Item creator'
+    name: 'Item creator'
     itemType: '§bItem type'
     itemFlags: 'Toggle item flags'
     itemName: '§bItem name'
@@ -312,6 +321,15 @@ inv:
     requirements: 'Requirements'
     questStages: 'Stages'
     noQuests: 'No quests have previously been created.'
+  commandsList:
+    name: 'Command list'
+    value: 'Command: {0}'
+    console: 'Console: {0}'
+  block:
+    name: 'Choose a block'
+    material: 'Material: {0}'
+  blocksList:
+    name: '§5Select blocks'
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cNo quests in progress.'
