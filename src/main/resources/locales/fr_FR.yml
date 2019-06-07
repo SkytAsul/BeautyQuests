@@ -1,4 +1,3 @@
----
 msg:
   quest:
     finished:
@@ -63,6 +62,10 @@ msg:
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   command:
+    setStage:
+      doesntExist: '§cL''étape avec l''id {0} n''existe pas.'
+      next: '§aL''étape a été passée.'
+      set: '§aL''étape {0} a été lancée.'
     playerNeeded: '§cVous devez être un joueur pour effectuer cette commande!'
     incorrectSyntax: '§cSyntaxe incorrecte.'
     noPermission: '§cVous n''avez pas la permission d''exécuter cette commande! (Permission requise : {0})'
@@ -336,8 +339,8 @@ inv:
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
-  noLaunchedName: '§c§lLoading'
-  noLaunchedDescription: '§c§oLoading'
+  noLaunchedName: '§c§lChargement'
+  noLaunchedDescription: '§c§oChargement'
   stage:
     region: '§eTrouve la région §6{0}'
     npc: '§eParle au NPC §6{0}'
@@ -349,7 +352,7 @@ scoreboard:
     fish: '§ePêchez §6{0}'
 misc:
   format:
-    prefix: '§6<§e§lQuests§r§6> §r'
+    prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e {0}'

@@ -141,9 +141,14 @@ public class Commands {
 		StageManager manager = qu.getStageManager();
 		if (cmd.args.length != 3) {
 			manager.next(target);
+			Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
 		}else {
 			Integer st = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
 			if (st == null) return;
+			if (manager.getStage(st) == null){
+				Lang.COMMAND_SETSTAGE_DOESNTEXIST.send(cmd.sender, st);
+				return;
+			}
 			PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 			if (qu.hasStarted(acc)) {
 				AbstractStage active = manager.getPlayerStage(acc);
@@ -151,12 +156,16 @@ public class Commands {
 					public void run(){
 						manager.finishStage(acc, active);
 						manager.setStage(acc, st, true);
+						Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, st);
 					}
 				};
 				if (active.hasAsyncEnd()) {
 					run.runTaskAsynchronously(BeautyQuests.getInstance());
 				}else run.run();
-			}else manager.setStage(acc, st, true);
+			}else {
+				manager.setStage(acc, st, true);
+				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			}
 		}
 	}
 	

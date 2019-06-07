@@ -18,6 +18,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
+import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.types.Mob;
 import fr.skytasul.quests.utils.types.RunnableObj;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
@@ -70,8 +71,7 @@ public class MobsListGUI implements CustomInventory{
 			if (typeName.equalsIgnoreCase("mpet")) typeName = mm.getConfig().getString("MPet.Anchor");
 			EntityType type = EntityType.fromName(typeName);
 			if (type == null) type = EntityType.valueOf(typeName.toUpperCase());
-			//name = mm.getDisplayName();
-			return ItemUtils.item(XMaterial.mobItem(type), mm.getDisplayName(), lore, "Base Health : " + mm.getBaseHealth(), "Base Damage : " + mm.getBaseDamage(), "Base Armor : " + mm.getBaseArmor(), "", Lang.click.toString());
+			return ItemUtils.item(XMaterial.mobItem(type), MythicMobs.getDisplayName(mm), lore, "Base Health : " + mm.getBaseHealth(), "Base Damage : " + mm.getBaseDamage(), "Base Armor : " + mm.getBaseArmor(), "", Lang.click.toString());
 		}else if (mob.hasNPC()){
 			NPC npc = mob.getNPC();
 			return ItemUtils.item(XMaterial.mobItem(npc.getTrait(MobType.class).getType()), npc.getName(), lore, "Name : " + npc.getName(), "NPC ID : " + npc.getId(), "", Lang.click.toString());

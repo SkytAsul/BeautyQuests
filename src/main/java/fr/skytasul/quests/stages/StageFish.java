@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +33,7 @@ public class StageFish extends AbstractStage{
 		this.fishes = fishes;
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onFish(PlayerFishEvent e){
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
 			if (!hasStarted(e.getPlayer())) return;

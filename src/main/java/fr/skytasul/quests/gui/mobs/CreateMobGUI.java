@@ -69,14 +69,10 @@ public class CreateMobGUI implements CustomInventory{
 			Utils.sendMessage(p, Lang.MOB_AMOUNT.toString());
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 					int i = (int) obj;
-					if (i == 0){
-						Utils.sendMessage(p, Lang.NUMBER_ZERO.toString());
-					}else {
-						mob.amount = i;
-						inv.setItem(slot, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(i)));
-					}
+					mob.amount = i;
+					ItemUtils.name(current, Lang.Amount.format(i));
 					openLastInv(p);
-			}, new NumberParser(Integer.class, true)));
+			}, new NumberParser(Integer.class, true, true)));
 			break;
 
 		case 1:
@@ -98,12 +94,14 @@ public class CreateMobGUI implements CustomInventory{
 			new SelectNPC(p, (obj) -> {
 				openLastInv(p);
 				reset();
-				NPC npc = (NPC) obj;
-				mob = new Mob(npc, mob.amount);
-				ItemUtils.lore(current, npc.getName());
-				
-				if (!done) inv.setItem(8, ItemUtils.itemDone());
-				done = true;
+				if (obj != null){
+					NPC npc = (NPC) obj;
+					mob = new Mob(npc, mob.amount);
+					ItemUtils.lore(current, npc.getName());
+
+					if (!done) inv.setItem(8, ItemUtils.itemDone());
+					done = true;
+				}
 			}).enterOrLeave(p);
 
 		case 5:

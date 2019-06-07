@@ -17,7 +17,7 @@ public class MythicMobs implements Listener{
 	}
 
 	public static String getDisplayName(Object mob){
-		return ((MythicMob) mob).getDisplayName();
+		return ((MythicMob) mob).getDisplayName().toString();
 	}
 	
 	public static MythicMob getMythicMob(String name){

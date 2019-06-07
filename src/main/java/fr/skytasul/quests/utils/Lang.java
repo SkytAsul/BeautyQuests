@@ -101,6 +101,9 @@ public enum Lang{
 	COMMAND_SCOREBOARD_LINEREMOVE("msg.command.scoreboard.lineRemoved"),
 	COMMAND_SCOREBOARD_LINENOEXIST("msg.command.scoreboard.lineInexistant"),
 	COMMAND_SCOREBOARD_RESETALL("msg.command.scoreboard.resetAll"),
+	COMMAND_SETSTAGE_DOESNTEXIST("msg.command.setStage.doesntExist"),
+	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),
+	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
 	
 	COMMAND_HELP("msg.command.help.header"),
 	COMMAND_HELP_CREATE("msg.command.help.create"),
