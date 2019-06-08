@@ -2,7 +2,7 @@
 What is **BeautyQuests**?
 * BeautyQuests is a Minecraft quest plugin based on a simple-to-use graphical interface.
 * It's an absolutely free plugin with a full technical documentation.
-* It's also a collaborative work, where everyone can improve and add new features. If you have ideas, submit them and me or somebody else will try to implement them.
+* It's also a collaborative work, where everyone can improve and add new features. If you have ideas, submit them and I or somebody else will try to implement them.
 * It's compatible with a large number of other plugins (like MythicMobs, Jobs, Vault, ...).
 
 ***
