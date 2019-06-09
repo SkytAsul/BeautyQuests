@@ -53,6 +53,7 @@ public class Quest{
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractReward> startRewards = new ArrayList<>();
 	private boolean repeatable = false;
+	private boolean cancellable = true;
 	private boolean scoreboard = true;
 	private boolean hid = false;
 	private boolean bypassLimit = false;
@@ -253,6 +254,14 @@ public class Quest{
 	
 	public boolean isRepeatable(){
 		return repeatable;
+	}
+	
+	public void setCancellable(boolean cancellable){
+		this.cancellable = cancellable;
+	}
+	
+	public boolean isCancellable(){
+		return cancellable;
 	}
 	
 	public boolean isRemoved(){
@@ -500,6 +509,7 @@ public class Quest{
 		map.put("scoreboard", scoreboard);
 		map.put("finished", Utils.serializeAccountsList(finished));
 		if (repeatable) map.put("repeatable", repeatable);
+		if (cancellable) map.put("cancellable", cancellable);
 		if (hologramText != null) map.put("hologramText", hologramText);
 		if (hid) map.put("hid", true);
 		if (endMessage != null) map.put("endMessage", endMessage);
@@ -551,8 +561,8 @@ public class Quest{
 			//qu.unloadAll();
 			return null;
 		}
-		if (map.containsKey("multiple")) qu.repeatable = (boolean) map.get("multiple"); // TODO remove on 0.14
 		if (map.containsKey("repeatable")) qu.repeatable = (boolean) map.get("repeatable");
+		if (map.containsKey("cancellable")) qu.cancellable = (boolean) map.get("cancellable");
 		if (map.containsKey("hid")) qu.hid = (boolean) map.get("hid");
 		if (map.containsKey("scoreboard")) qu.scoreboard = (boolean) map.get("scoreboard");
 		if (map.containsKey("endMessage")) qu.endMessage = (String) map.get("endMessage");

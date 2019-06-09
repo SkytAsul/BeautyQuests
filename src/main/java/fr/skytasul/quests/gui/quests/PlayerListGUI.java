@@ -93,7 +93,7 @@ public class PlayerListGUI implements CustomInventory {
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
 				List<String> desc = Utils.splitOnSpace(qu.getStageManager().getDescriptionLine(acc, Source.MENU), 45);
-				if (QuestsConfiguration.allowPlayerCancelQuest()) {
+				if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
 					desc.add(null);
 					desc.add(Lang.cancelLore.toString());
 				}
@@ -173,7 +173,8 @@ public class PlayerListGUI implements CustomInventory {
 			if (QuestsConfiguration.allowPlayerCancelQuest() && cat == Category.IN_PROGRESS) {
 				int id = (int) (slot - (Math.floor(slot * 1D / 9D)*2) + page*35);
 				Inventories.create(p, new ConfirmGUI(() -> {
-						quests.get(id).cancelPlayer(acc);
+						Quest qu = quests.get(id);
+						if (qu.isCancellable()) qu.cancelPlayer(acc);
 				}, () -> {
 						p.openInventory(inv);
 						Inventories.put(p, thiz, inv);

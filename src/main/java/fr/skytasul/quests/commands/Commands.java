@@ -253,15 +253,11 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				Quest qu = (Quest) obj;
-				qu.cancelPlayer(acc);
-				Lang.CANCEL_QUEST.send(cmd.sender, qu.getName());
+				cancelQuest(cmd.sender, acc, (Quest) obj);
 			}, acc, true, false, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
-				Quest qu = (Quest) cmd.args[1];
-				qu.cancelPlayer(acc);
-				Lang.CANCEL_QUEST.send(cmd.sender, qu.getName());
+				cancelQuest(cmd.sender, acc, (Quest) cmd.args[1]);
 		}else {
 			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 		}
@@ -408,6 +404,15 @@ public class Commands {
 			quest.remove(true);
 			Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
 		}
+	}
+
+	private static void cancelQuest(CommandSender sender, PlayerAccount acc, Quest qu){
+		if (!sender.hasPermission("beautyquests.command.cancel.other") && !qu.isCancellable()){
+			Lang.CANCEL_QUEST_UNAVAILABLE.send(sender, qu.getName());
+			return;
+		}
+		qu.cancelPlayer(acc);
+		Lang.CANCEL_QUEST.send(sender, qu.getName());
 	}
 	
 }

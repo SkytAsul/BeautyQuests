@@ -84,6 +84,7 @@ msg:
       remover: '§6{0} quest information/s of {1} has/have been deleted.'
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
     cancelQuest: '§6You have cancelled the quest {0}.'
+    cancelQuestUnavailable: '§cThe quest {0} cannot be cancelled.'
     backupCreated: '§6You have successfully created backups of all quests and player informations.'
     backupPlayersFailed: '§cCreating a backup for all the player informations has failed.'
     backupQuestsFailed: '§cCreating a backup for all the quests has failed.'
@@ -230,6 +231,7 @@ inv:
     multipleTime:
       itemName: 'Toggle several-use'
       itemLore: 'Can the quest be done\nseveral times?'
+    cancellable: 'Cancellable by player'
     scoreboardItem: 'Enable scoreboard'
     hideItem: 'Hide menu and dynmap'
     bypassLimit: 'Don''t count quest limit'
@@ -385,7 +387,6 @@ misc:
   unused: '§2§lUnused'
   used: '§a§lUsed'
   remove: '§7Middle-click to remove'
-  nul: 'null'
   or: 'or'
   amount: '§eAmount: {0}'
   items: 'items'

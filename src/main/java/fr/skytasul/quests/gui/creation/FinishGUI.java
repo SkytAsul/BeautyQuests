@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -44,6 +45,7 @@ import net.citizensnpcs.api.npc.NPC;
 public class FinishGUI implements CustomInventory{
 
 	static ItemStack multiple = ItemUtils.itemSwitch(Lang.multiple.toString(), false, Lang.multipleLore.toString());
+	static ItemStack cancellable = ItemUtils.itemSwitch(Lang.cancellable.toString(), true);
 	static ItemStack scoreboard = ItemUtils.itemSwitch(Lang.scoreboard.toString(), true);
 	static ItemStack hide = ItemUtils.itemSwitch(Lang.hide.toString(), false);
 	static ItemStack bypass = ItemUtils.itemSwitch(Lang.bypass.toString(), false);
@@ -65,6 +67,7 @@ public class FinishGUI implements CustomInventory{
 	private String name = null;
 	private NPC startNPC = null;
 	private boolean isRepeatable = false;
+	private boolean isCancellable = true;
 	private boolean hasScoreboard = true;
 	private boolean isHid = false;
 	private boolean bypassLimit = false;
@@ -109,12 +112,13 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(0, multiple.clone());
 			inv.setItem(1, scoreboard.clone());
 			inv.setItem(2, hide.clone());
-			inv.setItem(3, bypass.clone());
 			inv.setItem(4, endMessage);
 			inv.setItem(5, startDialog);
 			// timer at 9
-			inv.setItem(11, editRequirements.clone());
-			inv.setItem(12, StagesGUI.ending.clone());
+			inv.setItem(10, bypass.clone());
+			if (QuestsConfiguration.allowPlayerCancelQuest()) inv.setItem(11, cancellable.clone());
+			inv.setItem(12, editRequirements.clone());
+			inv.setItem(13, StagesGUI.ending.clone());
 			inv.setItem(14, startRewards.clone());
 			inv.setItem(16, holoText);
 
@@ -152,10 +156,6 @@ public class FinishGUI implements CustomInventory{
 
 		case 2:
 			isHid = ItemUtils.toggle(current);
-			break;
-
-		case 3:
-			bypassLimit = ItemUtils.toggle(current);
 			break;
 
 		case 4: // 						End message
@@ -217,7 +217,15 @@ public class FinishGUI implements CustomInventory{
 			}).enterOrLeave(p);
 			break;
 
-		case 11:	//						Quest requirements
+		case 10:
+			bypassLimit = ItemUtils.toggle(current);
+			break;
+
+		case 11:
+			isCancellable = ItemUtils.toggle(current);
+			break;
+
+		case 12:	//						Quest requirements
 			Inventories.create(p, new RequirementsGUI((obj) -> {
 				Inventories.put(p, openLastInv(p), inv);
 				requirements = (List<AbstractRequirement>) obj;
@@ -225,7 +233,7 @@ public class FinishGUI implements CustomInventory{
 			}, requirements));
 			break;
 
-		case 12: //						End Rewards
+		case 13: //						End Rewards
 			Inventories.create(p, new RewardsGUI((obj) -> {
 				Inventories.put(p, openLastInv(p), inv);
 				rewards = (List<AbstractReward>) obj;
@@ -277,7 +285,7 @@ public class FinishGUI implements CustomInventory{
 
 		case 23: //						Finish
 			if (current.getType() == Material.GOLD_INGOT){
-				finish(inv);
+				finish();
 			}
 			break;
 
@@ -296,7 +304,7 @@ public class FinishGUI implements CustomInventory{
 		}
 	}
 
-	private void finish(Inventory inv){
+	private void finish(){
 		Quest qu;
 		Map<PlayerAccount, Integer> players = null;
 		if (editing){
@@ -326,6 +334,7 @@ public class FinishGUI implements CustomInventory{
 		}
 		if (editing && !stagesEdited) qu.getStageManager().setPlayersStage(players);
 		qu.setBypassLimit(bypassLimit);
+		qu.setCancellable(isCancellable);
 		qu.setTimer(timer);
 		qu.setRewards(rewards);
 		qu.setStartRewards(rewardsStart);
@@ -366,7 +375,8 @@ public class FinishGUI implements CustomInventory{
 		if (isRepeatable) inv.setItem(9, timerItem);
 		hasScoreboard = ItemUtils.set(inv.getItem(1), edited.isScoreboardEnabled());
 		isHid = ItemUtils.set(inv.getItem(2), edited.isHid());
-		bypassLimit = ItemUtils.set(inv.getItem(3), edited.canBypassLimit());
+		bypassLimit = ItemUtils.set(inv.getItem(10), edited.canBypassLimit());
+		isCancellable = ItemUtils.set(inv.getItem(11), edited.isCancellable());
 		endMsg = edited.getEndMessage();
 		dialog = edited.getStartDialog();
 		inv.setItem(23, edit.clone());

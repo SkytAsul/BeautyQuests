@@ -257,7 +257,8 @@ public class ItemUtils {
 	 * @param enable new state of the switch
 	 * @return same state
 	 */
-	public static boolean set(ItemStack itemSwitch, boolean enable) {
+	public static boolean set(ItemStack itemSwitch, boolean enable){
+		if (itemSwitch == null) return enable;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));
 		if (XMaterial.isNewVersion()){
