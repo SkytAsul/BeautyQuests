@@ -163,6 +163,7 @@ public abstract class AbstractStage implements Listener{
 		try{
 			return descriptionLine(acc, source);
 		}catch (Exception ex){
+			ex.printStackTrace();
 			return "§a" + type.name;
 		}
 	}

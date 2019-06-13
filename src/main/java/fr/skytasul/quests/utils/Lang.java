@@ -217,6 +217,8 @@ public enum Lang{
 	stageChat("inv.create.talkChat"),
 	stageInteract("inv.create.interact"),
 	stageFish("inv.create.fish"),
+	stageCraft("inv.create.craft"),
+	stageBucket("inv.create.bucket"),
 	stageText("inv.create.NPCText"),
 	stageHide("inv.create.hideClues"),
 	editMobs("inv.create.editMobsKill"),
@@ -231,6 +233,9 @@ public enum Lang{
 	blockLocation("inv.create.selectBlockLocation"),
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
+	editItem("inv.create.editItem"),
+	editBucketType("inv.create.editBucketType"),
+	editBucketAmount("inv.create.editBucketAmount"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -266,6 +271,8 @@ public enum Lang{
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
+	
+	INVENTORY_ITEM("inv.itemSelect.name"),
 	
 	INVENTORY_NPC("inv.npcCreate.name"),
 	name("inv.npcCreate.setName"),
@@ -334,6 +341,7 @@ public enum Lang{
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
 	addBlock("inv.blocksList.addBlock"),
 	
+	INVENTORY_BUCKETS("inv.buckets.name"),
 	
 	
 	BOOK_NAME("inv.listBook.questName"),
@@ -358,6 +366,8 @@ public enum Lang{
 	SCOREBOARD_CHAT("scoreboard.stage.chat"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
+	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
+	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
 	
 	/* Misc */
 	
@@ -374,6 +384,8 @@ public enum Lang{
 	Chat("misc.stageType.chat"),
 	Interact("misc.stageType.interact"),
 	Fish("misc.stageType.Fish"),
+	Craft("misc.stageType.Craft"),
+	Bucket("misc.stageType.Bucket"),
 	
 	RClass("misc.requirement.class"),
 	RFaction("misc.requirement.faction"),
@@ -384,6 +396,9 @@ public enum Lang{
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
+	BucketWater("misc.bucket.water"),
+	BucketLava("misc.bucket.lava"),
+	BucketMilk("misc.bucket.milk"),
 	HologramText("misc.hologramText"),
 	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),

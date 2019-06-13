@@ -206,6 +206,8 @@ inv:
     talkChat: '§aWrite in chat'
     interact: '§aInteract with block'
     fish: '§aCatch fishes'
+    craft: '§aCraft an item'
+    bucket: '§aFill buckets'
     NPCText: '§eEdit dialog'
     hideClues: 'Hide particles and holograms'
     editMobsKill: '§eEdit mobs to kill'
@@ -220,6 +222,9 @@ inv:
     selectBlockLocation: '§eSelect block location'
     leftClick: 'Click must be left-click'
     editFishes: '§eEdit fishes to catch'
+    editItem: '§eEdit item to craft'
+    editBucketType: '§eEdit the type of bucket to fill'
+    editBucketAmount: '§eEdit the amount of buckets to fill'
   stages:
     name: 'Create stages'
     nextPage: '§eNext page'
@@ -258,6 +263,8 @@ inv:
   itemsSelect:
     name: 'Edit items'
     none: '§aMove an item to here or\nclick to open the item editor.'
+  itemSelect:
+    name: 'Choose an item'
   npcCreate:
     name: 'Create NPC'
     setName: '§eEdit NPC name'
@@ -338,6 +345,8 @@ inv:
   blocksList:
     name: 'Select blocks'
     addBlock: '§aClick to add a block.'
+  buckets:
+    name: 'Bucket type'
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cNo quests in progress.'
@@ -352,6 +361,8 @@ scoreboard:
     chat: '§eWrite §6{0}'
     interact: '§eClick on the block at §6{0}'
     fish: '§eFish §6{0}'
+    craft: '§eCraft §6{0}'
+    bucket: '§eFill §6{0}'
 misc:
   format:
     prefix: '§6<§e§lQuests§r§6> §r'
@@ -367,6 +378,8 @@ misc:
     chat: 'Write in chat'
     interact: 'Interact with block'
     Fish: 'Catch fishes'
+    Craft: 'Craft an item'
+    Bucket: 'Fill a bucket'
   requirement:
     class: '§bClass/es required'
     faction: '§bFaction/s required'
@@ -377,6 +390,10 @@ misc:
     placeholder: '§bPlaceholder value required'
     quest: '§aQuest required'
     mcMMOSkillLevel: '§dSkill level required'
+  bucket:
+    water: 'Water bucket'
+    lava: 'Lava bucket'
+    milk: 'Milk bucket'
   questItemLore: '§e§oQuest Item'
   hologramText: '§8§lQuest NPC'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'

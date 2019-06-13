@@ -25,18 +25,24 @@ import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitBlockClick;
+import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
+import fr.skytasul.quests.gui.creation.BucketTypeGUI;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
+import fr.skytasul.quests.stages.StageBucket;
+import fr.skytasul.quests.stages.StageBucket.BucketType;
 import fr.skytasul.quests.stages.StageChat;
+import fr.skytasul.quests.stages.StageCraft;
 import fr.skytasul.quests.stages.StageFish;
 import fr.skytasul.quests.stages.StageInteract;
 import fr.skytasul.quests.stages.StageMine;
@@ -321,6 +327,8 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
 	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.OAK_PLANKS, Lang.stageInteract.toString());
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
+	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
+	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 
 	public static void initialize(){
 		DebugUtils.broadcastDebugMessage("Initlializing default stage types.");
@@ -333,6 +341,8 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, new CreateChat());
 		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, new CreateInteract());
 		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new CreateFish());
+		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, new CreateCraft());
+		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, new CreateBucket());
 	}
 }
 
@@ -688,6 +698,79 @@ class CreateFish implements StageCreationRunnables{
 					datas.getGUI().reopen(p, true);
 				}, (List<ItemStack>) datas.get("items")));
 			}
+		});
+	}
+}
+
+class CreateCraft implements StageCreationRunnables{
+	public void start(Player p, LineData datas){
+		new ItemGUI((is) -> {
+			datas.put("item", is);
+			datas.getGUI().reopen(p, true);
+			setItem(datas.getLine());
+		}).create(p);
+	}
+
+	public AbstractStage finish(LineData datas, Quest qu){
+		StageCraft stage = new StageCraft(qu.getStageManager(), (ItemStack) datas.get("item"));
+		return stage;
+	}
+
+	public void edit(LineData datas, AbstractStage stage){
+		datas.put("item", ((StageCraft) stage).getItem());
+		setItem(datas.getLine());
+	}
+
+	public static void setItem(Line line){
+		line.setItem(5, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
+			new ItemGUI((is) -> {
+				datas.put("item", is);
+				datas.getGUI().reopen(p, true);
+			}).create(p);
+		});
+	}
+}
+
+class CreateBucket implements StageCreationRunnables{
+	public void start(Player p, LineData datas){
+		new BucketTypeGUI((bucket) -> {
+			datas.put("bucket", bucket);
+			new TextEditor(p, (obj) -> {
+				datas.put("amount", obj);
+				datas.getGUI().reopen(p, true);
+				setItems(datas.getLine());
+			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+		}).create(p);
+	}
+
+	public AbstractStage finish(LineData datas, Quest qu){
+		StageBucket stage = new StageBucket(qu.getStageManager(), (BucketType) datas.get("bucket"), (int) datas.get("amount"));
+		return stage;
+	}
+
+	public void edit(LineData datas, AbstractStage stage){
+		StageBucket st = (StageBucket) stage;
+		datas.put("bucket", st.getBucketType());
+		datas.put("amount", st.getBucketAmount());
+		setItems(datas.getLine());
+	}
+
+	public static void setItems(Line line){
+		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
+			new TextEditor(p, (obj) -> {
+				datas.put("amount", obj);
+				datas.getGUI().reopen(p, true);
+				ItemUtils.lore(item, Lang.Amount.format(obj));
+			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+		});
+		BucketType type = (BucketType) line.data.get("bucket");
+		line.setItem(5, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
+			new BucketTypeGUI((bucket) -> {
+				datas.put("bucket", bucket);
+				datas.getGUI().reopen(p, true);
+				item.setType(bucket.getMaterial().parseMaterial());
+				ItemUtils.lore(item, bucket.getName());
+			}).create(p);
 		});
 	}
 }

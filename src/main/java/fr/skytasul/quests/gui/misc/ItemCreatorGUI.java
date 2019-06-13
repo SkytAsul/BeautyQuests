@@ -29,9 +29,11 @@ public class ItemCreatorGUI implements CustomInventory {
 	private Inventory inv;
 	private Player p;
 	private RunnableObj run;
-
-	public ItemCreatorGUI(RunnableObj end){
+	private boolean allowCancel;
+	
+	public ItemCreatorGUI(RunnableObj end, boolean allowCancel){
 		run = end;
+		this.allowCancel = allowCancel;
 	}
 
 	private XMaterial type;
@@ -39,7 +41,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	private List<String> lore = new ArrayList<>();
 	private boolean quest = false;
 	private boolean flags = false;
-
+	
 
 	public Inventory open(Player p) {
 		this.p = p;
@@ -50,7 +52,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
 		inv.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
 		inv.setItem(6, ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
-		inv.setItem(8, ItemUtils.itemCancel());
+		if (allowCancel) inv.setItem(8, ItemUtils.itemCancel());
 		inv.setItem(17, ItemUtils.itemDone());
 		inv.getItem(17).setType(Material.COAL);
 
@@ -78,7 +80,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 				type = (XMaterial) obj;
 				reopen();
-			}, new MaterialParser(true)));;
+			}, new MaterialParser(true)));
 			break;
 
 		case 1:

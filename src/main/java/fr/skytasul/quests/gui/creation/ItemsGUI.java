@@ -19,7 +19,7 @@ import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemsGUI implements CustomInventory{
 	
-	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
+	public static ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
 	
 	private List<ItemStack> items;
 	
@@ -91,7 +91,7 @@ public class ItemsGUI implements CustomInventory{
 				Inventories.create(p, new ItemCreatorGUI((obj) -> {
 						if (obj != null) inv.setItem(slot, (ItemStack) obj);
 						Inventories.put(p, openLastInv(p), inv);
-				}));
+				}, true));
 			}else {
 				new BukkitRunnable() {
 					public void run() {
