@@ -509,7 +509,7 @@ public class Quest{
 		map.put("scoreboard", scoreboard);
 		map.put("finished", Utils.serializeAccountsList(finished));
 		if (repeatable) map.put("repeatable", repeatable);
-		if (cancellable) map.put("cancellable", cancellable);
+		if (!cancellable) map.put("cancellable", cancellable);
 		if (hologramText != null) map.put("hologramText", hologramText);
 		if (hid) map.put("hid", true);
 		if (endMessage != null) map.put("endMessage", endMessage);

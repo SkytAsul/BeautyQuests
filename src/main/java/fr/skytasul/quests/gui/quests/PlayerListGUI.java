@@ -172,12 +172,13 @@ public class PlayerListGUI implements CustomInventory {
 		default:
 			if (QuestsConfiguration.allowPlayerCancelQuest() && cat == Category.IN_PROGRESS) {
 				int id = (int) (slot - (Math.floor(slot * 1D / 9D)*2) + page*35);
+				Quest qu = quests.get(id);
+				if (!qu.isCancellable()) break;
 				Inventories.create(p, new ConfirmGUI(() -> {
-						Quest qu = quests.get(id);
-						if (qu.isCancellable()) qu.cancelPlayer(acc);
+					qu.cancelPlayer(acc);
 				}, () -> {
-						p.openInventory(inv);
-						Inventories.put(p, thiz, inv);
+					p.openInventory(inv);
+					Inventories.put(p, thiz, inv);
 				}));
 			}
 			break;

@@ -3,11 +3,14 @@ package fr.skytasul.quests.utils;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+
+import fr.skytasul.quests.utils.nms.NMS;
 
 public enum XMaterial {
 	
@@ -387,7 +390,7 @@ public enum XMaterial {
 	GREEN_CARPET("CARPET", 13),
 	GREEN_CONCRETE("CONCRETE", 13),
 	GREEN_CONCRETE_POWDER("CONCRETE_POWDER", 13),
-	GREEN_DYE("INK_SACK", 2),
+	GREEN_DYE("INK_SACK", 2, "green dye", "CACTUS_GREEN"),
 	GREEN_GLAZED_TERRACOTTA("GREEN_GLAZED_TERRACOTTA", 0),
 	GREEN_SHULKER_BOX("GREEN_SHULKER_BOX", 0),
 	GREEN_STAINED_GLASS("STAINED_GLASS", 13),
@@ -748,7 +751,7 @@ public enum XMaterial {
 	RED_CARPET("CARPET", 14),
 	RED_CONCRETE("CONCRETE", 14),
 	RED_CONCRETE_POWDER("CONCRETE_POWDER", 14),
-	RED_DYE("INK_SACK", 1),
+	RED_DYE("INK_SACK", 1, "red dye", "ROSE_RED"),
 	RED_GLAZED_TERRACOTTA("RED_GLAZED_TERRACOTTA", 0),
 	RED_MUSHROOM("RED_MUSHROOM", 0),
 	RED_MUSHROOM_BLOCK("RED_MUSHROOM", 0),
@@ -948,7 +951,7 @@ public enum XMaterial {
 	YELLOW_CARPET("CARPET", 4),
 	YELLOW_CONCRETE("CONCRETE", 4),
 	YELLOW_CONCRETE_POWDER("CONCRETE_POWDER", 4),
-	YELLOW_DYE(),
+	YELLOW_DYE("INK_SACK", 11, "yellow dye", "DANDELION_YELLOW"),
 	YELLOW_GLAZED_TERRACOTTA("YELLOW_GLAZED_TERRACOTTA", 0),
 	YELLOW_SHULKER_BOX("YELLOW_SHULKER_BOX", 0),
 	YELLOW_STAINED_GLASS("STAINED_GLASS", 4),
@@ -968,6 +971,7 @@ public enum XMaterial {
 	short data;
 	boolean item;
 	String lastName;
+	String name13;
 	
 	XMaterial(){ // post 1.13
 		this("STONE", 0, false);
@@ -982,6 +986,12 @@ public enum XMaterial {
 		this.lastName = lastName;
 	}
 	
+	XMaterial(String m, int data, String lastName, String name13){
+		this(m, data, false);
+		this.lastName = lastName;
+		this.name13 = name13;
+	}
+	
 	XMaterial(String m, int data, boolean item){
 		this.m = m;
 		this.data = (short) data;
@@ -994,6 +1004,7 @@ public enum XMaterial {
 	
 	public ItemStack parseItem(){
 		Material mat = parseMaterial(item);
+		Validate.notNull(mat, "Unable to find Bukkit material for XMaterial " + name());
 		if(isNewVersion()){
 			return new ItemStack(mat);
 		}
@@ -1074,7 +1085,10 @@ public enum XMaterial {
 	}
 	public Material parseMaterial(boolean item){
 		if (isNewVersion()){
-			Material mat = Material.matchMaterial(this.toString());
+			Material mat;
+			if (name13 != null && NMS.getMCVersion() == 13){
+				mat = Material.matchMaterial(name13);
+			}else mat = Material.matchMaterial(this.toString());
 	        if(mat != null) return mat;
 		}
         return Material.matchMaterial(m + (item ? "_ITEM" : ""));
