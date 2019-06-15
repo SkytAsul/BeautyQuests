@@ -3,10 +3,13 @@ package fr.skytasul.quests.stages;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
@@ -18,6 +21,9 @@ import fr.skytasul.quests.stages.StageManager.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
+/**
+ * @author SkytAsul, ezeiger92, TheBusyBiscuit
+ */
 public class StageCraft extends AbstractStage {
 
 	private ItemStack result;
@@ -35,12 +41,48 @@ public class StageCraft extends AbstractStage {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onCraft(CraftItemEvent e){
 		Player p = (Player) e.getView().getPlayer();
-		ItemStack clicked = e.getView().getTopInventory().getItem(0);
-		System.out.println(clicked.toString());
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		ItemStack item = e.getRecipe().getResult();
+		
 		if (manager.hasStageLaunched(acc, this)){
-			if (clicked.isSimilar(result)){
-				int newAmount = playerAmounts.get(acc) - clicked.getAmount();
+			if (e.getRecipe().getResult().isSimilar(result)){
+				
+				int recipeAmount = item.getAmount();
+
+				switch (e.getClick()) {
+					case NUMBER_KEY:
+						// If hotbar slot selected is full, crafting fails (vanilla behavior, even when items match)
+						if (e.getWhoClicked().getInventory().getItem(e.getHotbarButton()) != null) recipeAmount = 0;
+						break;
+
+					case DROP:
+					case CONTROL_DROP:
+						// If we are holding items, craft-via-drop fails (vanilla behavior)
+						ItemStack cursor = e.getCursor();
+						if (cursor != null && cursor.getType() != Material.AIR) recipeAmount = 0;
+						break;
+
+					case SHIFT_RIGHT:
+					case SHIFT_LEFT:
+						if (recipeAmount == 0) break;
+
+						int maxCraftable = getMaxCraftAmount(e.getInventory());
+						int capacity = fits(item, e.getView().getBottomInventory());
+
+						// If we can't fit everything, increase "space" to include the items dropped by crafting
+						// (Think: Uncrafting 8 iron blocks into 1 slot)
+						if (capacity < maxCraftable)
+							maxCraftable = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
+
+						recipeAmount = maxCraftable;
+						break;
+					default:
+				}
+
+				// No use continuing if we haven't actually crafted a thing
+				if (recipeAmount == 0) return;
+				
+				int newAmount = playerAmounts.get(acc) - recipeAmount;
 				if (newAmount <= 0){
 					playerAmounts.remove(acc);
 					finishStage(p);
@@ -53,7 +95,7 @@ public class StageCraft extends AbstractStage {
 	
 	public void start(PlayerAccount account){
 		super.start(account);
-		playerAmounts.put(account, result.getAmount());
+		if (!playerAmounts.containsKey(account)) playerAmounts.put(account, result.getAmount());
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){
@@ -75,6 +117,31 @@ public class StageCraft extends AbstractStage {
 		StageCraft stage = new StageCraft(manager, ItemStack.deserialize((Map<String, Object>) map.get("result")));
 		((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.playerAmounts.put(PlayersManager.getByIndex(acc), (int) amount));
 		return stage;
+	}
+	
+	public static int getMaxCraftAmount(CraftingInventory inv) {
+		if (inv.getResult() == null) return 0;
+
+		int resultCount = inv.getResult().getAmount();
+		int materialCount = Integer.MAX_VALUE;
+
+		for (ItemStack is : inv.getMatrix())
+			if (is != null && is.getAmount() < materialCount)
+				materialCount = is.getAmount();
+
+		return resultCount * materialCount;
+	}
+
+	public static int fits(ItemStack stack, Inventory inv) {
+		int result = 0;
+
+		for (ItemStack is : inv.getContents())
+			if (is == null)
+				result += stack.getMaxStackSize();
+			else if (is.isSimilar(stack))
+				result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
+
+		return result;
 	}
 
 }
