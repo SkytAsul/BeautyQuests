@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,7 +14,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
@@ -43,19 +43,16 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.Factions;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
-import fr.skytasul.quests.utils.types.RunnableObj;
-import fr.skytasul.quests.utils.types.RunnableReturn;
-import net.citizensnpcs.api.npc.NPC;
 
 public class RequirementsGUI implements CustomInventory {
 
 	private Inventory inv;
 	private HashMap<Integer, Map<String, Object>> datas = new HashMap<>();
 	
-	private RunnableObj end;
+	private Consumer<List<AbstractRequirement>> end;
 	private Map<Class<?>, AbstractRequirement> lastRequirements = new HashMap<>();
 	
-	public RequirementsGUI(RunnableObj end, List<AbstractRequirement> requirements){
+	public RequirementsGUI(Consumer<List<AbstractRequirement>> end, List<AbstractRequirement> requirements){
 		this.end = end;
 		for (AbstractRequirement req : requirements){
 			lastRequirements.put(req.getClass(), req);
@@ -132,7 +129,7 @@ public class RequirementsGUI implements CustomInventory {
 				req.add(ls.get((int) data.getValue().get("666DONOTREMOVE-id")).runnables.finish(data.getValue()));
 			}
 			Inventories.closeAndExit(p);
-			end.run(req);	
+			end.accept(req);	
 			return true;
 		}
 		if (!datas.containsKey(slot)){
@@ -177,27 +174,24 @@ class QuestR implements RequirementCreationRunnables{
 	
 	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 		Utils.sendMessage(p, Lang.CHOOSE_NPC_STARTER.toString());
-		Editor.enterOrLeave(p, new SelectNPC(p, new RunnableObj(){
-			public void run(Object obj){
-				if (obj == null) {
+		Editor.enterOrLeave(p, new SelectNPC(p, (npc) -> {
+			if (npc == null) {
+				gui.reopen(p, true);
+				gui.removeRequirement(datas);
+				return;
+			}
+			if (QuestsAPI.isQuestStarter(npc)){
+				Inventories.create(p, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quest) -> {
+					if (quest != null){
+						if (datas.containsKey("id")) datas.remove("id");
+						datas.put("id", quest.getID());
+					}else gui.remove((int) datas.get("slot"));
 					gui.reopen(p, true);
-					gui.removeRequirement(datas);
-					return;
-				}
-				NPC npc = (NPC) obj;
-				if (QuestsAPI.isQuestStarter(npc)){
-					Inventories.create(p, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quest) -> {
-							if (quest != null){
-								if (datas.containsKey("id")) datas.remove("id");
-								datas.put("id", ((Quest) quest).getID());
-							}else gui.remove((int) datas.get("slot"));
-							gui.reopen(p, true);
-					}));
-				}else {
-					Utils.sendMessage(p, Lang.NPC_NOT_QUEST.toString());
-					gui.reopen(p, true);
-					gui.removeRequirement(datas);
-				}
+				}));
+			}else {
+				Utils.sendMessage(p, Lang.NPC_NOT_QUEST.toString());
+				gui.reopen(p, true);
+				gui.removeRequirement(datas);
 			}
 		}));
 	}
@@ -275,16 +269,16 @@ class PermissionsR implements RequirementCreationRunnables{
 		if (!datas.containsKey("perms")) datas.put("perms", new ArrayList<String>());
 		Lang.CHOOSE_PERM_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
-				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor(p, (text) -> {
-					datas.put("msg", text);
-					gui.reopen(p, false);
-				}, () -> {
-					gui.reopen(p, false);
-				}, () -> {
-					datas.put("msg", null);
-					gui.reopen(p, false);
-				}).enterOrLeave(p);
+			Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
+			new TextEditor(p, (text) -> {
+				datas.put("msg", text);
+				gui.reopen(p, false);
+			}, () -> {
+				gui.reopen(p, false);
+			}, () -> {
+				datas.put("msg", null);
+				gui.reopen(p, false);
+			}).enterOrLeave(p);
 		}, (List<String>) datas.get("perms")));
 	}
 	
@@ -309,15 +303,13 @@ class FactionR implements RequirementCreationRunnables{
 		if (!datas.containsKey("factions")) datas.put("factions", new ArrayList<String>());
 		Lang.CHOOSE_FAC_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
-				gui.reopen(p, false);
-		}, (List<String>) datas.get("factions"))).valid = new RunnableReturn<Boolean>() {
-			public Boolean run(Object obj) {
-				if (!Factions.factionExists((String) obj)){
-					Lang.FACTION_DOESNT_EXIST.send(p);
-					return false;
-				}
-				return true;
+			gui.reopen(p, false);
+		}, (List<String>) datas.get("factions"))).valid = (string) -> {
+			if (!Factions.factionExists(string)){
+				Lang.FACTION_DOESNT_EXIST.send(p);
+				return false;
 			}
+			return true;
 		};
 	}
 
@@ -339,14 +331,12 @@ class ClassR implements RequirementCreationRunnables{
 		Lang.CHOOSE_CLASSES_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
 			gui.reopen(p, false);
-		}, (List<String>) datas.get("classes"))).valid = new RunnableReturn<Boolean>() {
-			public Boolean run(Object obj) {
-				if (!SkillAPI.classExists((String) obj)){
-					Lang.CLASS_DOESNT_EXIST.send(p);
-					return false;
-				}
-				return true;
+		}, (List<String>) datas.get("classes"))).valid = (string) -> {
+			if (!SkillAPI.classExists(string)){
+				Lang.CLASS_DOESNT_EXIST.send(p);
+				return false;
 			}
+			return true;
 		};
 	}
 	

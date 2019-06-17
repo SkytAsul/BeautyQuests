@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,7 +19,6 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BlockData;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class BlocksGUI implements CustomInventory {
 
@@ -28,7 +28,7 @@ public class BlocksGUI implements CustomInventory {
 	public Map<Integer, BlockData> blocks = new HashMap<>();
 	
 	public Inventory inv;
-	public RunnableObj run;
+	public Consumer<List<BlockData>> run;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -47,7 +47,7 @@ public class BlocksGUI implements CustomInventory {
 	public boolean onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
 		if (slot == 8){
 			Inventories.closeAndExit(p);
-			run.run(new ArrayList<>(blocks.values()));
+			run.accept(new ArrayList<>(blocks.values()));
 			return true;
 		}
 		if (click.isRightClick()){
@@ -58,8 +58,8 @@ public class BlocksGUI implements CustomInventory {
 		SelectBlockGUI sm = Inventories.create(p, new SelectBlockGUI());
 		sm.run = (obj) -> {
 			Inventories.put(p, openLastInv(p), inv);
-			inv.setItem(slot, fromBlock((BlockData) obj));
-			blocks.put(slot, (BlockData) obj);
+			inv.setItem(slot, fromBlock(obj));
+			blocks.put(slot, obj);
 		};
 		return true;
 	}

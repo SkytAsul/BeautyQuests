@@ -1,33 +1,34 @@
 package fr.skytasul.quests.editors;
 
+import java.util.function.Consumer;
+
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.editors.checkers.AbstractParser;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class TextEditor extends Editor{
 	
-	protected RunnableObj run;
+	protected Consumer<Object> run;
 	public Runnable cancel;
 	public Runnable nul;
 	
 	public AbstractParser parser;
 	
-	public TextEditor(Player p, RunnableObj end){
+	public TextEditor(Player p, Consumer<Object> end){
 		this(p, end, null, null, null);
 	}
 	
-	public TextEditor(Player p, RunnableObj end, Runnable cancel, Runnable nul){
+	public TextEditor(Player p, Consumer<Object> end, Runnable cancel, Runnable nul){
 		this(p, end, null, cancel, nul);
 	}
 	
-	public TextEditor(Player p, RunnableObj end, AbstractParser parser){
+	public TextEditor(Player p, Consumer<Object> end, AbstractParser parser){
 		this(p, end, parser, null, null);
 	}
 	
-	public TextEditor(Player p, RunnableObj end, AbstractParser parser, Runnable cancel, Runnable nul){
+	public TextEditor(Player p, Consumer<Object> end, AbstractParser parser, Runnable cancel, Runnable nul){
 		super(p);
 		this.run = end;
 		this.parser = parser;
@@ -75,7 +76,7 @@ public class TextEditor extends Editor{
 
 		if (!invalid){
 			leave(p);
-			run.run(returnment);
+			run.accept(returnment);
 			return true;
 		}
 		return false;

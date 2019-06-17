@@ -23,6 +23,8 @@ playerQuestUpdateMessage: true
 playerStageStartMessage: true
 # Allows player to cancel quests they have started with the GUI
 allowPlayerCancelQuest: true
+# Shows a Yes/No GUI to let the player choose if he wants to accept the quest or not
+questConfirmGUI: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest

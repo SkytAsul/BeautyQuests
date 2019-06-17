@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,17 +42,16 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.types.Command;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class RewardsGUI implements CustomInventory {
 
 	private Inventory inv;
 	private HashMap<Integer, Map<String, Object>> datas = new HashMap<>();
 
-	private RunnableObj end;
+	private Consumer<List<AbstractReward>> end;
 	private Map<Class<?>, AbstractReward> lastRewards = new HashMap<>();
 
-	public RewardsGUI(RunnableObj end, List<AbstractReward> rewards){
+	public RewardsGUI(Consumer<List<AbstractReward>> end, List<AbstractReward> rewards){
 		this.end = end;
 		for (AbstractReward req : rewards){
 			lastRewards.put(req.getClass(), req);
@@ -126,7 +126,7 @@ public class RewardsGUI implements CustomInventory {
 				req.add(((RewardCreator) data.getValue().get("666DONOTREMOVE-creator")).runnables.finish(data.getValue()));
 			}
 			Inventories.closeAndExit(p);
-			end.run(req);
+			end.accept(req);
 			return true;
 		}
 		if (!datas.containsKey(slot)){
@@ -174,10 +174,7 @@ class CommandR implements RewardCreationRunnables{
 		if (!datas.containsKey("commands")) datas.put("commands", new ArrayList<>());
 		Inventories.create(p, new ListGUI<Command>((List<Command>) datas.get("commands")) {
 			public void click(Command existing){
-				Inventories.create(p, new CommandGUI((obj) -> {
-					Command cmd = (Command) obj;
-					this.finishItem(cmd);
-				})).setFromExistingCommand(existing);
+				Inventories.create(p, new CommandGUI((cmd) -> this.finishItem(cmd))).setFromExistingCommand(existing);
 			}
 
 			public String name(){
@@ -231,7 +228,6 @@ class ItemR implements RewardCreationRunnables{
 
 class MessageR implements RewardCreationRunnables{
 
-
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		Lang.END_MESSAGE.send(p);
 		TextEditor wt = new TextEditor(p, (obj) -> {
@@ -240,8 +236,8 @@ class MessageR implements RewardCreationRunnables{
 			ItemUtils.lore(clicked, (String) obj);
 		});
 		wt.cancel = () -> {
-				if (!datas.containsKey("text")) gui.removeReward(datas);
-				gui.reopen(p, false);
+			if (!datas.containsKey("text")) gui.removeReward(datas);
+			gui.reopen(p, false);
 		};
 		Editor.enterOrLeave(p, wt);
 	}
@@ -290,8 +286,7 @@ class PermissionR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		Lang.CHOOSE_PERM_REWARD.send(p);
-		PermissionsEditor wt = new PermissionsEditor(p, (obj) -> {
-			Map<String, Boolean> map = (Map<String, Boolean>) obj;
+		PermissionsEditor wt = new PermissionsEditor(p, (map) -> {
 			if (map.isEmpty()) {
 				gui.removeReward(datas);
 			}else {
@@ -320,10 +315,10 @@ class TeleportationR implements RewardCreationRunnables{
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		Lang.MOVE_TELEPORT_POINT.send(p);
 		Editor.enterOrLeave(p, new WaitClick(p, () -> {
-				Location lc = p.getLocation();
-				datas.put("loc", lc);
-				ItemUtils.lore(clicked, Utils.locationToString(lc));
-				gui.reopen(p, false);
+			Location lc = p.getLocation();
+			datas.put("loc", lc);
+			ItemUtils.lore(clicked, Utils.locationToString(lc));
+			gui.reopen(p, false);
 		}, NPCGUI.validMove.clone()));
 	}
 

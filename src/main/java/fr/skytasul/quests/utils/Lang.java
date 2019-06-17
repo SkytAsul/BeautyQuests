@@ -370,6 +370,13 @@ public enum Lang{
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
 	
+	/* Indications */
+	
+	INDICATION_START("indication.startQuest"), // 0: quest name
+	INDICATION_CLOSE("indication.closeInventory"),
+	INDICATION_CANCEL("indication.cancelQuest"), // 0: quest name
+	INDICATION_REMOVE("indication.removeQuest"), // 0: quest name
+	
 	/* Misc */
 	
 	Prefix("misc.format.prefix"),

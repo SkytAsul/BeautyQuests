@@ -1,5 +1,7 @@
 package fr.skytasul.quests.gui.npc;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -13,18 +15,18 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
+import net.citizensnpcs.api.npc.NPC;
 
 public class SelectGUI implements CustomInventory{
 	
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 	
-	private  RunnableObj run;
+	private Consumer<NPC> run;
 	
 	public Inventory inv;
 	
-	public SelectGUI(RunnableObj run) {
+	public SelectGUI(Consumer<NPC> run) {
 		this.run = run;
 	}
 	
@@ -51,7 +53,7 @@ public class SelectGUI implements CustomInventory{
 			tmp.run = (obj) -> {
 				if (obj == null){
 					Inventories.put(p, openLastInv(p), inv);
-				}else run.run(obj);
+				}else run.accept(obj);
 			};
 			break;
 
@@ -59,7 +61,7 @@ public class SelectGUI implements CustomInventory{
 			Editor.enterOrLeave(p, new SelectNPC(p, (obj) -> {
 				if (obj == null){
 					p.openInventory(inv);
-				}else run.run(obj);
+				}else run.accept(obj);
 			}));
 			break;
 		}

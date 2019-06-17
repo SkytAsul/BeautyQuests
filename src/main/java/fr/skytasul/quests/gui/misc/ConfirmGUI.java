@@ -16,16 +16,19 @@ import fr.skytasul.quests.utils.XMaterial;
 public class ConfirmGUI implements CustomInventory {
 
 	private Runnable yes, no;
+	private String indication;
 	
-	public ConfirmGUI(Runnable yes, Runnable no) {
+	public ConfirmGUI(Runnable yes, Runnable no, String indication) {
 		this.yes = yes;
 		this.no = no;
+		this.indication = indication;
 	}
 	
 	public Inventory open(Player p){
 		Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_CONFIRM.toString());
 		
 		inv.setItem(1, ItemUtils.item(XMaterial.LIME_DYE, Lang.confirmYes.toString()));
+		inv.setItem(2, ItemUtils.item(XMaterial.PAPER, indication));
 		inv.setItem(3, ItemUtils.item(XMaterial.RED_DYE, Lang.confirmNo.toString()));
 		
 		return p.openInventory(inv).getTopInventory();

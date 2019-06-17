@@ -2,6 +2,8 @@ package fr.skytasul.quests.gui.blocks;
 
 import static fr.skytasul.quests.gui.ItemUtils.item;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -17,13 +19,12 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BlockData;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class SelectBlockGUI implements CustomInventory{
 	
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
-	public RunnableObj run;
+	public Consumer<BlockData> run;
 	
 	public Inventory inv;
 	
@@ -80,7 +81,7 @@ public class SelectBlockGUI implements CustomInventory{
 			
 		case 8:
 			Inventories.closeAndExit(p);
-			run.run(block);
+			run.accept(block);
 			break;
 			
 		}

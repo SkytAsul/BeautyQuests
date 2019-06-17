@@ -1,19 +1,21 @@
 package fr.skytasul.quests.editors;
 
+import java.util.function.Consumer;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.npc.NPC;
 
 public class SelectNPC extends InventoryClear{
 	
-	private RunnableObj run;
+	private Consumer<NPC> run;
 	
-	public SelectNPC(Player p, RunnableObj end){
+	public SelectNPC(Player p, Consumer<NPC> end){
 		super(p);
 		this.run = end;
 	}
@@ -23,13 +25,13 @@ public class SelectNPC extends InventoryClear{
 		if (e.getClicker() != p) return;
 		e.setCancelled(true);
 		leave(e.getClicker());
-		run.run(e.getNPC());
+		run.accept(e.getNPC());
 	}
 	
 	public boolean chat(String msg){
 		if (msg.equals("cancel")){
 			leave(p);
-			run.run(null);
+			run.accept(null);
 			return true;
 		}
 		return false;

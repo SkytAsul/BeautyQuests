@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -16,11 +17,10 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class ChooseQuestGUI implements CustomInventory{
 	
-	private RunnableObj run;
+	private Consumer<Quest> run;
 	public final List<Quest> quests;
 	
 	public Inventory inv;
@@ -30,7 +30,7 @@ public class ChooseQuestGUI implements CustomInventory{
 		return this;
 	}
 	
-	public ChooseQuestGUI(List<Quest> quests, RunnableObj run){
+	public ChooseQuestGUI(List<Quest> quests, Consumer<Quest> run){
 		Validate.notNull(quests, "Quests cannot be null");
 		Validate.notNull(run, "Runnable cannot be null");
 		
@@ -59,7 +59,7 @@ public class ChooseQuestGUI implements CustomInventory{
 	
 	private void end(Player p, Quest c){
 		if (inv != null) Inventories.closeAndExit(p);
-		run.run(c);
+		run.accept(c);
 	}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {

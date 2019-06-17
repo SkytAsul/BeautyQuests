@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -16,13 +17,12 @@ import fr.skytasul.quests.gui.misc.PagedGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class QuestsListGUI extends PagedGUI<Quest> {
 	
-	public RunnableObj run;
+	public Consumer<Quest> run;
 
-	public QuestsListGUI(RunnableObj run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
+	public QuestsListGUI(Consumer<Quest> run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
 		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN,  new ArrayList<>());
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getQuestsStarteds(acc));
@@ -38,7 +38,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 
 	public void click(Quest existing){
 		Inventories.closeAndExit(p);
-		run.run(existing);
+		run.accept(existing);
 	}
 	
 	public CloseBehavior onClose(Player p, Inventory inv){

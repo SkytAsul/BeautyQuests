@@ -39,7 +39,7 @@ public class ItemGUI implements CustomInventory {
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot != 4) return true;
 		new ItemCreatorGUI((obj) -> {
-			end.accept((ItemStack) obj);
+			end.accept(obj);
 		}, false).create(p);
 		return true;
 	}

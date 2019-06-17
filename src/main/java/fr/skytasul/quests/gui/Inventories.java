@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Pair;
 
 public class Inventories{
@@ -96,7 +97,7 @@ public class Inventories{
 						}, () -> {
 							g.put(p, pair);
 							p.openInventory(e.getInventory());
-						}));
+						}, Lang.INDICATION_CLOSE.toString()));
 					}
 				}.runTaskLater(BeautyQuests.getInstance(), 1L);
 				break;

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.gui.npc;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -16,7 +18,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.EntityTypeGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
@@ -31,7 +32,7 @@ public class NPCGUI implements CustomInventory{
 	private ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
-	public RunnableObj run;
+	public Consumer<NPC> run;
 	public Inventory inv;
 	
 	private EntityType en = EntityType.VILLAGER;
@@ -82,9 +83,8 @@ public class NPCGUI implements CustomInventory{
 			break;
 			
 		case 5:
-			Inventories.create(p, new EntityTypeGUI((obj) -> {
+			Inventories.create(p, new EntityTypeGUI((en) -> {
 					Inventories.put(p, openLastInv(p), inv);
-					en = (EntityType) obj;
 					if (en == EntityType.PLAYER){
 						inv.setItem(5, ItemUtils.skull(Lang.name.toString(), null, "player"));
 					}else inv.setItem(5, ItemUtils.item(XMaterial.mobItem(en), Lang.name.toString(), en.getName()));
@@ -93,7 +93,7 @@ public class NPCGUI implements CustomInventory{
 			
 		case 7:
 			Inventories.closeAndExit(p);
-			run.run(null);
+			run.accept(null);
 			break;
 			
 		case 8:
@@ -106,7 +106,7 @@ public class NPCGUI implements CustomInventory{
 			npc.spawn(p.getLocation());
 			((Citizens) CitizensAPI.getPlugin()).getNPCSelector().select(p, npc);
 			Inventories.closeAndExit(p);
-			run.run(npc);
+			run.accept(npc);
 			break;
 		
 		}

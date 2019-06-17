@@ -1,23 +1,23 @@
 package fr.skytasul.quests.editors;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
-import fr.skytasul.quests.utils.types.RunnableReturn;
 
 public class TextListEditor extends Editor{
 	
-	protected RunnableObj run;
-	public RunnableReturn<Boolean> valid;
+	protected Consumer<List<String>> run;
+	public Predicate<String> valid;
 	
 	private List<String> texts;
 	
-	public TextListEditor(Player p, RunnableObj end, List<String> texts){
+	public TextListEditor(Player p, Consumer<List<String>> end, List<String> texts){
 		super(p);
 		Validate.notNull(texts, "Text list in Editor cannot be null.");
 		this.run = end;
@@ -48,7 +48,7 @@ public class TextListEditor extends Editor{
 				break;
 			}
 			if (valid != null){
-				if (!valid.run(msg)) break;
+				if (!valid.test(msg)) break;
 			}
 			texts.add(msg);
 			Lang.TEXTLIST_TEXT_ADDED.send(p, msg);
@@ -82,7 +82,7 @@ public class TextListEditor extends Editor{
 
 		case CLOSE:
 			leave(p);
-			run.run(texts);
+			run.accept(texts);
 			break;
 
 		}

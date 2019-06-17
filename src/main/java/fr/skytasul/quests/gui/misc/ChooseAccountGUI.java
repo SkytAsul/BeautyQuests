@@ -3,6 +3,7 @@ package fr.skytasul.quests.gui.misc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,18 +18,17 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class ChooseAccountGUI implements CustomInventory {
 
 	private Inventory inv;
 	
-	private RunnableObj run;
+	private Consumer<PlayerAccount> run;
 	private UUID target;
 	
 	private List<PlayerAccount> accounts;
 	
-	public ChooseAccountGUI(UUID target, RunnableObj run){
+	public ChooseAccountGUI(UUID target, Consumer<PlayerAccount> run){
 		this.run = run;
 		this.target = target;
 	}
@@ -39,7 +39,7 @@ public class ChooseAccountGUI implements CustomInventory {
 		
 		if (accounts.size() == 0) return null;
 		if (accounts.size() == 1){
-			run.run(accounts.get(0));
+			run.accept(accounts.get(0));
 			return null;
 		}
 		
@@ -65,7 +65,7 @@ public class ChooseAccountGUI implements CustomInventory {
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		Inventories.closeAndExit(p);
-		run.run(accounts.get(slot));
+		run.accept(accounts.get(slot));
 		return true;
 	}
 	

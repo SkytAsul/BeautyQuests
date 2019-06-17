@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -67,11 +68,12 @@ public class QuestsListener implements Listener{
 				}
 				e.setCancelled(false);
 			}else {
-				ChooseQuestGUI ci = new ChooseQuestGUI(launcheable, (obj) -> {
-					if (obj == null) return;
-					((Quest) obj).clickNPC(p);
-				});
-				Inventories.create(p, ci);
+				new ChooseQuestGUI(launcheable, (quest) -> {
+					if (quest == null) return;
+					if (QuestsConfiguration.questConfirmGUI()){
+						new ConfirmGUI(() -> quest.clickNPC(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(quest.getName())).create(p);
+					}else quest.clickNPC(p);
+				}).create(p);
 			}
 		}
 	}

@@ -1,8 +1,9 @@
 package fr.skytasul.quests.gui.mobs;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -25,9 +26,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.types.Mob;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import net.citizensnpcs.api.npc.NPC;
 
 public class CreateMobGUI implements CustomInventory{
 	
@@ -36,7 +35,7 @@ public class CreateMobGUI implements CustomInventory{
 	private ItemStack epicBoss = ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.epicBoss.toString());
 	private ItemStack ndone = ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString());
 	
-	public RunnableObj run;
+	public Consumer<Mob> run;
 	
 	public Inventory inv;
 	private boolean done = false;
@@ -76,10 +75,9 @@ public class CreateMobGUI implements CustomInventory{
 			break;
 
 		case 1:
-			Inventories.create(p, new EntityTypeGUI((obj) -> {
+			Inventories.create(p, new EntityTypeGUI((en) -> {
 					Inventories.put(p, openLastInv(p), inv);
 					reset();
-					EntityType en = (EntityType) obj;
 					mob = new Mob(en, mob.amount);
 					
 					inv.setItem(slot, ItemUtils.item(XMaterial.mobItem(en), Lang.bukkitMob.toString(), en.getName()));
@@ -91,11 +89,10 @@ public class CreateMobGUI implements CustomInventory{
 			
 		case 3:
 			Lang.SELECT_KILL_NPC.send(p);
-			new SelectNPC(p, (obj) -> {
+			new SelectNPC(p, (npc) -> {
 				openLastInv(p);
 				reset();
-				if (obj != null){
-					NPC npc = (NPC) obj;
+				if (npc != null){
 					mob = new Mob(npc, mob.amount);
 					ItemUtils.lore(current, npc.getName());
 
@@ -139,7 +136,7 @@ public class CreateMobGUI implements CustomInventory{
 		case 8:
 			if (current.getType() == Material.DIAMOND) {
 				Inventories.closeAndExit(p);
-				run.run(mob);
+				run.accept(mob);
 			}
 			break;
 			

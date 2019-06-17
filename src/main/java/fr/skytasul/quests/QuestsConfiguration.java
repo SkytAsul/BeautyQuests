@@ -50,6 +50,7 @@ public class QuestsConfiguration {
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean playerCancelQuest = false;
+	private static boolean questConfirmGUI = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	// stageDescription
@@ -90,6 +91,7 @@ public class QuestsConfiguration {
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
+		questConfirmGUI = config.getBoolean("questConfirmGUI");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = Dependencies.gps && config.getBoolean("gps");
@@ -186,6 +188,10 @@ public class QuestsConfiguration {
 
 	public static boolean allowPlayerCancelQuest(){
 		return playerCancelQuest;
+	}
+
+	public static boolean questConfirmGUI(){
+		return questConfirmGUI;
 	}
 
 	public static boolean playSounds(){

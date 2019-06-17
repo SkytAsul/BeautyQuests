@@ -410,7 +410,7 @@ public class Commands {
 				Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
 			}, () -> {
 				((Player) sender).closeInventory();
-			}));
+			}, Lang.INDICATION_REMOVE.format(quest.getName())));
 		}else {
 			quest.remove(true);
 			Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());

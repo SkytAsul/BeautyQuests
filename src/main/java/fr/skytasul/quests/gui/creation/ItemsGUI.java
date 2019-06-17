@@ -89,8 +89,8 @@ public class ItemsGUI implements CustomInventory{
 		}else {
 			if (current.equals(none)){
 				Inventories.create(p, new ItemCreatorGUI((obj) -> {
-						if (obj != null) inv.setItem(slot, (ItemStack) obj);
-						Inventories.put(p, openLastInv(p), inv);
+					if (obj != null) inv.setItem(slot, obj);
+					Inventories.put(p, openLastInv(p), inv);
 				}, true));
 			}else {
 				new BukkitRunnable() {

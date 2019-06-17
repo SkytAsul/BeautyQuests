@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -23,19 +24,18 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
 public class CommandsManager implements CommandExecutor, TabCompleter{
 
 	public final Map<String, InternalCommand> commands = new HashMap<>();
-	private RunnableObj noArgs;
+	private Consumer<CommandSender> noArgs;
 	
 	/**
 	 * @param noArgs RunnableObj(player) who'll be ran if the command is executed without any arguments <i>(can be null)</i>
 	 */
-	public CommandsManager(RunnableObj noArgs){
+	public CommandsManager(Consumer<CommandSender> noArgs){
 		this.noArgs = noArgs;
 	}
 	
@@ -61,7 +61,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		if (args.length == 0){
 			if (noArgs != null){
-				noArgs.run(sender);
+				noArgs.accept(sender);
 			}else Lang.INCORRECT_SYNTAX.sendWP(sender);
 			return false;
 		}

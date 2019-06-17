@@ -1,5 +1,7 @@
 package fr.skytasul.quests.gui.creation;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,15 +18,14 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Command;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class CommandGUI implements CustomInventory {
 	
-	public CommandGUI(RunnableObj end){
+	public CommandGUI(Consumer<Command> end){
 		run = end;
 	}
 	
-	private RunnableObj run;
+	private Consumer<Command> run;
 	private Inventory inv;
 	
 	private String cmd;
@@ -68,7 +69,7 @@ public class CommandGUI implements CustomInventory {
 		case 2:
 			if (current.getType() == Material.DIAMOND){
 				Inventories.closeAndExit(p);
-				run.run(new Command(cmd, console));
+				run.accept(new Command(cmd, console));
 			}
 			break;
 			

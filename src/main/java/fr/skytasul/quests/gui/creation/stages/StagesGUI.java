@@ -56,7 +56,6 @@ import fr.skytasul.quests.utils.compatibility.WorldGuard;
 import fr.skytasul.quests.utils.types.BlockData;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.Mob;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import net.citizensnpcs.api.npc.NPC;
 
 public class StagesGUI implements CustomInventory {
@@ -147,11 +146,9 @@ public class StagesGUI implements CustomInventory {
 
 		line.setItem(0, ending, new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
-				Inventories.create(p, new RewardsGUI(new RunnableObj() {
-					public void run(Object obj){
-						datas.put("rewards", obj);
-						reopen(p, true);
-					}
+				Inventories.create(p, new RewardsGUI((rewards) -> {
+					datas.put("rewards", rewards);
+					reopen(p, true);
 				}, (List<AbstractReward>) datas.get("rewards")));
 			}
 		});
@@ -159,20 +156,18 @@ public class StagesGUI implements CustomInventory {
 		line.setItem(1, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.DESC_MESSAGE.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, new RunnableObj() {
-					public void run(Object obj){
-						datas.put("customText", obj);
-						line.editItem(1, ItemUtils.lore(line.getItem(1), (String) obj));
-						reopen(p, false);
-					}
+				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+					datas.put("customText", obj);
+					line.editItem(1, ItemUtils.lore(line.getItem(1), (String) obj));
+					reopen(p, false);
 				}));
 				text.nul = () -> {
-						datas.remove("customText");
-						line.editItem(1,  ItemUtils.lore(line.getItem(1)));
-						reopen(p, false);
+					datas.remove("customText");
+					line.editItem(1,  ItemUtils.lore(line.getItem(1)));
+					reopen(p, false);
 				};
 				text.cancel = () -> {
-						reopen(p, false);
+					reopen(p, false);
 				};
 			}
 		});
@@ -180,20 +175,18 @@ public class StagesGUI implements CustomInventory {
 		line.setItem(2, startMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.START_TEXT.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, new RunnableObj() {
-					public void run(Object obj){
-						datas.put("startMessage", obj);
-						line.editItem(2, ItemUtils.lore(line.getItem(2), (String) obj));
-						reopen(p, false);
-					}
+				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+					datas.put("startMessage", obj);
+					line.editItem(2, ItemUtils.lore(line.getItem(2), (String) obj));
+					reopen(p, false);
 				}));
 				text.nul = () -> {
-						datas.remove("startMessage");
-						line.editItem(2, ItemUtils.lore(line.getItem(2)));
-						reopen(p, false);
+					datas.remove("startMessage");
+					line.editItem(2, ItemUtils.lore(line.getItem(2)));
+					reopen(p, false);
 				};
 				text.cancel = () -> {
-						reopen(p, false);
+					reopen(p, false);
 				};
 			}
 		});
@@ -356,9 +349,9 @@ class CreateNPC implements StageCreationRunnables{
 	private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
 	public void start(Player p, LineData datas) {
 		StagesGUI sg = datas.getGUI();
-		Inventories.create(p, new SelectGUI((obj) -> {
+		Inventories.create(p, new SelectGUI((npc) -> {
 			sg.reopen(p, true);
-			npcDone((NPC) obj, sg, datas.getLine(), datas);
+			npcDone(npc, sg, datas.getLine(), datas);
 		}));
 	}
 
@@ -412,10 +405,10 @@ class CreateBringBack implements StageCreationRunnables{
 		setItem(line, sg);
 		List<ItemStack> items = new ArrayList<>();
 		datas.put("items", items);
-		SelectGUI npcGUI = new SelectGUI((obj) -> {
+		SelectGUI npcGUI = new SelectGUI((npc) -> {
 			Inventories.closeWithoutExit(p);
 			sg.reopen(p, true);
-			if (obj != null) CreateNPC.npcDone((NPC) obj, sg, line, datas);
+			if (npc != null) CreateNPC.npcDone(npc, sg, line, datas);
 		});
 		ItemsGUI itemsGUI = new ItemsGUI(() -> {
 			Inventories.create(p, npcGUI);
@@ -517,8 +510,8 @@ class CreateArea implements StageCreationRunnables{
 			}
 		}));
 		wt.cancel = () -> {
-				sg.reopen(p, false);
-				if (first) line.executeFirst(p);
+			sg.reopen(p, false);
+			if (first) line.executeFirst(p);
 		};
 	}
 

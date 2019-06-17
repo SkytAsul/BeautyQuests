@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -20,7 +21,6 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.types.Mob;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.MobType;
@@ -32,7 +32,7 @@ public class MobsListGUI implements CustomInventory{
 	public Map<Integer, Mob> mobs = new HashMap<>();
 	
 	public Inventory inv;
-	public RunnableObj run;
+	public Consumer<List<Mob>> run;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -83,7 +83,7 @@ public class MobsListGUI implements CustomInventory{
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
 			Inventories.closeAndExit(p);
-			run.run(new ArrayList<>(mobs.values()));
+			run.accept(new ArrayList<>(mobs.values()));
 			return true;
 		}
 		if (click.isRightClick()){
@@ -94,8 +94,8 @@ public class MobsListGUI implements CustomInventory{
 		CreateMobGUI sm = Inventories.create(p, new CreateMobGUI());
 		sm.run = (obj) -> {
 			Inventories.put(p, openLastInv(p), inv);
-			inv.setItem(slot, fromMob((Mob) obj));
-			mobs.put(slot, (Mob) obj);
+			inv.setItem(slot, fromMob(obj));
+			mobs.put(slot, obj);
 		};
 		return true;
 	}

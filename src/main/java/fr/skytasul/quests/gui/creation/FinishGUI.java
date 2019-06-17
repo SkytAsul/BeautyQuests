@@ -175,15 +175,14 @@ public class FinishGUI implements CustomInventory{
 			Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 			Editor.enterOrLeave(p, new DialogEditor(p, null, (obj) -> {
 				openLastInv(p);
-				dialog = (Dialog) obj;
+				dialog = obj;
 			}, dialog != null ? dialog : new Dialog(null)));
 			break;
 
 		case 7: //						Select start NPC
 			Editor.enterOrLeave(p, new SelectNPC(p, (obj) -> {
 				if (obj != null){
-					NPC npc = (NPC) obj;
-					startNPC = npc;
+					startNPC = obj;
 					ItemUtils.lore(current, startNPC.getFullName());
 				}
 				refreshFinish(inv);
@@ -195,7 +194,7 @@ public class FinishGUI implements CustomInventory{
 			NPCGUI tmp = (NPCGUI) Inventories.create(p, new NPCGUI());
 			tmp.run = (obj) -> {
 				if (obj != null) {
-					startNPC = (NPC) obj;
+					startNPC = obj;
 					startNPC.spawn(p.getLocation().setDirection(new Vector(0, 0, 0)));
 					ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
 				}
@@ -228,7 +227,7 @@ public class FinishGUI implements CustomInventory{
 		case 12:	//						Quest requirements
 			Inventories.create(p, new RequirementsGUI((obj) -> {
 				Inventories.put(p, openLastInv(p), inv);
-				requirements = (List<AbstractRequirement>) obj;
+				requirements = obj;
 				ItemUtils.lore(current, Lang.requirements.format(requirements.size()));
 			}, requirements));
 			break;
@@ -236,7 +235,7 @@ public class FinishGUI implements CustomInventory{
 		case 13: //						End Rewards
 			Inventories.create(p, new RewardsGUI((obj) -> {
 				Inventories.put(p, openLastInv(p), inv);
-				rewards = (List<AbstractReward>) obj;
+				rewards = obj;
 				ItemUtils.lore(current, Lang.rewards.format(rewards.size()));
 			}, rewards));
 			break;
@@ -244,7 +243,7 @@ public class FinishGUI implements CustomInventory{
 		case 14: //						Start Rewards
 			Inventories.create(p, new RewardsGUI((obj) -> {
 				Inventories.put(p, openLastInv(p), inv);
-				rewardsStart = (List<AbstractReward>) obj;
+				rewardsStart = obj;
 				ItemUtils.lore(current, Lang.rewards.format(rewardsStart.size()));
 			}, rewardsStart));
 			break;
@@ -270,12 +269,12 @@ public class FinishGUI implements CustomInventory{
 				ItemUtils.name(current, name);
 				refreshFinish(inv);
 			}, () -> {
-					Inventories.put(p, openLastInv(p), inv);
+				Inventories.put(p, openLastInv(p), inv);
 			}, () -> {
-					name = null;
-					Inventories.put(p, openLastInv(p), inv);
-					ItemUtils.name(current, Lang.questName.toString());
-					refreshFinish(inv);
+				name = null;
+				Inventories.put(p, openLastInv(p), inv);
+				ItemUtils.name(current, Lang.questName.toString());
+				refreshFinish(inv);
 			}).enterOrLeave(p);
 			break;
 

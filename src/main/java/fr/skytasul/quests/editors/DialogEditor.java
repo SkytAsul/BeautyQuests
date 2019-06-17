@@ -1,6 +1,7 @@
 package fr.skytasul.quests.editors;
 
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
 
@@ -9,15 +10,14 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.Message;
 import fr.skytasul.quests.utils.types.Message.Sender;
-import fr.skytasul.quests.utils.types.RunnableObj;
 import net.citizensnpcs.api.npc.NPC;
 
 public class DialogEditor extends Editor{
 	
-	private RunnableObj run;
+	private Consumer<Dialog> run;
 	public Dialog d;
 
-	public DialogEditor(Player p, NPC npc, RunnableObj run, Dialog dialog){
+	public DialogEditor(Player p, NPC npc, Consumer<Dialog> run, Dialog dialog){
 		super(p);
 		this.run = run;
 		this.d = dialog;
@@ -119,7 +119,7 @@ public class DialogEditor extends Editor{
 
 		case CLOSE:
 			leave(p);
-			run.run(d);
+			run.accept(d);
 			break;
 
 		}

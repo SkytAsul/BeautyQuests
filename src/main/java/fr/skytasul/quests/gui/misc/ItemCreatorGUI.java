@@ -2,6 +2,7 @@ package fr.skytasul.quests.gui.misc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,24 +15,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.editors.Editor;
-import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class ItemCreatorGUI implements CustomInventory {
 
 	private Inventory inv;
 	private Player p;
-	private RunnableObj run;
+	private Consumer<ItemStack> run;
 	private boolean allowCancel;
 	
-	public ItemCreatorGUI(RunnableObj end, boolean allowCancel){
+	public ItemCreatorGUI(Consumer<ItemStack> end, boolean allowCancel){
 		run = end;
 		this.allowCancel = allowCancel;
 	}
@@ -98,11 +98,9 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		case 4:
 			Lang.CHOOSE_ITEM_LORE.send(p);
-			Editor.enterOrLeave(p, new TextListEditor(p, new RunnableObj() {
-				public void run(Object obj) {
-					lore = (List<String>) obj;
-					reopen();
-				}
+			Editor.enterOrLeave(p, new TextListEditor(p, (list) -> {
+				lore = list;
+				reopen();
 			}, lore));
 			break;
 
@@ -119,13 +117,13 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		case 8:
 			Inventories.closeAndExit(p);
-			run.run(null);
+			run.accept(null);
 			break;
 
 		case 17: //VALIDATE
 			if (current.getType() == Material.DIAMOND){
 				Inventories.closeAndExit(p);
-				run.run(build());
+				run.accept(build());
 			}
 			break;
 

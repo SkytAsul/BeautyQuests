@@ -2,20 +2,20 @@ package fr.skytasul.quests.editors;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class PermissionsEditor extends Editor{
 	
-	protected RunnableObj run;
+	protected Consumer<Map<String, Boolean>> run;
 	
 	private Map<String, Boolean> perms;
 	
-	public PermissionsEditor(Player p, RunnableObj end, Map<String, Boolean> permissions){
+	public PermissionsEditor(Player p, Consumer<Map<String, Boolean>> end, Map<String, Boolean> permissions){
 		super(p);
 		this.run = end;
 		this.perms = permissions;
@@ -68,7 +68,7 @@ public class PermissionsEditor extends Editor{
 
 		case CLOSE:
 			leave(p);
-			run.run(perms);
+			run.accept(perms);
 			break;
 
 		}

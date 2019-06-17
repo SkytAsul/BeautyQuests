@@ -3,6 +3,7 @@ package fr.skytasul.quests.gui.misc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
@@ -12,7 +13,6 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.RunnableObj;
 
 public class EntityTypeGUI extends PagedGUI<EntityType>{
 
@@ -28,9 +28,9 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 		entities.put(EntityType.PLAYER, ItemUtils.skull("player", "Knight"));
 	}
 	
-	private RunnableObj run;
+	private Consumer<EntityType> run;
 	
-	public EntityTypeGUI(RunnableObj run){
+	public EntityTypeGUI(Consumer<EntityType> run){
 		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, new ArrayList<>(entities.keySet()));
 		this.run = run;
 	}
@@ -41,7 +41,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 
 	public void click(EntityType existing){
 		Inventories.closeAndExit(p);
-		run.run(existing);
+		run.accept(existing);
 	}
 
 }
