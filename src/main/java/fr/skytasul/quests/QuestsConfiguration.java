@@ -3,7 +3,6 @@ package fr.skytasul.quests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,8 +38,6 @@ public class QuestsConfiguration {
 	private static boolean enablePrefix = true;
 	private static double hologramsHeight = 0.0;
 	private static boolean disableTextHologram = false;
-	private static ItemStack holoLaunchItem = null;
-	private static ItemStack holoTalkItem = null;
 	/*private static ConfigurationSection effect;
 	private static boolean effectEnabled;*/
 	private static boolean mobsProgressBar = false;
@@ -59,6 +56,11 @@ public class QuestsConfiguration {
 	private static String descPrefix = "{nl}§e- §6";
 	private static boolean descXOne = true;
 	private static List<Source> descSources = new ArrayList<>();
+
+	private static ItemStack holoLaunchItem = null;
+	private static ItemStack holoLaunchNoItem = null;
+	private static ItemStack holoTalkItem = null;
+	
 
 	public static Quest firstQuest;
 
@@ -104,22 +106,6 @@ public class QuestsConfiguration {
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		if (BeautyQuests.getInstance().getDataFile().contains("launchItem")){
-			holoLaunchItem = ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection("launchItem").getValues(false));
-		}else if (!StringUtils.isEmpty(config.getString("holoLaunchItemName"))){
-			XMaterial xmat = XMaterial.fromString(config.getString("holoLaunchItemName"));
-			if (xmat == null){
-				holoLaunchItem = null;
-			}else holoLaunchItem = xmat.parseItem();
-		}
-		if (BeautyQuests.getInstance().getDataFile().contains("talkItem")){
-			holoTalkItem = ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection("talkItem").getValues(false));
-		}else if (!StringUtils.isEmpty(config.getString("holoTalkItemName"))){
-			XMaterial xmat = XMaterial.fromString(config.getString("holoTalkItemName"));
-			if (xmat == null){
-				holoTalkItem = null;
-			}else holoTalkItem = xmat.parseItem();
-		}
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
 		hookAcounts = Dependencies.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
@@ -150,6 +136,10 @@ public class QuestsConfiguration {
 		particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
 		particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
 		particleNext = loadParticles(config, "next", new Particle(ParticleEffect.SMOKE_NORMAL, ParticleShape.SPOT, null));
+
+		holoLaunchItem = loadHologram("launchItem");
+		holoLaunchNoItem = loadHologram("nolaunchItem");
+		holoTalkItem = loadHologram("talkItem");
 	}
 	
 	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
@@ -164,6 +154,13 @@ public class QuestsConfiguration {
 			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
 			return particle;
 		}else return null;
+	}
+	
+	private static ItemStack loadHologram(String name){
+		if (BeautyQuests.getInstance().getDataFile().contains(name)){
+			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
+		}
+		return null;
 	}
 	
 
@@ -270,6 +267,11 @@ public class QuestsConfiguration {
 	public static ItemStack getHoloLaunchItem(){
 		if (!Dependencies.holod) return null;
 		return holoLaunchItem;
+	}
+
+	public static ItemStack getHoloLaunchNoItem(){
+		if (!Dependencies.holod) return null;
+		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){

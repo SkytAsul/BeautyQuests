@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
@@ -33,7 +31,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
-import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -66,12 +63,6 @@ public class Quest{
 	private boolean removed = false;
 	private boolean asyncEnd = false;
 	private List<Player> asyncStart = null;
-	private Object holoAll;
-	private Object holoLaunch;
-	
-	private BukkitTask holoTask;
-	private boolean hologramLaunch = Dependencies.holod && QuestsConfiguration.getHoloLaunchItem() != null;
-	private boolean hologramAll = Dependencies.holod && !StringUtils.isEmpty(getHologramText());
 	
 	List<Player> launcheable = new ArrayList<>();
 	private List<Player> particles = new ArrayList<>();
@@ -86,85 +77,15 @@ public class Quest{
 	}
 	
 	public void create() {
-		if (hologramAll || hologramLaunch){
-			launchHologramTask();
-		}
 		if (Dependencies.dyn) Dynmap.addMarker(this);
 	}
 	
 	void updateLauncheable(LivingEntity en) {
-		if (hologramLaunch) updateHoloLaunchVisibility();
 		if (QuestsConfiguration.showStartParticles()) {
 			if (launcheable.isEmpty()) return;
 			particles.clear();
 			particles.addAll(launcheable);
 			QuestsConfiguration.getParticleStart().send(en, particles);
-		}
-	}
-	
-	private void launchHologramTask(){
-		if (npcStarter == null) return;
-		holoTask = new BukkitRunnable() {
-			public void run() {
-				if (removed){
-					removeHoloAll();
-					removeHoloLaunch();
-					this.cancel();
-				}
-				boolean rem = npcStarter.getEntity() == null;
-				if (!rem) rem = !npcStarter.getEntity().getType().isAlive();
-				if (rem){
-					if (hologramAll) removeHoloAll();
-					if (hologramLaunch) removeHoloLaunch();
-					return;
-				}
-				if (hologramAll && holoAll == null) createHoloAll();
-				if (hologramLaunch && holoLaunch == null) createHoloLaunch();
-				if (hologramAll) HolographicDisplays.teleport(holoAll, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 0));
-				if (hologramLaunch) HolographicDisplays.teleport(holoLaunch, Utils.upLocationForEntity((LivingEntity) npcStarter.getEntity(), 1));
-			}
-		}.runTaskTimer(BeautyQuests.getInstance(), 1L, 1L);
-	}
-	
-	private void createHoloAll(){
-		for (Quest quest : QuestsAPI.getQuestsAssigneds(npcStarter)) {
-			if (quest.holoAll != null) {
-				hologramAll = false;
-				return;
-			}
-		}
-		holoAll = HolographicDisplays.createHologram(npcStarter.getStoredLocation(), true);
-		HolographicDisplays.appendTextLine(holoAll, getHologramText());
-	}
-	
-	private void removeHoloAll(){
-		HolographicDisplays.delete(holoAll);
-		holoAll = null;
-	}
-	
-	private void createHoloLaunch(){
-		if (!HolographicDisplays.hasProtocolLib()) {
-			for (Quest quest : QuestsAPI.getQuestsAssigneds(npcStarter)) {
-				if (quest.holoLaunch != null) {
-					hologramLaunch = false;
-					return;
-				}
-			}
-		}
-		holoLaunch = HolographicDisplays.createHologram(npcStarter.getStoredLocation(), false);
-		HolographicDisplays.appendItem(holoLaunch, QuestsConfiguration.getHoloLaunchItem());
-	}
-	
-	private void removeHoloLaunch(){
-		HolographicDisplays.delete(holoLaunch);
-		holoLaunch = null;
-	}
-	
-	private void updateHoloLaunchVisibility(){
-		try {
-			HolographicDisplays.setPlayersVisible(holoLaunch, launcheable);
-		}catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -483,9 +404,6 @@ public class Quest{
 	
 	public void unloadAll(){
 		manager.remove();
-        if (holoTask != null) holoTask.cancel();
-		if (holoAll != null) removeHoloAll();
-        if (holoLaunch != null) removeHoloLaunch();
 		if (Dependencies.dyn) Dynmap.removeMarker(this);
 		for (AbstractReward rew : rewards){
 			rew.unload();

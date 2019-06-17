@@ -377,6 +377,7 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	private void resetDatas(){
+		npcs.values().forEach(NPCStarter::removeHolograms);
 		quests.clear();
 		npcs.clear();
 		HandlerList.unregisterAll(this);
@@ -472,7 +473,6 @@ public class BeautyQuests extends JavaPlugin{
 		quests.remove(quest);
 		NPCStarter starter = npcs.get(quest.getStarter());
 		starter.removeQuest(quest);
-		if (starter.getQuests().isEmpty()) starter.delete();
 	}
 
 	public void addQuest(Quest quest){

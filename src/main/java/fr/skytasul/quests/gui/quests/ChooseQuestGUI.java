@@ -66,5 +66,9 @@ public class ChooseQuestGUI implements CustomInventory{
 		if (slot < quests.size()) end(p, quests.get(slot));
 		return true;
 	}
+	
+	public CloseBehavior onClose(Player p, Inventory inv){
+		return CloseBehavior.REMOVE;
+	}
 
 }

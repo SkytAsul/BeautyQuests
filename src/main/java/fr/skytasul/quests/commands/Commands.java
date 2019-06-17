@@ -32,6 +32,15 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class Commands {
 	
+	/*@Cmd(player =true)
+	public void debugHolo(CommandContext cmd){
+		Hologram holo = HologramsAPI.createHologram(BeautyQuests.getInstance(), cmd.player.getLocation());
+		holo.getVisibilityManager().setVisibleByDefault(false);
+		holo.appendTextLine("LOL");
+		holo.appendItemLine(XMaterial.ELYTRA.parseItem());
+		holo.getVisibilityManager().showTo(cmd.player);
+	}*/
+	
 	@Cmd(permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){
 		Inventories.create(cmd.player, new StagesGUI());
@@ -263,18 +272,20 @@ public class Commands {
 		}
 	}
 	
-	@Cmd(permission = "setItem", player = true, min = 1, args = "talk|launch")
+	@Cmd(permission = "setItem", player = true, min = 1, args = "talk|launch|nolaunch")
 	public void setItem(CommandContext cmd){
-		if (!"talk".equalsIgnoreCase((String) cmd.args[0]) && !"launch".equalsIgnoreCase((String) cmd.args[0])){
+		String name = (String) cmd.args[0];
+		if (!"talk".equalsIgnoreCase(name) && !"launch".equalsIgnoreCase(name) && !"nolaunch".equalsIgnoreCase(name)){
 			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 			return;
 		}
 		ItemStack item = cmd.player.getInventory().getItemInMainHand();
 		if (item == null || item.getType() == Material.AIR){
-			Lang.MUST_HOLD_ITEM.send(cmd.sender);
+			BeautyQuests.getInstance().getDataFile().set(name.toLowerCase() + "Item", null);
+			Lang.ITEM_REMOVED.send(cmd.sender);
 			return;
 		}
-		BeautyQuests.getInstance().getDataFile().set(((String) cmd.args[0]).toLowerCase() + "Item", item.serialize());
+		BeautyQuests.getInstance().getDataFile().set(name.toLowerCase() + "Item", item.serialize());
 		Lang.ITEM_CHANGED.send(cmd.sender);
 	}
 	
@@ -380,7 +391,7 @@ public class Commands {
 		}
 	}
 	
-	@Cmd(permission = "reload")
+	//@Cmd(permission = "reload")
 	public void removeDuplicate(CommandContext cmd){
 		PlayersManager.debugDuplicate(cmd.sender);
 	}

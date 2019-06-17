@@ -26,11 +26,11 @@ public class HolographicDisplays {
 	
 	public static Object createHologram(Location lc, boolean visible){
 		Hologram holo = HologramsAPI.createHologram(BeautyQuests.getInstance(), lc);
-		holo.getVisibilityManager().setVisibleByDefault(visible);
+		if (hasProtocolLib()) holo.getVisibilityManager().setVisibleByDefault(visible);
 		return holo;
 	}
 	
-	public static void setPlayersVisible(Object hologram, List<Player> players) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException{
+	public static void setPlayersVisible(Object hologram, List<Player> players) throws ReflectiveOperationException{
 		if (!check(hologram)) return;
 		if (!hasProtocolLib()) return;
 		List<Player> all = new ArrayList<>(players);

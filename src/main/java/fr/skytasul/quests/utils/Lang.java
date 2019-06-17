@@ -83,6 +83,7 @@ public enum Lang{
 	COMMAND_DOESNT_EXIST_NOSLASH("msg.command.invalidCommand.simple"),
 	MUST_HOLD_ITEM("msg.command.needItem"),
 	ITEM_CHANGED("msg.command.itemChanged"),
+	ITEM_REMOVED("msg.command.itemRemoved"),
 	SUCCESFULLY_REMOVED("msg.command.removed"),
 	LEAVE_ALL_RESULT("msg.command.leaveAll"),
 	DATA_REMOVED("msg.command.resetPlayer.player"),
