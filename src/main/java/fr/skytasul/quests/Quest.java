@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.api.QuestsAPI;
@@ -55,6 +56,8 @@ public class Quest{
 	private boolean hid = false;
 	private boolean bypassLimit = false;
 	private int timer = -1;
+	private ItemStack hologramLaunch;
+	private ItemStack hologramLaunchNo;
 	
 	private Map<Player, Integer> dgPlayers = new HashMap<>();
 	private final List<PlayerAccount> finished = new ArrayList<>();
@@ -98,16 +101,7 @@ public class Quest{
 		return manager;
 	}
 	
-	public String getRawHologramText(){
-		return hologramText;
-	}
-	
-	public String getHologramText() {
-		if (hologramText == null){
-			if (QuestsConfiguration.isTextHologramDisabled()) return null;
-			return Lang.HologramText.toString();
-		}
-		if (hologramText.equals("none")) return null;
+	public String getCustomHologramText(){
 		return hologramText;
 	}
 	
@@ -225,9 +219,26 @@ public class Quest{
 		return endMessage;
 	}
 	
+	public ItemStack getCustomHologramLaunch(){
+		return hologramLaunch == null ? QuestsConfiguration.getHoloLaunchItem() : hologramLaunch;
+	}
+	
+	public void setHologramLaunch(ItemStack hologram){
+		this.hologramLaunch = hologram;
+	}
+	
+	public ItemStack getCustomHologramLaunchNo(){
+		return hologramLaunchNo == null ? QuestsConfiguration.getHoloLaunchNoItem() : hologramLaunchNo;
+	}
+	
+	public void setHologramLaunchNo(ItemStack hologram){
+		this.hologramLaunchNo = hologram;
+	}
+	
 	public int getID(){
 		return id;
 	}
+	
 	
 	public void copyFinished(Quest quest){
 		finished.clear();
@@ -434,6 +445,8 @@ public class Quest{
 		if (dialog != null) map.put("startDialog", dialog.serialize());
 		if (bypassLimit) map.put("bypassLimit", bypassLimit);
 		if (timer > -1) map.put("timer", timer);
+		if (hologramLaunch != null) map.put("hologramLaunch", hologramLaunch.serialize());
+		if (hologramLaunchNo != null) map.put("hologramLaunchNo", hologramLaunchNo.serialize());
 		
 		if (!inTimer.isEmpty()){
 			Map<String, String> tmap = new HashMap<>();
@@ -488,6 +501,8 @@ public class Quest{
 		if (map.containsKey("finished")) Utils.deserializeAccountsList(qu.finished, (List<String>) map.get("finished"));
 		if (map.containsKey("hologramText")) qu.hologramText = (String) map.get("hologramText");
 		if (map.containsKey("bypassLimit")) qu.bypassLimit = (boolean) map.get("bypassLimit");
+		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));
+		if (map.containsKey("hologramLaunchNo")) qu.hologramLaunchNo = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunchNo"));
 		if (map.containsKey("timer")) qu.timer = (int) map.get("timer");
 		if (map.get("inTimer") != null){
 			Map<String, String> list = (Map<String, String>) map.get("inTimer");

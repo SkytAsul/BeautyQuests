@@ -269,6 +269,8 @@ public enum Lang{
 	timer("inv.details.timer"),
 	requirements("inv.details.requirements"),
 	rewards("inv.details.rewards"),
+	hologramLaunch("inv.details.hologramLaunch"),
+	hologramLaunchNo("inv.details.hologramLaunchNo"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),

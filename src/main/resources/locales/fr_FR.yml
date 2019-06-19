@@ -74,6 +74,7 @@ msg:
       simple: '§cCette commande n''existe pas, tapez §ehelp§c.'
     needItem: '§cVous devez tenir un item dans votre main principale !'
     itemChanged: '§aL''item a été modifié. Le changement prendra effet après redémarrage.'
+    itemRemoved: '§aL''item de l''hologramme a été supprimé.'
     removed: '§aLa quête {0} a bien été supprimée.'
     leaveAll: '§aVous avez forcé la fin de {0} quête(s). §c{1} erreur(s).'
     resetPlayer:
@@ -84,6 +85,7 @@ msg:
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
     startQuest: '§6Vous avez forcé le début de la quête {0} (UUID du joueur : {1}).'
     cancelQuest: '§6Vous avez annulé la quête {0}.'
+    cancelQuestUnavailable: '§cLa quête {0} ne peut être annulée.'
     backupCreated: '§6Vous avez créé une sauvegarde des quêtes et des données joueurs avec succès.'
     backupPlayersFailed: '§cLa création d''une sauvegarde des données joueur a échoué.'
     backupQuestsFailed: '§cLa création d''une sauvegarde des quêtes a échoué.'
@@ -205,6 +207,8 @@ inv:
     talkChat: '§aEcrire dans le chat'
     interact: '§aCliquez sur un bloc'
     fish: '§aPêcher'
+    craft: '§aFabriquer un objet'
+    bucket: '§aRemplir des seaux'
     NPCText: '§eModifier le dialogue'
     hideClues: 'Cacher les particules et les hologrammes'
     editMobsKill: '§eModifier les mobs à tuer'
@@ -219,6 +223,9 @@ inv:
     selectBlockLocation: '§eSélectionner la position du bloc'
     leftClick: 'Clic gauche nécessaire'
     editFishes: '§eModifier les poissons nécessaires'
+    editItem: '§eEditer l''objet à fabriquer'
+    editBucketType: '§eModifier le type de seau à remplir'
+    editBucketAmount: '§eModifier la quantité de seaux à remplir'
   stages:
     name: 'Créer les étapes'
     nextPage: '§ePage suivante'
@@ -230,6 +237,7 @@ inv:
     multipleTime:
       itemName: 'Inverser la multi-utilisation'
       itemLore: "La quête peut-elle être\nfaite plusieurs fois ?"
+    cancellable: 'Annulable par le joueur'
     scoreboardItem: 'Activer le scoreboard'
     hideItem: 'Cacher la quête du menu et de la dynmap'
     bypassLimit: 'Ne pas compter la limite de quêtes'
@@ -256,6 +264,8 @@ inv:
   itemsSelect:
     name: 'Modifier les items'
     none: "§aDéplacez un item ici ou \n §acliquez pour ouvrir l'éditeur d'item"
+  itemSelect:
+    name: 'Choisissez un objet'
   npcCreate:
     name: 'Créer le NPC'
     setName: '§eModifier le nom du NPC'
@@ -336,6 +346,8 @@ inv:
   blocksList:
     name: 'Sélectionner des blocs'
     addBlock: '§aCliquez pour ajouter un block.'
+  buckets:
+    name: 'Type de seau'
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -350,11 +362,18 @@ scoreboard:
     chat: '§eEcrivez §6{0}'
     interact: '§eCliquez sur le bloc à §6{0}'
     fish: '§ePêchez §6{0}'
+    craft: '§eFabriquez §6{0}'
+    bucket: '§eRemplissez §6{0}'
+indication:
+  startQuest: '§7Voulez-vous commencer la quête {0} ?'
+  closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
+  cancelQuest: '§7Êtes-vous sûr de vouloir annuler la quête {0} ?'
+  removeQuest: '§7Êtes-vous sûr de vouloir supprimer la quête {0} ?'
 misc:
   format:
     prefix: '§6<§e§lQuêtes§r§6> §r'
-    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     offText: '§r§e {0}'
   stageType:
     region: 'Trouver une region'
@@ -365,6 +384,8 @@ misc:
     chat: 'Parler dans le chat'
     interact: 'Intéragir avec un bloc'
     Fish: 'Pêcher'
+    Craft: 'Fabriquer un objet'
+    Bucket: 'Remplir un seau'
   requirement:
     class: '§bClasse(s) requise(s)'
     faction: '§bFaction(s) requise(s)'
@@ -375,9 +396,13 @@ misc:
     placeholder: '§bPlaceholder requis'
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
+  bucket:
+    water: 'Seau d''eau'
+    lava: 'Seau de lave'
+    milk: 'Seau de lait'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'
-  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: '§eType d''entité : {0}'
   enabled: 'Activé'
   disabled: 'Désactivé'
@@ -385,7 +410,6 @@ misc:
   unused: '§2§lInutilisé'
   used: '§a§lUtilisé'
   remove: '§7Clic central pour supprimer'
-  nul: 'null'
   or: 'ou'
   amount: '§eQuantité : {0}'
   items: 'objets'

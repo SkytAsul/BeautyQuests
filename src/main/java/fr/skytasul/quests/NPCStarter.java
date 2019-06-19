@@ -36,8 +36,8 @@ public class NPCStarter {
 	private BukkitTask hologramsTask;
 	private boolean hologramsRemoved = true;
 	private Hologram hologramText = new Hologram(true, Dependencies.holod && !QuestsConfiguration.isTextHologramDisabled(), getHologramText());
-	private Hologram hologramLaunch = new Hologram(false, Dependencies.holod, QuestsConfiguration.getHoloLaunchItem());
-	private Hologram hologramLaunchNo = new Hologram(false, Dependencies.holod && HolographicDisplays.hasProtocolLib(), QuestsConfiguration.getHoloLaunchNoItem());
+	private Hologram hologramLaunch = new Hologram(false, Dependencies.holod, getHologramLaunch());
+	private Hologram hologramLaunchNo = new Hologram(false, Dependencies.holod && HolographicDisplays.hasProtocolLib(), getHologramLaunchNo());
 	
 	NPCStarter(NPC npc){
 		Validate.notNull(npc, "NPC cannot be null");
@@ -142,13 +142,27 @@ public class NPCStarter {
 	
 	public String getHologramText(){
 		for (Quest qu : quests){
-			String raw = qu.getRawHologramText();
+			String raw = qu.getCustomHologramText();
 			if (raw != null){
 				if (raw.equals("none")) return null;
 				return raw;
 			}
 		}
 		return Lang.HologramText.toString();
+	}
+	
+	public ItemStack getHologramLaunch(){
+		for (Quest qu : quests){
+			if (qu.getCustomHologramLaunch() != null) return qu.getCustomHologramLaunch();
+		}
+		return QuestsConfiguration.getHoloLaunchItem();
+	}
+	
+	public ItemStack getHologramLaunchNo(){
+		for (Quest qu : quests){
+			if (qu.getCustomHologramLaunchNo() != null) return qu.getCustomHologramLaunchNo();
+		}
+		return QuestsConfiguration.getHoloLaunchNoItem();
 	}
 	
 	public void removeHolograms(){

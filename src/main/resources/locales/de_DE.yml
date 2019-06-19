@@ -4,8 +4,8 @@ msg:
       base: '§aGlückwunsch! Du hast die Quest §e{0}§a abgeschlossen!'
       obtain: '§aDu erhälst {0}!'
     started: 'Du hast die Quest §r§e{0}§o§6 gestartet!'
-    created: '§aGlückwunsch! Du hast die Quest §e{0}§a mit {1} Schritt/en erstellt!'
-    edited: '§aGlückwunsch! Du hast die Quest §e{0}§a bearbeitet, die jetzt {1} Schritt/e enthält!'
+    created: '§aGlückwunsch! Du hast die Quest §e{0}§a mit {1} Schritt(en) erstellt!'
+    edited: '§aGlückwunsch! Du hast die Quest §e{0}§a bearbeitet, die jetzt {1} Schritt(e) enthält!'
     createCancelled: '§cDie Erstellung oder Bearbeitung wurde von einem anderen Plugin abgebrochen!'
     cancelling: '§cErstellung der Quest abgebrochen.'
     editCancelling: '§cBearbeitung der Quest abgebrochen.'
@@ -38,7 +38,7 @@ msg:
     job: '§cDu musst mindestens {0} Level für den Job §e{1}§c haben!'
     skill: '§cDu musst mindestens {0} Level für die Fähigkeit §e{1}§c haben!'
     combatLevel: '§cDu musst mindestens Kampflevel {0} sein!'
-    wait: '§cDu musst {0} Minute/n warten, bevor du die Quest erneut starten kannst!'
+    wait: '§cDu musst {0} Minute(n) warten, bevor du die Quest erneut starten kannst!'
   experience:
     edited: '§aDu hast die Erfahrungsgewinnung von {0} auf {1} Punkt/e gesetzt.'
   selectNPCToKill: '§aWähle den zu tötenden NPC.'
@@ -74,16 +74,18 @@ msg:
       simple: '§cDieser Befehl existiert nicht, schreibe §ehelp§c.'
     needItem: '§cDu musst ein Item in deiner Haupthand halten!'
     itemChanged: '§aDas Item wurde bearbeitet. Die Änderungen werden nach einem Neustart angewendet.'
+    itemRemoved: '§aDas Hologramm-Item wurde entfernt.'
     removed: '§aDie Quest {0} wurde erfolgreich entfernt.'
-    leaveAll: '§aDu hast das Ende von {0} Quest/s erzwungen. Fehler: {1}'
+    leaveAll: '§aDu hast das Ende von {0} Quest(s) erzwungen. Fehler: {1}'
     resetPlayer:
-      player: '§6Alle Informationen deiner {0} Quest/s wurde/wurden von {1} gelöscht.'
-      remover: '§6{0} Questinformation/en von {1} wurde/n gelöscht.'
+      player: '§6Alle Informationen deiner {0} Quest(s) wurde/wurden von {1} gelöscht.'
+      remover: '§6{0} Questinformation(en) von {1} wurde/n gelöscht.'
     resetPlayerQuest:
       player: '§6Alle Informationen über die Quest {0} wurden von {1} gelöscht.'
-      remover: '§6{0} Questinformation/en von {1} wurde/n gelöscht.'
+      remover: '§6{0} Questinformation(en) von {1} wurde(n) gelöscht.'
     startQuest: '§6Du hast den Start der Quest {0} erzwungen. (Spieler-UUID: {1})'
     cancelQuest: '§6Du hast die Quest {0} abgebrochen.'
+    cancelQuestUnavailable: '§cDie Quest {0} kann nicht abgebrochen werden.'
     backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
     backupPlayersFailed: '§cDas Sichern von allen Spielerinformationen ist fehlgeschlagen.'
     backupQuestsFailed: '§cDas Sichern von allen Quests ist fehlgeschlagen.'
@@ -155,7 +157,7 @@ msg:
       noSender: '§aNachricht „{0}“ ohne einen Absender hinzugefügt.'
       messageRemoved: '§aNachricht „{0}“ entfernt.'
       soundAdded: '§aGeräusch „{0}“ für die Nachricht „{1}“ hinzugefügt.'
-      cleared: '§a{0} entfernte Nachricht/en.'
+      cleared: '§a{0} entfernte Nachricht(en).'
       help:
         header: '§6§lBeautyQuests — Dialogbearbeitungs-Hilfe'
         npc: '§6npc [Nachricht]: §eFüge eine vom NPC gesagte Nachricht hinzu.'
@@ -205,6 +207,8 @@ inv:
     talkChat: '§aIn den Chat schreiben'
     interact: '§aMit Block interagieren'
     fish: '§aFische fangen'
+    craft: '§aEin Item herstellen'
+    bucket: '§aEimer befüllen'
     NPCText: '§eDialog bearbeiten'
     hideClues: 'Partikel und Hologramme verstecken'
     editMobsKill: '§eDie zu tötenden Mobs bearbeiten'
@@ -219,6 +223,9 @@ inv:
     selectBlockLocation: '§eBlockposition auswählen'
     leftClick: 'Muss Linksklick sein'
     editFishes: '§eDie zu fangenden Fische bearbeiten'
+    editItem: '§eHerzustellendes Item bearbeiten'
+    editBucketType: '§eTyp des zu befüllenden Eimers bearbeiten'
+    editBucketAmount: '§eAnzahl an zu befüllenden Eimer bearbeiten'
   stages:
     name: 'Schritte erstellen'
     nextPage: '§eNächste Seite'
@@ -230,6 +237,7 @@ inv:
     multipleTime:
       itemName: 'Mehrfachverwendung umschalten'
       itemLore: "Kann die Quest mehrmals\nabgeschlossen werden?"
+    cancellable: 'Vom Spieler abbrechbar'
     scoreboardItem: 'Scoreboard aktivieren'
     hideItem: 'Menü und Dynmap verstecken'
     bypassLimit: 'Questlimit nicht zählen'
@@ -251,11 +259,13 @@ inv:
     startRewards: '§6Startbelohnungen'
     hologramText: '§eHologrammtext'
     timer: '§bZeit, bevor man die Quest erneut starten kann.'
-    requirements: '{0} Anforderung/en'
-    rewards: '{0} Belohnung/en'
+    requirements: '{0} Anforderung(en)'
+    rewards: '{0} Belohnung(en)'
   itemsSelect:
     name: 'Items bearbeiten'
     none: "§aBewege ein Item hierher oder\nklicke, um den Item-Editor zu öffnen."
+  itemSelect:
+    name: 'Item auswählen'
   npcCreate:
     name: 'NPC erstellen'
     setName: '§eNPC-Name bearbeiten'
@@ -300,7 +310,7 @@ inv:
     finished: 'Abgeschlossene Quests'
     inProgress: 'Laufende Quests'
     loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
-    timeToWait: '§3§o{0} Minute/n, bevor du die Quest erneut starten kannst.'
+    timeToWait: '§3§o{0} Minute(n), bevor du die Quest erneut starten kannst.'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
     format:
       normal: '§6§l§o{0}'
@@ -336,11 +346,13 @@ inv:
   blocksList:
     name: 'Blöcke auswählen'
     addBlock: '§aKlicke, um einen Block hinzuzufügen.'
+  buckets:
+    name: 'Eimertyp'
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'
-  noLaunchedName: '§c§l- x -'
-  noLaunchedDescription: '§c§ox'
+  noLaunchedName: '&c&lLaden'
+  noLaunchedDescription: '§c§oLaden'
   stage:
     region: '§eFinde Region §6{0}'
     npc: '§eSprich mit dem NPC §6{0}'
@@ -350,6 +362,13 @@ scoreboard:
     chat: '§eSchreibe §6{0}'
     interact: '§eKlicke auf den Block bei §6{0}'
     fish: '§eAngle §6{0}'
+    craft: '§eStelle §6{0} §eher'
+    bucket: '§eBefülle §6{0}'
+indication:
+  startQuest: '§7Möchtest du die Quest {0} starten?'
+  closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
+  cancelQuest: '§7Bist du sicher, dass du die Quest {0} abbrechen möchtest?'
+  removeQuest: '§7Bist du sicher, dass du die Quest {0} entfernen möchtest?'
 misc:
   format:
     prefix: '§6<§e§lQuests§r§6> §r'
@@ -365,16 +384,22 @@ misc:
     chat: 'Schreibe im Chat'
     interact: 'Mit Block interagieren'
     Fish: 'Fische fangen'
+    Craft: 'Item herstellen'
+    Bucket: 'Eimer befüllen'
   requirement:
-    class: '§bBenötigte Klasse/n'
-    faction: '§bBenötigte Fraktion/en'
+    class: '§bBenötigte Klasse(n)'
+    faction: '§bBenötigte Fraktion(en)'
     jobLevel: '§bJob-Level benötigt'
     combatLevel: '§bKampflevel benötigt'
     experienceLevel: '§bErfahrungslevel benötigt'
-    permissions: '§3Benötigte Berechtigung/en'
+    permissions: '§3Benötigte Berechtigung(en)'
     placeholder: '§bPlatzhalter-Wert benötigt'
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigte Fertigkeitslevel'
+  bucket:
+    water: 'Wassereimer'
+    lava: 'Lavaeimer'
+    milk: 'Milcheimer'
   questItemLore: '§e§oQuest-Item'
   hologramText: '§8§lQuest-NPC'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
@@ -385,7 +410,6 @@ misc:
   unused: '§2§lUnbenutzt'
   used: '§a§lBenutzt'
   remove: '§7Mittelklicke zum Entfernen'
-  nul: 'null'
   or: 'oder'
   amount: '§eAnzahl: {0}'
   items: 'Items'

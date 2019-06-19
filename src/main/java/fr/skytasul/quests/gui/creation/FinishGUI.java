@@ -33,6 +33,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.utils.Lang;
@@ -60,6 +61,8 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack startRewards = ItemUtils.item(XMaterial.CARROT_ON_A_STICK, Lang.startRewards.toString());
 	static ItemStack holoText = ItemUtils.item(XMaterial.PAINTING, Lang.hologramText.toString());
 	static ItemStack timerItem = ItemUtils.item(XMaterial.CLOCK, Lang.timer.toString());
+	static ItemStack hologramLaunch = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunch.toString());
+	static ItemStack hologramLaunchNo = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunchNo.toString());
 
 	private final StagesGUI stages;
 
@@ -107,13 +110,15 @@ public class FinishGUI implements CustomInventory{
 				invName = invName + " ID: " + edited.getID();
 				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
 			}
-			inv = Bukkit.createInventory(null, 27, invName);
+			inv = Bukkit.createInventory(null, 36, invName);
 
 			inv.setItem(0, multiple.clone());
 			inv.setItem(1, scoreboard.clone());
 			inv.setItem(2, hide.clone());
 			inv.setItem(4, endMessage);
 			inv.setItem(5, startDialog);
+			inv.setItem(7, questStarterSelect.clone());
+			inv.setItem(8, questStarterCreate);
 			// timer at 9
 			inv.setItem(10, bypass.clone());
 			if (QuestsConfiguration.allowPlayerCancelQuest()) inv.setItem(11, cancellable.clone());
@@ -121,13 +126,13 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(13, StagesGUI.ending.clone());
 			inv.setItem(14, startRewards.clone());
 			inv.setItem(16, holoText);
-
-			inv.setItem(7, questStarterSelect.clone());
-			inv.setItem(8, questStarterCreate);
 			inv.setItem(17, questName.clone());
-			inv.setItem(23, create.clone());
-
-			inv.setItem(21, ItemUtils.itemLaterPage());
+			
+			inv.setItem(24, hologramLaunch.clone());
+			inv.setItem(25, hologramLaunchNo.clone());
+			
+			inv.setItem(32, create.clone());
+			inv.setItem(30, ItemUtils.itemLaterPage());
 			
 			if (editing) setFromQuest();
 		}
@@ -277,12 +282,20 @@ public class FinishGUI implements CustomInventory{
 				refreshFinish(inv);
 			}).enterOrLeave(p);
 			break;
+			
+		case 24:
+		case 25:
+			new ItemCreatorGUI((item) -> {
+				if (item != null) inv.setItem(slot, item);
+				openLastInv(p);
+			}, true);
+			break;
 
-		case 21: // 						Later page
+		case 30: // 						Later page
 			Inventories.create(p, stages);
 			break;
 
-		case 23: //						Finish
+		case 32: //						Finish
 			if (current.getType() == Material.GOLD_INGOT){
 				finish();
 			}
@@ -291,9 +304,20 @@ public class FinishGUI implements CustomInventory{
 		}
 		return true;
 	}
+	
+	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
+		if (slot == 24 || slot == 25){
+			if (current.equals(slot == 24 ? hologramLaunch : hologramLaunchNo)){
+				inv.setItem(slot, cursor);
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
 
 	private void refreshFinish(Inventory inv) {
-		ItemStack item = inv.getItem(23);
+		ItemStack item = inv.getItem(32);
 		if (name != null && startNPC != null) {
 			item.setType(Material.GOLD_INGOT);
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
@@ -339,6 +363,8 @@ public class FinishGUI implements CustomInventory{
 		qu.setStartRewards(rewardsStart);
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
+		qu.setHologramLaunch(hologramLaunch);
+		qu.setHologramLaunchNo(hologramLaunchNo);
 		if (dialog != null){
 			dialog.setNPC(startNPC);
 			qu.setStartDialog(dialog);
@@ -368,7 +394,7 @@ public class FinishGUI implements CustomInventory{
 		ItemUtils.lore(inv.getItem(14), Lang.rewards.format(rewardsStart.size()));
 		startNPC = edited.getStarter();
 		ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
-		hologramText = edited.getRawHologramText();
+		hologramText = edited.getCustomHologramText();
 		isRepeatable = ItemUtils.set(inv.getItem(0), edited.isRepeatable());
 		timer = edited.getRawTimer();
 		if (isRepeatable) inv.setItem(9, timerItem);
@@ -378,9 +404,11 @@ public class FinishGUI implements CustomInventory{
 		isCancellable = ItemUtils.set(inv.getItem(11), edited.isCancellable());
 		endMsg = edited.getEndMessage();
 		dialog = edited.getStartDialog();
-		inv.setItem(23, edit.clone());
+		inv.setItem(32, edit.clone());
 		requirements = new ArrayList<>(edited.getRequirements());
 		ItemUtils.lore(inv.getItem(11), Lang.requirements.format(requirements.size()));
+		inv.setItem(24, edited.getCustomHologramLaunch());
+		inv.setItem(25, edited.getCustomHologramLaunchNo());
 		refreshFinish(inv);
 	}
 

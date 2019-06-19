@@ -74,8 +74,9 @@ msg:
       simple: '§c指令不存在, 输入 §ehelp §c查看帮助(不需要 /)'
     needItem: '§c你必须在主手手持该物品!'
     itemChanged: '§a已编辑物品. 更改会在重启后生效.'
+    itemRemoved: '§a已删除全息物品.'
     removed: '§a成功删除任务 {0}。'
-    leaveAll: '§a你强制结束了{0}个任务. §c出现{1}个错误.'
+    leaveAll: '§e你强制结束了{0}个任务. §c出现{1}个错误.'
     resetPlayer:
       player: '§6你的所有任务数据 ({0}) 被 {1} 删除了.'
       remover: '§6已删除 {1} 的 {0} 条任务数据.'
@@ -84,6 +85,7 @@ msg:
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
     startQuest: '§6你接受了任务 {0} (UUID： {1}).'
     cancelQuest: '§6你放弃了任务 {0}.'
+    cancelQuestUnavailable: '§c无法取消任务 {0} .'
     backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
     backupPlayersFailed: '§c创建玩家数据备份失败.'
     backupQuestsFailed: '§c创建任务数据备份失败.'
@@ -205,6 +207,8 @@ inv:
     talkChat: '§a在聊天框内输入'
     interact: '§a点击方块'
     fish: '§a钓鱼'
+    craft: '§a合成物品'
+    bucket: '§a装满桶'
     NPCText: '§e编辑NPC的文本对话'
     hideClues: '隐藏任务指示 (粒子效果和全息文字)'
     editMobsKill: '§e编辑要击杀的怪物'
@@ -219,6 +223,9 @@ inv:
     selectBlockLocation: '§6选择方块位置'
     leftClick: '必须左击'
     editFishes: '§e编辑所需的鱼'
+    editItem: '§e编辑要合成的物品'
+    editBucketType: '§e编辑要装满的桶类型'
+    editBucketAmount: '§e编辑要装满的桶数量'
   stages:
     name: '§8创建任务阶段'
     nextPage: '§e下一页'
@@ -230,6 +237,7 @@ inv:
     multipleTime:
       itemName: '开关重复任务'
       itemLore: '任务是否可以多次完成?'
+    cancellable: '玩家可取消任务'
     scoreboardItem: '启用计分版'
     hideItem: '隐藏任务 (菜单和卫星地图)'
     bypassLimit: '忽略任务上限'
@@ -256,6 +264,8 @@ inv:
   itemsSelect:
     name: '编辑物品'
     none: '§a把物品放到这里或点击打开物品编辑器.'
+  itemSelect:
+    name: '选择物品'
   npcCreate:
     name: '创建NPC'
     setName: '§a编辑NPC名称'
@@ -336,6 +346,8 @@ inv:
   blocksList:
     name: '选择方块'
     addBlock: '§a点击添加一个方块.'
+  buckets:
+    name: '桶的类型'
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -350,6 +362,13 @@ scoreboard:
     chat: '§e输入 §6{0}'
     interact: '§e点击在§6{0}的方块'
     fish: '§e钓鱼 §6{0}'
+    craft: '§e合成 §6{0}'
+    bucket: '§e装满 §6{0}'
+indication:
+  startQuest: '§7您是否想要接受任务 {0}?'
+  closeInventory: '§7你确定要关闭该页面吗？'
+  cancelQuest: '§7您确定要取消任务 {0}?'
+  removeQuest: '§7您确定要删除任务 {0}?'
 misc:
   format:
     prefix: '§6<§e§l任务§r§6> §r'
@@ -365,6 +384,8 @@ misc:
     chat: '在聊天框内说话'
     interact: '与方块交互'
     Fish: '钓鱼'
+    Craft: '合成物品'
+    Bucket: '装满桶'
   requirement:
     class: '§b所需职业'
     faction: '§b所需派系'
@@ -375,6 +396,10 @@ misc:
     placeholder: '§b所需占位符数值'
     quest: '§a所需前置任务'
     mcMMOSkillLevel: '§d所需技能等级'
+  bucket:
+    water: '水桶'
+    lava: '岩浆桶'
+    milk: '牛奶桶'
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
@@ -385,7 +410,6 @@ misc:
   unused: '§e§l未设置'
   used: '§6§l已设置'
   remove: '§7点击鼠标中键删除'
-  nul: '无'
   or: '或'
   amount: '§e数量: {0}'
   items: '物品'
