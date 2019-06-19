@@ -370,7 +370,7 @@ public class Quest{
 				
 				if (endMessage != null){
 					if (manager.getStages().getLast() instanceof StageNPC){
-						Utils.sendNPCMessage(p, endMessage, ((StageNPC) manager.getStages().getLast()).getNPC(), 1, 1);
+						Lang.NpcText.send(p, ((StageNPC) manager.getStages().getLast()).getNPC().getName(), endMessage, 1, 1);
 					}else {
 						Utils.sendOffMessage(p, endMessage);
 					}

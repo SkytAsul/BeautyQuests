@@ -213,6 +213,7 @@ public class NPCStarter {
 		}
 		
 		public void delete(){
+			if (hologram == null) return;
 			HolographicDisplays.delete(hologram);
 			hologram = null;
 		}

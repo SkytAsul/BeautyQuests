@@ -57,7 +57,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, line);
+		if (msg) Lang.NpcText.send(p, npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 		return false;
 	}
 	
@@ -82,7 +82,7 @@ public class StageBringBack extends StageNPC{
 
 	public void launch(Player p){
 		super.launch(p);
-		if (sendStartMessage()) Utils.sendNPCMessage(p, Lang.NEED_OBJECTS.toString(), npc, 1, 1, line);
+		if (sendStartMessage()) Lang.NpcText.send(p, npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
 	

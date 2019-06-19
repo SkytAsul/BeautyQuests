@@ -25,6 +25,8 @@ playerStageStartMessage: true
 allowPlayerCancelQuest: true
 # Shows a Yes/No GUI to let the player choose if he wants to accept the quest or not
 questConfirmGUI: false
+# Dialogs are shown in the action bar instead of the chat
+dialogsInActionBar: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest

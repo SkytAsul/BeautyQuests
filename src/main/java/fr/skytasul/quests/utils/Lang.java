@@ -380,9 +380,9 @@ public enum Lang{
 	/* Misc */
 	
 	Prefix("misc.format.prefix"),
-	NpcText("misc.format.npcText"),
-	SelfText("misc.format.selfText"),
-	OffText("misc.format.offText"),
+	NpcText("misc.format.npcText"), // 0: npc, 1: msg, 2: index, 3: max
+	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
+	OffText("misc.format.offText"), // 1: msg
 	
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),

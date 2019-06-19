@@ -6,12 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Message.Sender;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Dialog{
 
@@ -36,18 +41,21 @@ public class Dialog{
 			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + stack[1].getMethodName() + "." + stack[2].getMethodName());
 			return;
 		}
-		String text = msg.text.replace("{PLAYER}", p.getName());
+		String text = null;
 		switch(msg.sender){
 		case PLAYER:
-			Utils.sendSelfMessage(p, text, id+1, messages.valuesSize());
+			text = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), msg.text, id+1, messages.valuesSize()), true);
 			break;
 		case NPC:
-			Utils.sendNPCMessage(p, text, npc, id+1, messages.valuesSize());
+			text = Utils.finalFormat(p, Lang.NpcText.format(npc.getName(), msg.text, id+1, messages.valuesSize()), true);
 			break;
 		case NOSENDER:
-			Utils.IsendMessage(p, text, true);
+			text = Utils.finalFormat(p, msg.text, true);
 			break;
 		}
+		if (QuestsConfiguration.sendDialogsInActionBar()){
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text.replace("{nl}", " ")));
+		}else p.sendMessage(StringUtils.splitByWholeSeparator(text, "{nl}"));
 		if (msg.sound != null) p.playSound(p.getLocation(), msg.sound, 1, 1);
 	}
 	

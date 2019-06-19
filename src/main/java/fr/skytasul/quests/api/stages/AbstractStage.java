@@ -19,6 +19,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.stages.StageManager;
 import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 /**
@@ -129,7 +130,7 @@ public abstract class AbstractStage implements Listener{
 		if (startMessage != null){
 			if (startMessage.length() > 0){
 				if (manager.getID(this) == 0){
-					Utils.sendNPCMessage(p, startMessage, manager.getQuest().getStarter(), 1, 1);
+					Lang.NpcText.send(p, manager.getQuest().getStarter().getName(), startMessage, 1, 1);
 				}else {
 					Utils.sendOffMessage(p, startMessage);
 				}

@@ -51,6 +51,7 @@ public class QuestsConfiguration {
 	private static boolean stageStart = true;
 	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
+	private static boolean dialogsInActionBar = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	// stageDescription
@@ -92,6 +93,7 @@ public class QuestsConfiguration {
 		stageStart = config.getBoolean("playerStageStartMessage");
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
+		dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("dialogsInActionBar");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = Dependencies.gps && config.getBoolean("gps");
@@ -194,6 +196,10 @@ public class QuestsConfiguration {
 		return questConfirmGUI;
 	}
 
+	public static boolean sendDialogsInActionBar(){
+		return dialogsInActionBar;
+	}
+	
 	public static boolean playSounds(){
 		return sounds;
 	}

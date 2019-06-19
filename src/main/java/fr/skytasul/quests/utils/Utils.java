@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -42,7 +42,6 @@ import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.citizensnpcs.api.npc.NPC;
 
 /**
  * A bunch of static methods who can be useful
@@ -107,25 +106,6 @@ public class Utils{
 	public static void sendMessageWP(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
 		IsendMessage(sender, "§6" + format(msg, replace), false);
-	}
-	
-	public static void sendNPCMessage(Player p, String msg, NPC npc, int index, int max, Object... replace){
-		if (replace.length != 0){
-			for (int i = 0; i < replace.length; i++){
-				msg = format(msg, i, replace[i].toString());
-			}
-		}
-		String npcName = npc.getName();
-		IsendMessage(p, Lang.NpcText.format(npcName, msg, index, max), true);
-	}
-	
-	public static void sendSelfMessage(Player p, String msg, int index, int max, Object... replace){
-		if (replace.length != 0){
-			for (int i = 0; i < replace.length; i++){
-				msg = format(msg, i, replace[i].toString());
-			}
-		}
-		IsendMessage(p, Lang.SelfText.format(p.getName(), msg, index, max), true);
 	}
 	
 	public static String finalFormat(CommandSender sender, String text, boolean playerName){
