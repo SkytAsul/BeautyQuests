@@ -9,6 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.utils.nms.NMS;
+
 public enum XMaterial {
 	
 	ACACIA_BOAT("BOAT_ACACIA", 0),
@@ -141,7 +143,6 @@ public enum XMaterial {
 	BUBBLE_CORAL_FAN(),
 	BUCKET("BUCKET", 0),
 	CACTUS("CACTUS", 0),
-	CACTUS_GREEN("INK_SACK", 2),
 	CAKE("CAKE", 0),
 	CAMPFIRE(),
 	CARROT("CARROT_ITEM", 0),
@@ -230,7 +231,6 @@ public enum XMaterial {
 	CYAN_WOOL("WOOL", 9),
 	DAMAGED_ANVIL("ANVIL", 2),
 	DANDELION("YELLOW_FLOWER", 0),
-	DANDELION_YELLOW("INK_SACK", 11),
 	DARK_OAK_BOAT("BOAT_DARK_OAK", 0),
 	DARK_OAK_BUTTON("WOOD_BUTTON", 0),
 	DARK_OAK_DOOR("DARK_OAK_DOOR", 0),
@@ -387,7 +387,7 @@ public enum XMaterial {
 	GREEN_CARPET("CARPET", 13),
 	GREEN_CONCRETE("CONCRETE", 13),
 	GREEN_CONCRETE_POWDER("CONCRETE_POWDER", 13),
-	GREEN_DYE("INK_SACK", 2),
+	GREEN_DYE("CACTUS_GREEN", "INK_SACK", 2),
 	GREEN_GLAZED_TERRACOTTA("GREEN_GLAZED_TERRACOTTA", 0),
 	GREEN_SHULKER_BOX("GREEN_SHULKER_BOX", 0),
 	GREEN_STAINED_GLASS("STAINED_GLASS", 13),
@@ -748,7 +748,7 @@ public enum XMaterial {
 	RED_CARPET("CARPET", 14),
 	RED_CONCRETE("CONCRETE", 14),
 	RED_CONCRETE_POWDER("CONCRETE_POWDER", 14),
-	RED_DYE("INK_SACK", 1),
+	RED_DYE("ROSE_RED", "INK_SACK", 1),
 	RED_GLAZED_TERRACOTTA("RED_GLAZED_TERRACOTTA", 0),
 	RED_MUSHROOM("RED_MUSHROOM", 0),
 	RED_MUSHROOM_BLOCK("RED_MUSHROOM", 0),
@@ -771,7 +771,6 @@ public enum XMaterial {
 	REPEATER("DIODE", 0),
 	REPEATING_COMMAND_BLOCK("COMMAND_REPEATING", 0),
 	ROSE_BUSH("DOUBLE_PLANT", 4),
-	ROSE_RED("INK_SACK", 1),
 	ROTTEN_FLESH("ROTTEN_FLESH", 0),
 	SADDLE("SADDLE", 0),
 	SALMON("RAW_FISH", 1, "raw salmon"),
@@ -948,7 +947,7 @@ public enum XMaterial {
 	YELLOW_CARPET("CARPET", 4),
 	YELLOW_CONCRETE("CONCRETE", 4),
 	YELLOW_CONCRETE_POWDER("CONCRETE_POWDER", 4),
-	YELLOW_DYE(),
+	YELLOW_DYE("DANDELION_YELLOW", "INK_SACK", 11),
 	YELLOW_GLAZED_TERRACOTTA("YELLOW_GLAZED_TERRACOTTA", 0),
 	YELLOW_SHULKER_BOX("YELLOW_SHULKER_BOX", 0),
 	YELLOW_STAINED_GLASS("STAINED_GLASS", 4),
@@ -964,7 +963,8 @@ public enum XMaterial {
 	ZOMBIE_WALL_HEAD("SKULL", 0),
 	;
 	
-	String m;
+	String only13;
+	String before13;
 	short data;
 	boolean item;
 	String lastName;
@@ -977,13 +977,18 @@ public enum XMaterial {
 		this(m, data, false);
 	}
 	
+	XMaterial(String only13, String m, int data){
+		this(m, data, false);
+		this.only13 = only13;
+	}
+	
 	XMaterial(String m, int data, String lastName){
 		this(m, data, false);
 		this.lastName = lastName;
 	}
 	
 	XMaterial(String m, int data, boolean item){
-		this.m = m;
+		this.before13 = m;
 		this.data = (short) data;
 		this.item = item;
 	}
@@ -1074,13 +1079,14 @@ public enum XMaterial {
 	}
 	public Material parseMaterial(boolean item){
 		if (isNewVersion()){
-			Material mat = Material.matchMaterial(this.toString());
+			Material mat = Material.matchMaterial(v13 && only13 != null ? only13 : this.toString());
 	        if(mat != null) return mat;
 		}
-        return Material.matchMaterial(m + (item ? "_ITEM" : ""));
+        return Material.matchMaterial(before13 + (item ? "_ITEM" : ""));
     }
 	
 	static byte newV = -1;
+	static boolean v13 = NMS.getMCVersion() == 13;
 	public static boolean isNewVersion(){
 		if(newV == 0) return false;
 		if(newV == 1) return true;
@@ -1098,7 +1104,7 @@ public enum XMaterial {
 			return XMaterial.valueOf(mat.toString());
 		}catch(IllegalArgumentException e){
 			for(XMaterial xmat:XMaterial.values()){
-				if(xmat.m.equals(mat.toString())){
+				if(xmat.before13.equals(mat.toString())){
 					return xmat;
 				}
 			}
@@ -1131,9 +1137,9 @@ public enum XMaterial {
 		}
 		XMaterial zero = null;
 		for(XMaterial mat : XMaterial.values()){
-			if(name.toUpperCase().equals(mat.m)){
+			if(name.toUpperCase().equals(mat.before13)){
 				if (mat.data == data){
-					cachedSearch.put(mat.m+","+data,mat);
+					cachedSearch.put(mat.before13+","+data,mat);
 					return mat;
 				}else if (mat.data == 0) zero = mat;
 			}

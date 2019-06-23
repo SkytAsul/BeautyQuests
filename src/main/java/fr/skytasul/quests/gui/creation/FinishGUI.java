@@ -406,7 +406,7 @@ public class FinishGUI implements CustomInventory{
 		dialog = edited.getStartDialog();
 		inv.setItem(32, edit.clone());
 		requirements = new ArrayList<>(edited.getRequirements());
-		ItemUtils.lore(inv.getItem(11), Lang.requirements.format(requirements.size()));
+		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());
 		refreshFinish(inv);

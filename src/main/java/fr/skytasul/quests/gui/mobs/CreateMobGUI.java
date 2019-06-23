@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.mobs;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -109,7 +110,11 @@ public class CreateMobGUI implements CustomInventory{
 				reset();
 				MythicMob mmob = (MythicMob) obj;
 				mob = new Mob(mmob, mob.amount);
-				ItemUtils.lore(current, "§a" + mmob.getDisplayName());
+				try {
+					ItemUtils.lore(current, "§a" + mmob.getClass().getDeclaredMethod("getDisplayName").invoke(mmob));
+				}catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+					e.printStackTrace();
+				}
 
 				if (!done) inv.setItem(8, ItemUtils.itemDone());
 				done = true;
