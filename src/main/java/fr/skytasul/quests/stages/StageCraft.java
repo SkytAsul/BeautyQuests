@@ -17,7 +17,8 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -29,8 +30,8 @@ public class StageCraft extends AbstractStage {
 	private ItemStack result;
 	private Map<PlayerAccount, Integer> playerAmounts = new HashMap<>();
 	
-	public StageCraft(StageManager manager, ItemStack result){
-		super(manager);
+	public StageCraft(QuestBranch branch, ItemStack result){
+		super(branch);
 		this.result = result;
 	}
 	
@@ -44,7 +45,7 @@ public class StageCraft extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		ItemStack item = e.getRecipe().getResult();
 		
-		if (manager.hasStageLaunched(acc, this)){
+		if (branch.hasStageLaunched(acc, this)){
 			if (e.getRecipe().getResult().isSimilar(result)){
 				
 				int recipeAmount = item.getAmount();
@@ -113,8 +114,8 @@ public class StageCraft extends AbstractStage {
 		map.put("players", playerSerialized);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageCraft stage = new StageCraft(manager, ItemStack.deserialize((Map<String, Object>) map.get("result")));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageCraft stage = new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")));
 		((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.playerAmounts.put(PlayersManager.getByIndex(acc), (int) amount));
 		return stage;
 	}

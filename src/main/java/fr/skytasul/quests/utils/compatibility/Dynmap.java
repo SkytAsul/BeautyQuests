@@ -9,8 +9,8 @@ import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Utils;
 

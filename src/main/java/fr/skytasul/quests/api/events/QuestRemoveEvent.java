@@ -2,8 +2,8 @@ package fr.skytasul.quests.api.events;
 
 import java.util.List;
 
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.structure.Quest;
 
 /**
  * Called when a quest is removed<br>

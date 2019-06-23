@@ -1,4 +1,4 @@
-package fr.skytasul.quests;
+package fr.skytasul.quests.structure;
 
 import java.io.File;
 import java.text.ParseException;
@@ -17,7 +17,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.PlayerStageResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
@@ -26,8 +29,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager;
-import fr.skytasul.quests.stages.StageNPC;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
@@ -39,8 +40,8 @@ import net.citizensnpcs.api.npc.NPC;
 public class Quest{
 	
 	private final int id;
-	final File file;
-	private StageManager manager;
+	private final File file;
+	private BranchesManager manager;
 	
 	private String name;
 	private String endMessage;
@@ -72,7 +73,7 @@ public class Quest{
 	
 	public Quest(String name, NPC npc, int id){
 		this.name = name;
-		this.manager = new StageManager(this);
+		this.manager = new BranchesManager(this);
 		this.npcStarter = npc;
 		this.id = id;
 		if (id >= BeautyQuests.lastID) BeautyQuests.lastID = id;
@@ -97,7 +98,7 @@ public class Quest{
 		return name;
 	}
 	
-	public StageManager getStageManager(){
+	public BranchesManager getStageManager(){
 		return manager;
 	}
 	
@@ -239,6 +240,10 @@ public class Quest{
 		return id;
 	}
 	
+	public File getFile(){
+		return file;
+	}
+	
 	
 	public void copyFinished(Quest quest){
 		finished.clear();
@@ -260,14 +265,19 @@ public class Quest{
 		return finished.contains(acc);
 	}
 	
-	public boolean cancelPlayer(PlayerAccount acc){
-		return manager.remove(acc, true);
+	public void cancelPlayer(PlayerAccount acc){
+		Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, this));
+		manager.remove(acc);
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
 		if (acc == null) return false;
 		boolean c = false;
-		if (manager.remove(acc, true)) c = true;
+		if (manager.contains(acc)){
+			Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, this));
+			manager.remove(acc);	
+			c = true;
+		}
 		if (finished.remove(acc)) c = true;
 		if (inTimer.remove(acc) != null) c = true;
 		if (acc.isCurrent() && dgPlayers.remove(acc.getPlayer()) != null) c = true;
@@ -359,7 +369,7 @@ public class Quest{
 			public void run(){
 				List<String> msg = Utils.giveRewards(p, startRewards);
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
-				manager.setStage(acc, 0, true);
+				manager.startPlayer(acc);
 			}
 		};
 		if (asyncStart != null){
@@ -379,14 +389,8 @@ public class Quest{
 				List<String> msg = Utils.giveRewards(p, rewards);
 				Utils.sendMessage(p, Lang.FINISHED_BASE.format(name) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
 				
-				if (endMessage != null){
-					if (manager.getStages().getLast() instanceof StageNPC){
-						Lang.NpcText.send(p, ((StageNPC) manager.getStages().getLast()).getNPC().getName(), endMessage, 1, 1);
-					}else {
-						Utils.sendOffMessage(p, endMessage);
-					}
-				}
-				manager.remove(acc, false);
+				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
+				manager.remove(acc);
 				if (!finished.contains(acc)) finished.add(acc);
 				if (repeatable){
 					Calendar cal = Calendar.getInstance();
@@ -438,7 +442,7 @@ public class Quest{
 		map.put("scoreboard", scoreboard);
 		map.put("finished", Utils.serializeAccountsList(finished));
 		if (repeatable) map.put("repeatable", repeatable);
-		if (cancellable) map.put("cancellable", cancellable);
+		if (!cancellable) map.put("cancellable", cancellable);
 		if (hologramText != null) map.put("hologramText", hologramText);
 		if (hid) map.put("hid", true);
 		if (endMessage != null) map.put("endMessage", endMessage);
@@ -487,7 +491,7 @@ public class Quest{
 		}
 		Quest qu = new Quest((String) map.get("name"), npc, (int) map.get("id"));
 		
-		qu.manager = StageManager.deserialize((Map<String, Object>) map.get("manager"), qu);
+		qu.manager = BranchesManager.deserialize((Map<String, Object>) map.get("manager"), qu);
 		if (qu.manager == null) {
 			//qu.unloadAll();
 			return null;

@@ -1,4 +1,4 @@
-package fr.skytasul.quests.stages;
+package fr.skytasul.quests.structure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,10 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.NextStageEvent;
-import fr.skytasul.quests.api.events.PlayerStageResetEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -27,57 +25,62 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.types.Pair;
 
-public class StageManager{
-
-	private Map<Integer, AbstractStage> stages = new LinkedHashMap<>();
-	private Map<PlayerAccount, Integer> playerStage = new HashMap<>();
+public class QuestBranch {
+	
+	/**
+	 * Stage -> Branch and Branch Stage ID
+	 */
+	public Map<AbstractStage, Pair<QuestBranch, Integer>> endStages = new HashMap<>();
+	private LinkedList<AbstractStage> regularStages = new LinkedList<>();
+	
+	private Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
 	
 	private Quest quest;
+	private BranchesManager manager;
 	
-	public StageManager(Quest quest){
+	public QuestBranch(Quest quest, BranchesManager manager){
 		this.quest = quest;
+		this.manager = manager;
 	}
 	
 	public Quest getQuest(){
 		return quest;
 	}
 	
+	public BranchesManager getBranchesManager(){
+		return manager;
+	}
+	
 	public int getStageSize(){
-		return stages.size();
+		return regularStages.size();
 	}
 	
 	public boolean contains(PlayerAccount account){
-		return playerStage.containsKey(account);
+		return playerAdvancement.containsKey(account);
 	}
 	
 	public void addStage(AbstractStage stage){
 		Validate.notNull(stage, "Stage cannot be null !");
-		stages.put(stages.size(), stage);
+		regularStages.add(stage);
 		stage.load();
 	}
 	
-	public int getID(AbstractStage st){
-		for (Entry<Integer, AbstractStage> en : stages.entrySet()){
-			if (en.getValue() == st) return en.getKey();
-		}
-		return 666;
+	public int getID(AbstractStage stage){
+		return regularStages.indexOf(stage);
 	}
 	
 	public LinkedList<AbstractStage> getStages(){
-		LinkedList<AbstractStage> tmp = new LinkedList<>();
-		for (Entry<Integer, AbstractStage> en : stages.entrySet()){
-			tmp.add(en.getKey(), en.getValue());
-		}
-		return tmp;
+		return regularStages;
 	}
 	
 	public AbstractStage getStage(int id){
-		return stages.get(id);
+		return regularStages.get(id);
 	}
 	
 	public String getDescriptionLine(PlayerAccount account, Source source){
-		if (!playerStage.containsKey(account)) throw new IllegalArgumentException("Account does not have this stage launched");
+		if (!playerAdvancement.containsKey(account)) throw new IllegalArgumentException("Account does not have this stage launched");
 		AbstractStage stage = getPlayerStage(account);
 		if (stage == null) return "§efinishing";
 		return stage.getDescriptionLine(account, source);
@@ -89,74 +92,54 @@ public class StageManager{
 		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE;
 	}
 	
-	public int getPlayerStageID(PlayerAccount account){
-		return playerStage.get(account);
-	}
-	
-	public AbstractStage getPlayerStage(PlayerAccount account){
-		if (playerStage.get(account) == null) return null;
-		return getStage(playerStage.get(account));
-	}
-	
-	public List<PlayerAccount> getPlayersForStage(AbstractStage stage){
-		List<PlayerAccount> ls = new ArrayList<>();
-		int id = getID(stage);
-		for (Entry<PlayerAccount, Integer> en : playerStage.entrySet()){
-			if (en.getValue() == id) ls.add(en.getKey());
-		}
-		return ls;
-	}
-	
 	public List<OfflinePlayer> getPlayersLaunched(){
 		List<OfflinePlayer> ls = new ArrayList<>();
-		for (PlayerAccount account : playerStage.keySet()){
+		for (PlayerAccount account : playerAdvancement.keySet()){
 			ls.add(account.getOfflinePlayer());
 		}
 		return ls;
 	}
 	
 	public List<PlayerAccount> getAccountsLaunched(){
-		return new ArrayList<>(playerStage.keySet());
+		return new ArrayList<>(playerAdvancement.keySet());
 	}
 	
-	public Map<PlayerAccount, Integer> getPlayersStage(){
-		return playerStage;
+	public Map<PlayerAccount, PlayerAdvancement> getPlayersStage(){
+		return playerAdvancement;
 	}
 	
-	public void setPlayersStage(Map<PlayerAccount, Integer> players){
-		this.playerStage = players;
+	public void setPlayersStage(Map<PlayerAccount, PlayerAdvancement> players){
+		this.playerAdvancement = players;
 	}
 	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
-		if (!playerStage.containsKey(acc)) return false;
-		AbstractStage ps = getPlayerStage(acc);
-		if (ps == null) return false;
-		return ps.equals(stage);
+		PlayerAdvancement advancement = playerAdvancement.get(acc);
+		if (advancement == null) return false;
+		if (advancement.regularStage != -1) return stage == getStage(advancement.regularStage);
+		return (endStages.keySet().contains(stage));
 	}
 	
-	private void removePlayerStage(PlayerAccount acc) {
-		AbstractStage stage = getPlayerStage(acc);
-		playerStage.remove(acc);
-		if (stage != null) {
-			stage.end(acc);
-		}
+	public void remove(PlayerAccount acc) {
+		if (!playerAdvancement.containsKey(acc)) return;
+		PlayerAdvancement advancement = playerAdvancement.get(acc);
+		playerAdvancement.remove(acc);
+		if (advancement.endingStages){
+			endStages.keySet().forEach((x) -> x.end(acc));
+		}else getStage(advancement.regularStage).end(acc);
 	}
 	
-	public boolean remove(PlayerAccount acc, boolean forced){
-		if (!playerStage.containsKey(acc)) return false;
-		removePlayerStage(acc);
-		if (forced) Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, quest));
-		return true;
+	public void finishStage(Player p, AbstractStage stage){
+		
 	}
 	
 	public void next(Player p){
-		if (stages.size() == 0){
+		if (regularStages.size() == 0){
 			Utils.sendMessage(p, Lang.QUEST_NOSTEPS.toString());
 			return;
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (playerStage.containsKey(acc)){
-			int last = playerStage.get(acc);
+		if (playerAdvancement.containsKey(acc)){
+			int last = playerAdvancement.get(acc);
 			DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
 			AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + last + " of quest " + quest.getID());
 			AbstractStage stage = getStage(last);
@@ -164,8 +147,15 @@ public class StageManager{
 				public void run(){
 					finishStage(acc, stage);
 					
-					if (last + 1 == stages.size()){
-						quest.finish(p);
+					if (last + 1 == regularStages.size()){ // last regular stage
+						if (endStages.isEmpty()){
+							quest.finish(p);
+						}else {
+							for (AbstractStage stage : endStages.keySet()){
+								stage.launch(p);
+								stage.start(acc);
+							}
+						}
 					}else {
 						setStage(acc, last + 1, true);
 						if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), quest.getName());
@@ -181,23 +171,23 @@ public class StageManager{
 		}
 	}
 	
-	public void finishStage(PlayerAccount acc, AbstractStage stage) {
+	public void endStage(PlayerAccount acc, AbstractStage stage) {
+		playerAdvancement.put(acc, null);
 		if (acc.isCurrent()){
 			stage.finish(acc.getPlayer());
 		}else stage.end(acc);
-		playerStage.put(acc, null);
 		if (acc.isCurrent()) Utils.giveRewards(acc.getPlayer(), stage.getRewards());
 	}
 	
 	public void setStage(PlayerAccount acc, int id, boolean launchStage){
-		AbstractStage stage = stages.get(new Integer(id));
+		AbstractStage stage = regularStages.get(id);
 		Player p = acc.getPlayer();
 		if (stage == null){
 			if (p != null) Lang.ERROR_OCCURED.send(p, " noStage");
 			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + quest.getName() + " : the stage " + id + " doesn't exists.");
-			removePlayerStage(acc);
+			remove(acc);
 		}else {
-			playerStage.put(acc, id);
+			playerAdvancement.put(acc, stage);
 			if (p != null && launchStage){
 				stage.launch(p);
 			}
@@ -206,18 +196,19 @@ public class StageManager{
 	}
 	
 	public void remove(){
-		for (AbstractStage stage : stages.values()){
+		for (AbstractStage stage : regularStages){
 			stage.unload();
 		}
-		stages.clear();
-		playerStage.clear();
+		endStages.clear();
+		regularStages.clear();
+		playerAdvancement.clear();
 	}
 	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new LinkedHashMap<>();
 		
 		List<Map<String, Object>> st = new ArrayList<>();
-		for (AbstractStage stage : stages.values()){
+		for (AbstractStage stage : regularStages){
 			try{
 				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
@@ -230,7 +221,7 @@ public class StageManager{
 		}
 		
 		Map<String, Object> pl = new LinkedHashMap<>();
-		for (Entry<PlayerAccount, Integer> en : playerStage.entrySet()){
+		for (Entry<PlayerAccount, Integer> en : playerAdvancement.entrySet()){
 			pl.put(en.getKey().getIndex(), en.getValue());
 		}
 		
@@ -241,11 +232,11 @@ public class StageManager{
 	}
 	
 	public String toString() {
-		return "StageManager{stages=" + stages.size() + ",players=" + playerStage.size() + "}";
+		return "StageManager{stages=" + regularStages.size() + ",players=" + playerAdvancement.size() + "}";
 	}
 	
-	public static StageManager deserialize(Map<String, Object> map, Quest qu){
-		StageManager sm = new StageManager(qu);
+	public static QuestBranch deserialize(Map<String, Object> map, BranchesManager manager){
+		QuestBranch sm = new QuestBranch(manager.getQuest(), manager);
 		
 		List<Map<String, Object>> stages = (List<Map<String, Object>>) map.get("stages");
 		Map<Integer, Integer> trueOrder = new LinkedHashMap<>();
@@ -259,13 +250,13 @@ public class StageManager{
 			try{
 				AbstractStage st = AbstractStage.deserialize(stages.get(t), sm);
 				if (st == null){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + qu.getName() + " (stage null)");
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName() + " (stage null)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
 				sm.addStage(st);
 			}catch (Throwable ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + qu.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
 				return null;
@@ -285,6 +276,24 @@ public class StageManager{
 		}
 		
 		return sm;
+	}
+	
+	class PlayerAdvancement{
+		boolean rewards = false;
+		boolean endingStages = false;
+		int regularStage = 0;
+		
+		public void inRewards(boolean rewards){
+			this.rewards = rewards;
+		}
+		public void inEndingStages(){
+			endingStages = true;
+			regularStage = -1;
+		}
+		public void inRegularStage(int id){
+			regularStage = id;
+			endingStages = false;
+		}
 	}
 	
 }

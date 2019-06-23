@@ -10,7 +10,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -21,8 +22,8 @@ public class StageChat extends AbstractStage{
 	
 	private boolean command;
 	
-	public StageChat(StageManager manager, String text, boolean cancel){
-		super(manager);
+	public StageChat(QuestBranch branch, String text, boolean cancel){
+		super(branch);
 		
 		Validate.notNull(text, "Text cannot be null");
 		this.text = text;
@@ -73,8 +74,8 @@ public class StageChat extends AbstractStage{
 		if (cancel) map.put("cancel", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		AbstractStage st = new StageChat(manager, (String) map.get("writeText"), map.containsKey("cancel") ? (boolean) map.get("cancel") : false);
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		AbstractStage st = new StageChat(branch, (String) map.get("writeText"), map.containsKey("cancel") ? (boolean) map.get("cancel") : false);
 		return st;
 	}
 

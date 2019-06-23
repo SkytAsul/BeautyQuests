@@ -12,7 +12,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.WorldGuard;
@@ -22,8 +23,8 @@ public class StageArea extends AbstractStage{
 	private ProtectedRegion region;
 	private World world;
 	
-	public StageArea(StageManager manager, String regionName, String worldName){
-		super(manager);
+	public StageArea(QuestBranch branch, String regionName, String worldName){
+		super(branch);
 		
 		World w = Bukkit.getWorld(worldName);
 		Validate.notNull(w, "No world with specified name (\"" + worldName + "\")");
@@ -67,8 +68,8 @@ public class StageArea extends AbstractStage{
 		map.put("world", world.getName());
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		AbstractStage st = new StageArea(manager, (String) map.get("region"), (String) map.get("world"));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		AbstractStage st = new StageArea(branch, (String) map.get("region"), (String) map.get("world"));
 		return st;
 	}
 

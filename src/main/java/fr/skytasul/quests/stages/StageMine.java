@@ -17,7 +17,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
@@ -29,8 +30,8 @@ public class StageMine extends AbstractStage {
 	private Map<PlayerAccount, List<BlockData>> remaining = new HashMap<>();
 	private boolean placeCancelled;
 	
-	public StageMine(StageManager manager, List<BlockData> blocks) {
-		super(manager);
+	public StageMine(QuestBranch branch, List<BlockData> blocks) {
+		super(branch);
 		if (blocks != null) this.blocks = blocks;
 	}
 
@@ -71,7 +72,7 @@ public class StageMine extends AbstractStage {
 		if (e.getPlayer() == null) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (manager.hasStageLaunched(acc, this)){
+		if (branch.hasStageLaunched(acc, this)){
 			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
 				System.out.println("metadata");
 				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
@@ -102,7 +103,7 @@ public class StageMine extends AbstractStage {
 		if (!placeCancelled) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!manager.hasStageLaunched(acc, this)) return;
+		if (!branch.hasStageLaunched(acc, this)) return;
 		List<BlockData> playerBlocks = remaining.get(acc);
 		if (playerBlocks == null) {
 			Lang.ERROR_OCCURED.send(p, "playerBlocks is null");
@@ -120,7 +121,7 @@ public class StageMine extends AbstractStage {
 		if (blocks.isEmpty() && acc.isCurrent()){
 			Player p = acc.getPlayer();
 			Utils.sendMessage(p, "§cThis stage doesn't need any blocks to mine... prevent an administrator :-)");
-			manager.next(p);
+			finishStage(p);
 			return false;
 		}
 		List<BlockData> list = new ArrayList<>();
@@ -148,8 +149,8 @@ public class StageMine extends AbstractStage {
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageMine st = new StageMine(manager, Utils.deserializeList((List<Map<String, Object>>) map.get("blocks"), BlockData::deserialize));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageMine st = new StageMine(branch, Utils.deserializeList((List<Map<String, Object>>) map.get("blocks"), BlockData::deserialize));
 		
 		Utils.deserializeAccountsMap((Map<String, List<Map<String, Object>>>) map.get("remaining"), st.remaining, n -> Utils.deserializeList(n, BlockData::deserialize));
 		

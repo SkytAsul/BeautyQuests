@@ -35,6 +35,8 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
+import fr.skytasul.quests.structure.NPCStarter;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
@@ -55,7 +57,7 @@ public class BeautyQuests extends JavaPlugin{
 	private FileConfiguration config;
 	private YamlConfiguration data;
 	private File dataFile;
-	static File saveFolder;
+	public static File saveFolder;
 	
 	/* --------- Datas --------- */
 
@@ -341,12 +343,12 @@ public class BeautyQuests extends JavaPlugin{
 		for (Quest qu : quests){
 			savingFailure = false;
 			try{
-				File file = qu.file;
+				File file = qu.getFile();
 				if (!file.exists()) file.createNewFile();
 				YamlConfiguration fc = YamlConfiguration.loadConfiguration(file);
 				List<Map<String, Object>> ls = new ArrayList<>();
 				ls.add(qu.serialize());
-				if (savingFailure) createQuestBackup(qu.file, qu.getID() + "", "Error when saving quest.");
+				if (savingFailure) createQuestBackup(qu.getFile(), qu.getID() + "", "Error when saving quest.");
 				fc.set("quest", ls);
 				fc.save(file);
 				amount++;
@@ -469,7 +471,7 @@ public class BeautyQuests extends JavaPlugin{
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
 	}
 	
-	void removeQuest(Quest quest){
+	public void removeQuest(Quest quest){
 		quests.remove(quest);
 		NPCStarter starter = npcs.get(quest.getStarter());
 		starter.removeQuest(quest);

@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 

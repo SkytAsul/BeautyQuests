@@ -11,7 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.CitizensAPI;
@@ -23,8 +24,8 @@ public class StageBringBack extends StageNPC{
 	private String splitted;
 	private String line;
 	
-	public StageBringBack(StageManager manager, NPC npc, ItemStack[] items) {
-		super(manager, npc);
+	public StageBringBack(QuestBranch branch, NPC npc, ItemStack[] items) {
+		super(branch, npc);
 		this.bringBack = this;
 		this.items = items;
 
@@ -91,8 +92,8 @@ public class StageBringBack extends StageNPC{
 		map.put("items", items);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageBringBack st = new StageBringBack(manager,
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageBringBack st = new StageBringBack(branch,
 				CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")),
 				((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 		st.loadDatas(map);

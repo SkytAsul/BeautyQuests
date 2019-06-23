@@ -1,6 +1,5 @@
 package fr.skytasul.quests.api.stages;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +16,9 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.BranchesManager;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -32,7 +32,7 @@ public abstract class AbstractStage implements Listener{
 	private StageType type = null;
 	protected boolean asyncEnd = false;
 	
-	protected final StageManager manager;
+	protected final QuestBranch branch;
 	
 	private String startMessage = null;
 	private List<AbstractReward> rewards = new ArrayList<>();
@@ -42,8 +42,8 @@ public abstract class AbstractStage implements Listener{
 		return this;
 	}
 	
-	public AbstractStage(StageManager manager){
-		this.manager = manager;
+	public AbstractStage(QuestBranch branch){
+		this.branch = branch;
 		
 		for (StageType type : StageType.types){
 			if (type.stageClass == getClass()) this.type = type;
@@ -52,8 +52,8 @@ public abstract class AbstractStage implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
 	
-	public StageManager getStageManager(){
-		return manager;
+	public QuestBranch getQuestBranch(){
+		return branch;
 	}
 	
 	public void setStartMessage(String text){
@@ -100,25 +100,25 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	public int getID(){
-		return manager.getID(this);
+		return branch.getID(this);
 	}
 	
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
-	 * @see StageManager#next(Player)
+	 * @see BranchesManager#next(Player)
 	 */
 	protected final void finishStage(Player p) {
-		manager.next(p);
+		branch.finishStage(p, this);
 	}
 	
 	/**
 	 * Called internally to test if a player has the stage started
 	 * @param p Player to test
-	 * @see StageManager#hasStageLaunched(PlayerAccount, AbstractStage)
+	 * @see BranchesManager#hasStageLaunched(PlayerAccount, AbstractStage)
 	 */
 	protected final boolean hasStarted(Player p){
-		return manager.hasStageLaunched(PlayersManager.getPlayerAccount(p), this);
+		return branch.hasStageLaunched(PlayersManager.getPlayerAccount(p), this);
 	}
 	
 	/**
@@ -129,8 +129,8 @@ public abstract class AbstractStage implements Listener{
 	public void launch(Player p){
 		if (startMessage != null){
 			if (startMessage.length() > 0){
-				if (manager.getID(this) == 0){
-					Lang.NpcText.send(p, manager.getQuest().getStarter().getName(), startMessage, 1, 1);
+				if (branch.getID(this) == 0){
+					Lang.NpcText.send(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
 				}else {
 					Utils.sendOffMessage(p, startMessage);
 				}
@@ -203,7 +203,7 @@ public abstract class AbstractStage implements Listener{
 	public final Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
-		map.put("order", manager.getID(this));
+		map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
 		map.put("text", startMessage);
 		map.put("customText", customText);
@@ -218,7 +218,7 @@ public abstract class AbstractStage implements Listener{
 		return map;
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) throws ReflectiveOperationException{
 		StageType type = StageType.getStageType((String) map.get("stageType"));
 		if (type == null){
 			BeautyQuests.getInstance().getLogger().warning("Unknown stage type : " + map.get("stageType"));
@@ -230,13 +230,13 @@ public abstract class AbstractStage implements Listener{
 		}
 		
 		try{
-			Method m = type.stageClass.getMethod("deserialize", Map.class, StageManager.class);
-			AbstractStage st = (AbstractStage) m.invoke(null, map, manager);
+			Method m = type.stageClass.getMethod("deserialize", Map.class, BranchesManager.class);
+			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);
 			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
 			for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
 				try {
-					AbstractReward reward = AbstractReward.deserialize(rew, manager.getQuest());
+					AbstractReward reward = AbstractReward.deserialize(rew, branch.getQuest());
 					st.rewards.add(reward);
 					if (reward.isAsync()) st.asyncEnd = true;
 				}catch (InstantiationException | ClassNotFoundException e) {

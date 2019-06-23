@@ -2,8 +2,8 @@ package fr.skytasul.quests.api.stages;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.structure.Quest;
 
 public abstract interface StageCreationRunnables {
 	

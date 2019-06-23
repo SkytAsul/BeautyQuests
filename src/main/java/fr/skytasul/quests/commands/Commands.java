@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.editors.Editor;
@@ -24,7 +23,8 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.Scoreboard;
-import fr.skytasul.quests.stages.StageManager;
+import fr.skytasul.quests.structure.BranchesManager;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -147,7 +147,7 @@ public class Commands {
 	public void setStage(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		Quest qu = (Quest) cmd.args[1];
-		StageManager manager = qu.getStageManager();
+		BranchesManager manager = qu.getStageManager();
 		if (cmd.args.length != 3) {
 			manager.next(target);
 			Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);

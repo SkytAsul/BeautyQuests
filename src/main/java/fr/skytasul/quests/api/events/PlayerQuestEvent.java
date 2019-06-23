@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.structure.Quest;
 
 public abstract class PlayerQuestEvent extends PlayerEvent{
 
