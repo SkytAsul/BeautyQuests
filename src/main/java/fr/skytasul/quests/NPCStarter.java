@@ -85,7 +85,7 @@ public class NPCStarter {
 						}else if (hologramLaunchNo.enabled && qu.isLauncheable(player.getKey(), false)){
 							unlauncheable.add(player.getKey());
 						}
-						players.remove(player.getKey());
+						iterator.remove();
 					}
 				}
 				hologramLaunch.setVisible(launcheable);
