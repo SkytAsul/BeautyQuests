@@ -291,7 +291,7 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	public void edit(Quest quest){
-		for (AbstractStage st : quest.getStageManager().getStages()){
+		for (AbstractStage st : quest.getBranchesManager().getStages()){
 			Line line = getLine(st.getID());
 			runClick(line, line.data, st.getType());
 			//line.data.put("end", st.getEnding().clone());
@@ -386,7 +386,7 @@ class CreateNPC implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		StageNPC stage = new StageNPC(qu.getStageManager(), (NPC) datas.get("npc"));
+		StageNPC stage = new StageNPC(qu.getBranchesManager(), (NPC) datas.get("npc"));
 		setFinish(stage, datas);
 		return stage;
 	}
@@ -427,7 +427,7 @@ class CreateBringBack implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		StageBringBack stage = new StageBringBack(qu.getStageManager(), (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		StageBringBack stage = new StageBringBack(qu.getBranchesManager(), (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 		CreateNPC.setFinish(stage, datas);
 		return stage;
 	}
@@ -473,7 +473,7 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		StageMobs stage = new StageMobs(qu.getStageManager(), ((List<Mob>) datas.get("mobs")));
+		StageMobs stage = new StageMobs(qu.getBranchesManager(), ((List<Mob>) datas.get("mobs")));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
@@ -524,7 +524,7 @@ class CreateArea implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu) {
-		StageArea stage = new StageArea(qu.getStageManager(), (String) datas.get("region"), (String) datas.get("world"));
+		StageArea stage = new StageArea(qu.getBranchesManager(), (String) datas.get("region"), (String) datas.get("world"));
 		return stage;
 	}
 
@@ -550,7 +550,7 @@ class CreateMine implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		StageMine stage = new StageMine(qu.getStageManager(), (List<BlockData>) datas.get("blocks"));
+		StageMine stage = new StageMine(qu.getBranchesManager(), (List<BlockData>) datas.get("blocks"));
 		stage.setPlaceCancelled((boolean) datas.get("prevent"));
 		return stage;
 	}
@@ -590,7 +590,7 @@ class CreateChat implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		StageChat stage = new StageChat(qu.getStageManager(), (String) datas.get("text"), (boolean) datas.get("cancel"));
+		StageChat stage = new StageChat(qu.getBranchesManager(), (String) datas.get("text"), (boolean) datas.get("cancel"));
 		return stage;
 	}
 
@@ -659,7 +659,7 @@ class CreateInteract implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		return new StageInteract(qu.getStageManager(), (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
+		return new StageInteract(qu.getBranchesManager(), (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
 	}
 	
 }
@@ -675,7 +675,7 @@ class CreateFish implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		StageFish stage = new StageFish(qu.getStageManager(), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		StageFish stage = new StageFish(qu.getBranchesManager(), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 		return stage;
 	}
 
@@ -705,7 +705,7 @@ class CreateCraft implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		StageCraft stage = new StageCraft(qu.getStageManager(), (ItemStack) datas.get("item"));
+		StageCraft stage = new StageCraft(qu.getBranchesManager(), (ItemStack) datas.get("item"));
 		return stage;
 	}
 
@@ -737,7 +737,7 @@ class CreateBucket implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, Quest qu){
-		StageBucket stage = new StageBucket(qu.getStageManager(), (BucketType) datas.get("bucket"), (int) datas.get("amount"));
+		StageBucket stage = new StageBucket(qu.getBranchesManager(), (BucketType) datas.get("bucket"), (int) datas.get("amount"));
 		return stage;
 	}
 

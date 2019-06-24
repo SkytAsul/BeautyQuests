@@ -1,7 +1,6 @@
 package fr.skytasul.quests.structure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -10,22 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.events.NextStageEvent;
-import fr.skytasul.quests.api.events.PlayerStageResetEvent;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class BranchesManager{
 
@@ -115,7 +104,7 @@ public class BranchesManager{
 	}
 	
 	public void startPlayer(PlayerAccount acc){
-		branches.get(0).setStage(acc, 0, true);
+		branches.get(0).start(acc);
 	}
 	
 	public void remove(PlayerAccount acc) {
@@ -163,30 +152,45 @@ public class BranchesManager{
 	}
 	
 	public String toString() {
-		return "StageManager{branches=" + branches.size() + ",players=" + playerBranch.size() + "}";
+		return "BranchesManager{branches=" + branches.size() + ",players=" + playerBranch.size() + "}";
 	}
 	
 	public static BranchesManager deserialize(Map<String, Object> map, Quest qu){
 		BranchesManager bm = new BranchesManager(qu);
 		
-		List<Map<String, Object>> stages = (List<Map<String, Object>>) map.get("branches");
-		Map<Integer, Integer> trueOrder = new LinkedHashMap<>();
-		for(int i = 0; i < stages.size(); i++){
-			trueOrder.put(i, (Integer) stages.get(i).get("order"));
+		if (map.containsKey("stages")){
+			try{
+				QuestBranch branch = QuestBranch.deserialize(map, bm);
+				bm.addBranch(branch);
+				return bm;
+			}catch (Exception ex){
+				BeautyQuests.getInstance().getLogger().severe("Error when converting old stages to the branches system for the quest " + qu.getName());
+				ex.printStackTrace();
+				BeautyQuests.loadingFailure = true;
+				return null;
+			}
 		}
 		
-		for (int i = 0; i < stages.size(); i++){
-			int t = trueOrder.get(i);
-			//Bukkit.broadcastMessage(i + " : " + t + " so " + stages.get(t).get("text"));
+		List<Map<String, Object>> branches = (List<Map<String, Object>>) map.get("branches");
+		branches.sort((x, y) -> {
+			int xid = (int) x.get("order");
+			int yid = (int) y.get("order");
+			if (xid < yid) return -1;
+			if (xid > yid) return 1;
+			BeautyQuests.logger.warning("Two branches with same order in quest " + qu.getID());
+			return 0;
+		});
+
+		for (int i = 0; i < branches.size(); i++) {
 			try{
-				QuestBranch st = QuestBranch.deserialize(stages.get(t), bm);
-				if (st == null){
+				QuestBranch branch = QuestBranch.deserialize(branches.get(i), bm);
+				if (branch == null){
 					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (null branch)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
-				bm.addBranch(st);
-			}catch (Throwable ex){
+				bm.addBranch(branch);
+			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
@@ -194,17 +198,20 @@ public class BranchesManager{
 			}
 		}
 		
-		if (map.get("players") != null){
-			new BukkitRunnable() {
-				public void run(){
-					Map<String, Object> players = (Map<String, Object>) map.get("players");
-					for (Entry<String, Object> en : players.entrySet()){
-						PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
-						if (acc != null) bm.setStage(acc, (int) en.getValue(), false);
+		new BukkitRunnable() {
+			public void run(){
+				((Map<String, Object>) map.get("players")).forEach((accId, id) -> {
+					try{
+						PlayerAccount acc = PlayersManager.getByIndex(accId);
+						if (acc != null) bm.playerBranch.put(acc, (int) id);
+					}catch (Exception ex){
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName());
+						ex.printStackTrace();
+						BeautyQuests.loadingFailure = true;
 					}
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		}
+				});
+			}
+		}.runTaskLater(BeautyQuests.getInstance(), 1L);
 		
 		return bm;
 	}

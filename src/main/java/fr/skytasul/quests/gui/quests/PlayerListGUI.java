@@ -92,7 +92,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> desc = Utils.splitOnSpace(qu.getStageManager().getDescriptionLine(acc, Source.MENU), 45);
+				List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getDescriptionLine(acc, Source.MENU), 45);
 				if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
 					desc.add(null);
 					desc.add(Lang.cancelLore.toString());

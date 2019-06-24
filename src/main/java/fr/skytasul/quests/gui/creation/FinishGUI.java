@@ -331,7 +331,7 @@ public class FinishGUI implements CustomInventory{
 		Quest qu;
 		Map<PlayerAccount, Integer> players = null;
 		if (editing){
-			if (!stagesEdited) players = new HashMap<>(edited.getStageManager().getPlayersStage());
+			if (!stagesEdited) players = new HashMap<>(edited.getBranchesManager().getPlayersStage());
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
 			qu.copyFinished(edited);
@@ -348,14 +348,14 @@ public class FinishGUI implements CustomInventory{
 				stage.setRewards((List<AbstractReward>) ln.get("rewards"));
 				stage.setCustomText((String) ln.get("customText"));
 				stage.setStartMessage((String) ln.get("startMessage"));
-				qu.getStageManager().addStage(stage);
+				qu.getBranchesManager().addStage(stage);
 			}catch (Throwable ex){
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
 				ex.printStackTrace();
 				continue;
 			}
 		}
-		if (editing && !stagesEdited) qu.getStageManager().setPlayersStage(players);
+		if (editing && !stagesEdited) qu.getBranchesManager().setPlayersStage(players);
 		qu.setBypassLimit(bypassLimit);
 		qu.setCancellable(isCancellable);
 		qu.setTimer(timer);
@@ -378,7 +378,7 @@ public class FinishGUI implements CustomInventory{
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
 			BeautyQuests.getInstance().addQuest(qu);
-			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getStageManager().getStageSize());
+			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getStageSize());
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 		}

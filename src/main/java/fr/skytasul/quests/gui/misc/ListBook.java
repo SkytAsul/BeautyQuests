@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -33,10 +32,6 @@ public class ListBook{
 					+ formatLine(Lang.BOOK_REQUIREMENTS.toString(), qu.getRequirements().size() + "")
 					+ "\n"
 					+ formatLine(Lang.BOOK_STAGES.toString(), ""));
-			for (int j = 0; j < qu.getStageManager().getStages().size(); j++){
-				AbstractStage st = qu.getStageManager().getStage(j);
-				stb.append(ChatColor.GOLD + ChatColor.BOLD.toString() + j + " : §1" + st.getType().name + "\n");
-			}
 			im.addPage(stb.toString());
 		}
 		if (BeautyQuests.getInstance().getQuests().isEmpty()){

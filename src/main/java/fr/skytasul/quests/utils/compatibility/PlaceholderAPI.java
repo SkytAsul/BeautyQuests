@@ -49,7 +49,7 @@ public class PlaceholderAPI {
 							}
 							left.remove(0);
 							if (left.isEmpty()) ordered.remove(p);
-							desc = qu.getStageManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+							desc = qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
 						}
 
 						if (after.isEmpty()){
@@ -86,7 +86,7 @@ public class PlaceholderAPI {
 						Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
 						if (qu == null) return "§c§lError: unknown quest §o" + sid;
 						if (qu.hasStarted(acc)){
-							return qu.getStageManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+							return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
 
 							/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
 							return stage == null ? "§ofinishing" : stage.getDescriptionLine(acc);*/

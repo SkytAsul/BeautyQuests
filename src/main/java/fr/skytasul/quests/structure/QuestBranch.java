@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.events.NextStageEvent;
+import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -25,28 +25,22 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.Pair;
 
 public class QuestBranch {
 	
-	/**
-	 * Stage -> Branch and Branch Stage ID
-	 */
-	public Map<AbstractStage, Pair<QuestBranch, Integer>> endStages = new HashMap<>();
+	public Map<AbstractStage, QuestBranch> endStages = new HashMap<>();
 	private LinkedList<AbstractStage> regularStages = new LinkedList<>();
 	
 	private Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
 	
-	private Quest quest;
 	private BranchesManager manager;
 	
-	public QuestBranch(Quest quest, BranchesManager manager){
-		this.quest = quest;
+	public QuestBranch(BranchesManager manager){
 		this.manager = manager;
 	}
 	
 	public Quest getQuest(){
-		return quest;
+		return manager.getQuest();
 	}
 	
 	public BranchesManager getBranchesManager(){
@@ -80,10 +74,20 @@ public class QuestBranch {
 	}
 	
 	public String getDescriptionLine(PlayerAccount account, Source source){
-		if (!playerAdvancement.containsKey(account)) throw new IllegalArgumentException("Account does not have this stage launched");
-		AbstractStage stage = getPlayerStage(account);
-		if (stage == null) return "§efinishing";
-		return stage.getDescriptionLine(account, source);
+		PlayerAdvancement adv = playerAdvancement.get(account);
+		if (adv == null) throw new IllegalArgumentException("Account does not have this branch launched");
+		if (adv.rewards) return "§efinishing";
+		if (adv.endingStages){
+			StringBuilder stb = new StringBuilder();
+			int i = 0;
+			for (AbstractStage stage : endStages.keySet()) {
+				i++;
+				stb.append(stage.getDescriptionLine(account, source));
+				if (i != endStages.size()) stb.append("{nl}{nl}");
+			}
+			return stb.toString();
+		}
+		return regularStages.get(adv.regularStage).getDescriptionLine(account, source);
 	}
 	/**
 	 * Where do the description request come from
@@ -128,55 +132,54 @@ public class QuestBranch {
 		}else getStage(advancement.regularStage).end(acc);
 	}
 	
+	public void start(PlayerAccount acc){
+		if (!regularStages.isEmpty()){
+			setStage(acc, 0, true);
+		}else {
+			setEndingStages(acc, true);
+		}
+	}
+	
 	public void finishStage(Player p, AbstractStage stage){
-		
-	}
-	
-	public void next(Player p){
-		if (regularStages.size() == 0){
-			Utils.sendMessage(p, Lang.QUEST_NOSTEPS.toString());
-			return;
-		}
+		DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
+		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (playerAdvancement.containsKey(acc)){
-			int last = playerAdvancement.get(acc);
-			DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
-			AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + last + " of quest " + quest.getID());
-			AbstractStage stage = getStage(last);
-			BukkitRunnable run = new BukkitRunnable() {
-				public void run(){
-					finishStage(acc, stage);
-					
-					if (last + 1 == regularStages.size()){ // last regular stage
-						if (endStages.isEmpty()){
-							quest.finish(p);
-						}else {
-							for (AbstractStage stage : endStages.keySet()){
-								stage.launch(p);
-								stage.start(acc);
-							}
-						}
+		endStage(acc, stage, () -> {
+			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
+				int newId = playerAdvancement.get(acc).regularStage;
+				if (newId == regularStages.size()){
+					if (endStages.isEmpty()){
+						getQuest().finish(p);
 					}else {
-						setStage(acc, last + 1, true);
-						if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), quest.getName());
-						Bukkit.getPluginManager().callEvent(new NextStageEvent(p, quest, stage, getStage(last + 1)));
-						Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
-						if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
+						setEndingStages(acc, true);
 					}
+				}else {
+					setStage(acc, newId, true);
 				}
-			};
-			if (stage.hasAsyncEnd()){
-				run.runTaskAsynchronously(BeautyQuests.getInstance());
-			}else run.run();
-		}
+			}else { // ending stage - redirect to other branch
+				QuestBranch result = endStages.get(stage);
+				result.start(acc);
+				playerAdvancement.remove(acc);
+			}
+		});
 	}
 	
-	public void endStage(PlayerAccount acc, AbstractStage stage) {
-		playerAdvancement.put(acc, null);
+	public void endStage(PlayerAccount acc, AbstractStage stage, Runnable runAfter) {
 		if (acc.isCurrent()){
 			stage.finish(acc.getPlayer());
+			if (stage.hasAsyncEnd()){
+				Utils.runAsync(() -> {
+					PlayerAdvancement adv = playerAdvancement.get(acc);
+					adv.inRewards(true);
+					Utils.giveRewards(acc.getPlayer(), stage.getRewards());
+					adv.inRewards(false);
+					Utils.runSync(() -> runAfter.run());
+				});
+			}else{
+				Utils.giveRewards(acc.getPlayer(), stage.getRewards());
+				runAfter.run();
+			}
 		}else stage.end(acc);
-		if (acc.isCurrent()) Utils.giveRewards(acc.getPlayer(), stage.getRewards());
 	}
 	
 	public void setStage(PlayerAccount acc, int id, boolean launchStage){
@@ -184,14 +187,29 @@ public class QuestBranch {
 		Player p = acc.getPlayer();
 		if (stage == null){
 			if (p != null) Lang.ERROR_OCCURED.send(p, " noStage");
-			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + quest.getName() + " : the stage " + id + " doesn't exists.");
+			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
 			remove(acc);
 		}else {
-			playerAdvancement.put(acc, stage);
+			if (playerAdvancement.containsKey(acc)){
+				if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+				playerAdvancement.get(acc).inRegularStage(id);
+			}else playerAdvancement.put(acc, new PlayerAdvancement());
 			if (p != null && launchStage){
 				stage.launch(p);
 			}
 			stage.start(acc);
+			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(p, getQuest(), stage));
+			Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
+			if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
+		}
+	}
+	
+	public void setEndingStages(PlayerAccount acc, boolean launchStage){
+		Player p = acc.getPlayer();
+		playerAdvancement.get(acc).inEndingStages();
+		for (AbstractStage newStage : endStages.keySet()){
+			if (p != null && launchStage) newStage.launch(p);
+			newStage.start(acc);
 		}
 	}
 	
@@ -213,7 +231,7 @@ public class QuestBranch {
 				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Throwable ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + quest.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getName());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
@@ -221,8 +239,8 @@ public class QuestBranch {
 		}
 		
 		Map<String, Object> pl = new LinkedHashMap<>();
-		for (Entry<PlayerAccount, Integer> en : playerAdvancement.entrySet()){
-			pl.put(en.getKey().getIndex(), en.getValue());
+		for (Entry<PlayerAccount, PlayerAdvancement> en : playerAdvancement.entrySet()){
+			pl.put(en.getKey().getIndex(), en.getValue().getState());
 		}
 		
 		map.put("stages", st);
@@ -236,26 +254,28 @@ public class QuestBranch {
 	}
 	
 	public static QuestBranch deserialize(Map<String, Object> map, BranchesManager manager){
-		QuestBranch sm = new QuestBranch(manager.getQuest(), manager);
+		QuestBranch sm = new QuestBranch(manager);
 		
 		List<Map<String, Object>> stages = (List<Map<String, Object>>) map.get("stages");
-		Map<Integer, Integer> trueOrder = new LinkedHashMap<>();
-		for(int i = 0; i < stages.size(); i++){
-			trueOrder.put(i, (Integer) stages.get(i).get("order"));
-		}
+		stages.sort((x, y) -> {
+			int xid = (int) x.get("order");
+			int yid = (int) y.get("order");
+			if (xid < yid) return -1;
+			if (xid > yid) return 1;
+			BeautyQuests.logger.warning("Two stages with same order in quest " + manager.getQuest().getID());
+			return 0;
+		});
 		
 		for (int i = 0; i < stages.size(); i++){
-			int t = trueOrder.get(i);
-			//Bukkit.broadcastMessage(i + " : " + t + " so " + stages.get(t).get("text"));
 			try{
-				AbstractStage st = AbstractStage.deserialize(stages.get(t), sm);
+				AbstractStage st = AbstractStage.deserialize(stages.get(i), sm);
 				if (st == null){
 					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName() + " (stage null)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
 				sm.addStage(st);
-			}catch (Throwable ex){
+			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
@@ -263,22 +283,30 @@ public class QuestBranch {
 			}
 		}
 		
-		if (map.get("players") != null){
-			new BukkitRunnable() {
-				public void run(){
-					Map<String, Object> players = (Map<String, Object>) map.get("players");
-					for (Entry<String, Object> en : players.entrySet()){
-						PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
-						if (acc != null) sm.setStage(acc, (int) en.getValue(), false);
+		new BukkitRunnable() {
+			public void run(){
+				((Map<String, Object>) map.get("players")).forEach((accId, adv) -> {
+					try{
+						PlayerAccount acc = PlayersManager.getByIndex(accId);
+						if (acc == null){
+							DebugUtils.logMessage("PlayerAccount with ID " + accId + " null in quest " + manager.getQuest().getID());
+							return;
+						}
+						sm.playerAdvancement.put(acc, new PlayerAdvancement());
+						if ("end".equals(adv)) sm.setEndingStages(acc, false); else sm.setStage(acc, (int) adv, false);
+					}catch (Exception ex){
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas of " + accId + " for the branch " + map.get("order") + " in the quest " + sm.getQuest().getName());
+						ex.printStackTrace();
+						BeautyQuests.loadingFailure = true;
 					}
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), 1L);
-		}
+				});
+			}
+		}.runTaskLater(BeautyQuests.getInstance(), 1L);
 		
 		return sm;
 	}
 	
-	class PlayerAdvancement{
+	static class PlayerAdvancement{
 		boolean rewards = false;
 		boolean endingStages = false;
 		int regularStage = 0;
@@ -293,6 +321,9 @@ public class QuestBranch {
 		public void inRegularStage(int id){
 			regularStage = id;
 			endingStages = false;
+		}
+		public String getState(){
+			return endingStages ? "end" : String.valueOf(regularStage);
 		}
 	}
 	

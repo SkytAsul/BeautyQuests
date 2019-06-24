@@ -9,26 +9,21 @@ import fr.skytasul.quests.structure.Quest;
 /**
  * Called when a player finish a stage
  */
-public class NextStageEvent extends PlayerQuestEvent{
+public class PlayerSetStageEvent extends PlayerQuestEvent{
 
-	AbstractStage last, next;
+	private AbstractStage stage;
 	
-	public NextStageEvent(Player who, Quest quest, AbstractStage last, AbstractStage next){
+	public PlayerSetStageEvent(Player who, Quest quest, AbstractStage stage){
 		super(who, quest);
-		this.last = last;
-		this.next = next;
+		this.stage = stage;
 	}
 	
-	public AbstractStage getLastStage(){
-		return last;
-	}
-	
-	public AbstractStage getNextStage(){
-		return next;
+	public AbstractStage getStage(){
+		return stage;
 	}
 	
 	public BranchesManager getStageManager(){
-		return qu.getStageManager();
+		return qu.getBranchesManager();
 	}
 
 }

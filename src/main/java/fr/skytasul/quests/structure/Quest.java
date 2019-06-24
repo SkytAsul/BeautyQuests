@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerStageResetEvent;
+import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
@@ -98,7 +98,7 @@ public class Quest{
 		return name;
 	}
 	
-	public BranchesManager getStageManager(){
+	public BranchesManager getBranchesManager(){
 		return manager;
 	}
 	
@@ -266,7 +266,7 @@ public class Quest{
 	}
 	
 	public void cancelPlayer(PlayerAccount acc){
-		Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, this));
+		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		manager.remove(acc);
 	}
 	
@@ -274,7 +274,7 @@ public class Quest{
 		if (acc == null) return false;
 		boolean c = false;
 		if (manager.contains(acc)){
-			Bukkit.getPluginManager().callEvent(new PlayerStageResetEvent(acc, this));
+			Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 			manager.remove(acc);	
 			c = true;
 		}
@@ -429,7 +429,7 @@ public class Quest{
 	}
 	
 	public String toString(){
-		return "Quest{npcID=" + npcStarter.getId() + ",stages=" + manager.toString() + ",several=" + repeatable + "}";
+		return "Quest{npcID=" + npcStarter.getId() + ",branches=" + manager.toString() + ",several=" + repeatable + "}";
 	}
 	
 	public Map<String, Object> serialize() throws Exception{

@@ -147,7 +147,7 @@ public class Commands {
 	public void setStage(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		Quest qu = (Quest) cmd.args[1];
-		BranchesManager manager = qu.getStageManager();
+		BranchesManager manager = qu.getBranchesManager();
 		if (cmd.args.length != 3) {
 			manager.next(target);
 			Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
