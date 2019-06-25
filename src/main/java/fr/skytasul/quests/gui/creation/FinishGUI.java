@@ -361,6 +361,7 @@ public class FinishGUI implements CustomInventory{
 		qu.setTimer(timer);
 		qu.setRewards(rewards);
 		qu.setStartRewards(rewardsStart);
+		qu.setRequirements(requirements);
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
 		qu.setHologramLaunch(hologramLaunch);
@@ -369,7 +370,6 @@ public class FinishGUI implements CustomInventory{
 			dialog.setNPC(startNPC);
 			qu.setStartDialog(dialog);
 		}
-		qu.getRequirements().addAll(requirements);
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
@@ -405,7 +405,7 @@ public class FinishGUI implements CustomInventory{
 		endMsg = edited.getEndMessage();
 		dialog = edited.getStartDialog();
 		inv.setItem(32, edit.clone());
-		requirements = new ArrayList<>(edited.getRequirements());
+		requirements = edited.getRequirements();
 		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());

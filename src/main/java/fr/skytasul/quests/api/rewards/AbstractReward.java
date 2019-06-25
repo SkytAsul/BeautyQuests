@@ -40,6 +40,10 @@ public abstract class AbstractReward {
 		return async;
 	}
 	
+	public void setQuest(Quest quest){
+		this.quest = quest;
+	}
+	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
