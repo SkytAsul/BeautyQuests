@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -25,6 +24,8 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.PlayerAdvancement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -143,37 +144,51 @@ public class Commands {
 		}
 	}
 	
-	@Cmd(permission = "setStage", min = 2, args = {"PLAYERS", "QUESTSID", "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14"})
+	@Cmd(permission = "setStage", min = 2, args = {"PLAYERS", "QUESTSID", "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14", "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14"})
 	public void setStage(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		Quest qu = (Quest) cmd.args[1];
-		BranchesManager manager = qu.getBranchesManager();
-		if (cmd.args.length != 3) {
-			manager.next(target);
-			Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
-		}else {
-			Integer st = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (st == null) return;
-			if (manager.getStage(st) == null){
-				Lang.COMMAND_SETSTAGE_DOESNTEXIST.send(cmd.sender, st);
+		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
+		QuestBranch currentBranch = manager.getPlayerBranch(acc);
+		if (cmd.args.length < 3) { // next/start quest
+			if (currentBranch == null){
+				manager.startPlayer(acc);
+				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 				return;
 			}
-			PlayerAccount acc = PlayersManager.getPlayerAccount(target);
-			if (qu.hasStarted(acc)) {
-				AbstractStage active = manager.getPlayerStage(acc);
-				BukkitRunnable run = new BukkitRunnable() {
-					public void run(){
-						manager.finishStage(acc, active);
-						manager.setStage(acc, st, true);
-						Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, st);
-					}
-				};
-				if (active.hasAsyncEnd()) {
-					run.runTaskAsynchronously(BeautyQuests.getInstance());
-				}else run.run();
-			}else {
-				manager.setStage(acc, st, true);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
+			if (!adv.isInEndingStages()){
+				currentBranch.finishStage(target, currentBranch.getStage(adv.getRegularStage()));
+				Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
+			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(cmd.sender);
+		}else {
+			Integer branchID = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+			if (branchID == null) return;
+			QuestBranch branch = manager.getBranch(branchID);
+			if (branch == null){
+				Lang.COMMAND_SETSTAGE_BRANCH_DOESNTEXIST.send(cmd.sender, branchID);
+				return;
+			}
+
+			Integer stageID = -1;
+			if (cmd.args.length > 3){
+				stageID = Utils.parseInt(cmd.sender, (String) cmd.args[3]);
+				if (stageID == null) return;
+			}
+			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
+			if (currentBranch != null) {
+				PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
+				if (adv.isInEndingStages()){
+					for (AbstractStage stage : currentBranch.endStages.keySet()) stage.end(acc);
+				}else {
+					currentBranch.getStage(adv.getRegularStage()).end(acc);
+				}
+			}
+			if (cmd.args.length == 3){ // start branch
+				branch.start(acc);
+			}else { // set stage in branch
+				branch.setStage(acc, stageID, true);
 			}
 		}
 	}

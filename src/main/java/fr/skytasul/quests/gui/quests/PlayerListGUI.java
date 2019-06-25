@@ -18,7 +18,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.BranchesManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -92,7 +92,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getDescriptionLine(acc, Source.MENU), 45);
+				List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
 				if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
 					desc.add(null);
 					desc.add(Lang.cancelLore.toString());

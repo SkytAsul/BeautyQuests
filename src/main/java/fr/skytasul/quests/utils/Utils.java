@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -17,7 +16,6 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -194,19 +192,6 @@ public class Utils{
 		}else {
 			p.getInventory().addItem(is);
 		}
-	}
-	
-	public static OfflinePlayer getOfflinePlayer(String name){
-		Validate.notNull(name);
-		Player pp = Bukkit.getPlayer(name);
-		if (pp == null){
-			OfflinePlayer[] ops = Bukkit.getOfflinePlayers();
-			if (ops == null) return null;
-			for (OfflinePlayer tmp : ops){
-				if (name.equals(tmp.getName())) return tmp;
-			}
-			return null;
-		}else return pp;
 	}
 	
 	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {

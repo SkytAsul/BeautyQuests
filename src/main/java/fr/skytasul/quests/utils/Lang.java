@@ -103,8 +103,10 @@ public enum Lang{
 	COMMAND_SCOREBOARD_LINEREMOVE("msg.command.scoreboard.lineRemoved"),
 	COMMAND_SCOREBOARD_LINENOEXIST("msg.command.scoreboard.lineInexistant"),
 	COMMAND_SCOREBOARD_RESETALL("msg.command.scoreboard.resetAll"),
-	COMMAND_SETSTAGE_DOESNTEXIST("msg.command.setStage.doesntExist"),
+	COMMAND_SETSTAGE_BRANCH_DOESNTEXIST("msg.command.setStage.branchDoesntExist"),
+	COMMAND_SETSTAGE_STAGE_DOESNTEXIST("msg.command.setStage.doesntExist"),
 	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),
+	COMMAND_SETSTAGE_NEXT_UNAVAILABLE("msg.command.setStage.nextUnavailable"),
 	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
 	
 	COMMAND_HELP("msg.command.help.header"),
@@ -112,7 +114,7 @@ public enum Lang{
 	COMMAND_HELP_EDIT("msg.command.help.edit"),
 	COMMAND_HELP_REMOVE("msg.command.help.remove"),
 	COMMAND_HELP_FINISH("msg.command.help.finishAll"),
-	COMMAND_HELP_STAGE("msg.command.help.setStage"),
+	COMMAND_HELP_STAGE("msg.command.help.setStage"),// TODO edit
 	COMMAND_HELP_RESET("msg.command.help.resetPlayer"),
 	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest"),
 	COMMAND_HELP_SEE("msg.command.help.seePlayer"),

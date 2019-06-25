@@ -36,6 +36,7 @@ import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch.PlayerAdvancement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -330,8 +331,14 @@ public class FinishGUI implements CustomInventory{
 	private void finish(){
 		Quest qu;
 		Map<PlayerAccount, Integer> players = null;
+		Map<Integer, Map<PlayerAccount, PlayerAdvancement>> branchesPlayers = new HashMap<>();
 		if (editing){
-			if (!stagesEdited) players = new HashMap<>(edited.getBranchesManager().getPlayersStage());
+			if (!stagesEdited){
+				players = new HashMap<>(edited.getBranchesManager().getPlayersStage());
+				for (int i = 0; i < edited.getBranchesManager().getBranchesAmount(); i++){
+					branchesPlayers.put(i, edited.getBranchesManager().getBranch(i).getPlayersStage());
+				}
+			}
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
 			qu.copyFinished(edited);
@@ -355,7 +362,12 @@ public class FinishGUI implements CustomInventory{
 				continue;
 			}
 		}
-		if (editing && !stagesEdited) qu.getBranchesManager().setPlayersStage(players);
+		if (editing && !stagesEdited){
+			qu.getBranchesManager().setPlayersStage(players);
+			for (int i = 0; i < qu.getBranchesManager().getBranchesAmount(); i++){
+				qu.getBranchesManager().getBranch(i).setPlayersStage(branchesPlayers.get(i));
+			}
+		}
 		qu.setBypassLimit(bypassLimit);
 		qu.setCancellable(isCancellable);
 		qu.setTimer(timer);

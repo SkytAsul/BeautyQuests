@@ -23,7 +23,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.ScoreboardSigns.VirtualTeam;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.BranchesManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -231,7 +231,7 @@ public class Scoreboard implements Listener{
 				text = showed == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", showed.getName());
 			}
 			if (text.contains("{questDescription}")){
-				text = showed == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", showed.getBranchesManager().getDescriptionLine(acc, Source.SCOREBOARD));
+				text = showed == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", showed.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD));
 			}
 			text = Utils.finalFormat(p, text, true);
 			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);

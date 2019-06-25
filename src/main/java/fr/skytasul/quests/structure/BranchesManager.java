@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -19,7 +18,7 @@ import fr.skytasul.quests.players.PlayersManager;
 public class BranchesManager{
 
 	private Map<Integer, QuestBranch> branches = new LinkedHashMap<>();
-	private Map<PlayerAccount, Integer> playerBranch = new HashMap<>();
+	Map<PlayerAccount, Integer> playerBranch = new HashMap<>();
 	
 	private Quest quest;
 	
@@ -64,6 +63,7 @@ public class BranchesManager{
 	}
 	
 	public QuestBranch getPlayerBranch(PlayerAccount account){
+		if (!playerBranch.containsKey(account)) return null;
 		return getBranch(playerBranch.get(account));
 	}
 	
@@ -72,14 +72,6 @@ public class BranchesManager{
 		int id = getID(branch);
 		for (Entry<PlayerAccount, Integer> en : playerBranch.entrySet()){
 			if (en.getValue() == id) ls.add(en.getKey());
-		}
-		return ls;
-	}
-	
-	public List<OfflinePlayer> getPlayersLaunched(){
-		List<OfflinePlayer> ls = new ArrayList<>();
-		for (PlayerAccount account : playerBranch.keySet()){
-			ls.add(account.getOfflinePlayer());
 		}
 		return ls;
 	}
@@ -111,9 +103,7 @@ public class BranchesManager{
 		if (!playerBranch.containsKey(acc)) return;
 		QuestBranch branch = getPlayerBranch(acc);
 		playerBranch.remove(acc);
-		if (branch != null) {
-			branch.remove(acc);
-		}
+		if (branch != null) branch.remove(acc, true);
 	}
 	
 	public void remove(){

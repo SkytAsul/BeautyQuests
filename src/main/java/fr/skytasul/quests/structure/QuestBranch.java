@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -96,24 +95,16 @@ public class QuestBranch {
 		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE;
 	}
 	
-	public List<OfflinePlayer> getPlayersLaunched(){
-		List<OfflinePlayer> ls = new ArrayList<>();
-		for (PlayerAccount account : playerAdvancement.keySet()){
-			ls.add(account.getOfflinePlayer());
-		}
-		return ls;
-	}
-	
-	public List<PlayerAccount> getAccountsLaunched(){
-		return new ArrayList<>(playerAdvancement.keySet());
-	}
-	
 	public Map<PlayerAccount, PlayerAdvancement> getPlayersStage(){
 		return playerAdvancement;
 	}
 	
 	public void setPlayersStage(Map<PlayerAccount, PlayerAdvancement> players){
 		this.playerAdvancement = players;
+	}
+	
+	public PlayerAdvancement getPlayerAdvancement(PlayerAccount acc){
+		return playerAdvancement.get(acc);
 	}
 	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
@@ -123,16 +114,17 @@ public class QuestBranch {
 		return (endStages.keySet().contains(stage));
 	}
 	
-	public void remove(PlayerAccount acc) {
-		if (!playerAdvancement.containsKey(acc)) return;
-		PlayerAdvancement advancement = playerAdvancement.get(acc);
-		playerAdvancement.remove(acc);
+	public void remove(PlayerAccount acc, boolean end) {
+		PlayerAdvancement advancement = playerAdvancement.remove(acc);
+		manager.playerBranch.remove(acc);
+		if (!end || advancement == null) return;
 		if (advancement.endingStages){
 			endStages.keySet().forEach((x) -> x.end(acc));
 		}else getStage(advancement.regularStage).end(acc);
 	}
 	
 	public void start(PlayerAccount acc){
+		manager.playerBranch.put(acc, manager.getID(this));
 		if (!regularStages.isEmpty()){
 			setStage(acc, 0, true);
 		}else {
@@ -149,6 +141,7 @@ public class QuestBranch {
 				int newId = playerAdvancement.get(acc).regularStage;
 				if (newId == regularStages.size()){
 					if (endStages.isEmpty()){
+						remove(acc, false);
 						getQuest().finish(p);
 					}else {
 						setEndingStages(acc, true);
@@ -157,9 +150,8 @@ public class QuestBranch {
 					setStage(acc, newId, true);
 				}
 			}else { // ending stage - redirect to other branch
-				QuestBranch result = endStages.get(stage);
-				result.start(acc);
-				playerAdvancement.remove(acc);
+				remove(acc, false);
+				endStages.get(stage).start(acc);
 			}
 		});
 	}
@@ -179,7 +171,10 @@ public class QuestBranch {
 				Utils.giveRewards(acc.getPlayer(), stage.getRewards());
 				runAfter.run();
 			}
-		}else stage.end(acc);
+		}else {
+			stage.end(acc);
+			runAfter.run();
+		}
 	}
 	
 	public void setStage(PlayerAccount acc, int id, boolean launchStage){
@@ -188,7 +183,7 @@ public class QuestBranch {
 		if (stage == null){
 			if (p != null) Lang.ERROR_OCCURED.send(p, " noStage");
 			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
-			remove(acc);
+			remove(acc, true);
 		}else {
 			if (playerAdvancement.containsKey(acc)){
 				if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
@@ -306,7 +301,7 @@ public class QuestBranch {
 		return sm;
 	}
 	
-	static class PlayerAdvancement{
+	public static class PlayerAdvancement{
 		boolean rewards = false;
 		boolean endingStages = false;
 		int regularStage = 0;
@@ -314,14 +309,25 @@ public class QuestBranch {
 		public void inRewards(boolean rewards){
 			this.rewards = rewards;
 		}
+		public boolean isInRewards(){
+			return rewards;
+		}
+		
 		public void inEndingStages(){
 			endingStages = true;
 			regularStage = -1;
+		}
+		public boolean isInEndingStages(){
+			return endingStages;
 		}
 		public void inRegularStage(int id){
 			regularStage = id;
 			endingStages = false;
 		}
+		public int getRegularStage(){
+			return regularStage;
+		}
+		
 		public String getState(){
 			return endingStages ? "end" : String.valueOf(regularStage);
 		}
