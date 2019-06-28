@@ -20,6 +20,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
+import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.Mob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import net.citizensnpcs.api.npc.NPC;
@@ -69,6 +70,7 @@ public class MobsListGUI implements CustomInventory{
 			String typeName = mm.getEntityType();
 			if (typeName.contains("baby_")) typeName = typeName.substring(5);
 			if (typeName.equalsIgnoreCase("mpet")) typeName = mm.getConfig().getString("MPet.Anchor");
+			if (NMS.getMCVersion() < 11 && typeName == "WITHER_SKELETON") typeName = "SKELETON";
 			EntityType type = EntityType.fromName(typeName);
 			if (type == null) type = EntityType.valueOf(typeName.toUpperCase());
 			return ItemUtils.item(XMaterial.mobItem(type), MythicMobs.getDisplayName(mm), lore, "Base Health : " + mm.getBaseHealth(), "Base Damage : " + mm.getBaseDamage(), "Base Armor : " + mm.getBaseArmor(), "", Lang.click.toString());

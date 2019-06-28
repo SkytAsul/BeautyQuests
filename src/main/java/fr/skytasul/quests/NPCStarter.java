@@ -157,7 +157,7 @@ public class NPCStarter {
 		quests = null;
 		BeautyQuests.getInstance().getNPCs().remove(npc);
 		launcheableTask.cancel();
-		hologramsTask.cancel();
+		if (hologramsTask != null) hologramsTask.cancel();
 		removeHolograms();
 	}
 	
