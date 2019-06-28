@@ -41,8 +41,8 @@ public class PlayerListGUI implements CustomInventory {
 		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
 
-		setBarItem(0, ItemUtils.itemLaterPage());
-		setBarItem(4, ItemUtils.itemNextPage());
+		setBarItem(0, ItemUtils.itemLaterPage);
+		setBarItem(4, ItemUtils.itemNextPage);
 		
 		setBarItem(1, ItemUtils.item(XMaterial.WRITTEN_BOOK, "§r" + Lang.finisheds.toString()));
 		setBarItem(2, ItemUtils.item(XMaterial.BOOK, "§r" + Lang.inProgress.toString()));

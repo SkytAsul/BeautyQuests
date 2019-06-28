@@ -133,7 +133,7 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(25, hologramLaunchNo.clone());
 			
 			inv.setItem(32, create.clone());
-			inv.setItem(30, ItemUtils.itemLaterPage());
+			inv.setItem(30, ItemUtils.itemLaterPage);
 			
 			if (editing) setFromQuest();
 		}

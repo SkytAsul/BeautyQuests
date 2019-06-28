@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.stages;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch;
 
 public abstract interface StageCreationRunnables {
 	
@@ -24,9 +24,9 @@ public abstract interface StageCreationRunnables {
 	/**
 	 * Called when quest creation finished
 	 * @param datas all datas saved when stage creation
-	 * @param qu quest created
+	 * @param branch quest created
 	 * @return AsbtractStage created
 	 */
-	public abstract AbstractStage finish(LineData datas, Quest qu);
+	public abstract AbstractStage finish(LineData datas, QuestBranch branch);
 	
 }

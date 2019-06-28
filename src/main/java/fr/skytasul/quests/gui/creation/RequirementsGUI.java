@@ -63,7 +63,7 @@ public class RequirementsGUI implements CustomInventory {
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, (int) StrictMath.ceil(RequirementCreator.getCreators().size() * 1.0 / 9) * 9 + 9, Lang.INVENTORY_REQUIREMENTS.toString());
 		
-		inv.setItem(4, ItemUtils.itemDone());
+		inv.setItem(4, ItemUtils.itemDone);
 		LinkedList<RequirementCreator> ls = RequirementCreator.getCreators();
 		for (RequirementCreator crea : ls){
 			int id = ls.indexOf(crea) + 9;
@@ -150,7 +150,7 @@ public class RequirementsGUI implements CustomInventory {
 
 	
 	public static void initialize(){
-		DebugUtils.broadcastDebugMessage("Initlializing default requirements.");
+		DebugUtils.logMessage("Initlializing default requirements.");
 		
 		QuestsAPI.registerRequirement(QuestRequirement.class, ItemUtils.item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), new QuestR());
 		QuestsAPI.registerRequirement(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), new LevelR());

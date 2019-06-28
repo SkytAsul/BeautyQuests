@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -72,9 +71,6 @@ public class QuestsConfiguration {
 
 	
 	static void initConfiguration(FileConfiguration config) {
-		DebugUtils.debugMode = config.getBoolean("debug", false);
-		if (DebugUtils.debugMode) BeautyQuests.logger.warning("Warning ! You are in debug mode");
-		
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {

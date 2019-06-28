@@ -39,7 +39,7 @@ public class ItemsGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_ITEMS.toString());
 		
-		inv.setItem(8, ItemUtils.itemDone());
+		inv.setItem(8, ItemUtils.itemDone);
 		setItemsFromRew();
 		for (int i = items.size(); i < 8; i++) inv.setItem(i, none);
 

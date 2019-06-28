@@ -49,8 +49,8 @@ public class NPCGUI implements CustomInventory{
 		inv.setItem(1, name.clone());
 		inv.setItem(3, skin.clone());
 		inv.setItem(5, type.clone());
-		inv.setItem(7, ItemUtils.itemCancel());
-		inv.setItem(8, ItemUtils.itemDone());
+		inv.setItem(7, ItemUtils.itemCancel);
+		inv.setItem(8, ItemUtils.itemDone);
 		
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;

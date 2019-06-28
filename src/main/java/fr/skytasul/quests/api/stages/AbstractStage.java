@@ -230,7 +230,7 @@ public abstract class AbstractStage implements Listener{
 		}
 		
 		try{
-			Method m = type.stageClass.getMethod("deserialize", Map.class, BranchesManager.class);
+			Method m = type.stageClass.getMethod("deserialize", Map.class, QuestBranch.class);
 			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);
 			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");

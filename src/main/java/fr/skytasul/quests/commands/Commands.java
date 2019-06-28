@@ -44,12 +44,13 @@ public class Commands {
 	
 	@Cmd(permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){
-		Inventories.create(cmd.player, new StagesGUI());
+		Inventories.create(cmd.player, new StagesGUI(null));
 	}
 	
 	@Cmd(permission = "edit", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
-		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
+		cmd.sender.sendMessage("§cThe edit command has been temporarily disabled.");
+		/*Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
@@ -61,7 +62,7 @@ public class Commands {
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
 			}
-		}).enterOrLeave(cmd.player);
+		}).enterOrLeave(cmd.player);*/
 	}
 	
 	@Cmd(permission = "remove", args = "QUESTSID")
@@ -192,7 +193,7 @@ public class Commands {
 			}
 		}
 	}
-	
+
 	@Cmd(permission = "resetPlayer", min = 1, args = "PLAYERS")
 	public void resetPlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];

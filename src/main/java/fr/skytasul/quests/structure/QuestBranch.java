@@ -151,7 +151,10 @@ public class QuestBranch {
 				}
 			}else { // ending stage - redirect to other branch
 				remove(acc, false);
-				endStages.get(stage).start(acc);
+				QuestBranch branch = endStages.get(stage);
+				if (branch == null){
+					getQuest().finish(p);
+				}else branch.start(acc);
 			}
 		});
 	}

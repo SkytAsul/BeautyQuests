@@ -62,7 +62,7 @@ public class RewardsGUI implements CustomInventory {
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, (int) StrictMath.ceil(RewardCreator.getCreators().size() * 1.0 / 9) * 9 + 9, Lang.INVENTORY_REWARDS.toString());
 
-		inv.setItem(4, ItemUtils.itemDone());
+		inv.setItem(4, ItemUtils.itemDone);
 		LinkedList<RewardCreator> ls = RewardCreator.getCreators();
 		for (RewardCreator crea : ls){
 			int id = ls.indexOf(crea) + 9;
@@ -150,7 +150,7 @@ public class RewardsGUI implements CustomInventory {
 
 
 	public static void initialize(){
-		DebugUtils.broadcastDebugMessage("Initlializing default rewards.");
+		DebugUtils.logMessage("Initlializing default rewards.");
 
 		QuestsAPI.registerReward(CommandReward.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.command.toString()), new CommandR());
 		QuestsAPI.registerReward(ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), new ItemR());

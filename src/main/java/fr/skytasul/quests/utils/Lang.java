@@ -243,8 +243,12 @@ public enum Lang{
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
 	laterPage("inv.stages.laterPage"),
+	regularPage("inv.stages.regularPage"),
+	branchesPage("inv.stages.branchesPage"),
 	ending("inv.stages.endingItem"),
 	descMessage("inv.stages.descriptionTextItem"),
+	previousBranch("inv.stages.previousBranch"),
+	newBranch("inv.stages.newBranch"),
 	
 	INVENTORY_DETAILS("inv.details.name"),
 	multiple("inv.details.multipleTime.itemName"),

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -40,7 +38,6 @@ import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
 import fr.skytasul.quests.stages.StageBucket;
 import fr.skytasul.quests.stages.StageBucket.BucketType;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.stages.StageChat;
 import fr.skytasul.quests.stages.StageCraft;
 import fr.skytasul.quests.stages.StageFish;
@@ -48,6 +45,8 @@ import fr.skytasul.quests.stages.StageInteract;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
+import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -73,31 +72,34 @@ public class StagesGUI implements CustomInventory {
 	private boolean stagesEdited = false;
 
 	private FinishGUI finish = null;
+	private StagesGUI previousBranch;
 
 	public Inventory inv;
 	int page;
 	private boolean stop = false;
 
+	public StagesGUI(StagesGUI previousBranch){
+		this.previousBranch = previousBranch;
+	}
+	
 	public Inventory open(Player p) {
 		if (inv == null){
 			inv = Bukkit.createInventory(null, 54, Lang.INVENTORY_STAGES.toString());
 
 			page = 0;
-			lines.add(new Line(inv, 0, this));
-			setStageCreate(lines.get(0));
-			DebugUtils.debugMessage(p, "First line initialized.");
-			for (int i = 1; i < 15; i++) lines.add(new Line(inv, i, this));
-			DebugUtils.debugMessage(p, lines.size() + " lines created.");
+			for (int i = 0; i < 20; i++) lines.add(new Line(inv, i, this));
+			setStageCreate(lines.get(0), false);
+			setStageCreate(lines.get(15), true);
 
-			inv.setItem(45, ItemUtils.itemLaterPage());
-			inv.setItem(49, ItemUtils.itemNextPage());
+			inv.setItem(45, ItemUtils.itemLaterPage);
+			inv.setItem(50, ItemUtils.itemNextPage);
 
-			inv.setItem(51, ItemUtils.itemDone());
-			inv.setItem(52, ItemUtils.itemCancel());
+			inv.setItem(52, ItemUtils.itemDone);
+			inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel : ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
 			refresh(p);
 		}
 
-		p.openInventory(inv);
+		inv = p.openInventory(inv).getTopInventory();
 		return inv;
 	}
 
@@ -109,28 +111,25 @@ public class StagesGUI implements CustomInventory {
 	 */
 	public StagesGUI reopen(Player p, boolean reImplement){
 		if (p != null){
-			DebugUtils.debugMessage(p, "open");
 			if (reImplement) Inventories.put(p, this, inv);
 			p.openInventory(inv);
 		}
 		return this;
 	}
 
-	private void setStageCreate(Line line){
+	private void setStageCreate(Line line, boolean branches){
 		line.removeItems();
-		line.setFirst(stageCreate.clone(), new StageRunnable() {
+		line.setItem(0, stageCreate.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
-				line.setFirst(null, null);
-				int i = 0;
-				for (Entry<StageType, StageCreator> en : StageCreator.getCreators().entrySet()){
-					line.setItem(i, en.getValue().item, new StageRunnable() {
+				line.setItem(0, null, null, true, false);
+				for (int i = 0; i < StageCreator.creators.size(); i++) {
+					StageCreator creator = StageCreator.creators.get(i);
+					line.setItem(i + 1, creator.item, new StageRunnable() {
 						public void run(Player p, LineData datas, ItemStack item) {
-							runClick(line, datas, en.getKey());
-							en.getValue().runnables.start(p, datas);
+							runClick(line, creator, branches);
+							creator.runnables.start(p, datas);
 						}
 					}, true, false);
-					datas.put(i + "", en.getKey());
-					i++;
 				}
 				line.setItems(0);
 			}
@@ -138,13 +137,13 @@ public class StagesGUI implements CustomInventory {
 		line.setItems(0);
 	}
 
-	private void runClick(Line line, LineData datas, StageType type){
+	private void runClick(Line line, StageCreator creator, boolean branches){
 		line.removeItems();
-		datas.clear();
-		datas.put("type", type);
-		datas.put("rewards", new ArrayList<>());
+		line.data.clear();
+		line.data.put("type", creator.type);
+		line.data.put("rewards", new ArrayList<>());
 
-		line.setItem(0, ending, new StageRunnable() {
+		line.setItem(1, ending, new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Inventories.create(p, new RewardsGUI((rewards) -> {
 					datas.put("rewards", rewards);
@@ -153,36 +152,17 @@ public class StagesGUI implements CustomInventory {
 			}
 		});
 
-		line.setItem(1, descMessage.clone(), new StageRunnable() {
+		line.setItem(2, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.DESC_MESSAGE.send(p);
 				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 					datas.put("customText", obj);
-					line.editItem(1, ItemUtils.lore(line.getItem(1), (String) obj));
-					reopen(p, false);
-				}));
-				text.nul = () -> {
-					datas.remove("customText");
-					line.editItem(1,  ItemUtils.lore(line.getItem(1)));
-					reopen(p, false);
-				};
-				text.cancel = () -> {
-					reopen(p, false);
-				};
-			}
-		});
-
-		line.setItem(2, startMessage.clone(), new StageRunnable() {
-			public void run(Player p, LineData datas, ItemStack item){
-				Lang.START_TEXT.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-					datas.put("startMessage", obj);
 					line.editItem(2, ItemUtils.lore(line.getItem(2), (String) obj));
 					reopen(p, false);
 				}));
 				text.nul = () -> {
-					datas.remove("startMessage");
-					line.editItem(2, ItemUtils.lore(line.getItem(2)));
+					datas.remove("customText");
+					line.editItem(2,  ItemUtils.lore(line.getItem(2)));
 					reopen(p, false);
 				};
 				text.cancel = () -> {
@@ -191,30 +171,56 @@ public class StagesGUI implements CustomInventory {
 			}
 		});
 
-		line.setFirst(stageRemove.clone(), new StageRunnable() {
+		line.setItem(3, startMessage.clone(), new StageRunnable() {
+			public void run(Player p, LineData datas, ItemStack item){
+				Lang.START_TEXT.send(p);
+				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+					datas.put("startMessage", obj);
+					line.editItem(3, ItemUtils.lore(line.getItem(3), (String) obj));
+					reopen(p, false);
+				}));
+				text.nul = () -> {
+					datas.remove("startMessage");
+					line.editItem(3, ItemUtils.lore(line.getItem(3)));
+					reopen(p, false);
+				};
+				text.cancel = () -> {
+					reopen(p, false);
+				};
+			}
+		});
+
+		int maxStages = branches ? 20 : 15;
+		line.setItem(0, stageRemove.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.clear();
 				line.removeItems();
-				if (line.getLine() != 14){
-					for (int i = line.getLine() + 1; i < 15; i++){
+				if (line.getLine() != maxStages-1){
+					for (int i = line.getLine() + 1; i < maxStages; i++){
 						getLine(i).exchangeLines(getLine(i - 1));
 					}
-					DebugUtils.debugMessage(p, "--");
 				}
-				for (int i = 0; i < 15; i++){
+				for (int i = 0; i < maxStages; i++){
 					Line l = getLine(i);
 					if (!isActiveLine(l)){
 						if (isClearLine(l)) break;
-						setStageCreate(l);
+						setStageCreate(l, i > maxStages-1);
 						break;
 					}
 				}
 			}
 		});
 
-		if (line.getLine() != 14){
+		if (line.getLine() != maxStages-1){
 			Line next = getLine(line.getLine() + 1);
-			if (!next.data.containsKey("type")) setStageCreate(next);
+			if (!next.data.containsKey("type")) setStageCreate(next, false);
+		}
+		
+		if (branches){
+			line.data.put("branch", new StagesGUI(this));
+			line.setItem(15, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
+				Inventories.create(p, (StagesGUI) datas.get("branch"));
+			});
 		}
 	}
 
@@ -223,7 +229,7 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	private boolean isClearLine(Line line){
-		return !isActiveLine(line) && line.first == null;
+		return !isActiveLine(line);
 	}
 
 	public Line getLine(int id){
@@ -240,25 +246,40 @@ public class StagesGUI implements CustomInventory {
 					page--;
 					refresh(p);
 				}
-			}else if (slot == 49) {
-				if (page < 2) {
+			}else if (slot > 45 && slot < 50){
+				page = slot - 46;
+				refresh(p);
+			}else if (slot == 50) {
+				if (page < 3) {
 					page++;
 					refresh(p);
 				}
-			}else if (slot == 51) {
-				if (isActiveLine(getLine(0))) finish(p);
 			}else if (slot == 52) {
-				stop = true;
-				p.closeInventory();
-				if (isActiveLine(getLine(0))) {
-					if (edit == null) {
-						Lang.QUEST_CANCEL.send(p);
-					}else Lang.QUEST_EDIT_CANCEL.send(p);
+				if (previousBranch == null){
+					if (isActiveLine(getLine(0))) finish(p);
+				}else {
+					StagesGUI branch = previousBranch;
+					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
+					branch.finish(p);
+				}
+			}else if (slot == 53) {
+				if (previousBranch == null){
+					stop = true;
+					p.closeInventory();
+					if (isActiveLine(getLine(0))) {
+						if (edit == null) {
+							Lang.QUEST_CANCEL.send(p);
+						}else Lang.QUEST_EDIT_CANCEL.send(p);
+					}
+				}else {
+					StagesGUI branch = previousBranch;
+					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
+					Inventories.create(p, branch);
 				}
 			}
 		}else {
 			stagesEdited = true;
-			Line line = getLine(Line.getLineNumber(slot)/9 +5*page);
+			Line line = getLine((slot - slot % 9)/9 +5*page);
 			line.click(slot, p, current);
 		}
 		return true;
@@ -270,7 +291,9 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	private void refresh(Player p) {
-		for (int i = 0; i < 3; i++) inv.setItem(i + 46, ItemUtils.itemSeparator(i == page ? DyeColor.GREEN : DyeColor.GRAY));
+		for (int i = 0; i < 3; i++) inv.setItem(i + 46, ItemUtils.item(i == page ? XMaterial.LIME_STAINED_GLASS_PANE : XMaterial.WHITE_STAINED_GLASS_PANE, Lang.regularPage.toString()));
+		inv.setItem(49, ItemUtils.item(page == 3 ? XMaterial.MAGENTA_STAINED_GLASS_PANE : XMaterial.PURPLE_STAINED_GLASS_PANE, Lang.branchesPage.toString()));
+		
 		for (Line line : lines) {
 			line.setItems(line.getActivePage());
 		}
@@ -290,25 +313,24 @@ public class StagesGUI implements CustomInventory {
 		return lines;
 	}
 
-	public void edit(Quest quest){
+	/*public void edit(Quest quest){
 		for (AbstractStage st : quest.getBranchesManager().getStages()){
 			Line line = getLine(st.getID());
 			runClick(line, line.data, st.getType());
-			//line.data.put("end", st.getEnding().clone());
 			line.data.put("rewards", st.getRewards());
 			if (st.getStartMessage() != null){
 				line.data.put("startMessage", st.getStartMessage());
-				line.editItem(2, ItemUtils.lore(line.getItem(2), st.getStartMessage()));
+				line.editItem(3, ItemUtils.lore(line.getItem(3), st.getStartMessage()));
 			}
 			if (st.getCustomText() != null){
 				line.data.put("customText", st.getCustomText());
-				line.editItem(1, ItemUtils.lore(line.getItem(1), st.getCustomText()));
+				line.editItem(2, ItemUtils.lore(line.getItem(2), st.getCustomText()));
 			}
-			StageCreator.getCreators().get(st.getType()).runnables.edit(line.data, st);
+			StageCreator.getCreator(st.getType()).runnables.edit(line.data, st);
 			line.setItems(0);
 		}
 		edit = quest;
-	}
+	}*/
 
 
 
@@ -324,7 +346,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 
 	public static void initialize(){
-		DebugUtils.broadcastDebugMessage("Initlializing default stage types.");
+		DebugUtils.logMessage("Initlializing default stage types.");
 
 		QuestsAPI.registerStage(new StageType("REGION", StageArea.class, Lang.Find.name(), "WorldGuard"), stageArea, new CreateArea());
 		QuestsAPI.registerStage(new StageType("NPC", StageNPC.class, Lang.Talk.name()), stageNPC, new CreateNPC());
@@ -357,7 +379,7 @@ class CreateNPC implements StageCreationRunnables{
 
 	public static void npcDone(NPC npc, StagesGUI sg, Line line, LineData datas){
 		datas.put("npc", npc);
-		datas.getLine().setItem(5, stageText.clone(), new StageRunnable() {
+		datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 				Editor.enterOrLeave(p, new DialogEditor(p, (NPC) datas.get("npc"), (obj) -> {
@@ -367,7 +389,7 @@ class CreateNPC implements StageCreationRunnables{
 			}
 		}, true, true);
 
-		datas.getLine().setItem(4, ItemUtils.itemSwitch(Lang.stageHide.toString(), datas.containsKey("hide") ? (boolean) datas.get("hide") : false), new StageRunnable() {
+		datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.stageHide.toString(), datas.containsKey("hide") ? (boolean) datas.get("hide") : false), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.put("hide", ItemUtils.toggle(item));
 			}
@@ -385,8 +407,8 @@ class CreateNPC implements StageCreationRunnables{
 		npcDone(stage.getNPC(), datas.getGUI(), datas.getLine(), datas);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu) {
-		StageNPC stage = new StageNPC(qu.getBranchesManager(), (NPC) datas.get("npc"));
+	public AbstractStage finish(LineData datas, QuestBranch branch) {
+		StageNPC stage = new StageNPC(branch, (NPC) datas.get("npc"));
 		setFinish(stage, datas);
 		return stage;
 	}
@@ -398,7 +420,7 @@ class CreateNPC implements StageCreationRunnables{
 }
 
 class CreateBringBack implements StageCreationRunnables{
-	private static final ItemStack stageItems = ItemUtils.item(XMaterial.DIAMOND_SWORD, Lang.stageItems.toString());
+	private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 	public void start(Player p, LineData datas) {
 		StagesGUI sg = datas.getGUI();
 		Line line = datas.getLine();
@@ -417,7 +439,7 @@ class CreateBringBack implements StageCreationRunnables{
 	}
 
 	public static void setItem(Line line, StagesGUI sg){
-		line.setItem(6, stageItems.clone(), new StageRunnable() {
+		line.setItem(7, stageItems.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Inventories.create(p, new ItemsGUI(() -> {
 					sg.reopen(p, true);
@@ -426,8 +448,8 @@ class CreateBringBack implements StageCreationRunnables{
 		});
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu) {
-		StageBringBack stage = new StageBringBack(qu.getBranchesManager(), (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+	public AbstractStage finish(LineData datas, QuestBranch branch) {
+		StageBringBack stage = new StageBringBack(branch, (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 		CreateNPC.setFinish(stage, datas);
 		return stage;
 	}
@@ -455,7 +477,7 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public static void setItems(Line line, StagesGUI sg, LineData datas){
-		line.setItem(5, editMobs.clone(), new StageRunnable() {
+		line.setItem(6, editMobs.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
 				mobs.setMobsFromList((List<Mob>) datas.get("mobs"));
@@ -465,15 +487,15 @@ class CreateMobs implements StageCreationRunnables{
 				};
 			}
 		});
-		line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), datas.containsKey("shoot") ? (boolean) datas.get("shoot") : false), new StageRunnable() {
+		line.setItem(5, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), datas.containsKey("shoot") ? (boolean) datas.get("shoot") : false), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
-				datas.put("shoot", ItemUtils.toggle(datas.getLine().getItem(6)));
+				datas.put("shoot", ItemUtils.toggle(datas.getLine().getItem(5)));
 			}
 		});
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu) {
-		StageMobs stage = new StageMobs(qu.getBranchesManager(), ((List<Mob>) datas.get("mobs")));
+	public AbstractStage finish(LineData datas, QuestBranch branch) {
+		StageMobs stage = new StageMobs(branch, ((List<Mob>) datas.get("mobs")));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
@@ -506,12 +528,12 @@ class CreateArea implements StageCreationRunnables{
 			} else {
 				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
 				sg.reopen(p, false);
-				if (first) line.executeFirst(p);
+				if (first) line.click(0, p, line.getItem(0));
 			}
 		}));
 		wt.cancel = () -> {
 			sg.reopen(p, false);
-			if (first) line.executeFirst(p);
+			if (first) line.click(0, p, line.getItem(0));
 		};
 	}
 
@@ -523,8 +545,8 @@ class CreateArea implements StageCreationRunnables{
 		}, true, true);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu) {
-		StageArea stage = new StageArea(qu.getBranchesManager(), (String) datas.get("region"), (String) datas.get("world"));
+	public AbstractStage finish(LineData datas, QuestBranch branch) {
+		StageArea stage = new StageArea(branch, (String) datas.get("region"), (String) datas.get("world"));
 		return stage;
 	}
 
@@ -533,7 +555,7 @@ class CreateArea implements StageCreationRunnables{
 		datas.put("region", st.getRegion().getId());
 		datas.put("world", WorldGuard.getWorld(st.getRegion().getId()).getName());
 		setItem(datas.getLine(), datas.getGUI());
-		ItemUtils.name(datas.getLine().getItem(6), st.getRegion().getId());
+		ItemUtils.name(datas.getLine().getItem(7), st.getRegion().getId());
 	}
 }
 
@@ -549,8 +571,8 @@ class CreateMine implements StageCreationRunnables{
 		};
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		StageMine stage = new StageMine(qu.getBranchesManager(), (List<BlockData>) datas.get("blocks"));
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		StageMine stage = new StageMine(branch, (List<BlockData>) datas.get("blocks"));
 		stage.setPlaceCancelled((boolean) datas.get("prevent"));
 		return stage;
 	}
@@ -563,7 +585,7 @@ class CreateMine implements StageCreationRunnables{
 	}
 
 	public static void setItems(Line line, LineData datas){
-		line.setItem(5, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
+		line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
 				blocks.setBlocksFromList(blocks.inv, (List<BlockData>) datas.get("blocks"));
@@ -573,7 +595,7 @@ class CreateMine implements StageCreationRunnables{
 				};
 			}
 		});
-		line.setItem(4, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), (boolean) datas.get("prevent")), new StageRunnable() {
+		line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), (boolean) datas.get("prevent")), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.put("prevent", ItemUtils.toggle(item));
 			}
@@ -589,8 +611,8 @@ class CreateChat implements StageCreationRunnables{
 		launchEditor(p, datas);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		StageChat stage = new StageChat(qu.getBranchesManager(), (String) datas.get("text"), (boolean) datas.get("cancel"));
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		StageChat stage = new StageChat(branch, (String) datas.get("text"), (boolean) datas.get("cancel"));
 		return stage;
 	}
 
@@ -602,12 +624,12 @@ class CreateChat implements StageCreationRunnables{
 	}
 
 	public static void setItems(LineData datas) {
-		datas.getLine().setItem(5, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString()), new StageRunnable() {
+		datas.getLine().setItem(6, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				launchEditor(p, datas);
 			}
 		});
-		datas.getLine().setItem(4, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), (boolean) datas.get("cancel")), new StageRunnable() {
+		datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), (boolean) datas.get("cancel")), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				datas.put("cancel", ItemUtils.toggle(item));
 			}
@@ -635,12 +657,12 @@ class CreateInteract implements StageCreationRunnables{
 	}
 	
 	public static void setItems(LineData datas){
-		datas.getLine().setItem(4, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.containsKey("left") ? (boolean) datas.get("left") : false), new StageRunnable() {
+		datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.containsKey("left") ? (boolean) datas.get("left") : false), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				datas.put("left", ItemUtils.toggle(item));
 			}
 		});
-		datas.getLine().setItem(5, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString()), new StageRunnable() {
+		datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.CLICK_BLOCK.send(p);
 				new WaitBlockClick(p, (obj) -> {
@@ -658,8 +680,8 @@ class CreateInteract implements StageCreationRunnables{
 		setItems(datas);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		return new StageInteract(qu.getBranchesManager(), (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		return new StageInteract(branch, (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
 	}
 	
 }
@@ -674,8 +696,8 @@ class CreateFish implements StageCreationRunnables{
 		}, items));
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		StageFish stage = new StageFish(qu.getBranchesManager(), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		StageFish stage = new StageFish(branch, ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 		return stage;
 	}
 
@@ -685,7 +707,7 @@ class CreateFish implements StageCreationRunnables{
 	}
 
 	public static void setItem(Line line, StagesGUI sg){
-		line.setItem(5, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
+		line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Inventories.create(p, new ItemsGUI(() -> {
 					datas.getGUI().reopen(p, true);
@@ -704,8 +726,8 @@ class CreateCraft implements StageCreationRunnables{
 		}).create(p);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		StageCraft stage = new StageCraft(qu.getBranchesManager(), (ItemStack) datas.get("item"));
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		StageCraft stage = new StageCraft(branch, (ItemStack) datas.get("item"));
 		return stage;
 	}
 
@@ -715,7 +737,7 @@ class CreateCraft implements StageCreationRunnables{
 	}
 
 	public static void setItem(Line line){
-		line.setItem(5, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
+		line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
 			new ItemGUI((is) -> {
 				datas.put("item", is);
 				datas.getGUI().reopen(p, true);
@@ -736,8 +758,8 @@ class CreateBucket implements StageCreationRunnables{
 		}).create(p);
 	}
 
-	public AbstractStage finish(LineData datas, Quest qu){
-		StageBucket stage = new StageBucket(qu.getBranchesManager(), (BucketType) datas.get("bucket"), (int) datas.get("amount"));
+	public AbstractStage finish(LineData datas, QuestBranch branch){
+		StageBucket stage = new StageBucket(branch, (BucketType) datas.get("bucket"), (int) datas.get("amount"));
 		return stage;
 	}
 
@@ -749,7 +771,7 @@ class CreateBucket implements StageCreationRunnables{
 	}
 
 	public static void setItems(Line line){
-		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
+		line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
 			new TextEditor(p, (obj) -> {
 				datas.put("amount", obj);
 				datas.getGUI().reopen(p, true);
@@ -757,7 +779,7 @@ class CreateBucket implements StageCreationRunnables{
 			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
 		});
 		BucketType type = (BucketType) line.data.get("bucket");
-		line.setItem(5, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
+		line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
 			new BucketTypeGUI((bucket) -> {
 				datas.put("bucket", bucket);
 				datas.getGUI().reopen(p, true);

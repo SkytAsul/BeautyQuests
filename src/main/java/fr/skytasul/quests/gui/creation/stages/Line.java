@@ -17,7 +17,6 @@ public class Line {
 	private int maxPage = 1;
 	
 	NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
-	Pair<ItemStack, StageRunnable> first = new Pair<>(null, null);
 
 	LineData data;
 	
@@ -54,7 +53,7 @@ public class Line {
 				items.add(en);
 			}else items.set(slot, en);
 		}
-		maxPage = (int) Math.ceil(items.getLast() * 1.0D / 6.0D);
+		maxPage = (int) Math.ceil(items.getLast() * 1.0D / 7.0D);
 		if (maxPage == 0) maxPage = 1;
 		if (refresh){
 			activePage = 0;
@@ -79,7 +78,7 @@ public class Line {
 	 * @return ItemStack in the gui if showed, or ItemStack stocked
 	 */
 	public ItemStack getItem(int slot){
-		if (line >= data.getGUI().page * 5 && line < (data.getGUI().page+1)*5) return inv.getItem(line*9 - data.getGUI().page*5*9 + 1 + (slot - activePage*7));
+		if (line >= data.getGUI().page * 5 && line < (data.getGUI().page+1)*5) return inv.getItem(line*9 - data.getGUI().page*5*9 + (slot - activePage*8));
 		return items.get(slot).getKey();
 	}
 	
@@ -116,20 +115,17 @@ public class Line {
 		if (!isInGUIPage()) return;
 		clearLine();
 		this.activePage = page;
-		if (first != null) RsetItem(0, first.getKey());
-		for (int i = 0; i < 7; i++){
-			int id = page*7+i;
-			if (id == items.getLast() + 1){
-				break;
-			}
+		for (int i = 0; i < 8; i++){
+			int id = page*8+i;
+			if (id == items.getLast() + 1) break; // last item of line
 			if (!items.contains(id)) continue;
 			Pair<ItemStack, StageRunnable> pair = items.get(id);
-			RsetItem(i + 1, pair.getKey());
-			pair.setKey(inv.getItem(getRSlot(i) + 1));
+			RsetItem(i, pair.getKey());
+			pair.setKey(inv.getItem(getRSlot(i)));
 		}
 		if (maxPage > 1){
-			if (page < maxPage - 1) RsetItem(8, ItemUtils.itemNextPage());
-			if (page > 0) RsetItem(0, ItemUtils.itemLaterPage());
+			if (page < maxPage - 1) RsetItem(8, ItemUtils.itemNextPage);
+			if (page > 0) RsetItem(0, ItemUtils.itemLaterPage);
 		}
 	}
 	
@@ -150,28 +146,22 @@ public class Line {
 		return line >= gpage*5 && line < (gpage+1)*5;
 	}
 	
-	void click(int slot, Player p, ItemStack is){
+	public void click(int slot, Player p, ItemStack is){
 		slot = slot - (line - data.getGUI().page*5)*9;
-		if (slot == 0){
-			if (activePage > 0){
-				activePage--;
-				setItems(activePage);
-			}else if (first.getValue() != null) first.getValue().run(p, data, is);
+		if (slot == 0 && activePage > 0){
+			activePage--;
+			setItems(activePage);
 		}else if (slot == 8){
 			if (activePage < maxPage - 1){
 				activePage++;
 				setItems(activePage);
 			}
 		}else {
-			int item = activePage * 7 + slot - 1;
+			int item = activePage * 8 + slot;
 			if (items.get(item) == null) return;
 			if (items.get(item).getValue() == null) return;
 			items.get(item).getValue().run(p, data, is);
 		}
-	}
-	
-	void setFirst(ItemStack is, StageRunnable run){
-		this.first = new Pair<ItemStack, StageRunnable>(is, run);
 	}
 	
 	private void clearLine(){
@@ -185,31 +175,16 @@ public class Line {
 		return line*9 - data.getGUI().page*5*9 + lineSlot;
 	}
 	
-	public void executeFirst(Player p) {
-		if (first != null && first.getValue() != null) first.getValue().run(p, data, inv.getItem(getRSlot(0)));
-	}
-	
 	/**
 	 * Remove all items (and clear the line)
 	 */
 	public void removeItems(){
 		items.clear();
-		first = new Pair<>(null, null);
 		clearLine();
 	}
 	
 	private void RsetItem(int Rslot, ItemStack is){
 		inv.setItem(getRSlot(Rslot), is);
-	}
-	
-	
-	/**
-	 * Get the first slot of the line (line number) from any slot in any inventory
-	 * @param slot inventory slot
-	 * @return line number, first slot of the line
-	 */
-	public static int getLineNumber(int slot){
-		return slot - slot % 9;
 	}
 	
 }

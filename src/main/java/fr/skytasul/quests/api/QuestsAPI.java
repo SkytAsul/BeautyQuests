@@ -39,8 +39,8 @@ public class QuestsAPI {
 			return;
 		}
 		StageType.types.add(type);
-		StageCreator.creators.put(type, new StageCreator(item, runnables));
-		DebugUtils.broadcastDebugMessage("Stage registered (" + type.name + ", " + (StageCreator.creators.size()-1) + ")");
+		StageCreator.creators.add(new StageCreator(type, item, runnables));
+		DebugUtils.logMessage("Stage registered (" + type.name + ", " + (StageCreator.creators.size()-1) + ")");
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class QuestsAPI {
 	 */
 	public static void registerRequirement(Class<? extends AbstractRequirement> clazz, ItemStack item, RequirementCreationRunnables runnables){
 		RequirementCreator.creators.add(new RequirementCreator(clazz, item, runnables));
-		DebugUtils.broadcastDebugMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
+		DebugUtils.logMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class QuestsAPI {
 	 */
 	public static void registerReward(Class<? extends AbstractReward> clazz, ItemStack item, RewardCreationRunnables runnables){
 		RewardCreator.creators.add(new RewardCreator(clazz, item, runnables));
-		DebugUtils.broadcastDebugMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
+		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
 	

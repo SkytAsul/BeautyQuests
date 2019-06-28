@@ -188,20 +188,24 @@ public class ItemUtils {
 	
 
 	/**
-	 * Get a ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
-	 * @return ItemStack instance of a "previous page" item
+	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemLaterPage(){
-		return item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString());
-	}
+	public static ItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
-	 * Get a ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
-	 * @return ItemStack instance of a "next page" item
+	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemNextPage(){
-		return item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString());
-	}
+	public static ItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+
+	/**
+	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
+	 */
+	public static ItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
+
+	/**
+	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
+	 */
+	public static ItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted
@@ -210,22 +214,6 @@ public class ItemUtils {
 	 */
 	public static ItemStack itemSeparator(DyeColor color){
 		return item(XMaterial.requestXMaterial("STAINED_GLASS_PANE", (byte) color.ordinal()), "§7");
-	}
-	
-	/**
-	 * Get an barrier item with name "inv.cancel"
-	 * @return ItemStack instance of a cancel item
-	 */
-	public static ItemStack itemCancel(){
-		return item(XMaterial.BARRIER, Lang.cancel.toString());
-	}
-	
-	/**
-	 * Get an diamond item with name "inv.done"
-	 * @return ItemStack instance of a validate item
-	 */
-	public static ItemStack itemDone(){
-		return item(XMaterial.DIAMOND, Lang.done.toString());
 	}
 
 	/**
