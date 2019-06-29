@@ -148,10 +148,11 @@ public class BranchesManager{
 	public static BranchesManager deserialize(Map<String, Object> map, Quest qu){
 		BranchesManager bm = new BranchesManager(qu);
 		
-		if (map.containsKey("stages")){
+		if (map.containsKey("stages")){ // migration <0.16
 			try{
-				QuestBranch branch = QuestBranch.deserialize(map, bm);
+				QuestBranch branch = new QuestBranch(bm);
 				bm.addBranch(branch);
+				branch.load(map);
 				return bm;
 			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when converting old stages to the branches system for the quest " + qu.getName());
@@ -160,6 +161,7 @@ public class BranchesManager{
 				return null;
 			}
 		}
+		
 		
 		List<Map<String, Object>> branches = (List<Map<String, Object>>) map.get("branches");
 		branches.sort((x, y) -> {
@@ -170,16 +172,15 @@ public class BranchesManager{
 			BeautyQuests.logger.warning("Two branches with same order in quest " + qu.getID());
 			return 0;
 		});
+		branches.forEach((x) -> bm.addBranch(new QuestBranch(bm)));
 
 		for (int i = 0; i < branches.size(); i++) {
 			try{
-				QuestBranch branch = QuestBranch.deserialize(branches.get(i), bm);
-				if (branch == null){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (null branch)");
+				if (!bm.getBranch(i).load(branches.get(i))){
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
-				bm.addBranch(branch);
 			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName());
 				ex.printStackTrace();

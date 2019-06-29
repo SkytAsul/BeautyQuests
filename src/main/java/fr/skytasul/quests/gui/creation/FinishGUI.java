@@ -36,6 +36,7 @@ import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.PlayerAdvancement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -348,26 +349,6 @@ public class FinishGUI implements CustomInventory{
 		qu.setRepeatable(isRepeatable);
 		qu.setScoreboardEnabled(hasScoreboard);
 		qu.setHid(isHid);
-		for (LineData ln : stages.getLinesDatas()){
-			try{
-				StageType type = (StageType) ln.get("type");
-				AbstractStage stage = StageCreator.getCreators().get(type).runnables.finish(ln, qu);
-				stage.setRewards((List<AbstractReward>) ln.get("rewards"));
-				stage.setCustomText((String) ln.get("customText"));
-				stage.setStartMessage((String) ln.get("startMessage"));
-				qu.getBranchesManager().addStage(stage);
-			}catch (Throwable ex){
-				Lang.ERROR_OCCURED.send(p, " lineToStage");
-				ex.printStackTrace();
-				continue;
-			}
-		}
-		if (editing && !stagesEdited){
-			qu.getBranchesManager().setPlayersStage(players);
-			for (int i = 0; i < qu.getBranchesManager().getBranchesAmount(); i++){
-				qu.getBranchesManager().getBranch(i).setPlayersStage(branchesPlayers.get(i));
-			}
-		}
 		qu.setBypassLimit(bypassLimit);
 		qu.setCancellable(isCancellable);
 		qu.setTimer(timer);
@@ -375,13 +356,24 @@ public class FinishGUI implements CustomInventory{
 		qu.setStartRewards(rewardsStart);
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
-		qu.setHologramLaunch(hologramLaunch);
-		qu.setHologramLaunchNo(hologramLaunchNo);
+		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(hologramLaunch);
+		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(hologramLaunchNo);
+		qu.getRequirements().addAll(requirements);
 		if (dialog != null){
 			dialog.setNPC(startNPC);
 			qu.setStartDialog(dialog);
 		}
-		qu.getRequirements().addAll(requirements);
+		
+		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());
+		qu.getBranchesManager().addBranch(mainBranch);
+		loadBranch(mainBranch, stages);
+		
+		if (editing && !stagesEdited){
+			qu.getBranchesManager().setPlayersStage(players);
+			for (int i = 0; i < qu.getBranchesManager().getBranchesAmount(); i++){
+				qu.getBranchesManager().getBranch(i).setPlayersStage(branchesPlayers.get(i));
+			}
+		}
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
@@ -390,11 +382,37 @@ public class FinishGUI implements CustomInventory{
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
 			BeautyQuests.getInstance().addQuest(qu);
-			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getStageSize());
+			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 		}
 		Inventories.closeAndExit(p);
+	}
+	
+	private void loadBranch(QuestBranch branch, StagesGUI gui){
+		for (LineData ln : gui.getLinesDatas()){
+			try{
+				StageType type = (StageType) ln.get("type");
+				AbstractStage stage = StageCreator.getCreator(type).runnables.finish(ln, branch);
+				stage.setRewards((List<AbstractReward>) ln.get("rewards"));
+				stage.setCustomText((String) ln.get("customText"));
+				stage.setStartMessage((String) ln.get("startMessage"));
+				if (ln.containsKey("branch")){
+					StagesGUI newGUI = (StagesGUI) ln.get("branch");
+					QuestBranch newBranch = null;
+					if (!newGUI.isEmpty()){
+						newBranch = new QuestBranch(branch.getBranchesManager());
+						branch.getBranchesManager().addBranch(newBranch);
+						loadBranch(newBranch, newGUI);
+					}
+					branch.addEndStage(stage, newBranch);
+				}else branch.addStage(stage);
+			}catch (Throwable ex){
+				Lang.ERROR_OCCURED.send(p, " lineToStage");
+				ex.printStackTrace();
+				continue;
+			}
+		}
 	}
 
 	private void setFromQuest(){

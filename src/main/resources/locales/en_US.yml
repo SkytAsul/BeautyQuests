@@ -207,7 +207,7 @@ inv:
     talkChat: '§aWrite in chat'
     interact: '§aInteract with block'
     fish: '§aCatch fishes'
-    craft: '§aCraft an item'
+    craft: '§aCraft item'
     bucket: '§aFill buckets'
     NPCText: '§eEdit dialog'
     hideClues: 'Hide particles and holograms'
@@ -232,7 +232,13 @@ inv:
     laterPage: '§ePrevious page'
     endingItem: '§eEdit end rewards'
     descriptionTextItem: '§eEdit description'
+    regularPage: '§aRegular stages'
+    branchesPage: '§dBranch stages'
+    previousBranch: '§eBack to previous branch'
+    newBranch: '§eCreate new branch'
   details:
+    hologramLaunch: '§eEdit "launch" hologram item'
+    hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
     name: '§8Last quest details'
     multipleTime:
       itemName: 'Toggle several-use'

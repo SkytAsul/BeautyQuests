@@ -60,6 +60,12 @@ public class QuestBranch {
 		stage.load();
 	}
 	
+	public void addEndStage(AbstractStage stage, QuestBranch linked){
+		Validate.notNull(stage, "Stage cannot be null !");
+		endStages.put(stage, linked);
+		stage.load();
+	}
+	
 	public int getID(AbstractStage stage){
 		return regularStages.indexOf(stage);
 	}
@@ -70,6 +76,10 @@ public class QuestBranch {
 	
 	public AbstractStage getStage(int id){
 		return regularStages.get(id);
+	}
+
+	public boolean isRegulatStage(AbstractStage stage){
+		return regularStages.contains(stage);
 	}
 	
 	public String getDescriptionLine(PlayerAccount account, Source source){
@@ -136,9 +146,14 @@ public class QuestBranch {
 		DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
 		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (!isRegulatStage(stage)){ // ending stage
+			for (AbstractStage end : endStages.keySet()){
+				if (end != stage) end.finish(p);
+			}
+		}
 		endStage(acc, stage, () -> {
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
-				int newId = playerAdvancement.get(acc).regularStage;
+				int newId = playerAdvancement.get(acc).regularStage + 1;
 				if (newId == regularStages.size()){
 					if (endStages.isEmpty()){
 						remove(acc, false);
@@ -204,6 +219,7 @@ public class QuestBranch {
 	
 	public void setEndingStages(PlayerAccount acc, boolean launchStage){
 		Player p = acc.getPlayer();
+		if (!playerAdvancement.containsKey(acc)) playerAdvancement.put(acc, new PlayerAdvancement());
 		playerAdvancement.get(acc).inEndingStages();
 		for (AbstractStage newStage : endStages.keySet()){
 			if (p != null && launchStage) newStage.launch(p);
@@ -223,25 +239,43 @@ public class QuestBranch {
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new LinkedHashMap<>();
 		
+		map.put("order", manager.getID(this));
+		
 		List<Map<String, Object>> st = new ArrayList<>();
 		for (AbstractStage stage : regularStages){
 			try{
 				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
-			}catch (Throwable ex){
+			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getName());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
 			}
 		}
+		map.put("stages", st);
+		
+		st = new ArrayList<>();
+		for (Entry<AbstractStage, QuestBranch> en : endStages.entrySet()){
+			try{
+				Map<String, Object> datas = en.getKey().serialize();
+				if (datas != null){
+					datas.put("branchLinked", manager.getID(en.getValue()));
+					st.add(datas);
+				}
+			}catch (Exception ex){
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getName());
+				ex.printStackTrace();
+				BeautyQuests.savingFailure = true;
+				continue;
+			}
+		}
+		map.put("endingStages", st);
 		
 		Map<String, Object> pl = new LinkedHashMap<>();
 		for (Entry<PlayerAccount, PlayerAdvancement> en : playerAdvancement.entrySet()){
 			pl.put(en.getKey().getIndex(), en.getValue().getState());
 		}
-		
-		map.put("stages", st);
 		map.put("players", pl);
 		
 		return map;
@@ -251,9 +285,7 @@ public class QuestBranch {
 		return "StageManager{stages=" + regularStages.size() + ",players=" + playerAdvancement.size() + "}";
 	}
 	
-	public static QuestBranch deserialize(Map<String, Object> map, BranchesManager manager){
-		QuestBranch sm = new QuestBranch(manager);
-		
+	public boolean load(Map<String, Object> map){
 		List<Map<String, Object>> stages = (List<Map<String, Object>>) map.get("stages");
 		stages.sort((x, y) -> {
 			int xid = (int) x.get("order");
@@ -266,18 +298,37 @@ public class QuestBranch {
 		
 		for (int i = 0; i < stages.size(); i++){
 			try{
-				AbstractStage st = AbstractStage.deserialize(stages.get(i), sm);
+				AbstractStage st = AbstractStage.deserialize(stages.get(i), this);
 				if (st == null){
 					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName() + " (stage null)");
 					BeautyQuests.loadingFailure = true;
-					return null;
+					return false;
 				}
-				sm.addStage(st);
+				addStage(st);
 			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
-				return null;
+				return false;
+			}
+		}
+		
+		if (map.containsKey("endingStages")){
+			for (Map<String, Object> endMap : (List<Map<String, Object>>) map.get("endingStages")){
+				try{
+					AbstractStage st = AbstractStage.deserialize(endMap, this);
+					if (st == null){
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getName() + " (stage null)");
+						BeautyQuests.loadingFailure = true;
+						return false;
+					}
+					addEndStage(st, manager.getBranch((int) endMap.get("branchLinked")));
+				}catch (Exception ex){
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getName());
+					ex.printStackTrace();
+					BeautyQuests.loadingFailure = true;
+					return false;
+				}
 			}
 		}
 		
@@ -290,10 +341,10 @@ public class QuestBranch {
 							DebugUtils.logMessage("PlayerAccount with ID " + accId + " null in quest " + manager.getQuest().getID());
 							return;
 						}
-						sm.playerAdvancement.put(acc, new PlayerAdvancement());
-						if ("end".equals(adv)) sm.setEndingStages(acc, false); else sm.setStage(acc, (int) adv, false);
+						playerAdvancement.put(acc, new PlayerAdvancement());
+						if ("end".equals(adv)) setEndingStages(acc, false); else setStage(acc, (int) adv, false);
 					}catch (Exception ex){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas of " + accId + " for the branch " + map.get("order") + " in the quest " + sm.getQuest().getName());
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas of " + accId + " for the branch " + map.get("order") + " in the quest " + getQuest().getName());
 						ex.printStackTrace();
 						BeautyQuests.loadingFailure = true;
 					}
@@ -301,7 +352,7 @@ public class QuestBranch {
 			}
 		}.runTaskLater(BeautyQuests.getInstance(), 1L);
 		
-		return sm;
+		return true;
 	}
 	
 	public static class PlayerAdvancement{

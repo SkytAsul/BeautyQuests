@@ -203,7 +203,7 @@ public class StagesGUI implements CustomInventory {
 				for (int i = 0; i < maxStages; i++){
 					Line l = getLine(i);
 					if (!isActiveLine(l)){
-						if (isClearLine(l)) break;
+						if (!isActiveLine(l)) break;
 						setStageCreate(l, i > maxStages-1);
 						break;
 					}
@@ -213,7 +213,7 @@ public class StagesGUI implements CustomInventory {
 
 		if (line.getLine() != maxStages-1){
 			Line next = getLine(line.getLine() + 1);
-			if (!next.data.containsKey("type")) setStageCreate(next, false);
+			if (!next.data.containsKey("type")) setStageCreate(next, branches);
 		}
 		
 		if (branches){
@@ -228,15 +228,15 @@ public class StagesGUI implements CustomInventory {
 		return line.data.containsKey("type");
 	}
 
-	private boolean isClearLine(Line line){
-		return !isActiveLine(line);
-	}
-
 	public Line getLine(int id){
 		for (Line l : lines){
 			if (l.getLine() == id) return l;
 		}
 		return null;
+	}
+	
+	public boolean isEmpty(){
+		return !isActiveLine(getLine(0)) && !isActiveLine(getLine(15));
 	}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -255,23 +255,23 @@ public class StagesGUI implements CustomInventory {
 					refresh(p);
 				}
 			}else if (slot == 52) {
-				if (previousBranch == null){
-					if (isActiveLine(getLine(0))) finish(p);
-				}else {
+				if (previousBranch == null){ // main inventory = directly finish if not empty
+					if (!isEmpty()) finish(p);
+				}else { // branch inventory = get the main inventory to finish
 					StagesGUI branch = previousBranch;
 					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 					branch.finish(p);
 				}
 			}else if (slot == 53) {
-				if (previousBranch == null){
+				if (previousBranch == null){ // main inventory = cancel button
 					stop = true;
 					p.closeInventory();
-					if (isActiveLine(getLine(0))) {
+					if (!isEmpty()) {
 						if (edit == null) {
 							Lang.QUEST_CANCEL.send(p);
 						}else Lang.QUEST_EDIT_CANCEL.send(p);
 					}
-				}else {
+				}else { // branch inventory = previous branch button
 					StagesGUI branch = previousBranch;
 					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 					Inventories.create(p, branch);
@@ -286,7 +286,7 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	public CloseBehavior onClose(Player p, Inventory inv){
-		if (!isActiveLine(getLine(0)) || stop) return CloseBehavior.REMOVE;
+		if (isEmpty() || stop) return CloseBehavior.REMOVE;
 		return CloseBehavior.REOPEN;
 	}
 
@@ -307,8 +307,8 @@ public class StagesGUI implements CustomInventory {
 
 	public List<LineData> getLinesDatas(){
 		List<LineData> lines = new LinkedList<>();
-		for (int i = 0; i < 15; i++){
-			if (isActiveLine(getLine(i))) lines.add(/*i, */getLine(i).data);
+		for (int i = 0; i < 20; i++){
+			if (isActiveLine(getLine(i))) lines.add(getLine(i).data);
 		}
 		return lines;
 	}

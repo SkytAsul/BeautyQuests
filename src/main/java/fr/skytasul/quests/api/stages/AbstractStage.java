@@ -203,7 +203,7 @@ public abstract class AbstractStage implements Listener{
 	public final Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
-		map.put("order", branch.getID(this));
+		if (branch.isRegulatStage(this)) map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
 		map.put("text", startMessage);
 		map.put("customText", customText);
