@@ -70,7 +70,7 @@ public class MobsListGUI implements CustomInventory{
 			String typeName = mm.getEntityType().toUpperCase();
 			if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 			if (typeName.equalsIgnoreCase("MPET")) typeName = mm.getConfig().getString("MPet.Anchor");
-			if (NMS.getMCVersion() < 11 && typeName == "WITHER_SKELETON") typeName = "SKELETON";
+			if (NMS.getMCVersion() < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
 			EntityType type = EntityType.fromName(typeName);
 			if (type == null) type = EntityType.valueOf(typeName);
 			return ItemUtils.item(XMaterial.mobItem(type), MythicMobs.getDisplayName(mm), lore, "Base Health : " + mm.getBaseHealth(), "Base Damage : " + mm.getBaseDamage(), "Base Armor : " + mm.getBaseArmor(), "", Lang.click.toString());
