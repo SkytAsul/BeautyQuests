@@ -179,7 +179,7 @@ public class NPCStarter {
 			this.visible = visible;
 			this.enabled = enabled && item != null;
 			this.item = item;
-			if (this.enabled && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) this.text = item.getItemMeta().getDisplayName();
+			if (this.enabled && QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) this.text = item.getItemMeta().getDisplayName();
 		}
 		
 		public void refresh(LivingEntity en){
