@@ -49,20 +49,19 @@ public class Commands {
 	
 	@Cmd(permission = "edit", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
-		cmd.sender.sendMessage("§cThe edit command has been temporarily disabled.");
-		/*Lang.CHOOSE_NPC_STARTER.send(cmd.player);
+		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						if (quObj == null) return;
-						Inventories.create(cmd.player, new StagesGUI()).edit((Quest) quObj);
+						Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) quObj);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
 			}
-		}).enterOrLeave(cmd.player);*/
+		}).enterOrLeave(cmd.player);
 	}
 	
 	@Cmd(permission = "remove", args = "QUESTSID")
@@ -160,7 +159,7 @@ public class Commands {
 			}
 			PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
 			if (!adv.isInEndingStages()){
-				currentBranch.finishStage(target, currentBranch.getStage(adv.getRegularStage()));
+				currentBranch.finishStage(target, currentBranch.getRegularStage(adv.getRegularStage()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
 			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(cmd.sender);
 		}else {
@@ -181,9 +180,9 @@ public class Commands {
 			if (currentBranch != null) {
 				PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
 				if (adv.isInEndingStages()){
-					for (AbstractStage stage : currentBranch.endStages.keySet()) stage.end(acc);
+					for (AbstractStage stage : currentBranch.getEndingStages().keySet()) stage.end(acc);
 				}else {
-					currentBranch.getStage(adv.getRegularStage()).end(acc);
+					currentBranch.getRegularStage(adv.getRegularStage()).end(acc);
 				}
 			}
 			if (cmd.args.length == 3){ // start branch

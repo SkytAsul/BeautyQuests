@@ -252,14 +252,14 @@ public class Utils{
 			ls.add("");
 			return ls;
 		}
-		
+
 		minSize--;
 		for (String str : StringUtils.splitByWholeSeparator(string, ("{nl}"))) {
 			int lastI = 0;
 			int ic = 0;
 			for (int i = 0; i < str.length(); i++){
 				String color = "";
-				if (!ls.isEmpty()) color = ChatColor.getLastColors(ls.get(ls.size() - 1));
+				if (!ls.isEmpty() && str.charAt(0) != '§') color = ChatColor.getLastColors(ls.get(ls.size() - 1));
 				if (ic >= minSize){
 					if (str.charAt(i) == ' '){
 						ls.add(color + str.substring(lastI, i));

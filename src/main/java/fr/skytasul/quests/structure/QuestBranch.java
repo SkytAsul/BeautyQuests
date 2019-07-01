@@ -27,7 +27,7 @@ import fr.skytasul.quests.utils.Utils;
 
 public class QuestBranch {
 	
-	public Map<AbstractStage, QuestBranch> endStages = new HashMap<>();
+	private Map<AbstractStage, QuestBranch> endStages = new HashMap<>();
 	private LinkedList<AbstractStage> regularStages = new LinkedList<>();
 	
 	private Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
@@ -54,7 +54,7 @@ public class QuestBranch {
 		return playerAdvancement.containsKey(account);
 	}
 	
-	public void addStage(AbstractStage stage){
+	public void addRegularStage(AbstractStage stage){
 		Validate.notNull(stage, "Stage cannot be null !");
 		regularStages.add(stage);
 		stage.load();
@@ -70,16 +70,20 @@ public class QuestBranch {
 		return regularStages.indexOf(stage);
 	}
 	
-	public LinkedList<AbstractStage> getStages(){
+	public LinkedList<AbstractStage> getRegularStages(){
 		return regularStages;
 	}
 	
-	public AbstractStage getStage(int id){
+	public AbstractStage getRegularStage(int id){
 		return regularStages.get(id);
 	}
 
 	public boolean isRegulatStage(AbstractStage stage){
 		return regularStages.contains(stage);
+	}
+	
+	public Map<AbstractStage, QuestBranch> getEndingStages(){
+		return endStages;
 	}
 	
 	public String getDescriptionLine(PlayerAccount account, Source source){
@@ -92,7 +96,7 @@ public class QuestBranch {
 			for (AbstractStage stage : endStages.keySet()) {
 				i++;
 				stb.append(stage.getDescriptionLine(account, source));
-				if (i != endStages.size()) stb.append("{nl}{nl}");
+				if (i != endStages.size()) stb.append("{nl} {nl}");
 			}
 			return stb.toString();
 		}
@@ -120,7 +124,7 @@ public class QuestBranch {
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
 		PlayerAdvancement advancement = playerAdvancement.get(acc);
 		if (advancement == null) return false;
-		if (advancement.regularStage != -1) return stage == getStage(advancement.regularStage);
+		if (advancement.regularStage != -1) return stage == getRegularStage(advancement.regularStage);
 		return (endStages.keySet().contains(stage));
 	}
 	
@@ -130,7 +134,7 @@ public class QuestBranch {
 		if (!end || advancement == null) return;
 		if (advancement.endingStages){
 			endStages.keySet().forEach((x) -> x.end(acc));
-		}else getStage(advancement.regularStage).end(acc);
+		}else getRegularStage(advancement.regularStage).end(acc);
 	}
 	
 	public void start(PlayerAccount acc){
@@ -304,7 +308,7 @@ public class QuestBranch {
 					BeautyQuests.loadingFailure = true;
 					return false;
 				}
-				addStage(st);
+				addRegularStage(st);
 			}catch (Exception ex){
 				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName());
 				ex.printStackTrace();

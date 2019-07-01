@@ -356,8 +356,8 @@ public class FinishGUI implements CustomInventory{
 		qu.setStartRewards(rewardsStart);
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
-		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(hologramLaunch);
-		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(hologramLaunchNo);
+		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(inv.getItem(24));
+		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(inv.getItem(25));
 		qu.getRequirements().addAll(requirements);
 		if (dialog != null){
 			dialog.setNPC(startNPC);
@@ -406,7 +406,7 @@ public class FinishGUI implements CustomInventory{
 						loadBranch(newBranch, newGUI);
 					}
 					branch.addEndStage(stage, newBranch);
-				}else branch.addStage(stage);
+				}else branch.addRegularStage(stage);
 			}catch (Throwable ex){
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
 				ex.printStackTrace();

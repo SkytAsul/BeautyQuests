@@ -87,7 +87,7 @@ public class Scoreboard implements Listener{
 					try{
 						if (line.tryRefresh()) line.refreshLines();
 					}catch (Exception ex){
-						BeautyQuests.logger.warning("An error occured when refreshing scoreboard line " + lines.indexOf(line));
+						BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + lines.indexOf(line));
 						ex.printStackTrace();
 					}
 				}
