@@ -25,6 +25,7 @@ import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitBlockClick;
+import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -36,6 +37,7 @@ import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
+import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
@@ -45,6 +47,7 @@ import fr.skytasul.quests.stages.StageChat;
 import fr.skytasul.quests.stages.StageCraft;
 import fr.skytasul.quests.stages.StageFish;
 import fr.skytasul.quests.stages.StageInteract;
+import fr.skytasul.quests.stages.StageLocation;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
@@ -322,6 +325,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
+	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
 
 	public static void initialize(){
 		DebugUtils.broadcastDebugMessage("Initlializing default stage types.");
@@ -336,6 +340,7 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new CreateFish());
 		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, new CreateCraft());
 		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, new CreateBucket());
+		QuestsAPI.registerStage(new StageType("LOCATION", StageLocation.class, Lang.Location.name()), stageLocation, new CreateLocation());
 	}
 }
 
@@ -728,6 +733,7 @@ class CreateBucket implements StageCreationRunnables{
 	public void start(Player p, LineData datas){
 		new BucketTypeGUI((bucket) -> {
 			datas.put("bucket", bucket);
+			Lang.BUCKET_AMOUNT.send(p);
 			new TextEditor(p, (obj) -> {
 				datas.put("amount", obj);
 				datas.getGUI().reopen(p, true);
@@ -750,6 +756,7 @@ class CreateBucket implements StageCreationRunnables{
 
 	public static void setItems(Line line){
 		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
+			Lang.BUCKET_AMOUNT.send(p);
 			new TextEditor(p, (obj) -> {
 				datas.put("amount", obj);
 				datas.getGUI().reopen(p, true);
@@ -764,6 +771,48 @@ class CreateBucket implements StageCreationRunnables{
 				item.setType(bucket.getMaterial().parseMaterial());
 				ItemUtils.lore(item, bucket.getName());
 			}).create(p);
+		});
+	}
+}
+
+class CreateLocation implements StageCreationRunnables{
+	public void start(Player p, LineData datas){
+		Lang.LOCATION_GO.send(p);
+		new WaitClick(p, () -> {
+			datas.put("location", p.getLocation());
+			datas.put("radius", 5);
+			datas.getGUI().reopen(p, false);
+			setItems(datas.getLine());
+		}, NPCGUI.validMove).enterOrLeave(p);
+	}
+
+	public AbstractStage finish(LineData datas, Quest qu){
+		StageLocation stage = new StageLocation(qu.getStageManager(), (Location) datas.get("location"), (int) datas.get("radius"));
+		return stage;
+	}
+
+	public void edit(LineData datas, AbstractStage stage){
+		StageLocation st = (StageLocation) stage;
+		datas.put("location", st.getLocation());
+		datas.put("radius", st.getRadius());
+		setItems(datas.getLine());
+	}
+
+	public static void setItems(Line line){
+		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
+			Lang.LOCATION_RADIUS.send(p);
+			new TextEditor(p, (x) -> {
+				datas.put("radius", x);
+				datas.getGUI().reopen(p, false);
+				ItemUtils.name(item, Lang.currentRadius.format(x));
+			}, new NumberParser(Integer.class, true, true), () -> datas.getGUI().reopen(p, false), null);
+		});
+		line.setItem(5, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
+			Lang.LOCATION_GO.send(p);
+			new WaitClick(p, () -> {
+				datas.put("location", p.getLocation());
+				datas.getGUI().reopen(p, false);
+			}, NPCGUI.validMove).enterOrLeave(p);
 		});
 	}
 }
