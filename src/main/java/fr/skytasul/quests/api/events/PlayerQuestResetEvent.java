@@ -6,9 +6,9 @@ import fr.skytasul.quests.players.PlayerAccount;
 /**
  * Called when the stage of a player is cancelled
  */
-public class PlayerStageResetEvent extends PlayerAccountQuestEvent {
+public class PlayerQuestResetEvent extends PlayerAccountQuestEvent {
 
-	public PlayerStageResetEvent(PlayerAccount account, Quest quest) {
+	public PlayerQuestResetEvent(PlayerAccount account, Quest quest) {
 		super(account, quest);
 	}
 

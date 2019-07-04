@@ -52,8 +52,8 @@ public class ItemCreatorGUI implements CustomInventory {
 		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
 		inv.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
 		inv.setItem(6, ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
-		if (allowCancel) inv.setItem(8, ItemUtils.itemCancel());
-		inv.setItem(17, ItemUtils.itemDone());
+		if (allowCancel) inv.setItem(8, ItemUtils.itemCancel);
+		inv.setItem(17, ItemUtils.itemDone);
 		inv.getItem(17).setType(Material.COAL);
 
 		inv = p.openInventory(inv).getTopInventory();

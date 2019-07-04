@@ -20,7 +20,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.GPS;
@@ -44,8 +45,8 @@ public class StageNPC extends AbstractStage{
 	private List<PlayerAccount> cached = new ArrayList<>();
 	protected Object holo;
 	
-	public StageNPC(StageManager manager, NPC npc){
-		super(manager);
+	public StageNPC(QuestBranch branch, NPC npc){
+		super(branch);
 		this.npc = npc;
 	}
 	
@@ -190,7 +191,7 @@ public class StageNPC extends AbstractStage{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		if (!QuestsConfiguration.handleGPS()) return;
-		if (!manager.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), this)) return;
+		if (!branch.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), this)) return;
 		GPS.launchCompass(e.getPlayer(), npc);
 	}
 	
@@ -206,7 +207,7 @@ public class StageNPC extends AbstractStage{
 	
 	public void launch(Player p) {
 		super.launch(p);
-		if (manager.getID(this) == 0 && sendStartMessage() && bringBack != /*? tester*/ null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
+		if (branch.getID(this) == 0 && sendStartMessage() && bringBack != /*? tester*/ null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
 		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
 	}
 	
@@ -240,8 +241,8 @@ public class StageNPC extends AbstractStage{
 		if (hide) map.put("hid", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageNPC st = new StageNPC(manager, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageNPC st = new StageNPC(branch, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
 		st.loadDatas(map);
 		return st;
 	}

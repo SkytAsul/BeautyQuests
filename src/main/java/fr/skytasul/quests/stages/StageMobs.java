@@ -19,7 +19,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -35,8 +36,8 @@ public class StageMobs extends AbstractStage{
 	
 	private int cachedSize;
 	
-	public StageMobs(StageManager manager, List<Mob> mobs){
-		super(manager);
+	public StageMobs(QuestBranch branch, List<Mob> mobs){
+		super(branch);
 		if (mobs != null) {
 			this.mobs = mobs;
 			cachedSize = mobsSize(mobs);
@@ -48,10 +49,10 @@ public class StageMobs extends AbstractStage{
 		if (shoot && e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE) return;
 		Player p = e.getKiller();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (manager.hasStageLaunched(acc, this)){
+		if (branch.hasStageLaunched(acc, this)){
 			PlayerDatas player = remaining.get(acc);
 			if (player == null){
-				BeautyQuests.logger.warning("Player " + p.getName() + " had corrupted datas ; skipping mobs stage for quest " + manager.getQuest().getID());
+				BeautyQuests.logger.warning("Player " + p.getName() + " had corrupted datas ; skipping mobs stage for quest " + branch.getQuest().getID());
 				finishStage(p);
 				return;
 			}
@@ -79,7 +80,7 @@ public class StageMobs extends AbstractStage{
 			for (Mob m : playerMobs){
 				if (m.isEmpty()){ // check problem
 					p.sendMessage("§cMob instance is empty. Please notice an administrator !");
-					BeautyQuests.logger.warning("Mob instance for stage " + getID() + " of quest " + manager.getQuest().getID() + " is empty.");
+					BeautyQuests.logger.warning("Mob instance for stage " + getID() + " of quest " + branch.getQuest().getID() + " is empty.");
 					playerMobs.remove(m);
 					finalTest(p, playerMobs, datas);
 					return;
@@ -142,7 +143,7 @@ public class StageMobs extends AbstractStage{
 	
 	private Object createBar(PlayerDatas datas) {
 		if (QuestsConfiguration.showMobsProgressBar() && cachedSize != 1) {
-			Object bar = Post1_9.createMobsBar(this.manager.getQuest().getName(), cachedSize);
+			Object bar = Post1_9.createMobsBar(branch.getQuest().getName(), cachedSize);
 			datas.bar = bar;
 			if (datas.acc.isCurrent()) Post1_9.showBar(bar, datas.acc.getPlayer());
 			return bar;
@@ -152,7 +153,7 @@ public class StageMobs extends AbstractStage{
 	
 	private void updateAmount(PlayerDatas datas, int newAmount) {
 		if (QuestsConfiguration.showMobsProgressBar()){
-			Post1_9.setBarProgress(this.manager.getQuest().getName(), datas.bar, newAmount, cachedSize);
+			Post1_9.setBarProgress(branch.getQuest().getName(), datas.bar, newAmount, cachedSize);
 			if (datas.acc.isCurrent()) Post1_9.showBar(datas.bar, datas.acc.getPlayer());
 			timerBar(datas);
 		}
@@ -229,8 +230,8 @@ public class StageMobs extends AbstractStage{
 		if (shoot) map.put("shoot", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageMobs st = new StageMobs(manager, Utils.deserializeList((List<Map<String, Object>>) map.get("mobs"), Mob::deserialize));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageMobs st = new StageMobs(branch, Utils.deserializeList((List<Map<String, Object>>) map.get("mobs"), Mob::deserialize));
 		
 		Map<String, List<Map<String, Object>>> re = (Map<String, List<Map<String, Object>>>) map.get("remaining");
 		if (re != null){

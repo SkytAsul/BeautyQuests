@@ -35,7 +35,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 		inv = Bukkit.createInventory(null, 9, name());
 		this.p = p;
 		
-		inv.setItem(8, ItemUtils.itemDone());
+		inv.setItem(8, ItemUtils.itemDone);
 		for (int i = 0; i < 8; i++){
 			if (objects.size() <= i){
 				inv.setItem(i, none);

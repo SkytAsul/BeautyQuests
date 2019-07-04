@@ -83,7 +83,7 @@ public class CreateMobGUI implements CustomInventory{
 					
 					inv.setItem(slot, ItemUtils.item(XMaterial.mobItem(en), Lang.bukkitMob.toString(), en.getName()));
 					
-					if (!done) inv.setItem(8, ItemUtils.itemDone());
+					if (!done) inv.setItem(8, ItemUtils.itemDone);
 					done = true;
 			}));
 			break;
@@ -97,7 +97,7 @@ public class CreateMobGUI implements CustomInventory{
 					mob = new Mob(npc, mob.amount);
 					ItemUtils.lore(current, npc.getName());
 
-					if (!done) inv.setItem(8, ItemUtils.itemDone());
+					if (!done) inv.setItem(8, ItemUtils.itemDone);
 					done = true;
 				}
 			}).enterOrLeave(p);
@@ -116,7 +116,7 @@ public class CreateMobGUI implements CustomInventory{
 					e.printStackTrace();
 				}
 
-				if (!done) inv.setItem(8, ItemUtils.itemDone());
+				if (!done) inv.setItem(8, ItemUtils.itemDone);
 				done = true;
 			}, new MythicNameParser(), () -> {
 				openLastInv(p);
@@ -131,7 +131,7 @@ public class CreateMobGUI implements CustomInventory{
 				mob = new Mob((String) obj, mob.amount);
 				ItemUtils.lore(current, "§a" + obj);
 
-				if (!done) inv.setItem(8, ItemUtils.itemDone());
+				if (!done) inv.setItem(8, ItemUtils.itemDone);
 				done = true;
 			}, new EpicBossParser(), () -> {
 				openLastInv(p);

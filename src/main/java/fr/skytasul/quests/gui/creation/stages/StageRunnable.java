@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 public interface StageRunnable {
 
 	/**
-	 * Called when item clicked
+	 * Called when the item is clicked
 	 * @param p player who click on the item
 	 * @param datas datas of the line
 	 * @param item item clicked

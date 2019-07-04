@@ -9,7 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 
 public class StageInteract extends AbstractStage {
@@ -17,8 +18,8 @@ public class StageInteract extends AbstractStage {
 	private Location lc;
 	private boolean left;
 	
-	public StageInteract(StageManager manager, Location location, boolean leftClick){
-		super(manager);
+	public StageInteract(QuestBranch branch, Location location, boolean leftClick){
+		super(branch);
 		this.lc = location.getBlock().getLocation();
 		this.left = leftClick;
 	}
@@ -53,8 +54,8 @@ public class StageInteract extends AbstractStage {
 		map.put("location", lc.serialize());
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		return new StageInteract(manager, Location.deserialize((Map<String, Object>) map.get("location")), (boolean) map.get("leftClick"));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		return new StageInteract(branch, Location.deserialize((Map<String, Object>) map.get("location")), (boolean) map.get("leftClick"));
 	}
 
 

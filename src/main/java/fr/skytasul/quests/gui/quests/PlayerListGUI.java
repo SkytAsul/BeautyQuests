@@ -18,7 +18,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -41,8 +41,8 @@ public class PlayerListGUI implements CustomInventory {
 		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
 
-		setBarItem(0, ItemUtils.itemLaterPage());
-		setBarItem(4, ItemUtils.itemNextPage());
+		setBarItem(0, ItemUtils.itemLaterPage);
+		setBarItem(4, ItemUtils.itemNextPage);
 		
 		setBarItem(1, ItemUtils.item(XMaterial.WRITTEN_BOOK, "§r" + Lang.finisheds.toString()));
 		setBarItem(2, ItemUtils.item(XMaterial.BOOK, "§r" + Lang.inProgress.toString()));
@@ -92,7 +92,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> desc = Utils.splitOnSpace(qu.getStageManager().getDescriptionLine(acc, Source.MENU), 45);
+				List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
 				if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
 					desc.add(null);
 					desc.add(Lang.cancelLore.toString());

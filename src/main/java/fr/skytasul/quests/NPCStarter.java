@@ -39,7 +39,7 @@ public class NPCStarter {
 	private Hologram hologramLaunch = new Hologram(false, Dependencies.holod, QuestsConfiguration.getHoloLaunchItem());
 	private Hologram hologramLaunchNo = new Hologram(false, Dependencies.holod && HolographicDisplays.hasProtocolLib(), QuestsConfiguration.getHoloLaunchNoItem());
 	
-	NPCStarter(NPC npc){
+	public NPCStarter(NPC npc){
 		Validate.notNull(npc, "NPC cannot be null");
 		this.npc = npc;
 		

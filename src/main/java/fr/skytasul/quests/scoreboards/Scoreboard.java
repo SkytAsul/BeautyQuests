@@ -16,14 +16,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerStageResetEvent;
+import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.ScoreboardSigns.VirtualTeam;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -87,7 +87,7 @@ public class Scoreboard implements Listener{
 					try{
 						if (line.tryRefresh()) line.refreshLines();
 					}catch (Exception ex){
-						BeautyQuests.logger.warning("An error occured when refreshing scoreboard line " + lines.indexOf(line));
+						BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + lines.indexOf(line));
 						ex.printStackTrace();
 					}
 				}
@@ -106,7 +106,7 @@ public class Scoreboard implements Listener{
 	}
 	
 	@EventHandler
-	public void onStageReset(PlayerStageResetEvent e){
+	public void onStageReset(PlayerQuestResetEvent e){
 		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
 	}
 	
@@ -231,7 +231,7 @@ public class Scoreboard implements Listener{
 				text = showed == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", showed.getName());
 			}
 			if (text.contains("{questDescription}")){
-				text = showed == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", showed.getStageManager().getDescriptionLine(acc, Source.SCOREBOARD));
+				text = showed == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", showed.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD));
 			}
 			text = Utils.finalFormat(p, text, true);
 			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);

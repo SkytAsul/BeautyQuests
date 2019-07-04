@@ -43,7 +43,7 @@ public class MobsListGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_MOBS.toString());
 		
-		inv.setItem(8, ItemUtils.itemDone());
+		inv.setItem(8, ItemUtils.itemDone);
 		for (int i = 0; i < 8; i++) inv.setItem(i, none.clone());
 		
 		inv = p.openInventory(inv).getTopInventory();

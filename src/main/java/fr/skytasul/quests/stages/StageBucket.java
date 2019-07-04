@@ -11,7 +11,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -22,8 +23,8 @@ public class StageBucket extends AbstractStage {
 	private int amount;
 	private Map<PlayerAccount, Integer> playerAmounts = new HashMap<>();
 	
-	public StageBucket(StageManager manager, BucketType bucket, int amount){
-		super(manager);
+	public StageBucket(QuestBranch branch, BucketType bucket, int amount){
+		super(branch);
 		this.bucket = bucket;
 		this.amount = amount;
 	}
@@ -39,7 +40,7 @@ public class StageBucket extends AbstractStage {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBucketFill(PlayerBucketFillEvent e){
 		PlayerAccount acc = PlayersManager.getPlayerAccount(e.getPlayer());
-		if (manager.hasStageLaunched(acc, this)){
+		if (branch.hasStageLaunched(acc, this)){
 			if (BucketType.fromMaterial(XMaterial.fromMaterial(e.getItemStack().getType())) == bucket){
 				int newAmount = playerAmounts.get(acc) - 1;
 				if (newAmount <= 0){
@@ -73,8 +74,8 @@ public class StageBucket extends AbstractStage {
 		map.put("players", playerSerialized);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageBucket stage = new StageBucket(manager, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageBucket stage = new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
 		((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.playerAmounts.put(PlayersManager.getByIndex(acc), (int) amount));
 		return stage;
 	}

@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -17,7 +16,6 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -39,7 +37,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -232,19 +230,6 @@ public class Utils{
 		}
 	}
 	
-	public static OfflinePlayer getOfflinePlayer(String name){
-		Validate.notNull(name);
-		Player pp = Bukkit.getPlayer(name);
-		if (pp == null){
-			OfflinePlayer[] ops = Bukkit.getOfflinePlayers();
-			if (ops == null) return null;
-			for (OfflinePlayer tmp : ops){
-				if (name.equals(tmp.getName())) return tmp;
-			}
-			return null;
-		}else return pp;
-	}
-	
 	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
 		if (value == null) return null;
 	    for (Entry<T, E> entry : map.entrySet()) {
@@ -303,14 +288,14 @@ public class Utils{
 			ls.add("");
 			return ls;
 		}
-		
+
 		minSize--;
 		for (String str : StringUtils.splitByWholeSeparator(string, ("{nl}"))) {
 			int lastI = 0;
 			int ic = 0;
 			for (int i = 0; i < str.length(); i++){
 				String color = "";
-				if (!ls.isEmpty()) color = ChatColor.getLastColors(ls.get(ls.size() - 1));
+				if (!ls.isEmpty() && str.charAt(0) != '§') color = ChatColor.getLastColors(ls.get(ls.size() - 1));
 				if (ic >= minSize){
 					if (str.charAt(i) == ' '){
 						ls.add(color + str.substring(lastI, i));

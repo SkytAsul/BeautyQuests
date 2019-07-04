@@ -6,8 +6,8 @@ lines:
 - value: ''
 - value: '&6{questName}'
   refresh: 2
-- value: ' '
-- value: '&e{questDescription}'
+- value: ''
+- value: '{questDescription}'
   refresh: 2
   length: 30
   

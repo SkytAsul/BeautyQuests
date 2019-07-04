@@ -79,16 +79,12 @@ public class ScoreboardSigns {
 		if (!created)
 			return;
 
-		try {
-			NMS.getNMS().sendPacket(player, createObjectivePacket(1, null));
-			for (VirtualTeam team : lines)
-				if (team != null)
-					NMS.getNMS().sendPacket(player, team.removeTeam());
+		NMS.getNMS().sendPacket(player, createObjectivePacket(1, null));
+		for (VirtualTeam team : lines)
+			if (team != null)
+				NMS.getNMS().sendPacket(player, team.removeTeam());
 
-			created = false;
-		}catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		created = false;
 	}
 
 	/**
@@ -116,6 +112,9 @@ public class ScoreboardSigns {
 			if (old != null && created)
 				NMS.getNMS().sendPacket(player, removeLine(old));
 
+			while (containsValue(value, team)){
+				value = value + " "; //add a space if a line with the value already exists
+			}
 			team.setValue(value);
 			sendLine(line);
 			return team;
@@ -130,38 +129,30 @@ public class ScoreboardSigns {
 	 * @param line the line to remove
 	 */
 	public void removeLine(int line){
-		try{
-			VirtualTeam team = getOrCreateTeam(line);
-			String old = team.getCurrentPlayer();
+		VirtualTeam team = getOrCreateTeam(line);
+		String old = team.getCurrentPlayer();
 
-			if (old != null && created) {
-				NMS.getNMS().sendPacket(player, removeLine(old));
-				NMS.getNMS().sendPacket(player, team.removeTeam());
-			}
+		if (old != null && created) {
+			NMS.getNMS().sendPacket(player, removeLine(old));
+			NMS.getNMS().sendPacket(player, team.removeTeam());
+		}
 
-			lines.remove(line);
-			for (int i = line; i < lines.size(); i++){
-				VirtualTeam val = getOrCreateTeam(i);
-				NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - /*line ?*/ i));
-			}
-		}catch (ClassNotFoundException ex){
-			ex.printStackTrace();
+		lines.remove(line);
+		for (int i = line; i < lines.size(); i++){
+			VirtualTeam val = getOrCreateTeam(i);
+			NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - /*line ?*/ i));
 		}
 	}
 
 	public void moveLines(int start, int amount){
-		try {
-			int newSize = lines.size() + amount;
-			for (int i = start; i < newSize; i++){ // from the start line to the end of the final list
-				if (i < start + amount){ // insert null values to make space
-					lines.add(start, null);
-				}else { // refresh scores of the next lines
-					VirtualTeam val = getOrCreateTeam(i);
-					NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - i));
-				}
+		int newSize = lines.size() + amount;
+		for (int i = start; i < newSize; i++){ // from the start line to the end of the final list
+			if (i < start + amount){ // insert null values to make space
+				lines.add(start, null);
+			}else { // refresh scores of the next lines
+				VirtualTeam val = getOrCreateTeam(i);
+				NMS.getNMS().sendPacket(player, sendScore(val.getCurrentPlayer(), 15 - i));
 			}
-		}catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -176,6 +167,19 @@ public class ScoreboardSigns {
 		if (line < 0)
 			return null;
 		return getOrCreateTeam(line).getValue();
+	}
+	
+	/**
+	 * Check if a line has the exact same value
+	 * @param value line value to check
+	 * @return true if a line has the same value
+	 */
+	public boolean containsValue(String value, VirtualTeam except){
+		for (VirtualTeam team : lines){
+			//if (team != null) System.out.println("VALUE: " + value + " | TEAM: " + team.getValue() + " | SAME: " + (except == team));
+			if (team != null && team != except && value.equals(team.getValue())) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -233,7 +237,7 @@ public class ScoreboardSigns {
 	/*
 		Factories
 		 */
-	private Object createObjectivePacket(int mode, String displayName) throws ClassNotFoundException {
+	private Object createObjectivePacket(int mode, String displayName){
 		Object packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardObjective");
 		// Nom de l'objectif
 		setField(packet, "a", player.getName());
@@ -261,7 +265,7 @@ public class ScoreboardSigns {
 		return packet;
 	}
 
-	private Object sendScore(String line, int score) throws ClassNotFoundException {
+	private Object sendScore(String line, int score){
 		Object packet;
 		if (NMS.getMCVersion() < 13){
 			packet = NMS.getNMS().newPacket("PacketPlayOutScoreboardScore", line);
@@ -278,7 +282,7 @@ public class ScoreboardSigns {
 		return packet;
 	}
 
-	private Object removeLine(String line) throws ClassNotFoundException {
+	private Object removeLine(String line){
 		if (NMS.getMCVersion() < 13){
 			return NMS.getNMS().newPacket("PacketPlayOutScoreboardScore", line);
 		}
@@ -298,6 +302,7 @@ public class ScoreboardSigns {
 		private String suffix;
 		private String currentPlayer;
 		private String oldPlayer;
+		private String cachedValue;
 
 		private boolean prefixChanged, suffixChanged, playerChanged = false;
 		private boolean first = true;
@@ -306,6 +311,7 @@ public class ScoreboardSigns {
 			this.name = name;
 			this.prefix = prefix;
 			this.suffix = suffix;
+			this.cachedValue = "";
 		}
 
 		private VirtualTeam(String name) {
@@ -320,7 +326,7 @@ public class ScoreboardSigns {
 			return prefix;
 		}
 
-		public void setPrefix(String prefix) {
+		private void setPrefix(String prefix) {
 			if (this.prefix == null || !this.prefix.equals(prefix))
 				this.prefixChanged = true;
 			this.prefix = prefix;
@@ -330,7 +336,7 @@ public class ScoreboardSigns {
 			return suffix;
 		}
 
-		public void setSuffix(String suffix) {
+		private void setSuffix(String suffix) {
 			if (this.suffix == null || !this.suffix.equals(prefix))
 				this.suffixChanged = true;
 			this.suffix = suffix;
@@ -366,7 +372,7 @@ public class ScoreboardSigns {
 			return packet;
 		}
 
-		public void setPlayer(String name) {
+		private void setPlayer(String name) {
 			if (this.currentPlayer == null || !this.currentPlayer.equals(name))
 				this.playerChanged = true;
 			this.oldPlayer = this.currentPlayer;
@@ -426,7 +432,7 @@ public class ScoreboardSigns {
 		}
 
 		public String getValue() {
-			return getPrefix() + getCurrentPlayer() + getSuffix();
+			return cachedValue;
 		}
 
 		public void setValue(String value) {
@@ -445,6 +451,7 @@ public class ScoreboardSigns {
 			} else {
 				throw new IllegalArgumentException("Too long value ! Max 48 characters, value was " + value.length() + " !");
 			}
+			this.cachedValue = value;
 		}
 	}
 

@@ -12,7 +12,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import me.clip.placeholderapi.PlaceholderHook;
@@ -49,7 +49,7 @@ public class PlaceholderAPI {
 							}
 							left.remove(0);
 							if (left.isEmpty()) ordered.remove(p);
-							desc = qu.getStageManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+							desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
 						}
 
 						if (after.isEmpty()){
@@ -86,7 +86,7 @@ public class PlaceholderAPI {
 						Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
 						if (qu == null) return "§c§lError: unknown quest §o" + sid;
 						if (qu.hasStarted(acc)){
-							return qu.getStageManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+							return qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
 
 							/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
 							return stage == null ? "§ofinishing" : stage.getDescriptionLine(acc);*/

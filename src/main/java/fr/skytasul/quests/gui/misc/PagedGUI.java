@@ -38,8 +38,8 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		this.p = p;
 		inv = Bukkit.createInventory(null, 45, name);
 
-		setBarItem(0, ItemUtils.itemLaterPage());
-		setBarItem(4, ItemUtils.itemNextPage());
+		setBarItem(0, ItemUtils.itemLaterPage);
+		setBarItem(4, ItemUtils.itemNextPage);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 		

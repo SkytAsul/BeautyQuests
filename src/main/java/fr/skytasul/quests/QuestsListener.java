@@ -45,7 +45,7 @@ public class QuestsListener implements Listener{
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
-			quests = quests.stream().filter(qu -> !qu.getStageManager().contains(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
+			quests = quests.stream().filter(qu -> !qu.getBranchesManager().contains(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
 			if (quests.isEmpty()) return;
 			
 			List<Quest> launcheable = new ArrayList<>();

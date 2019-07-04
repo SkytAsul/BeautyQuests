@@ -19,7 +19,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -28,8 +29,8 @@ public class StageFish extends AbstractStage{
 	private ItemStack[] fishes;
 	private Map<PlayerAccount, List<ItemStack>> players = new HashMap<>();
 	
-	public StageFish(StageManager manager, ItemStack[] fishes){
-		super(manager);
+	public StageFish(QuestBranch branch, ItemStack[] fishes){
+		super(branch);
 		this.fishes = fishes;
 	}
 
@@ -85,8 +86,8 @@ public class StageFish extends AbstractStage{
 		map.put("remaining", re);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		StageFish stage = new StageFish(manager, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		StageFish stage = new StageFish(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 
 		Utils.deserializeAccountsMap(((Map<String, List<ItemStack>>) map.get("remaining")), stage.players, n -> n);
 		
