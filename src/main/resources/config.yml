@@ -59,6 +59,8 @@ hologramsHeight: 0.0
 holoLaunchItemName: BOOK
 # Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
 holoTalkItemName: COAL
+# Is the custom name of the hologram in datas.yml shown
+showCustomHologramName: true
 # dynmap integration options
 dynmap:
   markerSetName: "Quests"

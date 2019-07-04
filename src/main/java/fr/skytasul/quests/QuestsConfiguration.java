@@ -37,6 +37,7 @@ public class QuestsConfiguration {
 	private static boolean enablePrefix = true;
 	private static double hologramsHeight = 0.0;
 	private static boolean disableTextHologram = false;
+	private static boolean showCustomHologramName = true;
 	/*private static ConfigurationSection effect;
 	private static boolean effectEnabled;*/
 	private static boolean mobsProgressBar = false;
@@ -105,6 +106,7 @@ public class QuestsConfiguration {
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
+		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
 		hookAcounts = Dependencies.acc ? config.getBoolean("accountsHook") : false;
@@ -270,6 +272,10 @@ public class QuestsConfiguration {
 	
 	public static double getHologramsHeight(){
 		return hologramsHeight;
+	}
+	
+	public static boolean isCustomHologramNameShown(){
+		return showCustomHologramName;
 	}
 
 	public static ItemStack getHoloLaunchItem(){

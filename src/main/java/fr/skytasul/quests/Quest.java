@@ -129,10 +129,8 @@ public class Quest{
 	public void setRewards(List<AbstractReward> rewards) {
 		this.rewards = rewards;
 		for(AbstractReward rew : rewards){
-			if (rew.isAsync()) {
-				asyncEnd = true;
-				break;
-			}
+			if (rew.isAsync()) asyncEnd = true;
+			rew.setQuest(this);
 		}
 	}
 	
@@ -144,10 +142,19 @@ public class Quest{
 		this.startRewards = rewards;
 		this.asyncStart = null;
 		for(AbstractReward rew : startRewards){
-			if (rew.isAsync()) {
-				asyncStart = new ArrayList<>();
-				break;
-			}
+			if (rew.isAsync() && asyncStart == null) asyncStart = new ArrayList<>();
+			rew.setQuest(this);
+		}
+	}
+
+	public List<AbstractRequirement> getRequirements(){
+		return new ArrayList<>(requirements);
+	}
+
+	public void setRequirements(List<AbstractRequirement> requirements) {
+		this.requirements = requirements;
+		for(AbstractRequirement req : requirements){
+			req.setQuest(this);
 		}
 	}
 	
@@ -205,10 +212,6 @@ public class Quest{
 
 	public void setHid(boolean hid){
 		this.hid = hid;
-	}
-
-	public List<AbstractRequirement> getRequirements(){
-		return requirements;
 	}
 	
 	public void setEndMessage(String msg){

@@ -354,6 +354,7 @@ public class FinishGUI implements CustomInventory{
 		qu.setTimer(timer);
 		qu.setRewards(rewards);
 		qu.setStartRewards(rewardsStart);
+		qu.setRequirements(requirements);
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
 		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(inv.getItem(24));
@@ -435,8 +436,8 @@ public class FinishGUI implements CustomInventory{
 		endMsg = edited.getEndMessage();
 		dialog = edited.getStartDialog();
 		inv.setItem(32, edit.clone());
-		requirements = new ArrayList<>(edited.getRequirements());
-		ItemUtils.lore(inv.getItem(11), Lang.requirements.format(requirements.size()));
+		requirements = edited.getRequirements();
+		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());
 		refreshFinish(inv);

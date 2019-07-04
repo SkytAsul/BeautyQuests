@@ -38,6 +38,10 @@ public abstract class AbstractRequirement {
 	 */
 	public void unload(){}
 	
+	public void setQuest(Quest quest){
+		this.quest = quest;
+	}
+	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		

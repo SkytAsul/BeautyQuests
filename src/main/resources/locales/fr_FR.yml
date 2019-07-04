@@ -233,6 +233,8 @@ inv:
     endingItem: '§eRécompenses de fin'
     descriptionTextItem: '§eModifier le texte de description'
   details:
+    hologramLaunch: '§eModifier l''item de l''hologramme "lancement"'
+    hologramLaunchNo: '§eModifier l''item de l''hologramme "lancement impossible"'
     name: '§8Derniers détails de la quête'
     multipleTime:
       itemName: 'Inverser la multi-utilisation'

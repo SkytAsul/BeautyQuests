@@ -142,6 +142,11 @@ public enum Lang{
 	BLOCKS_AMOUNT("msg.editor.blocksToMineAmount"),
 	BLOCKS_NAME("msg.editor.blocksToMineName"),
 	
+	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
+	
+	LOCATION_GO("msg.editor.goToLocation"),
+	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
+	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
@@ -222,6 +227,7 @@ public enum Lang{
 	stageFish("inv.create.fish"),
 	stageCraft("inv.create.craft"),
 	stageBucket("inv.create.bucket"),
+	stageLocation("inv.create.location"),
 	stageText("inv.create.NPCText"),
 	stageHide("inv.create.hideClues"),
 	editMobs("inv.create.editMobsKill"),
@@ -239,6 +245,9 @@ public enum Lang{
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
 	editBucketAmount("inv.create.editBucketAmount"),
+	editLocation("inv.create.editLocation"),
+	editRadius("inv.create.editRadius"),
+	currentRadius("inv.create.currentRadius"), // 0: radius
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -377,6 +386,7 @@ public enum Lang{
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
+	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
 	
 	/* Indications */
 	
@@ -402,6 +412,7 @@ public enum Lang{
 	Fish("misc.stageType.Fish"),
 	Craft("misc.stageType.Craft"),
 	Bucket("misc.stageType.Bucket"),
+	Location("misc.stageType.location"),
 	
 	RClass("misc.requirement.class"),
 	RFaction("misc.requirement.faction"),
