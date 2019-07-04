@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -46,7 +47,6 @@ import fr.skytasul.quests.stages.StageInteract;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;

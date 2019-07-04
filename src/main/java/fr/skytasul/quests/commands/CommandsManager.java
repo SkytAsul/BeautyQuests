@@ -17,10 +17,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;

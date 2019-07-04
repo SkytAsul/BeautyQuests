@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.Quest;
 
 public abstract class QuestEvent extends Event {
 

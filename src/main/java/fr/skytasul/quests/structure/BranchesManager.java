@@ -12,6 +12,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 

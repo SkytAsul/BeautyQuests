@@ -1,4 +1,4 @@
-package fr.skytasul.quests.structure;
+package fr.skytasul.quests;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,8 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;

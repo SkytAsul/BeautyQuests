@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.Quest;
 import net.citizensnpcs.api.npc.NPC;
 
 @Retention(RUNTIME)

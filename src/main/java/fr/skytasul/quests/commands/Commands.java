@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.editors.Editor;
@@ -23,7 +24,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.PlayerAdvancement;
 import fr.skytasul.quests.utils.Lang;

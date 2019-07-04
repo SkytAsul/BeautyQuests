@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.Quest;
 
 public abstract class AbstractReward {
 

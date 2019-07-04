@@ -7,11 +7,11 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;

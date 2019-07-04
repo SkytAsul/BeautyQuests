@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.Quest;
 
 public abstract class AbstractRequirement {
 

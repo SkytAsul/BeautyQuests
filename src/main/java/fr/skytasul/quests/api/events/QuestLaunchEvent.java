@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.events;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.Quest;
 
 /**
  * Called when a player starts a quest
