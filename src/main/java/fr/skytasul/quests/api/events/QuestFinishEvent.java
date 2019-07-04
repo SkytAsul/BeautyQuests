@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.structure.Quest;
 
 /**
  * Called when a player finish a quest

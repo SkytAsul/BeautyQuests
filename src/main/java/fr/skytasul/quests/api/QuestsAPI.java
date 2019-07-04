@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.NPCStarter;
-import fr.skytasul.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -22,6 +20,8 @@ import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.structure.NPCStarter;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import net.citizensnpcs.api.npc.NPC;
 

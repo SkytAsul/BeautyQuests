@@ -8,7 +8,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.stages.StageManager.Source;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 
 public class StageLocation extends AbstractStage {
@@ -18,8 +19,8 @@ public class StageLocation extends AbstractStage {
 	
 	private String descMessage;
 	
-	public StageLocation(StageManager manager, Location lc, int radius){
-		super(manager);
+	public StageLocation(QuestBranch branch, Location lc, int radius){
+		super(branch);
 		this.lc = lc;
 		this.radius = radius;
 		
@@ -51,8 +52,8 @@ public class StageLocation extends AbstractStage {
 		map.put("radius", radius);
 	}
 
-	public static AbstractStage deserialize(Map<String, Object> map, StageManager manager){
-		return new StageLocation(manager, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
+	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+		return new StageLocation(branch, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
 	}
 	
 }
