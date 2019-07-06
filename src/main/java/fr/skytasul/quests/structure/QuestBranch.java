@@ -286,7 +286,7 @@ public class QuestBranch {
 	}
 	
 	public String toString() {
-		return "StageManager{stages=" + regularStages.size() + ",players=" + playerAdvancement.size() + "}";
+		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + ",players=" + playerAdvancement.size() + "}";
 	}
 	
 	public boolean load(Map<String, Object> map){

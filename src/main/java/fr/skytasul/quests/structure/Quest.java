@@ -46,6 +46,7 @@ public class Quest{
 	private String name;
 	private String endMessage;
 	private String hologramText;
+	private String customConfirmMessage;
 	private NPC npcStarter;
 	private Dialog dialog;
 	private List<AbstractRequirement> requirements = new ArrayList<>();
@@ -108,6 +109,18 @@ public class Quest{
 	
 	public void setHologramText(String hologramText) {
 		this.hologramText = hologramText;
+	}
+	
+	public String getCustomConfirmMessage(){
+		return customConfirmMessage;
+	}
+	
+	public String getConfirmMessage(){
+		return customConfirmMessage != null ? customConfirmMessage : Lang.INDICATION_START.format(name);
+	}
+	
+	public void setCustomConfirmMessage(String message) {
+		this.customConfirmMessage = message;
 	}
 	
 	public int getRawTimer(){
@@ -447,6 +460,7 @@ public class Quest{
 		if (repeatable) map.put("repeatable", repeatable);
 		if (!cancellable) map.put("cancellable", cancellable);
 		if (hologramText != null) map.put("hologramText", hologramText);
+		if (customConfirmMessage != null) map.put("confirmMessage", customConfirmMessage);
 		if (hid) map.put("hid", true);
 		if (endMessage != null) map.put("endMessage", endMessage);
 		if (dialog != null) map.put("startDialog", dialog.serialize());
@@ -507,6 +521,7 @@ public class Quest{
 		if (map.containsKey("startDialog")) qu.dialog = Dialog.deserialize((Map<String, Object>) map.get("startDialog"));
 		if (map.containsKey("finished")) Utils.deserializeAccountsList(qu.finished, (List<String>) map.get("finished"));
 		if (map.containsKey("hologramText")) qu.hologramText = (String) map.get("hologramText");
+		if (map.containsKey("confirmMessage")) qu.customConfirmMessage = (String) map.get("confirmMessage");
 		if (map.containsKey("bypassLimit")) qu.bypassLimit = (boolean) map.get("bypassLimit");
 		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));
 		if (map.containsKey("hologramLaunchNo")) qu.hologramLaunchNo = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunchNo"));

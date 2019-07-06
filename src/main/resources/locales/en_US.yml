@@ -32,6 +32,7 @@ msg:
   writeCommand: '§aWrite the wanted command: (The command is without the "/" and the placeholder "{PLAYER}" is supported. It will be replaced with the name of the executor.)'
   writeHologramText: '§aWrite text of the hologram: (Write "none" if you don''t want a hologram and "null" if you want the default text.)'
   writeQuestTimer: '§aWrite the required time (in minutes) before you can restart the quest: (Write "null" if you want the default timer.)'
+  writeConfirmMessage: '§aWrite the confirm message shown when the player is about to start the quest: (Write "null" if you want the default timer.)'
   requirements:
     quest: '§cYou must have finished the quest §e{0}§c!'
     level: '§cYou must be at least level {0}!'
@@ -97,6 +98,8 @@ msg:
       lineRemoved: '§6You have successfully removed the line {0}.'
       lineInexistant: '§cThe line {0} doesn''t exist.'
       resetAll: '§6You have successfully reset the scoreboard of the player {0}.'
+      hidden: '§6The scoreboard of the player {0} has been hidden.'
+      shown: '§6The scoreboard of the player {0} has been shown.'
     help:
       header: '§6§lBeautyQuests — Help'
       create: '§6/{0} create: §eCreate a quest.'
@@ -246,6 +249,7 @@ inv:
   details:
     hologramLaunch: '§eEdit "launch" hologram item'
     hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
+    customConfirmMessage: '§eEdit quest confirmation message'
     name: '§8Last quest details'
     multipleTime:
       itemName: 'Toggle several-use'

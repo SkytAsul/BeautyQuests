@@ -39,6 +39,7 @@ public class Scoreboard implements Listener{
 	private Quest showed = null;
 	private int nextId = -1;
 	private List<Quest> launched;
+	private boolean hid = false;
 	
 	Scoreboard(Player player, ScoreboardManager manager){
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
@@ -58,6 +59,7 @@ public class Scoreboard implements Listener{
 		runnable = new BukkitRunnable() {
 			int changeTime = 1;
 			public void run(){
+				if (hid) return;
 				changeTime--;
 				boolean change = nextId != -1;
 				if (changeTime == 0 || change){
@@ -134,6 +136,16 @@ public class Scoreboard implements Listener{
 			nextId = launched.indexOf(showed);
 		}
 		launched.remove(quest);
+	}
+	
+	public void hide(){
+		hid = true;
+		if (sb != null) sb.destroy();
+	}
+	
+	public void show(){
+		hid = false;
+		if (sb == null) initScoreboard();
 	}
 	
 	public void refreshQuestsLines(){

@@ -798,7 +798,7 @@ class CreateBucket implements StageCreationRunnables{
 	}
 
 	public static void setItems(Line line){
-		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
+		line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
 			Lang.BUCKET_AMOUNT.send(p);
 			new TextEditor(p, (obj) -> {
 				datas.put("amount", obj);
@@ -842,15 +842,15 @@ class CreateLocation implements StageCreationRunnables{
 	}
 
 	public static void setItems(Line line){
-		line.setItem(4, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
+		line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
 			Lang.LOCATION_RADIUS.send(p);
 			new TextEditor(p, (x) -> {
 				datas.put("radius", x);
 				datas.getGUI().reopen(p, false);
-				ItemUtils.name(item, Lang.currentRadius.format(x));
-			}, new NumberParser(Integer.class, true, true), () -> datas.getGUI().reopen(p, false), null);
+				ItemUtils.lore(item, Lang.currentRadius.format(x));
+			}, new NumberParser(Integer.class, true, true), () -> datas.getGUI().reopen(p, false), null).enterOrLeave(p);
 		});
-		line.setItem(5, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
+		line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
 			Lang.LOCATION_GO.send(p);
 			new WaitClick(p, () -> {
 				datas.put("location", p.getLocation());

@@ -72,7 +72,7 @@ public class QuestsListener implements Listener{
 				new ChooseQuestGUI(launcheable, (quest) -> {
 					if (quest == null) return;
 					if (QuestsConfiguration.questConfirmGUI()){
-						new ConfirmGUI(() -> quest.clickNPC(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(quest.getName())).create(p);
+						new ConfirmGUI(() -> quest.clickNPC(p), () -> Inventories.closeAndExit(p), quest.getConfirmMessage()).create(p);
 					}else quest.clickNPC(p);
 				}).create(p);
 			}

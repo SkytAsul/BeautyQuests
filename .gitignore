@@ -1,5 +1,7 @@
 /bin/
 /target/
+/doc/
 /.classpath
 /.project
 /.settings/
+*.jardesc

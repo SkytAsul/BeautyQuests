@@ -1,6 +1,6 @@
 name: BeautyQuests
 author: SkytAsul
-version: 0.16_PRE6
+version: 0.16_PRE8
 api-version: 1.13
 description: Quests system with a simple graphical interface.
 depend: [Citizens]
