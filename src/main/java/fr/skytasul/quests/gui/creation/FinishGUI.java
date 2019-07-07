@@ -293,6 +293,7 @@ public class FinishGUI implements CustomInventory{
 			Lang.CONFIRM_MESSAGE.send(p);
 			new TextEditor(p, (obj) -> {
 				confirmMessage = (String) obj;
+				openLastInv(p);
 				ItemUtils.lore(current, confirmMessage);
 			}, () -> openLastInv(p), () -> {
 				confirmMessage = null;
