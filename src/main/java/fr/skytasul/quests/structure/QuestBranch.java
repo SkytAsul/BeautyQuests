@@ -208,7 +208,7 @@ public class QuestBranch {
 			remove(acc, true);
 		}else {
 			if (playerAdvancement.containsKey(acc)){
-				if (QuestsConfiguration.sendQuestUpdateMessage()) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+				if (QuestsConfiguration.sendQuestUpdateMessage() && p != null) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
 				playerAdvancement.get(acc).inRegularStage(id);
 			}else playerAdvancement.put(acc, new PlayerAdvancement());
 			if (p != null && launchStage){
@@ -346,7 +346,7 @@ public class QuestBranch {
 							return;
 						}
 						playerAdvancement.put(acc, new PlayerAdvancement());
-						if ("end".equals(adv)) setEndingStages(acc, false); else setStage(acc, (int) adv, false);
+						if ("end".equals(adv)) setEndingStages(acc, false); else setStage(acc, Integer.parseInt((String) adv), false);
 					}catch (Exception ex){
 						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas of " + accId + " for the branch " + map.get("order") + " in the quest " + getQuest().getName());
 						ex.printStackTrace();

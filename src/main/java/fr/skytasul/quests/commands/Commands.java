@@ -349,7 +349,7 @@ public class Commands {
 		}else Utils.sendMessage(cmd.sender, "Version not supported");
 	}
 	
-	@Cmd(permission = "scoreboard", min = 2, args = {"PLAYERS", "setline|removeline|resetline|resetall"})
+	@Cmd(permission = "scoreboard", min = 2, args = {"PLAYERS", "setline|removeline|resetline|resetall|hide|show"})
 	public void scoreboard(CommandContext cmd){
 		Player p = (Player) cmd.args[0];
 		Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);

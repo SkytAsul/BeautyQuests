@@ -140,7 +140,10 @@ public class Scoreboard implements Listener{
 	
 	public void hide(){
 		hid = true;
-		if (sb != null) sb.destroy();
+		if (sb != null){
+			sb.destroy();
+			sb = null;
+		}
 	}
 	
 	public void show(){
