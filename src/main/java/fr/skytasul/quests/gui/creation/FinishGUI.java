@@ -173,11 +173,13 @@ public class FinishGUI implements CustomInventory{
 			Lang.END_MESSAGE.send(p);
 			new TextEditor(p, (obj) -> {
 				endMsg = (String) obj;
+				ItemUtils.lore(current, endMsg);
 				openLastInv(p);
 			}, () -> {
 				openLastInv(p);
 			}, () -> {
 				endMsg = null;
+				ItemUtils.lore(current);
 				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
@@ -454,6 +456,7 @@ public class FinishGUI implements CustomInventory{
 		bypassLimit = ItemUtils.set(inv.getItem(10), edited.canBypassLimit());
 		isCancellable = ItemUtils.set(inv.getItem(11), edited.isCancellable());
 		endMsg = edited.getEndMessage();
+		ItemUtils.lore(inv.getItem(4), endMsg);
 		dialog = edited.getStartDialog();
 		inv.setItem(32, edit.clone());
 		requirements = edited.getRequirements();

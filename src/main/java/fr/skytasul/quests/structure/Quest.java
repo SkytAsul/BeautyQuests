@@ -115,10 +115,6 @@ public class Quest{
 		return customConfirmMessage;
 	}
 	
-	public String getConfirmMessage(){
-		return customConfirmMessage != null ? customConfirmMessage : Lang.INDICATION_START.format(name);
-	}
-	
 	public void setCustomConfirmMessage(String message) {
 		this.customConfirmMessage = message;
 	}
