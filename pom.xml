@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -85,25 +84,77 @@
 			<version>7.0.1-SNAPSHOT	</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- JAR dependencies -->
+		<dependency>
+			<groupId>fr.skytasul</groupId>
+			<artifactId>accountshook</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/AccountsHook.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.dynmap</groupId>
+			<artifactId>dynmap</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/dynmap.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.massivecraft</groupId>
+			<artifactId>factions</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/Factions.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.massivecraft</groupId>
+			<artifactId>massivecore</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/MassiveCore.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.live.bemmamin</groupId>
+			<artifactId>gps</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/GPS.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.gamingmesh</groupId>
+			<artifactId>jobs</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/Jobs.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.gmail.mrphpfan</groupId>
+			<artifactId>mccombatlevel</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/McCombatLevel.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.gmail.nossr50</groupId>
+			<artifactId>mcmmo</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/mcMMO.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.lumine</groupId>
+			<artifactId>mythicmobs</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/MythicMobs.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.suxy</groupId>
+			<artifactId>skillapi</artifactId>
+			<version>1.0</version>
+			<systemPath>${project.basedir}/jars/SkillAPI.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<compilerId>eclipse</compilerId>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.plexus</groupId>
-						<artifactId>plexus-compiler-eclipse</artifactId>
-						<version>1.8.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-		</plugins>
-	</build>
 </project>
