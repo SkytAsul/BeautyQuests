@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.skytasul</groupId>
-	<artifactId>beautyquests</artifactId>
+	<artifactId>beautyquests-parent</artifactId>
 	<version>0.16.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>beautyquests</name>
 	<url>https://github.com/SkytAsul/BeautyQuests/</url>
@@ -18,143 +18,20 @@
 
 	<repositories>
 		<repository>
-			<id>spigotmc-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<id>citizens</id>
-			<url>http://repo.citizensnpcs.co/</url>
-		</repository>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>placeholderapi</id>
-			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
-		<repository>
-			<id>codemc-repo</id>
-			<url>https://repo.codemc.org/repository/maven-public/</url>
-		</repository>
-		<repository>
-			<id>dynmap</id>
-			<url>http://repo.mikeprimm.com/</url>
-		</repository>
-		<repository>
-			<id>sk89q</id>
-			<url>http://maven.sk89q.com/repo/</url>
+			<id>codemc-nms</id>
+			<url>https://repo.codemc.org/repository/nms/</url>
 		</repository>
 	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.14.3-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizens</artifactId>
-			<version>2.0.25-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.MilkBowl</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>1.7</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>me.clip</groupId>
-			<artifactId>placeholderapi</artifactId>
-			<version>2.10.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
-			<artifactId>holographicdisplays-plugin</artifactId>
-			<version>2.3.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sk89q.worldguard</groupId>
-			<artifactId>worldguard-bukkit</artifactId>
-			<version>7.0.1-SNAPSHOT	</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- JAR dependencies -->
-		<dependency>
-			<groupId>fr.skytasul</groupId>
-			<artifactId>accountshook</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/AccountsHook.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.dynmap</groupId>
-			<artifactId>dynmap</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/dynmap.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>factions</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/Factions.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>massivecore</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/MassiveCore.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.live.bemmamin</groupId>
-			<artifactId>gps</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/GPS.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gamingmesh</groupId>
-			<artifactId>jobs</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/Jobs.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.mrphpfan</groupId>
-			<artifactId>mccombatlevel</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/McCombatLevel.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.nossr50</groupId>
-			<artifactId>mcmmo</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/mcMMO.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.lumine</groupId>
-			<artifactId>mythicmobs</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/MythicMobs.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.suxy</groupId>
-			<artifactId>skillapi</artifactId>
-			<version>1.0</version>
-			<systemPath>${project.basedir}/jars/SkillAPI.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-	</dependencies>
+
+	<modules>
+		<module>core</module>
+		<module>v1_9_R1</module>
+		<module>v1_9_R2</module>
+		<module>v1_10_R1</module>
+		<module>v1_11_R1</module>
+		<module>v1_12_R1</module>
+		<module>v1_13_R2</module>
+		<module>v1_14_R1</module>
+		<module>dist</module>
+	</modules>
 </project>
