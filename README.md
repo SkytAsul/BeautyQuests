@@ -1,3 +1,6 @@
+[![Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/badge/icon)](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests)
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
+
 # BeautyQuests
 What is **BeautyQuests**?
 * BeautyQuests is a Minecraft quest plugin based on a simple-to-use graphical interface.
@@ -13,8 +16,10 @@ This plugin is elaborate to look pretty and to simplify the quests for the playe
 
 ***
 
-## Download
-The plugin can be downloaded only from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**.
+## Downloads
+Plugin releases can be downloaded from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**.
+
+Development builds are available on **[Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/)**.
 
 ***
 
@@ -25,8 +30,6 @@ You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**.
 
 ## Crowdin
 If you want to help us translate BeautyQuests into your native language, join the [official BeautyQuests Crowdin project](https://crowdin.com/project/beautyquests) and let players in-game see your translations (read the project description for more informations).
-
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
 
 ***
 
