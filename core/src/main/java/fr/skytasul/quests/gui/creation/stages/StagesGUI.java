@@ -240,6 +240,7 @@ public class StagesGUI implements CustomInventory {
 	}
 	
 	public boolean isEmpty(){
+		if (lines.isEmpty()) return true; // if this StagesGUI has never been opened
 		return !isActiveLine(getLine(0)) && !isActiveLine(getLine(15));
 	}
 
