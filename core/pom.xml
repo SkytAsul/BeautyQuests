@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>${project.parent.version}</version>
+		<version>0.16.0-SNAPSHOT</version>
 	</parent>
 	
    <build>
