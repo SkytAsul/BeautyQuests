@@ -23,9 +23,9 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
+import fr.skytasul.quests.structure.PlayerAdvancement;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.PlayerAdvancement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -157,7 +157,7 @@ public class Commands {
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 				return;
 			}
-			PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
+			PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
 			if (!adv.isInEndingStages()){
 				currentBranch.finishStage(target, currentBranch.getRegularStage(adv.getRegularStage()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
@@ -178,7 +178,7 @@ public class Commands {
 			}
 			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
 			if (currentBranch != null) {
-				PlayerAdvancement adv = currentBranch.getPlayerAdvancement(acc);
+				PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
 				if (adv.isInEndingStages()){
 					for (AbstractStage stage : currentBranch.getEndingStages().keySet()) stage.end(acc);
 				}else {
