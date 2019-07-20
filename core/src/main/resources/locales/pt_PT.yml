@@ -20,9 +20,9 @@ msg:
   writeNPCText: '§aEscreve o diálogo que será dito ao jogador pelo NPC: (Escreve "help" para receber ajuda.)'
   writeRegionName: '§aEscreve o nome da região necessária para a etapa:'
   writeXPGain: '§aEscreve a quantidade de pontos de experiência que o jogador obterá: (Último valor: {0})'
-  writeMobAmount: '§aEscreve a quantidade de monstros para matar:'
+  writeMobAmount: '§aEscreve a quantidade de mobs para matar:'
   writeChatMessage: '§aEscreve a mensagem necessária: (Adiciona "{SLASH}" no início, caso quiseres um comando.)'
-  writeEndMessage: '§aEscreve a mensagem que será enviada no final da missão ou na fase:'
+  writeEndMessage: '§aEscreve a mensagem que será enviada no final da missão ou na etapa:'
   writeDescriptionText: '§aEscreve o texto que descreve o objetivo da etapa:'
   writeStageText: '§aEscreve o texto que será enviado para o jogador no início da etapa:'
   moveToTeleportPoint: '§aVai ao local de teleporte desejado.'
@@ -32,7 +32,7 @@ msg:
   writeCommand: '§aEscreve o comando desejado: (O comando está sem o "/" e o espaço reservado "{PLAYER}" é suportado. Ele será substituído pelo nome do executor.)'
   writeHologramText: '§aEscreve o texto do holograma: (Escreve "none" se não queres um holograma e "null" se queres o texto padrão.)'
   writeQuestTimer: '§aEscreve o tempo necessário (em minutos) antes de reiniciar a missão: (Escreve "null" se desejas o temporizador padrão.)'
-  writeConfirmMessage: '§aWrite the confirmation message shown when a player is about to start the quest: (Write "null" if you want the default message.)'
+  writeConfirmMessage: '§aEscreve a mensagem de confirmação mostrada quando um jogador está prestes a iniciar a missão: (Escreve "null" se queres a mensagem padrão.)'
   requirements:
     quest: '§cTens que ter terminado a missão §e{0}§c!'
     level: '§cDeves ter pelo menos nível {0}!'
@@ -199,7 +199,7 @@ inv:
   validate: '§b§lValidar'
   cancel: '§c§lCancelar'
   confirm:
-    name: '§8Tens a certeza?'
+    name: 'Tens a certeza?'
     'yes': '§aConfirmar'
     'no': '§cCancelar'
   create:
@@ -250,7 +250,7 @@ inv:
     hologramLaunch: '§eEditar item holograma de "lançamento"'
     hologramLaunchNo: '§eEditar item holograma de "launch unavailable"'
     customConfirmMessage: '§eEdit quest confirmation message'
-    name: '§8Detalhes da última missão'
+    name: 'Detalhes da última missão'
     multipleTime:
       itemName: 'Alternar vários usos'
       itemLore: "A missão pode ser feita\nvárias vezes?"
@@ -319,9 +319,9 @@ inv:
     commands: 'Comandos: {0}'
     teleportation: "§aSelecionado:\n X: {0}\n Y: {1}\n Z: {2}\n Mundo: {3}"
   listAllQuests:
-    name: '§8Missões'
+    name: 'Missões'
   listPlayerQuests:
-    name: '§8Missões de {0}'
+    name: 'Missões de {0}'
   listQuests:
     notStarted: 'Missões não iniciadas'
     finished: 'Missões concluídas'
@@ -344,7 +344,7 @@ inv:
     value: '§eComando'
     console: 'Consola'
   chooseAccount:
-    name: '§5Qual conta?'
+    name: 'Qual conta?'
   listBook:
     questName: 'Nome'
     questStarter: 'Iniciador'

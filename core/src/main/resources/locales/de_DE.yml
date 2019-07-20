@@ -199,7 +199,7 @@ inv:
   validate: '§b§lBestätigen'
   cancel: '§c§lAbbrechen'
   confirm:
-    name: '§8Bist du sicher?'
+    name: 'Bist du sicher?'
     'yes': '§aBestätigen'
     'no': '§cAbbrechen'
   create:
@@ -250,7 +250,7 @@ inv:
     hologramLaunch: '§e„Starten“‐Hologramm‐Item bearbeiten'
     hologramLaunchNo: '§e„Starten nicht verfügbar“‐Hologramm‐Item bearbeiten'
     customConfirmMessage: '§eQuestbestätigungsnachricht bearbeiten'
-    name: '§8Letzte Questdetails'
+    name: 'Letzte Questdetails'
     multipleTime:
       itemName: 'Mehrfachverwendung umschalten'
       itemLore: "Kann die Quest mehrmals\nabgeschlossen werden?"
@@ -319,9 +319,9 @@ inv:
     commands: 'Befehle: {0}'
     teleportation: "§aAusgewählt:\n X: {0}\n Y: {1}\n Z: {2}\n Welt: {3}"
   listAllQuests:
-    name: '§8Quests'
+    name: 'Quests'
   listPlayerQuests:
-    name: '§8{0}''s Quests'
+    name: '{0}''s Quests'
   listQuests:
     notStarted: 'Nicht gestartete Quests'
     finished: 'Abgeschlossene Quests'
@@ -344,7 +344,7 @@ inv:
     value: '§eBefehl'
     console: 'Konsole'
   chooseAccount:
-    name: '§5Welcher Account?'
+    name: 'Welcher Account?'
   listBook:
     questName: 'Name'
     questStarter: 'Starter'

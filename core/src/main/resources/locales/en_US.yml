@@ -199,7 +199,7 @@ inv:
   validate: '§b§lValidate'
   cancel: '§c§lCancel'
   confirm:
-    name: '§8Are you sure?'
+    name: 'Are you sure?'
     'yes': '§aConfirm'
     'no': '§cCancel'
   create:
@@ -250,7 +250,7 @@ inv:
     hologramLaunch: '§eEdit "launch" hologram item'
     hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
     customConfirmMessage: '§eEdit quest confirmation message'
-    name: '§8Last quest details'
+    name: 'Last quest details'
     multipleTime:
       itemName: 'Toggle several-use'
       itemLore: 'Can the quest be done\nseveral times?'
@@ -319,9 +319,9 @@ inv:
     commands: 'Commands: {0}'
     teleportation: '§aSelected:\n X: {0}\n Y: {1}\n Z: {2}\n World: {3}'
   listAllQuests:
-    name: '§8Quests'
+    name: 'Quests'
   listPlayerQuests:
-    name: '§8{0}''s quests'
+    name: '{0}''s quests'
   listQuests:
     notStarted: 'Not started quests'
     finished: 'Finished quests'
@@ -344,7 +344,7 @@ inv:
     value: '§eCommand'
     console: 'Console'
   chooseAccount:
-    name: '§5What account?'
+    name: 'What account?'
   listBook:
     questName: 'Name'
     questStarter: 'Starter'
