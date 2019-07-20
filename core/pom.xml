@@ -9,7 +9,21 @@
 		<artifactId>beautyquests-parent</artifactId>
 		<version>0.16.0-SNAPSHOT</version>
 	</parent>
-	
+
+	<build>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>plugin.yml</include>
+					<include>*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
 	<repositories>
 		<repository>
 			<id>citizens</id>
@@ -75,7 +89,7 @@
 			<version>7.0.1-SNAPSHOT	</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Local JARs -->
 		<dependency>
 			<groupId>fr.skytasul</groupId>

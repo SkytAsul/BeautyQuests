@@ -202,7 +202,7 @@ public class QuestBranch {
 				stage.launch(p);
 			}
 			stage.start(acc);
-			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(p, getQuest(), stage));
+			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
 			Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
 			if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
 		}
