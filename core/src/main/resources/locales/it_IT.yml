@@ -1,4 +1,3 @@
----
 msg:
   quest:
     finished:
@@ -106,13 +105,13 @@ msg:
       create: '§6/{0} create: §eCrea una missione.'
       edit: '§6/{0} edit: §eModifica una missione.'
       remove: '§6/{0} remove <id>: §eElimina una quest con un id definito o clicca sul NPC quando non è specificato.'
-      finishAll: '§6/{0} finishAll <player>: §eTermina tutte le missioni in corso.'
-      setStage: '§6/{0} setStage <player> <id> [new stage]: §eTermina una fase per un giocatore.'
-      resetPlayer: '§6/{0} resetPlayer <player>: §eRimuovi tutte le informazioni su un giocatore.'
-      resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eElimina le informazioni di una quest per un giocatore.'
-      seePlayer: '§6/{0} seePlayer <player>: §eVisualizza le informazioni su un giocatore.'
+      finishAll: '§6/{0} finishAll <giocatore>: §eTermina tutte le missioni in corso.'
+      setStage: '§6/{0} setStage <giocatore> <id> [nuova fase]: §eTermina una fase per un giocatore.'
+      resetPlayer: '§6/{0} resetPlayer <giocatore>: §eRimuovi tutte le informazioni su un giocatore.'
+      resetPlayerQuest: '§6/{0} resetPlayerQuest <giocatore> [id]: §eElimina le informazioni di una quest per un giocatore.'
+      seePlayer: '§6/{0} seePlayer <giocatore>: §eVisualizza le informazioni su un giocatore.'
       reload: '§6/{0} reload: §eSalva e ricarica tutte le configurazioni e i file. (§cobsoleto§e)'
-      start: '§6/{0} start <player> [id]: §eForza l''inizio di una missione.'
+      start: '§6/{0} start <giocatore> [id]: §eForza l''inizio di una missione.'
       setItem: '§6/{0} setItem <talk|launch>: §eSalva l''oggetto dell''hologram.'
       adminMode: '§6/{0} adminMode: §eAbilita/disabilita la modalità Admin. (Utile per visualizzare i messaggi di log.)'
       version: '§6/{0} version: §eVisualizza la versione del plugin.'
@@ -147,7 +146,7 @@ msg:
         value: '§aScrivi il valore richiesto per il placeholder §6%{0}%§a:'
       chooseSkillRequired: '§aScrivi il nome dell''abilità richiesta:'
       reward:
-        permission: '§aModifica quali permessi devono essere conservati e quali rimossi con "add <permission> [remove: yes = "true", no = "false"]": (Scrivi "help" per altri comandi.)'
+        permission: '§aModifica quali permessi devono essere conservati e quali rimossi con "add <permesso> [remove: yes = "true", no = "false"]": (Scrivi "help" per altri comandi.)'
         money: '§aScrivi l''importo dei soldi ricevuti:'
     selectWantedBlock: '§aClicca con il bastone sul blocco desiderato per la fase.'
     itemCreator:
@@ -157,7 +156,7 @@ msg:
       unknownItemType: '§cTipo oggetto sconosciuto.'
       invalidItemType: '§cTipo di oggetto non valido. (L''oggetto non può essere un blocco.)'
     dialog:
-      syntax: '§cSintassi corretta: {0}{1} <message>'
+      syntax: '§cSintassi corretta: {0}{1} <messaggio>'
       syntaxRemove: '§cSintassi corretta: remove <id>'
       player: '§aMessaggio "{0}" aggiunto per il giocatore.'
       npc: '§aMessaggio "{0}" aggiunto per il NPC.'
@@ -167,15 +166,15 @@ msg:
       cleared: '§a{0} ha rimosso il messaggio(i).'
       help:
         header: '§6§lBeautyQuests — Aiuto editor'
-        npc: '§6npc <message>: §eAggiungi un messaggio detto dal NPC.'
-        player: '§6player <message>: §eAggiungi un messaggio detto dal giocatore.'
-        nothing: '§6noSender <message>: §eAggiungi un messaggio senza un mittente.'
+        npc: '§6npc <messaggio>: §eAggiungi un messaggio detto dal NPC.'
+        player: '§6player <messaggio>: §eAggiungi un messaggio detto dal giocatore.'
+        nothing: '§6noSender <messaggio>: §eAggiungi un messaggio senza un mittente.'
         remove: '§6remove <id>:§eRimuovi un messaggio.'
         list: '§6list: §eVisualizza tutti i messaggi.'
-        npcInsert: '§6npcInsert <id> <message>: §eInserisci un messaggio detto dal NPC.'
-        playerInsert: '§6playerInsert <id> <message> §eInserisci un messaggio detto dal giocatore.'
-        nothingInsert: '§6nothingInsert <id> <message>: §eInserisci un messaggio senza alcun prefix.'
-        addSound: '§6addSound <id> <sound>: §eAggiungi un suono a un messaggio.'
+        npcInsert: '§6npcInsert <id> <messaggio>: §eInserisci un messaggio detto dall''NPC.'
+        playerInsert: '§6playerInsert <id> <messaggio> §eInserisci un messaggio detto dal giocatore.'
+        nothingInsert: '§6nothingInsert <id> <messaggio>: §eInserisci un messaggio senza alcun prefix.'
+        addSound: '§6addSound <id> <suono>: §eAggiungi un suono a un messaggio.'
         clear: '§6clear: §eRimuovi tutti i messaggi.'
         close: '§6close: §eConvalida tutti i messaggi.'
     mythicmobs:
@@ -189,7 +188,7 @@ msg:
       removed: '§aTesto "{0}" rimosso.'
       help:
         header: '§6§lBeautyQuests — Guida editor'
-        add: '§6add <message>: §eAggiungi un testo.'
+        add: '§6add <messaggio>: §eAggiungi un testo.'
         remove: '§6remove <id>: §eRimuovi un testo.'
         list: '§6list: §eVisualizza tutti i testi aggiunti.'
         close: '§6close: §eConvalida i testi aggiunti.'
@@ -390,7 +389,7 @@ indication:
   removeQuest: '§7Sei sicuro di voler rimuovere la missione {0}?'
 misc:
   format:
-    prefix: '§6<§e§lQuests§r§6> §r'
+    prefix: '§6<§e§lMissioni§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e {0}'
@@ -421,7 +420,7 @@ misc:
     lava: 'Secchio di Lava'
     milk: 'Secchio di latte'
   questItemLore: '§e§oQuest item'
-  hologramText: '§8§lQuest NPC'
+  hologramText: '§8§lNPC della missione'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eTipo di entità: {0}'
   enabled: 'Abilitato'
