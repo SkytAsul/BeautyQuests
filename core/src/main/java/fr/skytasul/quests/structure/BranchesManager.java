@@ -203,7 +203,7 @@ public class BranchesManager{
 						
 						String adv = (String) advancement;
 						int separator = adv.indexOf('|');
-						QuestBranch branch = bm.getBranch(Integer.parseInt(adv.substring(0, separator)));
+						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
 						bm.playerAdvancement.put(acc, new PlayerAdvancement(branch));
 						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)), false);
 					}catch (Exception ex){
