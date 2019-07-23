@@ -194,8 +194,8 @@ public class QuestBranch {
 			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
 			remove(acc, true);
 		}else {
-			if (!manager.contains(acc)){
-				if (QuestsConfiguration.sendQuestUpdateMessage() && p != null) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+			if (manager.contains(acc)){
+				if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && launchStage) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
 				manager.playerAdvancement.get(acc).inRegularStage(id);
 			}else manager.playerAdvancement.put(acc, new PlayerAdvancement(this));
 			if (p != null && launchStage){
@@ -210,11 +210,18 @@ public class QuestBranch {
 	
 	public void setEndingStages(PlayerAccount acc, boolean launchStage){
 		Player p = acc.getPlayer();
-		if (!manager.contains(acc)) manager.playerAdvancement.put(acc, new PlayerAdvancement(this));
-		manager.playerAdvancement.get(acc).inEndingStages();
+		if (manager.contains(acc)){
+			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && launchStage) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+			manager.playerAdvancement.get(acc).inEndingStages();
+		}else manager.playerAdvancement.put(acc, new PlayerAdvancement(this));
 		for (AbstractStage newStage : endStages.keySet()){
 			if (p != null && launchStage) newStage.launch(p);
 			newStage.start(acc);
+			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), newStage));
+		}
+		if (p != null && launchStage){
+			Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
+			if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
 		}
 	}
 	

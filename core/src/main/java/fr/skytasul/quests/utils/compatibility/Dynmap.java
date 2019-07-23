@@ -32,7 +32,7 @@ public class Dynmap {
 			markers = api.createMarkerSet("beautyquests.markerset", QuestsConfiguration.dynmapSetName(), null, false);
 		}else markers.setMarkerSetLabel(QuestsConfiguration.dynmapSetName());
 		
-		markers.setMinZoom(1);
+		markers.setMinZoom(QuestsConfiguration.dynmapMinimumZoom());
 		markers.setHideByDefault(false);
 		markers.setDefaultMarkerIcon(icon);
 	}

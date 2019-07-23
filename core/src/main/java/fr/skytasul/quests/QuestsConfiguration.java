@@ -55,6 +55,7 @@ public class QuestsConfiguration {
 	private static boolean dialogsInActionBar = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
+	private static int dMinZoom = 0;
 	// stageDescription
 	private static String descPrefix = "{nl}§e- §6";
 	private static boolean descXOne = true;
@@ -115,6 +116,7 @@ public class QuestsConfiguration {
 		dSetName = config.getString("dynmap.markerSetName");
 		if (dSetName == null || dSetName.isEmpty()) Dependencies.dyn = false;
 		dIcon = config.getString("dynmap.markerIcon");
+		dMinZoom = config.getInt("dynmap.minZoom");
 		finishSound = config.getString("finishSound");
 		try{
 			Sound.valueOf(finishSound.toUpperCase());
@@ -304,6 +306,10 @@ public class QuestsConfiguration {
 	
 	public static String dynmapMarkerIcon(){
 		return dIcon;
+	}
+	
+	public static int dynmapMinimumZoom(){
+		return dMinZoom;
 	}
 	
 	public static int getMaxSplittedAdvancementPlaceholder(){

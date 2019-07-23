@@ -117,7 +117,7 @@ public enum Lang{
 	COMMAND_HELP_EDIT("msg.command.help.edit"),
 	COMMAND_HELP_REMOVE("msg.command.help.remove"),
 	COMMAND_HELP_FINISH("msg.command.help.finishAll"),
-	COMMAND_HELP_STAGE("msg.command.help.setStage"),// TODO edit
+	COMMAND_HELP_STAGE("msg.command.help.setStage"),
 	COMMAND_HELP_RESET("msg.command.help.resetPlayer"),
 	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest"),
 	COMMAND_HELP_SEE("msg.command.help.seePlayer"),

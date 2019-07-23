@@ -12,9 +12,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>1.14.3-R0.1-20190714.051413-5</version>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.14.3-R0.1-20190722.235358-7</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

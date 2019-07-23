@@ -65,6 +65,7 @@ showCustomHologramName: true
 dynmap:
   markerSetName: "Quests"
   markerIcon: "bookshelf"
+  minZoom: 0
 
 # - Stage descriptions -
 # Prefix before object's name in lists (example: §6first, §6second and §6third)
