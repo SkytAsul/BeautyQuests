@@ -336,7 +336,7 @@ public class StagesGUI implements CustomInventory {
 			StagesGUI gui = new StagesGUI(this);
 			gui.open(null); // init other GUI
 			line.data.put("branch", gui);
-			gui.editBranch(en.getValue());
+			if (en.getValue() != null) gui.editBranch(en.getValue());
 			runClick(line, StageCreator.getCreator(en.getKey().getType()), true);
 			stageDatas(line, en.getKey());
 			i++;
@@ -582,7 +582,7 @@ class CreateArea implements StageCreationRunnables{
 		datas.put("region", st.getRegion().getId());
 		datas.put("world", WorldGuard.getWorld(st.getRegion().getId()).getName());
 		setItem(datas.getLine(), datas.getGUI());
-		ItemUtils.name(datas.getLine().getItem(7), st.getRegion().getId());
+		ItemUtils.name(datas.getLine().getItem(6), st.getRegion().getId());
 	}
 }
 

@@ -211,8 +211,8 @@ public class StageMobs extends AbstractStage{
 	
 	public void end(PlayerAccount account){
 		if (!remaining.containsKey(account)) return;
+		PlayerDatas datas = remaining.remove(account);
 		if (QuestsConfiguration.showMobsProgressBar()){
-			PlayerDatas datas = remaining.remove(account);
 			Post1_9.removeBar(datas.bar);
 			datas.bar = null;
 			if (datas.task != null) datas.task.cancel();

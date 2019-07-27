@@ -153,8 +153,8 @@ public class NPCStarter {
 	}
 	
 	public void delete() {
-		for (Iterator<Quest> iterator = quests.iterator(); iterator.hasNext();) {
-			iterator.next().remove(true);
+		for (Quest qu : new ArrayList<>(quests)) {
+			qu.remove(true);
 		}
 		quests = null;
 		BeautyQuests.getInstance().getNPCs().remove(npc);
