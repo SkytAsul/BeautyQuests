@@ -3,6 +3,7 @@ package fr.skytasul.quests.utils;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
@@ -968,6 +969,7 @@ public enum XMaterial {
 	short data;
 	boolean item;
 	String lastName;
+	String name13;
 	
 	XMaterial(){ // post 1.13
 		this("STONE", 0, false);
@@ -987,6 +989,12 @@ public enum XMaterial {
 		this.lastName = lastName;
 	}
 	
+	XMaterial(String m, int data, String lastName, String name13){
+		this(m, data, false);
+		this.lastName = lastName;
+		this.name13 = name13;
+	}
+	
 	XMaterial(String m, int data, boolean item){
 		this.before13 = m;
 		this.data = (short) data;
@@ -999,6 +1007,7 @@ public enum XMaterial {
 	
 	public ItemStack parseItem(){
 		Material mat = parseMaterial(item);
+		Validate.notNull(mat, "Unable to find Bukkit material for XMaterial " + name());
 		if(isNewVersion()){
 			return new ItemStack(mat);
 		}

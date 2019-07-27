@@ -2,7 +2,7 @@
 What is **BeautyQuests**?
 * BeautyQuests is a Minecraft quest plugin based on a simple-to-use graphical interface.
 * It's an absolutely free plugin with a full technical documentation.
-* It's also a collaborative work, where everyone can improve and add new features. If you have ideas, submit them and me or somebody else will try to implement them.
+* It's also a collaborative work, where everyone can improve and add new features. If you have ideas, submit them and I or somebody else will try to implement them.
 * It's compatible with a large number of other plugins (like MythicMobs, Jobs, Vault, ...).
 
 ***
@@ -25,6 +25,8 @@ You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**.
 
 ## Crowdin
 If you want to help us translate BeautyQuests into your native language, join the [official BeautyQuests Crowdin project](https://crowdin.com/project/beautyquests) and let players in-game see your translations (read the project description for more informations).
+
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
 
 ***
 
