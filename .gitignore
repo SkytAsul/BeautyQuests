@@ -1,0 +1,8 @@
+/bin/
+/doc/
+.classpath
+.project
+*.jardesc
+target/
+.settings/
+/core/jars/
