@@ -37,7 +37,8 @@ public class StageLocation extends AbstractStage {
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
-		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
+		if (e.getTo().getWorld() != lc.getWorld()) return;
+		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return; // only rotation
 		if (hasStarted(e.getPlayer())){
 			if (e.getTo().distance(lc) <= radius) finishStage(e.getPlayer());
 		}
