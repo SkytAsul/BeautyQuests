@@ -52,6 +52,8 @@ public class Inventories{
 		if (g.get(p) == null) return;
 		if (inv == null) return;
 		
+		e.setCancelled(false);
+		
 		if (inv == p.getInventory()){
 			if (e.isShiftClick()) e.setCancelled(true);
 			return;

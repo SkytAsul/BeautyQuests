@@ -94,7 +94,11 @@ public class QuestBranch {
 			for (AbstractStage stage : endStages.keySet()) {
 				i++;
 				stb.append(stage.getDescriptionLine(account, source));
-				if (i != endStages.size()) stb.append("{nl} {nl}");
+				if (i != endStages.size()){
+					stb.append("{nl}");
+					stb.append(Lang.SCOREBOARD_BETWEEN_BRANCHES.toString());
+					stb.append("{nl}");
+				}
 			}
 			return stb.toString();
 		}
@@ -334,7 +338,7 @@ public class QuestBranch {
 							return;
 						}
 						manager.playerAdvancement.put(acc, new PlayerAdvancement(QuestBranch.this));
-						if ("end".equals(adv)) setEndingStages(acc, false); else setStage(acc, Integer.parseInt((String) adv), false);
+						if ("end".equals(adv)) setEndingStages(acc, false); else setStage(acc, Utils.parseInt(adv), false);
 					}catch (Exception ex){
 						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas of " + accId + " for the branch " + map.get("order") + " in the quest " + getQuest().getName());
 						ex.printStackTrace();

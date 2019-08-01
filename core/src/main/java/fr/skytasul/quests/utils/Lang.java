@@ -380,6 +380,7 @@ public enum Lang{
 	SCOREBOARD_NONE("scoreboard.noLaunched"),
 	SCOREBOARD_NONE_NAME("scoreboard.noLaunchedName"),
 	SCOREBOARD_NONE_DESC("scoreboard.noLaunchedDescription"),
+	SCOREBOARD_BETWEEN_BRANCHES("scoreboard.textBetwteenBranch"),
 	SCOREBOARD_REG("scoreboard.stage.region"),
 	SCOREBOARD_NPC("scoreboard.stage.npc"),
 	SCOREBOARD_ITEMS("scoreboard.stage.items"),

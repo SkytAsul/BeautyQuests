@@ -275,6 +275,10 @@ public class Utils{
 		}
 	}
 	
+	public static int parseInt(Object obj){
+		return obj instanceof Integer ? (int) obj : Integer.parseInt((String) obj);
+	}
+	
 	public static String removeColors(String str){
 		int i;
 		while ((i = str.indexOf("§")) != -1){
