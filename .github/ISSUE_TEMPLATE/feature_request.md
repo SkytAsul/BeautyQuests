@@ -1,7 +1,6 @@
 ---
 name: Feature request
 about: Suggest an idea for BeautyQuests.
-title: "<feature> "
 labels: feature request
 assignees: ''
 

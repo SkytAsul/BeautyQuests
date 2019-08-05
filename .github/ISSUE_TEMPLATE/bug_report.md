@@ -1,7 +1,6 @@
 ---
 name: Bug report
 about: Create a bug report for BeautyQuests.
-title: "<bug> "
 labels: bug
 assignees: ''
 
