@@ -63,7 +63,7 @@ public class ItemUtils {
 	public static ItemStack lore(ItemStack is, String... lore) {
 		ItemMeta im = is.getItemMeta();
 		List<String> ls = new ArrayList<>();
-		if (lore != null){
+		if (lore != null && lore[0] != null){
 			for (String s : lore){
 				if (s == null) {
 					ls.add("§a");

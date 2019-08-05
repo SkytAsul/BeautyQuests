@@ -1,4 +1,4 @@
-	package fr.skytasul.quests.gui.misc;
+	package fr.skytasul.quests.gui.templates;
 
 import java.util.List;
 

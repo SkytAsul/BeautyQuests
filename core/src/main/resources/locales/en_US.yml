@@ -3,7 +3,7 @@ msg:
     finished:
       base: '§aCongratulations! You have finished the quest §e{0}§a!'
       obtain: '§aYou obtain {0}!'
-    started: 'You have started the quest §r§e{0}§o§6!'
+    started: '§aYou have started the quest §r§e{0}§o§6!'
     created: '§aCongratulations! You have created the quest §e{0}§a which includes {1} branch(es)!'
     edited: '§aCongratulations! You have edited the quest §e{0}§a which includes now {1} branch(es)!'
     createCancelled: '§cThe creation or edition has been cancelled by another plugin!'

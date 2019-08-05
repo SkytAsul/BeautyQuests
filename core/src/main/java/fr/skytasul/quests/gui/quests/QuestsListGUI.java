@@ -12,7 +12,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.misc.PagedGUI;
+import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;

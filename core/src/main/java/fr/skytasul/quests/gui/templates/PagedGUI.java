@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.templates;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	protected Player p;
 	protected Inventory inv;
 	private int page = 0;
+	private int maxPage;
 	
 	private String name;
 	private DyeColor color;
@@ -32,6 +33,8 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		this.name = name;
 		this.color = color;
 		this.objects = objects;
+		
+		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
 	}
 	
 	public Inventory open(Player p) {
@@ -83,6 +86,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 				setItems();
 				break;
 			case 4:
+				if (page+1 == maxPage) break;
 				page++;
 				setItems();
 				break;

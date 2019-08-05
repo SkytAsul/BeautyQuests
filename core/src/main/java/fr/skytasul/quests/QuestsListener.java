@@ -69,6 +69,12 @@ public class QuestsListener implements Listener{
 				}
 				e.setCancelled(false);
 			}else {
+				for (Quest quest : launcheable){
+					if (quest.isInDialog(p)){
+						quest.clickNPC(p);
+						return;
+					}
+				}
 				new ChooseQuestGUI(launcheable, (quest) -> {
 					if (quest == null) return;
 					if (QuestsConfiguration.questConfirmGUI()){

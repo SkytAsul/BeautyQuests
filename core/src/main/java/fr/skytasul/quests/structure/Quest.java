@@ -287,7 +287,7 @@ public class Quest{
 		boolean c = false;
 		if (manager.contains(acc)){
 			Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
-			manager.remove(acc);	
+			manager.remove(acc);
 			c = true;
 		}
 		if (finished.remove(acc)) c = true;
@@ -441,7 +441,7 @@ public class Quest{
 	}
 	
 	public String toString(){
-		return "Quest{npcID=" + npcStarter.getId() + ",branches=" + manager.toString() + ",several=" + repeatable + "}";
+		return "Quest{id=" + id + ",npcID=" + npcStarter.getId() + ",branches=" + manager.toString() + ",name=" + name + "}";
 	}
 	
 	public Map<String, Object> serialize() throws Exception{

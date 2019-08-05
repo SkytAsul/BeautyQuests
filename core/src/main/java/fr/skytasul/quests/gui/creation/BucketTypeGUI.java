@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.misc.ChooseGUI;
+import fr.skytasul.quests.gui.templates.ChooseGUI;
 import fr.skytasul.quests.stages.StageBucket.BucketType;
 import fr.skytasul.quests.utils.Lang;
 

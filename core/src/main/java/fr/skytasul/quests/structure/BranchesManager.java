@@ -106,8 +106,8 @@ public class BranchesManager{
 	public void remove(PlayerAccount acc) {
 		if (!playerAdvancement.containsKey(acc)) return;
 		QuestBranch branch = getPlayerBranch(acc);
-		playerAdvancement.remove(acc);
 		if (branch != null) branch.remove(acc, true);
+		playerAdvancement.remove(acc);
 	}
 	
 	public void remove(){
@@ -204,6 +204,11 @@ public class BranchesManager{
 						String adv = (String) advancement;
 						int separator = adv.indexOf('|');
 						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
+						if (branch == null){
+							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName() + ": branch is null");
+							BeautyQuests.loadingFailure = true;
+							return;
+						}
 						bm.playerAdvancement.put(acc, new PlayerAdvancement(branch));
 						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)), false);
 					}catch (Exception ex){
