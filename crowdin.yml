@@ -1,3 +1,11 @@
-files:
-  - source: /core/src/main/resources/locales/en_US.yml
-    translation: /core/src/main/resources/locales/%locale_with_underscore%.yml
+"files" : [
+  {
+    "source" : "/core/src/main/resources/locales/en_US.yml",
+    "translation" : "/core/src/main/resources/locales/%locale_with_underscore%.yml",
+    "languages_mapping" : {
+      "locale_with_underscore" : {
+        "bq" : "en_US"
+      }
+    }
+  }
+]
