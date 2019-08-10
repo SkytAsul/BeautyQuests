@@ -4,7 +4,7 @@ msg:
     finished:
       base: '§a恭喜你完成了任务 §o§6{0}§r§a!'
       obtain: '§a你获得了 {0}!'
-    started: '你接受了任务 §r§e{0}§o§6!'
+    started: '§a你接受了任务 §r§e{0}§o§6!'
     created: '§a你成功地创建了 "§e{0}§a" 任务, 包含 {1} 个阶段!'
     edited: '§a你成功地修改了 "§e{0}§a", 包含 {1} 个阶段!'
     createCancelled: '§c抱歉，任务创建/编辑已被其他插件取消...'
@@ -18,7 +18,7 @@ msg:
   stageMobs:
     noMobs: '§c这个任务阶段没有要杀的怪物 :-)'
     listMobs: '§a你需要杀死 {0}.'
-  writeNPCText: '输入玩家需要对NPC说的话. 输入 "help" 来获取帮助. (指令不需要输入 /)'
+  writeNPCText: '输入玩家需要对NPC说的话. 输入 \"help\" 来获取帮助. (指令不需要输入 /)'
   writeRegionName: '输入任务阶段所需前往的区域名.'
   writeXPGain: '输入玩家获得的经验点. 最终获得: §a{0}'
   writeMobAmount: '输入要击杀的怪物数.'
@@ -65,10 +65,10 @@ msg:
   playerNotOnline: '§c玩家 {0} 不在线.'
   command:
     setStage:
-      branchDoesntExist: '§cThe branch with the id {0} doesn''t exist.'
+      branchDoesntExist: '§cid为{0}的任务分支不存在。'
       doesntExist: '§cID为{0}的任务阶段不存在.'
       next: '§a已跳过该任务阶段.'
-      nextUnavailable: '§cThe "skip" option is not available when the player is in the end of a branch.'
+      nextUnavailable: '§c"skip"选项在玩家到达任务分支结尾时无法使用。'
       set: '§a已进入任务阶段 {0} .'
     playerNeeded: '§c你必须是玩家才能使用这个指令.'
     incorrectSyntax: '§c错误用法.'
@@ -108,8 +108,8 @@ msg:
       create: '§6/{0} create: §a创建任务'
       edit: '§6/{0} edit: §a编辑任务'
       remove: '§6/{0} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
-      finishAll: '§6/{0} finishAll: §a结束所有进行中的任务'
-      setStage: '§6/{0} setStage <玩家名> <任务名> [新的任务阶段] : §e结束一名玩家的任务阶段'
+      finishAll: '§6/{0} finishAll <玩家名>: §a结束一名玩家所有进行中的任务。'
+      setStage: '§6/{0} setStage <玩家名> <id> [新任务分支] [新任务阶段]: §e跳过玩家当前的任务阶段/开始任务分支/s为任务分支设置任务阶段。'
       resetPlayer: '§6/{0} resetPlayer <玩家名>: §e删除一名玩家的所有任务数据。'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <玩家名> [id]: §e删除一名玩家的一个任务数据'
       seePlayer: '§6/{0} seePlayer <玩家名>: §a查看玩家的任务数据。'

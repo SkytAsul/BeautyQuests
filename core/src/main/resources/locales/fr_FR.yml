@@ -4,7 +4,7 @@ msg:
     finished:
       base: '§aFélicitations ! Vous avez complété la quête §e{0}§r§a !'
       obtain: '§aVous remportez {0} !'
-    started: 'Vous commencez la quête §r§e{0}§o§6 !'
+    started: '§aVous commencez la quête §r§e{0}§o§6 !'
     created: '§aFélicitations ! Vous avez créé la quête §e{0}§a, qui comporte {1} branche(s) !'
     edited: '§aFélicitations ! Vous avez modifié la quête §e{0}§a, qui comporte désormais {1} branche(s) !'
     createCancelled: '§cLa création (ou l''édition) de votre quête a été annulée par un plugin tiers.'
@@ -65,10 +65,10 @@ msg:
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   command:
     setStage:
-      branchDoesntExist: '§cThe branch with the id {0} doesn''t exist.'
+      branchDoesntExist: '§cLa branche avec l''id {0} n''existe pas.'
       doesntExist: '§cL''étape avec l''id {0} n''existe pas.'
       next: '§aL''étape a été passée.'
-      nextUnavailable: '§cThe "skip" option is not available when the player is in the end of a branch.'
+      nextUnavailable: '§cL''option "passer l''étape" n''est pas disponible quand le joueur est à la fin d''une branche.'
       set: '§aL''étape {0} a été lancée.'
     playerNeeded: '§cVous devez être un joueur pour effectuer cette commande!'
     incorrectSyntax: '§cSyntaxe incorrecte.'
@@ -108,8 +108,8 @@ msg:
       create: '§6/{0} create : §eCréer une quête.'
       edit: '§6/{0} edit : §eModifier une quête.'
       remove: '§6/{0} remove <id> : §eSupprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
-      finishAll: '§6/{0} finishAll <joueur> : §eFinir toutes les quêtes en cours.'
-      setStage: '§6/{0} setStage <joueur> <id> [étape suivante] : §eFinir l''étape en cours d''un joueur.'
+      finishAll: '§6/{0} finishAll <joueur> : §eFinir toutes les quêtes d''un joueur.'
+      setStage: '§6/{0} setStage <player> <id> [nouvelle branche] [nouvelle étape]: §ePasser l''étape en cours/lancer une branche/lancer une étape pour une branche.'
       resetPlayer: '§6/{0} resetPlayer <joueur> : §eSupprimer les données d''un joueur.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <joueur> [id] : §eSupprimer les données d''une seule quête pour un joueur.'
       seePlayer: '§6/{0} seePlayer <joueur> : §eVoir les données d''un joueur.'
@@ -373,7 +373,7 @@ scoreboard:
   noLaunched: '§cAucune quête en cours.'
   noLaunchedName: '§c§lChargement'
   noLaunchedDescription: '§c§oChargement'
-  textBetwteenBranch: '§e or'
+  textBetwteenBranch: '§e ou'
   stage:
     region: '§eTrouve la région §6{0}'
     npc: '§eParle au NPC §6{0}'
