@@ -72,7 +72,7 @@ msg:
       set: '§aL''étape {0} a été lancée.'
     playerNeeded: '§cVous devez être un joueur pour effectuer cette commande!'
     incorrectSyntax: '§cSyntaxe incorrecte.'
-    noPermission: '§cVous n''avez pas la permission d''exécuter cette commande! (Permission requise : {0})'
+    noPermission: '§cYou haven''t the required permission "{0}" to execute this command!'
     invalidCommand:
       quests: '§cCette commande n''existe pas, tapez §e/quests help§c.'
       simple: '§cCette commande n''existe pas, tapez §ehelp§c.'
