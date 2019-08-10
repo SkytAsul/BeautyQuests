@@ -1,9 +1,10 @@
+---
 msg:
   quest:
     finished:
       base: '§aGlückwunsch! Du hast die Quest §e{0}§a abgeschlossen!'
       obtain: '§aDu erhälst {0}!'
-    started: 'Du hast die Quest §r§e{0}§o§6 gestartet!'
+    started: '§aDu hast die Quest §r§e{0}§o§6 gestartet!'
     created: '§aGlückwunsch! Du hast die Quest §e{0}§a mit {1} Zweig(en) erstellt!'
     edited: '§aGlückwunsch! Du hast die Quest §e{0}§a bearbeitet, die jetzt {1} Zweig(e) enthält!'
     createCancelled: '§cDie Erstellung oder Bearbeitung wurde von einem anderen Plugin abgebrochen!'
@@ -64,12 +65,14 @@ msg:
   playerNotOnline: '§cDer Spieler {0} ist offline.'
   command:
     setStage:
+      branchDoesntExist: '§cDer Zweig mit der ID {0} existiert nicht.'
       doesntExist: '§cDer Schritt mit der ID {0} existiert nicht.'
       next: '§aDer Schritt wurde übersprungen.'
+      nextUnavailable: '§cDie „Überspringen“‐Option ist nicht verfügbar, wenn der Spieler am Ende eines Zweiges ist.'
       set: '§aSchritt {0} gestartet.'
     playerNeeded: '§cDu musst ein Spieler sein, um diesen Befehl ausführen zu können.'
     incorrectSyntax: '§cFalsche Syntax.'
-    noPermission: '§cDu hast nicht ausreichend Berechtigungen, um diesen Befehl ausführen zu können! (Benötigt: {0})'
+    noPermission: '§cDu hast nicht die benötigte Berechtigung „{0}“, um diesen Befehl auszuführen!'
     invalidCommand:
       quests: '§cDieser Befehl existiert nicht, schreibe §e/quests help§c.'
       simple: '§cDieser Befehl existiert nicht, schreibe §ehelp§c.'
@@ -105,8 +108,8 @@ msg:
       create: '§6/{0} create: §eErstelle eine Quest.'
       edit: '§6/{0} edit: §eBearbeite eine Quest.'
       remove: '§6/{0} remove <ID>: §eLösche eine Quest mit der angegebenen ID oder klicke auf den NPC, wenn nicht definiert.'
-      finishAll: '§6/{0} finishAll <Spieler>: §eBeende alle laufenden Quests eines Spielers.'
-      setStage: '§6/{0} setStage <Spieler> <ID> [neuer Schritt]: §eBeende einen Schritt für einen Spieler.'
+      finishAll: '§6/{0} finishAll <Spieler>: §eBeende alle Quests eines Spielers.'
+      setStage: '§6/{0} setStage <Spieler> <ID> [neuer Zweig] [neuer Schritt]: §eÜberspringe den aktuellen Schritt/starte einen Zweig/setze einen Schritt für einen Zweig.'
       resetPlayer: '§6/{0} resetPlayer <Spieler>: §eEntferne alle Informationen eines Spielers.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <Spieler> [ID]: §eLösche Informationen einer Quest für einen Spieler.'
       seePlayer: '§6/{0} seePlayer <Spieler>: §eSieh dir die Informationen eines Spielers an.'
@@ -146,7 +149,7 @@ msg:
         value: '§aSchreibe den benötigten Wert für den Platzhalter §6%{0}%§a:'
       chooseSkillRequired: '§aSchreibe den Namen der benötigten Fähigkeit:'
       reward:
-        permission: '§aBearbeite mit „add <Berechtigung> [entfernen: ja – „true“; nein – „false“]“, welche Berechtigungen beibehalten und welche entfernt werden sollen: (Schreibe „help“ für weitere Befehle.)'
+        permission: '§aBearbeite mit „add <Berechtigung> [entfernen: ja = „true“; nein = „false“]“, welche Berechtigungen beibehalten und welche entfernt werden sollen: (Schreibe „help“ für weitere Befehle.)'
         money: '§aSchreibe die zu bekommende Menge an Geld:'
     selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
     itemCreator:
@@ -232,7 +235,7 @@ inv:
     editFishes: '§eDie zu fangenden Fische bearbeiten'
     editItem: '§eHerzustellendes Item bearbeiten'
     editBucketType: '§eTyp des zu befüllenden Eimers bearbeiten'
-    editBucketAmount: '§eAnzahl an zu befüllenden Eimer bearbeiten'
+    editBucketAmount: '§eAnzahl an zu befüllenden Eimern bearbeiten'
     editLocation: '§ePosition bearbeiten'
     editRadius: '§eEntfernung von Position bearbeiten'
     currentRadius: '§eAktuelle Entfernung: §6{0}'
@@ -275,7 +278,7 @@ inv:
     editRequirements: '§eAnforderungen bearbeiten'
     startRewards: '§6Startbelohnungen'
     hologramText: '§eHologrammtext'
-    timer: '§bZeit, bevor man die Quest erneut starten kann.'
+    timer: '§bZeit, bevor die Quest erneut gestartet werden kann.'
     requirements: '{0} Anforderung(en)'
     rewards: '{0} Belohnung(en)'
   itemsSelect:
@@ -321,7 +324,7 @@ inv:
   listAllQuests:
     name: 'Quests'
   listPlayerQuests:
-    name: '{0}''s Quests'
+    name: 'Quests von {0}'
   listQuests:
     notStarted: 'Nicht gestartete Quests'
     finished: 'Abgeschlossene Quests'
@@ -370,6 +373,7 @@ scoreboard:
   noLaunched: '§cKeine laufenden Quests.'
   noLaunchedName: '&c&lLaden'
   noLaunchedDescription: '§c§oLaden'
+  textBetwteenBranch: '§e oder'
   stage:
     region: '§eFinde Region §6{0}'
     npc: '§eSprich mit dem NPC §6{0}'

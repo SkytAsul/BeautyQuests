@@ -1,3 +1,4 @@
+---
 msg:
   quest:
     finished:
@@ -19,7 +20,7 @@ msg:
     listMobs: '§aYou must kill {0}.'
   writeNPCText: '§aWrite the dialog that will be said to the player by the NPC: (Write "help" to receive help.)'
   writeRegionName: '§aWrite the name of the region required for the step:'
-  writeXPGain: '§aWrite the amount of experience points that the player will obtain: (Last value: {0})'
+  writeXPGain: '§aWrite the amount of experience points the player will obtain: (Last value: {0})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
   writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if you want a command.)'
   writeEndMessage: '§aWrite the message that will be sent at the end of the quest or the stage:'
@@ -67,7 +68,7 @@ msg:
       branchDoesntExist: '§cThe branch with the id {0} doesn''t exist.'
       doesntExist: '§cThe stage with the id {0} doesn''t exist.'
       next: '§aThe stage has been skipped.'
-      nextUnavailable: '§cThe "skip" option is not available when the player is in the end of a branch.'
+      nextUnavailable: '§cThe "skip" option is not available when the player is at the end of a branch.'
       set: '§aStage {0} launched.'
     playerNeeded: '§cYou must be a player to execute this command!'
     incorrectSyntax: '§cIncorrect syntax.'
@@ -107,8 +108,8 @@ msg:
       create: '§6/{0} create: §eCreate a quest.'
       edit: '§6/{0} edit: §eEdit a quest.'
       remove: '§6/{0} remove <id>: §eDelete a quest with a specified id or click on the NPC when not defined.'
-      finishAll: '§6/{0} finishAll <player>: §eFinish all quests in progress.'
-      setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eNext/Finish the branch/ Set a stage for a player.'
+      finishAll: '§6/{0} finishAll <player>: §eFinish all quests of a player.'
+      setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the current stage/start the branch/set a stage for a branch.'
       resetPlayer: '§6/{0} resetPlayer <player>: §eRemove all informations about a player.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eDelete informations of a quest for a player.'
       seePlayer: '§6/{0} seePlayer <player>: §eView informations about a player.'
@@ -255,7 +256,7 @@ inv:
     name: 'Last quest details'
     multipleTime:
       itemName: 'Toggle several-use'
-      itemLore: 'Can the quest be done\nseveral times?'
+      itemLore: "Can the quest be done\nseveral times?"
     cancellable: 'Cancellable by player'
     scoreboardItem: 'Enable scoreboard'
     hideItem: 'Hide menu and dynmap'
@@ -269,7 +270,7 @@ inv:
     selectStarterNPC: '§e§lSelect NPC starter'
     createQuest:
       itemName: '§lCreate quest'
-      itemLore: 'One NPC must be selected and\na quest name needs to be defined.'
+      itemLore: "One NPC must be selected and\na quest name needs to be defined."
     editQuest:
       itemName: '§lEdit quest'
     endMessage: '§eEdit end message'
@@ -282,7 +283,7 @@ inv:
     rewards: '{0} reward(s)'
   itemsSelect:
     name: 'Edit items'
-    none: '§aMove an item to here or\nclick to open the item editor.'
+    none: "§aMove an item to here or\nclick to open the item editor."
   itemSelect:
     name: 'Choose item'
   npcCreate:
@@ -305,7 +306,7 @@ inv:
   mobs:
     name: 'Select mobs'
     none: '§aClick to add a mob.'
-    click: '§7Left-click to edit.\nRight-click to delete.'
+    click: "§7Left-click to edit.\nRight-click to delete."
   mobSelect:
     name: 'Select mob'
     bukkitEntityType: '§eSelect entity type'
@@ -319,7 +320,7 @@ inv:
   rewards:
     name: 'Rewards'
     commands: 'Commands: {0}'
-    teleportation: '§aSelected:\n X: {0}\n Y: {1}\n Z: {2}\n World: {3}'
+    teleportation: "§aSelected:\n X: {0}\n Y: {1}\n Z: {2}\n World: {3}"
   listAllQuests:
     name: 'Quests'
   listPlayerQuests:
@@ -376,7 +377,7 @@ scoreboard:
   stage:
     region: '§eFind region §6{0}'
     npc: '§eTalk with NPC §6{0}'
-    items: '§eFind items for §6{0}§e:'
+    items: '§eBring items to §6{0}§e:'
     mobs: '§eKill §6{0}'
     mine: '§eMine {0}'
     chat: '§eWrite §6{0}'
