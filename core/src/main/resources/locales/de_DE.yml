@@ -72,7 +72,7 @@ msg:
       set: '§aSchritt {0} gestartet.'
     playerNeeded: '§cDu musst ein Spieler sein, um diesen Befehl ausführen zu können.'
     incorrectSyntax: '§cFalsche Syntax.'
-    noPermission: '§cDu hast nicht ausreichend Berechtigungen, um diesen Befehl ausführen zu können! (Benötigt: {0})'
+    noPermission: '§cYou haven''t the required permission "{0}" to execute this command!'
     invalidCommand:
       quests: '§cDieser Befehl existiert nicht, schreibe §e/quests help§c.'
       simple: '§cDieser Befehl existiert nicht, schreibe §ehelp§c.'
