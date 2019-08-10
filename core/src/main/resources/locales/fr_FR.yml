@@ -1,3 +1,4 @@
+---
 msg:
   quest:
     finished:
@@ -64,8 +65,10 @@ msg:
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   command:
     setStage:
+      branchDoesntExist: '§cThe branch with the id {0} doesn''t exist.'
       doesntExist: '§cL''étape avec l''id {0} n''existe pas.'
       next: '§aL''étape a été passée.'
+      nextUnavailable: '§cThe "skip" option is not available when the player is in the end of a branch.'
       set: '§aL''étape {0} a été lancée.'
     playerNeeded: '§cVous devez être un joueur pour effectuer cette commande!'
     incorrectSyntax: '§cSyntaxe incorrecte.'
@@ -370,6 +373,7 @@ scoreboard:
   noLaunched: '§cAucune quête en cours.'
   noLaunchedName: '§c§lChargement'
   noLaunchedDescription: '§c§oChargement'
+  textBetwteenBranch: '§e or'
   stage:
     region: '§eTrouve la région §6{0}'
     npc: '§eParle au NPC §6{0}'
