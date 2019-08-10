@@ -72,7 +72,7 @@ msg:
       set: '§a已进入任务阶段 {0} .'
     playerNeeded: '§c你必须是玩家才能使用这个指令.'
     incorrectSyntax: '§c错误用法.'
-    noPermission: '§c你没有权限输入这个指令！(需要权限: {0})'
+    noPermission: '§cYou haven''t the required permission "{0}" to execute this command!'
     invalidCommand:
       quests: '§c指令不存在, 输入 §e/quests help 查看帮助§c.'
       simple: '§c指令不存在, 输入 §ehelp §c查看帮助(不需要 /)'
