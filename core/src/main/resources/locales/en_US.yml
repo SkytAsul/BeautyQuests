@@ -1,3 +1,4 @@
+---
 msg:
   quest:
     finished:
@@ -255,7 +256,7 @@ inv:
     name: 'Last quest details'
     multipleTime:
       itemName: 'Toggle several-use'
-      itemLore: 'Can the quest be done\nseveral times?'
+      itemLore: "Can the quest be done\nseveral times?"
     cancellable: 'Cancellable by player'
     scoreboardItem: 'Enable scoreboard'
     hideItem: 'Hide menu and dynmap'
@@ -269,7 +270,7 @@ inv:
     selectStarterNPC: '§e§lSelect NPC starter'
     createQuest:
       itemName: '§lCreate quest'
-      itemLore: 'One NPC must be selected and\na quest name needs to be defined.'
+      itemLore: "One NPC must be selected and\na quest name needs to be defined."
     editQuest:
       itemName: '§lEdit quest'
     endMessage: '§eEdit end message'
@@ -282,7 +283,7 @@ inv:
     rewards: '{0} reward(s)'
   itemsSelect:
     name: 'Edit items'
-    none: '§aMove an item to here or\nclick to open the item editor.'
+    none: "§aMove an item to here or\nclick to open the item editor."
   itemSelect:
     name: 'Choose item'
   npcCreate:
@@ -305,7 +306,7 @@ inv:
   mobs:
     name: 'Select mobs'
     none: '§aClick to add a mob.'
-    click: '§7Left-click to edit.\nRight-click to delete.'
+    click: "§7Left-click to edit.\nRight-click to delete."
   mobSelect:
     name: 'Select mob'
     bukkitEntityType: '§eSelect entity type'
@@ -319,7 +320,7 @@ inv:
   rewards:
     name: 'Rewards'
     commands: 'Commands: {0}'
-    teleportation: '§aSelected:\n X: {0}\n Y: {1}\n Z: {2}\n World: {3}'
+    teleportation: "§aSelected:\n X: {0}\n Y: {1}\n Z: {2}\n World: {3}"
   listAllQuests:
     name: 'Quests'
   listPlayerQuests:
