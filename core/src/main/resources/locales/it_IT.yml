@@ -72,7 +72,7 @@ msg:
       set: '§aFase {0} avviata.'
     playerNeeded: '§cDevi essere un giocatore per eseguire questo comando!'
     incorrectSyntax: '§cSintassi errata.'
-    noPermission: '§cYou haven''t the required permission "{0}" to execute this command!'
+    noPermission: '§cYou haven''t enough permissions to execute this command! (Required: {0})'
     invalidCommand:
       quests: '§cQuesto comando non esiste, scrivi §e/quests help§c.'
       simple: '§cQuesto comando non esiste, scrivi §ehelp§c.'
