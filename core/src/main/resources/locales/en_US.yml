@@ -72,7 +72,7 @@ msg:
       set: '§aStage {0} launched.'
     playerNeeded: '§cYou must be a player to execute this command!'
     incorrectSyntax: '§cIncorrect syntax.'
-    noPermission: '§cYou haven''t enough permissions to execute this command! (Required: {0})'
+    noPermission: '§cYou haven''t the required permission "{0}" to execute this command!'
     invalidCommand:
       quests: '§cThis command doesn''t exist, write §e/quests help§c.'
       simple: '§cThis command doesn''t exist, write §ehelp§c.'
