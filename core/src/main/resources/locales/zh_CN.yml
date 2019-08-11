@@ -72,7 +72,7 @@ msg:
       set: '§a已进入任务阶段 {0} .'
     playerNeeded: '§c你必须是玩家才能使用这个指令.'
     incorrectSyntax: '§c错误用法.'
-    noPermission: '§c你没有权限输入这个指令！(需要权限: {0})'
+    noPermission: '§cYou haven''t enough permissions to execute this command! (Required: {0})'
     invalidCommand:
       quests: '§c指令不存在, 输入 §e/quests help 查看帮助§c.'
       simple: '§c指令不存在, 输入 §ehelp §c查看帮助(不需要 /)'
@@ -256,7 +256,7 @@ inv:
     name: '§8最终任务详细设置'
     multipleTime:
       itemName: '开关重复任务'
-      itemLore: "任务是否可以多次完成?"
+      itemLore: '任务是否可以多次完成?'
     cancellable: '玩家可取消任务'
     scoreboardItem: '启用计分版'
     hideItem: '隐藏任务 (菜单和卫星地图)'
@@ -270,7 +270,7 @@ inv:
     selectStarterNPC: '§6§l选择接受任务的NPC'
     createQuest:
       itemName: '§l创建任务'
-      itemLore: "必须先选择或创建一个NPC并且已设置任务名."
+      itemLore: '必须先选择或创建一个NPC并且已设置任务名.'
     editQuest:
       itemName: '§l编辑任务'
     endMessage: '§a编辑任务结束消息'
@@ -283,7 +283,7 @@ inv:
     rewards: '{0} 个奖励'
   itemsSelect:
     name: '编辑物品'
-    none: "§a把物品放到这里或点击打开物品编辑器."
+    none: '§a把物品放到这里或点击打开物品编辑器.'
   itemSelect:
     name: '选择物品'
   npcCreate:
@@ -306,7 +306,7 @@ inv:
   mobs:
     name: '选择怪物'
     none: '§a点击添加怪物'
-    click: "§7左键编辑,右键删除."
+    click: '§7左键编辑,右键删除.'
   mobSelect:
     name: '选择怪物'
     bukkitEntityType: '§e选择一个生物类型'
