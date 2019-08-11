@@ -130,7 +130,7 @@ public abstract class AbstractStage implements Listener{
 		if (startMessage != null){
 			if (startMessage.length() > 0){
 				if (branch.getID(this) == 0){
-					Lang.NpcText.send(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
+					Lang.NpcText.sendWP(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
 				}else {
 					Utils.sendOffMessage(p, startMessage);
 				}
