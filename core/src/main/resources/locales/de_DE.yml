@@ -377,7 +377,7 @@ scoreboard:
   stage:
     region: '§eFinde Region §6{0}'
     npc: '§eSprich mit dem NPC §6{0}'
-    items: '§eFinde Items für §6{0}§e:'
+    items: '§eBringe Items zu §6{0}§e:'
     mobs: '§eTöte §6{0}'
     mine: '§eBaue {0} ab'
     chat: '§eSchreibe §6{0}'
