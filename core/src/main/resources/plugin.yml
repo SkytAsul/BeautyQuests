@@ -11,7 +11,7 @@ commands:
   beautyquests:
     description: Main command for quests
     permission: beautyquests.command
-    aliases: [bquests, quests, beautyquests, bq, quetes, quest]
+    aliases: [bquests, quests, beautyquests, bq, quest]
     
 permissions:
   beautyquests.*:

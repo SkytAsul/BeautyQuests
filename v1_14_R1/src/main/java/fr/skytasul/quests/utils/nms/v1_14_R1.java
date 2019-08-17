@@ -10,15 +10,15 @@ import fr.skytasul.quests.utils.ParticleEffect;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.server.v1_14_R1.ChatComponentText;
 import net.minecraft.server.v1_14_R1.EnumChatFormat;
+import net.minecraft.server.v1_14_R1.EnumHand;
 import net.minecraft.server.v1_14_R1.Packet;
-import net.minecraft.server.v1_14_R1.PacketDataSerializer;
-import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_14_R1.PacketPlayOutOpenBook;
 import net.minecraft.server.v1_14_R1.PacketPlayOutWorldParticles;
 
 public class v1_14_R1 extends NMS{
 	
 	public Object bookPacket(ByteBuf buf){
-		return new PacketPlayOutCustomPayload(PacketPlayOutCustomPayload.c, new PacketDataSerializer(buf));
+		return new PacketPlayOutOpenBook(EnumHand.MAIN_HAND);
 	}
 
 	public Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2,

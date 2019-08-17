@@ -331,12 +331,13 @@ public class Commands {
 	}
 	
 	@Cmd(player = true)
-	public void editor(CommandContext cmd){
+	public void exitEditor(CommandContext cmd){
 		Editor.leave(cmd.player);
+		Inventories.closeAndExit(cmd.player);
 	}
 	
 	@Cmd(player = true)
-	public void inventory(CommandContext cmd){
+	public void reopenInventory(CommandContext cmd){
 		if (Inventories.isInSystem(cmd.player)){
 			Inventories.openInventory(cmd.player);
 		}
