@@ -822,12 +822,12 @@ class CreateBucket implements StageCreationRunnables{
 class CreateLocation implements StageCreationRunnables{
 	public void start(Player p, LineData datas){
 		Lang.LOCATION_GO.send(p);
-		new WaitClick(p, () -> {
+		new WaitClick(p, NPCGUI.validMove, () -> {
 			datas.put("location", p.getLocation());
 			datas.put("radius", 5);
 			datas.getGUI().reopen(p, false);
 			setItems(datas.getLine());
-		}, NPCGUI.validMove).enterOrLeave(p);
+		}).enterOrLeave(p);
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch){
@@ -853,10 +853,10 @@ class CreateLocation implements StageCreationRunnables{
 		});
 		line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
 			Lang.LOCATION_GO.send(p);
-			new WaitClick(p, () -> {
+			new WaitClick(p, NPCGUI.validMove, () -> {
 				datas.put("location", p.getLocation());
 				datas.getGUI().reopen(p, false);
-			}, NPCGUI.validMove).enterOrLeave(p);
+			}).enterOrLeave(p);
 		});
 	}
 }

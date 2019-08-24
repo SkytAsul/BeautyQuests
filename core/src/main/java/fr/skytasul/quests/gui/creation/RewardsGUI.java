@@ -314,12 +314,12 @@ class TeleportationR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		Lang.MOVE_TELEPORT_POINT.send(p);
-		Editor.enterOrLeave(p, new WaitClick(p, () -> {
+		Editor.enterOrLeave(p, new WaitClick(p, NPCGUI.validMove.clone(), () -> {
 			Location lc = p.getLocation();
 			datas.put("loc", lc);
 			ItemUtils.lore(clicked, Utils.locationToString(lc));
 			gui.reopen(p, false);
-		}, NPCGUI.validMove.clone()));
+		}));
 	}
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is){

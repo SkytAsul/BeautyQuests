@@ -60,9 +60,9 @@ public class NPCGUI implements CustomInventory{
 		switch (slot){
 		
 		case 0:
-			Editor.enterOrLeave(p, new WaitClick(p, () -> {
+			Editor.enterOrLeave(p, new WaitClick(p, validMove.clone(), () -> {
 				openLastInv(p);
-			}, validMove.clone()));
+			}));
 			break;
 
 		case 1:
