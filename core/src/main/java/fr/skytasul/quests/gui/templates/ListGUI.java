@@ -2,6 +2,7 @@
 
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -14,7 +15,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.XMaterial;
 
 /**
- * An inventory who has 8 slots to store items. Each item is linked in a list to an instance of type T.
+ * An inventory which has up to 54 slots to store items. Each item is linked in a list to an instance of type T.
  * @author SkytAsul
  *
  * @param <T> type of objects stocked in the list
@@ -24,18 +25,22 @@ public abstract class ListGUI<T> implements CustomInventory {
 	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c");
 
 	protected List<T> objects;
+	protected int size;
+	
 	protected Inventory inv;
 	protected Player p;
 	
-	public ListGUI(List<T> list){
+	public ListGUI(List<T> list, int size){
 		this.objects = list;
+		Validate.isTrue(size % 9 == 0, "Size must be a multiple of 9");
+		this.size = size;
 	}
 	
 	public Inventory open(Player p){
-		inv = Bukkit.createInventory(null, 9, name());
+		inv = Bukkit.createInventory(null, size, name());
 		this.p = p;
 		
-		inv.setItem(8, ItemUtils.itemDone);
+		inv.setItem(size - 1, ItemUtils.itemDone);
 		for (int i = 0; i < 8; i++){
 			if (objects.size() <= i){
 				inv.setItem(i, none);
@@ -56,7 +61,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
-		if (slot == 8){
+		if (slot == size - 1){
 			finish();
 		}else {
 			if (current.equals(none)){
@@ -96,8 +101,8 @@ public abstract class ListGUI<T> implements CustomInventory {
 	 * @param object existing object to represent
 	 * @return ItemStack who represents the object
 	 */
-	
 	public abstract ItemStack getItemStack(T object);
+	
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object (may be null if there was no previous object)

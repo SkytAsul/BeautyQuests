@@ -2,7 +2,6 @@ package fr.skytasul.quests.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ReflectUtils {
@@ -66,12 +65,12 @@ public class ReflectUtils {
 		return clazz.getEnumConstants()[ordinal];
 	}
 	
-	public static Object getFieldValue(Field field, Object instance) throws IllegalArgumentException, IllegalAccessException{
+	public static Object getFieldValue(Field field, Object instance) throws ReflectiveOperationException{
 		field.setAccessible(true);
 		return field.get(instance);
 	}
 	
-	public static void setFieldValue(Field field, Object instance, Object object) throws IllegalArgumentException, IllegalAccessException{
+	public static void setFieldValue(Field field, Object instance, Object object) throws ReflectiveOperationException{
 		field.setAccessible(true);
 		field.set(instance, object);
 	}
@@ -84,12 +83,12 @@ public class ReflectUtils {
 		return s;
 	}
 	
-	public static void invoke(Object obj, Method method, Object... params) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public static void invoke(Object obj, Method method, Object... params) throws ReflectiveOperationException{
 		method.setAccessible(true);
 		method.invoke(null, params);
 	}
 	
-	public static <T> T newInstance(Constructor<T> constructor, Object... params) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public static <T> T newInstance(Constructor<T> constructor, Object... params) throws ReflectiveOperationException{
 		constructor.setAccessible(true);
 		/*if (constructor.getParameters().length != 0){
 			//for (Parameter param : constructor.getParameters()) Bukkit.broadcastMessage(param.getType().getName());

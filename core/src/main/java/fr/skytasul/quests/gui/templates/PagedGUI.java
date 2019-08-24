@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.templates;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -28,21 +29,28 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	private String name;
 	private DyeColor color;
 	protected List<T> objects;
+	protected Consumer<List<T>> validate;
 	
 	protected PagedGUI(String name, DyeColor color, List<T> objects){
+		this(name, color, objects, null);
+	}
+	
+	protected PagedGUI(String name, DyeColor color, List<T> objects, Consumer<List<T>> validate){
 		this.name = name;
 		this.color = color;
 		this.objects = objects;
-		
-		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
+		this.validate = validate;
 	}
 	
 	public Inventory open(Player p) {
 		this.p = p;
+		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
+		
 		inv = Bukkit.createInventory(null, 45, name);
 
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
+		if (validate != null) setBarItem(2, ItemUtils.itemDone);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 		
@@ -73,6 +81,18 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		inv.setItem(slot, is);
 		return slot;
 	}
+	
+	/**
+	 * @param object T object to get the slot from
+	 * @return slot in the inventory, -1 if the object is on another page
+	 */
+	public int getObjectSlot(T object){
+		int index = objects.indexOf(object);
+		if (index < page*35 || index > (page + 1)*35) return -1;
+		
+		int line = (int) Math.floor(index * 1.0 / 7.0);
+		return index + (2 * line);
+	}
 
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -90,6 +110,10 @@ public abstract class PagedGUI<T> implements CustomInventory {
 				page++;
 				setItems();
 				break;
+				
+			case 2:
+				validate.accept(objects);
+				break;
 			}
 			break;
 			
@@ -98,7 +122,9 @@ public abstract class PagedGUI<T> implements CustomInventory {
 			
 		default:
 			int line = (int) Math.floor(slot * 1D / 9D);
-			click(objects.get(slot - line*2 + page*35));
+			int objectSlot = slot - line*2 + page*35;
+			click(objects.get(objectSlot));
+			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 		return true;
 	}
@@ -107,8 +133,8 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	 * @param object existing object to represent
 	 * @return ItemStack who represents the object
 	 */
-	
 	public abstract ItemStack getItemStack(T object);
+	
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object

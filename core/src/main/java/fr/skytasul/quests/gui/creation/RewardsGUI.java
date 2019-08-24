@@ -172,7 +172,7 @@ class CommandR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		if (!datas.containsKey("commands")) datas.put("commands", new ArrayList<>());
-		Inventories.create(p, new ListGUI<Command>((List<Command>) datas.get("commands")) {
+		Inventories.create(p, new ListGUI<Command>((List<Command>) datas.get("commands"), 9) {
 			public void click(Command existing){
 				Inventories.create(p, new CommandGUI((cmd) -> this.finishItem(cmd))).setFromExistingCommand(existing);
 			}
