@@ -194,7 +194,7 @@ class CommandR implements RewardCreationRunnables{
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack item){
 		CommandReward rew = (CommandReward) reward;
-		datas.put("cmd", new ArrayList<>(rew.commands));
+		datas.put("commands", new ArrayList<>(rew.commands));
 		ItemUtils.lore(item, Lang.commands.format(rew.commands.size()));
 	}
 

@@ -56,9 +56,11 @@ public class MinecraftNames {
 	}
 	
 	public static String getEntityName(EntityType type) {
-		if (map == null) return defaultFormat(type.getName());
+		String defaultName = type.getName();
+		if (defaultName == null) defaultName = type.name();
+		if (map == null) return defaultFormat(defaultName);
 		String name = cachedEntities.get(type);
-		if (name == null) return defaultFormat(type.getName());
+		if (name == null) return defaultFormat(defaultName);
 		return name;
 	}
 	
@@ -70,7 +72,7 @@ public class MinecraftNames {
 	}
 	
 	public static String defaultFormat(String value){
-		return value.toLowerCase().replace("_", "");
+		return value.toLowerCase().replace("_", " ");
 	}
 	
 }
