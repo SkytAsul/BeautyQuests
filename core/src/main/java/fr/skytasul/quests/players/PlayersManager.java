@@ -62,12 +62,27 @@ public class PlayersManager {
 			String nidentifier = identifier.substring(7);
 			try{
 				abs = Accounts.getAccountFromIdentifier(nidentifier);
-			}catch (Throwable ex){
+			}catch (Exception ex){
 				ex.printStackTrace();
 			}
-		}else if (QuestsConfiguration.hookAccounts()){
-			abs = Accounts.createAccountFromUUID(UUID.fromString(identifier));
-		}else abs = new UUIDAccount(UUID.fromString(identifier));
+		}else {
+			try{
+				UUID uuid = UUID.fromString(identifier);
+				if (QuestsConfiguration.hookAccounts()){
+					try{
+						abs = Accounts.createAccountFromUUID(uuid);
+					}catch (UnsupportedOperationException ex){
+						BeautyQuests.logger.warning("Can't migrate an UUID account to a hooked one.");
+					}
+				}else abs = new UUIDAccount(uuid);
+			}catch (IllegalArgumentException ex){
+				BeautyQuests.logger.warning("Account identifier " + identifier + " is not valid.");
+			}
+		}
+		if (abs == null){
+			BeautyQuests.logger.info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
+			return new PlayerAccount(new GhostAccount(identifier));
+		}
 		
 		PlayerAccount acc = new PlayerAccount(abs);
 		UUID id = acc.abstractAcc.getOfflinePlayer().getUniqueId();

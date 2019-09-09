@@ -325,9 +325,9 @@ public class Commands {
 		if (success) Lang.BACKUP_CREATED.send(cmd.sender);
 	}
 	
-	@Cmd(permission = "adminMode", player = true)
+	@Cmd(permission = "adminMode")
 	public void adminMode(CommandContext cmd){
-		AdminMode.toggle(cmd.player);
+		AdminMode.toggle(cmd.sender);
 	}
 	
 	@Cmd(player = true)
