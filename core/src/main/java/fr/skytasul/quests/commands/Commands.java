@@ -33,15 +33,6 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class Commands {
 	
-	/*@Cmd(player =true)
-	public void debugHolo(CommandContext cmd){
-		Hologram holo = HologramsAPI.createHologram(BeautyQuests.getInstance(), cmd.player.getLocation());
-		holo.getVisibilityManager().setVisibleByDefault(false);
-		holo.appendTextLine("LOL");
-		holo.appendItemLine(XMaterial.ELYTRA.parseItem());
-		holo.getVisibilityManager().showTo(cmd.player);
-	}*/
-	
 	@Cmd(permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){
 		Inventories.create(cmd.player, new StagesGUI(null));

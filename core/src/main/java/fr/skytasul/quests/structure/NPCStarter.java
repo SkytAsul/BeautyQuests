@@ -92,11 +92,6 @@ public class NPCStarter {
 				}
 				hologramLaunch.setVisible(launcheable);
 				hologramLaunchNo.setVisible(unlauncheable);
-				
-				if (npc.getId() == 3){
-					//System.out.println("launcheable: " + launcheable.size() + " | unlauncheable: " + unlauncheable.size());
-				}
-				
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
 		
@@ -134,7 +129,7 @@ public class NPCStarter {
 	public void addQuest(Quest quest) {
 		if (quests.contains(quest)) return;
 		quests.add(quest);
-		if (hologramText.enabled && quest.getCustomHologramText() != null) hologramText.text = quest.getCustomHologramText();
+		if (hologramText.enabled && quest.getCustomHologramText() != null) hologramText.setText(quest.getCustomHologramText());
 		if (hologramLaunch.enabled && quest.getCustomHologramLaunch() != null) hologramLaunch.item = quest.getCustomHologramLaunch();
 		if (hologramLaunchNo.enabled && quest.getCustomHologramLaunchNo() != null) hologramLaunchNo.item = quest.getCustomHologramLaunchNo();
 	}
@@ -197,6 +192,13 @@ public class NPCStarter {
 			}catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		public void setText(String text){
+			this.text = text;
+			if (item != null) return; // no need to test if none
+			enabled = enabled && !StringUtils.isEmpty(text) && !"none".equals(text);
+			if (!enabled) delete();
 		}
 		
 		public void create(Location lc){
