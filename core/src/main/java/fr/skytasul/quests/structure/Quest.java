@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -444,47 +445,55 @@ public class Quest{
 		return "Quest{id=" + id + ",npcID=" + npcStarter.getId() + ",branches=" + manager.toString() + ",name=" + name + "}";
 	}
 	
-	public Map<String, Object> serialize() throws Exception{
-		Map<String, Object> map = new HashMap<>();
 
-		map.put("name", name);
-		map.put("id", id);
-		map.put("manager", manager.serialize());
-		map.put("starterID", npcStarter.getId());
-		map.put("scoreboard", scoreboard);
-		map.put("finished", Utils.serializeAccountsList(finished));
-		if (repeatable) map.put("repeatable", repeatable);
-		if (!cancellable) map.put("cancellable", cancellable);
-		if (hologramText != null) map.put("hologramText", hologramText);
-		if (customConfirmMessage != null) map.put("confirmMessage", customConfirmMessage);
-		if (hid) map.put("hid", true);
-		if (endMessage != null) map.put("endMessage", endMessage);
-		if (dialog != null) map.put("startDialog", dialog.serialize());
-		if (bypassLimit) map.put("bypassLimit", bypassLimit);
-		if (timer > -1) map.put("timer", timer);
-		if (hologramLaunch != null) map.put("hologramLaunch", hologramLaunch.serialize());
-		if (hologramLaunchNo != null) map.put("hologramLaunchNo", hologramLaunchNo.serialize());
+	public void saveToFile(boolean unload) throws Exception{
+		if (!file.exists()) file.createNewFile();
+		YamlConfiguration fc = new YamlConfiguration();
+		
+		save(fc);
+		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
+		fc.save(file);
+		
+		if (unload) unloadAll();
+	}
+	
+	private void save(ConfigurationSection section) throws Exception{
+		section.set("name", name);
+		section.set("id", id);
+		section.set("manager", manager.serialize());
+		section.set("starterID", npcStarter.getId());
+		section.set("scoreboard", scoreboard);
+		section.set("finished", Utils.serializeAccountsList(finished));
+		if (repeatable) section.set("repeatable", repeatable);
+		if (!cancellable) section.set("cancellable", cancellable);
+		if (hologramText != null) section.set("hologramText", hologramText);
+		if (customConfirmMessage != null) section.set("confirmMessage", customConfirmMessage);
+		if (hid) section.set("hid", true);
+		if (endMessage != null) section.set("endMessage", endMessage);
+		if (dialog != null) section.set("startDialog", dialog.serialize());
+		if (bypassLimit) section.set("bypassLimit", bypassLimit);
+		if (timer > -1) section.set("timer", timer);
+		if (hologramLaunch != null) section.set("hologramLaunch", hologramLaunch.serialize());
+		if (hologramLaunchNo != null) section.set("hologramLaunchNo", hologramLaunchNo.serialize());
 		
 		if (!inTimer.isEmpty()){
 			Map<String, String> tmap = new HashMap<>();
 			for (Entry<PlayerAccount, Long> en : inTimer.entrySet()){
 				tmap.put(en.getKey().getIndex(), Utils.getDateFormat().format(new Date(en.getValue())));
 			}
-			map.put("inTimer", tmap);
+			section.set("inTimer", tmap);
 		}
 		
-		map.put("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
-		map.put("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
-		map.put("startRewardsList", Utils.serializeList(startRewards, AbstractReward::serialize));
-		
-		return map;
+		section.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
+		section.set("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
+		section.set("startRewardsList", Utils.serializeList(startRewards, AbstractReward::serialize));
 	}
 	
 
 	public static Quest loadFromFile(File file){
 		try {
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-			return deserialize((Map<String, Object>) config.getMapList("quest").get(0));
+			return deserialize(config.isList("quest") ? (Map<String, Object>) config.getMapList("quest").get(0) : config.getValues(true));
 		}catch (Throwable e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
@@ -492,7 +501,7 @@ public class Quest{
 		}
 	}
 	
-	static Quest deserialize(Map<String, Object> map){
+	private static Quest deserialize(Map<String, Object> map){
 		if (!map.containsKey("id")) {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;

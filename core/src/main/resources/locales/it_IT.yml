@@ -72,7 +72,7 @@ msg:
       set: '§aFase {0} avviata.'
     playerNeeded: '§cDevi essere un giocatore per eseguire questo comando!'
     incorrectSyntax: '§cSintassi errata.'
-    noPermission: '§cYou haven''t enough permissions to execute this command! (Required: {0})'
+    noPermission: '§cNon hai i permessi richiesti per eseguire questo comando! (Richiesto: {0})'
     invalidCommand:
       quests: '§cQuesto comando non esiste, scrivi §e/quests help§c.'
       simple: '§cQuesto comando non esiste, scrivi §ehelp§c.'
@@ -130,8 +130,8 @@ msg:
     already: '§cSei già nell''editor.'
     enter:
       title: '§6~ Modalità Editor ~'
-      subtitle: '§6Scrivi "/quests editor" per forzare l''uscita.'
-    chat: '§6Sei attualmente in modalità Editor. Scrivi l''editor "/quests editor" per forzare l''uscita dall''editor. (è altamente sconsigliato, considera l''uso di comandi come "close" o "cancel" per tornare alla finestra precedente.)'
+      subtitle: '§6Scrivi "/quests exitEditor" per forzare l''uscita.'
+    chat: '§6Sei attualmente in modalità Editor. Scrivi l''editor "/quests exitEditor" per forzare l''uscita dall''editor. (è altamente sconsigliato, considera l''uso di comandi come "close" o "cancel" per tornare alla finestra precedente.)'
     npc:
       enter: '§aClicca su un NPC o scrivi "cancel".'
       choseStarter: '§aScegli il NPC che avvia la missione.'
@@ -373,11 +373,11 @@ scoreboard:
   noLaunched: '§cNessuna missione in corso.'
   noLaunchedName: '§c§lCaricamento'
   noLaunchedDescription: '§c§oCaricamento'
-  textBetwteenBranch: '§e or'
+  textBetwteenBranch: '§e o'
   stage:
     region: '§eTrova regione §6{0}'
     npc: '§eParla con NPC §6{0}'
-    items: '§eTrova oggetti per §6{0}§e:'
+    items: '§ePorta gli oggetti a §6{0}§e:'
     mobs: '§eUccidi §6{0}'
     mine: '§eMina {0}'
     chat: '§eScrivi §6{0}'

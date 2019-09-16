@@ -343,18 +343,9 @@ public class BeautyQuests extends JavaPlugin{
 		for (Quest qu : quests){
 			savingFailure = false;
 			try{
-				File file = qu.getFile();
-				if (!file.exists()) file.createNewFile();
-				YamlConfiguration fc = YamlConfiguration.loadConfiguration(file);
-				List<Map<String, Object>> ls = new ArrayList<>();
-				ls.add(qu.serialize());
-				if (savingFailure) createQuestBackup(qu.getFile(), qu.getID() + "", "Error when saving quest.");
-				fc.set("quest", ls);
-				fc.save(file);
+				qu.saveToFile(unload);
 				amount++;
-				
-				if (unload) qu.unloadAll();
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				getLogger().warning("Error when saving quest ID " + qu.getID());
 				ex.printStackTrace();
 				continue;

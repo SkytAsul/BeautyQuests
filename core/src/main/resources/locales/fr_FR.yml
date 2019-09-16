@@ -130,8 +130,8 @@ msg:
     already: '§cVous êtes déjà dans un éditeur.'
     enter:
       title: '§6~ mode éditeur ~'
-      subtitle: '§6Entrez "/quests editor" pour forcer la sortie.'
-    chat: '§6Vous êtes actuellement dans le mode éditeur. Entrez "/quests editor" pour forcer la sortie de ce mode (peu recommandé, préférez l''usage de mots-clés tels que "close" ou "cancel" pour revenir à l''inventaire précédent).'
+      subtitle: '§6Entrez "/quests exitEditor" pour forcer la sortie.'
+    chat: '§6Vous êtes actuellement dans le mode éditeur. Entrez "/quests exitEditor" pour forcer la sortie de ce mode (peu recommandé, préférez l''usage de mots-clés tels que "close" ou "cancel" pour revenir à l''inventaire précédent).'
     npc:
       enter: '§aCliquez sur un NPC, ou tapez "cancel" pour annuler.'
       choseStarter: '§aSélectionnez le NPC qui commence la quête.'
@@ -377,7 +377,7 @@ scoreboard:
   stage:
     region: '§eTrouve la région §6{0}'
     npc: '§eParle au NPC §6{0}'
-    items: '§eTrouve des items pour §6{0} §e:'
+    items: '§eRapporte des items à §6{0} §e:'
     mobs: '§eTue {0}'
     mine: '§eMine {0}'
     chat: '§eEcrivez §6{0}'

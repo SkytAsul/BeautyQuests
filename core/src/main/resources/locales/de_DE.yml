@@ -130,8 +130,8 @@ msg:
     already: '§cDu befindest dich bereits im Editor.'
     enter:
       title: '§6~ Editor‐Modus ~'
-      subtitle: '§6Schreibe „/quests editor”, um das Verlassen zu erzwingen.'
-    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests editor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
+      subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
+    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests exitEditor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
     npc:
       enter: '§aKlicke auf einen NPC oder schreibe „cancel”.'
       choseStarter: '§aWähle den NPC, der die Quest startet.'
@@ -377,7 +377,7 @@ scoreboard:
   stage:
     region: '§eFinde Region §6{0}'
     npc: '§eSprich mit dem NPC §6{0}'
-    items: '§eFinde Items für §6{0}§e:'
+    items: '§eBringe Items zu §6{0}§e:'
     mobs: '§eTöte §6{0}'
     mine: '§eBaue {0} ab'
     chat: '§eSchreibe §6{0}'

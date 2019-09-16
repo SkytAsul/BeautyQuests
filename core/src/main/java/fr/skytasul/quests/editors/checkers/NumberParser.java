@@ -24,7 +24,6 @@ public class NumberParser implements AbstractParser {
 	
 	
 	public Object parse(Player p, String msg) throws Throwable{
-		msg = msg.trim().replaceAll("\\uFEFF", "");
 		try{
 			String tname = numberType != Integer.class ? numberType.getSimpleName() : "Int";
 			Number number = (Number) numberType.getDeclaredMethod("parse" + tname, String.class).invoke(null, msg);

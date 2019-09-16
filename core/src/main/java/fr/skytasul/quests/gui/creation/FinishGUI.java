@@ -395,6 +395,13 @@ public class FinishGUI implements CustomInventory{
 			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
+			try {
+				qu.saveToFile(false);
+			}catch (Exception e) {
+				Lang.ERROR_OCCURED.send(p, "initial quest save");
+				BeautyQuests.logger.severe("Error when trying to save quest");
+				e.printStackTrace();
+			}
 		}
 		Inventories.closeAndExit(p);
 	}

@@ -61,6 +61,7 @@ public abstract class Editor implements Listener{
 	}
 	
 	private final void callChat(String rawText){
+		rawText = rawText.trim().replaceAll("\\uFEFF", "");
 		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText))){
 			Lang.CHAT_EDITOR.send(p);
 		}
