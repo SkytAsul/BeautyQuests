@@ -493,8 +493,8 @@ public class Quest{
 	public static Quest loadFromFile(File file){
 		try {
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-			return deserialize(config.isList("quest") ? (Map<String, Object>) config.getMapList("quest").get(0) : config.getValues(true));
-		}catch (Throwable e) {
+			return deserialize(config.isList("quest") ? (Map<String, Object>) config.getMapList("quest").get(0) : Utils.mapFromConfigurationSection(config));
+		}catch (Exception e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
 			return null;

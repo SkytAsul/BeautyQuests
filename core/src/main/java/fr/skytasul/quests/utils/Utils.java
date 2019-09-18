@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -319,6 +320,16 @@ public class Utils{
 			ls.add(deserialize.apply(map));
 		}
 		return ls;
+	}
+	
+	public static Map<String, Object> mapFromConfigurationSection(ConfigurationSection section){
+		Map<String, Object> map = section.getValues(true);
+		for (Entry<String, Object> entry : section.getValues(true).entrySet()) {
+			if (entry.getValue() instanceof ConfigurationSection) {
+				map.put(entry.getKey(), mapFromConfigurationSection((ConfigurationSection) entry.getValue()));
+			}else map.put(entry.getKey(), entry.getValue());
+		}
+		return map;
 	}
 	
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
