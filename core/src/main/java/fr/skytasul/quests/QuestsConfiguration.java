@@ -138,9 +138,11 @@ public class QuestsConfiguration {
 			}
 		}
 		
-		particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
-		particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
-		particleNext = loadParticles(config, "next", new Particle(ParticleEffect.SMOKE_NORMAL, ParticleShape.SPOT, null));
+		if (NMS.isValid()) {
+			particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
+			particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
+			particleNext = loadParticles(config, "next", new Particle(ParticleEffect.SMOKE_NORMAL, ParticleShape.SPOT, null));
+		}
 
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
@@ -148,7 +150,7 @@ public class QuestsConfiguration {
 	}
 	
 	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
-		if (NMS.isValid() && config.getBoolean(name + ".enabled")){
+		if (config.getBoolean(name + ".enabled")) {
 			Particle particle;
 			try{
 				particle = Particle.deserialize(config.getConfigurationSection(name).getValues(false));

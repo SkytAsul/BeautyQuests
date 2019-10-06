@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -62,6 +63,7 @@ public abstract class Editor implements Listener{
 	
 	private final void callChat(String rawText){
 		rawText = rawText.trim().replaceAll("\\uFEFF", "");
+		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
 		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText))){
 			Lang.CHAT_EDITOR.send(p);
 		}

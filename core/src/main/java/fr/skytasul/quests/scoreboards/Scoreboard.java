@@ -262,7 +262,9 @@ public class Scoreboard implements Listener{
 			}
 			lastAmount = ls.size();
 			for (int i = 0; i < ls.size(); i++){
-				setTeam(i, sb.setLine(firstLine + i, ls.get(i)));
+				String lineText = ls.get(i);
+				if (lineText.length() > 48) lineText = lineText.substring(0, 48);
+				setTeam(i, sb.setLine(firstLine + i, lineText));
 			}
 		}
 		
