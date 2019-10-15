@@ -327,7 +327,7 @@ public class Quest{
 		if (repeatable && inTimer.containsKey(acc)){
 			long time = inTimer.get(acc);
 			if (time > System.currentTimeMillis()){
-				if (sendMessage) if (QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
+				if (sendMessage) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
 				return false;
 			}
 			inTimer.remove(acc);

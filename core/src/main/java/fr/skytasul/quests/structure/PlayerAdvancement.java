@@ -6,6 +6,8 @@ public class PlayerAdvancement{
 	boolean endingStages = false;
 	int regularStage = 0;
 	
+	private int branchIndex = -1;
+	
 	public PlayerAdvancement(QuestBranch branch){
 		this.branch = branch;
 	}
@@ -34,5 +36,12 @@ public class PlayerAdvancement{
 	
 	public String getState(){
 		return branch.getID() + "|" + (endingStages ? "end" : regularStage);
+	}
+	
+	public void storeIndex(){
+		this.branchIndex = branch.getID();
+	}
+	public void loadIndex(BranchesManager bm){
+		this.branch = bm.getBranch(branchIndex);
 	}
 }

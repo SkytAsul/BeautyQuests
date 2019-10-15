@@ -352,7 +352,10 @@ public class FinishGUI implements CustomInventory{
 		Quest qu;
 		Map<PlayerAccount, PlayerAdvancement> players = null;
 		if (editing){
-			if (!stagesEdited) players = new HashMap<>(edited.getBranchesManager().getPlayersAdvancement());
+			if (!stagesEdited) {
+				players = new HashMap<>(edited.getBranchesManager().getPlayersAdvancement());
+				players.forEach((acc, adv) -> adv.storeIndex());
+			}
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
 			qu.copyFinished(edited);
@@ -383,7 +386,10 @@ public class FinishGUI implements CustomInventory{
 		qu.getBranchesManager().addBranch(mainBranch);
 		loadBranch(mainBranch, stages);
 		
-		if (editing && !stagesEdited) qu.getBranchesManager().setPlayersStage(players);
+		if (editing && !stagesEdited) {
+			players.forEach((acc, adv) -> adv.loadIndex(qu.getBranchesManager()));
+			qu.getBranchesManager().setPlayersStage(players);
+		}
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
