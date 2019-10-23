@@ -143,7 +143,7 @@ public class StageMine extends AbstractStage {
 		
 		Map<String, List<Map<String, Object>>> re = new HashMap<>();
 		for (Entry<PlayerAccount, List<BlockData>> b : remaining.entrySet()){
-			re.put(b.getKey().getIndex(), Utils.serializeList(blocks, BlockData::serialize));
+			re.put(b.getKey().getIndex(), Utils.serializeList(b.getValue(), BlockData::serialize));
 		}
 		map.put("remaining", re);
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);

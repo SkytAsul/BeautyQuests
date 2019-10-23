@@ -151,8 +151,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		if (args.length == 1){
 			for (Entry<String, InternalCommand> en : commands.entrySet()){ // PERMISSIONS
-				String perm = en.getValue().cmd.permission();
-				if (perm != null && sender.hasPermission(perm)) find.add(en.getKey());
+				if (hasPermission(sender, en.getValue().cmd.permission())) find.add(en.getKey());
 			}
 		}else if (args.length >= 2){
 			int index = args.length-2;
@@ -160,7 +159,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			InternalCommand internal = commands.get(sel);
 			String[] needed = internal.cmd.args();
 			if (needed.length <= index) return tmp;
-			if (!internal.cmd.permission().isEmpty() && !hasPermission(sender, internal.cmd.permission())) return tmp;
+			if (!hasPermission(sender, internal.cmd.permission())) return tmp;
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("QUESTSID")){
@@ -181,6 +180,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 	}
 	
 	public static boolean hasPermission(CommandSender sender, String cmd){
+		if (cmd == null || cmd.isEmpty()) return true;
 		return sender.hasPermission(("beautyquests.command." + cmd));
 	}
 	

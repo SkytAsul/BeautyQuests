@@ -67,14 +67,14 @@ public class RequirementsGUI implements CustomInventory {
 		LinkedList<RequirementCreator> ls = RequirementCreator.getCreators();
 		for (RequirementCreator crea : ls){
 			int id = ls.indexOf(crea) + 9;
-			inv.setItem(id, ItemUtils.lore(crea.item.clone(), "", Lang.Unused.toString()));
+			inv.setItem(id, crea.item.clone());
 			if (lastRequirements.containsKey(crea.clazz)){
 				Map<String, Object> ldatas = initDatas(ls.indexOf(crea));
 				datas.put(id, ldatas);
 				//DebugUtils.debugMessage(p, "last requirement : clazz " + crea.clazz.getName() + " | " + (ldata == null) + " | for slot " + id);
 				crea.runnables.edit(ldatas, lastRequirements.get(crea.clazz));
 				usedLore(inv.getItem(id));
-			}
+			}else unusedLore(inv.getItem(id));
 		}
 
 		inv = p.openInventory(inv).getTopInventory();
@@ -92,7 +92,11 @@ public class RequirementsGUI implements CustomInventory {
 	
 	public void remove(int slot){
 		datas.remove(slot);
-		ItemUtils.lore(inv.getItem(slot), "", Lang.Unused.toString());
+		unusedLore(inv.getItem(slot));
+	}
+
+	private void unusedLore(ItemStack is) {
+		ItemUtils.lore(is, "", Lang.Unused.toString());
 	}
 	
 	private void usedLore(ItemStack is){
