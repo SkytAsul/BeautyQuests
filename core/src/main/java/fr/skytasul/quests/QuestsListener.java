@@ -23,6 +23,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
@@ -100,10 +101,22 @@ public class QuestsListener implements Listener{
 		Inventories.onClick(e);
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
-		if (QuestsConfiguration.firstQuest != null && !e.getPlayer().hasPlayedBefore()) QuestsConfiguration.firstQuest.start(e.getPlayer());
-		PlayersManager.getPlayerAccount(e.getPlayer());
+		Player player = e.getPlayer();
+		if (!QuestsConfiguration.hookAccounts()) {
+			boolean firstJoin = !PlayersManager.hasAccounts(player);
+			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
+			}, 5L);
+		}
+	}
+
+	@EventHandler
+	public void onAccountJoin(PlayerAccountJoinEvent e) {
+		if (QuestsConfiguration.firstQuest != null && e.isFirstJoin()) {
+			QuestsConfiguration.firstQuest.start(e.getPlayer());
+		}
 		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}
 	

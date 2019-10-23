@@ -29,7 +29,9 @@ public class HookedAccount extends AbstractAccount {
 	}
 	
 	public String getIdentifier() {
-		return "Hooked|" + hook.getIdentifier();
+		String identifier = hook.getIdentifier();
+		if (identifier == null) return null;
+		return "Hooked|" + identifier;
 	}
 
 	

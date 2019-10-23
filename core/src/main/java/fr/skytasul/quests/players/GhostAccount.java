@@ -16,11 +16,13 @@ public class GhostAccount extends AbstractAccount{
 	}
 	
 	public Player getPlayer(){
-		throw new UnsupportedOperationException("This operation is unavailable with a ghost account");
+		//throw new UnsupportedOperationException("This operation is unavailable with a ghost account");
+		return null;
 	}
 	
 	public boolean isCurrent(){
-		throw new UnsupportedOperationException("This operation is unavailable with a ghost account");
+		//throw new UnsupportedOperationException("This operation is unavailable with a ghost account");
+		return false;
 	}
 	
 	public int hashCode(){

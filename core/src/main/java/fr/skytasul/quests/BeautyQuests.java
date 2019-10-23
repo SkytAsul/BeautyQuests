@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,6 +34,7 @@ import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
+import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
@@ -328,8 +330,14 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}
 		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
-		
+
 		getServer().getPluginManager().registerEvents(new QuestsListener(), this);
+
+		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
+			}
+		}, 5L);
 		
 		return quests.size();
 	}

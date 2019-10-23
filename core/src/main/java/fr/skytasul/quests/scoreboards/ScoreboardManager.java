@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -45,7 +43,7 @@ public class ScoreboardManager{
 		}
 		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
 		
-		new BukkitRunnable() {
+		/*new BukkitRunnable() {  // no longer need to do this as PlayerAccountJoinEvent is called in BeautyQuests#loadAllDatas
 			public void run() {
 				for (Player p : Bukkit.getOnlinePlayers()){
 					try{
@@ -57,7 +55,7 @@ public class ScoreboardManager{
 				}
 				if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards created");
 			}
-		}.runTaskLater(BeautyQuests.getInstance(), 2L);
+		}.runTaskLater(BeautyQuests.getInstance(), 2L);*/
 	}
 	
 	public List<ScoreboardLine> getScoreboardLines(){
@@ -81,11 +79,12 @@ public class ScoreboardManager{
 	}
 	
 	public void removePlayerScoreboard(Player p){
-		scoreboards.remove(p).unload();
+		if (scoreboards.containsKey(p)) scoreboards.remove(p).unload();
 	}
 	
 	public void create(Player p){
 		if (!QuestsConfiguration.showScoreboards()) return;
+		removePlayerScoreboard(p);
 		scoreboards.put(p, new Scoreboard(p, this));
 	}
 	

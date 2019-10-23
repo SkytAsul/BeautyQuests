@@ -55,6 +55,10 @@ public class PlayersManager {
 		}
 	}
 	
+	public static boolean hasAccounts(Player p) {
+		return (playerAccounts.containsKey(p.getUniqueId()));
+	}
+
 	private synchronized static PlayerAccount createPlayerAccount(String identifier){
 		AbstractAccount abs = null;
 		if (identifier.startsWith("Hooked|")){
@@ -168,7 +172,9 @@ public class PlayersManager {
 		DebugUtils.logMessage("Saving " + accounts.valuesSize() + " accounts for " + playerAccounts.size() + " players.");
 		Map<Integer, String> list = new HashMap<>();
 		for (Entry<Integer, PlayerAccount> en : accounts.getOriginalMap().entrySet()){
-			list.put(en.getKey(), en.getValue().abstractAcc.getIdentifier());
+			String identifier = en.getValue().abstractAcc.getIdentifier();
+			if (identifier == null) continue;
+			list.put(en.getKey(), identifier);
 		}
 		config.set("players", list);
 	}

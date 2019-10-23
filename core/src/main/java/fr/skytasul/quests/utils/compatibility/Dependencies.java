@@ -55,7 +55,6 @@ public class Dependencies {
 		}
 		if (pman.isPluginEnabled("AccountsHook")){
 			acc = true;
-			new Accounts();
 		}
 		if (pman.isPluginEnabled("dynmap")){
 			dyn = true;
