@@ -11,14 +11,14 @@ import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class MoneyReward extends AbstractReward {
 
-	public int money = 0;
+	public double money = 0;
 	
 	public MoneyReward(){
 		super("moneyReward");
 		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
 	}
 	
-	public MoneyReward(int money){
+	public MoneyReward(double money) {
 		this();
 		this.money = money;
 	}
@@ -27,7 +27,7 @@ public class MoneyReward extends AbstractReward {
 		if (money > 0){
 			Vault.depositPlayer(p, money);
 		}else Vault.withdrawPlayer(p, Math.abs(money));
-		return money + " " + (money <= 1 ? Vault.currencyNameSingular() : Vault.currencyNamePlural());
+		return Vault.format(money);
 	}
 
 	
@@ -36,7 +36,10 @@ public class MoneyReward extends AbstractReward {
 	}
 
 	protected void load(Map<String, Object> savedDatas){
-		money = (int) savedDatas.get("money");
+		Object money = savedDatas.get("money");
+		if (money instanceof Integer) { // TODO remove on 0.18
+			this.money = ((Integer) money).doubleValue();
+		}else this.money = (double) money;
 	}
 
 }

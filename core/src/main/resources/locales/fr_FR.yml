@@ -40,6 +40,7 @@ msg:
     job: '§cVous devez avoir au moins le niveau {0} du job §e{1}§c !'
     skill: '§cVous devez être au moins niveau {0} de la compétence §e{1}§c!'
     combatLevel: '§cVous devez au moins avoir le niveau de combat {0}!'
+    money: '§cVous devez avoir {0} !'
     wait: '§cVous devez encore attendre {0} minutes avant de pouvoir recommencer cette quête !'
   experience:
     edited: '§aVous avez changé le gain d''expérience de {0} à {1} points.'
@@ -148,6 +149,7 @@ msg:
         identifier: '§aEntrez le nom du placeholder requis, sans les pourcentages de début et de fin :'
         value: '§aEntrez la valeur requise pour le placeholder §6%{0}%§a :'
       chooseSkillRequired: '§aEntrez le nom de la compétence requise :'
+      chooseMoneyRequired: '§aEntrez la quantité de monnaie nécessaire :'
       reward:
         permission: '§aModifiez les permissions gagnées ou retirées avec "add <permission> [retirer: oui = "true", non = "false"]" (tapez "help" pour voir les autres commandes).'
         money: '§aEntrez la quantité de monnaie gagnée :'
@@ -419,6 +421,7 @@ misc:
     placeholder: '§bPlaceholder requis'
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
+    money: '§dMonnaie requise'
   bucket:
     water: 'Seau d''eau'
     lava: 'Seau de lave'

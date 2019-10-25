@@ -33,6 +33,7 @@ import fr.skytasul.quests.requirements.JobLevelRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
 import fr.skytasul.quests.requirements.McCombatLevelRequirement;
 import fr.skytasul.quests.requirements.McMMOSkillRequirement;
+import fr.skytasul.quests.requirements.MoneyRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
@@ -165,6 +166,7 @@ public class RequirementsGUI implements CustomInventory {
 		if (Dependencies.papi) QuestsAPI.registerRequirement(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), new PlaceholderR());
 		if (Dependencies.mmo) QuestsAPI.registerRequirement(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RJobLvl.toString()), new SkillLevelR());
 		if (Dependencies.mclvl) QuestsAPI.registerRequirement(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), new CombatLevelR());
+		if (Dependencies.vault) QuestsAPI.registerRequirement(MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), new MoneyRQ());
 	}
 	
 }
@@ -435,5 +437,24 @@ class CombatLevelR implements RequirementCreationRunnables{
 	
 	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
 		datas.put("lvl", ((McCombatLevelRequirement) requirement).level);
+	}
+}
+
+class MoneyRQ implements RequirementCreationRunnables {
+	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+		Lang.CHOOSE_MONEY_REQUIRED.send(p);
+		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+			datas.put("money", (double) obj);
+			gui.reopen(p, false);
+		}, new NumberParser(Double.class, true, true)));
+	}
+
+	public void edit(Map<String, Object> datas, AbstractRequirement reward) {
+		MoneyRequirement rew = (MoneyRequirement) reward;
+		datas.put("money", rew.money);
+	}
+
+	public AbstractRequirement finish(Map<String, Object> datas) {
+		return new MoneyRequirement((double) datas.get("money"));
 	}
 }

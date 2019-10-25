@@ -26,6 +26,7 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -381,6 +382,7 @@ public class Quest{
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
 				List<String> msg = Utils.giveRewards(p, startRewards);
+				requirements.stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
 			}

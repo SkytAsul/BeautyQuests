@@ -40,6 +40,7 @@ msg:
     job: '§cYou must be at least level {0} for the job §e{1}§c!'
     skill: '§cYou must be at least level {0} for the skill §e{1}§c!'
     combatLevel: '§cYou must be at least combat level {0}!'
+    money: '§cYou must have {0}!'
     wait: '§cYou must wait {0} minute(s) before you can restart this quest!'
   experience:
     edited: '§aYou have changed the experience gain from {0} to {1} points.'
@@ -148,6 +149,7 @@ msg:
         identifier: '§aWrite the name of the required placeholder without the percent characters:'
         value: '§aWrite the required value for the placeholder §6%{0}%§a:'
       chooseSkillRequired: '§aWrite the name of the required skill:'
+      chooseMoneyRequired: '§aWrite the amount of required money:'
       reward:
         permission: '§aEdit which permissions should be kept and which removed with "add <permission> [remove: yes = "true", no = "false"]": (Write "help" for other commands.)'
         money: '§aWrite the amount of the received money:'
@@ -419,6 +421,7 @@ misc:
     placeholder: '§bPlaceholder value required'
     quest: '§aQuest required'
     mcMMOSkillLevel: '§dSkill level required'
+    money: '§dMoney required'
   bucket:
     water: 'Water bucket'
     lava: 'Lava bucket'

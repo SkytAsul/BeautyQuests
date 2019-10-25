@@ -51,6 +51,7 @@ public enum Lang{
 	REQUIREMENT_JOB("msg.requirements.job"),
 	REQUIREMENT_SKILL("msg.requirements.skill"),
 	REQUIREMENT_COMBAT_LEVEL("msg.requirements.combatLevel"),
+	REQUIREMENT_MONEY("msg.requirements.money"), // 0: money
 	QUEST_WAIT("msg.requirements.wait"),
 	
 	XP_EDITED("msg.experience.edited"),
@@ -160,6 +161,7 @@ public enum Lang{
 	CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER("msg.editor.text.choosePlaceholderRequired.identifier"),
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value"),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
+	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
@@ -428,6 +430,7 @@ public enum Lang{
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
+	RMoney("misc.requirement.money"),
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),

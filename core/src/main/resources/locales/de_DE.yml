@@ -40,6 +40,7 @@ msg:
     job: '§cDu musst mindestens {0} Level für den Job §e{1}§c haben!'
     skill: '§cDu musst mindestens {0} Level für die Fähigkeit §e{1}§c haben!'
     combatLevel: '§cDu musst mindestens Kampflevel {0} sein!'
+    money: '§cDu benötigst {0}!'
     wait: '§cDu musst {0} Minute(n) warten, bevor du die Quest erneut starten kannst!'
   experience:
     edited: '§aDu hast die Erfahrungsgewinnung von {0} auf {1} Punkt(e) gesetzt.'
@@ -148,6 +149,7 @@ msg:
         identifier: '§aSchreibe den Namen des benötigten Platzhalters ohne die Prozentzeichen:'
         value: '§aSchreibe den benötigten Wert für den Platzhalter §6%{0}%§a:'
       chooseSkillRequired: '§aSchreibe den Namen der benötigten Fähigkeit:'
+      chooseMoneyRequired: '§aSchreibe die Menge an benötigtem Geld:'
       reward:
         permission: '§aBearbeite mit „add <Berechtigung> [entfernen: ja = „true“; nein = „false“]“, welche Berechtigungen beibehalten und welche entfernt werden sollen: (Schreibe „help“ für weitere Befehle.)'
         money: '§aSchreibe die zu bekommende Menge an Geld:'
@@ -419,6 +421,7 @@ misc:
     placeholder: '§bPlatzhalter‐Wert benötigt'
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
+    money: '§dGeld benötigt'
   bucket:
     water: 'Wassereimer'
     lava: 'Lavaeimer'

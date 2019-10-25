@@ -28,14 +28,24 @@ public class Vault {
 		return vperm;
 	}
 
-	public static void depositPlayer(Player p, int money){
+	public static void depositPlayer(Player p, double money) {
 		if (eco != null) eco.depositPlayer(p, money);
 	}
 
-	public static void withdrawPlayer(Player p, int money){
+	public static void withdrawPlayer(Player p, double money) {
 		if (eco != null) eco.withdrawPlayer(p, money);
 	}
 	
+	public static boolean has(Player p, double money) {
+		if (eco == null) return false;
+		return eco.has(p, money);
+	}
+
+	public static String format(double money) {
+		if (eco == null) return "" + money;
+		return eco.format(money);
+	}
+
 	public static void changePermission(Player p, String perm, boolean remove){
 		if (vperm == null) return;
 		for (World world : Bukkit.getWorlds()){
@@ -44,14 +54,6 @@ public class Vault {
 				if (has) vperm.playerRemove(world.getName(), p, perm);
 			}else if (!has) vperm.playerAdd(world.getName(), p, perm);
 		}
-	}
-	
-	public static String currencyNameSingular(){
-		return eco.currencyNameSingular();
-	}
-	
-	public static String currencyNamePlural(){
-		return eco.currencyNamePlural();
 	}
 	
 }

@@ -258,16 +258,14 @@ class MessageR implements RewardCreationRunnables{
 
 class MoneyR implements RewardCreationRunnables{
 
-
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
 		Lang.CHOOSE_MONEY_REWARD.send(p);
 		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			datas.put("money", (int) obj);
+			datas.put("money", (double) obj);
 			gui.reopen(p, false);
 			ItemUtils.lore(clicked, "Money : " + obj);
-		}, new NumberParser(Integer.class, false, true)));
+		}, new NumberParser(Double.class, false, true)));
 	}
-
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is){
 		MoneyReward rew = (MoneyReward) reward;
@@ -275,9 +273,8 @@ class MoneyR implements RewardCreationRunnables{
 		ItemUtils.lore(is, "Money : " + rew.money);
 	}
 
-
 	public AbstractReward finish(Map<String, Object> datas){
-		return new MoneyReward((int) datas.get("money"));
+		return new MoneyReward((double) datas.get("money"));
 	}
 
 }
