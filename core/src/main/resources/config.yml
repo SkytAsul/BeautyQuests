@@ -1,3 +1,4 @@
+# General configuration
 # Number of minutes before the quest can be redone
 redoMinuts: 5
 # Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, de_DE, it_IT, es_ES, pt_PT
@@ -15,6 +16,7 @@ firstQuest: -1
 # Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
 maxLaunchedQuests: 0
 
+# Quests behaviors
 # Enable or disable the scoreboards - more options in scoreboard.yml
 scoreboards: true
 # Enable or disable message when a quest is updated (next stage)
@@ -27,6 +29,10 @@ allowPlayerCancelQuest: true
 questConfirmGUI: false
 # Dialogs are shown in the action bar instead of the chat
 dialogsInActionBar: false
+# Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
+dialogsDefaultTime: 100
+# If enabled, players will not be allowed to click on the NPC to pass a line of dialog
+disableDialogClick: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest
@@ -42,7 +48,7 @@ item: BOOK
 # Page item material
 pageItem: ARROW
 
-# - Dependencies -
+# - Integrations -
 # Enable GPS integration
 gps: false
 # Enable or disable SkillAPI experience overriding in xp reward/requirement

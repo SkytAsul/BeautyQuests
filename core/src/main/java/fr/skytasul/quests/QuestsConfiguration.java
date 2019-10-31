@@ -55,6 +55,8 @@ public class QuestsConfiguration {
 	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
 	private static boolean dialogsInActionBar = false;
+	private static int dialogsDefaultTime = 100;
+	private static boolean disableDialogClick = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -96,6 +98,8 @@ public class QuestsConfiguration {
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
 		dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("dialogsInActionBar");
+		dialogsDefaultTime = config.getInt("dialogsDefaultTime");
+		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = Dependencies.gps && config.getBoolean("gps");
@@ -207,6 +211,14 @@ public class QuestsConfiguration {
 
 	public static boolean sendDialogsInActionBar(){
 		return dialogsInActionBar;
+	}
+
+	public static int getDialogsDefaultTime() {
+		return dialogsDefaultTime;
+	}
+
+	public static boolean isDialogClickDisabled() {
+		return disableDialogClick;
 	}
 	
 	public static boolean playSounds(){

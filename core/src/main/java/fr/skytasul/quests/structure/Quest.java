@@ -63,7 +63,6 @@ public class Quest{
 	private ItemStack hologramLaunch;
 	private ItemStack hologramLaunchNo;
 	
-	private Map<Player, Integer> dgPlayers = new HashMap<>();
 	private final List<PlayerAccount> finished = new ArrayList<>();
 	private final Map<PlayerAccount, Long> inTimer = new HashMap<>();
 	
@@ -294,7 +293,7 @@ public class Quest{
 		}
 		if (finished.remove(acc)) c = true;
 		if (inTimer.remove(acc) != null) c = true;
-		if (acc.isCurrent() && dgPlayers.remove(acc.getPlayer()) != null) c = true;
+		if (acc.isCurrent() && dialog.remove(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -337,32 +336,13 @@ public class Quest{
 	}
 	
 	public boolean isInDialog(Player p) {
-		return dgPlayers.containsKey(p);
+		return dialog.isInDialog(p);
 	}
 	
 	public void clickNPC(Player p){
-		//if (!isLauncheable(p, true)) return;
-		if (sendDialog(p)) start(p);
-	}
-	
-	private boolean sendDialog(Player p){
-		if (dialog == null) return true;
-		if (dialog.messages.isEmpty()) return true;
-		int id;
-		if (dgPlayers.containsKey(p)){ // player has already started
-			id = dgPlayers.get(p);
-			if (id >= dialog.messages.valuesSize()) id = 0;
-			dgPlayers.remove(p); // remove from list
-		}else { // never started
-			id = 0;
-		}
-		dialog.send(p, id);
-		
-		id++;
-		if (dialog.messages.valuesSize() == id) return true;
-		// not last message
-		dgPlayers.put(p, id); // add in list
-		return false;
+		if (dialog != null) {
+			dialog.send(p, () -> start(p));
+		}else start(p);
 	}
 	
 	public void start(Player p){

@@ -179,6 +179,8 @@ public enum Lang{
 	DIALOG_MSG_ADDED_NOSENDER("msg.editor.dialog.noSender"),
 	DIALOG_MSG_REMOVED("msg.editor.dialog.messageRemoved"),
 	DIALOG_SOUND_ADDED("msg.editor.dialog.soundAdded"),
+	DIALOG_TIME_SET("msg.editor.dialog.timeSet"), // 0: index, 1: time
+	DIALOG_TIME_REMOVED("msg.editor.dialog.timeRemoved"), // 0: index
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
 	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
 	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
@@ -190,6 +192,7 @@ public enum Lang{
 	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert"),
 	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert"),
 	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
+	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime"),
 	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
 	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
 	

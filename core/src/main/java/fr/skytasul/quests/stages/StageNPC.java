@@ -1,7 +1,6 @@
 package fr.skytasul.quests.stages;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ public class StageNPC extends AbstractStage{
 	
 	protected StageBringBack bringBack = null;
 	
-	protected Map<Player, Integer> dialogs = new HashMap<>();
 	private BukkitTask task;
 	
 	private List<PlayerAccount> cached = new ArrayList<>();
@@ -146,41 +144,20 @@ public class StageNPC extends AbstractStage{
 		
 		e.setCancelled(true);
 		
+		if (bringBack != null && !bringBack.checkItems(p, true)) return;
 		if (di != null){ // dialog exists
-			if (dialogs.containsKey(p)){ // Already started
-				int id = dialogs.get(p) + 1;
-				// next dialog
-				di.send(p, id);
-				dialogs.replace(p, id);
-				
-				test(p, id);// end
-				return;
-				
-				// dialog not started
-			}else if (bringBack != null){ // if bringback has not required items
-				if (!bringBack.checkItems(p, true)) return;
-				bringBack.removeItems(p);
-			}
-			if (di.start(p)){
-				dialogs.put(p, 0);
-				test(p, 0);
-				return;
-			}
+			di.send(p, () -> {
+				if (bringBack != null) {
+					if (!bringBack.checkItems(p, true)) return;
+					bringBack.removeItems(p);
+				}
+				finishStage(p);
+			});
+			return;
 		}else if (bringBack != null){ // no dialog but bringback
-			if (!bringBack.checkItems(p, true)){ // not required items
-				return;
-			}else { // required items present - so remove items
-				bringBack.removeItems(p);
-			}
+			bringBack.removeItems(p);
 		}
 		finishStage(p);
-	}
-	
-	private void test(Player p, int id){
-		if (id+1 == di.messages.valuesSize()){ // end
-			dialogs.remove(p);
-			finishStage(p);
-		}
 	}
 	
 	protected String npcName(){
