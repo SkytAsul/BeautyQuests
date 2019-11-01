@@ -293,7 +293,7 @@ public class Quest{
 		}
 		if (finished.remove(acc)) c = true;
 		if (inTimer.remove(acc) != null) c = true;
-		if (acc.isCurrent() && dialog.remove(acc.getPlayer())) c = true;
+		if (acc.isCurrent() && dialog == null ? false : dialog.remove(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -336,7 +336,7 @@ public class Quest{
 	}
 	
 	public boolean isInDialog(Player p) {
-		return dialog.isInDialog(p);
+		return dialog == null ? false : dialog.isInDialog(p);
 	}
 	
 	public void clickNPC(Player p){

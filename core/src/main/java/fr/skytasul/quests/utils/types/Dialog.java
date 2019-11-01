@@ -148,8 +148,8 @@ public class Dialog{
 	}
 	
 	class PlayerStatus {
-		int lastId;
-		BukkitTask task;
+		int lastId = -1;
+		BukkitTask task = null;
 	}
 
 }
