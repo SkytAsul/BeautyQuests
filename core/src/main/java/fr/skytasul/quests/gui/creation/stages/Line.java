@@ -53,7 +53,7 @@ public class Line {
 				items.add(en);
 			}else items.set(slot, en);
 		}
-		maxPage = (int) Math.ceil(items.getLast() * 1.0D / 7.0D);
+		maxPage = (int) Math.ceil((items.getLast() - 8) * 1.0D / 7.0D) + 1;
 		if (maxPage == 0) maxPage = 1;
 		if (refresh){
 			activePage = 0;
@@ -115,14 +115,21 @@ public class Line {
 		if (!isInGUIPage()) return;
 		clearLine();
 		this.activePage = page;
-		for (int i = 0; i < 8; i++){
-			int id = page*8+i;
-			if (id == items.getLast() + 1) break; // last item of line
-			if (!items.contains(id)) continue;
-			Pair<ItemStack, StageRunnable> pair = items.get(id);
-			RsetItem(i, pair.getKey());
-			pair.setKey(inv.getItem(getRSlot(i)));
+
+		int maxLineCapacity = page == 0 ? 8 : 7;
+		int firstID = page == 0 ? 0 : 8 + (page - 1) * 7;
+
+		int slot = page == 0 ? 0 : 1;
+		for (int id = firstID; id < firstID + maxLineCapacity; id++) {
+			if (items.contains(id)) {
+				Pair<ItemStack, StageRunnable> pair = items.get(id);
+				int RSlot = getRSlot(slot);
+				inv.setItem(RSlot, pair.getKey());
+				pair.setKey(inv.getItem(RSlot));
+			}
+			slot++;
 		}
+
 		if (maxPage > 1){
 			if (page < maxPage - 1) RsetItem(8, ItemUtils.itemNextPage);
 			if (page > 0) RsetItem(0, ItemUtils.itemLaterPage);
@@ -157,7 +164,7 @@ public class Line {
 				setItems(activePage);
 			}
 		}else {
-			int item = activePage * 8 + slot;
+			int item = (activePage == 0 ? 0 : activePage * 7) + slot;
 			if (items.get(item) == null) return;
 			if (items.get(item).getValue() == null) return;
 			items.get(item).getValue().run(p, data, is);
@@ -170,7 +177,7 @@ public class Line {
 			RsetItem(i, null);
 		}
 	}
-	
+
 	private int getRSlot(int lineSlot) {
 		return line*9 - data.getGUI().page*5*9 + lineSlot;
 	}
