@@ -53,6 +53,7 @@ public class Line {
 				items.add(en);
 			}else items.set(slot, en);
 		}
+		System.out.println(slot + " " + en.getKey());
 		maxPage = (int) Math.ceil((items.getLast() - 8) * 1.0D / 7.0D) + 1;
 		if (maxPage == 0) maxPage = 1;
 		if (refresh){
@@ -120,7 +121,7 @@ public class Line {
 		int firstID = page == 0 ? 0 : 8 + (page - 1) * 7;
 
 		int slot = page == 0 ? 0 : 1;
-		for (int id = firstID; id < firstID + maxLineCapacity; id++) {
+		for (int id = firstID; id < firstID + 1 + maxLineCapacity; id++) {
 			if (items.contains(id)) {
 				Pair<ItemStack, StageRunnable> pair = items.get(id);
 				int RSlot = getRSlot(slot);
