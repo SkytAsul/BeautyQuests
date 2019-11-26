@@ -1,7 +1,9 @@
 package fr.skytasul.quests.stages;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +22,8 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class StageBringBack extends StageNPC{
 	
-	private ItemStack[] items;
+	private final ItemStack[] items;
+	private Map<ItemStack, Integer> amountsMap = new HashMap<>();
 	private String splitted;
 	private String line;
 	
@@ -28,6 +31,10 @@ public class StageBringBack extends StageNPC{
 		super(branch, npc);
 		this.bringBack = this;
 		this.items = items;
+		for (ItemStack item : items) {
+			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
+			amountsMap.put(item, amount);
+		}
 
 		String[] array = new String[items.length]; // create messages on beginning
 		for (int i = 0; i < array.length; i++){
@@ -51,8 +58,8 @@ public class StageBringBack extends StageNPC{
 	
 	public boolean checkItems(Player p, boolean msg){
 		boolean done = true;
-		for (ItemStack is : items){
-			if (!Utils.containsItems(p.getInventory(), is, is.getAmount())){
+		for (Entry<ItemStack, Integer> en : amountsMap.entrySet()) {
+			if (!Utils.containsItems(p.getInventory(), en.getKey(), en.getValue())) {
 				done = false;
 				break;
 			}
