@@ -88,6 +88,7 @@ public class StageMobs extends AbstractStage{
 				i = i + m.amount;
 			}
 			updateAmount(datas, i);
+			branch.getBranchesManager().objectiveUpdated(p);
 		}
 	}
 	

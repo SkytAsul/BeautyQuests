@@ -153,6 +153,7 @@ public class QuestBranch {
 					if (endStages.isEmpty()){
 						remove(acc, false);
 						getQuest().finish(p);
+						return;
 					}else {
 						setEndingStages(acc, true);
 					}
@@ -164,8 +165,10 @@ public class QuestBranch {
 				QuestBranch branch = endStages.get(stage);
 				if (branch == null){
 					getQuest().finish(p);
+					return;
 				}else branch.start(acc);
 			}
+			manager.objectiveUpdated(p);
 		});
 	}
 	

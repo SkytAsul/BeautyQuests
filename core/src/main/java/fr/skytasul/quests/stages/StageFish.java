@@ -37,15 +37,18 @@ public class StageFish extends AbstractStage{
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onFish(PlayerFishEvent e){
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
-			if (!hasStarted(e.getPlayer())) return;
+			Player p = e.getPlayer();
+			if (!hasStarted(p)) return;
 			ItemStack fish = ((Item) e.getCaught()).getItemStack();
-			List<ItemStack> playerFishes = players.get(PlayersManager.getPlayerAccount(e.getPlayer()));
+			List<ItemStack> playerFishes = players.get(PlayersManager.getPlayerAccount(p));
 			for (ItemStack is : playerFishes){
 				if (fish.isSimilar(is)){
 					if (fish.getAmount() >= is.getAmount()){
 						playerFishes.remove(is);
 					}else is.setAmount(is.getAmount() - fish.getAmount());
-					if (playerFishes.isEmpty()) finishStage(e.getPlayer());
+					if (playerFishes.isEmpty()) {
+						finishStage(p);
+					}else branch.getBranchesManager().objectiveUpdated(p);
 					break;
 				}
 			}

@@ -32,6 +32,7 @@ public class Scoreboard implements Listener{
 	private PlayerAccount acc;
 	private Player p;
 	private ScoreboardSigns sb;
+	private ScoreboardManager manager;
 	
 	private LinkedList<Line> lines = new LinkedList<>();
 	private BukkitRunnable runnable;
@@ -45,6 +46,7 @@ public class Scoreboard implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		this.p = player;
 		this.acc = PlayersManager.getPlayerAccount(p);
+		this.manager = manager;
 		
 		for (ScoreboardLine line : manager.getScoreboardLines()){
 			lines.add(new Line(line));
@@ -81,7 +83,7 @@ public class Scoreboard implements Listener{
 						int id = nextId == -1 ? launched.indexOf(showed)+1 : nextId;
 						if (id >= launched.size() || id == -1) id = 0;
 						showed = launched.get(id);
-						if (change && manager.refreshLines()) refreshQuestsLines();
+						if (change) refreshQuestsLines();
 					}
 				}
 				if (sb == null) return;
@@ -135,6 +137,7 @@ public class Scoreboard implements Listener{
 	private void questRemove(Quest quest){
 		if (quest == showed){
 			nextId = launched.indexOf(showed);
+			refreshQuestsLines();
 		}
 		launched.remove(quest);
 	}
@@ -152,7 +155,14 @@ public class Scoreboard implements Listener{
 		if (sb == null) initScoreboard();
 	}
 	
+	public void setShownQuest(Quest quest) {
+		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
+		showed = quest;
+		refreshQuestsLines();
+	}
+
 	public void refreshQuestsLines(){
+		if (!manager.refreshLines()) return;
 		for (Line line : lines){
 			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
 		}

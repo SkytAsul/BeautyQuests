@@ -9,11 +9,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.scoreboards.Scoreboard;
 
 public class BranchesManager{
 
@@ -99,6 +101,15 @@ public class BranchesManager{
 		return br.equals(branch);
 	}
 	
+	/**
+	 * Called internally when the quest is updated for the player
+	 * @param p Player
+	 */
+	public final void objectiveUpdated(Player p) {
+		Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+		if (sb != null) sb.setShownQuest(quest);
+	}
+
 	public void startPlayer(PlayerAccount acc){
 		branches.get(0).start(acc);
 	}

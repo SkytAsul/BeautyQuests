@@ -3,6 +3,7 @@ package fr.skytasul.quests.stages;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -39,16 +40,18 @@ public class StageBucket extends AbstractStage {
 
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBucketFill(PlayerBucketFillEvent e){
-		PlayerAccount acc = PlayersManager.getPlayerAccount(e.getPlayer());
+		Player p = e.getPlayer();
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			if (BucketType.fromMaterial(XMaterial.fromMaterial(e.getItemStack().getType())) == bucket){
 				int newAmount = playerAmounts.get(acc) - 1;
 				if (newAmount <= 0){
 					playerAmounts.remove(acc);
-					finishStage(e.getPlayer());
+					finishStage(p);
 				}else {
 					playerAmounts.put(acc, newAmount);
 				}
+				branch.getBranchesManager().objectiveUpdated(p);
 			}
 		}
 	}

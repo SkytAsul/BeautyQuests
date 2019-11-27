@@ -87,6 +87,7 @@ public class StageMine extends AbstractStage {
 					b.amount--;
 					if (b.amount == 0){
 						playerBlocks.remove(b);
+						branch.getBranchesManager().objectiveUpdated(p);
 						break;
 					}
 				}
