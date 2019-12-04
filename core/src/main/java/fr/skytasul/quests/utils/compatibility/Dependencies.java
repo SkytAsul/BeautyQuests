@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 
@@ -25,6 +27,7 @@ public class Dependencies {
 	public static boolean gps = false; //		GPS
 	public static boolean mmo = false; //	mcMMO
 	public static boolean mclvl = false; //	McCombatLevel
+	public static boolean boss = false; //	Boss
 	
 	public static void initialize(PluginManager pman, Logger logger){
 		if (pman.isPluginEnabled("WorldGuard")){
@@ -32,7 +35,7 @@ public class Dependencies {
 		}
 		if (pman.isPluginEnabled("MythicMobs")){
 			mm = true;
-			pman.registerEvents(new MythicMobs(), BeautyQuests.getInstance());
+			QuestsAPI.registerMobFactory(new MythicMobs());
 		}
 		if (pman.isPluginEnabled("Vault")){
 			vault = true;
@@ -75,6 +78,10 @@ public class Dependencies {
 		}
 		if (pman.isPluginEnabled("McCombatLevel")){
 			mclvl = true;
+		}
+		if (pman.isPluginEnabled("Boss")) {
+			boss = true;
+			QuestsAPI.registerMobFactory(new BossAPI());
 		}
 	}
 	

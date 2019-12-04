@@ -324,6 +324,7 @@ public enum Lang{
 	bukkitMob("inv.mobSelect.bukkitEntityType"),
 	mythicMob("inv.mobSelect.mythicMob"),
 	epicBoss("inv.mobSelect.epicBoss"),
+	boss("inv.mobSelect.boss"),
 	
 	location("inv.stageEnding.locationTeleport"),
 	command("inv.stageEnding.command"),

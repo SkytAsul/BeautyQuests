@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -26,17 +27,16 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Post1_9;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
-import fr.skytasul.quests.utils.types.Mob;
 
 public class StageMobs extends AbstractStage{
 
-	private final List<Mob> mobs;
+	private final List<Mob<?>> mobs;
 	private Map<PlayerAccount, PlayerDatas> remaining = new HashMap<>();
 	private boolean shoot = false;
 	
 	private int cachedSize;
 	
-	public StageMobs(QuestBranch branch, List<Mob> mobs){
+	public StageMobs(QuestBranch branch, List<Mob<?>> mobs) {
 		super(branch);
 		if (mobs != null) {
 			this.mobs = mobs;
@@ -56,10 +56,10 @@ public class StageMobs extends AbstractStage{
 				finishStage(p);
 				return;
 			}
-			List<Mob> playerMobs = player.remaining;
+			List<Mob<?>> playerMobs = player.remaining;
 			boolean hasChanged = false;
-			for (Mob m : playerMobs){
-				if (m.equalsMob(e.getPluginMob())){
+			for (Mob<?> m : playerMobs) {
+				if (m.applies(e.getPluginMob())) {
 					hasChanged = true;
 					m.amount--;
 					if (m.amount == 0){
@@ -72,13 +72,13 @@ public class StageMobs extends AbstractStage{
 		}
 	}
 	
-	public void finalTest(Player p, List<Mob> playerMobs, PlayerDatas datas){
+	public void finalTest(Player p, List<Mob<?>> playerMobs, PlayerDatas datas) {
 		if (playerMobs.isEmpty()){
 			finishStage(p);
 		}else {
 			int i = 0;
-			for (Mob m : playerMobs){
-				if (m.isEmpty()){ // check problem
+			for (Mob<?> m : playerMobs) {
+				if (m.isNull()) { // check problem
 					p.sendMessage("§cMob instance is empty. Please notice an administrator !");
 					BeautyQuests.logger.warning("Mob instance for stage " + getID() + " of quest " + branch.getQuest().getID() + " is empty.");
 					playerMobs.remove(m);
@@ -92,7 +92,7 @@ public class StageMobs extends AbstractStage{
 		}
 	}
 	
-	public List<Mob> getMobs(){
+	public List<Mob<?>> getMobs() {
 		return mobs;
 	}
 
@@ -115,10 +115,10 @@ public class StageMobs extends AbstractStage{
 	}
 	
 	private String[] buildRemainingArray(PlayerAccount acc, Source source){
-		List<Mob> list = remaining.get(acc).remaining;
+		List<Mob<?>> list = remaining.get(acc).remaining;
 		String[] str = new String[list.size()];
 		for (int i = 0; i < list.size(); i++){
-			Mob m = list.get(i);
+			Mob<?> m = list.get(i);
 			str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), QuestsConfiguration.getItemAmountColor(), m.amount, QuestsConfiguration.showDescriptionItemsXOne(source));
 		}
 		return str;
@@ -131,8 +131,8 @@ public class StageMobs extends AbstractStage{
 			finishStage(p);
 			return false;
 		}
-		List<Mob> tmp = new ArrayList<>();
-		for (Mob m : mobs){
+		List<Mob<?>> tmp = new ArrayList<>();
+		for (Mob<?> m : mobs) {
 			tmp.add(m.clone());
 		}
 		PlayerDatas datas = new PlayerDatas(acc, tmp, null);
@@ -193,7 +193,7 @@ public class StageMobs extends AbstractStage{
 			if (sendStartMessage()) {
 				String[] str = new String[mobs.size()];
 				for (int i = 0; i < mobs.size(); i++){
-					Mob m = mobs.get(i);
+					Mob<?> m = mobs.get(i);
 					str[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(m.getName(), ChatColor.GREEN.toString(), m.amount, false);
 				}
 				Utils.sendMessage(p, Lang.STAGE_MOBSLIST.toString(), Utils.itemsToFormattedString(str, QuestsConfiguration.getItemAmountColor()));
@@ -239,7 +239,7 @@ public class StageMobs extends AbstractStage{
 			for (Entry<String, List<Map<String, Object>>> en : re.entrySet()){
 				PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
 				if (acc == null) continue;
-				List<Mob> list = Utils.deserializeList(en.getValue(), Mob::deserialize);
+				List<Mob<?>> list = Utils.deserializeList(en.getValue(), Mob::deserialize);
 				if (list.isEmpty()){
 					DebugUtils.logMessage("Player " + en.getKey() + " unused for StageMobs");
 					st.remaining.put(acc, new PlayerDatas(null, new ArrayList<>(), null));
@@ -256,22 +256,22 @@ public class StageMobs extends AbstractStage{
 		return st;
 	}
 	
-	private static int mobsSize(List<Mob> mobs) {
+	private static int mobsSize(List<Mob<?>> mobs) {
 		int size = 0;
-		for(Mob mob : mobs) {
+		for (Mob<?> mob : mobs) {
 			size += mob.amount;
 		}
 		return size;
 	}
 	
 	static class PlayerDatas{
-		List<Mob> remaining = new ArrayList<>();
+		List<Mob<?>> remaining = new ArrayList<>();
 		Object bar = null;
 		
 		PlayerAccount acc;
 		BukkitTask task;
 		
-		PlayerDatas(PlayerAccount acc, List<Mob> remaining, Object bar){
+		PlayerDatas(PlayerAccount acc, List<Mob<?>> remaining, Object bar) {
 			this.acc = acc;
 			this.remaining = remaining;
 			this.bar = bar;

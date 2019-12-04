@@ -44,6 +44,8 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
+import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
+import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -205,6 +207,8 @@ public class BeautyQuests extends JavaPlugin{
 				StagesGUI.initialize(); // 			initializing default stage types
 				RequirementsGUI.initialize(); //	initializing default requirements
 				RewardsGUI.initialize(); //			initializing default rewards
+				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
+				QuestsAPI.registerMobFactory(new CitizensFactory());
 			}
 			
 			QuestsConfiguration.initConfiguration(config);

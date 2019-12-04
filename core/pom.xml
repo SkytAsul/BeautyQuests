@@ -160,5 +160,12 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/jars/SkillAPI.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>com.suxy</groupId>
+			<artifactId>boss</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/jars/BossAPI.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>

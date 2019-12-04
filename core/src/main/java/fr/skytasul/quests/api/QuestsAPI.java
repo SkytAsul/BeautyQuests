@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -65,6 +66,11 @@ public class QuestsAPI {
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
+	public static void registerMobFactory(MobFactory<?> factory) {
+		MobFactory.factories.add(factory);
+		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
+		DebugUtils.logMessage("Mob factory registered (id: " + factory.getID() + ")");
+	}
 	
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){

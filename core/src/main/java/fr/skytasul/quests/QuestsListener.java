@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -27,8 +25,6 @@ import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
-import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -133,20 +129,6 @@ public class QuestsListener implements Listener{
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent e) { // firework damage
 		if (e.getDamager().hasMetadata("questFinish")) e.setCancelled(true);
-	}
-	
-	@EventHandler
-	public void onEntityKilled(EntityDeathEvent e){
-		LivingEntity en = e.getEntity();
-		if (en.getKiller() == null) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(en.getType(), en.getKiller(), en));
-	}
-	
-	@EventHandler
-	public void onNPCKilled(NPCDeathEvent e){
-		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
-		if (en.getKiller() == null) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(e.getNPC(), en.getKiller(), en));
 	}
 	
 }

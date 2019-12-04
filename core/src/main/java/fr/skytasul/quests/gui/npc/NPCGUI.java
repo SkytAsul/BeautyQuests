@@ -15,7 +15,7 @@ import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.misc.EntityTypeGUI;
+import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import net.citizensnpcs.Citizens;

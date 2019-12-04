@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.mobs;
 
 import java.util.ArrayList;
 import java.util.HashMap;

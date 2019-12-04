@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
@@ -58,7 +59,6 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.WorldGuard;
 import fr.skytasul.quests.utils.types.BlockData;
 import fr.skytasul.quests.utils.types.Dialog;
-import fr.skytasul.quests.utils.types.Mob;
 import net.citizensnpcs.api.npc.NPC;
 
 public class StagesGUI implements CustomInventory {
@@ -507,7 +507,7 @@ class CreateMobs implements StageCreationRunnables{
 		line.setItem(6, editMobs.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
-				mobs.setMobsFromList((List<Mob>) datas.get("mobs"));
+				mobs.setMobsFromList((List<Mob<?>>) datas.get("mobs"));
 				mobs.run = (obj) -> {
 					sg.reopen(p, true);
 					datas.put("mobs", obj);
@@ -522,7 +522,7 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch) {
-		StageMobs stage = new StageMobs(branch, ((List<Mob>) datas.get("mobs")));
+		StageMobs stage = new StageMobs(branch, ((List<Mob<?>>) datas.get("mobs")));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
