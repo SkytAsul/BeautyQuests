@@ -53,7 +53,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	}
 
 	public String getName(MythicMob data) {
-		return data.getDisplayName();
+		return data.getDisplayName().get();
 	}
 
 	public EntityType getEntityType(MythicMob data) {
