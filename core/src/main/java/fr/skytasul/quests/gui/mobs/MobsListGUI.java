@@ -67,7 +67,7 @@ public class MobsListGUI implements CustomInventory{
 			inv.setItem(slot, none.clone());
 			return true;
 		}
-		new PagedGUI<MobFactory<?>>("Mob type", DyeColor.LIME, MobFactory.factories) {
+		new PagedGUI<MobFactory<?>>(Lang.INVENTORY_MOBSELECT.toString(), DyeColor.LIME, MobFactory.factories) {
 			public ItemStack getItemStack(MobFactory<?> object) {
 				return object.getFactoryItem();
 			}

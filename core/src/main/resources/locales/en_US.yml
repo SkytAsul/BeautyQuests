@@ -310,10 +310,11 @@ inv:
     none: '§aClick to add a mob.'
     click: "§7Left-click to edit.\nRight-click to delete."
   mobSelect:
-    name: 'Select mob'
+    name: 'Select mob type'
     bukkitEntityType: '§eSelect entity type'
     mythicMob: '§6Select Mythic Mob'
     epicBoss: '§6Select Epic Boss'
+    boss: '§6Select a Boss'
   stageEnding:
     locationTeleport: '§eEdit teleport location'
     command: '§eEdit executed command'

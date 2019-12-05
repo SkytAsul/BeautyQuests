@@ -53,7 +53,6 @@ public class Line {
 				items.add(en);
 			}else items.set(slot, en);
 		}
-		System.out.println(slot + " " + en.getKey());
 		maxPage = (int) Math.ceil((items.getLast() - 8) * 1.0D / 7.0D) + 1;
 		if (maxPage == 0) maxPage = 1;
 		if (refresh){
