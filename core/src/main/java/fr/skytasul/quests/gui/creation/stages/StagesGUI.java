@@ -651,7 +651,7 @@ class CreateChat implements StageCreationRunnables{
 	}
 
 	public static void setItems(LineData datas) {
-		datas.getLine().setItem(6, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString()), new StageRunnable() {
+		datas.getLine().setItem(6, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? (String) datas.get("text") : "§lx"), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				launchEditor(p, datas);
 			}
@@ -666,8 +666,10 @@ class CreateChat implements StageCreationRunnables{
 	public static void launchEditor(Player p, LineData datas){
 		Lang.CHAT_MESSAGE.send(p);
 		new TextEditor(p, (obj) -> {
-			datas.put("text", ((String) obj).replace("{SLASH}", "/"));
+			String msg = ((String) obj).replace("{SLASH}", "/");
+			datas.put("text", msg);
 			datas.getGUI().reopen(p, false);
+			ItemUtils.lore(datas.getLine().getItem(6), msg);
 		}).enterOrLeave(p);
 	}
 }
