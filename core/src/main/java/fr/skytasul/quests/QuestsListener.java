@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
@@ -116,6 +117,11 @@ public class QuestsListener implements Listener{
 		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}
 	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+	}
+
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
 		String lore = Lang.QuestItemLore.toString();

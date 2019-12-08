@@ -6,6 +6,8 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.utils.DebugUtils;
+
 public class Command {
 
 	public String label;
@@ -21,6 +23,7 @@ public class Command {
 		if (console){
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), formattedcmd);
 		}else o.performCommand(formattedcmd);
+		DebugUtils.logMessage((console ? "Console" : o.getName()) + " just performed command " + formattedcmd);
 	}
 	
 	public Map<String, Object> serialize(){

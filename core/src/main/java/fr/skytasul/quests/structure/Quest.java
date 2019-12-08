@@ -24,6 +24,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
+import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
@@ -351,7 +352,7 @@ public class Quest{
 			Lang.ALREADY_STARTED.send(p);
 			return;
 		}
-		QuestLaunchEvent event = new QuestLaunchEvent(p, this);
+		QuestPreLaunchEvent event = new QuestPreLaunchEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
@@ -365,6 +366,8 @@ public class Quest{
 				requirements.stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
+
+				Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this));
 			}
 		};
 		if (asyncStart != null){

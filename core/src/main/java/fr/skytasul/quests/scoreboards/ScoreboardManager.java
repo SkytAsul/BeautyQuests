@@ -42,20 +42,6 @@ public class ScoreboardManager{
 			}
 		}
 		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
-		
-		/*new BukkitRunnable() {  // no longer need to do this as PlayerAccountJoinEvent is called in BeautyQuests#loadAllDatas
-			public void run() {
-				for (Player p : Bukkit.getOnlinePlayers()){
-					try{
-						scoreboards.put(p, new Scoreboard(p, ScoreboardManager.this));
-					}catch (Throwable ex){
-						ex.printStackTrace();
-						continue;
-					}
-				}
-				if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards created");
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 2L);*/
 	}
 	
 	public List<ScoreboardLine> getScoreboardLines(){
@@ -79,7 +65,7 @@ public class ScoreboardManager{
 	}
 	
 	public void removePlayerScoreboard(Player p){
-		if (scoreboards.containsKey(p)) scoreboards.remove(p).unload();
+		if (scoreboards.containsKey(p)) scoreboards.remove(p).cancel();
 	}
 	
 	public void create(Player p){
@@ -89,7 +75,7 @@ public class ScoreboardManager{
 	}
 	
 	public void unload(){
-		for (Scoreboard s : scoreboards.values()) s.unload();
+		for (Scoreboard s : scoreboards.values()) s.cancel();
 		if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards deleted.");
 		scoreboards.clear();
 	}
