@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -46,14 +45,18 @@ public class Vault {
 		return eco.format(money);
 	}
 
-	public static void changePermission(Player p, String perm, boolean remove){
-		if (vperm == null) return;
-		for (World world : Bukkit.getWorlds()){
-			boolean has = vperm.has(world.getName(), p.getName(), perm);
-			if (remove) {
-				if (has) vperm.playerRemove(world.getName(), p, perm);
-			}else if (!has) vperm.playerAdd(world.getName(), p, perm);
-		}
+	public static void changePermission(Player p, String perm, boolean remove, String world) {
+		boolean has = vperm.playerHas(world, p, perm);
+		if (remove) {
+			if (has) vperm.playerRemove(world, p, perm);
+		}else if (!has) vperm.playerAdd(world, p, perm);
+	}
+
+	public static void changeGroup(Player p, String group, boolean remove, String world) {
+		boolean has = vperm.playerInGroup(world, p, group);
+		if (remove) {
+			if (has) vperm.playerRemoveGroup(world, p, group);
+		}else if (!has) vperm.playerAddGroup(world, p, group);
 	}
 	
 }

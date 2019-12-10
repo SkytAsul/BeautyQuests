@@ -151,7 +151,8 @@ msg:
       chooseSkillRequired: '§aWrite the name of the required skill:'
       chooseMoneyRequired: '§aWrite the amount of required money:'
       reward:
-        permission: '§aEdit which permissions should be kept and which removed with "add <permission> [remove: yes = "true", no = "false"]": (Write "help" for other commands.)'
+        permissionName: '§aWrite the permission name.'
+        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
         money: '§aWrite the amount of the received money:'
     selectWantedBlock: '§aClick with the stick on the wanted block for the stage.'
     itemCreator:
@@ -371,6 +372,18 @@ inv:
     addBlock: '§aClick to add a block.'
   buckets:
     name: 'Bucket type'
+  permission:
+    name: 'Choose permission'
+    perm: '§aPermission'
+    world: '§aWorld'
+    worldGlobal: '§b§lGlobal'
+    remove: 'Remove permission'
+    removeLore: '§7Permission will be taken off\n§7instead of given.'
+  permissionList:
+    name: 'Permissions list'
+    removed: '§eTaken off: §6{0}'
+    world: '§eWorld: §6{0}'
+    
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cNo quests in progress.'
@@ -434,6 +447,7 @@ misc:
   enabled: 'Enabled'
   disabled: 'Disabled'
   unknown: 'unknown'
+  notSet: "§cnot set"
   unused: '§2§lUnused'
   used: '§a§lUsed'
   remove: '§7Middle-click to remove'

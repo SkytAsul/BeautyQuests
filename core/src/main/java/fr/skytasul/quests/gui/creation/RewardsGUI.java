@@ -20,7 +20,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.editors.Editor;
-import fr.skytasul.quests.editors.PermissionsEditor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -28,6 +27,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.npc.NPCGUI;
+import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.rewards.CommandReward;
 import fr.skytasul.quests.rewards.ItemReward;
@@ -42,6 +42,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.types.Command;
+import fr.skytasul.quests.utils.types.Permission;
 
 public class RewardsGUI implements CustomInventory {
 
@@ -282,27 +283,22 @@ class MoneyR implements RewardCreationRunnables{
 class PermissionR implements RewardCreationRunnables{
 
 	public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked){
-		Lang.CHOOSE_PERM_REWARD.send(p);
-		PermissionsEditor wt = new PermissionsEditor(p, (map) -> {
-			if (map.isEmpty()) {
-				gui.removeReward(datas);
-			}else {
-				datas.put("permissions", map);
-				ItemUtils.lore(clicked, "Permissions : " + map.size());
-			}
-			gui.reopen(p, false);
-		}, datas.containsKey("permissions") ? (Map<String, Boolean>) datas.get("permissions") : new HashMap<>());
-		Editor.enterOrLeave(p, wt);
+		if (!datas.containsKey("permissions")) datas.put("permissions", new ArrayList<>());
+		List<Permission> permissions = (List<Permission>) datas.get("permissions");
+		new PermissionListGUI(permissions, () -> {
+			ItemUtils.lore(clicked, "Permissions : " + permissions.size());
+			gui.reopen(p, true);
+		}).create(p);
 	}
 
 	public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is){
 		PermissionReward rew = (PermissionReward) reward;
-		datas.put("permissions", rew.permissions);
+		datas.put("permissions", new ArrayList<>(rew.permissions));
 		ItemUtils.lore(is, "Permissions : " + rew.permissions.size());
 	}
 
 	public AbstractReward finish(Map<String, Object> datas){
-		return new PermissionReward((Map<String, Boolean>) datas.get("permissions"));
+		return new PermissionReward((List<Permission>) datas.get("permissions"));
 	}
 
 }

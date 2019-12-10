@@ -44,4 +44,8 @@ public class ImmutableItemStack extends ItemStack {
 		throw new UnsupportedOperationException("This ItemStack instance is immutable");
 	}
 	
+	public ItemStack toMutableStack() {
+		return new ItemStack(this);
+	}
+
 }

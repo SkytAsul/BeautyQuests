@@ -41,7 +41,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 		this.p = p;
 		
 		inv.setItem(size - 1, ItemUtils.itemDone);
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < size - 1; i++) {
 			if (objects.size() <= i){
 				inv.setItem(i, none);
 			}else {

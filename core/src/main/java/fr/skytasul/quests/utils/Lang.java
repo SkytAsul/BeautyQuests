@@ -42,6 +42,7 @@ public enum Lang{
 	NPC_SKIN("msg.writeNpcSkinName"), 
 	QUEST_NAME("msg.writeQuestName"),
 	COMMAND("msg.writeCommand"),
+	COMMAND_DELAY("msg.writeCommandDelay"),
 	HOLOGRAM_TEXT("msg.writeHologramText"),
 	TIMER("msg.writeQuestTimer"),
 	CONFIRM_MESSAGE("msg.writeConfirmMessage"),
@@ -163,7 +164,8 @@ public enum Lang{
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
 	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
 	// rewards
-	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission"),
+	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
+	CHOOSE_PERM_WORLD("msg.editor.text.reward.permissionWorld"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
@@ -356,6 +358,7 @@ public enum Lang{
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
 	commandConsole("inv.command.console"),
+	commandDelay("inv.command.delay"),
 	
 	INVENTORY_COMMANDS_LIST("inv.commandsList.name"),
 	commandsListValue("inv.commandsList.value"),
@@ -371,7 +374,17 @@ public enum Lang{
 	
 	INVENTORY_BUCKETS("inv.buckets.name"),
 	
-	
+	INVENTORY_PERMISSION("inv.permission.name"),
+	perm("inv.permission.perm"),
+	world("inv.permission.world"),
+	worldGlobal("inv.permission.worldGlobal"),
+	permRemove("inv.permission.remove"),
+	permRemoveLore("inv.permission.removeLore"),
+
+	INVENTORY_PERMISSION_LIST("inv.permissionList.name"),
+	permRemoved("inv.permissionList.removed"),
+	permWorld("inv.permissionList.world"),
+
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -445,6 +458,7 @@ public enum Lang{
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),
+	NotSet("misc.notSet"),
 	Unused("misc.unused"),
 	Used("misc.used"),
 	Remove("misc.remove"),
@@ -477,15 +491,15 @@ public enum Lang{
 	}
 	
 	public String format(Object... replace){
-		return Utils.format(toString(), replace);
+		return Utils.format(value, replace);
 	}
 	
 	public void send(CommandSender sender, Object... args){
-		Utils.sendMessage(sender, this.toString(), args);
+		Utils.sendMessage(sender, value, args);
 	}
 	
 	public void sendWP(CommandSender p, Object... args){
-		Utils.sendMessageWP(p, this.toString(), args);
+		Utils.sendMessageWP(p, value, args);
 	}
 
 

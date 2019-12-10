@@ -74,7 +74,6 @@ public class StageMine extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
-				System.out.println("metadata");
 				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
 			}
 			List<BlockData> playerBlocks = remaining.get(acc);
@@ -85,9 +84,9 @@ public class StageMine extends AbstractStage {
 			for (BlockData b : playerBlocks){
 				if (b.type.isSameMaterial(e.getBlock())){
 					b.amount--;
+					branch.getBranchesManager().objectiveUpdated(p);
 					if (b.amount == 0){
 						playerBlocks.remove(b);
-						branch.getBranchesManager().objectiveUpdated(p);
 						break;
 					}
 				}

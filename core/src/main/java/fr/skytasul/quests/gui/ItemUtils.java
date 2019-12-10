@@ -190,22 +190,22 @@ public class ItemUtils {
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
+	public static ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+	public static ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
 	 */
-	public static ItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
+	public static ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
 	 */
-	public static ItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
+	public static ImmutableItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted
