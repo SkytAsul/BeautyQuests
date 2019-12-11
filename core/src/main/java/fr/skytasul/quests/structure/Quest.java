@@ -29,6 +29,8 @@ import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -342,7 +344,13 @@ public class Quest{
 	
 	public void clickNPC(Player p){
 		if (dialog != null) {
-			dialog.send(p, () -> start(p));
+			dialog.send(p, () -> attemptStart(p));
+		}else attemptStart(p);
+	}
+
+	private void attemptStart(Player p) {
+		if (QuestsConfiguration.questConfirmGUI()) {
+			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(name), getCustomConfirmMessage()).create(p);
 		}else start(p);
 	}
 	
