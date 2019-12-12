@@ -82,7 +82,7 @@ public abstract class NMS{
 				ex.printStackTrace();
 			}
 		}else nms = new NullNMS();
-		BeautyQuests.logger.info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Current accepted versions : 1.11, 1.12");
+		BeautyQuests.logger.info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Currenttly accepted versions are: " + String.join(", ", validVersions));
 	}
 	
 }
