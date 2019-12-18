@@ -89,8 +89,8 @@ public class StageCraft extends AbstractStage {
 					finishStage(p);
 				}else {
 					playerAmounts.put(acc, newAmount);
+					branch.getBranchesManager().objectiveUpdated(p);
 				}
-				branch.getBranchesManager().objectiveUpdated(p);
 			}
 		}
 	}

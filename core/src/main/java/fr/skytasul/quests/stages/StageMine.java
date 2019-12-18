@@ -84,17 +84,15 @@ public class StageMine extends AbstractStage {
 			for (BlockData b : playerBlocks){
 				if (b.type.isSameMaterial(e.getBlock())){
 					b.amount--;
-					branch.getBranchesManager().objectiveUpdated(p);
-					if (b.amount == 0){
-						playerBlocks.remove(b);
-						break;
-					}
+					if (b.amount == 0) playerBlocks.remove(b);
+					if (playerBlocks.isEmpty()) {
+						remaining.remove(acc);
+						finishStage(p);
+					}else branch.getBranchesManager().objectiveUpdated(p);
+					break;
 				}
 			}
-			if (playerBlocks.isEmpty()){
-				remaining.remove(acc);
-				finishStage(p);
-			}
+
 		}
 	}
 	
