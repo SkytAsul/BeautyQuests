@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.accounts;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

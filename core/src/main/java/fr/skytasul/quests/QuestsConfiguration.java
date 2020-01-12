@@ -68,7 +68,6 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
-	
 
 	public static Quest firstQuest;
 

@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.accounts;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -7,7 +7,7 @@ public class GhostAccount extends AbstractAccount{
 	
 	private String identifier;
 	
-	GhostAccount(String identifier){
+	public GhostAccount(String identifier) {
 		this.identifier = identifier;
 	}
 	

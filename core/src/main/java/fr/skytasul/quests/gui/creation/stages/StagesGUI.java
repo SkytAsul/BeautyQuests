@@ -1,9 +1,12 @@
 package fr.skytasul.quests.gui.creation.stages;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -57,7 +60,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.WorldGuard;
-import fr.skytasul.quests.utils.types.BlockData;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -507,7 +509,7 @@ class CreateMobs implements StageCreationRunnables{
 		line.setItem(6, editMobs.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
-				mobs.setMobsFromList((List<Mob<?>>) datas.get("mobs"));
+				mobs.setMobsFromMap((Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
 				mobs.run = (obj) -> {
 					sg.reopen(p, true);
 					datas.put("mobs", obj);
@@ -522,14 +524,14 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch) {
-		StageMobs stage = new StageMobs(branch, ((List<Mob<?>>) datas.get("mobs")));
+		StageMobs stage = new StageMobs(branch, (Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
 		StageMobs st = (StageMobs) stage;
-		datas.put("mobs", new ArrayList<>(st.getMobs()));
+		datas.put("mobs", st.cloneObjects());
 		datas.put("shoot", st.isShoot());
 		setItems(datas.getLine(), datas.getGUI(), datas);
 	}
@@ -599,14 +601,14 @@ class CreateMine implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch){
-		StageMine stage = new StageMine(branch, (List<BlockData>) datas.get("blocks"));
+		StageMine stage = new StageMine(branch, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
 		stage.setPlaceCancelled((boolean) datas.get("prevent"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
 		StageMine st = (StageMine) stage;
-		datas.put("blocks", new ArrayList<>(st.getBlocks()));
+		datas.put("blocks", st.cloneObjects());
 		datas.put("prevent", st.isPlaceCancelled());
 		setItems(datas.getLine(), datas);
 	}
@@ -615,7 +617,7 @@ class CreateMine implements StageCreationRunnables{
 		line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-				blocks.setBlocksFromList(blocks.inv, (List<BlockData>) datas.get("blocks"));
+				blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
 				blocks.run = (obj) -> {
 					datas.getGUI().reopen(p, true);
 					datas.put("blocks", obj);
@@ -726,12 +728,28 @@ class CreateFish implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch){
-		StageFish stage = new StageFish(branch, ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		List<ItemStack> itemsList = (List<ItemStack>) datas.get("items");
+		Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
+		for (int i = 0; i < itemsList.size(); i++) {
+			ItemStack item = itemsList.get(i);
+			int amount = item.getAmount();
+			item.setAmount(1);
+			itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
+		}
+		StageFish stage = new StageFish(branch, itemsMap);
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		datas.put("items", new ArrayList<>(Arrays.asList(((StageFish) stage).getFishes())));
+		StageFish st = (StageFish) stage;
+		List<ItemStack> items = new ArrayList<>();
+		Map<Integer, Entry<ItemStack, Integer>> itemsMap = st.getObjects();
+		for (Entry<ItemStack, Integer> itemEntry : itemsMap.values()) {
+			ItemStack item = itemEntry.getKey().clone();
+			item.setAmount(itemEntry.getValue());
+			items.add(item);
+		}
+		datas.put("items", items);
 		setItem(datas.getLine(), datas.getGUI());
 	}
 

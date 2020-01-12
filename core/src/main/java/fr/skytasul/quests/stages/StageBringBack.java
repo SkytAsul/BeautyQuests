@@ -79,9 +79,9 @@ public class StageBringBack extends StageNPC{
 		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
 	}
 
-	public void launch(Player p){
-		super.launch(p);
-		if (sendStartMessage()) Lang.NpcText.sendWP(p, npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+	public void start(PlayerAccount acc) {
+		super.start(acc);
+		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
 	

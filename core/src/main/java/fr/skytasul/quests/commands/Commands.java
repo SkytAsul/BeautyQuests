@@ -12,7 +12,6 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.gui.misc.ChooseAccountGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
@@ -20,10 +19,10 @@ import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
-import fr.skytasul.quests.structure.PlayerAdvancement;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
@@ -141,16 +140,18 @@ public class Commands {
 		Quest qu = (Quest) cmd.args[1];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		QuestBranch currentBranch = manager.getPlayerBranch(acc);
-		if (cmd.args.length < 3) { // next/start quest
-			if (currentBranch == null){
-				manager.startPlayer(acc);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
-				return;
-			}
-			PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
-			if (!adv.isInEndingStages()){
-				currentBranch.finishStage(target, currentBranch.getRegularStage(adv.getRegularStage()));
+		if (cmd.args.length < 3 && !acc.hasQuestDatas(qu)) { // start quest
+			qu.start(target);
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			return;
+		}
+
+		PlayerQuestDatas datas = acc.getQuestDatas(qu);
+		QuestBranch currentBranch = manager.getBranch(datas.getBranch());
+
+		if (cmd.args.length < 3) { // next
+			if (!datas.isInEndingStages()) {
+				currentBranch.finishStage(target, currentBranch.getRegularStage(datas.getStage()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
 			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(cmd.sender);
 		}else {
@@ -169,17 +170,17 @@ public class Commands {
 			}
 			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
 			if (currentBranch != null) {
-				PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
-				if (adv.isInEndingStages()){
+				if (datas.isInEndingStages()) {
 					for (AbstractStage stage : currentBranch.getEndingStages().keySet()) stage.end(acc);
 				}else {
-					currentBranch.getRegularStage(adv.getRegularStage()).end(acc);
+					currentBranch.getRegularStage(datas.getStage()).end(acc);
 				}
 			}
 			if (cmd.args.length == 3){ // start branch
 				branch.start(acc);
 			}else { // set stage in branch
-				branch.setStage(acc, stageID, true);
+				datas.setBranch(branchID);
+				branch.setStage(acc, stageID);
 			}
 		}
 	}
@@ -214,9 +215,7 @@ public class Commands {
 	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		Inventories.create(cmd.player, new ChooseAccountGUI(target.getUniqueId(), (obj) -> {
-			Inventories.create(cmd.player, new PlayerListGUI((PlayerAccount) obj));
-		}));
+		new PlayerListGUI(PlayersManager.getPlayerAccount(target)).create(cmd.player);
 	}
 	
 	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
@@ -406,10 +405,10 @@ public class Commands {
 		}
 	}
 	
-	//@Cmd(permission = "reload")
+	/*@Cmd(permission = "reload")
 	public void removeDuplicate(CommandContext cmd){
 		PlayersManager.debugDuplicate(cmd.sender);
-	}
+	}*/
 	
 	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){

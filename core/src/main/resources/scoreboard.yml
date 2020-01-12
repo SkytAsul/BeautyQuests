@@ -1,13 +1,22 @@
+# Configuration relative to quests
 quests:
+  # Time in seconds before the quest tracker switch
   changeTime: 10
+  # If enabled and the player has no quest launched, the scoreboard will disappear until the player starts a new quest
   hideIfEmpty: true
+  # If enabled, scoreboard lines containing {questName} or {questDescription} will be automatically refreshed whenever the quest tracker is refreshed
   refreshLines: true
+
+# Lines contained in the scoreboard
+#  Available parameters:
+#  * value: the value of line, surrounded by '
+#   -> special placehlolders: {questName} and {questDescription}
+#  * refresh: time in seconds before the line is refreshed (useful with dynamic placeholders)
+#  * length: max length of the line, if the number of characters exceed this limit the line will be split
 lines:
 - value: ''
 - value: '&6{questName}'
-  refresh: 2
 - value: ''
 - value: '{questDescription}'
-  refresh: 2
   length: 30
   

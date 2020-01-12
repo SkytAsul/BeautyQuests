@@ -10,12 +10,12 @@ import fr.skytasul.quests.utils.Utils;
 public class NumberedList<T> implements Iterable<T>, Cloneable{
 
 	private Map<Integer, T> map;
-	
-	public NumberedList(){
+
+	public NumberedList() {
 		this.map = new HashMap<>();
 	}
-	
-	private NumberedList(Map<Integer, T> map){
+
+	private NumberedList(Map<Integer, T> map) {
 		this.map = map;
 	}
 	
@@ -28,7 +28,7 @@ public class NumberedList<T> implements Iterable<T>, Cloneable{
 		int i = 0;
 		while(map.get(i) != null){
 			i++;
-			if (i > Short.MAX_VALUE) throw new InternalError("Maximum number of attempts reached.");
+			if (i == Integer.MAX_VALUE) throw new InternalError("Maximum number of attempts reached.");
 		}
 		map.put(i, value);
 		return i;

@@ -10,9 +10,9 @@ import org.bukkit.event.Listener;
 import fr.skytasul.accounts.Account;
 import fr.skytasul.accounts.AccountService;
 import fr.skytasul.accounts.AccountUseEvent;
-import fr.skytasul.quests.players.HookedAccount;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.accounts.HookedAccount;
 
 public class Accounts implements Listener {
 

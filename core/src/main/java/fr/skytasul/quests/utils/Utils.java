@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +39,6 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
@@ -306,7 +305,7 @@ public class Utils{
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
-	public static <T> List<Map<String, Object>> serializeList(List<T> objects, Function<T, Map<String, Object>> serialize){
+	public static <T> List<Map<String, Object>> serializeList(Collection<T> objects, Function<T, Map<String, Object>> serialize) {
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (T obj : objects){
 			ls.add(serialize.apply(obj));
@@ -355,7 +354,7 @@ public class Utils{
 		}
 	}
 	
-	public static List<String> serializeAccountsList(List<PlayerAccount> from){
+	/*public static List<String> serializeAccountsList(List<PlayerAccount> from){
 		List<String> to = new ArrayList<>();
 		for (PlayerAccount acc : from){
 			to.add(acc.getIndex());
@@ -365,18 +364,18 @@ public class Utils{
 	
 	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){
 		for (String id : from){
-			PlayerAccount acc = PlayersManager.getByIndex(id);
+			PlayerAccount acc = PlayersManager.manager.getByIndex(id);
 			if (acc != null) to.add(acc);
 		}
 	}
 	
 	public static <T, R> void deserializeAccountsMap(Map<String, T> from, Map<PlayerAccount, R> to, Function<T, R> fun){
 		for (Entry<String, T> en : from.entrySet()){
-			PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
+			PlayerAccount acc = PlayersManager.manager.getByIndex(en.getKey());
 			if (acc == null) continue;
 			to.put(acc, fun.apply(en.getValue()));
 		}
-	}
+	}*/
 	
 	public static String descriptionLines(Source source, String... elements){
 		if (elements.length == 0) return Lang.Unknown.toString();

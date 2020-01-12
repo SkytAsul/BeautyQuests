@@ -18,6 +18,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -36,9 +37,12 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerDB;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
@@ -55,10 +59,13 @@ public class BeautyQuests extends JavaPlugin{
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
 	
-	/* --------- YAML --------- */
+	/* --------- Storage --------- */
 	
 	private String lastVersion;
 	private FileConfiguration config;
+
+	private Database db;
+
 	private YamlConfiguration data;
 	private File dataFile;
 	public static File saveFolder;
@@ -212,6 +219,21 @@ public class BeautyQuests extends JavaPlugin{
 			}
 			
 			QuestsConfiguration.initConfiguration(config);
+			ConfigurationSection dbConfig = config.getConfigurationSection("database");
+			if (dbConfig.getBoolean("enabled")) {
+				db = new Database(dbConfig);
+				if (db.openConnection()) {
+					logger.info("Connection to database etablished.");
+				}else {
+					logger.severe("Connection to database has failed.");
+					db.closeConnection();
+					db = null;
+					logger.severe("This is a fatal error. Now disabling.");
+					disable = true;
+					setEnabled(false);
+					return;
+				}
+			}
 		}catch (Exception ex){
 			getLogger().severe("Error when loading.");
 			ex.printStackTrace();
@@ -313,8 +335,9 @@ public class BeautyQuests extends JavaPlugin{
 		lastID = data.getInt("lastID");
 
 		try{
-			PlayersManager.load(data);
-		}catch (Throwable ex){
+			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			PlayersManager.manager.load();
+		}catch (Exception ex) {
 			createDataBackup("Error when loading player datas.");
 			ex.printStackTrace();
 		}
@@ -367,7 +390,7 @@ public class BeautyQuests extends JavaPlugin{
 		data.set("version", getDescription().getVersion());
 		
 		try{
-			PlayersManager.save(data);
+			PlayersManager.manager.save();
 		}catch (Throwable ex){
 			createDataBackup("Error when saving player datas.");
 			ex.printStackTrace();
@@ -385,6 +408,7 @@ public class BeautyQuests extends JavaPlugin{
 		npcs.values().forEach(NPCStarter::removeHolograms);
 		quests.clear();
 		npcs.clear();
+		if (db != null) db.closeConnection();
 		HandlerList.unregisterAll(this);
 		if (Dependencies.dyn) Dynmap.unload();
 	}
@@ -503,6 +527,10 @@ public class BeautyQuests extends JavaPlugin{
 		return data;
 	}
 	
+	public Database getDatabase() {
+		return db;
+	}
+
 	public ScoreboardManager getScoreboardManager(){
 		return scoreboards;
 	}

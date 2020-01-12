@@ -2,7 +2,7 @@ package fr.skytasul.quests.gui.blocks;
 
 import static fr.skytasul.quests.gui.ItemUtils.item;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,17 +18,17 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.types.BlockData;
 
 public class SelectBlockGUI implements CustomInventory{
 	
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
-	public Consumer<BlockData> run;
+	public BiConsumer<XMaterial, Integer> run;
 	
 	public Inventory inv;
 	
-	BlockData block = new BlockData(XMaterial.STONE, 1);
+	private XMaterial type = XMaterial.STONE;
+	private int amount = 1;
 	
 	public String name() {
 		return Lang.INVENTORY_BLOCK.toString();
@@ -49,8 +49,8 @@ public class SelectBlockGUI implements CustomInventory{
 	}
 
 	public void updateItems(){
-		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(block.amount)));
-		inv.setItem(3, item(block.type, Lang.materialName.format(block.type.name())));
+		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+		inv.setItem(3, item(type, Lang.materialName.format(type.name())));
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -63,7 +63,7 @@ public class SelectBlockGUI implements CustomInventory{
 			Inventories.closeWithoutExit(p);
 			Lang.BLOCKS_AMOUNT.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				block.amount = (int) obj;
+				amount = (int) obj;
 				openLastInv(p);
 				updateItems();
 			}, new NumberParser(Integer.class, true, true)));
@@ -73,15 +73,16 @@ public class SelectBlockGUI implements CustomInventory{
 			Inventories.closeWithoutExit(p);
 			Lang.BLOCKS_NAME.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				XMaterial type = (XMaterial) obj; block.type = type;
-					openLastInv(p);
-					updateItems();
+				XMaterial type = (XMaterial) obj;
+				this.type = type;
+				openLastInv(p);
+				updateItems();
 			}, new MaterialParser(false)));
 			break;
-			
+
 		case 8:
 			Inventories.closeAndExit(p);
-			run.accept(block);
+			run.accept(type, amount);
 			break;
 			
 		}
