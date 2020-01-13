@@ -25,19 +25,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected Map<Integer, Entry<T, Integer>> objects;
 
 	protected Map<Player, BossBar> bars = new HashMap<>();
-	private boolean barsEnabled = QuestsConfiguration.showMobsProgressBar();
+	private boolean barsEnabled = false;
 	private int cachedSize = 0;
-
-	public AbstractCountableStage(QuestBranch branch) {
-		this(branch, new HashMap<>());
-	}
 
 	public AbstractCountableStage(QuestBranch branch, Map<Integer, Entry<T, Integer>> objects) {
 		super(branch);
 		this.objects = objects;
-		for (Entry<T, Integer> objectsEntry : objects.values()) {
-			cachedSize += objectsEntry.getValue();
-		}
+		calculateSize();
 	}
 
 	public Map<Integer, Entry<T, Integer>> getObjects() {
@@ -54,6 +48,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc) {
 		return (Map<Integer, Integer>) getData(acc, "remaining");
+	}
+
+	protected void calculateSize() {
+		for (Entry<T, Integer> objectsEntry : objects.values()) {
+			cachedSize += objectsEntry.getValue();
+		}
+		barsEnabled = QuestsConfiguration.showMobsProgressBar() && cachedSize > 0;
 	}
 
 	protected String descriptionLine(PlayerAccount acc, Source source){
@@ -118,7 +119,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	public void start(PlayerAccount acc) {
 		super.start(acc);
-		if (acc.isCurrent()) createBar(acc.getPlayer());
+		if (acc.isCurrent()) createBar(acc.getPlayer(), 0);
 	}
 
 	public void end(PlayerAccount acc) {
@@ -138,14 +139,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		Player p = e.getPlayer();
 		removeBar(p);
 		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			createBar(p);
+			createBar(p, getPlayerRemainings(e.getPlayerAccount()).values().stream().mapToInt(x -> x).sum());
 		}
 	}
 
-	protected void createBar(Player p) {
-		if (barsEnabled && cachedSize > 0) {
-			bars.put(p, new BossBar(p));
-		}
+	protected void createBar(Player p, int amount) {
+		if (barsEnabled) bars.put(p, new BossBar(p, amount));
 	}
 
 	protected void removeBar(Player p) {
@@ -163,19 +162,23 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected abstract T deserialize(Object object);
 
 	protected void serialize(Map<String, Object> map) {
-		Map<Integer, Entry<Object, Integer>> serializedObjects = new HashMap<>(objects.size());
+		Map<Integer, Map<String, Object>> serializedObjects = new HashMap<>(objects.size());
 		for (Entry<Integer, Entry<T, Integer>> obj : objects.entrySet()) {
-			serializedObjects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(obj.getValue().getKey(), obj.getValue().getValue()));
+			Map<String, Object> serializedObject = new HashMap<>(2);
+			serializedObject.put("object", serialize(obj.getValue().getKey()));
+			serializedObject.put("amount", obj.getValue().getValue());
+			serializedObjects.put(obj.getKey(), serializedObject);
 		}
 		map.put("objects", serializedObjects);
 	}
 
 	protected void deserialize(Map<String, Object> serializedDatas) {
-		Map<Integer, Entry<Object, Integer>> serializedObjects = (Map<Integer, Entry<Object, Integer>>) serializedDatas.get("objects");
-		for (Entry<Integer, Entry<Object, Integer>> obj : serializedObjects.entrySet()) {
-			objects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(deserialize(obj.getValue().getKey()), obj.getValue().getValue()));
+		Map<Integer, Map<String, Object>> serializedObjects = (Map<Integer, Map<String, Object>>) serializedDatas.get("objects");
+		for (Entry<Integer, Map<String, Object>> obj : serializedObjects.entrySet()) {
+			objects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(deserialize(obj.getValue().get("object")), (int) obj.getValue().get("amount")));
 		}
 		if (objects.isEmpty()) BeautyQuests.logger.warning("A " + getClass().getSimpleName() + " stage in the quest ID " + branch.getQuest().getID() + " have no content.");
+		calculateSize();
 	}
 
 	class BossBar {
@@ -183,11 +186,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		private Object bar;
 		private BukkitTask timer;
 
-		public BossBar(Player p) {
+		public BossBar(Player p, int amount) {
 			this.p = p;
 			bar = Post1_9.createMobsBar(branch.getQuest().getName(), cachedSize);
-			Post1_9.showBar(bar, p);
-			timer();
+			update(amount);
 		}
 
 		public void remove() {

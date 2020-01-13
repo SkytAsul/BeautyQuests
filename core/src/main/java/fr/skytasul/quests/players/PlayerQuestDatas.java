@@ -84,10 +84,12 @@ public class PlayerQuestDatas {
 		Map<String, Object> map = new HashMap<>();
 
 		map.put("questID", questID);
+		map.put("finished", finished);
+		map.put("timer", timer);
 		map.put("currentBranch", branch);
 		map.put("currentStage", stage);
 		for (int i = 0; i < stageDatas.length; i++) {
-			map.put("stage" + i + "datas", stageDatas[i]);
+			if (stageDatas[i] != null) map.put("stage" + i + "datas", stageDatas[i]);
 		}
 
 		return map;

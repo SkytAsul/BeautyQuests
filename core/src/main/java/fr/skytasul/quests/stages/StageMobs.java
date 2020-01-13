@@ -58,6 +58,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 	}
 	
 	public void start(PlayerAccount acc) {
+		super.start(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
 			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), super.descriptionFormat(acc, Source.FORCELINE));
 		}

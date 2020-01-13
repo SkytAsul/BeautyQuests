@@ -128,24 +128,25 @@ public class PlayersManagerYAML extends PlayersManager {
 
 		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
 		if (config.isConfigurationSection("players")) {
-			for (Entry<String, Object> en : config.getConfigurationSection("players").getValues(false).entrySet()) {
+			for (String key : config.getConfigurationSection("players").getKeys(false)) {
 				try {
-					int index = Integer.parseInt(en.getKey());
+					String path = "players." + key;
+					int index = Integer.parseInt(key);
 					PlayerAccount acc;
-					if (en.getValue() instanceof ConfigurationSection) {
-						ConfigurationSection datas = (ConfigurationSection) en.getValue();
+					if (config.isConfigurationSection(path)) {
+						ConfigurationSection datas = config.getConfigurationSection(path);
 						acc = createPlayerAccount((String) datas.get("identifier"), index);
-						for (ConfigurationSection questDatas : (List<ConfigurationSection>) datas.get("quests")){
+						for (Map<?, ?> questDatas : datas.getMapList("quests")) {
 							int questID = (int) questDatas.get("questID");
-							acc.datas.put(questID, new PlayerQuestDatas(acc, questID, questDatas.getLong("timer"), questDatas.getBoolean("finished"), questDatas.getInt("currentBranch"), questDatas.getInt("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
+							acc.datas.put(questID, new PlayerQuestDatas(acc, questID, Utils.parseLong(questDatas.get("timer")), (boolean) questDatas.get("finished"), (int) questDatas.get("currentBranch"), (int) questDatas.get("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
 						}
 					}else {
-						acc = createPlayerAccount((String) en.getValue(), index);
+						acc = createPlayerAccount(config.getString(path), index);
 					}
 					accounts.set(index, acc);
 				}catch (Exception ex) {
 					ex.printStackTrace();
-					BeautyQuests.logger.severe("An error occured while loading player account. Identifier: " + en.getValue());
+					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key));
 					continue;
 				}
 			}
@@ -153,10 +154,8 @@ public class PlayersManagerYAML extends PlayersManager {
 		DebugUtils.logMessage(accounts.valuesSize() + " accounts loaded for " + playerAccounts.size() + " players.");
 	}
 
-	private Map<String, Object> getStageDatas(ConfigurationSection questDatas, int index) {
-		ConfigurationSection section = questDatas.getConfigurationSection("stage" + index + "datas");
-		if (section == null) return null;
-		return section.getValues(true);
+	private Map<String, Object> getStageDatas(Map<?, ?> questDatas, int index) {
+		return (Map<String, Object>) questDatas.get("stage" + index + "datas");
 	}
 
 	public void save() {
