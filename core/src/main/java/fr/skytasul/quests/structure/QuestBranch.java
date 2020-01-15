@@ -122,12 +122,14 @@ public class QuestBranch {
 	
 	public void remove(PlayerAccount acc, boolean end) {
 		if (!acc.hasQuestDatas(getQuest())) return;
-		PlayerQuestDatas datas = acc.removeQuestDatas(getQuest());
-		if (!end) return;
-		if (datas.isInEndingStages()) {
-			endStages.keySet().forEach((x) -> x.end(acc));
-		}else getRegularStage(datas.getStage()).end(acc);
+		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		if (end) {
+			if (datas.isInEndingStages()) {
+				endStages.keySet().forEach((x) -> x.end(acc));
+			}else getRegularStage(datas.getStage()).end(acc);
+		}
 		datas.setBranch(-1);
+		datas.setStage(-1);
 	}
 	
 	public void start(PlayerAccount acc){

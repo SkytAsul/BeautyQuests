@@ -427,15 +427,13 @@ public class Quest{
 	}
 	
 
-	public void saveToFile(boolean unload) throws Exception{
+	public void saveToFile() throws Exception {
 		if (!file.exists()) file.createNewFile();
 		YamlConfiguration fc = new YamlConfiguration();
 		
 		save(fc);
 		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
 		fc.save(file);
-		
-		if (unload) unloadAll();
 	}
 	
 	private void save(ConfigurationSection section) throws Exception{

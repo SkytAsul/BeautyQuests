@@ -43,7 +43,7 @@ public class StageBucket extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			if (BucketType.fromMaterial(XMaterial.fromMaterial(e.getItemStack().getType())) == bucket){
-				int amount = (int) getData(acc, "amount");
+				int amount = getPlayerAmount(acc);
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
@@ -53,16 +53,20 @@ public class StageBucket extends AbstractStage {
 		}
 	}
 
+	private int getPlayerAmount(PlayerAccount acc) {
+		return getData(acc, "amount", Integer.class);
+	}
+
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		datas.put("amount", amount);
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), (int) getData(acc, "amount"), false));
+		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), (int) getData(acc, "amount"), false) };
+		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
 	}
 	
 	protected void serialize(Map<String, Object> map){

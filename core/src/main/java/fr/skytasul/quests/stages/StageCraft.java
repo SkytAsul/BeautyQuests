@@ -82,7 +82,7 @@ public class StageCraft extends AbstractStage {
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				int amount = (int) getData(acc, "amount");
+				int amount = getPlayerAmount(acc);
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
@@ -97,16 +97,19 @@ public class StageCraft extends AbstractStage {
 		datas.put("amount", result.getAmount());
 	}
 
+	private int getPlayerAmount(PlayerAccount acc) {
+		return getData(acc, "amount", Integer.class);
+	}
+
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), (int) getData(acc, "amount"), false));
+		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), (int) getData(acc, "amount"), false) };
+		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
 	}
 	
 	protected void serialize(Map<String, Object> map){
-		super.serialize();
 		map.put("result", result.serialize());
 	}
 	

@@ -154,7 +154,7 @@ public class BeautyQuests extends JavaPlugin{
 		stopSaveCycle();
 		
 		try {
-			if (!disable) getLogger().info(saveAllConfig(true) + " quests saved");
+			if (!disable) saveAllConfig(true);
 			if (logger != null) logger.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -184,9 +184,10 @@ public class BeautyQuests extends JavaPlugin{
 			saveTask = new BukkitRunnable() {
 				public void run() {
 					try {
-						logger.info(saveAllConfig(false) + " quests saved ~ periodic save");
-					}catch (Throwable e) {
-						logger.severe("Error when saving !");
+						saveAllConfig(false);
+						logger.info("Datas saved ~ periodic save");
+					}catch (Exception e) {
+						logger.severe("Error when saving!");
 						e.printStackTrace();
 					}
 				}
@@ -369,12 +370,12 @@ public class BeautyQuests extends JavaPlugin{
 		return quests.size();
 	}
 
-	public int saveAllConfig(boolean unload) throws Throwable{
+	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload){
 			if (scoreboards != null) scoreboards.unload();
 		}
 		
-		int amount = 0;
+		/*int amount = 0; // no longer need to save quests
 		for (Quest qu : quests){
 			savingFailure = false;
 			try{
@@ -385,6 +386,9 @@ public class BeautyQuests extends JavaPlugin{
 				ex.printStackTrace();
 				continue;
 			}
+		}*/
+		if (unload) {
+			quests.forEach(Quest::unloadAll);
 		}
 		data.set("lastID", lastID);
 		data.set("version", getDescription().getVersion());
@@ -400,8 +404,6 @@ public class BeautyQuests extends JavaPlugin{
 		if (unload){
 			resetDatas();
 		}
-		
-		return amount;
 	}
 	
 	private void resetDatas(){
@@ -465,9 +467,10 @@ public class BeautyQuests extends JavaPlugin{
 	public void performReload(CommandSender sender){
 		try {
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
-			sender.sendMessage("§a " + saveAllConfig(true) + " quests saved");
+			saveAllConfig(true);
+			sender.sendMessage("§aDatas saved!");
 			resetDatas();
-		} catch (Throwable e) {
+		}catch (Exception e) {
 			sender.sendMessage("§cError when saving datas. §lInterrupting operation!");
 			e.printStackTrace();
 			return;

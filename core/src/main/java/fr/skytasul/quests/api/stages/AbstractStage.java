@@ -157,7 +157,9 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage ends (player can be offline)
 	 * @param acc PlayerAccount for which the stage ends
 	 */
-	public void end(PlayerAccount acc) {}
+	public void end(PlayerAccount acc) {
+		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
+	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
@@ -190,8 +192,8 @@ public abstract class AbstractStage implements Listener{
 		branch.getBranchesManager().objectiveUpdated(p);
 	}
 
-	protected Object getData(PlayerAccount acc, String dataKey) {
-		return acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID()).get(dataKey);
+	protected <T> T getData(PlayerAccount acc, String dataKey, Class<T> type) {
+		return (T) acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID()).get(dataKey);
 	}
 
 	@Deprecated // for migration only, TODO remove

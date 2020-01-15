@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.Scoreboard;
@@ -113,9 +112,6 @@ public class BranchesManager{
 		if (!acc.hasQuestDatas(quest)) return;
 		QuestBranch branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
-		PlayerQuestDatas datas = acc.getQuestDatas(quest);
-		datas.setBranch(-1);
-		datas.setStage(-1);
 	}
 	
 	public void remove(){

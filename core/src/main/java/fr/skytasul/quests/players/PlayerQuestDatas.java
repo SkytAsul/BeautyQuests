@@ -22,7 +22,7 @@ public class PlayerQuestDatas {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = finished;
-		this.setTimer(timer);
+		this.timer = timer;
 		this.branch = branch;
 		this.stage = stage;
 		this.stageDatas[0] = stage0datas;

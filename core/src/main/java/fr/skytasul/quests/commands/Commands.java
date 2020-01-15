@@ -94,9 +94,9 @@ public class Commands {
 	@Cmd(permission = "reload")
 	public void save(CommandContext cmd){
 		try {
-			int amount = BeautyQuests.getInstance().saveAllConfig(false);
-			cmd.sender.sendMessage("§a" + amount + " quests saved");
-			BeautyQuests.logger.info(amount + " quests saved ~ manual save from " + cmd.sender.getName());
+			BeautyQuests.getInstance().saveAllConfig(false);
+			cmd.sender.sendMessage("§aDatas saved!");
+			BeautyQuests.logger.info("Datas saved ~ manual save from " + cmd.sender.getName());
 		} catch (Throwable e) {
 			e.printStackTrace();
 			cmd.sender.sendMessage("Error while saving the data file.");

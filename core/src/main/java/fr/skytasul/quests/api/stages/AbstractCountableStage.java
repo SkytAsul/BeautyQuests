@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.creation.stages;
+package fr.skytasul.quests.api.stages;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -47,7 +46,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc) {
-		return (Map<Integer, Integer>) getData(acc, "remaining");
+		return getData(acc, "remaining", Map.class);
 	}
 
 	protected void calculateSize() {
@@ -66,7 +65,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
-		Map<Integer, Integer> playerAmounts = (Map<Integer, Integer>) getData(acc, "remaining");
+		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 		String[] elements = new String[playerAmounts.size()];
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
@@ -88,7 +87,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected void event(PlayerAccount acc, Player p, Object object, int amount) {
 		for (int id = 0; id < objects.size(); id++) {
 			if (objectApplies(objects.get(id).getKey(), object)) {
-				Map<Integer, Integer> playerAmounts = (Map<Integer, Integer>) getData(acc, "remaining");
+				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 				if (!playerAmounts.containsKey(id)) return;
 				int playerAmount = playerAmounts.get(id);
 				if (playerAmount <= amount) {
@@ -98,8 +97,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
 				}else {
-					if (barsEnabled) bars.get(p).update(playerAmounts.values().stream().mapToInt(x -> x).sum());
-					updateObjective(acc, p, "remaning", playerAmounts);
+					if (barsEnabled) bars.get(p).update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					updateObjective(acc, p, "remaining", playerAmounts);
 				}
 				return;
 			}
@@ -119,7 +118,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	public void start(PlayerAccount acc) {
 		super.start(acc);
-		if (acc.isCurrent()) createBar(acc.getPlayer(), 0);
+		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
 	}
 
 	public void end(PlayerAccount acc) {

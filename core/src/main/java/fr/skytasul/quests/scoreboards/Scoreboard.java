@@ -76,9 +76,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				if (sb == null) initScoreboard();
 
 				int id = launched.indexOf(showed) + 1;
+				int lastID = id;
 				if (id >= launched.size() || id == -1) id = 0;
-				showed = launched.get(id);
-				refreshQuestsLines();
+				if (lastID != id) {
+					showed = launched.get(id);
+					refreshQuestsLines();
+				}
 			}
 		}
 		if (sb == null) return;
