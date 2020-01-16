@@ -22,7 +22,7 @@ import fr.skytasul.quests.utils.types.NumberedList;
 
 public class PlayersManagerYAML extends PlayersManager {
 
-	private NumberedList<PlayerAccount> accounts = new NumberedList<>();
+	NumberedList<PlayerAccount> accounts = new NumberedList<>();
 	private Map<UUID, List<PlayerAccount>> playerAccounts = new HashMap<>();
 
 	public synchronized PlayerAccount retrievePlayerAccount(Player p) {

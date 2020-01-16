@@ -199,6 +199,7 @@ public abstract class AbstractStage implements Listener{
 	@Deprecated // for migration only, TODO remove
 	protected void setData(PlayerAccount acc, String dataKey, Object dataValue) {
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		if (datas == null) datas = new HashMap<>();
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
 	}

@@ -21,10 +21,13 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerDB;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -393,6 +396,30 @@ public class Commands {
 		}
 	}
 	
+	@Cmd (permission = "reload")
+	public void migrateDatas(CommandContext cmd) {
+		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
+			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");
+			return;
+		}
+		Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+		cmd.sender.sendMessage("§aConnecting to the database.");
+		if (db.openConnection()) {
+			cmd.sender.sendMessage("§aConnection to database etablished.");
+		}else {
+			cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
+			db.closeConnection();
+			db = null;
+			return;
+		}
+		try {
+			cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
+		}catch (Exception e) {
+			e.printStackTrace();
+			cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
+		}
+	}
+
 	@Cmd(permission = "help")
 	public void help(CommandContext cmd){
 		for (Lang l : Lang.values()){

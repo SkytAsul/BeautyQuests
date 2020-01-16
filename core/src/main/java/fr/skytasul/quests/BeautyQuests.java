@@ -124,6 +124,12 @@ public class BeautyQuests extends JavaPlugin{
 							+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
 					launchSaveCycle();
+
+					if (!lastVersion.equals(getDescription().getVersion())) { // maybe change in data structure : update of all quest files
+						DebugUtils.logMessage("Migrating from " + lastVersion + " to " + getDescription().getVersion());
+						for (Quest qu : quests) qu.saveToFile();
+						saveAllConfig(false);
+					}
 				}catch (Throwable e) {
 					e.printStackTrace();
 				}

@@ -20,8 +20,8 @@ import fr.skytasul.quests.utils.Database;
 
 public class PlayersManagerDB extends PlayersManager {
 
-	private final String accountsTable;
-	private final String datasTable;
+	private static final String ACCOUNTS_TABLE = "`player_accounts`";
+	private static final String DATAS_TABLE = "`player_quests`";
 
 	private Database db;
 	private PreparedStatement getAccounts;
@@ -39,8 +39,6 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public PlayersManagerDB(Database db) {
 		this.db = db;
-		this.accountsTable = "`player_accounts`";
-		this.datasTable = "`player_quests`";
 	}
 
 	public PlayerAccount retrievePlayerAccount(Player p) {
@@ -93,39 +91,9 @@ public class PlayersManagerDB extends PlayersManager {
 		return CustomizedObjectTypeAdapter.GSON.fromJson(json, Map.class);
 	}
 
-	/*public int getAccountIndex(PlayerAccount account) {
-		try {
-			ResultSet result = getIndex.executeQuery();
-			result.next();
-			return result.getInt("id");
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}*/
-
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatasDB(acc, quest.getID());
 	}
-
-	/*public void dataUpdated(PlayerAccount acc, int questID, String key, Object data) {
-		Utils.runAsync(() -> {
-			try {
-				updateQuestData.setString(1, key);
-				updateQuestData.setObject(2, data);
-				updateQuestData.setInt(3, acc.index);
-				updateQuestData.setInt(4, questID);
-				if (updateQuestData.executeUpdate() == 0) {
-					insertQuestData.setInt(1, acc.index);
-					insertQuestData.setInt(2, questID);
-					insertQuestData.executeUpdate();
-					updateQuestData.executeUpdate();
-				}
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-	}*/
 
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest) {
 		try {
@@ -148,36 +116,58 @@ public class PlayersManagerDB extends PlayersManager {
 		return false;
 	}
 
+	public String migrate(PlayersManagerYAML yaml) throws SQLException {
+		ResultSet result = db.getStatement().getConnection().getMetaData().getTables(null, null, "%", null);
+		while (result.next()) {
+			String tableName = result.getString(3);
+			if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
+				result.close();
+				return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
+			}
+		}
+		result.close();
+
+		load();
+		
+		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
+		PreparedStatement insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		int amount = 0;
+		for (PlayerAccount acc : yaml.accounts){
+			insertAccount.setInt(1, acc.index);
+			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
+			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
+			insertAccount.executeUpdate();
+
+			for (Entry<Integer, PlayerQuestDatas> entry : acc.datas.entrySet()) {
+				insertQuestData.setInt(1, acc.index);
+				insertAccount.setInt(2, entry.getKey());
+				insertAccount.setBoolean(3, entry.getValue().isFinished());
+				insertAccount.setLong(4, entry.getValue().getTimer());
+				insertAccount.setInt(5, entry.getValue().getBranch());
+				insertAccount.setInt(6, entry.getValue().getStage());
+				for (int i = 0; i < 5; i++) {
+					Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
+					insertAccount.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+				}
+				insertAccount.executeUpdate();
+			}
+			amount++;
+		}
+		
+
+		return "§aMigration succeed! " + amount + " accounts migrated.";
+	}
+
 	public void load() {
 		try {
-			db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + accountsTable + " ("
-					+ " `id` int NOT NULL AUTO_INCREMENT ,"
-					+ " `identifier` text NOT NULL ,"
-					+ " `player_uuid` char(36) NOT NULL ,"
-					+ " PRIMARY KEY (`id`)"
-					+ " )");
-			getAccounts = db.prepareStatement("SELECT * FROM " + accountsTable + " WHERE `player_uuid` = ?");
-			insertAccount = db.prepareStatementGeneratedKeys("INSERT INTO " + accountsTable + " (`identifier`, `player_uuid`) VALUES (?, ?)");
-			//getIndex = db.prepareStatement("SELECT id FROM " + accountsTable + " WHERE identifier = ?");
+			createTables(db);
 
-			db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + datasTable + " (" +
-					" `id` int NOT NULL AUTO_INCREMENT ," +
-					" `account_id` int(11) NOT NULL," +
-					" `quest_id` int(11) NOT NULL," +
-					" `finished` tinyint(1) DEFAULT NULL," +
-					" `timer` bigint(20) DEFAULT NULL," +
-					" `current_branch` tinyint(4) DEFAULT NULL," +
-					" `current_stage` tinyint(4) DEFAULT NULL," +
-					" `stage_0_datas` longtext DEFAULT NULL," +
-					" `stage_1_datas` longtext DEFAULT NULL," +
-					" `stage_2_datas` longtext DEFAULT NULL," +
-					" `stage_3_datas` longtext DEFAULT NULL," +
-					" `stage_4_datas` longtext DEFAULT NULL," +
-					" PRIMARY KEY (`id`)" +
-					")");
-			insertQuestData = db.prepareStatement("INSERT INTO " + datasTable + " (`account_id`, `quest_id`) VALUES (?, ?)");
-			removeQuestData = db.prepareStatement("DELETE FROM " + datasTable + " WHERE `account_id` = ? AND `quest_id` = ?");
-			getQuestsData = db.prepareStatement("SELECT * FROM " + datasTable + " WHERE `account_id` = ?");
+			getAccounts = db.prepareStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
+			insertAccount = db.prepareStatementGeneratedKeys("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)");
+
+			insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
+			removeQuestData = db.prepareStatement("DELETE FROM " + DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
+			getQuestsData = db.prepareStatement("SELECT * FROM " + DATAS_TABLE + " WHERE `account_id` = ?");
 
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
@@ -192,7 +182,72 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	private PreparedStatement prepareDatasStatement(String column) throws SQLException {
-		return db.prepareStatement("UPDATE " + datasTable + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
+		return db.prepareStatement("UPDATE " + DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
+	}
+
+	private static void createTables(Database db) throws SQLException {
+		db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
+				+ " `id` int NOT NULL AUTO_INCREMENT ,"
+				+ " `identifier` text NOT NULL ,"
+				+ " `player_uuid` char(36) NOT NULL ,"
+				+ " PRIMARY KEY (`id`)"
+				+ " )");
+		db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + DATAS_TABLE + " (" +
+				" `id` int NOT NULL AUTO_INCREMENT ," +
+				" `account_id` int(11) NOT NULL," +
+				" `quest_id` int(11) NOT NULL," +
+				" `finished` tinyint(1) DEFAULT NULL," +
+				" `timer` bigint(20) DEFAULT NULL," +
+				" `current_branch` tinyint(4) DEFAULT NULL," +
+				" `current_stage` tinyint(4) DEFAULT NULL," +
+				" `stage_0_datas` longtext DEFAULT NULL," +
+				" `stage_1_datas` longtext DEFAULT NULL," +
+				" `stage_2_datas` longtext DEFAULT NULL," +
+				" `stage_3_datas` longtext DEFAULT NULL," +
+				" `stage_4_datas` longtext DEFAULT NULL," +
+				" PRIMARY KEY (`id`)" +
+				")");
+	}
+
+	public static String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
+		ResultSet result = db.getStatement().getConnection().getMetaData().getTables(null, null, "%", null);
+		while (result.next()) {
+			String tableName = result.getString(3);
+			if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
+				result.close();
+				return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
+			}
+		}
+		result.close();
+
+		createTables(db);
+
+		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
+		PreparedStatement insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		int amount = 0;
+		for (PlayerAccount acc : yaml.accounts) {
+			insertAccount.setInt(1, acc.index);
+			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
+			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
+			insertAccount.executeUpdate();
+
+			for (Entry<Integer, PlayerQuestDatas> entry : acc.datas.entrySet()) {
+				insertQuestData.setInt(1, acc.index);
+				insertQuestData.setInt(2, entry.getKey());
+				insertQuestData.setBoolean(3, entry.getValue().isFinished());
+				insertQuestData.setLong(4, entry.getValue().getTimer());
+				insertQuestData.setInt(5, entry.getValue().getBranch());
+				insertQuestData.setInt(6, entry.getValue().getStage());
+				for (int i = 0; i < 5; i++) {
+					Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
+					insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+				}
+				insertQuestData.executeUpdate();
+			}
+			amount++;
+		}
+
+		return "§aMigration succeed! " + amount + " accounts migrated.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 	}
 
 	public void save() {}

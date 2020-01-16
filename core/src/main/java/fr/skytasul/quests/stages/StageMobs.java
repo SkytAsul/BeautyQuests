@@ -95,7 +95,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> serializedMob = list.get(i);
 				Mob<?> mob = Mob.deserialize(serializedMob);
-				objects.put(i, new AbstractMap.SimpleEntry<>(mob, (int) map.get("amount")));
+				objects.put(i, new AbstractMap.SimpleEntry<>(mob, (int) serializedMob.get("amount")));
 			}
 		}
 		StageMobs stage = new StageMobs(branch, objects);

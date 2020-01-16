@@ -173,8 +173,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	protected void deserialize(Map<String, Object> serializedDatas) {
 		Map<Integer, Map<String, Object>> serializedObjects = (Map<Integer, Map<String, Object>>) serializedDatas.get("objects");
-		for (Entry<Integer, Map<String, Object>> obj : serializedObjects.entrySet()) {
-			objects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(deserialize(obj.getValue().get("object")), (int) obj.getValue().get("amount")));
+		if (serializedObjects != null) {
+			for (Entry<Integer, Map<String, Object>> obj : serializedObjects.entrySet()) {
+				objects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(deserialize(obj.getValue().get("object")), (int) obj.getValue().get("amount")));
+			}
 		}
 		if (objects.isEmpty()) BeautyQuests.logger.warning("A " + getClass().getSimpleName() + " stage in the quest ID " + branch.getQuest().getID() + " have no content.");
 		calculateSize();
