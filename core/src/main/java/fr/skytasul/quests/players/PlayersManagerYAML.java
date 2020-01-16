@@ -137,8 +137,9 @@ public class PlayersManagerYAML extends PlayersManager {
 						ConfigurationSection datas = config.getConfigurationSection(path);
 						acc = createPlayerAccount((String) datas.get("identifier"), index);
 						for (Map<?, ?> questDatas : datas.getMapList("quests")) {
-							int questID = (int) questDatas.get("questID");
-							acc.datas.put(questID, new PlayerQuestDatas(acc, questID, Utils.parseLong(questDatas.get("timer")), (boolean) questDatas.get("finished"), (int) questDatas.get("currentBranch"), (int) questDatas.get("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
+							int questID = (Integer) questDatas.get("questID");
+							acc.datas.put(questID,
+									new PlayerQuestDatas(acc, questID, Utils.parseLong(questDatas.get("timer")), (Boolean) questDatas.get("finished"), (Integer) questDatas.get("currentBranch"), (Integer) questDatas.get("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
 						}
 					}else {
 						acc = createPlayerAccount(config.getString(path), index);
