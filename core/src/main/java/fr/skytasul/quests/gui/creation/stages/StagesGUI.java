@@ -224,7 +224,7 @@ public class StagesGUI implements CustomInventory {
 		
 		if (branches){
 			if (!line.data.containsKey("branch")) line.data.put("branch", new StagesGUI(this));
-			line.setItem(15, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
+			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
 				Inventories.create(p, (StagesGUI) datas.get("branch"));
 			});
 		}

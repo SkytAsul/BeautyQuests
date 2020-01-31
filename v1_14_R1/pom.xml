@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.14.4-R0.1-20191018.091136-11</version>
+			<version>1.14.4-R0.1-20191224.232152-15</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

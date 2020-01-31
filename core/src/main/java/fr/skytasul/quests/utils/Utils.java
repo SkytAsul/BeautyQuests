@@ -345,7 +345,7 @@ public class Utils{
 		try {
 			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			p.playSound(p.getLocation(), sound, volume, 1);
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
 		}
 	}
 	
@@ -354,7 +354,7 @@ public class Utils{
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			lc.getWorld().playSound(lc, sound, volume, 1);
+			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}
 	
