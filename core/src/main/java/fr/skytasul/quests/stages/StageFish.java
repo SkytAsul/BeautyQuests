@@ -73,7 +73,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 
 		if (map.containsKey("remaining")) {
 			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, List<ItemStack>>) map.get("players")).forEach((acc, items) -> {
+			((Map<String, List<ItemStack>>) map.get("remaining")).forEach((acc, items) -> {
 				Map<ItemStack, Integer> itemsMap = new HashMap<>();
 				for (ItemStack item : items) {
 					ItemStack itemOne = item.clone();

@@ -432,10 +432,11 @@ public class Commands {
 		}
 	}
 	
-	/*@Cmd(permission = "reload")
+	@Cmd (permission = "reload")
 	public void removeDuplicate(CommandContext cmd){
-		PlayersManager.debugDuplicate(cmd.sender);
-	}*/
+		PlayersManagerYAML migration = PlayersManager.getMigrationYAML();
+		migration.debugDuplicate(cmd.sender);
+	}
 	
 	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){

@@ -105,7 +105,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 
 		if (map.containsKey("remaining")) {
 			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, List<Map<String, Object>>>) map.get("players")).forEach((acc, blocks) -> {
+			((Map<String, List<Map<String, Object>>>) map.get("remaining")).forEach((acc, blocks) -> {
 				Map<XMaterial, Integer> blocksMap = new HashMap<>();
 				for (Map<String, Object> block : blocks) {
 					blocksMap.put(XMaterial.valueOf((String) block.get("type")), (int) block.get("amount"));
