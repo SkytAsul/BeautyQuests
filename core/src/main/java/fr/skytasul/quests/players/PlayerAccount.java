@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -67,13 +68,9 @@ public class PlayerAccount {
 		return abstractAcc.equals(((PlayerAccount) arg0).abstractAcc);
 	}
 	
-	public Map<String, Object> serialize(){
-		Map<String, Object> map = new HashMap<>();
-		
-		map.put("identifier", abstractAcc.getIdentifier());
-		map.put("quests", Utils.serializeList(datas.values(), PlayerQuestDatas::serialize));
-		
-		return map;
+	public void serialize(ConfigurationSection config) {
+		config.set("identifier", abstractAcc.getIdentifier());
+		config.set("quests", Utils.serializeList(datas.values(), PlayerQuestDatas::serialize));
 	}
 	
 }

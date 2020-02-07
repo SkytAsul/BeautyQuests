@@ -116,48 +116,6 @@ public class PlayersManagerDB extends PlayersManager {
 		return false;
 	}
 
-	public String migrate(PlayersManagerYAML yaml) throws SQLException {
-		ResultSet result = db.getStatement().getConnection().getMetaData().getTables(null, null, "%", null);
-		while (result.next()) {
-			String tableName = result.getString(3);
-			if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
-				result.close();
-				return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
-			}
-		}
-		result.close();
-
-		load();
-		
-		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
-		PreparedStatement insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		int amount = 0;
-		for (PlayerAccount acc : yaml.accounts){
-			insertAccount.setInt(1, acc.index);
-			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
-			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
-			insertAccount.executeUpdate();
-
-			for (Entry<Integer, PlayerQuestDatas> entry : acc.datas.entrySet()) {
-				insertQuestData.setInt(1, acc.index);
-				insertAccount.setInt(2, entry.getKey());
-				insertAccount.setBoolean(3, entry.getValue().isFinished());
-				insertAccount.setLong(4, entry.getValue().getTimer());
-				insertAccount.setInt(5, entry.getValue().getBranch());
-				insertAccount.setInt(6, entry.getValue().getStage());
-				for (int i = 0; i < 5; i++) {
-					Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
-					insertAccount.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
-				}
-				insertAccount.executeUpdate();
-			}
-			amount++;
-		}
-		
-
-		return "§aMigration succeed! " + amount + " accounts migrated.";
-	}
-
 	public void load() {
 		try {
 			createTables(db);
@@ -225,7 +183,8 @@ public class PlayersManagerDB extends PlayersManager {
 		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
 		PreparedStatement insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		int amount = 0;
-		for (PlayerAccount acc : yaml.accounts) {
+		yaml.loadAllAccounts();
+		for (PlayerAccount acc : yaml.loadedAccounts) {
 			insertAccount.setInt(1, acc.index);
 			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
 			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());

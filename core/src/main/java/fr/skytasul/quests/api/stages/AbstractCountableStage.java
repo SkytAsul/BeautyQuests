@@ -46,7 +46,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc) {
-		return getData(acc, "remaining", Map.class);
+		return getData(acc, "remaining");
 	}
 
 	protected void calculateSize() {

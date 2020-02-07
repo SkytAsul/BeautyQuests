@@ -1,15 +1,17 @@
 package fr.skytasul.quests.players;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -22,25 +24,27 @@ import fr.skytasul.quests.utils.types.NumberedList;
 
 public class PlayersManagerYAML extends PlayersManager {
 
-	NumberedList<PlayerAccount> accounts = new NumberedList<>();
-	private Map<UUID, List<PlayerAccount>> playerAccounts = new HashMap<>();
+	NumberedList<PlayerAccount> loadedAccounts = new NumberedList<>();
+	private Map<Integer, String> identifiersIndex = new HashMap<>();
+	private int lastAccountID = 0;
+
+	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 
 	public synchronized PlayerAccount retrievePlayerAccount(Player p) {
-		UUID id = p.getUniqueId();
-		List<PlayerAccount> playerList = getPlayerAccounts(id);
-
-		for (PlayerAccount acc : playerList) {
-			if (acc.abstractAcc.isCurrent()) return acc;
+		String identifier = super.getIdentifier(p);
+		if (identifiersIndex.containsValue(identifier)) {
+			int id = Utils.getKeyByValue(identifiersIndex, identifier);
+			PlayerAccount acc = loadedAccounts.get(id);
+			if (acc != null) return acc;
+			return loadFromFile(identifier, id);
 		}
-		synchronized (accounts) {
-			AbstractAccount absacc = super.createAbstractAccount(p);
-			PlayerAccount acc = new PlayerAccount(absacc, -1);
-			playerList.add(acc);
-			acc.index = accounts.add(acc);
 
-			DebugUtils.logMessage("New account registered for " + p.getName() + " (" + acc.abstractAcc.getIdentifier() + "), index " + acc.index + " via " + DebugUtils.stackTraces(2, 4));
-			return acc;
-		}
+		AbstractAccount absacc = super.createAbstractAccount(p);
+		PlayerAccount acc = new PlayerAccount(absacc, lastAccountID + 1);
+		addAccount(acc);
+
+		DebugUtils.logMessage("New account registered for " + p.getName() + " (" + acc.abstractAcc.getIdentifier() + "), index " + acc.index + " via " + DebugUtils.stackTraces(2, 4));
+		return acc;
 	}
 
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
@@ -50,7 +54,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest) {}
 
 	public boolean hasAccounts(Player p) {
-		return (playerAccounts.containsKey(p.getUniqueId()));
+		return identifiersIndex.containsValue(getIdentifier(p));
 	}
 
 	private synchronized PlayerAccount createPlayerAccount(String identifier, int index) {
@@ -59,53 +63,57 @@ public class PlayersManagerYAML extends PlayersManager {
 			BeautyQuests.logger.info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
 			return new PlayerAccount(new GhostAccount(identifier), index);
 		}
-		PlayerAccount acc = new PlayerAccount(abs, index);
-		UUID id = abs.getOfflinePlayer().getUniqueId();
-		getPlayerAccounts(id).add(acc);
-		return acc;
+		return new PlayerAccount(abs, index);
+	}
+
+	void loadAllAccounts() {
+		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experiment some lags.");
+		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
+			if (loadedAccounts.contains(entry.getKey())) continue;
+			loadFromFile(entry.getValue(), entry.getKey());
+		}
 	}
 
 	public void debugDuplicate(CommandSender sender) {
 		new Thread(() -> {
 			try {
+				loadAllAccounts();
 				int amount = 0;
-				for (Entry<UUID, List<PlayerAccount>> en : playerAccounts.entrySet()) {
+
+				Map<String, List<PlayerAccount>> playerAccounts = new HashMap<>();
+				for (PlayerAccount acc : loadedAccounts.getOriginalMap().values()) {
+					List<PlayerAccount> list = playerAccounts.get(acc.abstractAcc.getIdentifier());
+					if (list == null) {
+						list = new ArrayList<>();
+						playerAccounts.put(acc.abstractAcc.getIdentifier(), list);
+					}
+					list.add(acc);
+				}
+				for (Entry<String, List<PlayerAccount>> en : playerAccounts.entrySet()) {
 					List<PlayerAccount> list = en.getValue();
 					System.out.println("Player occurence : " + list.size() + " accounts");
 					int i = 0;
 					for (;;) {
 						if (i >= list.size() - 1) break;
 						PlayerAccount obj = list.get(i);
-						if (obj.equals(list.get(i + 1))) {
+						PlayerAccount other = list.get(i + 1);
+						if (obj.equals(other) && obj.datas.size() <= other.datas.size()) {
 							list.remove(i);
-							accounts.remove(obj, false);
+							int index = loadedAccounts.indexOf(obj);
+							loadedAccounts.remove(index, false);
+							identifiersIndex.remove(index);
+							removePlayerFile(obj);
 							amount++;
 						}else i++;
 					}
 				}
 				Thread.sleep(1000);
-
-				NumberedList<PlayerAccount> newAccounts = new NumberedList<>();
-				for (PlayerAccount acc : accounts) {
-					newAccounts.add(acc);
-				}
-				accounts = newAccounts;
-				sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total accounts : " + accounts.valuesSize());
+				
+				sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total accounts : " + loadedAccounts.valuesSize());
 			}catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}).start();
-	}
-
-	/**
-	 * Get all registered accounts for player
-	 * @param id Player's UUID
-	 * @return the list of all accounts (<b>WARNING</B> it's the real instance !)
-	 */
-	public synchronized List<PlayerAccount> getPlayerAccounts(UUID id) {
-		List<PlayerAccount> ls;
-		while ((ls = playerAccounts.get(id)) == null) playerAccounts.put(id, new ArrayList<>(5));
-		return ls;
 	}
 
 	/*public void debug(Player p) {
@@ -117,14 +125,53 @@ public class PlayersManagerYAML extends PlayersManager {
 		}
 	}*/
 
-	public PlayerAccount getByIndex(String index) {
-		return accounts.get(Utils.parseInt(index));
+	public PlayerAccount getByIndex(String index) { // TODO remove on 0.19
+		int id = Utils.parseInt(index);
+		PlayerAccount acc = loadedAccounts.get(id);
+		if (acc != null) return acc;
+		String identifier = identifiersIndex.get(id);
+		return loadFromFile(identifier, id);
 	}
 
+	private void addAccount(PlayerAccount acc) {
+		loadedAccounts.set(acc.index, acc);
+		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
+		if (acc.index >= lastAccountID) lastAccountID = acc.index;
+	}
+
+	public PlayerAccount loadFromFile(String identifier, int index) {
+		File file = new File(directory, identifier + ".yml");
+		if (!file.exists()) return null;
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
+		return loadFromConfig(index, playerConfig);
+	}
+
+	private PlayerAccount loadFromConfig(int index, ConfigurationSection datas) {
+		PlayerAccount acc = createPlayerAccount((String) datas.get("identifier"), index);
+		for (Map<?, ?> questDatas : datas.getMapList("quests")) {
+			int questID = (Integer) questDatas.get("questID");
+			acc.datas.put(questID,
+					new PlayerQuestDatas(acc, questID, Utils.parseLong(questDatas.get("timer")), (Boolean) questDatas.get("finished"), (Integer) questDatas.get("currentBranch"), (Integer) questDatas.get("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
+		}
+		addAccount(acc);
+		return acc;
+	}
+
+	public void savePlayerFile(PlayerAccount acc) throws IOException {
+		File file = new File(directory, acc.abstractAcc.getIdentifier() + ".yml");
+		file.createNewFile();
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
+		acc.serialize(playerConfig);
+		playerConfig.save(file);
+	}
+
+	public void removePlayerFile(PlayerAccount acc) {
+		File file = new File(directory, acc.abstractAcc.getIdentifier() + ".yml");
+		if (file.exists()) file.delete();
+	}
 
 	public void load() {
-		accounts.clear();
-		playerAccounts.clear();
+		if (!directory.exists()) directory.mkdirs();
 
 		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
 		if (config.isConfigurationSection("players")) {
@@ -132,19 +179,11 @@ public class PlayersManagerYAML extends PlayersManager {
 				try {
 					String path = "players." + key;
 					int index = Integer.parseInt(key);
-					PlayerAccount acc;
-					if (config.isConfigurationSection(path)) {
-						ConfigurationSection datas = config.getConfigurationSection(path);
-						acc = createPlayerAccount((String) datas.get("identifier"), index);
-						for (Map<?, ?> questDatas : datas.getMapList("quests")) {
-							int questID = (Integer) questDatas.get("questID");
-							acc.datas.put(questID,
-									new PlayerQuestDatas(acc, questID, Utils.parseLong(questDatas.get("timer")), (Boolean) questDatas.get("finished"), (Integer) questDatas.get("currentBranch"), (Integer) questDatas.get("currentStage"), getStageDatas(questDatas, 0), getStageDatas(questDatas, 1), getStageDatas(questDatas, 2), getStageDatas(questDatas, 3), getStageDatas(questDatas, 4)));
-						}
+					if (config.isConfigurationSection(path)) { // TODO remove on release (beta thing)
+						loadFromConfig(index, config.getConfigurationSection(path));
 					}else {
-						acc = createPlayerAccount(config.getString(path), index);
+						identifiersIndex.put(index, config.getString(path));
 					}
-					accounts.set(index, acc);
 				}catch (Exception ex) {
 					ex.printStackTrace();
 					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key));
@@ -152,7 +191,7 @@ public class PlayersManagerYAML extends PlayersManager {
 				}
 			}
 		}
-		DebugUtils.logMessage(accounts.valuesSize() + " accounts loaded for " + playerAccounts.size() + " players.");
+		//DebugUtils.logMessage(accounts.valuesSize() + " accounts loaded for " + playerAccounts.size() + " players.");
 	}
 
 	private Map<String, Object> getStageDatas(Map<?, ?> questDatas, int index) {
@@ -160,14 +199,18 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	public void save() {
-		DebugUtils.logMessage("Saving " + accounts.valuesSize() + " accounts for " + playerAccounts.size() + " players.");
+		DebugUtils.logMessage("Saving " + loadedAccounts.valuesSize() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
 		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-		Map<Integer, Map<String, Object>> list = new HashMap<>();
-		for (Entry<Integer, PlayerAccount> en : accounts.getOriginalMap().entrySet()) {
-			list.put(en.getKey(), en.getValue().serialize());
+		config.set("players", identifiersIndex);
+
+		for (PlayerAccount acc : loadedAccounts) {
+			try {
+				savePlayerFile(acc);
+			}catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		config.set("players", list);
 	}
 
 }

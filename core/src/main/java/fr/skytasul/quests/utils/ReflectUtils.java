@@ -85,7 +85,7 @@ public class ReflectUtils {
 	
 	public static void invoke(Object obj, Method method, Object... params) throws ReflectiveOperationException{
 		method.setAccessible(true);
-		method.invoke(null, params);
+		method.invoke(obj, params);
 	}
 	
 	public static <T> T newInstance(Constructor<T> constructor, Object... params) throws ReflectiveOperationException{

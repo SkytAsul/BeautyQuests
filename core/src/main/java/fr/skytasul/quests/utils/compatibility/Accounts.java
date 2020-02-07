@@ -32,6 +32,10 @@ public class Accounts implements Listener {
 		return new HookedAccount(acc);
 	}
 	
+	public static String getPlayerCurrentIdentifier(Player p) {
+		return service.getAccountForPlayer(p).getIdentifier();
+	}
+
 	@EventHandler
 	public void onAccountUse(AccountUseEvent e) {
 		Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer()), e.isAccountCreated()));

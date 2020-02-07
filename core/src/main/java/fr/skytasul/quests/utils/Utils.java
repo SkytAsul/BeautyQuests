@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -159,15 +160,14 @@ public class Utils{
 				if (item.getAmount() == i.getAmount()) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
                     return;
-                } else {
-                    if(item.getAmount() > i.getAmount()){
-                        item.setAmount(item.getAmount() - i.getAmount());
-                        return;
-                    }else if(item.getAmount() < i.getAmount()){
-                        i.setAmount(i.getAmount() - item.getAmount());
-                        inv.setItem(slot, new ItemStack(Material.AIR));
-                    }
                 }
+				if (item.getAmount() > i.getAmount()) {
+					item.setAmount(item.getAmount() - i.getAmount());
+					return;
+				}else if (item.getAmount() < i.getAmount()) {
+					i.setAmount(i.getAmount() - item.getAmount());
+					inv.setItem(slot, new ItemStack(Material.AIR));
+				}
 			}
 		}
 	}
@@ -178,13 +178,12 @@ public class Utils{
 			if (isSimilar(item, i)){
 				if (item.getAmount() == amount) {
 					return true;
-                } else {
-                    if(item.getAmount() > amount){
-                    	return true;
-                    }else if(item.getAmount() < amount){
-                        amount -= item.getAmount();
-                    }
                 }
+				if (item.getAmount() > amount) {
+					return true;
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
+				}
 			}
 		}
 		return false;
@@ -242,6 +241,17 @@ public class Utils{
 	    return null;
 	}
 	
+	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
+		if (value == null) return Collections.EMPTY_LIST;
+		List<T> list = new ArrayList<>();
+		for (Entry<T, E> entry : map.entrySet()) {
+			if (value.equals(entry.getValue())) {
+				list.add(entry.getKey());
+			}
+		}
+		return list;
+	}
+
 	public static String format(String msg, Object... replace){
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){

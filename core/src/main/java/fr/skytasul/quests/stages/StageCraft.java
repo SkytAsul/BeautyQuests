@@ -98,7 +98,7 @@ public class StageCraft extends AbstractStage {
 	}
 
 	private int getPlayerAmount(PlayerAccount acc) {
-		return getData(acc, "amount", Integer.class);
+		return getData(acc, "amount");
 	}
 
 	protected String descriptionLine(PlayerAccount acc, Source source){

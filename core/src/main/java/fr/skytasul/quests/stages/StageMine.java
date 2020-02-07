@@ -96,7 +96,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("blocks");
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> blockData = list.get(i);
-				objects.put(i, new AbstractMap.SimpleEntry<>(XMaterial.valueOf((String) map.get("type")), (int) blockData.get("amount")));
+				objects.put(i, new AbstractMap.SimpleEntry<>(XMaterial.valueOf((String) blockData.get("type")), (int) blockData.get("amount")));
 			}
 		}
 

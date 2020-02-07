@@ -54,7 +54,7 @@ public class StageBucket extends AbstractStage {
 	}
 
 	private int getPlayerAmount(PlayerAccount acc) {
-		return getData(acc, "amount", Integer.class);
+		return getData(acc, "amount");
 	}
 
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {

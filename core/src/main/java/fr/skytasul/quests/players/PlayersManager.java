@@ -35,6 +35,10 @@ public abstract class PlayersManager {
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 
+	public String getIdentifier(Player p) {
+		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerCurrentIdentifier(p) : p.getUniqueId().toString();
+	}
+
 	private static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public synchronized static PlayerAccount getPlayerAccount(Player p){
@@ -74,7 +78,7 @@ public abstract class PlayersManager {
 		return null;
 	}
 
-	public static PlayersManagerYAML getMigrationYAML() {
+	public static PlayersManagerYAML getMigrationYAML() { // TODO remove on 0.19
 		if (!(manager instanceof PlayersManagerYAML)) throw new IllegalStateException("Old player datas cannot be migrated if the current storage type is not YAML.");
 		return (PlayersManagerYAML) manager;
 	}

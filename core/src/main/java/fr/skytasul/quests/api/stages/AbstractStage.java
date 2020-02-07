@@ -192,8 +192,9 @@ public abstract class AbstractStage implements Listener{
 		branch.getBranchesManager().objectiveUpdated(p);
 	}
 
-	protected <T> T getData(PlayerAccount acc, String dataKey, Class<T> type) {
-		return (T) acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID()).get(dataKey);
+	protected <T> T getData(PlayerAccount acc, String dataKey) {
+		Map<String, Object> stageDatas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		return stageDatas == null ? null : (T) stageDatas.get(dataKey);
 	}
 
 	@Deprecated // for migration only, TODO remove
