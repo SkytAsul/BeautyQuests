@@ -275,6 +275,7 @@ public class Quest{
 	public void cancelPlayer(PlayerAccount acc){
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		manager.remove(acc);
+		acc.removeQuestDatas(this);
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
@@ -282,7 +283,6 @@ public class Quest{
 		boolean c = false;
 		if (acc.hasQuestDatas(this)) {
 			cancelPlayer(acc);
-			acc.removeQuestDatas(this);
 			c = true;
 		}
 		if (acc.isCurrent() && dialog == null ? false : dialog.remove(acc.getPlayer())) c = true;

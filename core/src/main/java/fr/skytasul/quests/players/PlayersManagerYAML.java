@@ -36,7 +36,7 @@ public class PlayersManagerYAML extends PlayersManager {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
 			PlayerAccount acc = loadedAccounts.get(id);
 			if (acc != null) return acc;
-			return loadFromFile(identifier, id);
+			return loadFromFile(id);
 		}
 
 		AbstractAccount absacc = super.createAbstractAccount(p);
@@ -70,7 +70,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experiment some lags.");
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.contains(entry.getKey())) continue;
-			loadFromFile(entry.getValue(), entry.getKey());
+			loadFromFile(entry.getKey());
 		}
 	}
 
@@ -129,8 +129,8 @@ public class PlayersManagerYAML extends PlayersManager {
 		int id = Utils.parseInt(index);
 		PlayerAccount acc = loadedAccounts.get(id);
 		if (acc != null) return acc;
-		String identifier = identifiersIndex.get(id);
-		return loadFromFile(identifier, id);
+		//String identifier = identifiersIndex.get(id);
+		return loadFromFile(id);
 	}
 
 	private void addAccount(PlayerAccount acc) {
@@ -139,8 +139,8 @@ public class PlayersManagerYAML extends PlayersManager {
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
 	}
 
-	public PlayerAccount loadFromFile(String identifier, int index) {
-		File file = new File(directory, identifier + ".yml");
+	public PlayerAccount loadFromFile(int index) {
+		File file = new File(directory, index + ".yml");
 		if (!file.exists()) return null;
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
 		return loadFromConfig(index, playerConfig);
@@ -158,7 +158,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	public void savePlayerFile(PlayerAccount acc) throws IOException {
-		File file = new File(directory, acc.abstractAcc.getIdentifier() + ".yml");
+		File file = new File(directory, acc.index + ".yml");
 		file.createNewFile();
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
 		acc.serialize(playerConfig);
@@ -166,7 +166,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	public void removePlayerFile(PlayerAccount acc) {
-		File file = new File(directory, acc.abstractAcc.getIdentifier() + ".yml");
+		File file = new File(directory, acc.index + ".yml");
 		if (file.exists()) file.delete();
 	}
 
@@ -183,6 +183,7 @@ public class PlayersManagerYAML extends PlayersManager {
 						loadFromConfig(index, config.getConfigurationSection(path));
 					}else {
 						identifiersIndex.put(index, config.getString(path));
+						if (index >= lastAccountID) lastAccountID = index;
 					}
 				}catch (Exception ex) {
 					ex.printStackTrace();
@@ -191,7 +192,7 @@ public class PlayersManagerYAML extends PlayersManager {
 				}
 			}
 		}
-		//DebugUtils.logMessage(accounts.valuesSize() + " accounts loaded for " + playerAccounts.size() + " players.");
+		DebugUtils.logMessage(loadedAccounts.valuesSize() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
 	}
 
 	private Map<String, Object> getStageDatas(Map<?, ?> questDatas, int index) {
