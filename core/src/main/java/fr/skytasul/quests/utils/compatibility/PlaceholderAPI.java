@@ -54,22 +54,19 @@ public class PlaceholderAPI {
 
 						if (after.isEmpty()){
 							return "§6" + qu.getName() + " §e: §o" + desc;
-						}else {
-							int i = Integer.parseInt(after.substring(1));
-							if (i > 1){
-								if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
-								List<String> ls = split.get(p);
-								if (ls != null) {
-									if (ls.size() <= i-2) return "";
-									return ls.get(i - 2);
-								}
-								return "§c§lError";
-							}else{
-								split.put(p, Utils.splitOnSpace(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1)*25));
-								return "§6" + qu.getName();
-							}
 						}
-						// /papi parse me %beautyquests_started_ordered_2%
+						int i = Integer.parseInt(after.substring(1));
+						if (i > 1) {
+							if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
+							List<String> ls = split.get(p);
+							if (ls != null) {
+								if (ls.size() <= i - 2) return "";
+								return ls.get(i - 2);
+							}
+							return "§c§lError";
+						}
+						split.put(p, Utils.splitOnSpace(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
+						return "§6" + qu.getName();
 						
 						/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
 						return "§6" + qu.getName() + " §e: §o" + (stage == null ? "finishing" : stage.getDescriptionLine(acc));*/

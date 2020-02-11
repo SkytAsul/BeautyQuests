@@ -158,9 +158,8 @@ public class QuestBranch {
 						remove(acc, false);
 						getQuest().finish(p);
 						return;
-					}else {
-						setEndingStages(acc, true);
 					}
+					setEndingStages(acc, true);
 				}else {
 					setStage(acc, newId);
 				}
@@ -170,7 +169,8 @@ public class QuestBranch {
 				if (branch == null){
 					getQuest().finish(p);
 					return;
-				}else branch.start(acc);
+				}
+				branch.start(acc);
 			}
 			manager.objectiveUpdated(p);
 		});

@@ -183,7 +183,7 @@ public class FinishGUI implements CustomInventory{
 
 		case 5: // Start dialog
 			Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-			Editor.enterOrLeave(p, new DialogEditor(p, null, (obj) -> {
+			Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 				openLastInv(p);
 				dialog = obj;
 			}, dialog != null ? dialog : new Dialog(null)));

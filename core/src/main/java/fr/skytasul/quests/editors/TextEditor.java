@@ -42,20 +42,18 @@ public class TextEditor extends Editor{
 			if (cancel == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "cancel");
 				return false;
-			}else {
-				leave(p);
-				cancel.run();
-				return true;
 			}
+			leave(p);
+			cancel.run();
+			return true;
 		}else if (msg.equals("null")){
 			if (nul == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "null");
 				return false;
-			}else {
-				leave(p);
-				nul.run();
-				return true;
 			}
+			leave(p);
+			nul.run();
+			return true;
 		}
 		
 		Object returnment = msg;

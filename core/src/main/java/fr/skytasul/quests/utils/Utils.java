@@ -395,9 +395,8 @@ public class Utils{
 		if (elements.length == 0) return Lang.Unknown.toString();
 		if (QuestsConfiguration.splitDescription(source) && elements.length > 1){
 			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
-		}else {
-			return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 		}
+		return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 	}
 	
 }
