@@ -116,7 +116,7 @@ public class QuestBranch {
 		if (!acc.hasQuestDatas(getQuest())) return false;
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		if (datas.getBranch() != getID()) return false;
-		if (!datas.isInEndingStages()) return stage == getRegularStage(datas.getStage());
+		if (!datas.isInEndingStages()) return stage.getID() == datas.getStage();
 		return (endStages.keySet().contains(stage));
 	}
 	

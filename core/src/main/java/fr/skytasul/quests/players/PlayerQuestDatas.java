@@ -10,7 +10,7 @@ public class PlayerQuestDatas {
 
 	private boolean finished = false;
 	private long timer;
-	private int branch, stage = -1;
+	private int branch = -1, stage = -1;
 	private Map<String, Object>[] stageDatas = new Map[5];
 
 	public PlayerQuestDatas(PlayerAccount acc, int questID) {

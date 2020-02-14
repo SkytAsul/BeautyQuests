@@ -34,9 +34,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		String identifier = super.getIdentifier(p);
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
-			PlayerAccount acc = loadedAccounts.get(id);
-			if (acc != null) return acc;
-			return loadFromFile(id);
+			return getByIndex(id);
 		}
 
 		AbstractAccount absacc = super.createAbstractAccount(p);
@@ -48,7 +46,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
-		return new PlayerQuestDatas(acc, quest.getID(), 0, false, 0, 0, null, null, null, null, null);
+		return new PlayerQuestDatas(acc, quest.getID());
 	}
 
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest) {}
@@ -70,7 +68,11 @@ public class PlayersManagerYAML extends PlayersManager {
 		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experiment some lags.");
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.contains(entry.getKey())) continue;
-			loadFromFile(entry.getKey());
+			PlayerAccount acc = loadFromFile(entry.getKey());
+			if (acc == null) {
+				acc = createPlayerAccount(entry.getValue(), entry.getKey());
+				addAccount(acc);
+			}
 		}
 	}
 
@@ -109,7 +111,7 @@ public class PlayersManagerYAML extends PlayersManager {
 				}
 				Thread.sleep(1000);
 				
-				sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total accounts : " + loadedAccounts.valuesSize());
+				sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total loaded accounts/identifiers: " + loadedAccounts.valuesSize());
 			}catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -125,12 +127,15 @@ public class PlayersManagerYAML extends PlayersManager {
 		}
 	}*/
 
-	public PlayerAccount getByIndex(String index) { // TODO remove on 0.19
-		int id = Utils.parseInt(index);
+	public PlayerAccount getByIndex(Object index) { // TODO remove on 0.19
+		int id = index instanceof Integer ? (int) index : Utils.parseInt(index);
 		PlayerAccount acc = loadedAccounts.get(id);
 		if (acc != null) return acc;
-		//String identifier = identifiersIndex.get(id);
-		return loadFromFile(id);
+		acc = loadFromFile(id);
+		if (acc != null) return acc;
+		acc = createPlayerAccount(identifiersIndex.get(id), id);
+		addAccount(acc);
+		return acc;
 	}
 
 	private void addAccount(PlayerAccount acc) {

@@ -129,10 +129,7 @@ public class QuestsAPI {
 	}
 
 	public static Quest getQuestFromID(int id){
-		for (Quest qu : getQuests()){
-			if (qu.getID() == id) return qu;
-		}
-		return null;
+		return BeautyQuests.getInstance().getQuests().stream().filter(x -> x.getID() == id).findFirst().orElse(null);
 	}
 	
 	public static List<Quest> getQuests(){

@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.CustomInventory;
@@ -92,12 +93,20 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
-				if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
-					desc.add(null);
-					desc.add(Lang.cancelLore.toString());
+				ItemStack item;
+				try {
+					List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
+					if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
+						desc.add(null);
+						desc.add(Lang.cancelLore.toString());
+					}
+					item = createQuestItem(qu, desc.toArray(new String[0]));
+				}catch (Exception ex) {
+					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
+					BeautyQuests.getInstance().getLogger().severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier());
+					ex.printStackTrace();
 				}
-				setMainItem(i - page * 35, createQuestItem(qu, desc.toArray(new String[0])));
+				setMainItem(i - page * 35, item);
 			}
 			break;
 			

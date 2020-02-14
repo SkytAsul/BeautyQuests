@@ -33,7 +33,7 @@ public class Permission implements Cloneable {
 	}
 
 	public static Permission deserialize(Map<String, Object> map) {
-		return new Permission((String) map.get("perm"), (boolean) map.get("take"), (String) map.get("world"));
+		return new Permission((String) map.get("perm"), map.containsKey("take") ? (boolean) map.get("take") : false, (String) map.get("world"));
 	}
 
 }

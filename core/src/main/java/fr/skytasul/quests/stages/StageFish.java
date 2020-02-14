@@ -77,7 +77,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 				Map<ItemStack, Integer> itemsMap = new HashMap<>();
 				for (ItemStack item : items) {
 					ItemStack itemOne = item.clone();
-					itemOne.setAmount(0);
+					itemOne.setAmount(1);
 					itemsMap.put(itemOne, item.getAmount());
 				}
 				stage.migrateDatas(migration.getByIndex(acc), itemsMap);
