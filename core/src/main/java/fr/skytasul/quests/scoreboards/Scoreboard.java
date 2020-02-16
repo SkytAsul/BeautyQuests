@@ -144,6 +144,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	public void setShownQuest(Quest quest) {
+		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 		showed = quest;
 		refreshQuestsLines();

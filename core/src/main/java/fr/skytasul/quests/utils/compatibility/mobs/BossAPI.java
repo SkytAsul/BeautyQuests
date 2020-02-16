@@ -41,7 +41,7 @@ public class BossAPI implements MobFactory<Boss> {
 			public void click(Boss existing) {
 				run.accept(existing);
 			}
-		};
+		}.create(p);
 	}
 
 	public Boss fromValue(String value) {

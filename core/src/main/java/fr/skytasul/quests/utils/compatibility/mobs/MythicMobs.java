@@ -41,7 +41,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 			public void click(MythicMob existing) {
 				run.accept(existing);
 			}
-		};
+		}.create(p);
 	}
 
 	public MythicMob fromValue(String value) {

@@ -50,6 +50,10 @@
 			<id>sk89q</id>
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
+		<repository>
+			<id>lumine</id>
+			<url>http://mvn.lumine.io/repository/maven-releases/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -94,6 +98,11 @@
 			<groupId>fr.skytasul</groupId>
 			<artifactId>accountshook</artifactId>
 			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.lumine.xikage</groupId>
+			<artifactId>MythicMobs</artifactId>
+			<version>4.8.0</version>
 		</dependency>
 
 		<!-- Local JARs -->
@@ -145,13 +154,6 @@
 			<version>1.0</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/jars/mcMMO.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>io.lumine</groupId>
-			<artifactId>mythicmobs</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/MythicMobs.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.suxy</groupId>
