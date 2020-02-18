@@ -1,6 +1,5 @@
 package fr.skytasul.quests.utils.compatibility.mobs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	}
 
 	public void itemClick(Player p, Consumer<MythicMob> run) {
-		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, new ArrayList<>(io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes())) {
+		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, x -> x.getInternalName()) {
 			public ItemStack getItemStack(MythicMob object) {
 				return ItemUtils.item(XMaterial.mobItem(getEntityType(object)), object.getInternalName());
 			}

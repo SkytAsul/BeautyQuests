@@ -1,6 +1,5 @@
 package fr.skytasul.quests.utils.compatibility.mobs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ public class BossAPI implements MobFactory<Boss> {
 	}
 
 	public void itemClick(Player p, Consumer<Boss> run) {
-		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, new ArrayList<>(org.mineacademy.boss.api.BossAPI.getBosses())) {
+		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses(), null, x -> x.getName()) {
 			public ItemStack getItemStack(Boss object) {
 				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
 			}

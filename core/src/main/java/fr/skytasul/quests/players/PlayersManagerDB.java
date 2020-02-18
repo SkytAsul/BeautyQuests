@@ -184,7 +184,7 @@ public class PlayersManagerDB extends PlayersManager {
 		PreparedStatement insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		int amount = 0;
 		yaml.loadAllAccounts();
-		for (PlayerAccount acc : yaml.loadedAccounts) {
+		for (PlayerAccount acc : yaml.loadedAccounts.values()) {
 			insertAccount.setInt(1, acc.index);
 			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
 			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());

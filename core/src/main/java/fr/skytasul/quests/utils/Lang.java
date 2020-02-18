@@ -220,6 +220,7 @@ public enum Lang{
 	/* Inventories */
 	done("inv.validate"),
 	cancel("inv.cancel"),
+	search("inv.search"),
 	
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),

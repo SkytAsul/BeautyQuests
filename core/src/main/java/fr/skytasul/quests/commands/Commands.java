@@ -439,7 +439,7 @@ public class Commands {
 			return;
 		}
 		if ("confirm".equals(cmd.get(0))) {
-			PlayersManager.getMigrationYAML().debugDuplicate(cmd.sender);
+			PlayersManager.getMigrationYAML().debugDuplicate();
 		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
 	}
 	
