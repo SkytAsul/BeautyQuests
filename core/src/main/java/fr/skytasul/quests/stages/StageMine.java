@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -44,9 +45,9 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		return Lang.SCOREBOARD_MINE.format(super.descriptionLine(acc, source));
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onMine(BlockBreakEvent e){
-		if (e.getPlayer() == null) return;
+		if (e.isCancelled() || e.getPlayer() == null) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
@@ -57,9 +58,9 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
-		if (!placeCancelled) return;
+		if (e.isCancelled() || !placeCancelled) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (!branch.hasStageLaunched(acc, this)) return;

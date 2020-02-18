@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -74,48 +75,68 @@ public class PlayersManagerYAML extends PlayersManager {
 				addAccount(acc);
 			}
 		}
+		BeautyQuests.getInstance().getLogger().info("Total loaded accounts: " + loadedAccounts.valuesSize());
 	}
 
 	public void debugDuplicate(CommandSender sender) {
-		new Thread(() -> {
-			try {
-				loadAllAccounts();
-				int amount = 0;
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			p.kickPlayer("§cCleanup operation.");
+		}
+		PlayersManager.cachedAccounts.clear();
 
-				Map<String, List<PlayerAccount>> playerAccounts = new HashMap<>();
-				for (PlayerAccount acc : loadedAccounts.getOriginalMap().values()) {
-					List<PlayerAccount> list = playerAccounts.get(acc.abstractAcc.getIdentifier());
-					if (list == null) {
-						list = new ArrayList<>();
-						playerAccounts.put(acc.abstractAcc.getIdentifier(), list);
-					}
-					list.add(acc);
-				}
-				for (Entry<String, List<PlayerAccount>> en : playerAccounts.entrySet()) {
-					List<PlayerAccount> list = en.getValue();
-					System.out.println("Player occurence : " + list.size() + " accounts");
-					int i = 0;
-					for (;;) {
-						if (i >= list.size() - 1) break;
-						PlayerAccount obj = list.get(i);
-						PlayerAccount other = list.get(i + 1);
-						if (obj.equals(other) && obj.datas.size() <= other.datas.size()) {
-							list.remove(i);
-							int index = loadedAccounts.indexOf(obj);
-							loadedAccounts.remove(index, false);
-							identifiersIndex.remove(index);
-							removePlayerFile(obj);
-							amount++;
-						}else i++;
-					}
-				}
-				Thread.sleep(1000);
-				
-				sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total loaded accounts/identifiers: " + loadedAccounts.valuesSize());
-			}catch (InterruptedException e) {
-				e.printStackTrace();
+		loadAllAccounts();
+		int amount = 0;
+
+		Map<String, List<PlayerAccount>> playerAccounts = new HashMap<>();
+		for (PlayerAccount acc : loadedAccounts.getOriginalMap().values()) {
+			List<PlayerAccount> list = playerAccounts.get(acc.abstractAcc.getIdentifier());
+			if (list == null) {
+				list = new ArrayList<>();
+				playerAccounts.put(acc.abstractAcc.getIdentifier(), list);
 			}
-		}).start();
+			list.add(acc);
+		}
+		for (Entry<String, List<PlayerAccount>> en : playerAccounts.entrySet()) {
+			List<PlayerAccount> list = en.getValue();
+			System.out.println("Player occurence : " + list.size() + " accounts");
+
+			int maxID = 0;
+			int maxSize = 0;
+			for (int i = 0; i < list.size(); i++) {
+				PlayerAccount acc = list.get(i);
+				if (acc.datas.size() > maxSize) {
+					maxID = i;
+					maxSize = acc.datas.size();
+				}
+			}
+			for (int i = 0; i < list.size(); i++) {
+				if (i != maxID) {
+					PlayerAccount acc = list.get(i);
+					int index = loadedAccounts.indexOf(acc);
+					loadedAccounts.remove(index, false);
+					identifiersIndex.remove(index);
+					removePlayerFile(acc);
+					amount++;
+				}
+			}
+
+			/*int i = 0;
+				for (;;) {
+					if (i >= list.size() - 1) break;
+					PlayerAccount obj = list.get(i);
+					PlayerAccount other = list.get(i + 1);
+					if (obj.equals(other) && obj.datas.size() <= other.datas.size()) {
+						list.remove(i);
+						int index = loadedAccounts.indexOf(obj);
+						loadedAccounts.remove(index, false);
+						identifiersIndex.remove(index);
+						removePlayerFile(obj);
+						amount++;
+					}else i++;
+				}*/
+		}
+
+		sender.sendMessage("§e§l§n" + amount + "§r §eduplicated accounts removeds. Total loaded accounts/identifiers: " + loadedAccounts.valuesSize() + "/" + identifiersIndex.size());
 	}
 
 	/*public void debug(Player p) {

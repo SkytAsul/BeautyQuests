@@ -39,7 +39,7 @@ public abstract class PlayersManager {
 		return QuestsConfiguration.hookAccounts() ? "Hooked|" + Accounts.getPlayerCurrentIdentifier(p) : p.getUniqueId().toString();
 	}
 
-	private static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
+	static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public synchronized static PlayerAccount getPlayerAccount(Player p){
 		if (p instanceof NPCHolder) return null;
