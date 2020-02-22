@@ -20,8 +20,10 @@ import fr.skytasul.quests.BeautyQuests;
 
 public class HolographicDisplays {
 
+	private static final boolean protocolLib = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
+
 	public static boolean hasProtocolLib() {
-		return com.gmail.filoghost.holographicdisplays.HolographicDisplays.hasProtocolLibHook();
+		return /*com.gmail.filoghost.holographicdisplays.HolographicDisplays.hasProtocolLibHook()*/ protocolLib;
 	}
 	
 	public static Object createHologram(Location lc, boolean visible){

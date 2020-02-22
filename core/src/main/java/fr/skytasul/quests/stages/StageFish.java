@@ -1,11 +1,10 @@
 package fr.skytasul.quests.stages;
 
-import java.util.ArrayList;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -15,86 +14,82 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
-public class StageFish extends AbstractStage{
-
-	private ItemStack[] fishes;
-	private Map<PlayerAccount, List<ItemStack>> players = new HashMap<>();
+public class StageFish extends AbstractCountableStage<ItemStack> {
 	
-	public StageFish(QuestBranch branch, ItemStack[] fishes){
-		super(branch);
-		this.fishes = fishes;
+	public StageFish(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> fishes) {
+		super(branch, fishes);
 	}
 
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFish(PlayerFishEvent e){
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
 			Player p = e.getPlayer();
+			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			Item item = (Item) e.getCaught();
-			if (item.isDead() || !hasStarted(p)) return;
+			if (item.isDead() || !branch.hasStageLaunched(acc, this)) return;
 			ItemStack fish = item.getItemStack();
-			List<ItemStack> playerFishes = players.get(PlayersManager.getPlayerAccount(p));
-			for (ItemStack is : playerFishes){
-				if (fish.isSimilar(is)){
-					if (fish.getAmount() >= is.getAmount()){
-						playerFishes.remove(is);
-					}else is.setAmount(is.getAmount() - fish.getAmount());
-					if (playerFishes.isEmpty()) {
-						finishStage(p);
-					}else branch.getBranchesManager().objectiveUpdated(p);
-					break;
-				}
-			}
+			event(acc, p, fish, fish.getAmount());
 		}
 	}
-	
-	public ItemStack[] getFishes(){
-		return fishes;
+
+	protected boolean objectApplies(ItemStack object, Object other) {
+		return object.isSimilar((ItemStack) other);
 	}
-	
-	public void launch(Player p){
-		super.launch(p);
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!players.containsKey(acc)){
-			List<ItemStack> playerFishes = new ArrayList<>();
-			for (ItemStack fish : fishes){
-				playerFishes.add(fish.clone());
-			}
-			players.put(acc, playerFishes);
-		}
+
+	protected String getName(ItemStack object) {
+		return ItemUtils.getName(object, true);
 	}
-	
-	public void end(PlayerAccount account) {
-		super.end(account);
-		players.remove(account);
+
+	protected Object serialize(ItemStack object) {
+		return object.serialize();
+	}
+
+	protected ItemStack deserialize(Object object) {
+		return ItemStack.deserialize((Map<String, Object>) object);
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_FISH.format(Utils.descriptionLines(source, players.get(acc).stream().map(x -> QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(x, QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(source))).collect(Collectors.toList()).toArray(new String[0])));
-	}
-
-	protected void serialize(Map<String, Object> map){
-		map.put("items", fishes);
-		Map<String, List<ItemStack>> re = new HashMap<>();
-		for (Entry<PlayerAccount, List<ItemStack>> en : players.entrySet()){
-			re.put(en.getKey().getIndex(), en.getValue());
-		}
-		map.put("remaining", re);
+		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		StageFish stage = new StageFish(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
+		Map<Integer, Entry<ItemStack, Integer>> objects = new HashMap<>();
 
-		Utils.deserializeAccountsMap(((Map<String, List<ItemStack>>) map.get("remaining")), stage.players, n -> n);
-		
+		if (map.containsKey("items")) {
+			List<ItemStack> list = (List<ItemStack>) map.get("items");
+			for (int i = 0; i < list.size(); i++) {
+				ItemStack is = list.get(i);
+				is.setAmount(1);
+				objects.put(i, new AbstractMap.SimpleEntry<>(is, is.getAmount()));
+			}
+		}
+
+		StageFish stage = new StageFish(branch, objects);
+		stage.deserialize(map);
+
+		if (map.containsKey("remaining")) {
+			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
+			((Map<String, List<ItemStack>>) map.get("remaining")).forEach((acc, items) -> {
+				Map<ItemStack, Integer> itemsMap = new HashMap<>();
+				for (ItemStack item : items) {
+					ItemStack itemOne = item.clone();
+					itemOne.setAmount(1);
+					itemsMap.put(itemOne, item.getAmount());
+				}
+				stage.migrateDatas(migration.getByIndex(acc), itemsMap);
+			});
+		}
+
 		return stage;
 	}
 

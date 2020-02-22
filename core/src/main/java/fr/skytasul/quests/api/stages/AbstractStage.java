@@ -38,10 +38,6 @@ public abstract class AbstractStage implements Listener{
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private String customText = null;
 	
-	protected AbstractStage getThis(){
-		return this;
-	}
-	
 	public AbstractStage(QuestBranch branch){
 		this.branch = branch;
 		
@@ -103,6 +99,18 @@ public abstract class AbstractStage implements Listener{
 		return branch.getID(this);
 	}
 	
+	public int getStoredID(){
+		if (branch.isRegularStage(this)) {
+			return 0;
+		}
+		int index = 0;
+		for (AbstractStage stage : branch.getEndingStages().keySet()) {
+			if (stage == this) break;
+			index++;
+		}
+		return index;
+	}
+
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
@@ -122,42 +130,36 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	/**
-	 * Called when the player is online at the moment the stage starts<br>
-	 * {@link #start(PlayerAccount)} is called just after
-	 * @param p Player who starts the stage
+	 * Called when the stage starts (player can be offline)
+	 * @param acc PlayerAccount for which the stage starts
 	 */
-	public void launch(Player p){
-		if (startMessage != null){
-			if (startMessage.length() > 0){
-				if (branch.getID(this) == 0){
-					Lang.NpcText.sendWP(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
-				}else {
-					Utils.sendOffMessage(p, startMessage);
+	public void start(PlayerAccount acc) {
+		if (acc.isCurrent()) {
+			Player p = acc.getPlayer();
+			if (startMessage != null){
+				if (startMessage.length() > 0){
+					if (branch.getID(this) == 0){
+						Lang.NpcText.sendWP(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
+					}else {
+						Utils.sendOffMessage(p, startMessage);
+					}
 				}
 			}
 		}
+		Map<String, Object> datas = new HashMap<>();
+		initPlayerDatas(acc, datas);
+		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
 	}
 	
-	/**
-	 * Called when the player is online at the moment the stage ends<br>
-	 * {@link #end(PlayerAccount)} will be called after that
-	 * @param p Player who ends the stage
-	 */
-	public void finish(Player p){
-		end(PlayersManager.getPlayerAccount(p));
-	}
-	
-	/**
-	 * Called when the stage starts/player data is loaded (player can be offline)
-	 * @param account PlayerAccount for which the stage starts
-	 */
-	public void start(PlayerAccount account){}
-	
+	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
+
 	/**
 	 * Called when the stage ends (player can be offline)
-	 * @param account PlayerAccount for which the stage ends
+	 * @param acc PlayerAccount for which the stage ends
 	 */
-	public void end(PlayerAccount account){}
+	public void end(PlayerAccount acc) {
+		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
+	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
@@ -183,6 +185,26 @@ public abstract class AbstractStage implements Listener{
 	 */
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {return null;}
 	
+	public void updateObjective(PlayerAccount acc, Player p, String dataKey, Object dataValue) {
+		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		datas.put(dataKey, dataValue);
+		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
+		branch.getBranchesManager().objectiveUpdated(p);
+	}
+
+	protected <T> T getData(PlayerAccount acc, String dataKey) {
+		Map<String, Object> stageDatas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		return stageDatas == null ? null : (T) stageDatas.get(dataKey);
+	}
+
+	@Deprecated // for migration only, TODO remove
+	protected void setData(PlayerAccount acc, String dataKey, Object dataValue) {
+		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		if (datas == null) datas = new HashMap<>();
+		datas.put(dataKey, dataValue);
+		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
+	}
+
 	/**
 	 * Called when the stage has to be unloaded
 	 */
@@ -203,7 +225,7 @@ public abstract class AbstractStage implements Listener{
 	public final Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
-		if (branch.isRegulatStage(this)) map.put("order", branch.getID(this));
+		if (branch.isRegularStage(this)) map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
 		map.put("text", startMessage);
 		map.put("customText", customText);
@@ -228,7 +250,7 @@ public abstract class AbstractStage implements Listener{
 			BeautyQuests.getInstance().getLogger().warning("The plugin " + type.dependCode + " is not enabled but needed.");
 			return null;
 		}
-		
+
 		try{
 			Method m = type.stageClass.getMethod("deserialize", Map.class, QuestBranch.class);
 			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);

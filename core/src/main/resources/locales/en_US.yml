@@ -204,6 +204,7 @@ advancement:
 inv:
   validate: '§b§lValidate'
   cancel: '§c§lCancel'
+  search: '§e§lSearch'
   confirm:
     name: 'Are you sure?'
     'yes': '§aConfirm'

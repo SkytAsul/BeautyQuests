@@ -1,9 +1,7 @@
 package fr.skytasul.quests.gui.creation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,8 +32,6 @@ import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.PlayerAdvancement;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
@@ -92,6 +88,7 @@ public class FinishGUI implements CustomInventory{
 	private Player p;
 
 	private boolean editing = false;
+	@SuppressWarnings ("unused")
 	private boolean stagesEdited = false;
 	private Quest edited;
 	
@@ -186,7 +183,7 @@ public class FinishGUI implements CustomInventory{
 
 		case 5: // Start dialog
 			Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-			Editor.enterOrLeave(p, new DialogEditor(p, null, (obj) -> {
+			Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 				openLastInv(p);
 				dialog = obj;
 			}, dialog != null ? dialog : new Dialog(null)));
@@ -350,15 +347,15 @@ public class FinishGUI implements CustomInventory{
 
 	private void finish(){
 		Quest qu;
-		Map<PlayerAccount, PlayerAdvancement> players = null;
+		//Map<PlayerAccount, PlayerAdvancement> players = null;
 		if (editing){
-			if (!stagesEdited) {
+			/*if (!stagesEdited) {
 				players = new HashMap<>(edited.getBranchesManager().getPlayersAdvancement());
 				players.forEach((acc, adv) -> adv.storeIndex());
-			}
+			}*/
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
-			qu.copyFinished(edited);
+			//qu.copyFinished(edited);
 		}else {
 			qu = new Quest(name, startNPC, ++BeautyQuests.lastID);
 		}
@@ -386,10 +383,10 @@ public class FinishGUI implements CustomInventory{
 		qu.getBranchesManager().addBranch(mainBranch);
 		loadBranch(mainBranch, stages);
 		
-		if (editing && !stagesEdited) {
+		/*if (editing && !stagesEdited) {
 			players.forEach((acc, adv) -> adv.loadIndex(qu.getBranchesManager()));
 			qu.getBranchesManager().setPlayersStage(players);
-		}
+		}*/
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
@@ -402,7 +399,7 @@ public class FinishGUI implements CustomInventory{
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 			try {
-				qu.saveToFile(false);
+				qu.saveToFile();
 			}catch (Exception e) {
 				Lang.ERROR_OCCURED.send(p, "initial quest save");
 				BeautyQuests.logger.severe("Error when trying to save quest");

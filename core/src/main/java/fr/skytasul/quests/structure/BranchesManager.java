@@ -1,7 +1,6 @@
 package fr.skytasul.quests.structure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,12 +14,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 
 public class BranchesManager{
 
 	private Map<Integer, QuestBranch> branches = new LinkedHashMap<>();
-	Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
+	//Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
 	
 	private Quest quest;
 	
@@ -34,10 +34,6 @@ public class BranchesManager{
 	
 	public int getBranchesAmount(){
 		return branches.size();
-	}
-	
-	public boolean contains(PlayerAccount account){
-		return playerAdvancement.containsKey(account);
 	}
 	
 	public void addBranch(QuestBranch branch){
@@ -64,16 +60,16 @@ public class BranchesManager{
 		return branches.get(id);
 	}
 	
-	public QuestBranch getPlayerBranch(PlayerAccount account){
-		if (!playerAdvancement.containsKey(account)) return null;
-		return playerAdvancement.get(account).branch;
+	public QuestBranch getPlayerBranch(PlayerAccount acc) {
+		if (!acc.hasQuestDatas(quest)) return null;
+		return branches.get(acc.getQuestDatas(quest).getBranch());
 	}
 	
-	public PlayerAdvancement getPlayerAdvancement(PlayerAccount account){
+	/*public PlayerAdvancement getPlayerAdvancement(PlayerAccount account){
 		return playerAdvancement.get(account);
-	}
+	}*/
 	
-	public List<PlayerAccount> getPlayersForBranch(QuestBranch branch){
+	/*public List<PlayerAccount> getPlayersForBranch(QuestBranch branch){
 		List<PlayerAccount> ls = new ArrayList<>();
 		int id = getID(branch);
 		for (Entry<PlayerAccount, PlayerAdvancement> en : playerAdvancement.entrySet()){
@@ -92,13 +88,11 @@ public class BranchesManager{
 	
 	public void setPlayersStage(Map<PlayerAccount, PlayerAdvancement> players){
 		this.playerAdvancement = players;
-	}
+	}*/
 	
 	public boolean hasBranchStarted(PlayerAccount acc, QuestBranch branch){
-		if (!playerAdvancement.containsKey(acc)) return false;
-		QuestBranch br = getPlayerBranch(acc);
-		if (br == null) return false;
-		return br.equals(branch);
+		if (!acc.hasQuestDatas(quest)) return false;
+		return acc.getQuestDatas(quest).getBranch() == branch.getID();
 	}
 	
 	/**
@@ -115,10 +109,9 @@ public class BranchesManager{
 	}
 	
 	public void remove(PlayerAccount acc) {
-		if (!playerAdvancement.containsKey(acc)) return;
+		if (!acc.hasQuestDatas(quest)) return;
 		QuestBranch branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
-		playerAdvancement.remove(acc);
 	}
 	
 	public void remove(){
@@ -126,7 +119,6 @@ public class BranchesManager{
 			branch.remove();
 		}
 		branches.clear();
-		playerAdvancement.clear();
 	}
 	
 	public Map<String, Object> serialize(){
@@ -144,39 +136,17 @@ public class BranchesManager{
 				continue;
 			}
 		}
-		
-		Map<String, Object> pl = new LinkedHashMap<>();
-		for (Entry<PlayerAccount, PlayerAdvancement> en : playerAdvancement.entrySet()){
-			pl.put(en.getKey().getIndex(), en.getValue().getState());
-		}
-		
 		map.put("branches", st);
-		map.put("playersAdvancement", pl);
 		
 		return map;
 	}
 	
 	public String toString() {
-		return "BranchesManager{branches=" + branches.size() + ",players=" + playerAdvancement.size() + "}";
+		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 	
 	public static BranchesManager deserialize(Map<String, Object> map, Quest qu){
 		BranchesManager bm = new BranchesManager(qu);
-		
-		if (map.containsKey("stages")){ // migration <0.16
-			try{
-				QuestBranch branch = new QuestBranch(bm);
-				bm.addBranch(branch);
-				branch.load(map);
-				return bm;
-			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when converting old stages to the branches system for the quest " + qu.getName());
-				ex.printStackTrace();
-				BeautyQuests.loadingFailure = true;
-				return null;
-			}
-		}
-		
 		
 		List<Map<String, Object>> branches = (List<Map<String, Object>>) map.get("branches");
 		branches.sort((x, y) -> {
@@ -207,9 +177,10 @@ public class BranchesManager{
 		if (!map.containsKey("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
 		new BukkitRunnable() {
 			public void run(){
+				PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
 				((Map<String, Object>) map.get("playersAdvancement")).forEach((accId, advancement) -> {
 					try{
-						PlayerAccount acc = PlayersManager.getByIndex(accId);
+						PlayerAccount acc = managerYAML.getByIndex(accId);
 						if (acc == null) return;
 						
 						String adv = (String) advancement;
@@ -220,8 +191,8 @@ public class BranchesManager{
 							BeautyQuests.loadingFailure = true;
 							return;
 						}
-						bm.playerAdvancement.put(acc, new PlayerAdvancement(branch));
-						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)), false);
+						acc.getQuestDatas(qu).setBranch(branch.getID());
+						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)));
 					}catch (Exception ex){
 						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName());
 						ex.printStackTrace();

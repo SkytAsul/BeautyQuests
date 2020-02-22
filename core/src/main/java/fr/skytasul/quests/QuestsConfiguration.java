@@ -68,7 +68,6 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
-	
 
 	public static Quest firstQuest;
 
@@ -160,8 +159,8 @@ public class QuestsConfiguration {
 	}
 	
 	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
+		Particle particle = null;
 		if (config.getBoolean(name + ".enabled")) {
-			Particle particle;
 			try{
 				particle = Particle.deserialize(config.getConfigurationSection(name).getValues(false));
 			}catch (Exception ex){
@@ -169,8 +168,8 @@ public class QuestsConfiguration {
 				particle = defaultParticle;
 			}
 			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
-			return particle;
-		}else return null;
+		}
+		return particle;
 	}
 	
 	private static ItemStack loadHologram(String name){

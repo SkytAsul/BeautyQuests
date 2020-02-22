@@ -58,5 +58,4 @@ public class StageInteract extends AbstractStage {
 		return new StageInteract(branch, Location.deserialize((Map<String, Object>) map.get("location")), (boolean) map.get("leftClick"));
 	}
 
-
 }

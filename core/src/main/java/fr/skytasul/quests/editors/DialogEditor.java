@@ -10,14 +10,13 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.Message;
 import fr.skytasul.quests.utils.types.Message.Sender;
-import net.citizensnpcs.api.npc.NPC;
 
 public class DialogEditor extends Editor{
 	
 	private Consumer<Dialog> run;
 	public Dialog d;
 
-	public DialogEditor(Player p, NPC npc, Consumer<Dialog> run, Dialog dialog){
+	public DialogEditor(Player p, Consumer<Dialog> run, Dialog dialog) {
 		super(p);
 		this.run = run;
 		this.d = dialog;

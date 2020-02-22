@@ -1,9 +1,12 @@
 package fr.skytasul.quests.gui.creation.stages;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -57,7 +60,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.WorldGuard;
-import fr.skytasul.quests.utils.types.BlockData;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -222,7 +224,7 @@ public class StagesGUI implements CustomInventory {
 		
 		if (branches){
 			if (!line.data.containsKey("branch")) line.data.put("branch", new StagesGUI(this));
-			line.setItem(15, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
+			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
 				Inventories.create(p, (StagesGUI) datas.get("branch"));
 			});
 		}
@@ -400,17 +402,17 @@ class CreateNPC implements StageCreationRunnables{
 		StagesGUI sg = datas.getGUI();
 		Inventories.create(p, new SelectGUI((npc) -> {
 			sg.reopen(p, true);
-			npcDone(npc, sg, datas.getLine(), datas);
+			npcDone(npc, datas);
 		}));
 	}
 
-	public static void npcDone(NPC npc, StagesGUI sg, Line line, LineData datas){
+	public static void npcDone(NPC npc, LineData datas) {
 		datas.put("npc", npc);
 		datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-				Editor.enterOrLeave(p, new DialogEditor(p, (NPC) datas.get("npc"), (obj) -> {
-					sg.reopen(p, false);
+				Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
+					datas.getGUI().reopen(p, false);
 					datas.put("npcText", obj);
 				}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog((NPC) datas.get("npc"))));
 			}
@@ -431,7 +433,7 @@ class CreateNPC implements StageCreationRunnables{
 	public static void setEdit(StageNPC stage, LineData datas) {
 		if (stage.getDialog() != null) datas.put("npcText", new Dialog(stage.getDialog().getNPC(), stage.getDialog().messages.clone()));
 		if (stage.isHid()) datas.put("hide", true);
-		npcDone(stage.getNPC(), datas.getGUI(), datas.getLine(), datas);
+		npcDone(stage.getNPC(), datas);
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch) {
@@ -449,15 +451,13 @@ class CreateNPC implements StageCreationRunnables{
 class CreateBringBack implements StageCreationRunnables{
 	private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 	public void start(Player p, LineData datas) {
-		StagesGUI sg = datas.getGUI();
-		Line line = datas.getLine();
-		setItem(line, sg);
+		setItem(datas.getLine());
 		List<ItemStack> items = new ArrayList<>();
 		datas.put("items", items);
 		SelectGUI npcGUI = new SelectGUI((npc) -> {
 			Inventories.closeWithoutExit(p);
-			sg.reopen(p, true);
-			if (npc != null) CreateNPC.npcDone(npc, sg, line, datas);
+			datas.getGUI().reopen(p, true);
+			if (npc != null) CreateNPC.npcDone(npc, datas);
 		});
 		ItemsGUI itemsGUI = new ItemsGUI(() -> {
 			Inventories.create(p, npcGUI);
@@ -465,11 +465,11 @@ class CreateBringBack implements StageCreationRunnables{
 		Inventories.create(p, itemsGUI);
 	}
 
-	public static void setItem(Line line, StagesGUI sg){
+	public static void setItem(Line line) {
 		line.setItem(7, stageItems.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Inventories.create(p, new ItemsGUI(() -> {
-					sg.reopen(p, true);
+					datas.getGUI().reopen(p, true);
 				}, (List<ItemStack>) datas.get("items")));
 			}
 		});
@@ -486,7 +486,7 @@ class CreateBringBack implements StageCreationRunnables{
 		CreateNPC.setEdit(st, datas);
 		datas.put("items", new ArrayList<>());
 		((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(st.getItems()));
-		setItem(datas.getLine(), datas.getGUI());
+		setItem(datas.getLine());
 	}
 }
 
@@ -507,7 +507,7 @@ class CreateMobs implements StageCreationRunnables{
 		line.setItem(6, editMobs.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
-				mobs.setMobsFromList((List<Mob<?>>) datas.get("mobs"));
+				mobs.setMobsFromMap((Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
 				mobs.run = (obj) -> {
 					sg.reopen(p, true);
 					datas.put("mobs", obj);
@@ -522,14 +522,14 @@ class CreateMobs implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch) {
-		StageMobs stage = new StageMobs(branch, ((List<Mob<?>>) datas.get("mobs")));
+		StageMobs stage = new StageMobs(branch, (Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
 		if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
 		StageMobs st = (StageMobs) stage;
-		datas.put("mobs", new ArrayList<>(st.getMobs()));
+		datas.put("mobs", st.cloneObjects());
 		datas.put("shoot", st.isShoot());
 		setItems(datas.getLine(), datas.getGUI(), datas);
 	}
@@ -599,14 +599,14 @@ class CreateMine implements StageCreationRunnables{
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch){
-		StageMine stage = new StageMine(branch, (List<BlockData>) datas.get("blocks"));
+		StageMine stage = new StageMine(branch, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
 		stage.setPlaceCancelled((boolean) datas.get("prevent"));
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
 		StageMine st = (StageMine) stage;
-		datas.put("blocks", new ArrayList<>(st.getBlocks()));
+		datas.put("blocks", st.cloneObjects());
 		datas.put("prevent", st.isPlaceCancelled());
 		setItems(datas.getLine(), datas);
 	}
@@ -615,7 +615,7 @@ class CreateMine implements StageCreationRunnables{
 		line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-				blocks.setBlocksFromList(blocks.inv, (List<BlockData>) datas.get("blocks"));
+				blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
 				blocks.run = (obj) -> {
 					datas.getGUI().reopen(p, true);
 					datas.put("blocks", obj);
@@ -721,21 +721,37 @@ class CreateFish implements StageCreationRunnables{
 		datas.put("items", items);
 		Inventories.create(p, new ItemsGUI(() -> {
 			datas.getGUI().reopen(p, true);
-			setItem(datas.getLine(), datas.getGUI());
+			setItem(datas.getLine());
 		}, items));
 	}
 
 	public AbstractStage finish(LineData datas, QuestBranch branch){
-		StageFish stage = new StageFish(branch, ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+		List<ItemStack> itemsList = (List<ItemStack>) datas.get("items");
+		Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
+		for (int i = 0; i < itemsList.size(); i++) {
+			ItemStack item = itemsList.get(i);
+			int amount = item.getAmount();
+			item.setAmount(1);
+			itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
+		}
+		StageFish stage = new StageFish(branch, itemsMap);
 		return stage;
 	}
 
 	public void edit(LineData datas, AbstractStage stage){
-		datas.put("items", new ArrayList<>(Arrays.asList(((StageFish) stage).getFishes())));
-		setItem(datas.getLine(), datas.getGUI());
+		StageFish st = (StageFish) stage;
+		List<ItemStack> items = new ArrayList<>();
+		Map<Integer, Entry<ItemStack, Integer>> itemsMap = st.getObjects();
+		for (Entry<ItemStack, Integer> itemEntry : itemsMap.values()) {
+			ItemStack item = itemEntry.getKey().clone();
+			item.setAmount(itemEntry.getValue());
+			items.add(item);
+		}
+		datas.put("items", items);
+		setItem(datas.getLine());
 	}
 
-	public static void setItem(Line line, StagesGUI sg){
+	public static void setItem(Line line) {
 		line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				Inventories.create(p, new ItemsGUI(() -> {

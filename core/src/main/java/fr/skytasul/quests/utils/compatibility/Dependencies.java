@@ -1,7 +1,5 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.logging.Logger;
-
 import org.bukkit.plugin.PluginManager;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -29,7 +27,7 @@ public class Dependencies {
 	public static boolean mclvl = false; //	McCombatLevel
 	public static boolean boss = false; //	Boss
 	
-	public static void initialize(PluginManager pman, Logger logger){
+	public static void initialize(PluginManager pman) {
 		if (pman.isPluginEnabled("WorldGuard")){
 			wg = true;
 		}

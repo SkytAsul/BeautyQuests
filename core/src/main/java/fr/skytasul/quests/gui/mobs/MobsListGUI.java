@@ -1,9 +1,9 @@
 package fr.skytasul.quests.gui.mobs;
 
-import java.util.ArrayList;
+import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -28,10 +28,10 @@ public class MobsListGUI implements CustomInventory{
 
 	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.mobsNone.toString());
 	
-	public Map<Integer, Mob<?>> mobs = new HashMap<>();
+	public Map<Integer, Entry<Mob<?>, Integer>> mobs = new HashMap<>();
 	
 	public Inventory inv;
-	public Consumer<List<Mob<?>>> run;
+	public Consumer<Map<Integer, Entry<Mob<?>, Integer>>> run;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -48,18 +48,19 @@ public class MobsListGUI implements CustomInventory{
 		return inv;
 	}
 	
-	public void setMobsFromList(List<Mob<?>> m) {
-		for (int i = 0; i < 8; i++){
-			if (m.size() == i) break;
-			mobs.put(i, m.get(i));
-			inv.setItem(i, m.get(i).createItemStack());
+	public void setMobsFromMap(Map<Integer, Entry<Mob<?>, Integer>> map) {
+		for (Entry<Integer, Entry<Mob<?>, Integer>> entry : map.entrySet()) {
+			int id = entry.getKey();
+			Entry<Mob<?>, Integer> mobEntry = entry.getValue();
+			mobs.put(id, mobEntry);
+			inv.setItem(id, mobEntry.getKey().createItemStack(mobEntry.getValue()));
 		}
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
 			Inventories.closeAndExit(p);
-			run.accept(new ArrayList<>(mobs.values()));
+			run.accept(mobs);
 			return true;
 		}
 		if (click.isRightClick()){
@@ -77,10 +78,11 @@ public class MobsListGUI implements CustomInventory{
 				existing.itemClick(p, (obj) -> {
 					Lang.MOB_AMOUNT.send(p);
 					new TextEditor(p, (x) -> {
+						int amount = (int) x;
 						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
-						Mob<?> mob = new Mob(existing, obj, (int) x);
-						MobsListGUI.this.inv.setItem(slot, mob.createItemStack());
-						mobs.put(slot, mob);
+						Mob<?> mob = new Mob(existing, obj);
+						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(amount));
+						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, amount));
 					}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
 				});
 			}

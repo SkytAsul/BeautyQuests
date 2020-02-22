@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +40,6 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
@@ -160,15 +160,14 @@ public class Utils{
 				if (item.getAmount() == i.getAmount()) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
                     return;
-                } else {
-                    if(item.getAmount() > i.getAmount()){
-                        item.setAmount(item.getAmount() - i.getAmount());
-                        return;
-                    }else if(item.getAmount() < i.getAmount()){
-                        i.setAmount(i.getAmount() - item.getAmount());
-                        inv.setItem(slot, new ItemStack(Material.AIR));
-                    }
                 }
+				if (item.getAmount() > i.getAmount()) {
+					item.setAmount(item.getAmount() - i.getAmount());
+					return;
+				}else if (item.getAmount() < i.getAmount()) {
+					i.setAmount(i.getAmount() - item.getAmount());
+					inv.setItem(slot, new ItemStack(Material.AIR));
+				}
 			}
 		}
 	}
@@ -179,13 +178,12 @@ public class Utils{
 			if (isSimilar(item, i)){
 				if (item.getAmount() == amount) {
 					return true;
-                } else {
-                    if(item.getAmount() > amount){
-                    	return true;
-                    }else if(item.getAmount() < amount){
-                        amount -= item.getAmount();
-                    }
                 }
+				if (item.getAmount() > amount) {
+					return true;
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
+				}
 			}
 		}
 		return false;
@@ -243,6 +241,17 @@ public class Utils{
 	    return null;
 	}
 	
+	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
+		if (value == null) return Collections.EMPTY_LIST;
+		List<T> list = new ArrayList<>();
+		for (Entry<T, E> entry : map.entrySet()) {
+			if (value.equals(entry.getValue())) {
+				list.add(entry.getKey());
+			}
+		}
+		return list;
+	}
+
 	public static String format(String msg, Object... replace){
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
@@ -277,9 +286,13 @@ public class Utils{
 	}
 	
 	public static int parseInt(Object obj){
-		return obj instanceof Integer ? (int) obj : Integer.parseInt((String) obj);
+		return obj instanceof Integer ? (int) obj : obj instanceof String ? Integer.parseInt((String) obj) : null;
 	}
 	
+	public static long parseLong(Object obj) {
+		return obj instanceof Long ? (long) obj : obj instanceof Integer ? ((Integer) obj).longValue() : obj instanceof String ? Long.parseLong((String) obj) : null;
+	}
+
 	public static String removeColors(String str){
 		int i;
 		while ((i = str.indexOf("§")) != -1){
@@ -306,7 +319,7 @@ public class Utils{
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
-	public static <T> List<Map<String, Object>> serializeList(List<T> objects, Function<T, Map<String, Object>> serialize){
+	public static <T> List<Map<String, Object>> serializeList(Collection<T> objects, Function<T, Map<String, Object>> serialize) {
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (T obj : objects){
 			ls.add(serialize.apply(obj));
@@ -342,7 +355,7 @@ public class Utils{
 		try {
 			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			p.playSound(p.getLocation(), sound, volume, 1);
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
 		}
 	}
 	
@@ -351,11 +364,11 @@ public class Utils{
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			lc.getWorld().playSound(lc, sound, volume, 1);
+			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}
 	
-	public static List<String> serializeAccountsList(List<PlayerAccount> from){
+	/*public static List<String> serializeAccountsList(List<PlayerAccount> from){
 		List<String> to = new ArrayList<>();
 		for (PlayerAccount acc : from){
 			to.add(acc.getIndex());
@@ -365,26 +378,25 @@ public class Utils{
 	
 	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){
 		for (String id : from){
-			PlayerAccount acc = PlayersManager.getByIndex(id);
+			PlayerAccount acc = PlayersManager.manager.getByIndex(id);
 			if (acc != null) to.add(acc);
 		}
 	}
 	
 	public static <T, R> void deserializeAccountsMap(Map<String, T> from, Map<PlayerAccount, R> to, Function<T, R> fun){
 		for (Entry<String, T> en : from.entrySet()){
-			PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
+			PlayerAccount acc = PlayersManager.manager.getByIndex(en.getKey());
 			if (acc == null) continue;
 			to.put(acc, fun.apply(en.getValue()));
 		}
-	}
+	}*/
 	
 	public static String descriptionLines(Source source, String... elements){
 		if (elements.length == 0) return Lang.Unknown.toString();
 		if (QuestsConfiguration.splitDescription(source) && elements.length > 1){
 			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
-		}else {
-			return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 		}
+		return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 	}
 	
 }

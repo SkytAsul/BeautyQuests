@@ -1,6 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -12,6 +11,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -22,7 +22,6 @@ public class StageBucket extends AbstractStage {
 
 	private BucketType bucket;
 	private int amount;
-	private Map<PlayerAccount, Integer> playerAmounts = new HashMap<>();
 	
 	public StageBucket(QuestBranch branch, BucketType bucket, int amount){
 		super(branch);
@@ -44,42 +43,45 @@ public class StageBucket extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			if (BucketType.fromMaterial(XMaterial.fromMaterial(e.getItemStack().getType())) == bucket){
-				int newAmount = playerAmounts.get(acc) - 1;
-				if (newAmount <= 0){
-					playerAmounts.remove(acc);
+				int amount = getPlayerAmount(acc);
+				if (amount <= 1) {
 					finishStage(p);
 				}else {
-					playerAmounts.put(acc, newAmount);
+					updateObjective(acc, p, "amount", --amount);
 				}
-				branch.getBranchesManager().objectiveUpdated(p);
 			}
 		}
 	}
-	
-	public void start(PlayerAccount account){
-		super.start(account);
-		playerAmounts.put(account, amount);
+
+	private int getPlayerAmount(PlayerAccount acc) {
+		return getData(acc, "amount");
+	}
+
+	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+		datas.put("amount", amount);
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), playerAmounts.get(acc), false));
+		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[]{Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), playerAmounts.get(acc), false)};
+		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
 	}
 	
 	protected void serialize(Map<String, Object> map){
 		map.put("bucket", bucket.name());
 		map.put("amount", amount);
-		Map<String, Integer> playerSerialized = new HashMap<>();
-		playerAmounts.forEach((acc, amount) -> playerSerialized.put(acc.getIndex(), amount));
-		map.put("players", playerSerialized);
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
 		StageBucket stage = new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
-		((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.playerAmounts.put(PlayersManager.getByIndex(acc), (int) amount));
+
+		if (map.containsKey("players")) {
+			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
+			((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.setData(migration.getByIndex(acc), "amount", (int) amount));
+		}
+
 		return stage;
 	}
 

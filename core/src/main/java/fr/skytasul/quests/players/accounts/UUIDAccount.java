@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.accounts;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ public class UUIDAccount extends AbstractAccount{
 
 	private UUID id;
 	
-	UUIDAccount(UUID id){
+	public UUIDAccount(UUID id) {
 		this.id = id;
 	}
 	

@@ -14,21 +14,19 @@ import fr.skytasul.quests.utils.compatibility.Dependencies;
 
 public class Mob<Data> implements Cloneable {
 
-	protected MobFactory<Data> factory;
-	protected Data data;
-	public int amount;
+	protected final MobFactory<Data> factory;
+	protected final Data data;
 
-	public Mob(MobFactory<Data> factory, Data data, int amount) {
+	public Mob(MobFactory<Data> factory, Data data) {
 		this.factory = factory;
 		this.data = data;
-		this.amount = amount;
 	}
 	
 	public String getName() {
 		return factory.getName(data);
 	}
 
-	public ItemStack createItemStack() {
+	public ItemStack createItemStack(int amount) {
 		List<String> lore = new ArrayList<>();
 		lore.add(Lang.Amount.format(amount));
 		lore.addAll(factory.getDescriptiveLore(data));
@@ -45,8 +43,24 @@ public class Mob<Data> implements Cloneable {
 		return this.data.equals(data);
 	}
 	
+	public int hashCode() {
+		int hash = 1;
+		hash = hash * 27 + factory.hashCode();
+		hash = hash * 27 + data.hashCode();
+		return hash;
+	}
+
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		if (obj instanceof Mob) {
+			Mob<?> mob = (Mob<?>) obj;
+			return this.factory.equals(mob.factory) && this.data.equals(mob.data);
+		}
+		return false;
+	}
+
 	public Mob<Data> clone(){
-		return new Mob<Data>(factory, data, amount);
+		return new Mob<Data>(factory, data);
 	}
 
 	public Map<String, Object> serialize(){
@@ -54,7 +68,6 @@ public class Mob<Data> implements Cloneable {
 
 		map.put("factoryName", factory.getID());
 		map.put("value", factory.getValue(data));
-		map.put("amount", amount);
 		
 		return map;
 	}
@@ -79,7 +92,7 @@ public class Mob<Data> implements Cloneable {
 		}
 		
 		MobFactory<?> factory = MobFactory.getMobFactory(factoryName);
-		Mob<?> mob = new Mob(factory, factory.fromValue(value), (int) map.get("amount"));
+		Mob<?> mob = new Mob(factory, factory.fromValue(value));
 		return mob;
 	}
 	

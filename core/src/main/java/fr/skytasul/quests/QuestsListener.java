@@ -43,7 +43,7 @@ public class QuestsListener implements Listener{
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
-			quests = quests.stream().filter(qu -> !qu.getBranchesManager().contains(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
+			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
 			if (quests.isEmpty()) return;
 			
 			List<Quest> launcheable = new ArrayList<>();
@@ -99,7 +99,7 @@ public class QuestsListener implements Listener{
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 		if (!QuestsConfiguration.hookAccounts()) {
-			boolean firstJoin = !PlayersManager.hasAccounts(player);
+			boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
 			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
 			}, 5L);

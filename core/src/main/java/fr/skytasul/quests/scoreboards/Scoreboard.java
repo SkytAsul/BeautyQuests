@@ -72,11 +72,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					for (Line line : lines) line.reset();
 				}
 				return; // no refresh
-			}else {
-				if (sb == null) initScoreboard();
+			}
+			if (sb == null) initScoreboard();
 
-				int id = launched.indexOf(showed) + 1;
-				if (id >= launched.size() || id == -1) id = 0;
+			int id = launched.indexOf(showed) + 1;
+			int lastID = id;
+			if (id >= launched.size() || id == -1) id = 0;
+			if (lastID != id) {
 				showed = launched.get(id);
 				refreshQuestsLines();
 			}
@@ -142,6 +144,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	public void setShownQuest(Quest quest) {
+		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 		showed = quest;
 		refreshQuestsLines();

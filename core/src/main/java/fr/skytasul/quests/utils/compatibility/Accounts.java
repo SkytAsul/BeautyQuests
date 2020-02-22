@@ -10,9 +10,9 @@ import org.bukkit.event.Listener;
 import fr.skytasul.accounts.Account;
 import fr.skytasul.accounts.AccountService;
 import fr.skytasul.accounts.AccountUseEvent;
-import fr.skytasul.quests.players.HookedAccount;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.accounts.HookedAccount;
 
 public class Accounts implements Listener {
 
@@ -32,6 +32,10 @@ public class Accounts implements Listener {
 		return new HookedAccount(acc);
 	}
 	
+	public static String getPlayerCurrentIdentifier(Player p) {
+		return service.getAccountForPlayer(p).getIdentifier();
+	}
+
 	@EventHandler
 	public void onAccountUse(AccountUseEvent e) {
 		Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer()), e.isAccountCreated()));

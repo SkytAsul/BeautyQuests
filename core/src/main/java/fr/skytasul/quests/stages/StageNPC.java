@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,7 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -40,7 +39,7 @@ public class StageNPC extends AbstractStage{
 	
 	private BukkitTask task;
 	
-	private List<PlayerAccount> cached = new ArrayList<>();
+	private List<Player> cached = new ArrayList<>();
 	protected Object holo;
 	
 	public StageNPC(QuestBranch branch, NPC npc){
@@ -58,9 +57,7 @@ public class StageNPC extends AbstractStage{
 				if (!en.getType().isAlive()) return;
 				Location lc = en.getLocation();
 				tmp.clear();
-				for (PlayerAccount acc : cached) {
-					if (!acc.isCurrent()) continue;
-					Player p = acc.getPlayer();
+				for (Player p : cached) {
 					if (p.getWorld() != lc.getWorld()) continue;
 					if (lc.distance(p.getLocation()) > 50) continue;
 					tmp.add(p);
@@ -142,8 +139,19 @@ public class StageNPC extends AbstractStage{
 		if (e.getNPC() != npc) return;
 		if (!hasStarted(p)) return;
 		
+		if (!branch.isRegularStage(this)) { // is ending stage
+			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items
+				for (AbstractStage stage : branch.getEndingStages().keySet()) {
+					if (stage instanceof StageBringBack) { // if other ending stage is bring back
+						StageBringBack other = (StageBringBack) stage;
+						if (other.getNPC() == npc && other.checkItems(p, false)) return; // if same NPC and can start: don't cancel event and stop there
+					}
+				}
+			}
+		}
+
 		e.setCancelled(true);
-		
+
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
 		if (di != null){ // dialog exists
 			di.send(p, () -> {
@@ -164,33 +172,30 @@ public class StageNPC extends AbstractStage{
 		return (npc != null) ? npc.getName() : "§c§lerror";
 	}
 	
-	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e){
-		if (!QuestsConfiguration.handleGPS()) return;
-		if (!branch.hasStageLaunched(PlayersManager.getPlayerAccount(e.getPlayer()), this)) return;
-		GPS.launchCompass(e.getPlayer(), npc);
+	public void onJoin(PlayerAccountJoinEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			cached.add(e.getPlayer());
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(e.getPlayer(), npc);
+		}else cached.remove(e.getPlayer());
 	}
 	
-	public void start(PlayerAccount account){
-		super.start(account);
-		cached.add(account);
+	public void start(PlayerAccount acc) {
+		super.start(acc);
+		if (acc.isCurrent()) {
+			Player p = acc.getPlayer();
+			cached.add(p);
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
+		}
 	}
 	
-	public void end(PlayerAccount account){
-		super.end(account);
-		cached.remove(account);
-	}
-	
-	public void launch(Player p) {
-		super.launch(p);
-		if (branch.getID(this) == 0 && sendStartMessage() && bringBack != /*? tester*/ null) Utils.sendMessage(p, Lang.TALK_NPC.toString(), npc.getName());
-		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
-	}
-	
-	public void finish(Player p){
-		super.finish(p);
-		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+	public void end(PlayerAccount acc) {
+		super.end(acc);
+		if (acc.isCurrent()) {
+			Player p = acc.getPlayer();
+			cached.remove(p);
+			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+		}
 	}
 	
 	public void unload() {
@@ -206,11 +211,11 @@ public class StageNPC extends AbstractStage{
 		}
 	}
 	
+
 	protected void loadDatas(Map<String, Object> map) {
 		setDialog(map.get("msg"));
 		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
 	}
-
 	
 	public void serialize(Map<String, Object> map){
 		if (npc != null) map.put("npcID", npc.getId());
