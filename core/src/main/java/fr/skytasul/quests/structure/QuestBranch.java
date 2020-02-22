@@ -77,7 +77,7 @@ public class QuestBranch {
 		return regularStages.get(id);
 	}
 
-	public boolean isRegulatStage(AbstractStage stage){
+	public boolean isRegularStage(AbstractStage stage){
 		return regularStages.contains(stage);
 	}
 	
@@ -145,7 +145,7 @@ public class QuestBranch {
 		DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
 		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!isRegulatStage(stage)){ // ending stage
+		if (!isRegularStage(stage)){ // ending stage
 			for (AbstractStage end : endStages.keySet()){
 				if (end != stage) end.end(acc);
 			}

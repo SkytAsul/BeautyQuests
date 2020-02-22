@@ -50,6 +50,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	protected void calculateSize() {
+		cachedSize = 0;
 		for (Entry<T, Integer> objectsEntry : objects.values()) {
 			cachedSize += objectsEntry.getValue();
 		}

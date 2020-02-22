@@ -100,7 +100,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	public int getStoredID(){
-		if (branch.isRegulatStage(this)) {
+		if (branch.isRegularStage(this)) {
 			return 0;
 		}
 		int index = 0;
@@ -225,7 +225,7 @@ public abstract class AbstractStage implements Listener{
 	public final Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
-		if (branch.isRegulatStage(this)) map.put("order", branch.getID(this));
+		if (branch.isRegularStage(this)) map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
 		map.put("text", startMessage);
 		map.put("customText", customText);

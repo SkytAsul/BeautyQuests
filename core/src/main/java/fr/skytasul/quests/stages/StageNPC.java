@@ -139,12 +139,12 @@ public class StageNPC extends AbstractStage{
 		if (e.getNPC() != npc) return;
 		if (!hasStarted(p)) return;
 		
-		if (!branch.isRegulatStage(this)) { // is ending stage
+		if (!branch.isRegularStage(this)) { // is ending stage
 			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items
 				for (AbstractStage stage : branch.getEndingStages().keySet()) {
 					if (stage instanceof StageBringBack) { // if other ending stage is bring back
 						StageBringBack other = (StageBringBack) stage;
-						if (other.getNPC() == npc && bringBack.checkItems(p, false)) return; // if same NPC and can start: don't cancel event and stop there
+						if (other.getNPC() == npc && other.checkItems(p, false)) return; // if same NPC and can start: don't cancel event and stop there
 					}
 				}
 			}
