@@ -34,11 +34,16 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 	public void onFish(PlayerFishEvent e){
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
 			Player p = e.getPlayer();
+			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			Item item = (Item) e.getCaught();
-			if (item.isDead() || !hasStarted(p)) return;
+			if (item.isDead() || !branch.hasStageLaunched(acc, this)) return;
 			ItemStack fish = item.getItemStack();
-			event(PlayersManager.getPlayerAccount(p), p, fish, fish.getAmount());
+			event(acc, p, fish, fish.getAmount());
 		}
+	}
+
+	protected boolean objectApplies(ItemStack object, Object other) {
+		return object.isSimilar((ItemStack) other);
 	}
 
 	protected String getName(ItemStack object) {
@@ -64,6 +69,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			List<ItemStack> list = (List<ItemStack>) map.get("items");
 			for (int i = 0; i < list.size(); i++) {
 				ItemStack is = list.get(i);
+				is.setAmount(1);
 				objects.put(i, new AbstractMap.SimpleEntry<>(is, is.getAmount()));
 			}
 		}

@@ -41,8 +41,9 @@ public class PlaceholderAPI {
 						Quest qu = null;
 						String desc = null;
 						if (after.isEmpty() || after.equals("_1")){
-							if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc));
+							if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc, true));
 							List<Quest> left = ordered.get(p);
+							QuestsAPI.updateQuestsStarteds(acc, true, left);
 							if (left.isEmpty()) return Lang.SCOREBOARD_NONE.toString();
 							while(!(qu = left.get(0)).hasStarted(acc)){
 								left.remove(0);

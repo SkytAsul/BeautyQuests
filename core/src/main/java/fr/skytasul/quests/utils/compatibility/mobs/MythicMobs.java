@@ -66,7 +66,11 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	}
 
 	public List<String> getDescriptiveLore(MythicMob data) {
-		return Arrays.asList("Base Health: " + data.getBaseHealth(), "Base Damage: " + data.getBaseDamage(), "Base Armor: " + data.getBaseArmor());
+		try {
+			return Arrays.asList("Base Health: " + data.getHealth().get(), "Base Damage: " + data.getDamage().get(), "Base Armor: " + data.getArmor().get());
+		}catch (NoSuchMethodError e) {
+			return Arrays.asList("§cError when retrieving mob informations", "§c-> §oPlease update MythicMobs");
+		}
 	}
 
 	@EventHandler

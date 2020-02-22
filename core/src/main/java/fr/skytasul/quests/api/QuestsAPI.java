@@ -85,6 +85,15 @@ public class QuestsAPI {
 		return launched;
 	}
 
+	public static void updateQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
+		for (Quest qu : BeautyQuests.getInstance().getQuests()) {
+			boolean contains = list.contains(qu);
+			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) {
+				if (!list.contains(qu)) list.add(qu);
+			}else if (contains) list.remove(qu);
+		}
+	}
+
 	public static int getStartedSize(PlayerAccount acc){
 		int i = 0;
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
