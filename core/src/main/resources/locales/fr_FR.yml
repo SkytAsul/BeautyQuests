@@ -60,7 +60,7 @@ msg:
   errorOccurred: '§cUne erreur est survenue, prévenez un administrateur ! §4§lCode d''erreur : {0}'
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
-  bringBackObjects: 'Rapporte-moi {0}.'
+  bringBackObjects: Rapporte-moi {0}.
   inventoryFull: '§cVotre inventaire est plein, l''item a été jeté au sol.'
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
@@ -151,8 +151,11 @@ msg:
       chooseSkillRequired: '§aEntrez le nom de la compétence requise :'
       chooseMoneyRequired: '§aEntrez la quantité de monnaie nécessaire :'
       reward:
-        permission: '§aModifiez les permissions gagnées ou retirées avec "add <permission> [retirer: oui = "true", non = "false"]" (tapez "help" pour voir les autres commandes).'
+        permissionName: '§aIndiquez le nom de la permission.'
+        permissionWorld: '§aIndiquez le monde dans lequel la permission sera mise à jour, ou "null" si vous voulez que ça le soit partout.'
         money: '§aEntrez la quantité de monnaie gagnée :'
+      chooseObjectiveRequired: '§aÉcrivez le nom de l''objectif.'
+      chooseObjectiveTargetScore: '§aIndiquez le score visé pour cet objectif.'
     selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
     itemCreator:
       itemType: '§aEntrez le nom du type d''item voulu :'
@@ -182,6 +185,9 @@ msg:
         addSound: '§6addSound <id> <son> : §eAjouter un son sur un message.'
         clear: '§6clear: §eSupprimer tous les messages.'
         close: '§6close: §eValider les messages.'
+        setTime: '§6setTime <id> <time>: §eModifie le temps (en ticks) avant que le message suivant ne se lance.'
+      timeSet: '§aLe temps a été modifié pour le message {0}: il est maintenant de {1} tick(s).'
+      timeRemoved: '§aLe temps a été supprimé du message {0}.'
     mythicmobs:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
@@ -197,14 +203,19 @@ msg:
         remove: '§6remove <id> : §eSupprimer un texte.'
         list: '§6list: §eVoir tout les textes.'
         close: '§6close: §eValider les textes.'
+    noSuchElement: '§cIl n''y a pas d’élément correspondant. Les éléments permis sont : §e{0}'
+    comparisonType: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§lgreater or equals§r§a. Tapez §onull§r§a pour l''utiliser.'
+    scoreboardObjectiveNotFound: '§cObjectif de scoreboard inconnu.'
+  writeCommandDelay: '§aIndiquez le délai de commande désiré, en ticks.'
 advancement:
-  finished: 'Terminée'
-  notStarted: 'Pas commencée'
+  finished: Terminée
+  notStarted: Pas commencée
 inv:
   validate: '§b§lValider'
   cancel: '§c§lAnnuler'
+  search: '§e§lRechercher'
   confirm:
-    name: 'Êtes-vous sûr ?'
+    name: Êtes-vous sûr ?
     'yes': '§aConfirmer'
     'no': '§cAnnuler'
   create:
@@ -222,18 +233,18 @@ inv:
     bucket: '§aRemplir des seaux'
     location: '§aAller à un endroit'
     NPCText: '§eModifier le dialogue'
-    hideClues: 'Cacher les particules et les hologrammes'
+    hideClues: Cacher les particules et les hologrammes
     editMobsKill: '§eModifier les mobs à tuer'
-    mobsKillFromAFar: 'Doit être tué de loin'
+    mobsKillFromAFar: Doit être tué de loin
     editBlocksMine: '§eModifier les blocs à casser'
-    preventBlockPlace: 'Empêcher les joueurs de casser leurs propres blocs'
+    preventBlockPlace: Empêcher les joueurs de casser leurs propres blocs
     editMessageType: '§eModifier le message à écrire'
-    cancelMessage: 'Annuler l''envoi'
+    cancelMessage: Annuler l'envoi
     selectItems: '§eChoisir les items nécessaires'
     selectRegion: '§7Choisir la région'
     stageStartMsg: '§eModifier le message de départ'
     selectBlockLocation: '§eSélectionner la position du bloc'
-    leftClick: 'Clic gauche nécessaire'
+    leftClick: Clic gauche nécessaire
     editFishes: '§eModifier les poissons nécessaires'
     editItem: '§eEditer l''objet à fabriquer'
     editBucketType: '§eModifier le type de seau à remplir'
@@ -242,7 +253,7 @@ inv:
     editRadius: '§eModifier la distance à partir de l''endroit'
     currentRadius: '§eDistance actuelle : §6{0}'
   stages:
-    name: 'Créer les étapes'
+    name: Créer les étapes
     nextPage: '§ePage suivante'
     laterPage: '§ePage précédente'
     endingItem: '§eRécompenses de fin'
@@ -255,14 +266,16 @@ inv:
     hologramLaunch: '§eModifier l''item de l''hologramme "lancement"'
     hologramLaunchNo: '§eModifier l''item de l''hologramme "lancement impossible"'
     customConfirmMessage: '§eModifier le message de confirmation de quête'
-    name: 'Derniers détails de la quête'
+    name: Derniers détails de la quête
     multipleTime:
-      itemName: 'Inverser la multi-utilisation'
-      itemLore: "La quête peut-elle être\nfaite plusieurs fois ?"
-    cancellable: 'Annulable par le joueur'
-    scoreboardItem: 'Activer le scoreboard'
-    hideItem: 'Cacher la quête du menu et de la dynmap'
-    bypassLimit: 'Ne pas compter la limite de quêtes'
+      itemName: Inverser la multi-utilisation
+      itemLore: |-
+        La quête peut-elle être
+        faite plusieurs fois ?
+    cancellable: Annulable par le joueur
+    scoreboardItem: Activer le scoreboard
+    hideItem: Cacher la quête du menu et de la dynmap
+    bypassLimit: Ne pas compter la limite de quêtes
     questName: '§a§lModifier le nom de la quête'
     setItemsRewards: '§eModifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
@@ -272,7 +285,10 @@ inv:
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
     createQuest:
       itemName: '§lCréer la quête'
-      itemLore: "Il te faut :\n- un NPC de sélectionné/créé\n- avoir choisi un nom de quête"
+      itemLore: |-
+        Il te faut :
+        - un NPC de sélectionné/créé
+        - avoir choisi un nom de quête
     editQuest:
       itemName: '§lModifier la quête'
     endMessage: '§eModifier le message de fin'
@@ -284,12 +300,14 @@ inv:
     requirements: '{0} exigence(s)'
     rewards: '{0} récompense(s)'
   itemsSelect:
-    name: 'Modifier les items'
-    none: "§aDéplacez un item ici ou \n §acliquez pour ouvrir l'éditeur d'item"
+    name: Modifier les items
+    none: |-
+      §aDéplacez un item ici ou 
+       §acliquez pour ouvrir l'éditeur d'item
   itemSelect:
-    name: 'Choisissez un objet'
+    name: Choisissez un objet
   npcCreate:
-    name: 'Créer le NPC'
+    name: Créer le NPC
     setName: '§eModifier le nom du NPC'
     setSkin: '§eModifier le skin du NPC'
     setType: '§eModifier le type du NPC'
@@ -298,39 +316,47 @@ inv:
       itemLore: '§aModifier la position du NPC.'
     moveItem: '§a§lValider l''endroit'
   npcSelect:
-    name: 'Sélectionner ou créer ?'
+    name: Sélectionner ou créer ?
     selectStageNPC: '§eSélectionner un NPC existant'
     createStageNPC: '§eCréer le NPC'
   entityType:
-    name: 'Choisir le type d''entité'
+    name: Choisir le type d'entité
   chooseQuest:
-    name: 'Quelle quête ?'
+    name: Quelle quête ?
   mobs:
-    name: 'Choisir les mobs'
+    name: Choisir les mobs
     none: '§aCliquer pour ajouter un mob.'
-    click: "§7Clic gauche pour modifier\nClic droit pour supprimer"
+    click: |-
+      §7Clic gauche pour modifier
+      Clic droit pour supprimer
   mobSelect:
-    name: 'Sélectionner le mob'
+    name: Choisir le type de monstre
     bukkitEntityType: '§eSélectionner un type de mob'
     mythicMob: '§6Sélectionner un Mythic Mob'
     epicBoss: '§6Sélectionner un Epic Boss'
+    boss: '§6Choisir un Boss'
   stageEnding:
     locationTeleport: '§eModifier le point de téléportation'
     command: '§eModifier la commande exécutée'
   requirements:
-    name: 'Nécessités'
+    name: Nécessités
   rewards:
-    name: 'Récompenses'
+    name: Récompenses
     commands: 'Commandes : {0}'
-    teleportation: "§aSéléctionné :\n X : {0}\n Y : {1}\n Z : {2}\n World : {3}"
+    teleportation: |-
+      §aSéléctionné :
+       X : {0}
+       Y : {1}
+       Z : {2}
+       World : {3}
   listAllQuests:
-    name: 'Quêtes'
+    name: Quêtes
   listPlayerQuests:
     name: 'Quêtes de {0}'
   listQuests:
-    notStarted: 'Quêtes non commencées'
-    finished: 'Quêtes terminées'
-    inProgress: 'Quêtes en cours'
+    notStarted: Quêtes non commencées
+    finished: Quêtes terminées
+    inProgress: Quêtes en cours
     loreCancel: '§c§oCliquez pour annuler la quête.'
     timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
@@ -338,38 +364,50 @@ inv:
       normal: '§6§l§o{0}'
       withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
-    name: 'Créateur d''item'
+    name: Créateur d'item
     itemType: '§bType d''item'
-    itemFlags: 'Flags d''item'
+    itemFlags: Flags d'item
     itemName: '§bNom de l''item'
     itemLore: '§bDescription de l''item'
     isQuestItem: '§bItem de quête :'
   command:
-    name: 'Commande'
+    name: Commande
     value: '§eCommande'
-    console: 'Console'
+    console: Console
+    delay: '§bDélai'
   chooseAccount:
-    name: 'Quel compte ?'
+    name: Quel compte ?
   listBook:
-    questName: 'Nom'
-    questStarter: 'NPC'
-    questRewards: 'Récompenses'
-    questMultiple: 'Plusieurs fois'
-    requirements: 'Exigences'
-    questStages: 'Etapes'
-    noQuests: 'Aucune quête n''a été préalablement créée.'
+    questName: Nom
+    questStarter: NPC
+    questRewards: Récompenses
+    questMultiple: Plusieurs fois
+    requirements: Exigences
+    questStages: Etapes
+    noQuests: Aucune quête n'a été préalablement créée.
   commandsList:
-    name: 'Liste des commandes'
+    name: Liste des commandes
     value: '§eCommande : {0}'
     console: '§eConsole : {0}'
   block:
-    name: 'Choisir un bloc'
+    name: Choisir un bloc
     material: '§eType de bloc : {0}'
   blocksList:
-    name: 'Sélectionner des blocs'
+    name: Sélectionner des blocs
     addBlock: '§aCliquez pour ajouter un block.'
   buckets:
-    name: 'Type de seau'
+    name: Type de seau
+  permission:
+    name: Choisir la permission
+    perm: '§aPermission'
+    world: '§aMonde'
+    worldGlobal: '§b§lGlobal'
+    remove: Supprimer la permission
+    removeLore: '§7La permission sera retirée\n§7au lieu d''être donnée.'
+  permissionList:
+    name: Liste des permissions
+    removed: '§eRetiré : §6{0}'
+    world: '§eMonde : §6{0}'
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -400,17 +438,17 @@ misc:
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     offText: '§r§e {0}'
   stageType:
-    region: 'Trouver une region'
-    npc: 'Trouver un NPC'
-    items: 'Rapporter des items'
-    mobs: 'Tuer des mobs'
-    mine: 'Casser des blocs'
-    chat: 'Parler dans le chat'
-    interact: 'Intéragir avec un bloc'
-    Fish: 'Pêcher'
-    Craft: 'Fabriquer un objet'
-    Bucket: 'Remplir un seau'
-    location: 'Trouver un endroit'
+    region: Trouver une region
+    npc: Trouver un NPC
+    items: Rapporter des items
+    mobs: Tuer des mobs
+    mine: Casser des blocs
+    chat: Parler dans le chat
+    interact: Intéragir avec un bloc
+    Fish: Pêcher
+    Craft: Fabriquer un objet
+    Bucket: Remplir un seau
+    location: Trouver un endroit
   requirement:
     class: '§bClasse(s) requise(s)'
     faction: '§bFaction(s) requise(s)'
@@ -418,28 +456,30 @@ misc:
     combatLevel: '§bNiveau de combat requis'
     experienceLevel: '§bNiveau d''expérience requis'
     permissions: '§3Permission(s) requise(s)'
+    scoreboard: '§dScore requis'
     placeholder: '§bPlaceholder requis'
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
     money: '§dMonnaie requise'
   bucket:
-    water: 'Seau d''eau'
-    lava: 'Seau de lave'
-    milk: 'Seau de lait'
+    water: Seau d'eau
+    lava: Seau de lave
+    milk: Seau de lait
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'
   mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: '§eType d''entité : {0}'
-  enabled: 'Activé'
-  disabled: 'Désactivé'
-  unknown: 'inconnu'
+  enabled: Activé
+  disabled: Désactivé
+  unknown: inconnu
+  notSet: '§cnon défini'
   unused: '§2§lInutilisé'
   used: '§a§lUtilisé'
   remove: '§7Clic central pour supprimer'
-  or: 'ou'
+  or: ou
   amount: '§eQuantité : {0}'
-  items: 'objets'
-  expPoints: 'points d''expérience'
+  items: objets
+  expPoints: points d'expérience
   'yes': 'Oui'
   'no': 'Non'
-  and: 'et'
+  and: et

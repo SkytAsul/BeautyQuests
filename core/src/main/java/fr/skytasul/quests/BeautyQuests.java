@@ -137,7 +137,7 @@ public class BeautyQuests extends JavaPlugin{
 		}.runTaskLater(this, 40L);
 
 		saveDefaultConfig();
-		NMS.intializeNMS();
+		NMS.getMCVersion();
 		registerCommands();
 
 		saveFolder = new File(getDataFolder(), "quests");
@@ -253,7 +253,8 @@ public class BeautyQuests extends JavaPlugin{
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}
-			
+
+			long lastMillis = System.currentTimeMillis();
 			String language = "locales/" + config.getString("lang", "en_US") + ".yml";
 			File file = new File(getDataFolder(), language);
 			InputStream res = getResource(language);
@@ -265,9 +266,9 @@ public class BeautyQuests extends JavaPlugin{
 				created = true;
 			}
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
+			boolean changes = false;
 			if (res != null){ // if it's a local resource
 				YamlConfiguration def = YamlConfiguration.loadConfiguration(new InputStreamReader(res, StandardCharsets.UTF_8));
-				boolean changes = false;
 				for (String key : def.getKeys(true)){ // get all keys in resource
 					if (!def.isConfigurationSection(key)){ // if not a block
 						if (!conf.contains(key)){ // if string does not exist in the file
@@ -277,10 +278,10 @@ public class BeautyQuests extends JavaPlugin{
 						}
 					}
 				}
-				if (changes) conf.save(file); // if there has been changes before, save the edited file
 			}
-			long lastMillis = System.currentTimeMillis();
-			Lang.loadStrings(conf);
+			if (Lang.loadStrings(conf)) changes = true;
+
+			if (changes) conf.save(file); // if there has been changes before, save the edited file
 			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 			return conf;
 		} catch(Exception e) {

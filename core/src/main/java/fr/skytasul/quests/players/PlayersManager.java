@@ -11,8 +11,8 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Accounts;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import net.citizensnpcs.npc.ai.NPCHolder;
 
 public abstract class PlayersManager {

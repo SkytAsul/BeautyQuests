@@ -37,6 +37,7 @@ import fr.skytasul.quests.requirements.MoneyRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
+import fr.skytasul.quests.requirements.ScoreboardRequirement;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -158,14 +159,15 @@ public class RequirementsGUI implements CustomInventory {
 		DebugUtils.logMessage("Initlializing default requirements.");
 		
 		QuestsAPI.registerRequirement(QuestRequirement.class, ItemUtils.item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), new QuestR());
-		QuestsAPI.registerRequirement(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), new LevelR());
-		if (Dependencies.jobs) QuestsAPI.registerRequirement(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), new JobLevelR());
+		QuestsAPI.registerRequirement(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), new LevelRequirement.Creator());
 		QuestsAPI.registerRequirement(PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), new PermissionsR());
+		QuestsAPI.registerRequirement(ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), new ScoreboardRequirement.Creator());
+		if (Dependencies.jobs) QuestsAPI.registerRequirement(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), new JobLevelRequirement.Creator());
 		if (Dependencies.fac) QuestsAPI.registerRequirement(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), new FactionR());
 		if (Dependencies.skapi) QuestsAPI.registerRequirement(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), new ClassR());
 		if (Dependencies.papi) QuestsAPI.registerRequirement(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), new PlaceholderR());
-		if (Dependencies.mmo) QuestsAPI.registerRequirement(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RJobLvl.toString()), new SkillLevelR());
-		if (Dependencies.mclvl) QuestsAPI.registerRequirement(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), new CombatLevelR());
+		if (Dependencies.mmo) QuestsAPI.registerRequirement(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RJobLvl.toString()), new McMMOSkillRequirement.Creator());
+		if (Dependencies.mclvl) QuestsAPI.registerRequirement(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), new McCombatLevelRequirement.Creator());
 		if (Dependencies.vault) QuestsAPI.registerRequirement(MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), new MoneyRQ());
 	}
 	
@@ -212,61 +214,6 @@ class QuestR implements RequirementCreationRunnables{
 	
 	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
 		datas.put("id", ((QuestRequirement) requirement).questId);
-	}
-}
-
-class LevelR implements RequirementCreationRunnables{
-	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-		Lang.CHOOSE_XP_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			if (datas.containsKey("lvl")) datas.remove("lvl");
-			datas.put("lvl", (int) obj);
-			gui.reopen(p, false);
-		}, new NumberParser(Integer.class, true)));
-	}
-	
-	
-	public AbstractRequirement finish(Map<String, Object> datas) {
-		LevelRequirement req = new LevelRequirement();
-		req.level = (int) datas.get("lvl");
-		return req;
-	}
-
-	
-	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-		datas.put("lvl", ((LevelRequirement) requirement).level);
-	}
-}
-
-class JobLevelR implements RequirementCreationRunnables{
-	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-		Lang.CHOOSE_JOB_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			if (datas.containsKey("job")){
-				datas.remove("lvl");
-				datas.remove("job");
-			}
-			datas.put("job", obj);
-			Lang.CHOOSE_XP_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (lvl) -> {
-				datas.put("lvl", (int) lvl);
-				gui.reopen(p, false);
-			}, new NumberParser(Integer.class, true)));
-		}));
-	}
-
-	
-	public AbstractRequirement finish(Map<String, Object> datas) {
-		JobLevelRequirement req = new JobLevelRequirement();
-		req.level = (int) datas.get("lvl");
-		req.jobName = (String) datas.get("job");
-		return req;
-	}
-	
-	
-	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-		datas.put("lvl", ((JobLevelRequirement) requirement).level);
-		datas.put("job", ((JobLevelRequirement) requirement).jobName);
 	}
 }
 
@@ -382,61 +329,6 @@ class PlaceholderR implements RequirementCreationRunnables{
 		PlaceholderRequirement req = (PlaceholderRequirement) requirement;
 		datas.put("placeholder", req.getPlaceholder());
 		datas.put("value", req.getValue());
-	}
-}
-
-class SkillLevelR implements RequirementCreationRunnables{
-	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-		Lang.CHOOSE_SKILL_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			if (datas.containsKey("skill")){
-				datas.remove("lvl");
-				datas.remove("skill");
-			}
-			datas.put("skill", obj);
-			Lang.CHOOSE_XP_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (lvl) -> {
-				datas.put("lvl", (int) lvl);
-				gui.reopen(p, false);
-			}, new NumberParser(Integer.class, true)));
-		}));
-	}
-
-	
-	public AbstractRequirement finish(Map<String, Object> datas) {
-		McMMOSkillRequirement req = new McMMOSkillRequirement();
-		req.level = (int) datas.get("lvl");
-		req.skillName = (String) datas.get("skill");
-		return req;
-	}
-	
-	
-	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-		datas.put("lvl", ((McMMOSkillRequirement) requirement).level);
-		datas.put("skill", ((McMMOSkillRequirement) requirement).skillName);
-	}
-}
-
-class CombatLevelR implements RequirementCreationRunnables{
-	public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-		Lang.CHOOSE_XP_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			if (datas.containsKey("lvl")) datas.remove("lvl");
-			datas.put("lvl", (int) obj);
-			gui.reopen(p, false);
-		}, new NumberParser(Integer.class, true)));
-	}
-	
-	
-	public AbstractRequirement finish(Map<String, Object> datas) {
-		McCombatLevelRequirement req = new McCombatLevelRequirement();
-		req.level = (int) datas.get("lvl");
-		return req;
-	}
-
-	
-	public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-		datas.put("lvl", ((McCombatLevelRequirement) requirement).level);
 	}
 }
 

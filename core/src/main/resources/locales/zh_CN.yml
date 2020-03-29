@@ -26,7 +26,7 @@ msg:
   writeEndMessage: '输入在任务或任务阶段结束后发送给玩家的消息'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
-  moveToTeleportPoint: '前往指定的传送点.'
+  moveToTeleportPoint: 前往指定的传送点.
   writeNpcName: '输入NPC名称.'
   writeNpcSkinName: '输入NPC皮肤名.'
   writeQuestName: '§a输入任务名：'
@@ -40,10 +40,11 @@ msg:
     job: '§e你必须达到 {0} 级才能应聘工作 {1}!'
     skill: '§e你的{1}技能必须要达到{0}级!'
     combatLevel: '§e你必须达到战斗等级 {0}!'
+    money: '§c你必须拥有 {0}!'
     wait: '§c你必须等待 {0} 分钟才能再次接受任务!'
   experience:
     edited: '已编辑获得的经验: {0}pts. 改为 {1}pts.'
-  selectNPCToKill: '选择要击杀的NPC.'
+  selectNPCToKill: 选择要击杀的NPC.
   npc:
     remove: '§a已删除NPC.'
     talk: '§a和§e{0}§a谈话.'
@@ -59,7 +60,7 @@ msg:
   errorOccurred: '§c插件发生错误，请联系管理员！错误代码为: {0}'
   commandsDisabled: '§c你不能在这时输入指令.'
   indexOutOfBounds: '§c数字 ({0}) 超过了区间 [{1}, {2}].'
-  bringBackObjects: '把 {0} 带回给我.'
+  bringBackObjects: 把 {0} 带回给我.
   inventoryFull: '§c你的背包已满, 任务奖励已掉落在地上.'
   playerNeverConnected: '§c在玩家{0}身上找不到数据.'
   playerNotOnline: '§c玩家 {0} 不在线.'
@@ -148,9 +149,13 @@ msg:
         identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
         value: '§a输入所需的 §6%{0}% 占位符的数值§a:'
       chooseSkillRequired: '§a输入技能名:'
+      chooseMoneyRequired: '§e输入所需金额:'
       reward:
-        permission: '§a用 "add [permission] / [remove: <true|false>]"编辑添加或删除的权限: (输入 "help" 查看其他指令.)'
+        permissionName: '§aWrite the permission name.'
+        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
         money: '§e输入获得的钱数:'
+      chooseObjectiveRequired: '§aWrite the objective name.'
+      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
     selectWantedBlock: '§a用木棍点击开始任务阶段的方块.'
     itemCreator:
       itemType: '§a输入物品类型名:'
@@ -180,6 +185,9 @@ msg:
         addSound: '§eaddsound <id> <音效名>: §b给一条消息添加音效.'
         clear: '§eclear: §b删除所有消息.'
         close: '§eclose: §b退出并保存所有消息.'
+        setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
+      timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
+      timeRemoved: '§aTime has been removed for message {0}.'
     mythicmobs:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
@@ -195,12 +203,17 @@ msg:
         remove: '§6remove [id]: §e删除一条文本.'
         list: '§6list: §e查看所有已添加的文本.'
         close: '6close: §e确认添加文本并退出编辑器.'
+    noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
+    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
+    scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
+  writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
-  finished: 'Finished'
-  notStarted: 'Not started'
+  finished: Finished
+  notStarted: Not started
 inv:
   validate: '§b§l确认'
   cancel: '§c§l取消'
+  search: '§e§lSearch'
   confirm:
     name: '§8你确认?'
     'yes': '§a确认'
@@ -218,20 +231,20 @@ inv:
     fish: '§a钓鱼'
     craft: '§a合成物品'
     bucket: '§a装满桶'
-    location: '前往指定位置'
+    location: 前往指定位置
     NPCText: '§e编辑NPC的文本对话'
-    hideClues: '隐藏任务指示 (粒子效果和全息文字)'
+    hideClues: 隐藏任务指示 (粒子效果和全息文字)
     editMobsKill: '§e编辑要击杀的怪物'
-    mobsKillFromAFar: '需要远程击杀怪物'
+    mobsKillFromAFar: 需要远程击杀怪物
     editBlocksMine: '§e编辑要破坏的方块'
-    preventBlockPlace: '防止玩家破坏方块'
+    preventBlockPlace: 防止玩家破坏方块
     editMessageType: '§e编辑要输入的消息'
-    cancelMessage: '取消发送'
+    cancelMessage: 取消发送
     selectItems: '§b选择所需的物品'
     selectRegion: '§7选择一片区域'
     stageStartMsg: '§e编辑阶段开始的消息'
     selectBlockLocation: '§6选择方块位置'
-    leftClick: '必须左击'
+    leftClick: 必须左击
     editFishes: '§e编辑所需的鱼'
     editItem: '§e编辑要合成的物品'
     editBucketType: '§e编辑要装满的桶类型'
@@ -255,12 +268,13 @@ inv:
     customConfirmMessage: '§e编辑确认接受任务的消息'
     name: '§8最终任务详细设置'
     multipleTime:
-      itemName: '开关重复任务'
-      itemLore: "任务是否可以多次完成?"
-    cancellable: '玩家可取消任务'
-    scoreboardItem: '启用计分版'
-    hideItem: '隐藏任务 (菜单和卫星地图)'
-    bypassLimit: '忽略任务上限'
+      itemName: 开关重复任务
+      itemLore: |-
+        任务是否可以多次完成?
+    cancellable: 玩家可取消任务
+    scoreboardItem: 启用计分版
+    hideItem: 隐藏任务 (菜单和卫星地图)
+    bypassLimit: 忽略任务上限
     questName: '§a§l编辑任务名'
     setItemsRewards: '§7编辑获得的物品'
     setXPRewards: '§e编辑获得的经验'
@@ -270,7 +284,8 @@ inv:
     selectStarterNPC: '§6§l选择接受任务的NPC'
     createQuest:
       itemName: '§l创建任务'
-      itemLore: "必须先选择或创建一个NPC并且已设置任务名."
+      itemLore: |-
+        必须先选择或创建一个NPC并且已设置任务名.
     editQuest:
       itemName: '§l编辑任务'
     endMessage: '§a编辑任务结束消息'
@@ -282,12 +297,13 @@ inv:
     requirements: '{0} 个任务需求'
     rewards: '{0} 个奖励'
   itemsSelect:
-    name: '编辑物品'
-    none: "§a把物品放到这里或点击打开物品编辑器."
+    name: 编辑物品
+    none: |-
+      §a把物品放到这里或点击打开物品编辑器.
   itemSelect:
-    name: '选择物品'
+    name: 选择物品
   npcCreate:
-    name: '创建NPC'
+    name: 创建NPC
     setName: '§a编辑NPC名称'
     setSkin: '§e编辑NPC皮肤'
     setType: '§a编辑NPC类型'
@@ -296,7 +312,7 @@ inv:
       itemLore: '§a更改NPC位置.'
     moveItem: '§a§l确认前往'
   npcSelect:
-    name: '选择还是创建NPC?'
+    name: 选择还是创建NPC?
     selectStageNPC: '§6选择 NPC'
     createStageNPC: '§e创建 NPC'
   entityType:
@@ -304,31 +320,38 @@ inv:
   chooseQuest:
     name: '§5选择哪一个任务?'
   mobs:
-    name: '选择怪物'
+    name: 选择怪物
     none: '§a点击添加怪物'
-    click: "§7左键编辑,右键删除."
+    click: |-
+      §7左键编辑,右键删除.
   mobSelect:
-    name: '选择怪物'
+    name: Select mob type
     bukkitEntityType: '§e选择一个生物类型'
     mythicMob: '§6选择一个MythicMob'
     epicBoss: '§6选择一个Epic Boss'
+    boss: '§6Select a Boss'
   stageEnding:
     locationTeleport: '§a编辑传送点'
     command: '§a编辑执行的指令'
   requirements:
-    name: '任务需求'
+    name: 任务需求
   rewards:
-    name: '任务奖励'
+    name: 任务奖励
     commands: '指令: {0}'
-    teleportation: "§a已选择:\n X: {0}\n Y: {1}\n Z: {2}\n 世界: {3}"
+    teleportation: |-
+      §aSelected:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      World: {3}
   listAllQuests:
     name: '§8任务'
   listPlayerQuests:
     name: '§8{0}的任务'
   listQuests:
-    notStarted: '没有已开始的任务'
-    finished: '已完成的任务'
-    inProgress: '进行中的任务'
+    notStarted: 没有已开始的任务
+    finished: 已完成的任务
+    inProgress: 进行中的任务
     loreCancel: '§c§o点击取消任务'
     timeToWait: '§3§o你需要等待{0} 分钟才能再次接受任务'
     canRedo: '§3§o你可以再次接受这个任务!'
@@ -338,36 +361,48 @@ inv:
   itemCreator:
     name: '§8物品编辑器'
     itemType: '§b物品类型'
-    itemFlags: '开关物品标志显示'
+    itemFlags: 开关物品标志显示
     itemName: '§b物品名'
     itemLore: '§b物品描述'
     isQuestItem: '§b任务物品:'
   command:
     name: '§8指令'
     value: '§b指令'
-    console: '控制台'
+    console: 控制台
+    delay: '§bDelay'
   chooseAccount:
     name: '§5选择哪一个帐号?'
   listBook:
-    questName: '任务名'
-    questStarter: '开始任务方式'
-    questRewards: '任务奖励'
-    questMultiple: '可重复次数'
-    requirements: '任务需求'
-    questStages: '任务阶段'
-    noQuests: '没有已创建的任务'
+    questName: 任务名
+    questStarter: 开始任务方式
+    questRewards: 任务奖励
+    questMultiple: 可重复次数
+    requirements: 任务需求
+    questStages: 任务阶段
+    noQuests: 没有已创建的任务
   commandsList:
-    name: '指令列表'
+    name: 指令列表
     value: '§e指令: {0}'
     console: '§e控制台: {0}'
   block:
-    name: '选择方块'
+    name: 选择方块
     material: '§e材料: {0}'
   blocksList:
-    name: '选择方块'
+    name: 选择方块
     addBlock: '§a点击添加一个方块.'
   buckets:
-    name: '桶的类型'
+    name: 桶的类型
+  permission:
+    name: Choose permission
+    perm: '§aPermission'
+    world: '§aWorld'
+    worldGlobal: '§b§lGlobal'
+    remove: Remove permission
+    removeLore: '§7Permission will be taken off\n§7instead of given.'
+  permissionList:
+    name: Permissions list
+    removed: '§eTaken off: §6{0}'
+    world: '§eWorld: §6{0}'
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -398,17 +433,17 @@ misc:
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e {0}'
   stageType:
-    region: '寻找区域'
-    npc: '寻找 NPC'
-    items: '带回物品'
-    mobs: '击杀怪物'
-    mine: '破坏方块'
-    chat: '在聊天框内说话'
-    interact: '与方块交互'
-    Fish: '钓鱼'
-    Craft: '合成物品'
-    Bucket: '装满桶'
-    location: '寻找地点'
+    region: 寻找区域
+    npc: 寻找 NPC
+    items: 带回物品
+    mobs: 击杀怪物
+    mine: 破坏方块
+    chat: 在聊天框内说话
+    interact: 与方块交互
+    Fish: 钓鱼
+    Craft: 合成物品
+    Bucket: 装满桶
+    location: 寻找地点
   requirement:
     class: '§b所需职业'
     faction: '§b所需派系'
@@ -416,27 +451,30 @@ misc:
     combatLevel: '§b所需战斗等级'
     experienceLevel: '§b所需经验等级'
     permissions: '§3所需权限'
+    scoreboard: '§dScore required'
     placeholder: '§b所需占位符数值'
     quest: '§a所需前置任务'
     mcMMOSkillLevel: '§d所需技能等级'
+    money: '§d所需金额'
   bucket:
-    water: '水桶'
-    lava: '岩浆桶'
-    milk: '牛奶桶'
+    water: 水桶
+    lava: 岩浆桶
+    milk: 牛奶桶
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§e生物类型: {0}'
-  enabled: '已启用'
-  disabled: '已关闭'
-  unknown: '未知'
+  enabled: 已启用
+  disabled: 已关闭
+  unknown: 未知
+  notSet: '§cnot set'
   unused: '§e§l未设置'
   used: '§6§l已设置'
   remove: '§e§o点击鼠标中键删除'
-  or: '或'
+  or: 或
   amount: '§e数量: {0}'
-  items: '物品'
-  expPoints: '经验点数'
+  items: 物品
+  expPoints: 经验点数
   'yes': '是'
   'no': '否'
-  and: '和'
+  and: 和

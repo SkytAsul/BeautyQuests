@@ -286,11 +286,21 @@ public class Utils{
 	}
 	
 	public static int parseInt(Object obj){
-		return obj instanceof Integer ? (int) obj : obj instanceof String ? Integer.parseInt((String) obj) : null;
+		if (obj instanceof Number) return ((Number) obj).intValue();
+		if (obj instanceof String) return Integer.parseInt((String) obj);
+		return 0;
 	}
 	
 	public static long parseLong(Object obj) {
-		return obj instanceof Long ? (long) obj : obj instanceof Integer ? ((Integer) obj).longValue() : obj instanceof String ? Long.parseLong((String) obj) : null;
+		if (obj instanceof Number) return ((Number) obj).longValue();
+		if (obj instanceof String) return Long.parseLong((String) obj);
+		return 0;
+	}
+
+	public static double parseDouble(Object obj) {
+		if (obj instanceof Number) return ((Number) obj).doubleValue();
+		if (obj instanceof String) return Double.parseDouble((String) obj);
+		return 0;
 	}
 
 	public static String removeColors(String str){

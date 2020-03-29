@@ -5,8 +5,8 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.utils.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class MoneyReward extends AbstractReward {

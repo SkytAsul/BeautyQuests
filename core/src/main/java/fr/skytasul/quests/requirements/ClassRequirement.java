@@ -11,8 +11,8 @@ import com.sucy.skill.api.classes.RPGClass;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.utils.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class ClassRequirement extends AbstractRequirement {
 

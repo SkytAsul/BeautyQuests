@@ -13,8 +13,8 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.utils.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class FactionRequirement extends AbstractRequirement {
 

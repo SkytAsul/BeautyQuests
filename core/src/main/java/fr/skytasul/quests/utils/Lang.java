@@ -152,6 +152,12 @@ public enum Lang{
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
 	
+	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
+
+	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
+	
+	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
+
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
@@ -163,6 +169,9 @@ public enum Lang{
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value"),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
 	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
+	CHOOSE_SCOREBOARD_OBJECTIVE("msg.editor.text.chooseObjectiveRequired"),
+	CHOOSE_SCOREBOARD_TARGET("msg.editor.text.chooseObjectiveTargetScore"),
+	
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
 	CHOOSE_PERM_WORLD("msg.editor.text.reward.permissionWorld"),
@@ -445,6 +454,7 @@ public enum Lang{
 	RCombatLvl("misc.requirement.combatLevel"),
 	RLevel("misc.requirement.experienceLevel"),
 	RPermissions("misc.requirement.permissions"),
+	RScoreboard("misc.requirement.scoreboard"),
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
@@ -504,13 +514,19 @@ public enum Lang{
 	}
 
 
-	
-	public static void loadStrings(YamlConfiguration config) {
+	public static boolean loadStrings(YamlConfiguration config) {
+		boolean changes = false;
 		for (Lang l : values()){
 			String value = config.getString(l.path, null);
-			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
+			if (value == null) {
+				value = "§cunknown string";
+				DebugUtils.logMessage("Unavailable string in config for key " + l.path);
+				config.set(l.path, value);
+				changes = true;
+			}
+			l.setValue(ChatColor.translateAlternateColorCodes('&', value));
 		}
+		return changes;
 	}
 	
 }

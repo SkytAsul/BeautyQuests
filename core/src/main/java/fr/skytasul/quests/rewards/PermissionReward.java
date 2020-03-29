@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.utils.MissingDependencyException;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionReward extends AbstractReward {
