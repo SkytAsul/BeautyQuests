@@ -1,6 +1,5 @@
 package fr.skytasul.quests.editors.checkers;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,9 +14,7 @@ public class EnumParser<T extends Enum<T>> implements AbstractParser {
 
 	public EnumParser(Class<T> enumClass) {
 		try {
-			Field valuesField = enumClass.getDeclaredField("$VALUES");
-			valuesField.setAccessible(true);
-			T[] values = (T[]) valuesField.get(null);
+			T[] values = (T[]) enumClass.getDeclaredMethod("values").invoke(null);
 			names = new HashMap<>(values.length + 1, 1);
 			for (T value : values) {
 				names.put(proceed(value.name()), value);
