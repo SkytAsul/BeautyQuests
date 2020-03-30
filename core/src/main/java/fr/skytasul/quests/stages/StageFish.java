@@ -1,6 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,20 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.ItemsGUI;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class StageFish extends AbstractCountableStage<ItemStack> {
 	
@@ -91,6 +99,53 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		}
 
 		return stage;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		public void start(Player p, LineData datas) {
+			List<ItemStack> items = new ArrayList<>();
+			datas.put("items", items);
+			Inventories.create(p, new ItemsGUI(() -> {
+				datas.getGUI().reopen(p, true);
+				setItem(datas.getLine());
+			}, items));
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			List<ItemStack> itemsList = (List<ItemStack>) datas.get("items");
+			Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
+			for (int i = 0; i < itemsList.size(); i++) {
+				ItemStack item = itemsList.get(i);
+				int amount = item.getAmount();
+				item.setAmount(1);
+				itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
+			}
+			StageFish stage = new StageFish(branch, itemsMap);
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageFish st = (StageFish) stage;
+			List<ItemStack> items = new ArrayList<>();
+			Map<Integer, Entry<ItemStack, Integer>> itemsMap = st.getObjects();
+			for (Entry<ItemStack, Integer> itemEntry : itemsMap.values()) {
+				ItemStack item = itemEntry.getKey().clone();
+				item.setAmount(itemEntry.getValue());
+				items.add(item);
+			}
+			datas.put("items", items);
+			setItem(datas.getLine());
+		}
+
+		public static void setItem(Line line) {
+			line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					Inventories.create(p, new ItemsGUI(() -> {
+						datas.getGUI().reopen(p, true);
+					}, (List<ItemStack>) datas.get("items")));
+				}
+			});
+		}
 	}
 
 }

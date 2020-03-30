@@ -6,8 +6,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Dependencies;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -50,6 +55,29 @@ public class PermissionReward extends AbstractReward {
 		}else {
 			permissions.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("perms"), Permission::deserialize));
 		}
+	}
+
+	public static class Creator implements RewardCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
+			if (!datas.containsKey("permissions")) datas.put("permissions", new ArrayList<>());
+			List<Permission> permissions = (List<Permission>) datas.get("permissions");
+			new PermissionListGUI(permissions, () -> {
+				ItemUtils.lore(clicked, "Permissions : " + permissions.size());
+				gui.reopen(p, true);
+			}).create(p);
+		}
+
+		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
+			PermissionReward rew = (PermissionReward) reward;
+			datas.put("permissions", new ArrayList<>(rew.permissions));
+			ItemUtils.lore(is, "Permissions : " + rew.permissions.size());
+		}
+
+		public AbstractReward finish(Map<String, Object> datas) {
+			return new PermissionReward((List<Permission>) datas.get("permissions"));
+		}
+
 	}
 
 }

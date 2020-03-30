@@ -18,7 +18,7 @@ public class Line {
 	
 	NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
 
-	LineData data;
+	public LineData data;
 	
 	Line(Inventory inv, int line, StagesGUI gui){
 		this.inv = inv;

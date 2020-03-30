@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.creation.ItemsGUI;
+import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -41,6 +45,25 @@ public class ItemReward extends AbstractReward {
 
 	protected void load(Map<String, Object> savedDatas){
 		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
+	}
+
+	public static class Creator implements RewardCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
+			if (!datas.containsKey("items")) datas.put("items", new ArrayList<>());
+			Inventories.create(p, new ItemsGUI(() -> {
+				gui.reopen(p, true);
+			}, (List<ItemStack>) datas.get("items")));
+		}
+
+		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
+			datas.put("items", ((ItemReward) reward).items);
+		}
+
+		public AbstractReward finish(Map<String, Object> datas) {
+			return new ItemReward((List<ItemStack>) datas.get("items"));
+		}
+
 	}
 
 }

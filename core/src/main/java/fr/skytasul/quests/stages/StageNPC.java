@@ -10,18 +10,29 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.editors.DialogEditor;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable;
+import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import fr.skytasul.quests.utils.types.Dialog;
@@ -227,6 +238,59 @@ public class StageNPC extends AbstractStage{
 		StageNPC st = new StageNPC(branch, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
 		st.loadDatas(map);
 		return st;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
+
+		public void start(Player p, LineData datas) {
+			StagesGUI sg = datas.getGUI();
+			Inventories.create(p, new SelectGUI((npc) -> {
+				sg.reopen(p, true);
+				npcDone(npc, datas);
+			}));
+		}
+
+		public static void npcDone(NPC npc, LineData datas) {
+			datas.put("npc", npc);
+			datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					Utils.sendMessage(p, Lang.NPC_TEXT.toString());
+					Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
+						datas.getGUI().reopen(p, false);
+						datas.put("npcText", obj);
+					}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog((NPC) datas.get("npc"))));
+				}
+			}, true, true);
+
+			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.stageHide.toString(), datas.containsKey("hide") ? (boolean) datas.get("hide") : false), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					datas.put("hide", ItemUtils.toggle(item));
+				}
+			}, true, true);
+		}
+
+		public static void setFinish(StageNPC stage, LineData datas) {
+			if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
+			if (datas.containsKey("hide")) stage.setHid((boolean) datas.get("hide"));
+		}
+
+		public static void setEdit(StageNPC stage, LineData datas) {
+			if (stage.getDialog() != null) datas.put("npcText", new Dialog(stage.getDialog().getNPC(), stage.getDialog().messages.clone()));
+			if (stage.isHid()) datas.put("hide", true);
+			npcDone(stage.getNPC(), datas);
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageNPC stage = new StageNPC(branch, (NPC) datas.get("npc"));
+			setFinish(stage, datas);
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageNPC st = (StageNPC) stage;
+			setEdit(st, datas);
+		}
 	}
 
 }

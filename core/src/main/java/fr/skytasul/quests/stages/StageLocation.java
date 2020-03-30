@@ -3,14 +3,24 @@ package fr.skytasul.quests.stages;
 import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.WaitClick;
+import fr.skytasul.quests.editors.checkers.NumberParser;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class StageLocation extends AbstractStage {
 
@@ -55,6 +65,48 @@ public class StageLocation extends AbstractStage {
 
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
 		return new StageLocation(branch, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
+	}
+	
+	public static class Creator implements StageCreationRunnables {
+		public void start(Player p, LineData datas) {
+			Lang.LOCATION_GO.send(p);
+			new WaitClick(p, NPCGUI.validMove, () -> {
+				datas.put("location", p.getLocation());
+				datas.put("radius", 5);
+				datas.getGUI().reopen(p, false);
+				setItems(datas.getLine());
+			}).enterOrLeave(p);
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageLocation stage = new StageLocation(branch, (Location) datas.get("location"), (int) datas.get("radius"));
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageLocation st = (StageLocation) stage;
+			datas.put("location", st.getLocation());
+			datas.put("radius", st.getRadius());
+			setItems(datas.getLine());
+		}
+
+		public static void setItems(Line line) {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
+				Lang.LOCATION_RADIUS.send(p);
+				new TextEditor(p, (x) -> {
+					datas.put("radius", x);
+					datas.getGUI().reopen(p, false);
+					ItemUtils.lore(item, Lang.currentRadius.format(x));
+				}, new NumberParser(Integer.class, true, true), () -> datas.getGUI().reopen(p, false), null).enterOrLeave(p);
+			});
+			line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
+				Lang.LOCATION_GO.send(p);
+				new WaitClick(p, NPCGUI.validMove, () -> {
+					datas.put("location", p.getLocation());
+					datas.getGUI().reopen(p, false);
+				}).enterOrLeave(p);
+			});
+		}
 	}
 	
 }

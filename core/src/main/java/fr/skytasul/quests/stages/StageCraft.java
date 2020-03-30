@@ -13,7 +13,11 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -21,6 +25,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -147,6 +152,35 @@ public class StageCraft extends AbstractStage {
 				result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
 
 		return result;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		public void start(Player p, LineData datas) {
+			new ItemGUI((is) -> {
+				datas.put("item", is);
+				datas.getGUI().reopen(p, true);
+				setItem(datas.getLine());
+			}).create(p);
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageCraft stage = new StageCraft(branch, (ItemStack) datas.get("item"));
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			datas.put("item", ((StageCraft) stage).getItem());
+			setItem(datas.getLine());
+		}
+
+		public static void setItem(Line line) {
+			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
+				new ItemGUI((is) -> {
+					datas.put("item", is);
+					datas.getGUI().reopen(p, true);
+				}).create(p);
+			});
+		}
 	}
 
 }

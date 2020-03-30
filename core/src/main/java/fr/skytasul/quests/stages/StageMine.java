@@ -11,11 +11,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.blocks.BlocksGUI;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable;
+import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -117,6 +126,50 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 
 		if (map.containsKey("placeCancelled")) stage.placeCancelled = (boolean) map.get("placeCancelled");
 		return stage;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		public void start(Player p, LineData datas) {
+			StagesGUI sg = datas.getGUI();
+			BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
+			blocks.run = (obj) -> {
+				sg.reopen(p, true);
+				datas.put("blocks", obj);
+				datas.put("prevent", false);
+				setItems(datas.getLine(), datas);
+			};
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageMine stage = new StageMine(branch, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
+			stage.setPlaceCancelled((boolean) datas.get("prevent"));
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageMine st = (StageMine) stage;
+			datas.put("blocks", st.cloneObjects());
+			datas.put("prevent", st.isPlaceCancelled());
+			setItems(datas.getLine(), datas);
+		}
+
+		public static void setItems(Line line, LineData datas) {
+			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
+					blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
+					blocks.run = (obj) -> {
+						datas.getGUI().reopen(p, true);
+						datas.put("blocks", obj);
+					};
+				}
+			});
+			line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), (boolean) datas.get("prevent")), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					datas.put("prevent", ItemUtils.toggle(item));
+				}
+			});
+		}
 	}
 
 }

@@ -9,16 +9,26 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable;
+import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 
 public class StageMobs extends AbstractCountableStage<Mob<?>> {
@@ -117,6 +127,52 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 
 		if (map.containsKey("shoot")) stage.shoot = (boolean) map.get("shoot");
 		return stage;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		private static final ItemStack editMobs = ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString());
+
+		public void start(Player p, LineData datas) {
+			StagesGUI sg = datas.getGUI();
+			Line line = datas.getLine();
+			MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
+			mobs.run = (obj) -> {
+				sg.reopen(p, true);
+				setItems(line, sg, datas);
+				datas.put("mobs", obj);
+			};
+		}
+
+		public static void setItems(Line line, StagesGUI sg, LineData datas) {
+			line.setItem(6, editMobs.clone(), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
+					mobs.setMobsFromMap((Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
+					mobs.run = (obj) -> {
+						sg.reopen(p, true);
+						datas.put("mobs", obj);
+					};
+				}
+			});
+			line.setItem(5, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), datas.containsKey("shoot") ? (boolean) datas.get("shoot") : false), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					datas.put("shoot", ItemUtils.toggle(datas.getLine().getItem(5)));
+				}
+			});
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageMobs stage = new StageMobs(branch, (Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
+			if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageMobs st = (StageMobs) stage;
+			datas.put("mobs", st.cloneObjects());
+			datas.put("shoot", st.isShoot());
+			setItems(datas.getLine(), datas.getGUI(), datas);
+		}
 	}
 
 }
