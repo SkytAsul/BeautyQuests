@@ -51,6 +51,7 @@ public class Quest{
 	private String name;
 	private String endMessage;
 	private String hologramText;
+	private String customDescription;
 	private String customConfirmMessage;
 	private NPC npcStarter;
 	private Dialog dialog;
@@ -112,6 +113,18 @@ public class Quest{
 		this.hologramText = hologramText;
 	}
 	
+	public String getCustomDescription() {
+		return customDescription;
+	}
+
+	public void setCustomDescription(String customDescription) {
+		this.customDescription = customDescription;
+	}
+
+	public String getDescription() {
+		return customDescription != null ? customDescription : Lang.TALK_NPC.format(npcStarter.getName());
+	}
+
 	public String getCustomConfirmMessage(){
 		return customConfirmMessage;
 	}
@@ -446,6 +459,7 @@ public class Quest{
 		if (!cancellable) section.set("cancellable", cancellable);
 		if (hologramText != null) section.set("hologramText", hologramText);
 		if (customConfirmMessage != null) section.set("confirmMessage", customConfirmMessage);
+		if (customDescription != null) section.set("customDescription", customDescription);
 		if (hid) section.set("hid", true);
 		if (endMessage != null) section.set("endMessage", endMessage);
 		if (dialog != null) section.set("startDialog", dialog.serialize());
@@ -495,6 +509,7 @@ public class Quest{
 		if (map.containsKey("endMessage")) qu.endMessage = (String) map.get("endMessage");
 		if (map.containsKey("startDialog")) qu.dialog = Dialog.deserialize((Map<String, Object>) map.get("startDialog"));
 		if (map.containsKey("hologramText")) qu.hologramText = (String) map.get("hologramText");
+		if (map.containsKey("customDescription")) qu.customDescription = (String) map.get("customDescription");
 		if (map.containsKey("confirmMessage")) qu.customConfirmMessage = (String) map.get("confirmMessage");
 		if (map.containsKey("bypassLimit")) qu.bypassLimit = (boolean) map.get("bypassLimit");
 		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));

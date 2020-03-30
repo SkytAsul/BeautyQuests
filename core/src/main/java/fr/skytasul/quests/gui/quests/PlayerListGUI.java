@@ -115,7 +115,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				setMainItem(i - page * 35, createQuestItem(qu, Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName())));
+				setMainItem(i - page * 35, createQuestItem(qu, qu.getDescription()));
 			}
 			break;
 		}

@@ -45,6 +45,7 @@ msg:
     the quest: (Write "null" if you want the default timer.)'
   writeConfirmMessage: '§aWrite the confirmation message shown when a player is about
     to start the quest: (Write "null" if you want the default message.)'
+  writeQuestDescription: '§aWrite the description of the quest, shown in the player's quest GUI.'
   requirements:
     quest: §cYou must have finished the quest §e{0}§c!
     level: §cYou must be at least level {0}!
@@ -293,6 +294,7 @@ inv:
     hologramLaunch: §eEdit "launch" hologram item
     hologramLaunchNo: §eEdit "launch unavailable" hologram item
     customConfirmMessage: §eEdit quest confirmation message
+    customDescription: §eEdit quest description
     name: Last quest details
     multipleTime:
       itemName: Toggle several-use

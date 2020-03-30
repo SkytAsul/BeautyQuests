@@ -61,7 +61,8 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack timerItem = ItemUtils.item(XMaterial.CLOCK, Lang.timer.toString());
 	static ItemStack hologramLaunch = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunch.toString());
 	static ItemStack hologramLaunchNo = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunchNo.toString());
-	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customConfirmMessage.toString());
+	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.FEATHER, Lang.customConfirmMessage.toString());
+	static ItemStack customDesc = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customConfirmMessage.toString());
 
 	private final StagesGUI stages;
 
@@ -76,6 +77,7 @@ public class FinishGUI implements CustomInventory{
 	private String endMsg;
 	private String hologramText;
 	private String confirmMessage;
+	private String description;
 	private Dialog dialog;
 	private int timer = -1;
 
@@ -128,7 +130,8 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(14, startRewards.clone());
 			inv.setItem(16, holoText);
 			inv.setItem(17, questName.clone());
-			
+
+			inv.setItem(21, customDesc.clone());
 			inv.setItem(22, customConfirmMessage.clone());
 			
 			inv.setItem(24, hologramLaunch.clone());
@@ -288,6 +291,19 @@ public class FinishGUI implements CustomInventory{
 			}).enterOrLeave(p);
 			break;
 			
+		case 21: //						Custom Description
+			Lang.QUEST_DESCRIPTION.send(p);
+			new TextEditor(p, (obj) -> {
+				description = (String) obj;
+				openLastInv(p);
+				ItemUtils.lore(current, description);
+			}, () -> openLastInv(p), () -> {
+				description = null;
+				ItemUtils.lore(current);
+				openLastInv(p);
+			}).enterOrLeave(p);
+			break;
+
 		case 22: //						Custom Confirm Message
 			Lang.CONFIRM_MESSAGE.send(p);
 			new TextEditor(p, (obj) -> {
@@ -371,6 +387,7 @@ public class FinishGUI implements CustomInventory{
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
 		qu.setCustomConfirmMessage(confirmMessage);
+		qu.setCustomDescription(description);
 		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(inv.getItem(24));
 		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(inv.getItem(25));
 		qu.getRequirements().addAll(requirements);
@@ -447,6 +464,8 @@ public class FinishGUI implements CustomInventory{
 		hologramText = edited.getCustomHologramText();
 		confirmMessage = edited.getCustomConfirmMessage();
 		if (confirmMessage != null) ItemUtils.lore(inv.getItem(22), confirmMessage);
+		description = edited.getCustomDescription();
+		if (description != null) ItemUtils.lore(inv.getItem(21), description);
 		isRepeatable = ItemUtils.set(inv.getItem(0), edited.isRepeatable());
 		timer = edited.getRawTimer();
 		if (isRepeatable) inv.setItem(9, timerItem);
