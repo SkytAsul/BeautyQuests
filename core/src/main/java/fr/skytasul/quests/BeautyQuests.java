@@ -185,7 +185,7 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	private void launchSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
+		if (QuestsConfiguration.saveCycle > 0 && saveTask == null) {
 			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
 			saveTask = new BukkitRunnable() {
 				public void run() {
