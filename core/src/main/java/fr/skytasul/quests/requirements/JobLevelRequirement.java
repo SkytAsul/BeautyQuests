@@ -18,7 +18,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 
 	public String jobName;
 	
-	protected JobLevelRequirement() {
+	public JobLevelRequirement() {
 		super("jobLevelRequired");
 		if (!Dependencies.jobs) throw new MissingDependencyException("Jobs");
 	}

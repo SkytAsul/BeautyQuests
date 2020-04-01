@@ -18,7 +18,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	private Objective objective;
 	private String objectiveName;
 
-	protected ScoreboardRequirement() {
+	public ScoreboardRequirement() {
 		super("scoreboardRequired");
 	}
 
