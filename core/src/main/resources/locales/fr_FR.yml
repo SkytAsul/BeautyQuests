@@ -34,6 +34,7 @@ msg:
   writeHologramText: '§aEcrivez le texte de l''hologramme. (tapez "none" si vous ne voulez pas d''hologramme, et "null" si vous voulez le texte par défaut.)'
   writeQuestTimer: '§aRenseignez le temps nécessaire (en minutes) avant de pouvoir refaire la quête. (Tapez "null" si vous voulez le temps par défaut)'
   writeConfirmMessage: '§aÉcrivez le message de confirmation affiché lorsqu''un joueur est sur le point de démarrer la quête : (Tapez "null" si vous voulez le message par défaut).'
+  writeQuestDescription: '§aÉcrivez la description de la quête, affichée dans l''interface des quêtes du joueur.'
   requirements:
     quest: '§cVous devez avoir terminé la quête §e{0}§c !'
     level: '§cVous devez être au moins niveau {0} !'
@@ -266,6 +267,7 @@ inv:
     hologramLaunch: '§eModifier l''item de l''hologramme "lancement"'
     hologramLaunchNo: '§eModifier l''item de l''hologramme "lancement impossible"'
     customConfirmMessage: '§eModifier le message de confirmation de quête'
+    customDescription: '§eModifier la description de la quête'
     name: Derniers détails de la quête
     multipleTime:
       itemName: Inverser la multi-utilisation
