@@ -89,6 +89,7 @@ msg:
     resetPlayerQuest:
       player: '§6Les données de la quête {0} ont été supprimées par {1}.'
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
+    resetQuest: '§6Les données de la quête ont été supprimées pour {0} joueurs.'
     startQuest: '§6Vous avez forcé le début de la quête {0} (UUID du joueur : {1}).'
     cancelQuest: '§6Vous avez annulé la quête {0}.'
     cancelQuestUnavailable: '§cLa quête {0} ne peut être annulée.'

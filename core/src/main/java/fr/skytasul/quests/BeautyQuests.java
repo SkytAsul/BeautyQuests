@@ -279,7 +279,7 @@ public class BeautyQuests extends JavaPlugin{
 					}
 				}
 			}
-			if (Lang.loadStrings(conf)) changes = true;
+			Lang.loadStrings(conf);
 
 			if (changes) conf.save(file); // if there has been changes before, save the edited file
 			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");

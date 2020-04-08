@@ -52,9 +52,11 @@ public class PermissionGUI implements CustomInventory {
 		case 0:
 			Lang.CHOOSE_PERM_REWARD.send(p);
 			new TextEditor(p, (x) -> {
+				perm = (String) x;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
 			}, () -> p.openInventory(inv), () -> {
+				perm = null;
 				inv.getItem(4).setType(Material.COAL);
 				p.openInventory(inv);
 			}).enterOrLeave(p);

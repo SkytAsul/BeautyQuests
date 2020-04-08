@@ -517,19 +517,12 @@ public enum Lang{
 	}
 
 
-	public static boolean loadStrings(YamlConfiguration config) {
-		boolean changes = false;
+	public static void loadStrings(YamlConfiguration config) {
 		for (Lang l : values()){
 			String value = config.getString(l.path, null);
-			if (value == null) {
-				value = "§cunknown string";
-				DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-				config.set(l.path, value);
-				changes = true;
-			}
-			l.setValue(ChatColor.translateAlternateColorCodes('&', value));
+			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
+			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
 		}
-		return changes;
 	}
 	
 }
