@@ -58,7 +58,7 @@ public class PlayerAccount {
 
 	public PlayerQuestDatas removeQuestDatas(Quest quest) {
 		PlayerQuestDatas removed = datas.remove(quest.getID());
-		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, quest);
+		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, quest, removed);
 		return removed;
 	}
 

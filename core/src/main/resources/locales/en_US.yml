@@ -103,6 +103,7 @@ msg:
     resetPlayerQuest:
       player: §6All informations about the quest {0} have been deleted by {1}.
       remover: §6{0} quest information(s) of {1} has/have been deleted.
+    resetQuest: §6Removed datas of the quest for {0} players.
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
     cancelQuest: §6You have cancelled the quest {0}.
     cancelQuestUnavailable: §cThe quest {0} can't be cancelled.

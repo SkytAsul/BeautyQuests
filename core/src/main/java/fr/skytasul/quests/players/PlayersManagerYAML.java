@@ -49,7 +49,18 @@ public class PlayersManagerYAML extends PlayersManager {
 		return new PlayerQuestDatas(acc, quest.getID());
 	}
 
-	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest) {}
+	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {}
+
+	public int removeQuestDatas(Quest quest) {
+		loadAllAccounts();
+		int amount = 0;
+		
+		for (PlayerAccount account : loadedAccounts.values()) {
+			if (account.removeQuestDatas(quest) != null) amount++;
+		}
+		
+		return amount;
+	}
 
 	public boolean hasAccounts(Player p) {
 		return identifiersIndex.containsValue(getIdentifier(p));
@@ -65,7 +76,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	void loadAllAccounts() {
-		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experiment some lags.");
+		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experience some lags.");
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
 			PlayerAccount acc = loadFromFile(entry.getKey());

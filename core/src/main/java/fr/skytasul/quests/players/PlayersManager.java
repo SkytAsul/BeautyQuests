@@ -23,8 +23,10 @@ public abstract class PlayersManager {
 
 	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
 
-	public abstract void playerQuestDataRemoved(PlayerAccount acc, Quest quest);
+	public abstract void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas);
 
+	public abstract int removeQuestDatas(Quest quest);
+	
 	public abstract boolean hasAccounts(Player p);
 
 	public abstract void load();

@@ -94,6 +94,7 @@ public enum Lang{
 	DATA_REMOVED_INFO("msg.command.resetPlayer.remover"),
 	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player"),
 	DATA_QUEST_REMOVED_INFO("msg.command.resetPlayerQuest.remover"),
+	QUEST_PLAYERS_REMOVED("msg.command.resetQuest"), // 0: amount of players
 	START_QUEST("msg.command.startQuest"),
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	CANCEL_QUEST_UNAVAILABLE("msg.command.cancelQuestUnavailable"),

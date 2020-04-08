@@ -1,5 +1,6 @@
 package fr.skytasul.quests.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -219,6 +220,17 @@ public class Commands {
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		new PlayerListGUI(PlayersManager.getPlayerAccount(target)).create(cmd.player);
+	}
+	
+	@Cmd(permission = "resetQuest", min = 1, args = {"QUESTSID"})
+	public void resetQuest(CommandContext cmd) {
+		Quest qu = (Quest) cmd.args[0];
+		int amount = 0;
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (qu.resetPlayer(PlayersManager.getPlayerAccount(p))) amount++;
+		}
+		amount += PlayersManager.manager.removeQuestDatas(qu);
+		Lang.QUEST_PLAYERS_REMOVED.send(cmd.sender, amount);
 	}
 	
 	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})

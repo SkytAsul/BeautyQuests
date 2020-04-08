@@ -31,6 +31,8 @@ public class PlayersManagerDB extends PlayersManager {
 	private PreparedStatement removeQuestData;
 	private PreparedStatement getQuestsData;
 
+	private PreparedStatement removeExistingQuestDatas;
+
 	private PreparedStatement updateFinished;
 	private PreparedStatement updateTimer;
 	private PreparedStatement updateBranch;
@@ -95,14 +97,28 @@ public class PlayersManagerDB extends PlayersManager {
 		return new PlayerQuestDatasDB(acc, quest.getID());
 	}
 
-	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest) {
+	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {
 		try {
+			for (Entry<BukkitTask, Object> entry : ((PlayerQuestDatasDB) datas).cachedDatas.values()) {
+				entry.getKey().cancel();
+			}
 			removeQuestData.setInt(1, acc.index);
 			removeQuestData.setInt(2, quest.getID());
 			removeQuestData.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public int removeQuestDatas(Quest quest) {
+		int amount = 0;
+		try {
+			removeExistingQuestDatas.setInt(1, quest.getID());
+			amount += removeExistingQuestDatas.executeUpdate();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return amount;
 	}
 
 	public boolean hasAccounts(Player p) {
@@ -127,6 +143,8 @@ public class PlayersManagerDB extends PlayersManager {
 			removeQuestData = db.prepareStatement("DELETE FROM " + DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
 			getQuestsData = db.prepareStatement("SELECT * FROM " + DATAS_TABLE + " WHERE `account_id` = ?");
 
+			removeExistingQuestDatas = db.prepareStatement("DELETE FROM " + DATAS_TABLE + " WHERE `quest_id` = ?");
+			
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
 			updateBranch = prepareDatasStatement("current_branch");
