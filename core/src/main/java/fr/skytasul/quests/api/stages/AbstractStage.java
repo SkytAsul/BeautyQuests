@@ -111,6 +111,10 @@ public abstract class AbstractStage implements Listener{
 		return index;
 	}
 
+	public String debugName() {
+		return "quest " + branch.getQuest().getName() + ", branch " + branch.getID() + ", stage " + getID();
+	}
+
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage

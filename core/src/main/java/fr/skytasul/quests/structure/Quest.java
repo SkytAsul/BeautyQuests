@@ -36,7 +36,7 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
@@ -84,7 +84,7 @@ public class Quest{
 	}
 	
 	public void create() {
-		if (Dependencies.dyn) Dynmap.addMarker(this);
+		if (DependenciesManager.dyn) Dynmap.addMarker(this);
 	}
 	
 	void updateLauncheable(LivingEntity en) {
@@ -426,7 +426,7 @@ public class Quest{
 	
 	public void unloadAll(){
 		manager.remove();
-		if (Dependencies.dyn) Dynmap.removeMarker(this);
+		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
 		for (AbstractReward rew : rewards){
 			rew.unload();
 		}

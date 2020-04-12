@@ -1,6 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.Bukkit;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -8,7 +8,7 @@ import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 
-public class Dependencies {
+public class DependenciesManager {
 
 	public static boolean wg = false; //		WorldGuard
 	public static boolean mm = false; //	MythicMobs
@@ -27,60 +27,66 @@ public class Dependencies {
 	public static boolean mclvl = false; //	McCombatLevel
 	public static boolean boss = false; //	Boss
 	
-	public static void initialize(PluginManager pman) {
-		if (pman.isPluginEnabled("WorldGuard")){
+	public static void initialize() {
+		if (testCompatibility("WorldGuard")){
 			wg = true;
 		}
-		if (pman.isPluginEnabled("MythicMobs")){
+		if (testCompatibility("MythicMobs")){
 			mm = true;
 			QuestsAPI.registerMobFactory(new MythicMobs());
 		}
-		if (pman.isPluginEnabled("Vault")){
+		if (testCompatibility("Vault")){
 			vault = true;
 		}
-		if (pman.isPluginEnabled("PlaceholderAPI")){
+		if (testCompatibility("PlaceholderAPI")){
 			papi = true;
 			PlaceholderAPI.registerPlaceholders();
 		}
-		if (pman.isPluginEnabled("SkillAPI")){
+		if (testCompatibility("SkillAPI")){
 			skapi = true;
 		}
-		if (pman.isPluginEnabled("HolographicDisplays")){
+		if (testCompatibility("HolographicDisplays")){
 			holod = true;
 		}
-		if (pman.isPluginEnabled("Jobs")){
+		if (testCompatibility("Jobs")){
 			jobs = true;
 		}
-		if (pman.isPluginEnabled("Factions")){
+		if (testCompatibility("Factions")){
 			fac = true;
 		}
-		if (pman.isPluginEnabled("AccountsHook")){
+		if (testCompatibility("AccountsHook")){
 			acc = true;
 		}
-		if (pman.isPluginEnabled("dynmap")){
+		if (testCompatibility("dynmap")){
 			dyn = true;
 		}
-		if (pman.isPluginEnabled("Parties")){
+		if (testCompatibility("Parties")){
 			par = true; // not used currently
 		}
-		if (pman.isPluginEnabled("EpicBosses")){
+		if (testCompatibility("EpicBosses")){
 			eboss = true;
-			pman.registerEvents(new EpicBosses(), BeautyQuests.getInstance());
+			Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance());
 		}
-		if (pman.isPluginEnabled("GPS")){
+		if (testCompatibility("GPS")){
 			gps = true;
 			GPS.init();
 		}
-		if (pman.isPluginEnabled("mcMMO")){
+		if (testCompatibility("mcMMO")){
 			mmo = true;
 		}
-		if (pman.isPluginEnabled("McCombatLevel")){
+		if (testCompatibility("McCombatLevel")){
 			mclvl = true;
 		}
-		if (pman.isPluginEnabled("Boss")) {
+		if (testCompatibility("Boss")) {
 			boss = true;
 			QuestsAPI.registerMobFactory(new BossAPI());
 		}
+	}
+	
+	private static boolean testCompatibility(String pluginName) {
+		if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) return false;
+		BeautyQuests.logger.info("Hooked into " + pluginName);
+		return true;
 	}
 	
 }

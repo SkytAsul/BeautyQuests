@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class Mob<Data> implements Cloneable {
 
@@ -80,7 +80,7 @@ public class Mob<Data> implements Cloneable {
 			if (map.containsKey("bmob")) {
 				factoryName = "bukkitEntity";
 				value = (String) map.get("bmob");
-			}else if (map.containsKey("mmob") && Dependencies.mm) {
+			}else if (map.containsKey("mmob") && DependenciesManager.mm) {
 				factoryName = "mythicMobs";
 				value = (String) map.get("mmob");
 			}else if (map.containsKey("npc")) {

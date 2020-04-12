@@ -15,7 +15,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
@@ -25,7 +25,7 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	public ClassRequirement() {
 		super("classRequired");
-		if (!Dependencies.skapi) throw new MissingDependencyException("SkillAPI");
+		if (!DependenciesManager.skapi) throw new MissingDependencyException("SkillAPI");
 	}
 
 	public List<String> getClassesName(){

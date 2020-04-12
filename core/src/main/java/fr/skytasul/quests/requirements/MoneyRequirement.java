@@ -12,7 +12,7 @@ import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
@@ -22,7 +22,7 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 
 	public MoneyRequirement() {
 		super("moneyRequired");
-		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
+		if (!DependenciesManager.vault) throw new MissingDependencyException("Vault");
 	}
 
 	public MoneyRequirement(double money) {

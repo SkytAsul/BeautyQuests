@@ -18,7 +18,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Factions;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
@@ -28,7 +28,7 @@ public class FactionRequirement extends AbstractRequirement {
 	
 	public FactionRequirement() {
 		super("factionRequired");
-		if (!Dependencies.fac) throw new MissingDependencyException("Factions");
+		if (!DependenciesManager.fac) throw new MissingDependencyException("Factions");
 	}
 
 	public List<String> getFactionsName(){

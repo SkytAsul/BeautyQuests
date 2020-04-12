@@ -13,7 +13,7 @@ import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
@@ -23,7 +23,7 @@ public class MoneyReward extends AbstractReward {
 	
 	public MoneyReward(){
 		super("moneyReward");
-		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
+		if (!DependenciesManager.vault) throw new MissingDependencyException("Vault");
 	}
 	
 	public MoneyReward(double money) {

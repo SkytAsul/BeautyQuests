@@ -67,6 +67,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
 		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
+		if (playerAmounts == null) {
+			BeautyQuests.logger.severe("The plugin has been unable to retrieve stage datas for account " + acc.debugName() + " on " + super.debugName());
+			return new String[] { "§4§lerror" };
+		}
 		String[] elements = new String[playerAmounts.size()];
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {

@@ -11,7 +11,7 @@ import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
@@ -28,7 +28,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 
 	public PlaceholderRequirement(){
 		super("placeholderRequired");
-		if (!Dependencies.papi) throw new MissingDependencyException("PlaceholderAPI");
+		if (!DependenciesManager.papi) throw new MissingDependencyException("PlaceholderAPI");
 	}
 
 	public boolean test(Player p){

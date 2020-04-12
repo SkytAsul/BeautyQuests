@@ -10,7 +10,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Jobs;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
@@ -20,7 +20,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	
 	public JobLevelRequirement() {
 		super("jobLevelRequired");
-		if (!Dependencies.jobs) throw new MissingDependencyException("Jobs");
+		if (!DependenciesManager.jobs) throw new MissingDependencyException("Jobs");
 	}
 
 	@Override

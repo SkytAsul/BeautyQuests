@@ -71,6 +71,10 @@ public class PlayerAccount {
 		return true;
 	}
 	
+	public String debugName() {
+		return abstractAcc.getIdentifier() + " (#" + index + ")";
+	}
+
 	public void serialize(ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
 		config.set("quests", Utils.serializeList(datas.values(), PlayerQuestDatas::serialize));

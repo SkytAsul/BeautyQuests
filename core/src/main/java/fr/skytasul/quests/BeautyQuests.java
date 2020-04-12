@@ -46,7 +46,7 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
@@ -110,7 +110,7 @@ public class BeautyQuests extends JavaPlugin{
 			return;
 		}
 		try{
-			Dependencies.initialize(getServer().getPluginManager());
+			DependenciesManager.initialize();
 		}catch (Throwable ex){
 			logger.severe("Error when initializing compatibilities. Consider restarting.");
 			ex.printStackTrace();
@@ -329,7 +329,7 @@ public class BeautyQuests extends JavaPlugin{
 		File scFile = new File(getDataFolder(), "scoreboard.yml");
 		if (!scFile.exists()) saveResource("scoreboard.yml", true);
 		scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
-		if (Dependencies.dyn){
+		if (DependenciesManager.dyn){
 			try{
 				Dynmap.intitialize();
 			}catch (Throwable ex){
@@ -419,7 +419,7 @@ public class BeautyQuests extends JavaPlugin{
 		npcs.clear();
 		if (db != null) db.closeConnection();
 		HandlerList.unregisterAll(this);
-		if (Dependencies.dyn) Dynmap.unload();
+		if (DependenciesManager.dyn) Dynmap.unload();
 	}
 	
 	/* ---------- Backups ---------- */

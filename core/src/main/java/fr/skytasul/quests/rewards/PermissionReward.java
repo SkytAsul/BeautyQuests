@@ -14,7 +14,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.types.Permission;
 
@@ -28,7 +28,7 @@ public class PermissionReward extends AbstractReward {
 
 	public PermissionReward(List<Permission> permissions) {
 		super("permReward");
-		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
+		if (!DependenciesManager.vault) throw new MissingDependencyException("Vault");
 		this.permissions = permissions;
 	}
 

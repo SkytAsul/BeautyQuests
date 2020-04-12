@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.McCombatLevel;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
@@ -15,7 +15,7 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 
 	public McCombatLevelRequirement(){
 		super("mcmmoCombatLevelRequirement");
-		if (!Dependencies.mmo) throw new MissingDependencyException("McCombatLevel");
+		if (!DependenciesManager.mmo) throw new MissingDependencyException("McCombatLevel");
 	}
 
 	@Override

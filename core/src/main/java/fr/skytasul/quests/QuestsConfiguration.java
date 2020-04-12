@@ -19,7 +19,7 @@ import fr.skytasul.quests.utils.ParticleEffect.Particle;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -101,7 +101,7 @@ public class QuestsConfiguration {
 		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
-		gps = Dependencies.gps && config.getBoolean("gps");
+		gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
 		item = XMaterial.fromString(config.getString("item"));
@@ -117,13 +117,13 @@ public class QuestsConfiguration {
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
-		hookAcounts = Dependencies.acc ? config.getBoolean("accountsHook") : false;
+		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
 		dSetName = config.getString("dynmap.markerSetName");
-		if (dSetName == null || dSetName.isEmpty()) Dependencies.dyn = false;
+		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn = false;
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
 		finishSound = config.getString("finishSound");
@@ -301,17 +301,17 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoTalkItem;
 	}
 	

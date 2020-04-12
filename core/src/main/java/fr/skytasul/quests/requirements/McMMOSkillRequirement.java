@@ -10,7 +10,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.McMMO;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
@@ -20,7 +20,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 
 	public McMMOSkillRequirement(){
 		super("mcmmoSklillLevelRequired");
-		if (!Dependencies.mmo) throw new MissingDependencyException("mcMMO");
+		if (!DependenciesManager.mmo) throw new MissingDependencyException("mcMMO");
 	}
 
 	@Override
