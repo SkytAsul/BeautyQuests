@@ -90,8 +90,9 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	protected void event(PlayerAccount acc, Player p, Object object, int amount) {
-		for (int id = 0; id < objects.size(); id++) {
-			if (objectApplies(objects.get(id).getKey(), object)) {
+		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
+			int id = entry.getKey();
+			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 				if (!playerAmounts.containsKey(id)) return;
 				int playerAmount = playerAmounts.get(id);

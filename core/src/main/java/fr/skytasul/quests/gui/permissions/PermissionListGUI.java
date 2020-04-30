@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -31,8 +30,6 @@ public class PermissionListGUI extends ListGUI<Permission> {
 	public void click(Permission existing) {
 		new PermissionGUI((perm) -> {
 			super.finishItem(perm);
-			Inventories.put(p, this, inv);
-			p.openInventory(inv);
 		}, existing).create(p);
 	}
 

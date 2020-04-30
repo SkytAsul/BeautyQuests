@@ -62,7 +62,7 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack hologramLaunch = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunch.toString());
 	static ItemStack hologramLaunchNo = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunchNo.toString());
 	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.FEATHER, Lang.customConfirmMessage.toString());
-	static ItemStack customDesc = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customConfirmMessage.toString());
+	static ItemStack customDesc = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customDescription.toString());
 
 	private final StagesGUI stages;
 
@@ -157,7 +157,8 @@ public class FinishGUI implements CustomInventory{
 
 		case 0:
 			if (isRepeatable = ItemUtils.toggle(current)){
-				inv.setItem(9, timerItem);
+				inv.setItem(9, ItemUtils.lore(timerItem.clone()));
+				setTimerItem();
 			}else inv.setItem(9, null);
 			break;
 
@@ -220,11 +221,13 @@ public class FinishGUI implements CustomInventory{
 			Lang.TIMER.send(p);
 			new TextEditor(p, (obj) -> {
 				timer = (int) obj;
+				setTimerItem();
 				openLastInv(p);
 			}, new NumberParser(Integer.class, true), () -> {
 				openLastInv(p);
 			}, () -> {
 				timer = -1;
+				setTimerItem();
 				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
@@ -350,6 +353,10 @@ public class FinishGUI implements CustomInventory{
 		return true;
 	}
 
+	private void setTimerItem() {
+		ItemUtils.lore(inv.getItem(9), timer == -1 ? "Default timer" : timer + " minutes");
+	}
+
 	private void refreshFinish(Inventory inv) {
 		ItemStack item = inv.getItem(32);
 		if (name != null && startNPC != null) {
@@ -468,7 +475,10 @@ public class FinishGUI implements CustomInventory{
 		if (description != null) ItemUtils.lore(inv.getItem(21), description);
 		isRepeatable = ItemUtils.set(inv.getItem(0), edited.isRepeatable());
 		timer = edited.getRawTimer();
-		if (isRepeatable) inv.setItem(9, timerItem);
+		if (isRepeatable) {
+			inv.setItem(9, timerItem);
+			setTimerItem();
+		}
 		hasScoreboard = ItemUtils.set(inv.getItem(1), edited.isScoreboardEnabled());
 		isHid = ItemUtils.set(inv.getItem(2), edited.isHid());
 		bypassLimit = ItemUtils.set(inv.getItem(10), edited.canBypassLimit());
