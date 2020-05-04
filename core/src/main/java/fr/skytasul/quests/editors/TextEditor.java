@@ -37,8 +37,8 @@ public class TextEditor extends Editor{
 		this.nul = nul;
 	}
 
-	public boolean chat(String msg){
-		if (msg.equals("cancel")){
+	public boolean chat(String msg, String strippedMessage){
+		if (strippedMessage.equals("cancel")) {
 			if (cancel == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "cancel");
 				return false;
@@ -46,7 +46,7 @@ public class TextEditor extends Editor{
 			leave(p);
 			cancel.run();
 			return true;
-		}else if (msg.equals("null")){
+		}else if (strippedMessage.equals("null")) {
 			if (nul == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "null");
 				return false;
@@ -60,7 +60,7 @@ public class TextEditor extends Editor{
 		boolean invalid = false;
 		if (parser != null){
 			try{
-				Object tmp = parser.parse(p, ChatColor.stripColor(msg));
+				Object tmp = parser.parse(p, ChatColor.stripColor(strippedMessage));
 				if (tmp == null){
 					invalid = true;
 				}else {

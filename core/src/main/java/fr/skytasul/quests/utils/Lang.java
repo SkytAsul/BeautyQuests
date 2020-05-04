@@ -47,6 +47,7 @@ public enum Lang{
 	TIMER("msg.writeQuestTimer"),
 	CONFIRM_MESSAGE("msg.writeConfirmMessage"),
 	QUEST_DESCRIPTION("msg.writeQuestDescription"),
+	QUEST_MATERIAL("msg.writeQuestMaterial"),
 	
 	REQUIREMENT_QUEST("msg.requirements.quest"),
 	REQUIREMENT_LEVEL("msg.requirements.level"),
@@ -310,6 +311,7 @@ public enum Lang{
 	hologramLaunchNo("inv.details.hologramLaunchNo"),
 	customConfirmMessage("inv.details.customConfirmMessage"),
 	customDescription("inv.details.customDescription"),
+	customMaterial("inv.details.customMaterial"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),

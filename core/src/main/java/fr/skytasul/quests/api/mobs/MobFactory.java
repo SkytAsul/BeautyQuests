@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
+import net.citizensnpcs.npc.ai.NPCHolder;
 
 /**
  * This class implements {@link Listener} to permit the implementation to have at least one {@link EventHandler}.
@@ -79,6 +80,7 @@ public abstract interface MobFactory<T> extends Listener {
 	 * @param p killer
 	 */
 	public default void callEvent(T data, Entity entity, Player p) {
+		if (p instanceof NPCHolder) return;
 		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(data, p, entity));
 	}
 

@@ -54,18 +54,19 @@ public abstract class Editor implements Listener{
 	
 	/**
 	 * Happens when the player in the editor type somthing in the chat
-	 * @param message Message typed
+	 * @param coloredMessage Message typed
+	 * @param strippedMessage Message without default colors
 	 * @return false if the plugin needs to send an help message to the player
 	 */
-	public boolean chat(String message){
+	public boolean chat(String coloredMessage, String strippedMessage) {
 		return false;
 	}
 	
 	private final void callChat(String rawText){
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
-		rawText = ChatColor.stripColor(rawText); // remove default colors
+		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText))){
+		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText), ChatColor.stripColor(rawText))) {
 			Lang.CHAT_EDITOR.send(p);
 		}
 	}

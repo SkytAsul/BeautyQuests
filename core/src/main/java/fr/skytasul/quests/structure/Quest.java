@@ -36,6 +36,7 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
@@ -66,6 +67,7 @@ public class Quest{
 	private int timer = -1;
 	private ItemStack hologramLaunch;
 	private ItemStack hologramLaunchNo;
+	private XMaterial customMaterial;
 	
 	private boolean removed = false;
 	private boolean asyncEnd = false;
@@ -133,6 +135,18 @@ public class Quest{
 		this.customConfirmMessage = message;
 	}
 	
+	public XMaterial getCustomMaterial() {
+		return customMaterial;
+	}
+
+	public void setCustomMaterial(XMaterial material) {
+		this.customMaterial = material;
+	}
+
+	public XMaterial getMaterial() {
+		return customMaterial == null ? QuestsConfiguration.getItemMaterial() : customMaterial;
+	}
+
 	public int getRawTimer(){
 		return timer;
 	}
@@ -467,6 +481,7 @@ public class Quest{
 		if (timer > -1) section.set("timer", timer);
 		if (hologramLaunch != null) section.set("hologramLaunch", hologramLaunch.serialize());
 		if (hologramLaunchNo != null) section.set("hologramLaunchNo", hologramLaunchNo.serialize());
+		if (customMaterial != null) section.set("customMaterial", customMaterial.name());
 		
 		section.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
 		section.set("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
@@ -515,6 +530,7 @@ public class Quest{
 		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));
 		if (map.containsKey("hologramLaunchNo")) qu.hologramLaunchNo = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunchNo"));
 		if (map.containsKey("timer")) qu.timer = (int) map.get("timer");
+		if (map.containsKey("customMaterial")) qu.customMaterial = XMaterial.valueOf((String) map.get("customMaterial"));
 		
 		if (map.containsKey("requirements")){
 			List<Map<String, Object>> rlist = (List<Map<String, Object>>) map.get("requirements");

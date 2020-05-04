@@ -93,6 +93,7 @@ stageDescriptionItemsSplit:
   showXOne: true
   # From which sources the text has to be split
   sources: [SCOREBOARD, MENU]
+  #
 
 
 # - Particles configuration -

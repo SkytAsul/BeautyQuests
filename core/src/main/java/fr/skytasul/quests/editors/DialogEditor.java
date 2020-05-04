@@ -3,6 +3,7 @@ package fr.skytasul.quests.editors;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -22,11 +23,11 @@ public class DialogEditor extends Editor{
 		this.d = dialog;
 	}
 
-	public boolean chat(String message){
-		String[] args = message.split(" ");
+	public boolean chat(String coloredMessage, String strippedMessage){
+		String[] args = coloredMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
-		String cmd = args[0];
+		String cmd = ChatColor.stripColor(args[0]);
 		try{
 			Command.valueOf(cmd.toUpperCase());
 		}catch (IllegalArgumentException ex){

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -33,7 +32,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	}
 
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.item(QuestsConfiguration.getItemMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName()));
+		return ItemUtils.item(qu.getMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName()));
 	}
 
 	public void click(Quest existing){

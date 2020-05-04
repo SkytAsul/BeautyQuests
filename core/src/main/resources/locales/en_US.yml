@@ -46,6 +46,7 @@ msg:
   writeConfirmMessage: '§aWrite the confirmation message shown when a player is about
     to start the quest: (Write "null" if you want the default message.)'
   writeQuestDescription: '§aWrite the description of the quest, shown in the player''s quest GUI.'
+  writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: §cYou must have finished the quest §e{0}§c!
     level: §cYou must be at least level {0}!
@@ -328,6 +329,7 @@ inv:
     timer: §bTime before you can restart the quest.
     requirements: '{0} requirement(s)'
     rewards: '{0} reward(s)'
+    customMaterial: '§eEdit quest item material'
   itemsSelect:
     name: Edit items
     none: |-

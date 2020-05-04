@@ -24,6 +24,7 @@ import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -63,6 +64,7 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack hologramLaunchNo = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunchNo.toString());
 	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.FEATHER, Lang.customConfirmMessage.toString());
 	static ItemStack customDesc = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customDescription.toString());
+	static ItemStack customMaterial = ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.customMaterial.toString());
 
 	private final StagesGUI stages;
 
@@ -80,6 +82,7 @@ public class FinishGUI implements CustomInventory{
 	private String description;
 	private Dialog dialog;
 	private int timer = -1;
+	private XMaterial material;
 
 	public List<AbstractRequirement> requirements = new ArrayList<>();
 	public List<AbstractReward> rewards = new ArrayList<>();
@@ -130,6 +133,8 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(14, startRewards.clone());
 			inv.setItem(16, holoText);
 			inv.setItem(17, questName.clone());
+
+			inv.setItem(20, customMaterial.clone());
 
 			inv.setItem(21, customDesc.clone());
 			inv.setItem(22, customConfirmMessage.clone());
@@ -294,6 +299,19 @@ public class FinishGUI implements CustomInventory{
 			}).enterOrLeave(p);
 			break;
 			
+		case 20: //						Custom Material
+			Lang.QUEST_MATERIAL.send(p);
+			new TextEditor(p, (obj) -> {
+				material = (XMaterial) obj;
+				current.setType(material.parseMaterial());
+				openLastInv(p);
+			}, new MaterialParser(false), () -> openLastInv(p), () -> {
+				material = null;
+				current.setType(QuestsConfiguration.getItemMaterial().parseMaterial());
+				openLastInv(p);
+			}).enterOrLeave(p);
+			break;
+
 		case 21: //						Custom Description
 			Lang.QUEST_DESCRIPTION.send(p);
 			new TextEditor(p, (obj) -> {
@@ -395,6 +413,7 @@ public class FinishGUI implements CustomInventory{
 		qu.setHologramText(hologramText);
 		qu.setCustomConfirmMessage(confirmMessage);
 		qu.setCustomDescription(description);
+		qu.setCustomMaterial(material);
 		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(inv.getItem(24));
 		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(inv.getItem(25));
 		qu.getRequirements().addAll(requirements);
@@ -491,6 +510,8 @@ public class FinishGUI implements CustomInventory{
 		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());
+		material = edited.getCustomMaterial();
+
 		refreshFinish(inv);
 	}
 
