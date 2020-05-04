@@ -17,6 +17,7 @@ import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
+import fr.skytasul.quests.utils.Database.BQStatement;
 
 public class PlayersManagerDB extends PlayersManager {
 
@@ -24,30 +25,35 @@ public class PlayersManagerDB extends PlayersManager {
 	private static final String DATAS_TABLE = "`player_quests`";
 
 	private Database db;
-	private PreparedStatement getAccounts;
-	private PreparedStatement insertAccount;
+	private BQStatement getAccounts;
+	private BQStatement insertAccount;
 
-	private PreparedStatement insertQuestData;
-	private PreparedStatement removeQuestData;
-	private PreparedStatement getQuestsData;
+	private BQStatement insertQuestData;
+	private BQStatement removeQuestData;
+	private BQStatement getQuestsData;
 
-	private PreparedStatement removeExistingQuestDatas;
+	private BQStatement removeExistingQuestDatas;
 
-	private PreparedStatement updateFinished;
-	private PreparedStatement updateTimer;
-	private PreparedStatement updateBranch;
-	private PreparedStatement updateStage;
-	private PreparedStatement[] updateDatas = new PreparedStatement[5];
+	private BQStatement updateFinished;
+	private BQStatement updateTimer;
+	private BQStatement updateBranch;
+	private BQStatement updateStage;
+	private BQStatement[] updateDatas = new BQStatement[5];
 
 	public PlayersManagerDB(Database db) {
 		this.db = db;
 	}
 
+	private void ensureDB() {
+		db.openConnection();
+	}
+
 	public PlayerAccount retrievePlayerAccount(Player p) {
 		try {
 			String uuid = p.getUniqueId().toString();
-			getAccounts.setString(1, uuid);
-			ResultSet result = getAccounts.executeQuery();
+			PreparedStatement statement = getAccounts.getStatement();
+			statement.setString(1, uuid);
+			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
 				if (abs.isCurrent()) {
@@ -59,10 +65,11 @@ public class PlayersManagerDB extends PlayersManager {
 			}
 
 			AbstractAccount absacc = super.createAbstractAccount(p);
-			insertAccount.setString(1, absacc.getIdentifier());
-			insertAccount.setString(2, uuid);
-			insertAccount.executeUpdate();
-			result = insertAccount.getGeneratedKeys();
+			statement = insertAccount.getStatement();
+			statement.setString(1, absacc.getIdentifier());
+			statement.setString(2, uuid);
+			statement.executeUpdate();
+			result = statement.getGeneratedKeys();
 			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
 			int index = result.getInt(1);
 			result.close();
@@ -75,8 +82,9 @@ public class PlayersManagerDB extends PlayersManager {
 
 	private void retrievePlayerDatas(PlayerAccount acc) {
 		try {
-			getQuestsData.setInt(1, acc.index);
-			ResultSet result = getQuestsData.executeQuery();
+			PreparedStatement statement = getQuestsData.getStatement();
+			statement.setInt(1, acc.index);
+			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				int questID = result.getInt("quest_id");
 				acc.datas.put(questID, new PlayerQuestDatasDB(acc, questID, result.getBoolean("finished"), result.getLong("timer"), result.getInt("current_branch"), result.getInt("current_stage"), getStageDatas(result, 0), getStageDatas(result, 1), getStageDatas(result, 2), getStageDatas(result, 3), getStageDatas(result, 4)));
@@ -102,9 +110,10 @@ public class PlayersManagerDB extends PlayersManager {
 			for (Entry<BukkitTask, Object> entry : ((PlayerQuestDatasDB) datas).cachedDatas.values()) {
 				entry.getKey().cancel();
 			}
-			removeQuestData.setInt(1, acc.index);
-			removeQuestData.setInt(2, quest.getID());
-			removeQuestData.executeUpdate();
+			PreparedStatement statement = removeQuestData.getStatement();
+			statement.setInt(1, acc.index);
+			statement.setInt(2, quest.getID());
+			statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -113,8 +122,9 @@ public class PlayersManagerDB extends PlayersManager {
 	public int removeQuestDatas(Quest quest) {
 		int amount = 0;
 		try {
-			removeExistingQuestDatas.setInt(1, quest.getID());
-			amount += removeExistingQuestDatas.executeUpdate();
+			PreparedStatement statement = removeExistingQuestDatas.getStatement();
+			statement.setInt(1, quest.getID());
+			amount += statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -123,8 +133,9 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public boolean hasAccounts(Player p) {
 		try {
-			getAccounts.setString(1, p.getUniqueId().toString());
-			ResultSet result = getAccounts.executeQuery();
+			PreparedStatement statement = getAccounts.getStatement();
+			statement.setString(1, p.getUniqueId().toString());
+			ResultSet result = statement.executeQuery();
 			return result.last();
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -136,14 +147,14 @@ public class PlayersManagerDB extends PlayersManager {
 		try {
 			createTables(db);
 
-			getAccounts = db.prepareStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
-			insertAccount = db.prepareStatementGeneratedKeys("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)");
+			getAccounts = db.new BQStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
+			insertAccount = db.new BQStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)", true);
 
-			insertQuestData = db.prepareStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
-			removeQuestData = db.prepareStatement("DELETE FROM " + DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
-			getQuestsData = db.prepareStatement("SELECT * FROM " + DATAS_TABLE + " WHERE `account_id` = ?");
+			insertQuestData = db.new BQStatement("INSERT INTO " + DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
+			removeQuestData = db.new BQStatement("DELETE FROM " + DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
+			getQuestsData = db.new BQStatement("SELECT * FROM " + DATAS_TABLE + " WHERE `account_id` = ?");
 
-			removeExistingQuestDatas = db.prepareStatement("DELETE FROM " + DATAS_TABLE + " WHERE `quest_id` = ?");
+			removeExistingQuestDatas = db.new BQStatement("DELETE FROM " + DATAS_TABLE + " WHERE `quest_id` = ?");
 			
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
@@ -157,8 +168,8 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 	}
 
-	private PreparedStatement prepareDatasStatement(String column) throws SQLException {
-		return db.prepareStatement("UPDATE " + DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
+	private BQStatement prepareDatasStatement(String column) throws SQLException {
+		return db.new BQStatement("UPDATE " + DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
 	}
 
 	private static void createTables(Database db) throws SQLException {
@@ -231,7 +242,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
-		private Map<PreparedStatement, Entry<BukkitTask, Object>> cachedDatas = new HashMap<>(5);
+		private Map<BQStatement, Entry<BukkitTask, Object>> cachedDatas = new HashMap<>(5);
 
 		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
 			super(acc, questID);
@@ -266,7 +277,7 @@ public class PlayersManagerDB extends PlayersManager {
 			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
 		}
 
-		private void setDataStatement(PreparedStatement dataStatement, Object data) {
+		private void setDataStatement(BQStatement dataStatement, Object data) {
 			if (cachedDatas.containsKey(dataStatement)){
 				cachedDatas.get(dataStatement).setValue(data);
 				return;
@@ -275,14 +286,16 @@ public class PlayersManagerDB extends PlayersManager {
 				try {
 					Entry<BukkitTask, Object> entry = cachedDatas.remove(dataStatement);
 					synchronized (dataStatement) {
-						dataStatement.setObject(1, entry.getValue());
-						dataStatement.setInt(2, acc.index);
-						dataStatement.setInt(3, questID);
-						if (dataStatement.executeUpdate() == 0) {
-							insertQuestData.setInt(1, acc.index);
-							insertQuestData.setInt(2, questID);
-							insertQuestData.executeUpdate();
-							dataStatement.executeUpdate();
+						PreparedStatement statement = dataStatement.getStatement();
+						statement.setObject(1, entry.getValue());
+						statement.setInt(2, acc.index);
+						statement.setInt(3, questID);
+						if (statement.executeUpdate() == 0) {
+							PreparedStatement insertStatement = insertQuestData.getStatement();
+							insertStatement.setInt(1, acc.index);
+							insertStatement.setInt(2, questID);
+							insertStatement.executeUpdate();
+							statement.executeUpdate();
 						}
 					}
 				}catch (SQLException e) {

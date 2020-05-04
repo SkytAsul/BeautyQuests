@@ -31,9 +31,7 @@ public class Database {
 	}
 
 	public boolean openConnection() {
-		try {
-			if (connection != null && !connection.isClosed()) return false;
-		}catch (SQLException e1) {}
+		if (!isClosed()) return false;
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -53,14 +51,22 @@ public class Database {
 		return true;
 	}
 	
-	public void closeConnection() {
+	public boolean isClosed() {
 		try {
-			if (connection != null && !connection.isClosed()) {
+			return connection == null || connection.isClosed() || !connection.isValid(0);
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return true;
+		}
+	}
+
+	public void closeConnection() {
+		if (isClosed()) {
+			try {
 				connection.close();
-				connection = null;
-				return;
-			}
-		}catch (SQLException e1) {}
+			}catch (SQLException e1) {}
+			connection = null;
+		}
 	}
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -77,6 +83,34 @@ public class Database {
 
 	public static Database getInstance(){
 		return BeautyQuests.getInstance().getDatabase();
+	}
+
+	public class BQStatement {
+		private final String statement;
+		private boolean returnGeneratedKeys;
+
+		public BQStatement(String statement) {
+			this(statement, false);
+		}
+
+		public BQStatement(String statement, boolean returnGeneratedKeys) {
+			this.statement = statement;
+			this.returnGeneratedKeys = returnGeneratedKeys;
+		}
+
+		private PreparedStatement prepared;
+
+		public PreparedStatement getStatement() throws SQLException {
+			if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0)) {
+				openConnection();
+				prepared = returnGeneratedKeys ? connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(statement);
+			}
+			return prepared;
+		}
+
+		public String getStatementCommand() {
+			return statement;
+		}
 	}
 
 }
