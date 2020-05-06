@@ -1,6 +1,6 @@
  package fr.skytasul.quests.utils;
 
-import java.text.DateFormat;
+	import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,13 +22,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -193,30 +191,38 @@ public class Utils{
         if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
             ItemMeta item1Meta = item1.getItemMeta();
             ItemMeta item2Meta = item2.getItemMeta();
-            if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
-            if (item1Meta.hasDisplayName()) {
-                if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
-            }
-            
-            if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
-            if (item1Meta.hasLore()) {
-                if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
-                for (int index = 0; index < item1Meta.getLore().size(); index++) {
-                    if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
-                }
-            }
-            
-            if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
-            if (item1Meta.hasEnchants()) {
-                if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
-                for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
-                    if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
-                }
-            }
-            if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
-            for (ItemFlag flag : item1Meta.getItemFlags()) {
-                if (!item2Meta.hasItemFlag(flag)) return false;
-            }
+
+			try {
+				return NMS.getNMS().equalsWithoutNBT(item1Meta, item2Meta);
+			}catch (ReflectiveOperationException ex) {
+				ex.printStackTrace();
+			}
+
+			/*if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
+			if (item1Meta.hasDisplayName()) {
+			    if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
+			}
+			
+			if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
+			if (item1Meta.hasLore()) {
+			    if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
+			    for (int index = 0; index < item1Meta.getLore().size(); index++) {
+			        if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
+			    }
+			}
+			
+			if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
+			if (item1Meta.hasEnchants()) {
+			    if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
+			    for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
+			        if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
+			    }
+			}
+			if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
+			for (ItemFlag flag : item1Meta.getItemFlags()) {
+			    if (!item2Meta.hasItemFlag(flag)) return false;
+			}*/
+
             return true;
         }
         return false;

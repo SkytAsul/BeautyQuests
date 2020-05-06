@@ -35,7 +35,7 @@ msg:
   writeQuestTimer: '§aRenseignez le temps nécessaire (en minutes) avant de pouvoir refaire la quête. (Tapez "null" si vous voulez le temps par défaut)'
   writeConfirmMessage: '§aÉcrivez le message de confirmation affiché lorsqu''un joueur est sur le point de démarrer la quête : (Tapez "null" si vous voulez le message par défaut).'
   writeQuestDescription: '§aÉcrivez la description de la quête, affichée dans l''interface des quêtes du joueur.'
-  writeQuestMaterial: '§aIndiquez le type d'item pour la quête.'
+  writeQuestMaterial: '§aIndiquez le type d''item pour la quête.'
   requirements:
     quest: '§cVous devez avoir terminé la quête §e{0}§c !'
     level: '§cVous devez être au moins niveau {0} !'
@@ -303,7 +303,7 @@ inv:
     timer: '§bTemps avant de pouvoir refaire la quête'
     requirements: '{0} exigence(s)'
     rewards: '{0} récompense(s)'
-    customMaterial: '§eModifiez l'item de la quête'
+    customMaterial: '§eModifiez l''item de la quête'
   itemsSelect:
     name: Modifier les items
     none: |-
