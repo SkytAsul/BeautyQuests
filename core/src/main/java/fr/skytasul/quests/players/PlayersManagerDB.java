@@ -44,10 +44,6 @@ public class PlayersManagerDB extends PlayersManager {
 		this.db = db;
 	}
 
-	private void ensureDB() {
-		db.openConnection();
-	}
-
 	public PlayerAccount retrievePlayerAccount(Player p) {
 		try {
 			String uuid = p.getUniqueId().toString();

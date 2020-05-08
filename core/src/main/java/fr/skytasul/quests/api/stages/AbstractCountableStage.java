@@ -144,7 +144,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		Player p = e.getPlayer();
 		removeBar(p);
 		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			createBar(p, getPlayerRemainings(e.getPlayerAccount()).values().stream().mapToInt(x -> x).sum());
+			Map<Integer, Integer> remainings = getPlayerRemainings(e.getPlayerAccount());
+			if (remainings == null) {
+				BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + debugName() + ". This is a bug!");
+				return;
+			}
+			createBar(p, remainings.values().stream().mapToInt(x -> x).sum());
 		}
 	}
 

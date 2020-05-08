@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -12,18 +13,25 @@ import fr.skytasul.quests.BeautyQuests;
 
 public class Database {
 
-	private String username, password, host, database;
+	private Properties properties;
+	private String host, database;
 	private int port;
 
 	private Connection connection;
 	private Statement statement;
 
 	public Database(ConfigurationSection config) {
-		this.username = config.getString("username");
-		this.password = config.getString("password");
 		this.host = config.getString("host");
 		this.database = config.getString("database");
 		this.port = config.getInt("port");
+
+		properties = new Properties();
+		properties.setProperty("user", config.getString("username"));
+		properties.setProperty("password", config.getString("password"));
+		if (!config.getBoolean("ssl")) {
+			properties.setProperty("verifyServerCertificate", "false");
+			properties.setProperty("useSSL", "false");
+		}
 	}
 
 	public String getDatabase() {
@@ -41,7 +49,7 @@ public class Database {
 		}
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), this.username, this.password);
+			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), properties);
 			statement = connection.createStatement();
 		}catch (SQLException ex) {
 			BeautyQuests.logger.severe("An exception occured when connecting to the database.");
