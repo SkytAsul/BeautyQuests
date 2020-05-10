@@ -270,6 +270,7 @@ inv:
     preventBlockPlace: Prevent players to break their own blocks
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
+    ignoreCase: Ignore the case of the message
     selectItems: §eEdit required items
     selectRegion: §7Choose region
     stageStartMsg: §eEdit starting message

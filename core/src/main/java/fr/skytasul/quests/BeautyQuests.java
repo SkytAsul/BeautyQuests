@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -63,6 +64,8 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private String lastVersion;
 	private FileConfiguration config;
+
+	private String loadedLanguage;
 
 	private Database db;
 
@@ -148,9 +151,15 @@ public class BeautyQuests extends JavaPlugin{
 		logger.launchFlushTimer();
 		try {
 			new SpigotUpdater(this, 39255);
+			DebugUtils.logMessage("Started Spigot updater");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+
+		Metrics metrics = new Metrics(this, 7460);
+		metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
+		metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+		DebugUtils.logMessage("Started bStats metrics");
 	}
 
 	public void onDisable(){
@@ -255,7 +264,8 @@ public class BeautyQuests extends JavaPlugin{
 			}
 
 			long lastMillis = System.currentTimeMillis();
-			String language = "locales/" + config.getString("lang", "en_US") + ".yml";
+			loadedLanguage = config.getString("lang", "en_US");
+			String language = "locales/" + loadedLanguage + ".yml";
 			File file = new File(getDataFolder(), language);
 			InputStream res = getResource(language);
 			boolean created = false;

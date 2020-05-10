@@ -259,6 +259,7 @@ public enum Lang{
 	preventBlockPlace("inv.create.preventBlockPlace"),
 	editMessage("inv.create.editMessageType"),
 	cancelEvent("inv.create.cancelMessage"),
+	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
 	stageRegion("inv.create.selectRegion"),
 	startMsg("inv.create.stageStartMsg"),

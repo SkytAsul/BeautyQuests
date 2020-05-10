@@ -80,7 +80,9 @@ public class MinecraftNames {
 		XMaterial type = XMaterial.fromItemStack(item);
 		if (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
-			return defaultFormat(XPotion.matchXPotion(meta.getBasePotionData().getType().getEffectType()).getTranslated(type));
+			try {
+				return defaultFormat(XPotion.matchXPotion(meta.getBasePotionData().getType().getEffectType()).getTranslated(type));
+			}catch (NullPointerException ex) {} // happens with potions with no effect
 		}
 		return getMaterialName(type);
 	}
