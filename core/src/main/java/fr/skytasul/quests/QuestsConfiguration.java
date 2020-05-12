@@ -19,7 +19,7 @@ import fr.skytasul.quests.utils.ParticleEffect.Particle;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -55,6 +55,8 @@ public class QuestsConfiguration {
 	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
 	private static boolean dialogsInActionBar = false;
+	private static int dialogsDefaultTime = 100;
+	private static boolean disableDialogClick = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -66,7 +68,6 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
-	
 
 	public static Quest firstQuest;
 
@@ -96,9 +97,11 @@ public class QuestsConfiguration {
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
 		dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("dialogsInActionBar");
+		dialogsDefaultTime = config.getInt("dialogsDefaultTime");
+		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
-		gps = Dependencies.gps && config.getBoolean("gps");
+		gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
 		item = XMaterial.fromString(config.getString("item"));
@@ -114,13 +117,13 @@ public class QuestsConfiguration {
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
-		hookAcounts = Dependencies.acc ? config.getBoolean("accountsHook") : false;
+		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
 		dSetName = config.getString("dynmap.markerSetName");
-		if (dSetName == null || dSetName.isEmpty()) Dependencies.dyn = false;
+		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn = false;
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
 		finishSound = config.getString("finishSound");
@@ -156,8 +159,8 @@ public class QuestsConfiguration {
 	}
 	
 	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
+		Particle particle = null;
 		if (config.getBoolean(name + ".enabled")) {
-			Particle particle;
 			try{
 				particle = Particle.deserialize(config.getConfigurationSection(name).getValues(false));
 			}catch (Exception ex){
@@ -165,8 +168,8 @@ public class QuestsConfiguration {
 				particle = defaultParticle;
 			}
 			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
-			return particle;
-		}else return null;
+		}
+		return particle;
 	}
 	
 	private static ItemStack loadHologram(String name){
@@ -207,6 +210,14 @@ public class QuestsConfiguration {
 
 	public static boolean sendDialogsInActionBar(){
 		return dialogsInActionBar;
+	}
+
+	public static int getDialogsDefaultTime() {
+		return dialogsDefaultTime;
+	}
+
+	public static boolean isDialogClickDisabled() {
+		return disableDialogClick;
 	}
 	
 	public static boolean playSounds(){
@@ -290,17 +301,17 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!Dependencies.holod) return null;
+		if (!DependenciesManager.holod) return null;
 		return holoTalkItem;
 	}
 	

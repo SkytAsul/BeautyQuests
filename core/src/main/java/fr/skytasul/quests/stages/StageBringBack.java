@@ -1,22 +1,31 @@
 package fr.skytasul.quests.stages;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.ItemsGUI;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable;
+import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -47,13 +56,6 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		line = Utils.descriptionLines(Source.FORCELINE, array);
-	}
-	
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e){
-		if (super.dialogs.containsKey(e.getPlayer())){ // if the player has started the dialog (so items has been removed from his inventory)
-			e.getPlayer().getInventory().addItem(items);
-		}
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -88,9 +90,9 @@ public class StageBringBack extends StageNPC{
 		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
 	}
 
-	public void launch(Player p){
-		super.launch(p);
-		if (sendStartMessage()) Lang.NpcText.sendWP(p, npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+	public void start(PlayerAccount acc) {
+		super.start(acc);
+		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
 	
@@ -105,6 +107,49 @@ public class StageBringBack extends StageNPC{
 				((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 		st.loadDatas(map);
 		return st;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
+
+		public void start(Player p, LineData datas) {
+			setItem(datas.getLine());
+			List<ItemStack> items = new ArrayList<>();
+			datas.put("items", items);
+			SelectGUI npcGUI = new SelectGUI((npc) -> {
+				Inventories.closeWithoutExit(p);
+				datas.getGUI().reopen(p, true);
+				if (npc != null) StageNPC.Creator.npcDone(npc, datas);
+			});
+			ItemsGUI itemsGUI = new ItemsGUI(() -> {
+				Inventories.create(p, npcGUI);
+			}, items);
+			Inventories.create(p, itemsGUI);
+		}
+
+		public static void setItem(Line line) {
+			line.setItem(7, stageItems.clone(), new StageRunnable() {
+				public void run(Player p, LineData datas, ItemStack item) {
+					Inventories.create(p, new ItemsGUI(() -> {
+						datas.getGUI().reopen(p, true);
+					}, (List<ItemStack>) datas.get("items")));
+				}
+			});
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageBringBack stage = new StageBringBack(branch, (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+			StageNPC.Creator.setFinish(stage, datas);
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			StageBringBack st = (StageBringBack) stage;
+			StageNPC.Creator.setEdit(st, datas);
+			datas.put("items", new ArrayList<>());
+			((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(st.getItems()));
+			setItem(datas.getLine());
+		}
 	}
 
 }

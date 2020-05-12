@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils;
+package fr.skytasul.quests.utils.compatibility;
 
 public class MissingDependencyException extends RuntimeException{
 

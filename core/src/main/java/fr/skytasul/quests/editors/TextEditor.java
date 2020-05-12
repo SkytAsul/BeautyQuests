@@ -2,6 +2,7 @@ package fr.skytasul.quests.editors;
 
 import java.util.function.Consumer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.editors.checkers.AbstractParser;
@@ -36,32 +37,30 @@ public class TextEditor extends Editor{
 		this.nul = nul;
 	}
 
-	public boolean chat(String msg){
-		if (msg.equals("cancel")){
+	public boolean chat(String msg, String strippedMessage){
+		if (strippedMessage.equals("cancel")) {
 			if (cancel == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "cancel");
 				return false;
-			}else {
-				leave(p);
-				cancel.run();
-				return true;
 			}
-		}else if (msg.equals("null")){
+			leave(p);
+			cancel.run();
+			return true;
+		}else if (strippedMessage.equals("null")) {
 			if (nul == null){
 				Utils.sendMessage(p, Lang.ARG_NOT_SUPPORTED.toString(), "null");
 				return false;
-			}else {
-				leave(p);
-				nul.run();
-				return true;
 			}
+			leave(p);
+			nul.run();
+			return true;
 		}
 		
 		Object returnment = msg;
 		boolean invalid = false;
 		if (parser != null){
 			try{
-				Object tmp = parser.parse(p, msg);
+				Object tmp = parser.parse(p, ChatColor.stripColor(strippedMessage));
 				if (tmp == null){
 					invalid = true;
 				}else {

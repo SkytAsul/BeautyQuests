@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,7 +22,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	public Consumer<Quest> run;
 
 	public QuestsListGUI(Consumer<Quest> run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
-		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN,  new ArrayList<>());
+		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, x -> x.getName());
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getQuestsStarteds(acc));
 			if (notStarted) super.objects.addAll(QuestsAPI.getQuestsUnstarted(acc, false));
@@ -33,7 +32,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	}
 
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.item(QuestsConfiguration.getItemMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName()));
+		return ItemUtils.item(qu.getMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName()));
 	}
 
 	public void click(Quest existing){

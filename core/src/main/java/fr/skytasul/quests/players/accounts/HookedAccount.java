@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.accounts;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
@@ -10,7 +10,6 @@ public class HookedAccount extends AbstractAccount {
 
 	private Account hook;
 	
-	@Deprecated
 	public HookedAccount(Account acc){
 		Validate.notNull(acc, "Account is null");
 		this.hook = acc;

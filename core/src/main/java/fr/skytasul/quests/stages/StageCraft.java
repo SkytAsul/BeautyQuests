@@ -1,6 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -14,13 +13,19 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -28,7 +33,6 @@ import fr.skytasul.quests.utils.Utils;
 public class StageCraft extends AbstractStage {
 
 	private ItemStack result;
-	private Map<PlayerAccount, Integer> playerAmounts = new HashMap<>();
 	
 	public StageCraft(QuestBranch branch, ItemStack result){
 		super(branch);
@@ -82,41 +86,46 @@ public class StageCraft extends AbstractStage {
 
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
-				
-				int newAmount = playerAmounts.get(acc) - recipeAmount;
-				if (newAmount <= 0){
-					playerAmounts.remove(acc);
+
+				int amount = getPlayerAmount(acc);
+				if (amount <= 1) {
 					finishStage(p);
 				}else {
-					playerAmounts.put(acc, newAmount);
+					updateObjective(acc, p, "amount", --amount);
 				}
 			}
 		}
 	}
 	
-	public void start(PlayerAccount account){
-		super.start(account);
-		if (!playerAmounts.containsKey(account)) playerAmounts.put(account, result.getAmount());
+	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+		super.initPlayerDatas(acc, datas);
+		datas.put("amount", result.getAmount());
 	}
-	
+
+	private int getPlayerAmount(PlayerAccount acc) {
+		return getData(acc, "amount");
+	}
+
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), playerAmounts.get(acc), false));
+		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[]{Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), playerAmounts.get(acc), false)};
+		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
 	}
 	
 	protected void serialize(Map<String, Object> map){
 		map.put("result", result.serialize());
-		Map<String, Integer> playerSerialized = new HashMap<>();
-		playerAmounts.forEach((acc, amount) -> playerSerialized.put(acc.getIndex(), amount));
-		map.put("players", playerSerialized);
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
 		StageCraft stage = new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")));
-		((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.playerAmounts.put(PlayersManager.getByIndex(acc), (int) amount));
+
+		if (map.containsKey("players")) {
+			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
+			((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.setData(migration.getByIndex(acc), "amount", (int) amount));
+		}
+
 		return stage;
 	}
 	
@@ -143,6 +152,35 @@ public class StageCraft extends AbstractStage {
 				result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
 
 		return result;
+	}
+
+	public static class Creator implements StageCreationRunnables {
+		public void start(Player p, LineData datas) {
+			new ItemGUI((is) -> {
+				datas.put("item", is);
+				datas.getGUI().reopen(p, true);
+				setItem(datas.getLine());
+			}).create(p);
+		}
+
+		public AbstractStage finish(LineData datas, QuestBranch branch) {
+			StageCraft stage = new StageCraft(branch, (ItemStack) datas.get("item"));
+			return stage;
+		}
+
+		public void edit(LineData datas, AbstractStage stage) {
+			datas.put("item", ((StageCraft) stage).getItem());
+			setItem(datas.getLine());
+		}
+
+		public static void setItem(Line line) {
+			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
+				new ItemGUI((is) -> {
+					datas.put("item", is);
+					datas.getGUI().reopen(p, true);
+				}).create(p);
+			});
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.gui.misc.ChooseAccountGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
@@ -20,12 +20,15 @@ import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerDB;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
-import fr.skytasul.quests.structure.PlayerAdvancement;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -95,9 +98,9 @@ public class Commands {
 	@Cmd(permission = "reload")
 	public void save(CommandContext cmd){
 		try {
-			int amount = BeautyQuests.getInstance().saveAllConfig(false);
-			cmd.sender.sendMessage("§a" + amount + " quests saved");
-			BeautyQuests.logger.info(amount + " quests saved ~ manual save from " + cmd.sender.getName());
+			BeautyQuests.getInstance().saveAllConfig(false);
+			cmd.sender.sendMessage("§aDatas saved!");
+			BeautyQuests.logger.info("Datas saved ~ manual save from " + cmd.sender.getName());
 		} catch (Throwable e) {
 			e.printStackTrace();
 			cmd.sender.sendMessage("Error while saving the data file.");
@@ -141,16 +144,18 @@ public class Commands {
 		Quest qu = (Quest) cmd.args[1];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		QuestBranch currentBranch = manager.getPlayerBranch(acc);
-		if (cmd.args.length < 3) { // next/start quest
-			if (currentBranch == null){
-				manager.startPlayer(acc);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
-				return;
-			}
-			PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
-			if (!adv.isInEndingStages()){
-				currentBranch.finishStage(target, currentBranch.getRegularStage(adv.getRegularStage()));
+		if (cmd.args.length < 3 && !acc.hasQuestDatas(qu)) { // start quest
+			qu.start(target);
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			return;
+		}
+
+		PlayerQuestDatas datas = acc.getQuestDatas(qu);
+		QuestBranch currentBranch = manager.getBranch(datas.getBranch());
+
+		if (cmd.args.length < 3) { // next
+			if (!datas.isInEndingStages()) {
+				currentBranch.finishStage(target, currentBranch.getRegularStage(datas.getStage()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(cmd.sender);
 			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(cmd.sender);
 		}else {
@@ -169,17 +174,17 @@ public class Commands {
 			}
 			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
 			if (currentBranch != null) {
-				PlayerAdvancement adv = manager.getPlayerAdvancement(acc);
-				if (adv.isInEndingStages()){
+				if (datas.isInEndingStages()) {
 					for (AbstractStage stage : currentBranch.getEndingStages().keySet()) stage.end(acc);
 				}else {
-					currentBranch.getRegularStage(adv.getRegularStage()).end(acc);
+					currentBranch.getRegularStage(datas.getStage()).end(acc);
 				}
 			}
 			if (cmd.args.length == 3){ // start branch
 				branch.start(acc);
 			}else { // set stage in branch
-				branch.setStage(acc, stageID, true);
+				datas.setBranch(branchID);
+				branch.setStage(acc, stageID);
 			}
 		}
 	}
@@ -214,9 +219,18 @@ public class Commands {
 	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		Inventories.create(cmd.player, new ChooseAccountGUI(target.getUniqueId(), (obj) -> {
-			Inventories.create(cmd.player, new PlayerListGUI((PlayerAccount) obj));
-		}));
+		new PlayerListGUI(PlayersManager.getPlayerAccount(target)).create(cmd.player);
+	}
+	
+	@Cmd(permission = "resetQuest", min = 1, args = {"QUESTSID"})
+	public void resetQuest(CommandContext cmd) {
+		Quest qu = (Quest) cmd.args[0];
+		int amount = 0;
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (qu.resetPlayer(PlayersManager.getPlayerAccount(p))) amount++;
+		}
+		amount += PlayersManager.manager.removeQuestDatas(qu);
+		Lang.QUEST_PLAYERS_REMOVED.send(cmd.sender, amount);
 	}
 	
 	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
@@ -394,6 +408,30 @@ public class Commands {
 		}
 	}
 	
+	@Cmd (permission = "reload")
+	public void migrateDatas(CommandContext cmd) {
+		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
+			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");
+			return;
+		}
+		Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+		cmd.sender.sendMessage("§aConnecting to the database.");
+		if (db.openConnection()) {
+			cmd.sender.sendMessage("§aConnection to database etablished.");
+		}else {
+			cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
+			db.closeConnection();
+			db = null;
+			return;
+		}
+		try {
+			cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
+		}catch (Exception e) {
+			e.printStackTrace();
+			cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
+		}
+	}
+
 	@Cmd(permission = "help")
 	public void help(CommandContext cmd){
 		for (Lang l : Lang.values()){
@@ -406,9 +444,15 @@ public class Commands {
 		}
 	}
 	
-	//@Cmd(permission = "reload")
+	@Cmd (permission = "reload")
 	public void removeDuplicate(CommandContext cmd){
-		PlayersManager.debugDuplicate(cmd.sender);
+		if (cmd.isPlayer()) {
+			cmd.player.sendMessage("§cThis command can't be performed by a player, as it will kick everybody on the server.");
+			return;
+		}
+		if ("confirm".equals(cmd.get(0))) {
+			PlayersManager.getMigrationYAML().debugDuplicate();
+		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
 	}
 	
 	

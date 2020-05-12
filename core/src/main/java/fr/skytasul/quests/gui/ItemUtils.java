@@ -99,14 +99,14 @@ public class ItemUtils {
 			lore(is, add);
 			return is;
 		}
-		List<String> ls = new ArrayList<>(Arrays.asList(getLore(is)));
+		List<String> ls = is.getItemMeta().getLore();
 		ls.addAll(Arrays.asList(add));
 		lore(is, ls.toArray(new String[0]));
 		return is;
 	}
 
 	public static String[] getLore(ItemStack is) {
-		if (!is.getItemMeta().hasLore()) return null;
+		if (!is.hasItemMeta() || !is.getItemMeta().hasLore()) return null;
 		return is.getItemMeta().getLore().toArray(new String[0]);
 	}
 
@@ -164,7 +164,7 @@ public class ItemUtils {
 	 */
 	public static String getName(ItemStack is, boolean format) {
 		if (is == null) return null;
-		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(XMaterial.fromItemStack(is)) : XMaterial.fromMaterial(is.getType()).getLastName();
+		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(is) : XMaterial.fromMaterial(is.getType()).getLastName();
 		return is.getItemMeta().getDisplayName();
 	}
 	
@@ -190,22 +190,22 @@ public class ItemUtils {
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
+	public static ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
 	 */
-	public static ItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+	public static ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
 	 */
-	public static ItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
+	public static ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
 	 */
-	public static ItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
+	public static ImmutableItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted

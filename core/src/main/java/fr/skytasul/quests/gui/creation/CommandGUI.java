@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -30,15 +31,17 @@ public class CommandGUI implements CustomInventory {
 	
 	private String cmd;
 	private boolean console = false;
+	private int delay = 0;
 	
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_COMMAND.toString());
 		
 		inv.setItem(0, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.commandValue.toString()));
-		inv.setItem(4, ItemUtils.itemSwitch(Lang.commandConsole.toString(), false));
+		inv.setItem(1, ItemUtils.itemSwitch(Lang.commandConsole.toString(), false));
+		inv.setItem(2, ItemUtils.item(XMaterial.CLOCK, Lang.commandDelay.toString()));
 
-		inv.setItem(2, ItemUtils.itemDone);
-		inv.getItem(2).setType(Material.COAL);
+		inv.setItem(4, ItemUtils.itemDone);
+		inv.getItem(4).setType(Material.COAL);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -48,7 +51,8 @@ public class CommandGUI implements CustomInventory {
 		if (cmd == null) return;
 		this.cmd = cmd.label;
 		this.console = cmd.console;
-		inv.getItem(2).setType(Material.DIAMOND);
+		this.delay = cmd.delay;
+		inv.getItem(4).setType(Material.DIAMOND);
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -57,19 +61,27 @@ public class CommandGUI implements CustomInventory {
 			Lang.COMMAND.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 				cmd = (String) obj;
-				inv.getItem(2).setType(Material.DIAMOND);
+				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
 			}));
 			break;
 			
-		case 4:
+		case 1:
 			console = ItemUtils.toggle(current);
 			break;
 			
 		case 2:
+			Lang.COMMAND_DELAY.send(p);
+			new TextEditor(p, (x) -> {
+				delay = (int) x;
+				p.openInventory(inv);
+			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+			break;
+
+		case 4:
 			if (current.getType() == Material.DIAMOND){
 				Inventories.closeAndExit(p);
-				run.accept(new Command(cmd, console));
+				run.accept(new Command(cmd, console, delay));
 			}
 			break;
 			

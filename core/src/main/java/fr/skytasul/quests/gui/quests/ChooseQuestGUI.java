@@ -11,7 +11,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -50,7 +49,10 @@ public class ChooseQuestGUI implements CustomInventory{
 		inv = Bukkit.createInventory(null, (int) Math.ceil((quests.size() * 1.0) / 9.0) * 9, Lang.INVENTORY_CHOOSE.toString());
 
 		for (int i = 0; i < quests.size(); i++){
-			inv.setItem(i, ItemUtils.item(QuestsConfiguration.getItemMaterial(), ChatColor.YELLOW + quests.get(i).getName()));
+			Quest quest = quests.get(i);
+			String[] lore = new String[0];
+			if (quest.getDescription() != null) lore = new String[] { quest.getDescription() };
+			inv.setItem(i, ItemUtils.item(quest.getMaterial(), ChatColor.YELLOW + quest.getName(), lore));
 		}
 		
 		inv = p.openInventory(inv).getTopInventory();

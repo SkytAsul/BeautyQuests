@@ -1,3 +1,4 @@
+# General configuration
 # Number of minutes before the quest can be redone
 redoMinuts: 5
 # Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, de_DE, it_IT, es_ES, pt_PT
@@ -14,7 +15,17 @@ saveCycle: 15
 firstQuest: -1
 # Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
 maxLaunchedQuests: 0
+# Database configuration
+database:
+  enabled: false
+  host: "localhost"
+  port: 3306
+  database: "beautyquests"
+  username: "unknown"
+  password: "unknown"
+  ssl: false
 
+# Quests behaviors
 # Enable or disable the scoreboards - more options in scoreboard.yml
 scoreboards: true
 # Enable or disable message when a quest is updated (next stage)
@@ -27,6 +38,10 @@ allowPlayerCancelQuest: true
 questConfirmGUI: false
 # Dialogs are shown in the action bar instead of the chat
 dialogsInActionBar: false
+# Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
+dialogsDefaultTime: 100
+# If enabled, players will not be allowed to click on the NPC to pass a line of dialog
+disableDialogClick: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest
@@ -42,24 +57,24 @@ item: BOOK
 # Page item material
 pageItem: ARROW
 
-# - Dependencies -
+# - Integrations -
 # Enable GPS integration
 gps: false
 # Enable or disable SkillAPI experience overriding in xp reward/requirement
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
-# Max amount of lines for the splitted placeholder %beautyquests_started_ordered_X%
+# (PlaceholderAPI) Max amount of lines for the splitted placeholder %beautyquests_started_ordered_X%
 splittedAdvancementPlaceholderMax: 3
-# Disable the hologram above NPC's head
+# (HolographicDisplays) Disable the hologram above NPC's head
 disableTextHologram: false
-# Value added to the hologram height (decimal value)
+# (HolographicDisplays) Value added to the hologram height (decimal value)
 hologramsHeight: 0.0
-# Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
+# (HolographicDisplays) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
 holoLaunchItemName: BOOK
-# Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
+# (HolographicDisplays) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
 holoTalkItemName: COAL
-# Is the custom name of the hologram in datas.yml shown
+# (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
 # dynmap integration options
 dynmap:
@@ -79,6 +94,7 @@ stageDescriptionItemsSplit:
   showXOne: true
   # From which sources the text has to be split
   sources: [SCOREBOARD, MENU]
+  #
 
 
 # - Particles configuration -

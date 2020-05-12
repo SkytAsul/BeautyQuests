@@ -7,14 +7,14 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.16.2</version>
+		<version>0.17.0-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>1.13.2-R0.1-20190715.162046-52</version>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.13.2-R0.1-20191113.201242-53</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

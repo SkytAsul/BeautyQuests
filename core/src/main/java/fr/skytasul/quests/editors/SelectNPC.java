@@ -28,8 +28,8 @@ public class SelectNPC extends InventoryClear{
 		run.accept(e.getNPC());
 	}
 	
-	public boolean chat(String msg){
-		if (msg.equals("cancel")){
+	public boolean chat(String msg, String strippedMessage){
+		if (strippedMessage.equals("cancel")) {
 			leave(p);
 			run.accept(null);
 			return true;

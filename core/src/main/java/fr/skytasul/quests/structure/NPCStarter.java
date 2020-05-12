@@ -22,7 +22,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.npc.ai.NPCHolder;
@@ -37,9 +37,9 @@ public class NPCStarter {
 	/* Holograms */
 	private BukkitTask hologramsTask;
 	private boolean hologramsRemoved = true;
-	private Hologram hologramText = new Hologram(true, Dependencies.holod && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
-	private Hologram hologramLaunch = new Hologram(false, Dependencies.holod, QuestsConfiguration.getHoloLaunchItem());
-	private Hologram hologramLaunchNo = new Hologram(false, Dependencies.holod && HolographicDisplays.hasProtocolLib(), QuestsConfiguration.getHoloLaunchNoItem());
+	private Hologram hologramText = new Hologram(true, DependenciesManager.holod && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
+	private Hologram hologramLaunch = new Hologram(false, DependenciesManager.holod, QuestsConfiguration.getHoloLaunchItem());
+	private Hologram hologramLaunchNo = new Hologram(false, DependenciesManager.holod && HolographicDisplays.hasProtocolLib(), QuestsConfiguration.getHoloLaunchNoItem());
 	
 	public NPCStarter(NPC npc){
 		Validate.notNull(npc, "NPC cannot be null");

@@ -8,8 +8,12 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Message.Sender;
@@ -21,24 +25,47 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Dialog{
 
 	private NPC npc;
-	
 	public NumberedList<Message> messages;
 	
-	public Dialog(NPC npc){
-		this.npc = npc;
-		this.messages = new NumberedList<>();
+	private Map<Player, PlayerStatus> players = new HashMap<>();
+	
+	public Dialog(NPC npc) {
+		this(npc, new NumberedList<>());
 	}
 	
-	public Dialog(NPC npc, NumberedList<Message> messages){
+	public Dialog(NPC npc, NumberedList<Message> messages) {
 		this.npc = npc;
 		this.messages = messages;
 	}
 	
-	public void send(Player p, int id){
+	public void send(Player p, final Runnable end) {
+		if (messages.isEmpty()) {
+			end.run();
+			return;
+		}
+
+		PlayerStatus status;
+		if (players.containsKey(p)) {
+			status = players.get(p);
+			if (status.task != null) {
+				if (QuestsConfiguration.isDialogClickDisabled()) return;
+				status.task.cancel();
+				status.task = null;
+			}
+		}else {
+			status = new PlayerStatus();
+			players.put(p, status);
+		}
+		int id = ++status.lastId;
+		if (id == messages.valuesSize()) {
+			players.remove(p);
+			end.run();
+			return;
+		}
+
 		Message msg = messages.get(id);
 		if (msg == null){
-			StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + stack[1].getMethodName() + "." + stack[2].getMethodName());
+			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(1, 2));
 			return;
 		}
 		String text = null;
@@ -57,16 +84,24 @@ public class Dialog{
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text.replace("{nl}", " ")));
 		}else p.sendMessage(StringUtils.splitByWholeSeparator(text, "{nl}"));
 		if (msg.sound != null) p.playSound(p.getLocation(), msg.sound, 1, 1);
-	}
-	
-	public boolean start(Player p){
-		if (!messages.isEmpty()){
-			send(p, 0);
-			return true;
+		if (msg.getWaitTime() != 0) {
+			status.task = new BukkitRunnable() {
+				public void run() {
+					status.task = null;
+					send(p, end);
+				}
+			}.runTaskLater(BeautyQuests.getInstance(), msg.getWaitTime());
 		}
-		return false;
 	}
 	
+	public boolean isInDialog(Player p) {
+		return players.containsKey(p);
+	}
+
+	public boolean remove(Player player) {
+		return players.remove(player) != null;
+	}
+
 	public NPC getNPC(){
 		return npc;
 	}
@@ -112,4 +147,9 @@ public class Dialog{
 		return di;
 	}
 	
+	class PlayerStatus {
+		int lastId = -1;
+		BukkitTask task = null;
+	}
+
 }

@@ -6,9 +6,16 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.editors.SelectNPC;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 
 public class QuestRequirement extends AbstractRequirement {
 
@@ -43,6 +50,43 @@ public class QuestRequirement extends AbstractRequirement {
 	protected void load(Map<String, Object> savedDatas) {
 		questId = (int) savedDatas.get("questID");
 		//Validate.notNull(QuestsAPI.getQuestFromID(questId), "Quest with id " + questId + " is null");
+	}
+
+	public static class Creator implements RequirementCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+			Utils.sendMessage(p, Lang.CHOOSE_NPC_STARTER.toString());
+			Editor.enterOrLeave(p, new SelectNPC(p, (npc) -> {
+				if (npc == null) {
+					gui.reopen(p, true);
+					gui.removeRequirement(datas);
+					return;
+				}
+				if (QuestsAPI.isQuestStarter(npc)) {
+					Inventories.create(p, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quest) -> {
+						if (quest != null) {
+							if (datas.containsKey("id")) datas.remove("id");
+							datas.put("id", quest.getID());
+						}else gui.remove((int) datas.get("slot"));
+						gui.reopen(p, true);
+					}));
+				}else {
+					Utils.sendMessage(p, Lang.NPC_NOT_QUEST.toString());
+					gui.reopen(p, true);
+					gui.removeRequirement(datas);
+				}
+			}));
+		}
+
+		public AbstractRequirement finish(Map<String, Object> datas) {
+			QuestRequirement req = new QuestRequirement();
+			req.questId = (int) datas.get("id");
+			return req;
+		}
+
+		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+			datas.put("id", ((QuestRequirement) requirement).questId);
+		}
 	}
 
 }

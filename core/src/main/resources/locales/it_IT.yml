@@ -9,7 +9,7 @@ msg:
     edited: '§aCongratulazioni! Hai modificato la quest §e{0}§a che ora include {1} ramo(i)!'
     createCancelled: '§cLa creazione o la modifica è stata annullata da un altro plugin!'
     cancelling: '§cProcesso di creazione della quest annullato.'
-    editCancelling: 'Processo di modifica della quest annullato.'
+    editCancelling: Processo di modifica della quest annullato.
     invalidID: '§ cLa quest con id {0} non esiste.'
     alreadyStarted: '§cHai già iniziato la missione!'
   quests:
@@ -40,6 +40,7 @@ msg:
     job: '§cDevi essere almeno di livello {0} per il lavoro §e{1}§c!'
     skill: '§cDevi essere almeno di livello {0} per l''abilità §e{1}§c!'
     combatLevel: '§cDevi essere almeno di livello di combattimento {0}!'
+    money: '§cDevi avere {0}!'
     wait: '§cDevi aspettare {0} minuto(i) prima di poter riavviare questa missione!'
   experience:
     edited: '§aHai cambiato l''esperienza guadagnata da {0} a {1} punti.'
@@ -59,7 +60,7 @@ msg:
   errorOccurred: '§cSi è verificato un errore, contatta un amministratore! §4§lCodice di errore: {0}'
   commandsDisabled: '§cAttualmente non sei autorizzato a eseguire comandi!'
   indexOutOfBounds: '§cIl numero {0} è fuori dai limiti! Deve essere compreso tra {1} e {2}.'
-  bringBackObjects: 'Riportami {0}.'
+  bringBackObjects: Riportami {0}.
   inventoryFull: '§cIl tuo inventario è pieno, l''oggetto è stato droppato sul pavimento.'
   playerNeverConnected: '§cImpossibile trovare informazioni sul giocatore {0}.'
   playerNotOnline: '§cIl giocatore {0} è offline.'
@@ -148,9 +149,13 @@ msg:
         identifier: '§aScrivi il nome del placeholder richiesto senza il carattere della percentuale:'
         value: '§aScrivi il valore richiesto per il placeholder §6%{0}%§a:'
       chooseSkillRequired: '§aScrivi il nome dell''abilità richiesta:'
+      chooseMoneyRequired: '§aScrivi la quantità di denaro richiesto:'
       reward:
-        permission: '§aModifica quali permessi devono essere conservati e quali rimossi con "add <permesso> [remove: yes = "true", no = "false"]": (Scrivi "help" per altri comandi.)'
+        permissionName: '§aWrite the permission name.'
+        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
         money: '§aScrivi l''importo dei soldi ricevuti:'
+      chooseObjectiveRequired: '§aWrite the objective name.'
+      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
     selectWantedBlock: '§aClicca con il bastone sul blocco desiderato per la fase.'
     itemCreator:
       itemType: '§aScrivi il nome del tipo di oggetto desiderato:'
@@ -180,6 +185,9 @@ msg:
         addSound: '§6addSound <id> <suono>: §eAggiungi un suono a un messaggio.'
         clear: '§6clear: §eRimuovi tutti i messaggi.'
         close: '§6close: §eConvalida tutti i messaggi.'
+        setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
+      timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
+      timeRemoved: '§aTime has been removed for message {0}.'
     mythicmobs:
       list: '§aUn elenco di tutti i Mythic Mobs:'
       isntMythicMob: '§cQuesto Mythic Mob non esiste.'
@@ -195,14 +203,19 @@ msg:
         remove: '§6remove <id>: §eRimuovi un testo.'
         list: '§6list: §eVisualizza tutti i testi aggiunti.'
         close: '§6close: §eConvalida i testi aggiunti.'
+    noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
+    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
+    scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
+  writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
-  finished: 'Terminato'
-  notStarted: 'Non iniziato'
+  finished: Terminato
+  notStarted: Non iniziato
 inv:
   validate: '§b§lConvalida'
   cancel: '§c§lAnnulla'
+  search: '§e§lSearch'
   confirm:
-    name: 'Sei sicuro?'
+    name: Sei sicuro?
     'yes': '§aConferma'
     'no': '§cAnnulla'
   create:
@@ -220,18 +233,18 @@ inv:
     bucket: '§aRiempi secchi'
     location: '§aVai alla posizione'
     NPCText: '§eModifica dialogo'
-    hideClues: 'Nascondi particelle e holograms'
+    hideClues: Nascondi particelle e holograms
     editMobsKill: '§eModifica mob da uccidere'
-    mobsKillFromAFar: 'Deve essere ucciso con una freccia'
+    mobsKillFromAFar: Deve essere ucciso con una freccia
     editBlocksMine: '§eModifica blocchi da rompere'
-    preventBlockPlace: 'Impedisci ai giocatori di rompere i propri blocchi'
+    preventBlockPlace: Impedisci ai giocatori di rompere i propri blocchi
     editMessageType: '§eModifica messaggio da scrivere'
-    cancelMessage: 'Annulla invio'
+    cancelMessage: Annulla invio
     selectItems: '§eModifica gli elementi richiesti'
     selectRegion: '§7Scegli regione'
     stageStartMsg: '§eModifica messaggio iniziale'
     selectBlockLocation: '§eSeleziona posizione blocco'
-    leftClick: 'Devi cliccare con il tasto destro'
+    leftClick: Devi cliccare con il tasto destro
     editFishes: '§eModifica i pesci da catturare'
     editItem: '§eModifica oggetti da craftare'
     editBucketType: '§eModifica il tipo di secchi da riempire'
@@ -240,7 +253,7 @@ inv:
     editRadius: '§eModifica distanza dalla posizione'
     currentRadius: '§eDistanza attuale: §6{0}'
   stages:
-    name: 'Crea fasi'
+    name: Crea fasi
     nextPage: '§ePagina successiva'
     laterPage: '§ePagina precedente'
     endingItem: '§eModifica ricompense finali'
@@ -253,14 +266,16 @@ inv:
     hologramLaunch: '§eModifica l''oggetto dell''hologram "Avvia"'
     hologramLaunchNo: '§eModifica l''oggetto dell''hologram "avvio non disponibile"'
     customConfirmMessage: '§eModifica il messaggio di conferma della missione'
-    name: 'Ultimi dettagli della missione'
+    name: Ultimi dettagli della missione
     multipleTime:
-      itemName: 'Attiva/disattiva ripetizione'
-      itemLore: "La missione può essere \navviata più volte?"
-    cancellable: 'Annullabile dal giocatore'
-    scoreboardItem: 'Abilita scoreboard'
-    hideItem: 'Nascondi menu e dynmap'
-    bypassLimit: 'Non contare il limite della quest'
+      itemName: Attiva/disattiva ripetizione
+      itemLore: |-
+        La missione può essere 
+        avviata più volte?
+    cancellable: Annullabile dal giocatore
+    scoreboardItem: Abilita scoreboard
+    hideItem: Nascondi menu e dynmap
+    bypassLimit: Non contare il limite della quest
     questName: '§a§lModifica il nome della quest'
     setItemsRewards: '§eModifica ricompense'
     setXPRewards: '§eModifica esperienza ricevuta'
@@ -270,7 +285,9 @@ inv:
     selectStarterNPC: '§e§lSeleziona un NPC di avvio'
     createQuest:
       itemName: '§lCrea quest'
-      itemLore: "Un NPC deve essere selezionato e\ndeve essere inserito il nome della quest."
+      itemLore: |-
+        Un NPC deve essere selezionato e
+        deve essere inserito il nome della quest.
     editQuest:
       itemName: '§lModifica quest'
     endMessage: '§eModifica messaggio finale'
@@ -282,12 +299,14 @@ inv:
     requirements: '{0} requisito(i)'
     rewards: '{0} ricompensa(e)'
   itemsSelect:
-    name: 'Modifica oggetti'
-    none: "§aSposta un oggetto qui o\nclicca per aprire l'editor degli item."
+    name: Modifica oggetti
+    none: |-
+      §aSposta un oggetto qui o
+      clicca per aprire l'editor degli item.
   itemSelect:
-    name: 'Scegli item'
+    name: Scegli item
   npcCreate:
-    name: 'Crea NPC'
+    name: Crea NPC
     setName: '§eModifica nome NPC'
     setSkin: '§eModifica skin NPC'
     setType: '§eModifica tipo NPC'
@@ -296,39 +315,47 @@ inv:
       itemLore: '§aCambia la posizione NPC.'
     moveItem: '§a§lConvalida il luogo'
   npcSelect:
-    name: 'Seleziona o crea?'
+    name: Seleziona o crea?
     selectStageNPC: '§eSeleziona NPC esistente'
     createStageNPC: '§eCrea NPC'
   entityType:
-    name: 'Scegli tipo entità'
+    name: Scegli tipo entità
   chooseQuest:
-    name: 'Quale quest?'
+    name: Quale quest?
   mobs:
-    name: 'Seleziona mob'
+    name: Seleziona mob
     none: '§aClicca per aggiungere un mob.'
-    click: "§7Click sinistro per modificare.\nClick destro per eliminare."
+    click: |-
+      §7Click sinistro per modificare.
+      Click destro per eliminare.
   mobSelect:
-    name: 'Seleziona mob'
+    name: Select mob type
     bukkitEntityType: '§eSeleziona tipo entità'
     mythicMob: '§6Seleziona Mythic Mob'
     epicBoss: '§6Seleziona Epic Boss'
+    boss: '§6Select a Boss'
   stageEnding:
     locationTeleport: '§eModifica la posizione del teletrasporto'
     command: '§eModifica comando eseguito'
   requirements:
-    name: 'Requisiti'
+    name: Requisiti
   rewards:
-    name: 'Ricompense'
+    name: Ricompense
     commands: 'Comandi: {0}'
-    teleportation: "§aSelezionato:\n X: {0}\n Y: {1}\n Z: {2}\n Mondo: {3}"
+    teleportation: |-
+      §aSelected:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      World: {3}
   listAllQuests:
-    name: 'Missioni'
+    name: Missioni
   listPlayerQuests:
     name: 'Missioni di {0}'
   listQuests:
-    notStarted: 'Missioni non iniziate'
-    finished: 'Missioni completate'
-    inProgress: 'Missioni in corso'
+    notStarted: Missioni non iniziate
+    finished: Missioni completate
+    inProgress: Missioni in corso
     loreCancel: '§c§oClicca per annullare la missione.'
     timeToWait: '§3§o{0} minuto(i) prima di poter riavviare questa missione.'
     canRedo: '§3§oPuoi riavviare questa missione!'
@@ -336,38 +363,50 @@ inv:
       normal: '§6§l§o{0}'
       withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
-    name: 'Crea oggetti'
+    name: Crea oggetti
     itemType: '§bTipo di oggetto'
-    itemFlags: 'Seleziona flag oggetto'
+    itemFlags: Seleziona flag oggetto
     itemName: '§bNome oggetto'
     itemLore: '§bItem lore'
     isQuestItem: '§bOggetto missione:'
   command:
-    name: 'Comando'
+    name: Comando
     value: '§eComando'
-    console: 'Console'
+    console: Console
+    delay: '§bDelay'
   chooseAccount:
-    name: 'Quale account?'
+    name: Quale account?
   listBook:
-    questName: 'Nome'
-    questStarter: 'Starter'
-    questRewards: 'Ricompense'
-    questMultiple: 'Più volte'
-    requirements: 'Requisiti'
-    questStages: 'Fasi'
-    noQuests: 'Nessuna missione è stata creata in precedenza.'
+    questName: Nome
+    questStarter: Starter
+    questRewards: Ricompense
+    questMultiple: Più volte
+    requirements: Requisiti
+    questStages: Fasi
+    noQuests: Nessuna missione è stata creata in precedenza.
   commandsList:
-    name: 'Lista comandi'
+    name: Lista comandi
     value: '§eComando: {0}'
     console: '§eConsole: {0}'
   block:
-    name: 'Scegli blocco'
+    name: Scegli blocco
     material: '§eMateriale: {0}'
   blocksList:
-    name: 'Seleziona blocchi'
+    name: Seleziona blocchi
     addBlock: '§aClicca per aggiungere un blocco.'
   buckets:
-    name: 'Tipo di secchio'
+    name: Tipo di secchio
+  permission:
+    name: Choose permission
+    perm: '§aPermission'
+    world: '§aWorld'
+    worldGlobal: '§b§lGlobal'
+    remove: Remove permission
+    removeLore: '§7Permission will be taken off\n§7instead of given.'
+  permissionList:
+    name: Permissions list
+    removed: '§eTaken off: §6{0}'
+    world: '§eWorld: §6{0}'
 scoreboard:
   name: '§6§lMissioni'
   noLaunched: '§cNessuna missione in corso.'
@@ -398,17 +437,17 @@ misc:
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e {0}'
   stageType:
-    region: 'Trova la regione'
-    npc: 'Trova l''NPC'
-    items: 'Riporta gli oggetti'
-    mobs: 'Uccidi mob'
-    mine: 'Rompi blocchi'
-    chat: 'Scrivi in chat'
-    interact: 'Interagisci con un blocco'
-    Fish: 'Pesca pesci'
-    Craft: 'Crafta oggetto'
-    Bucket: 'Riempi un secchio'
-    location: 'Trova una posizione'
+    region: Trova la regione
+    npc: Trova l'NPC
+    items: Riporta gli oggetti
+    mobs: Uccidi mob
+    mine: Rompi blocchi
+    chat: Scrivi in chat
+    interact: Interagisci con un blocco
+    Fish: Pesca pesci
+    Craft: Crafta oggetto
+    Bucket: Riempi un secchio
+    location: Trova una posizione
   requirement:
     class: '§bClass(e) richiesta'
     faction: '§bFazione(i) richiesta'
@@ -416,27 +455,30 @@ misc:
     combatLevel: '§bLivello di combattimento richiesto'
     experienceLevel: '§bLivelli di esperienza richiesti'
     permissions: '§3Permesso(i) richiesti'
+    scoreboard: '§dScore required'
     placeholder: '§bValore Placeholder richiesto'
     quest: '§aMissione richiesta'
     mcMMOSkillLevel: '§dLivello di abilità richiesto'
+    money: '§dDenaro richiesto'
   bucket:
-    water: 'Secchio d''acqua'
-    lava: 'Secchio di Lava'
-    milk: 'Secchio di latte'
+    water: Secchio d'acqua
+    lava: Secchio di Lava
+    milk: Secchio di latte
   questItemLore: '§e§oQuest item'
   hologramText: '§8§lNPC della missione'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eTipo di entità: {0}'
-  enabled: 'Abilitato'
-  disabled: 'Disabilitato'
-  unknown: 'sconosciuto'
+  enabled: Abilitato
+  disabled: Disabilitato
+  unknown: sconosciuto
+  notSet: '§cnot set'
   unused: '§2§lNon utilizzato'
   used: '§a§lUtilizzato'
   remove: '§7Click centrale per rimuovere'
-  or: 'o'
+  or: o
   amount: '§eQuantità: {0}'
-  items: 'oggetti'
-  expPoints: 'punti esperienza'
+  items: oggetti
+  expPoints: punti esperienza
   'yes': 'Si'
   'no': 'No'
-  and: 'e'
+  and: e

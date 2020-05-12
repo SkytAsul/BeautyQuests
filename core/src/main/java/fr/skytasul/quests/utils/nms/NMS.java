@@ -1,12 +1,16 @@
 package fr.skytasul.quests.utils.nms;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -15,6 +19,22 @@ import io.netty.buffer.ByteBuf;
 
 public abstract class NMS{
 	
+	private ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
+	private ReflectUtils craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
+
+	private Field unhandledTags;
+	private Method equalsCommon;
+
+	public NMS() {
+		try {
+			Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
+			unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
+			equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
+		}catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public abstract Object bookPacket(ByteBuf buf);
 
 	public abstract Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt, Object paramData);
@@ -39,8 +59,13 @@ public abstract class NMS{
 	
 	public abstract Object getEnumChatFormat(int value);
 	
-	private ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
-	private ReflectUtils craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
+	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
+		unhandledTags.setAccessible(true);
+		equalsCommon.setAccessible(true);
+		((Map<?, ?>) unhandledTags.get(meta1)).clear();
+		((Map<?, ?>) unhandledTags.get(meta2)).clear();
+		return (boolean) equalsCommon.invoke(meta1, meta2);
+	}
 	
 	public ReflectUtils getNMSReflect(){
 		return nmsReflect;
@@ -69,7 +94,7 @@ public abstract class NMS{
 	private static int MCversion;
 	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1");
 	
-	public static void intializeNMS(){
+	static {
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
 		if (validVersions.contains(version)){
 			try{

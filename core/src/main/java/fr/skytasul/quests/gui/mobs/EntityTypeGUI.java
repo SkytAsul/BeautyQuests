@@ -1,6 +1,5 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.mobs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,7 +31,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	private Consumer<EntityType> run;
 	
 	public EntityTypeGUI(Consumer<EntityType> run){
-		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, new ArrayList<>(entities.keySet()));
+		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet(), null, x -> x.getName());
 		this.run = run;
 	}
 
@@ -43,6 +42,10 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	public void click(EntityType existing){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
+	}
+
+	public String getName(EntityType object) {
+		return object.getName();
 	}
 
 }

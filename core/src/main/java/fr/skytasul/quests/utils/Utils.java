@@ -1,9 +1,11 @@
  package fr.skytasul.quests.utils;
 
-import java.text.DateFormat;
+	import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,13 +22,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,10 +38,8 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.netty.buffer.ByteBuf;
@@ -113,7 +111,7 @@ public class Utils{
 	}
 	
 	public static String finalFormat(CommandSender sender, String text, boolean playerName){
-		if (Dependencies.papi && sender instanceof Player) text = PlaceholderAPI.setPlaceholders((Player) sender, text);	
+		if (DependenciesManager.papi && sender instanceof Player) text = PlaceholderAPI.setPlaceholders((Player) sender, text);	
 		if (playerName) text = text.replace("{PLAYER}", sender.getName());
 		return text;
 	}
@@ -160,15 +158,14 @@ public class Utils{
 				if (item.getAmount() == i.getAmount()) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
                     return;
-                } else {
-                    if(item.getAmount() > i.getAmount()){
-                        item.setAmount(item.getAmount() - i.getAmount());
-                        return;
-                    }else if(item.getAmount() < i.getAmount()){
-                        i.setAmount(i.getAmount() - item.getAmount());
-                        inv.setItem(slot, new ItemStack(Material.AIR));
-                    }
                 }
+				if (item.getAmount() > i.getAmount()) {
+					item.setAmount(item.getAmount() - i.getAmount());
+					return;
+				}else if (item.getAmount() < i.getAmount()) {
+					i.setAmount(i.getAmount() - item.getAmount());
+					inv.setItem(slot, new ItemStack(Material.AIR));
+				}
 			}
 		}
 	}
@@ -179,13 +176,12 @@ public class Utils{
 			if (isSimilar(item, i)){
 				if (item.getAmount() == amount) {
 					return true;
-                } else {
-                    if(item.getAmount() > amount){
-                    	return true;
-                    }else if(item.getAmount() < amount){
-                        amount -= item.getAmount();
-                    }
                 }
+				if (item.getAmount() > amount) {
+					return true;
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
+				}
 			}
 		}
 		return false;
@@ -195,30 +191,38 @@ public class Utils{
         if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
             ItemMeta item1Meta = item1.getItemMeta();
             ItemMeta item2Meta = item2.getItemMeta();
-            if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
-            if (item1Meta.hasDisplayName()) {
-                if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
-            }
-            
-            if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
-            if (item1Meta.hasLore()) {
-                if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
-                for (int index = 0; index < item1Meta.getLore().size(); index++) {
-                    if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
-                }
-            }
-            
-            if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
-            if (item1Meta.hasEnchants()) {
-                if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
-                for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
-                    if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
-                }
-            }
-            if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
-            for (ItemFlag flag : item1Meta.getItemFlags()) {
-                if (!item2Meta.hasItemFlag(flag)) return false;
-            }
+
+			try {
+				return NMS.getNMS().equalsWithoutNBT(item1Meta, item2Meta);
+			}catch (ReflectiveOperationException ex) {
+				ex.printStackTrace();
+			}
+
+			/*if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
+			if (item1Meta.hasDisplayName()) {
+			    if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
+			}
+			
+			if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
+			if (item1Meta.hasLore()) {
+			    if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
+			    for (int index = 0; index < item1Meta.getLore().size(); index++) {
+			        if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
+			    }
+			}
+			
+			if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
+			if (item1Meta.hasEnchants()) {
+			    if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
+			    for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
+			        if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
+			    }
+			}
+			if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
+			for (ItemFlag flag : item1Meta.getItemFlags()) {
+			    if (!item2Meta.hasItemFlag(flag)) return false;
+			}*/
+
             return true;
         }
         return false;
@@ -243,6 +247,17 @@ public class Utils{
 	    return null;
 	}
 	
+	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
+		if (value == null) return Collections.EMPTY_LIST;
+		List<T> list = new ArrayList<>();
+		for (Entry<T, E> entry : map.entrySet()) {
+			if (value.equals(entry.getValue())) {
+				list.add(entry.getKey());
+			}
+		}
+		return list;
+	}
+
 	public static String format(String msg, Object... replace){
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
@@ -277,9 +292,23 @@ public class Utils{
 	}
 	
 	public static int parseInt(Object obj){
-		return obj instanceof Integer ? (int) obj : Integer.parseInt((String) obj);
+		if (obj instanceof Number) return ((Number) obj).intValue();
+		if (obj instanceof String) return Integer.parseInt((String) obj);
+		return 0;
 	}
 	
+	public static long parseLong(Object obj) {
+		if (obj instanceof Number) return ((Number) obj).longValue();
+		if (obj instanceof String) return Long.parseLong((String) obj);
+		return 0;
+	}
+
+	public static double parseDouble(Object obj) {
+		if (obj instanceof Number) return ((Number) obj).doubleValue();
+		if (obj instanceof String) return Double.parseDouble((String) obj);
+		return 0;
+	}
+
 	public static String removeColors(String str){
 		int i;
 		while ((i = str.indexOf("§")) != -1){
@@ -306,7 +335,7 @@ public class Utils{
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
 	}
 	
-	public static <T> List<Map<String, Object>> serializeList(List<T> objects, Function<T, Map<String, Object>> serialize){
+	public static <T> List<Map<String, Object>> serializeList(Collection<T> objects, Function<T, Map<String, Object>> serialize) {
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (T obj : objects){
 			ls.add(serialize.apply(obj));
@@ -342,7 +371,7 @@ public class Utils{
 		try {
 			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			p.playSound(p.getLocation(), sound, volume, 1);
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
 		}
 	}
 	
@@ -351,11 +380,11 @@ public class Utils{
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
 		}catch (Throwable ex){
-			lc.getWorld().playSound(lc, sound, volume, 1);
+			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}
 	
-	public static List<String> serializeAccountsList(List<PlayerAccount> from){
+	/*public static List<String> serializeAccountsList(List<PlayerAccount> from){
 		List<String> to = new ArrayList<>();
 		for (PlayerAccount acc : from){
 			to.add(acc.getIndex());
@@ -365,26 +394,25 @@ public class Utils{
 	
 	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){
 		for (String id : from){
-			PlayerAccount acc = PlayersManager.getByIndex(id);
+			PlayerAccount acc = PlayersManager.manager.getByIndex(id);
 			if (acc != null) to.add(acc);
 		}
 	}
 	
 	public static <T, R> void deserializeAccountsMap(Map<String, T> from, Map<PlayerAccount, R> to, Function<T, R> fun){
 		for (Entry<String, T> en : from.entrySet()){
-			PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
+			PlayerAccount acc = PlayersManager.manager.getByIndex(en.getKey());
 			if (acc == null) continue;
 			to.put(acc, fun.apply(en.getValue()));
 		}
-	}
+	}*/
 	
 	public static String descriptionLines(Source source, String... elements){
 		if (elements.length == 0) return Lang.Unknown.toString();
 		if (QuestsConfiguration.splitDescription(source) && elements.length > 1){
 			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
-		}else {
-			return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 		}
+		return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
 	}
 	
 }

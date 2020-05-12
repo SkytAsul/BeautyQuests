@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -65,6 +66,11 @@ public class QuestsAPI {
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
+	public static void registerMobFactory(MobFactory<?> factory) {
+		MobFactory.factories.add(factory);
+		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
+		DebugUtils.logMessage("Mob factory registered (id: " + factory.getID() + ")");
+	}
 	
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){
@@ -77,6 +83,15 @@ public class QuestsAPI {
 			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) launched.add(qu);
 		}
 		return launched;
+	}
+
+	public static void updateQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
+		for (Quest qu : BeautyQuests.getInstance().getQuests()) {
+			boolean contains = list.contains(qu);
+			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) {
+				if (!list.contains(qu)) list.add(qu);
+			}else if (contains) list.remove(qu);
+		}
 	}
 
 	public static int getStartedSize(PlayerAccount acc){
@@ -123,10 +138,7 @@ public class QuestsAPI {
 	}
 
 	public static Quest getQuestFromID(int id){
-		for (Quest qu : getQuests()){
-			if (qu.getID() == id) return qu;
-		}
-		return null;
+		return BeautyQuests.getInstance().getQuests().stream().filter(x -> x.getID() == id).findFirst().orElse(null);
 	}
 	
 	public static List<Quest> getQuests(){

@@ -42,9 +42,12 @@ public enum Lang{
 	NPC_SKIN("msg.writeNpcSkinName"), 
 	QUEST_NAME("msg.writeQuestName"),
 	COMMAND("msg.writeCommand"),
+	COMMAND_DELAY("msg.writeCommandDelay"),
 	HOLOGRAM_TEXT("msg.writeHologramText"),
 	TIMER("msg.writeQuestTimer"),
 	CONFIRM_MESSAGE("msg.writeConfirmMessage"),
+	QUEST_DESCRIPTION("msg.writeQuestDescription"),
+	QUEST_MATERIAL("msg.writeQuestMaterial"),
 	
 	REQUIREMENT_QUEST("msg.requirements.quest"),
 	REQUIREMENT_LEVEL("msg.requirements.level"),
@@ -92,6 +95,7 @@ public enum Lang{
 	DATA_REMOVED_INFO("msg.command.resetPlayer.remover"),
 	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player"),
 	DATA_QUEST_REMOVED_INFO("msg.command.resetPlayerQuest.remover"),
+	QUEST_PLAYERS_REMOVED("msg.command.resetQuest"), // 0: amount of players
 	START_QUEST("msg.command.startQuest"),
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	CANCEL_QUEST_UNAVAILABLE("msg.command.cancelQuestUnavailable"),
@@ -151,6 +155,12 @@ public enum Lang{
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
 	
+	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
+
+	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
+	
+	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
+
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
@@ -162,8 +172,12 @@ public enum Lang{
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value"),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
 	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
+	CHOOSE_SCOREBOARD_OBJECTIVE("msg.editor.text.chooseObjectiveRequired"),
+	CHOOSE_SCOREBOARD_TARGET("msg.editor.text.chooseObjectiveTargetScore"),
+	
 	// rewards
-	CHOOSE_PERM_REWARD("msg.editor.text.reward.permission"),
+	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
+	CHOOSE_PERM_WORLD("msg.editor.text.reward.permissionWorld"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
@@ -179,6 +193,8 @@ public enum Lang{
 	DIALOG_MSG_ADDED_NOSENDER("msg.editor.dialog.noSender"),
 	DIALOG_MSG_REMOVED("msg.editor.dialog.messageRemoved"),
 	DIALOG_SOUND_ADDED("msg.editor.dialog.soundAdded"),
+	DIALOG_TIME_SET("msg.editor.dialog.timeSet"), // 0: index, 1: time
+	DIALOG_TIME_REMOVED("msg.editor.dialog.timeRemoved"), // 0: index
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
 	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
 	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
@@ -190,6 +206,7 @@ public enum Lang{
 	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert"),
 	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert"),
 	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
+	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime"),
 	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
 	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
 	
@@ -215,6 +232,7 @@ public enum Lang{
 	/* Inventories */
 	done("inv.validate"),
 	cancel("inv.cancel"),
+	search("inv.search"),
 	
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),
@@ -241,6 +259,7 @@ public enum Lang{
 	preventBlockPlace("inv.create.preventBlockPlace"),
 	editMessage("inv.create.editMessageType"),
 	cancelEvent("inv.create.cancelMessage"),
+	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
 	stageRegion("inv.create.selectRegion"),
 	startMsg("inv.create.stageStartMsg"),
@@ -292,6 +311,8 @@ public enum Lang{
 	hologramLaunch("inv.details.hologramLaunch"),
 	hologramLaunchNo("inv.details.hologramLaunchNo"),
 	customConfirmMessage("inv.details.customConfirmMessage"),
+	customDescription("inv.details.customDescription"),
+	customMaterial("inv.details.customMaterial"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
@@ -321,6 +342,7 @@ public enum Lang{
 	bukkitMob("inv.mobSelect.bukkitEntityType"),
 	mythicMob("inv.mobSelect.mythicMob"),
 	epicBoss("inv.mobSelect.epicBoss"),
+	boss("inv.mobSelect.boss"),
 	
 	location("inv.stageEnding.locationTeleport"),
 	command("inv.stageEnding.command"),
@@ -352,6 +374,7 @@ public enum Lang{
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
 	commandConsole("inv.command.console"),
+	commandDelay("inv.command.delay"),
 	
 	INVENTORY_COMMANDS_LIST("inv.commandsList.name"),
 	commandsListValue("inv.commandsList.value"),
@@ -367,7 +390,17 @@ public enum Lang{
 	
 	INVENTORY_BUCKETS("inv.buckets.name"),
 	
-	
+	INVENTORY_PERMISSION("inv.permission.name"),
+	perm("inv.permission.perm"),
+	world("inv.permission.world"),
+	worldGlobal("inv.permission.worldGlobal"),
+	permRemove("inv.permission.remove"),
+	permRemoveLore("inv.permission.removeLore"),
+
+	INVENTORY_PERMISSION_LIST("inv.permissionList.name"),
+	permRemoved("inv.permissionList.removed"),
+	permWorld("inv.permissionList.world"),
+
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -427,6 +460,7 @@ public enum Lang{
 	RCombatLvl("misc.requirement.combatLevel"),
 	RLevel("misc.requirement.experienceLevel"),
 	RPermissions("misc.requirement.permissions"),
+	RScoreboard("misc.requirement.scoreboard"),
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
@@ -441,6 +475,7 @@ public enum Lang{
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),
+	NotSet("misc.notSet"),
 	Unused("misc.unused"),
 	Used("misc.used"),
 	Remove("misc.remove"),
@@ -473,19 +508,18 @@ public enum Lang{
 	}
 	
 	public String format(Object... replace){
-		return Utils.format(toString(), replace);
+		return Utils.format(value, replace);
 	}
 	
 	public void send(CommandSender sender, Object... args){
-		Utils.sendMessage(sender, this.toString(), args);
+		Utils.sendMessage(sender, value, args);
 	}
 	
 	public void sendWP(CommandSender p, Object... args){
-		Utils.sendMessageWP(p, this.toString(), args);
+		Utils.sendMessageWP(p, value, args);
 	}
 
 
-	
 	public static void loadStrings(YamlConfiguration config) {
 		for (Lang l : values()){
 			String value = config.getString(l.path, null);

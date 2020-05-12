@@ -1,9 +1,7 @@
 package fr.skytasul.quests.gui.creation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +24,7 @@ import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -34,8 +33,6 @@ import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.PlayerAdvancement;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
@@ -65,7 +62,9 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack timerItem = ItemUtils.item(XMaterial.CLOCK, Lang.timer.toString());
 	static ItemStack hologramLaunch = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunch.toString());
 	static ItemStack hologramLaunchNo = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, Lang.hologramLaunchNo.toString());
-	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customConfirmMessage.toString());
+	static ItemStack customConfirmMessage = ItemUtils.item(XMaterial.FEATHER, Lang.customConfirmMessage.toString());
+	static ItemStack customDesc = ItemUtils.item(XMaterial.OAK_SIGN, Lang.customDescription.toString());
+	static ItemStack customMaterial = ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.customMaterial.toString());
 
 	private final StagesGUI stages;
 
@@ -80,8 +79,10 @@ public class FinishGUI implements CustomInventory{
 	private String endMsg;
 	private String hologramText;
 	private String confirmMessage;
+	private String description;
 	private Dialog dialog;
 	private int timer = -1;
+	private XMaterial material;
 
 	public List<AbstractRequirement> requirements = new ArrayList<>();
 	public List<AbstractReward> rewards = new ArrayList<>();
@@ -92,6 +93,7 @@ public class FinishGUI implements CustomInventory{
 	private Player p;
 
 	private boolean editing = false;
+	@SuppressWarnings ("unused")
 	private boolean stagesEdited = false;
 	private Quest edited;
 	
@@ -131,7 +133,10 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(14, startRewards.clone());
 			inv.setItem(16, holoText);
 			inv.setItem(17, questName.clone());
-			
+
+			inv.setItem(20, customMaterial.clone());
+
+			inv.setItem(21, customDesc.clone());
 			inv.setItem(22, customConfirmMessage.clone());
 			
 			inv.setItem(24, hologramLaunch.clone());
@@ -157,7 +162,8 @@ public class FinishGUI implements CustomInventory{
 
 		case 0:
 			if (isRepeatable = ItemUtils.toggle(current)){
-				inv.setItem(9, timerItem);
+				inv.setItem(9, ItemUtils.lore(timerItem.clone()));
+				setTimerItem();
 			}else inv.setItem(9, null);
 			break;
 
@@ -186,7 +192,7 @@ public class FinishGUI implements CustomInventory{
 
 		case 5: // Start dialog
 			Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-			Editor.enterOrLeave(p, new DialogEditor(p, null, (obj) -> {
+			Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 				openLastInv(p);
 				dialog = obj;
 			}, dialog != null ? dialog : new Dialog(null)));
@@ -220,11 +226,13 @@ public class FinishGUI implements CustomInventory{
 			Lang.TIMER.send(p);
 			new TextEditor(p, (obj) -> {
 				timer = (int) obj;
+				setTimerItem();
 				openLastInv(p);
 			}, new NumberParser(Integer.class, true), () -> {
 				openLastInv(p);
 			}, () -> {
 				timer = -1;
+				setTimerItem();
 				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
@@ -291,6 +299,32 @@ public class FinishGUI implements CustomInventory{
 			}).enterOrLeave(p);
 			break;
 			
+		case 20: //						Custom Material
+			Lang.QUEST_MATERIAL.send(p);
+			new TextEditor(p, (obj) -> {
+				material = (XMaterial) obj;
+				current.setType(material.parseMaterial());
+				openLastInv(p);
+			}, new MaterialParser(false), () -> openLastInv(p), () -> {
+				material = null;
+				current.setType(QuestsConfiguration.getItemMaterial().parseMaterial());
+				openLastInv(p);
+			}).enterOrLeave(p);
+			break;
+
+		case 21: //						Custom Description
+			Lang.QUEST_DESCRIPTION.send(p);
+			new TextEditor(p, (obj) -> {
+				description = (String) obj;
+				openLastInv(p);
+				ItemUtils.lore(current, description);
+			}, () -> openLastInv(p), () -> {
+				description = null;
+				ItemUtils.lore(current);
+				openLastInv(p);
+			}).enterOrLeave(p);
+			break;
+
 		case 22: //						Custom Confirm Message
 			Lang.CONFIRM_MESSAGE.send(p);
 			new TextEditor(p, (obj) -> {
@@ -337,6 +371,10 @@ public class FinishGUI implements CustomInventory{
 		return true;
 	}
 
+	private void setTimerItem() {
+		ItemUtils.lore(inv.getItem(9), timer == -1 ? "Default timer" : timer + " minutes");
+	}
+
 	private void refreshFinish(Inventory inv) {
 		ItemStack item = inv.getItem(32);
 		if (name != null && startNPC != null) {
@@ -350,15 +388,15 @@ public class FinishGUI implements CustomInventory{
 
 	private void finish(){
 		Quest qu;
-		Map<PlayerAccount, PlayerAdvancement> players = null;
+		//Map<PlayerAccount, PlayerAdvancement> players = null;
 		if (editing){
-			if (!stagesEdited) {
+			/*if (!stagesEdited) {
 				players = new HashMap<>(edited.getBranchesManager().getPlayersAdvancement());
 				players.forEach((acc, adv) -> adv.storeIndex());
-			}
+			}*/
 			edited.remove(false);
 			qu = new Quest(name, startNPC, edited.getID());
-			qu.copyFinished(edited);
+			//qu.copyFinished(edited);
 		}else {
 			qu = new Quest(name, startNPC, ++BeautyQuests.lastID);
 		}
@@ -374,6 +412,8 @@ public class FinishGUI implements CustomInventory{
 		qu.setEndMessage(endMsg);
 		qu.setHologramText(hologramText);
 		qu.setCustomConfirmMessage(confirmMessage);
+		qu.setCustomDescription(description);
+		qu.setCustomMaterial(material);
 		if (!hologramLaunch.equals(inv.getItem(24))) qu.setHologramLaunch(inv.getItem(24));
 		if (!hologramLaunchNo.equals(inv.getItem(25))) qu.setHologramLaunchNo(inv.getItem(25));
 		qu.getRequirements().addAll(requirements);
@@ -386,10 +426,10 @@ public class FinishGUI implements CustomInventory{
 		qu.getBranchesManager().addBranch(mainBranch);
 		loadBranch(mainBranch, stages);
 		
-		if (editing && !stagesEdited) {
+		/*if (editing && !stagesEdited) {
 			players.forEach((acc, adv) -> adv.loadIndex(qu.getBranchesManager()));
 			qu.getBranchesManager().setPlayersStage(players);
-		}
+		}*/
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
@@ -402,7 +442,7 @@ public class FinishGUI implements CustomInventory{
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 			try {
-				qu.saveToFile(false);
+				qu.saveToFile();
 			}catch (Exception e) {
 				Lang.ERROR_OCCURED.send(p, "initial quest save");
 				BeautyQuests.logger.severe("Error when trying to save quest");
@@ -450,9 +490,14 @@ public class FinishGUI implements CustomInventory{
 		hologramText = edited.getCustomHologramText();
 		confirmMessage = edited.getCustomConfirmMessage();
 		if (confirmMessage != null) ItemUtils.lore(inv.getItem(22), confirmMessage);
+		description = edited.getCustomDescription();
+		if (description != null) ItemUtils.lore(inv.getItem(21), description);
 		isRepeatable = ItemUtils.set(inv.getItem(0), edited.isRepeatable());
 		timer = edited.getRawTimer();
-		if (isRepeatable) inv.setItem(9, timerItem);
+		if (isRepeatable) {
+			inv.setItem(9, timerItem);
+			setTimerItem();
+		}
 		hasScoreboard = ItemUtils.set(inv.getItem(1), edited.isScoreboardEnabled());
 		isHid = ItemUtils.set(inv.getItem(2), edited.isHid());
 		bypassLimit = ItemUtils.set(inv.getItem(10), edited.canBypassLimit());
@@ -465,6 +510,8 @@ public class FinishGUI implements CustomInventory{
 		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());
+		material = edited.getCustomMaterial();
+
 		refreshFinish(inv);
 	}
 

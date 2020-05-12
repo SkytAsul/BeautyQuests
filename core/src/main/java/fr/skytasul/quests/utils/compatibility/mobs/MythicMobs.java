@@ -1,51 +1,92 @@
 package fr.skytasul.quests.utils.compatibility.mobs;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.bukkit.DyeColor;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 
-public class MythicMobs implements Listener{
+public class MythicMobs implements MobFactory<MythicMob> {
 
-	public static String getInternalName(Object mob){
-		return ((MythicMob) mob).getInternalName();
+	public String getID() {
+		return "mythicMobs";
 	}
 
-	public static String getDisplayName(Object mob){
+	private ItemStack item = ItemUtils.item(XMaterial.BLAZE_POWDER, Lang.mythicMob.toString());
+	public ItemStack getFactoryItem() {
+		return item;
+	}
+
+	public void itemClick(Player p, Consumer<MythicMob> run) {
+		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, x -> x.getInternalName()) {
+			public ItemStack getItemStack(MythicMob object) {
+				return ItemUtils.item(XMaterial.mobItem(getEntityType(object)), object.getInternalName());
+			}
+
+			public void click(MythicMob existing) {
+				run.accept(existing);
+			}
+		}.create(p);
+	}
+
+	public MythicMob fromValue(String value) {
+		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(value);
+	}
+
+	public String getValue(MythicMob data) {
+		return data.getInternalName();
+	}
+
+	public String getName(MythicMob data) {
+		return data.getDisplayName().get();
+	}
+
+	public EntityType getEntityType(MythicMob data) {
+		String typeName = data.getEntityType().toUpperCase();
+		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
+		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
+		if (NMS.getMCVersion() < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
+		EntityType type = EntityType.fromName(typeName);
+		if (type == null) type = EntityType.valueOf(typeName);
+		return type;
+	}
+
+	public List<String> getDescriptiveLore(MythicMob data) {
 		try {
-			return MythicMob.class.getDeclaredMethod("getDisplayName").invoke(mob).toString();
-		}catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
+			return Arrays.asList("Base Health: " + data.getHealth().get(), "Base Damage: " + data.getDamage().get(), "Base Armor: " + data.getArmor().get());
+		}catch (NoSuchMethodError e) {
+			return Arrays.asList("§cError when retrieving mob informations", "§c-> §oPlease update MythicMobs");
 		}
 	}
-	
-	public static MythicMob getMythicMob(String name){
-		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(name);
-	}
-	
-	public static boolean isMythicMob(Entity en){
-		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().isActiveMob(en.getUniqueId());
+
+	@EventHandler
+	public void onMythicDeath(MythicMobDeathEvent e) {
+		if (e.getKiller() == null) return;
+		if (!(e.getKiller() instanceof Player)) return;
+		callEvent(e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
 	}
 	
 	public static void sendMythicMobsList(Player p){
 		Utils.sendMessage(p, Lang.MYTHICMOB_LIST.toString());
 		StringBuilder stb = new StringBuilder("§a");
-		for (MythicMob mm : io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes()){
+		for (MythicMob mm : io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes()) {
 			stb.append(mm.getInternalName() + "; ");
 		}
 		Utils.sendMessage(p, stb.toString());
-	}
-	
-	@EventHandler
-	public void onMythicDeath(io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent e){
-		if (e.getKiller() == null) return;
-		if (!(e.getKiller() instanceof Player)) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(e.getMob().getType(), (Player) e.getKiller(), e.getEntity()));
 	}
 	
 }

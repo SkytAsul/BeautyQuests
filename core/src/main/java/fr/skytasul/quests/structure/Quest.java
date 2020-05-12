@@ -4,8 +4,6 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,16 +22,22 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
+import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
@@ -48,6 +52,7 @@ public class Quest{
 	private String name;
 	private String endMessage;
 	private String hologramText;
+	private String customDescription;
 	private String customConfirmMessage;
 	private NPC npcStarter;
 	private Dialog dialog;
@@ -62,10 +67,7 @@ public class Quest{
 	private int timer = -1;
 	private ItemStack hologramLaunch;
 	private ItemStack hologramLaunchNo;
-	
-	private Map<Player, Integer> dgPlayers = new HashMap<>();
-	private final List<PlayerAccount> finished = new ArrayList<>();
-	private final Map<PlayerAccount, Long> inTimer = new HashMap<>();
+	private XMaterial customMaterial;
 	
 	private boolean removed = false;
 	private boolean asyncEnd = false;
@@ -84,7 +86,7 @@ public class Quest{
 	}
 	
 	public void create() {
-		if (Dependencies.dyn) Dynmap.addMarker(this);
+		if (DependenciesManager.dyn) Dynmap.addMarker(this);
 	}
 	
 	void updateLauncheable(LivingEntity en) {
@@ -113,6 +115,18 @@ public class Quest{
 		this.hologramText = hologramText;
 	}
 	
+	public String getCustomDescription() {
+		return customDescription;
+	}
+
+	public void setCustomDescription(String customDescription) {
+		this.customDescription = customDescription;
+	}
+
+	public String getDescription() {
+		return customDescription != null ? customDescription : Lang.TALK_NPC.format(npcStarter.getName());
+	}
+
 	public String getCustomConfirmMessage(){
 		return customConfirmMessage;
 	}
@@ -121,6 +135,18 @@ public class Quest{
 		this.customConfirmMessage = message;
 	}
 	
+	public XMaterial getCustomMaterial() {
+		return customMaterial;
+	}
+
+	public void setCustomMaterial(XMaterial material) {
+		this.customMaterial = material;
+	}
+
+	public XMaterial getMaterial() {
+		return customMaterial == null ? QuestsConfiguration.getItemMaterial() : customMaterial;
+	}
+
 	public int getRawTimer(){
 		return timer;
 	}
@@ -258,43 +284,35 @@ public class Quest{
 		return file;
 	}
 	
-	
-	public void copyFinished(Quest quest){
-		finished.clear();
-		finished.addAll(quest.finished);
-	}
-	
 	public int getTimeLeft(PlayerAccount acc){
-		if (!inTimer.containsKey(acc)) return -1;
-		return Math.max((int) Math.ceil((inTimer.get(acc) - System.currentTimeMillis()) / 1000D / 60D), 0);
+		return Math.max((int) Math.ceil((acc.getQuestDatas(this).getTimer() - System.currentTimeMillis()) / 60000D), 0);
 	}
 
 	public boolean hasStarted(PlayerAccount acc){
-		if (manager.contains(acc)) return true;
+		if (!acc.hasQuestDatas(this)) return false;
+		if (acc.getQuestDatas(this).getBranch() != -1) return true;
 		if (acc.isCurrent() && asyncStart != null && asyncStart.contains(acc.getPlayer())) return true;
 		return false;
 	}
 
 	public boolean hasFinished(PlayerAccount acc){
-		return finished.contains(acc);
+		return acc.hasQuestDatas(this) ? acc.getQuestDatas(this).isFinished() : false;
 	}
 	
 	public void cancelPlayer(PlayerAccount acc){
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		manager.remove(acc);
+		acc.removeQuestDatas(this);
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
 		if (acc == null) return false;
 		boolean c = false;
-		if (manager.contains(acc)){
-			Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
-			manager.remove(acc);
+		if (acc.hasQuestDatas(this)) {
+			cancelPlayer(acc);
 			c = true;
 		}
-		if (finished.remove(acc)) c = true;
-		if (inTimer.remove(acc) != null) c = true;
-		if (acc.isCurrent() && dgPlayers.remove(acc.getPlayer()) != null) c = true;
+		if (acc.isCurrent() && dialog == null ? false : dialog.remove(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -304,7 +322,7 @@ public class Quest{
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!repeatable && finished.contains(acc)) return false;
+		if (!repeatable && hasFinished(acc)) return false;
 		if (!testTimer(p, acc, sendMessage)) return false;
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
@@ -325,44 +343,31 @@ public class Quest{
 	}
 	
 	public boolean testTimer(Player p, PlayerAccount acc, boolean sendMessage){
-		if (repeatable && inTimer.containsKey(acc)){
-			long time = inTimer.get(acc);
+		if (repeatable && acc.hasQuestDatas(this)) {
+			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()){
 				if (sendMessage) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
 				return false;
 			}
-			inTimer.remove(acc);
+			acc.getQuestDatas(this).setTimer(0);
 		}
 		return true;
 	}
 	
 	public boolean isInDialog(Player p) {
-		return dgPlayers.containsKey(p);
+		return dialog == null ? false : dialog.isInDialog(p);
 	}
 	
 	public void clickNPC(Player p){
-		//if (!isLauncheable(p, true)) return;
-		if (sendDialog(p)) start(p);
+		if (dialog != null) {
+			dialog.send(p, () -> attemptStart(p));
+		}else attemptStart(p);
 	}
-	
-	private boolean sendDialog(Player p){
-		if (dialog == null) return true;
-		if (dialog.messages.isEmpty()) return true;
-		int id;
-		if (dgPlayers.containsKey(p)){ // player has already started
-			id = dgPlayers.get(p);
-			if (id >= dialog.messages.valuesSize()) id = 0;
-			dgPlayers.remove(p); // remove from list
-		}else { // never started
-			id = 0;
-		}
-		dialog.send(p, id);
-		
-		id++;
-		if (dialog.messages.valuesSize() == id) return true;
-		// not last message
-		dgPlayers.put(p, id); // add in list
-		return false;
+
+	private void attemptStart(Player p) {
+		if (QuestsConfiguration.questConfirmGUI()) {
+			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(name), getCustomConfirmMessage()).create(p);
+		}else start(p);
 	}
 	
 	public void start(Player p){
@@ -371,12 +376,12 @@ public class Quest{
 			Lang.ALREADY_STARTED.send(p);
 			return;
 		}
-		QuestLaunchEvent event = new QuestLaunchEvent(p, this);
+		QuestPreLaunchEvent event = new QuestPreLaunchEvent(p, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
-		inTimer.remove(acc);
+		acc.getQuestDatas(this).setTimer(0);
 		Lang.STARTED_QUEST.send(p, name);
 		
 		BukkitRunnable run = new BukkitRunnable() {
@@ -385,6 +390,8 @@ public class Quest{
 				requirements.stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
+
+				Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this));
 			}
 		};
 		if (asyncStart != null){
@@ -406,11 +413,12 @@ public class Quest{
 				
 				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
-				if (!finished.contains(acc)) finished.add(acc);
+				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
+				questDatas.setFinished(true);
 				if (repeatable){
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, getTimer());
-					inTimer.put(acc, cal.getTime().getTime());
+					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation());
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
@@ -422,19 +430,17 @@ public class Quest{
 	}
 
 	public void remove(boolean msg){
-		List<PlayerAccount> accounts = manager.getAccountsLaunched();
-		
 		BeautyQuests.getInstance().removeQuest(this);
 		unloadAll();
 		if (file.exists()) file.delete();
 		removed = true;
-		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this, accounts));
+		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this));
 		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + name + "\" has been removed");
 	}
 	
 	public void unloadAll(){
 		manager.remove();
-		if (Dependencies.dyn) Dynmap.removeMarker(this);
+		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
 		for (AbstractReward rew : rewards){
 			rew.unload();
 		}
@@ -448,15 +454,13 @@ public class Quest{
 	}
 	
 
-	public void saveToFile(boolean unload) throws Exception{
+	public void saveToFile() throws Exception {
 		if (!file.exists()) file.createNewFile();
 		YamlConfiguration fc = new YamlConfiguration();
 		
 		save(fc);
 		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
 		fc.save(file);
-		
-		if (unload) unloadAll();
 	}
 	
 	private void save(ConfigurationSection section) throws Exception{
@@ -465,11 +469,11 @@ public class Quest{
 		section.set("manager", manager.serialize());
 		section.set("starterID", npcStarter.getId());
 		section.set("scoreboard", scoreboard);
-		section.set("finished", Utils.serializeAccountsList(finished));
 		if (repeatable) section.set("repeatable", repeatable);
 		if (!cancellable) section.set("cancellable", cancellable);
 		if (hologramText != null) section.set("hologramText", hologramText);
 		if (customConfirmMessage != null) section.set("confirmMessage", customConfirmMessage);
+		if (customDescription != null) section.set("customDescription", customDescription);
 		if (hid) section.set("hid", true);
 		if (endMessage != null) section.set("endMessage", endMessage);
 		if (dialog != null) section.set("startDialog", dialog.serialize());
@@ -477,14 +481,7 @@ public class Quest{
 		if (timer > -1) section.set("timer", timer);
 		if (hologramLaunch != null) section.set("hologramLaunch", hologramLaunch.serialize());
 		if (hologramLaunchNo != null) section.set("hologramLaunchNo", hologramLaunchNo.serialize());
-		
-		if (!inTimer.isEmpty()){
-			Map<String, String> tmap = new HashMap<>();
-			for (Entry<PlayerAccount, Long> en : inTimer.entrySet()){
-				tmap.put(en.getKey().getIndex(), Utils.getDateFormat().format(new Date(en.getValue())));
-			}
-			section.set("inTimer", tmap);
-		}
+		if (customMaterial != null) section.set("customMaterial", customMaterial.name());
 		
 		section.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
 		section.set("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
@@ -526,25 +523,14 @@ public class Quest{
 		if (map.containsKey("scoreboard")) qu.scoreboard = (boolean) map.get("scoreboard");
 		if (map.containsKey("endMessage")) qu.endMessage = (String) map.get("endMessage");
 		if (map.containsKey("startDialog")) qu.dialog = Dialog.deserialize((Map<String, Object>) map.get("startDialog"));
-		if (map.containsKey("finished")) Utils.deserializeAccountsList(qu.finished, (List<String>) map.get("finished"));
 		if (map.containsKey("hologramText")) qu.hologramText = (String) map.get("hologramText");
+		if (map.containsKey("customDescription")) qu.customDescription = (String) map.get("customDescription");
 		if (map.containsKey("confirmMessage")) qu.customConfirmMessage = (String) map.get("confirmMessage");
 		if (map.containsKey("bypassLimit")) qu.bypassLimit = (boolean) map.get("bypassLimit");
 		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));
 		if (map.containsKey("hologramLaunchNo")) qu.hologramLaunchNo = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunchNo"));
 		if (map.containsKey("timer")) qu.timer = (int) map.get("timer");
-		if (map.get("inTimer") != null){
-			Map<String, String> list = (Map<String, String>) map.get("inTimer");
-			for (Entry<String, String> en : list.entrySet()){
-				try {
-					PlayerAccount acc = PlayersManager.getByIndex(en.getKey());
-					if (acc != null) qu.inTimer.put(acc, Utils.getDateFormat().parse(en.getValue()).getTime());
-				} catch (ParseException e) {
-					BeautyQuests.loadingFailure = true;
-					continue;
-				}
-			}
-		}
+		if (map.containsKey("customMaterial")) qu.customMaterial = XMaterial.valueOf((String) map.get("customMaterial"));
 		
 		if (map.containsKey("requirements")){
 			List<Map<String, Object>> rlist = (List<Map<String, Object>>) map.get("requirements");
@@ -590,6 +576,26 @@ public class Quest{
 			}
 		}
 		
+		// migration from old player datas - TODO delete on 0.20
+		if (map.containsKey("finished")) {
+			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
+			for (String id : (List<String>) map.get("finished")) {
+				managerYAML.getByIndex(id).getQuestDatas(qu).setFinished(true);
+			}
+		}
+		if (map.get("inTimer") != null) {
+			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
+			for (Entry<String, String> en : ((Map<String, String>) map.get("inTimer")).entrySet()) {
+				try {
+					PlayerAccount acc = managerYAML.getByIndex(en.getKey());
+					acc.getQuestDatas(qu).setTimer(Utils.getDateFormat().parse(en.getValue()).getTime());
+				}catch (ParseException e) {
+					BeautyQuests.loadingFailure = true;
+					continue;
+				}
+			}
+		}
+
 		return qu;
 	}
 	

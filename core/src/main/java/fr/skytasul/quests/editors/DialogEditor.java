@@ -3,6 +3,7 @@ package fr.skytasul.quests.editors;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -10,24 +11,23 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.Message;
 import fr.skytasul.quests.utils.types.Message.Sender;
-import net.citizensnpcs.api.npc.NPC;
 
 public class DialogEditor extends Editor{
 	
 	private Consumer<Dialog> run;
 	public Dialog d;
 
-	public DialogEditor(Player p, NPC npc, Consumer<Dialog> run, Dialog dialog){
+	public DialogEditor(Player p, Consumer<Dialog> run, Dialog dialog) {
 		super(p);
 		this.run = run;
 		this.d = dialog;
 	}
 
-	public boolean chat(String message){
-		String[] args = message.split(" ");
+	public boolean chat(String coloredMessage, String strippedMessage){
+		String[] args = coloredMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
-		String cmd = args[0];
+		String cmd = ChatColor.stripColor(args[0]);
 		try{
 			Command.valueOf(cmd.toUpperCase());
 		}catch (IllegalArgumentException ex){
@@ -92,7 +92,7 @@ public class DialogEditor extends Editor{
 			
 		case ADDSOUND:
 			if (args.length < 3){
-				Utils.sendMessage(p, Lang.TEXTLIST_SYNTAX.toString() + "addsound <id> <sound>");
+				Utils.sendMessage(p, Lang.TEXTLIST_SYNTAX.toString() + "addSound <id> <sound>");
 				break;
 			}
 			try{
@@ -107,6 +107,30 @@ public class DialogEditor extends Editor{
 			}
 			break;
 			
+		case SETTIME:
+			if (args.length < 3) {
+				Utils.sendMessage(p, Lang.TEXTLIST_SYNTAX.toString() + "setTime <id> <time in ticks>");
+				break;
+			}
+			try {
+				Message imsg = d.messages.get(Integer.parseInt(args[1]));
+				if (imsg == null) {
+					Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
+					break;
+				}
+				int time = Integer.parseInt(args[2]);
+				if (time < 0) {
+					imsg.wait = -1;
+					Lang.DIALOG_TIME_REMOVED.send(p, args[1]);
+				}else {
+					imsg.wait = time;
+					Lang.DIALOG_TIME_SET.send(p, args[1], imsg.wait = time);
+				}
+			}catch (IllegalArgumentException ex) {
+				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}
+			break;
+
 		case CLEAR:
 			Lang.DIALOG_CLEARED.send(p, d.messages.clear());
 			break;
@@ -127,7 +151,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, ADDSOUND, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, ADDSOUND, SETTIME, CLEAR;
 	}
 	
 }

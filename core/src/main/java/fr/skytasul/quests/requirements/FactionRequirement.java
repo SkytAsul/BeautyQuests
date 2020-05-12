@@ -13,8 +13,14 @@ import com.massivecraft.factions.entity.MPlayer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.utils.MissingDependencyException;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.editors.TextListEditor;
+import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.Factions;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class FactionRequirement extends AbstractRequirement {
 
@@ -22,7 +28,7 @@ public class FactionRequirement extends AbstractRequirement {
 	
 	public FactionRequirement() {
 		super("factionRequired");
-		if (!Dependencies.fac) throw new MissingDependencyException("Factions");
+		if (!DependenciesManager.fac) throw new MissingDependencyException("Factions");
 	}
 
 	public List<String> getFactionsName(){
@@ -59,6 +65,33 @@ public class FactionRequirement extends AbstractRequirement {
 				continue;
 			}
 			factions.add(FactionColl.get().get(s));
+		}
+	}
+
+	public static class Creator implements RequirementCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+			if (!datas.containsKey("factions")) datas.put("factions", new ArrayList<String>());
+			Lang.CHOOSE_FAC_REQUIRED.send(p);
+			Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
+				gui.reopen(p, false);
+			}, (List<String>) datas.get("factions"))).valid = (string) -> {
+				if (!Factions.factionExists(string)) {
+					Lang.FACTION_DOESNT_EXIST.send(p);
+					return false;
+				}
+				return true;
+			};
+		}
+
+		public AbstractRequirement finish(Map<String, Object> datas) {
+			FactionRequirement req = new FactionRequirement();
+			for (String s : (List<String>) datas.get("factions")) req.addFaction(Factions.getFaction(s));
+			return req;
+		}
+
+		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+			datas.put("factions", new ArrayList<>(((FactionRequirement) requirement).getFactionsName()));
 		}
 	}
 

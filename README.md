@@ -1,5 +1,6 @@
 [![Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/badge/icon)](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
+[![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
 
 # BeautyQuests
 What is **BeautyQuests**?

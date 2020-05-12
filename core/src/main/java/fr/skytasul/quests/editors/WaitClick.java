@@ -21,6 +21,7 @@ public class WaitClick extends InventoryClear{
 	public WaitClick(Player p, ItemStack validateItem, Runnable validate, ItemStack noneItem, Runnable none){
 		super(p);
 		this.validateItem = validateItem;
+		this.noneItem = noneItem;
 		this.validate = validate;
 		this.none = none;
 	}

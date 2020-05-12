@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -27,80 +26,73 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-public class Scoreboard implements Listener{
+public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private PlayerAccount acc;
 	private Player p;
 	private ScoreboardSigns sb;
+	private ScoreboardManager manager;
 	
 	private LinkedList<Line> lines = new LinkedList<>();
-	private BukkitRunnable runnable;
 	
 	private Quest showed = null;
-	private int nextId = -1;
 	private List<Quest> launched;
 	private boolean hid = false;
-	
-	Scoreboard(Player player, ScoreboardManager manager){
+	private int changeTime = 1;
+
+	Scoreboard(Player player, ScoreboardManager manager) {
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		this.p = player;
 		this.acc = PlayersManager.getPlayerAccount(p);
-		
-		for (ScoreboardLine line : manager.getScoreboardLines()){
+		this.manager = manager;
+
+		for (ScoreboardLine line : manager.getScoreboardLines()) {
 			lines.add(new Line(line));
 		}
-		
+
 		launched = QuestsAPI.getQuestsStarteds(acc, true);
 
-		if (manager.hideEmtptyScoreboard()) {
-			if (!launched.isEmpty()) initScoreboard();
-		}else initScoreboard();
-		
-		runnable = new BukkitRunnable() {
-			int changeTime = 1;
-			public void run(){
-				if (!player.isOnline()) return;
-				if (hid) return;
-				changeTime--;
-				boolean change = nextId != -1;
-				if (changeTime == 0 || change){
-					changeTime = manager.getQuestChangeTime();
-					nextId = -1;
-					
-					if (launched.isEmpty()){
-						showed = null;
-						if (manager.hideEmtptyScoreboard() && sb != null){
-							sb.destroy();
-							sb = null;
-							for (Line line : lines) line.reset();
-						}
-						return; // no refresh
-					}else {
-						if (sb == null) initScoreboard(); 
-						
-						int id = nextId == -1 ? launched.indexOf(showed)+1 : nextId;
-						if (id >= launched.size() || id == -1) id = 0;
-						showed = launched.get(id);
-						if (change && manager.refreshLines()) refreshQuestsLines();
-					}
-				}
-				if (sb == null) return;
-				
-				for (Line line : lines){
-					try{
-						if (line.tryRefresh()) line.refreshLines();
-					}catch (Exception ex){
-						BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + lines.indexOf(line));
-						ex.printStackTrace();
-					}
-				}
-			}
-		};
-		runnable.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 5L, 20L);
+		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 5L, 20L);
 	}
-	
-	public ScoreboardSigns getScoreboard(){
-		return sb;
+
+	public void run() {
+		if (!p.isOnline()) return;
+		if (hid) return;
+		changeTime--;
+		if (changeTime == 0) {
+			changeTime = manager.getQuestChangeTime();
+
+			if (launched.isEmpty()) {
+				showed = null;
+				if (sb == null) {
+					if (!manager.hideEmtptyScoreboard()) initScoreboard();
+				}else {
+					sb.destroy();
+					sb = null;
+					for (Line line : lines) line.reset();
+				}
+				return; // no refresh
+			}
+			if (sb == null) initScoreboard();
+
+			int lastID = launched.indexOf(showed);
+			int id = lastID + 1;
+			if (id >= launched.size() || lastID == -1) id = 0;
+			if (lastID != id) {
+				showed = launched.get(id);
+				refreshQuestsLines();
+			}
+		}
+		if (sb == null) return;
+
+		for (Line line : lines) {
+			try {
+				if (line.tryRefresh()) line.refreshLines();
+			}catch (Exception ex) {
+				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + lines.indexOf(line));
+				ex.printStackTrace();
+			}
+		}
 	}
 	
 	@EventHandler
@@ -120,23 +112,22 @@ public class Scoreboard implements Listener{
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onQuestLaunch(QuestLaunchEvent e){
-		if (!e.isCancelled() && e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()){
-			nextId = launched.indexOf(showed)+1;
-			launched.add(nextId, e.getQuest());
+		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
+			launched.add(launched.indexOf(showed) + 1, e.getQuest());
+			showed = e.getQuest();
+			refreshQuestsLines();
 		}
-	}
-	
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e){
-		if (e.getPlayer() != p) return;
-		unload();
 	}
 	
 	private void questRemove(Quest quest){
-		if (quest == showed){
-			nextId = launched.indexOf(showed);
-		}
+		int id = launched.indexOf(quest);
 		launched.remove(quest);
+		if (quest == showed){
+			if (!launched.isEmpty()) {
+				showed = launched.get(id >= launched.size() ? 0 : id);
+			}else showed = null;
+			refreshQuestsLines();
+		}
 	}
 	
 	public void hide(){
@@ -152,7 +143,19 @@ public class Scoreboard implements Listener{
 		if (sb == null) initScoreboard();
 	}
 	
+	public void setShownQuest(Quest quest) {
+		if (!quest.isScoreboardEnabled()) return;
+		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
+		showed = quest;
+		refreshQuestsLines();
+	}
+
 	public void refreshQuestsLines(){
+		if (!manager.refreshLines()) return;
+		if (sb == null) {
+			changeTime = 1;
+			run();
+		}
 		for (Line line : lines){
 			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
 		}
@@ -192,10 +195,10 @@ public class Scoreboard implements Listener{
 		return true;
 	}
 	
-	public void unload(){
+	public synchronized void cancel() throws IllegalStateException {
+		super.cancel();
 		HandlerList.unregisterAll(this);
 		if (sb != null) sb.destroy();
-		if (runnable != null) runnable.cancel();
 	}
 	
 	public void initScoreboard(){

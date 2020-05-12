@@ -7,14 +7,14 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.16.2</version>
+		<version>0.17.0-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.15-R0.1-20191211.174234-1</version>
+			<version>${spigot-latest-nms}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

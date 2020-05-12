@@ -3,10 +3,18 @@ package fr.skytasul.quests.rewards;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.utils.MissingDependencyException;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.NumberParser;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class MoneyReward extends AbstractReward {
@@ -15,7 +23,7 @@ public class MoneyReward extends AbstractReward {
 	
 	public MoneyReward(){
 		super("moneyReward");
-		if (!Dependencies.vault) throw new MissingDependencyException("Vault");
+		if (!DependenciesManager.vault) throw new MissingDependencyException("Vault");
 	}
 	
 	public MoneyReward(double money) {
@@ -40,6 +48,29 @@ public class MoneyReward extends AbstractReward {
 		if (money instanceof Integer) { // TODO remove on 0.18
 			this.money = ((Integer) money).doubleValue();
 		}else this.money = (double) money;
+	}
+
+	public static class Creator implements RewardCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
+			Lang.CHOOSE_MONEY_REWARD.send(p);
+			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				datas.put("money", (double) obj);
+				gui.reopen(p, false);
+				ItemUtils.lore(clicked, "Money : " + obj);
+			}, new NumberParser(Double.class, false, true)));
+		}
+
+		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
+			MoneyReward rew = (MoneyReward) reward;
+			datas.put("money", rew.money);
+			ItemUtils.lore(is, "Money : " + rew.money);
+		}
+
+		public AbstractReward finish(Map<String, Object> datas) {
+			return new MoneyReward((double) datas.get("money"));
+		}
+
 	}
 
 }

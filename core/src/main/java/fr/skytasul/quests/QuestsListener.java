@@ -5,30 +5,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
-import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -47,7 +43,7 @@ public class QuestsListener implements Listener{
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
-			quests = quests.stream().filter(qu -> !qu.getBranchesManager().contains(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
+			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
 			if (quests.isEmpty()) return;
 			
 			List<Quest> launcheable = new ArrayList<>();
@@ -78,9 +74,7 @@ public class QuestsListener implements Listener{
 				}
 				new ChooseQuestGUI(launcheable, (quest) -> {
 					if (quest == null) return;
-					if (QuestsConfiguration.questConfirmGUI()){
-						new ConfirmGUI(() -> quest.clickNPC(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(quest.getName()), quest.getCustomConfirmMessage()).create(p);
-					}else quest.clickNPC(p);
+					quest.clickNPC(p);
 				}).create(p);
 			}
 		}
@@ -105,7 +99,7 @@ public class QuestsListener implements Listener{
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 		if (!QuestsConfiguration.hookAccounts()) {
-			boolean firstJoin = !PlayersManager.hasAccounts(player);
+			boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
 			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
 			}, 5L);
@@ -121,6 +115,11 @@ public class QuestsListener implements Listener{
 	}
 	
 	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+	}
+
+	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
 		String lore = Lang.QuestItemLore.toString();
 		if (lore.isEmpty()) return;
@@ -133,20 +132,6 @@ public class QuestsListener implements Listener{
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent e) { // firework damage
 		if (e.getDamager().hasMetadata("questFinish")) e.setCancelled(true);
-	}
-	
-	@EventHandler
-	public void onEntityKilled(EntityDeathEvent e){
-		LivingEntity en = e.getEntity();
-		if (en.getKiller() == null) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(en.getType(), en.getKiller(), en));
-	}
-	
-	@EventHandler
-	public void onNPCKilled(NPCDeathEvent e){
-		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
-		if (en.getKiller() == null) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(e.getNPC(), en.getKiller(), en));
 	}
 	
 }

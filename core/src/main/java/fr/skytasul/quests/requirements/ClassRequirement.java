@@ -6,13 +6,18 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.utils.MissingDependencyException;
-import fr.skytasul.quests.utils.compatibility.Dependencies;
+import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.editors.TextListEditor;
+import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
+import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
 public class ClassRequirement extends AbstractRequirement {
 
@@ -20,7 +25,7 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	public ClassRequirement() {
 		super("classRequired");
-		if (!Dependencies.skapi) throw new MissingDependencyException("SkillAPI");
+		if (!DependenciesManager.skapi) throw new MissingDependencyException("SkillAPI");
 	}
 
 	public List<String> getClassesName(){
@@ -36,7 +41,7 @@ public class ClassRequirement extends AbstractRequirement {
 	public boolean test(Player p) {
 		if (classes.isEmpty()) return true;
 		for (RPGClass classe : classes){
-			if (SkillAPI.getPlayerData(p).getMainClass().getData() == classe) return true;
+			if (com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass().getData() == classe) return true;
 		}
 		return false;
 	}
@@ -57,12 +62,39 @@ public class ClassRequirement extends AbstractRequirement {
 			return;
 		}
 		for (String s : (List<String>) savedDatas.get("classes")){
-			RPGClass classe = SkillAPI.getClasses().get(s.toLowerCase());
+			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());
 			if (classe == null){
 				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists. Quest \"" + quest.getName() + "\", ID " + quest.getID());
 				continue;
 			}
 			classes.add(classe);
+		}
+	}
+
+	public static class Creator implements RequirementCreationRunnables {
+
+		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
+			if (!datas.containsKey("classes")) datas.put("classes", new ArrayList<String>());
+			Lang.CHOOSE_CLASSES_REQUIRED.send(p);
+			Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
+				gui.reopen(p, false);
+			}, (List<String>) datas.get("classes"))).valid = (string) -> {
+				if (!SkillAPI.classExists(string)) {
+					Lang.CLASS_DOESNT_EXIST.send(p);
+					return false;
+				}
+				return true;
+			};
+		}
+
+		public AbstractRequirement finish(Map<String, Object> datas) {
+			ClassRequirement req = new ClassRequirement();
+			for (String s : (List<String>) datas.get("classes")) req.addClass(SkillAPI.getClass(s));
+			return req;
+		}
+
+		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+			datas.put("classes", new ArrayList<>(((ClassRequirement) requirement).getClassesName()));
 		}
 	}
 

@@ -1,7 +1,10 @@
 package fr.skytasul.quests.gui.templates;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -10,8 +13,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.LevenshteinComparator;
+import fr.skytasul.quests.utils.XMaterial;
 
 /**
  * An inventory with an infinite amount of pages of 35 items (integer limit).
@@ -20,6 +27,8 @@ import fr.skytasul.quests.gui.ItemUtils;
  * @param <T> type of objects stocked in the inventory
  */
 public abstract class PagedGUI<T> implements CustomInventory {
+
+	private static ItemStack itemSearch = ItemUtils.item(XMaterial.COMPASS, Lang.search.toString());
 
 	protected Player p;
 	protected Inventory inv;
@@ -30,16 +39,18 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	private DyeColor color;
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
+	private LevenshteinComparator<T> comparator;
 	
-	protected PagedGUI(String name, DyeColor color, List<T> objects){
-		this(name, color, objects, null);
+	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
+		this(name, color, objects, null, null);
 	}
 	
-	protected PagedGUI(String name, DyeColor color, List<T> objects, Consumer<List<T>> validate){
+	protected PagedGUI(String name, DyeColor color, Collection<T> objects, Consumer<List<T>> validate, Function<T, String> searchName) {
 		this.name = name;
 		this.color = color;
-		this.objects = objects;
+		this.objects = new ArrayList<>(objects);
 		this.validate = validate;
+		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
 	}
 	
 	public Inventory open(Player p) {
@@ -51,6 +62,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		if (validate != null) setBarItem(2, ItemUtils.itemDone);
+		if (comparator != null) setBarItem(3, itemSearch);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 		
@@ -114,6 +126,15 @@ public abstract class PagedGUI<T> implements CustomInventory {
 			case 2:
 				validate.accept(objects);
 				break;
+
+			case 3:
+				new TextEditor(p, (obj) -> {
+					//objects.stream().filter(x -> getName(x).contains((String) obj));
+					objects.sort(comparator.setReference((String) obj));
+					setItems();
+					p.openInventory(inv);
+				}, () -> p.openInventory(inv), null).enterOrLeave(p);
+				break;
 			}
 			break;
 			
@@ -134,7 +155,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	 * @return ItemStack who represents the object
 	 */
 	public abstract ItemStack getItemStack(T object);
-	
+
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object

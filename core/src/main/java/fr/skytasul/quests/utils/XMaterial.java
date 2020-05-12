@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public enum XMaterial {
-	
+
 	ACACIA_BOAT("BOAT_ACACIA", 0),
 	ACACIA_BUTTON("WOOD_BUTTON", 0),
 	ACACIA_DOOR("ACACIA_DOOR", 0, true),
@@ -53,10 +53,13 @@ public enum XMaterial {
 	BEACON("BEACON", 0),
 	BEDROCK("BEDROCK", 0),
 	BEEF("RAW_BEEF", 0),
+	BEEHIVE(),
 	BEETROOT("BEETROOT", 0),
 	BEETROOTS("BEETROOT", 0),
 	BEETROOT_SEEDS("BEETROOT_SEEDS", 0),
 	BEETROOT_SOUP("BEETROOT_SOUP", 0),
+	BEE_NEST(),
+	BEE_SPAWN_EGG(),
 	BELL(),
 	BIRCH_BOAT("BOAT_BIRCH", 0),
 	BIRCH_BUTTON("WOOD_BUTTON", 0),
@@ -402,6 +405,10 @@ public enum XMaterial {
 	HAY_BLOCK("HAY_BLOCK", 0),
 	HEART_OF_THE_SEA(),
 	HEAVY_WEIGHTED_PRESSURE_PLATE("IRON_PLATE", 0),
+	HONEYCOMB(),
+	HONEYCOMB_BLOCK(),
+	HONEY_BLOCK(),
+	HONEY_BOTTLE(),
 	HOPPER("HOPPER", 0),
 	HOPPER_MINECART("HOPPER_MINECART", 0),
 	HORN_CORAL(),
@@ -549,6 +556,7 @@ public enum XMaterial {
 	MOSSY_COBBLESTONE_STAIRS("COBBLESTONE_STAIRS", 0),
 	MOSSY_COBBLESTONE_WALL("COBBLE_WALL", 1),
 	MOSSY_STONE_BRICKS("SMOOTH_BRICK", 1),
+	MOSSY_STONE_BRICK_WALL(),
 	MOSSY_STONE_SLAB("STEP", 0),
 	MOSSY_STONE_STAIRS("COBBLESTONE_STAIRS", 0),
 	MOSSY_STONE_WALL("COBBLE_WALL", 0),
@@ -964,93 +972,93 @@ public enum XMaterial {
 	ZOMBIE_VILLAGER_SPAWN_EGG("MONSTER_EGG", 27),
 	ZOMBIE_WALL_HEAD("SKULL", 0),
 	;
-	
+
 	String only13;
 	String before13;
 	short data;
 	boolean item;
 	String lastName;
 	String name13;
-	
-	XMaterial(){ // post 1.13
+
+	XMaterial() { // post 1.13
 		this("STONE", 0, false);
 	}
-	
-	XMaterial(String m, int data){
+
+	XMaterial(String m, int data) {
 		this(m, data, false);
 	}
-	
-	XMaterial(String only13, String m, int data){
+
+	XMaterial(String only13, String m, int data) {
 		this(m, data, false);
 		this.only13 = only13;
 	}
-	
-	XMaterial(String m, int data, String lastName){
+
+	XMaterial(String m, int data, String lastName) {
 		this(m, data, false);
 		this.lastName = lastName;
 	}
-	
-	XMaterial(String m, int data, String lastName, String name13){
+
+	XMaterial(String m, int data, String lastName, String name13) {
 		this(m, data, false);
 		this.lastName = lastName;
 		this.name13 = name13;
 	}
-	
-	XMaterial(String m, int data, boolean item){
+
+	XMaterial(String m, int data, boolean item) {
 		this.before13 = m;
 		this.data = (short) data;
 		this.item = item;
 	}
-	
-	public String getLastName(){
+
+	public String getLastName() {
 		return lastName == null ? name() : lastName;
 	}
-	
-	public ItemStack parseItem(){
+
+	public ItemStack parseItem() {
 		Material mat = parseMaterial(item);
 		Validate.notNull(mat, "Unable to find Bukkit material for XMaterial " + name());
-		if(isNewVersion()){
+		if (isNewVersion()) {
 			return new ItemStack(mat);
 		}
-		return new ItemStack(mat,1,(byte) data);
+		return new ItemStack(mat, 1, (byte) data);
 	}
-	
-	public static ItemStack playerSkullItem(){
+
+	public static ItemStack playerSkullItem() {
 		Material mat = PLAYER_HEAD.parseMaterial();
 		if (isNewVersion()) return new ItemStack(mat);
 		return new ItemStack(Material.getMaterial("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
 	}
-	
-	public boolean isSameMaterial(ItemStack comp){
-		if(isNewVersion()){
+
+	public boolean isSameMaterial(ItemStack comp) {
+		if (isNewVersion()) {
 			return comp.getType() == this.parseMaterial();
 		}
-		if(comp.getType() == this.parseMaterial() &&
-				(int) comp.getData().getData() == (int) this.data){
+		if (comp.getType() == this.parseMaterial() &&
+				(int) comp.getData().getData() == (int) this.data) {
 			return true;
 		}
 		XMaterial xmat = fromMaterial(comp.getType());
-		if(isDamageable(xmat)){
-			if(this.parseMaterial() == comp.getType()){
+		if (isDamageable(xmat)) {
+			if (this.parseMaterial() == comp.getType()) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public boolean isSameMaterial(Block comp){
-		if(isNewVersion()){
+
+	public boolean isSameMaterial(Block comp) {
+		if (isNewVersion()) {
 			return comp.getType() == this.parseMaterial();
 		}
-		if(comp.getType() == this.parseMaterial() &&
-				comp.getData() == this.data){
+		if (comp.getType() == this.parseMaterial() &&
+				comp.getData() == this.data) {
 			return true;
 		}
 		return false;
 	}
-	
-	public boolean isDamageable(XMaterial type){
-		switch(type.toString()){
+
+	public boolean isDamageable(XMaterial type) {
+		switch (type.toString()) {
 		case "HELMET":
 			return true;
 		case "CHESTPLATE":
@@ -1084,85 +1092,87 @@ public enum XMaterial {
 		}
 	}
 
-	public Material parseMaterial(){
+	public Material parseMaterial() {
 		return parseMaterial(false);
 	}
-	public Material parseMaterial(boolean item){
-		if (isNewVersion()){
-			Material mat = Material.matchMaterial(v13 && only13 != null ? only13 : this.toString());
-	        if(mat != null) return mat;
+
+	public Material parseMaterial(boolean item) {
+		if (isNewVersion()) {
+			Material mat = Material.matchMaterial(v13 && only13 != null ? only13 : name());
+			if (mat != null) return mat;
 		}
-        return Material.matchMaterial(before13 + (item ? "_ITEM" : ""));
-    }
-	
+		return Material.matchMaterial(before13 + (item ? "_ITEM" : ""));
+	}
+
 	static byte newV = -1;
 	static boolean v13 = NMS.getMCVersion() == 13;
-	public static boolean isNewVersion(){
-		if(newV == 0) return false;
-		if(newV == 1) return true;
-        Material mat = Material.matchMaterial("RED_WOOL");
-        if(mat != null){
-        	newV = 1;
-            return true;
-        }
-        newV = 0;
-        return false;
+	public static boolean isNewVersion() {
+		if (newV == 0) return false;
+		if (newV == 1) return true;
+		Material mat = Material.matchMaterial("RED_WOOL");
+		if (mat != null) {
+			newV = 1;
+			return true;
+		}
+		newV = 0;
+		return false;
 	}
-	
-	public static XMaterial fromMaterial(Material mat){
-		try{
+
+	public static XMaterial fromMaterial(Material mat) {
+		try {
 			return XMaterial.valueOf(mat.toString());
-		}catch(IllegalArgumentException e){
-			for(XMaterial xmat:XMaterial.values()){
-				if(xmat.before13.equals(mat.toString())){
+		}catch (IllegalArgumentException e) {
+			for (XMaterial xmat : XMaterial.values()) {
+				if (xmat.before13.equals(mat.toString())) {
 					return xmat;
 				}
 			}
 		}
 		return null;
 	}
-	
-	public static XMaterial fromString(String key){
+
+	public static XMaterial fromString(String key) {
 		XMaterial xmat = null;
-		try{
+		try {
 			key = key.toUpperCase(Locale.ENGLISH);
 			key = key.replaceAll("\\s+", "_").replaceAll("\\W", "");
 			xmat = XMaterial.valueOf(key);
 			return xmat;
-		}catch(IllegalArgumentException e){
+		}catch (IllegalArgumentException e) {
 			String[] split = key.split(":");
-			if(split.length == 1){
-				xmat = requestXMaterial(key,(byte) 0);
-			}else{
-				xmat = requestXMaterial(split[0],(byte) Integer.parseInt(split[1]));
+			if (split.length == 1) {
+				xmat = requestXMaterial(key, (byte) 0);
+			}else {
+				xmat = requestXMaterial(split[0], (byte) Integer.parseInt(split[1]));
 			}
 			return xmat;
 		}
 	}
-	
+
 	private static HashMap<String, XMaterial> cachedSearch = new HashMap<>();
-	public static XMaterial requestXMaterial(String name, short data){
-		if(cachedSearch.containsKey(name.toUpperCase()+","+data)){
-			return cachedSearch.get(name.toUpperCase()+","+data);
+
+	public static XMaterial requestXMaterial(String name, short data) {
+		if (cachedSearch.containsKey(name.toUpperCase() + "," + data)) {
+			return cachedSearch.get(name.toUpperCase() + "," + data);
 		}
 		XMaterial zero = null;
-		for(XMaterial mat : XMaterial.values()){
-			if(name.toUpperCase().equals(mat.before13)){
-				if (mat.data == data){
-					cachedSearch.put(mat.before13+","+data,mat);
+		for (XMaterial mat : XMaterial.values()) {
+			if (name.toUpperCase().equals(mat.before13)) {
+				if (mat.data == data) {
+					cachedSearch.put(mat.before13 + "," + data, mat);
 					return mat;
 				}else if (mat.data == 0) zero = mat;
 			}
 		}
 		return zero;
 	}
-	
-	public static XMaterial fromItemStack(ItemStack item){
+
+	public static XMaterial fromItemStack(ItemStack item) {
 		Material mat = item.getType();
 		if (isNewVersion()) return XMaterial.valueOf(mat.name());
 		return requestXMaterial(mat.name(), item.getDurability());
 	}
-	
+
 	public static XMaterial mobItem(EntityType type) {
 		XMaterial material = XMaterial.fromString(type.name() + "_SPAWN_EGG");
 		if (material != null) return material;
@@ -1178,5 +1188,5 @@ public enum XMaterial {
 		if (type == EntityType.ILLUSIONER) return BLAZE_POWDER;
 		return SPONGE;
 	}
-	
+
 }
