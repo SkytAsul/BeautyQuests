@@ -90,6 +90,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	protected void event(PlayerAccount acc, Player p, Object object, int amount) {
+		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
@@ -149,7 +150,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + debugName() + ". This is a bug!");
 				return;
 			}
-			createBar(p, remainings.values().stream().mapToInt(x -> x).sum());
+			createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
 		}
 	}
 

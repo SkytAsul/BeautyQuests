@@ -186,7 +186,6 @@ public enum XPotion {
 	 * @since 1.0.0
 	 */
 	@Nullable
-	@SuppressWarnings ("deprecation")
 	private static PotionEffectType getIdFromString(@Nonnull String type) {
 		try {
 			int id = Integer.parseInt(type);
@@ -263,10 +262,7 @@ public enum XPotion {
 	@Nonnull
 	public static ThrownPotion throwPotion(@Nonnull LivingEntity entity, @Nullable Color color, @Nullable PotionEffect... effects) {
 		Objects.requireNonNull(entity, "Cannot throw potion from null entity");
-		@SuppressWarnings ("deprecation")
-		ItemStack potion = Material.getMaterial("SPLASH_POTION") == null ? new ItemStack(Material.POTION, 1, (short) 16398) : // or 16384?
-				new ItemStack(Material.SPLASH_POTION);
-		// TODO check why the fuck Lingering potion isn't supported.
+		ItemStack potion = XMaterial.SPLASH_POTION.parseItem();
 
 		PotionMeta meta = (PotionMeta) potion.getItemMeta();
 		meta.setColor(color);

@@ -159,6 +159,7 @@ public class BeautyQuests extends JavaPlugin{
 		Metrics metrics = new Metrics(this, 7460);
 		metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
 		metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+		metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
 		DebugUtils.logMessage("Started bStats metrics");
 	}
 

@@ -118,6 +118,9 @@ public class PlayerListGUI implements CustomInventory {
 				setMainItem(i - page * 35, createQuestItem(qu, qu.getDescription()));
 			}
 			break;
+
+		default:
+			break;
 		}
 	}
 	
