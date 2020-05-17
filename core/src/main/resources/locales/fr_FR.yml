@@ -243,6 +243,7 @@ inv:
     preventBlockPlace: Empêcher les joueurs de casser leurs propres blocs
     editMessageType: '§eModifier le message à écrire'
     cancelMessage: Annuler l'envoi
+    ignoreCase: Ignorer la casse du message
     selectItems: '§eChoisir les items nécessaires'
     selectRegion: '§7Choisir la région'
     stageStartMsg: '§eModifier le message de départ'

@@ -34,6 +34,8 @@ msg:
   writeHologramText: '§aSchreibe den Text des Hologramms: (Schreibe „none”, wenn du kein Hologramm haben möchtest und „null”, wenn du den Standard‐Text verwenden willst.)'
   writeQuestTimer: '§aSchreibe die benötigte Zeit (in Minuten), bevor ein Spieler die Quest erneut starten kann: (Schreibe „null“, wenn der Standard‐Timer verwendet werden soll.)'
   writeConfirmMessage: '§aSchreibe die Bestätigungsnachricht, die beim Startversuch der Quest dem Spieler gezeigt wird: (Schreibe „null“, wenn die Standard‐Nachricht verwendet werden soll.)'
+  writeQuestDescription: '§aGebe die Beschreibung der Quest ein, welche in der Quest-GUI des Spielers angezeigt werden soll.'
+  writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: '§cDu musst die Quest §e{0}§c abgeschlossen haben!'
     level: '§cDu musst mindestens {0} Level haben!'
@@ -88,6 +90,7 @@ msg:
     resetPlayerQuest:
       player: '§6Alle Informationen über die Quest {0} wurden von {1} gelöscht.'
       remover: '§6{0} Questinformation(en) von {1} wurde(n) gelöscht.'
+    resetQuest: '§6Quest Daten wurden für {0} Spieler entfernt.'
     startQuest: '§6Du hast den Start der Quest {0} erzwungen. (Spieler‐UUID: {1})'
     cancelQuest: '§6Du hast die Quest {0} abgebrochen.'
     cancelQuestUnavailable: '§cDie Quest {0} kann nicht abgebrochen werden.'
@@ -151,11 +154,11 @@ msg:
       chooseSkillRequired: '§aSchreibe den Namen der benötigten Fähigkeit:'
       chooseMoneyRequired: '§aSchreibe die Menge an benötigtem Geld:'
       reward:
-        permissionName: '§aWrite the permission name.'
-        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
+        permissionName: '§aGebe den Namen der Berechtigung ein.'
+        permissionWorld: '§aGebe die Welt an, in welcher die Berechtigung bearbeitet werden soll, oder "null" wenn es Global gelten soll.'
         money: '§aSchreibe die zu bekommende Menge an Geld:'
-      chooseObjectiveRequired: '§aWrite the objective name.'
-      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
+      chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
+      chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
     selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
     itemCreator:
       itemType: '§aSchreibe den Namen des gewünschten Items:'
@@ -185,9 +188,9 @@ msg:
         addSound: '§6addSound <ID> <Geräusch>: §eFüge ein Geräusch einer Nachricht hinzu.'
         clear: '§6clear: §eEntferne alle Nachrichten.'
         close: '§6close: §eBestätige alle Nachrichten.'
-        setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
-      timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
-      timeRemoved: '§aTime has been removed for message {0}.'
+        setTime: '§6setTime <id> <time>: §eSetze die Zeit (in ticks) bevor die nächste automatische Nachricht gesendet wird.'
+      timeSet: '§aDie Zeit für die Nachricht {0} wurde bearbeitet: jetzt {1} ticks.'
+      timeRemoved: '§aDie Zeit wurde für die Nachricht {0} entfernt.'
     mythicmobs:
       list: '§aEine Liste aller Mythic Mobs:'
       isntMythicMob: '§cDieser Mythic Mob existiert nicht.'
@@ -203,17 +206,17 @@ msg:
         remove: '§6remove <ID>: §eEntferne einen Text.'
         list: '§6list: §eSieh dir alle hinzugefügten Texte an.'
         close: '§6close: §eBestätige die hinzugefügten Texte.'
-    noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
-    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
-    scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
-  writeCommandDelay: '§aWrite the desired command delay, in ticks.'
+    noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{0}'
+    comparisonType: '§aWähle eine folgender Vergleichsarten aus: {0}. Der Standard ist: §e§lgreater or equals§r§a. Benutze §onull§r§a um dies zu nutzen.'
+    scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
+  writeCommandDelay: '§aGebe die gewünschte Kommando Verzögerung in ticks an.'
 advancement:
   finished: Abgeschlossen
   notStarted: Nicht gestartet
 inv:
   validate: '§b§lBestätigen'
   cancel: '§c§lAbbrechen'
-  search: '§e§lSearch'
+  search: '§e§lSuche'
   confirm:
     name: Bist du sicher?
     'yes': '§aBestätigen'
@@ -240,6 +243,7 @@ inv:
     preventBlockPlace: Spieler daran hindern, ihre eigenen Blöcke zu zerstören
     editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
     cancelMessage: Senden abbrechen
+    ignoreCase: Ignore the case of the message
     selectItems: '§eBenötigte Items auswählen'
     selectRegion: '§7Region auswählen'
     stageStartMsg: '§eStartnachricht bearbeiten'
@@ -266,6 +270,7 @@ inv:
     hologramLaunch: '§e„Starten“‐Hologramm‐Item bearbeiten'
     hologramLaunchNo: '§e„Starten nicht verfügbar“‐Hologramm‐Item bearbeiten'
     customConfirmMessage: '§eQuestbestätigungsnachricht bearbeiten'
+    customDescription: '§eBearbeite Quest Beschreibung'
     name: Letzte Questdetails
     multipleTime:
       itemName: Mehrfachverwendung umschalten
@@ -298,6 +303,7 @@ inv:
     timer: '§bZeit, bevor die Quest erneut gestartet werden kann.'
     requirements: '{0} Anforderung(en)'
     rewards: '{0} Belohnung(en)'
+    customMaterial: '§eEdit quest item material'
   itemsSelect:
     name: Items bearbeiten
     none: |-
@@ -329,11 +335,11 @@ inv:
       §7Linksklicke zum Bearbeiten.
       Rechtsklicke zum Löschen.
   mobSelect:
-    name: Select mob type
+    name: Wähle den Mobtyp
     bukkitEntityType: '§eObjekttyp auswählen'
     mythicMob: '§6Mythic Mob auswählen'
     epicBoss: '§6Epic Boss auswählen'
-    boss: '§6Select a Boss'
+    boss: '§6Wähle einen Boss'
   stageEnding:
     locationTeleport: '§eTeleportationsposition bearbeiten'
     command: '§eAuszuführenden Befehl bearbeiten'
@@ -343,11 +349,11 @@ inv:
     name: Belohnungen
     commands: 'Befehle: {0}'
     teleportation: |-
-      §aSelected:
+      §aAusgewählt:
       X: {0}
       Y: {1}
       Z: {2}
-      World: {3}
+      Welt: {3}
   listAllQuests:
     name: Quests
   listPlayerQuests:
@@ -373,7 +379,7 @@ inv:
     name: Befehl
     value: '§eBefehl'
     console: Konsole
-    delay: '§bDelay'
+    delay: '§bVerzögerung'
   chooseAccount:
     name: Welcher Account?
   listBook:
@@ -397,16 +403,16 @@ inv:
   buckets:
     name: Eimertyp
   permission:
-    name: Choose permission
-    perm: '§aPermission'
-    world: '§aWorld'
+    name: Berechtigung auswählen
+    perm: '§aBerechtigung'
+    world: '§aWelt'
     worldGlobal: '§b§lGlobal'
-    remove: Remove permission
-    removeLore: '§7Permission will be taken off\n§7instead of given.'
+    remove: Berechtigung entfernen
+    removeLore: '§7Berechtigung wird genommen\n§7statt zu geben.'
   permissionList:
-    name: Permissions list
-    removed: '§eTaken off: §6{0}'
-    world: '§eWorld: §6{0}'
+    name: Berechtigungsliste
+    removed: '§eGenommen: §6{0}'
+    world: '§eWelt: §6{0}'
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'
@@ -455,7 +461,7 @@ misc:
     combatLevel: '§bKampflevel benötigt'
     experienceLevel: '§bErfahrungslevel benötigt'
     permissions: '§3Benötigte Berechtigung(en)'
-    scoreboard: '§dScore required'
+    scoreboard: '§dPunktestand erforderlich'
     placeholder: '§bPlatzhalter‐Wert benötigt'
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
@@ -471,7 +477,7 @@ misc:
   enabled: Aktiviert
   disabled: Deaktiviert
   unknown: unbekannt
-  notSet: '§cnot set'
+  notSet: '§cnicht gesetzt'
   unused: '§2§lUnbenutzt'
   used: '§a§lBenutzt'
   remove: '§7Mittelklicke zum Entfernen'

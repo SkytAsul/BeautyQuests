@@ -34,6 +34,8 @@ msg:
   writeHologramText: "§a输入全息文字. (输入 \"none\" 则不显示, 输入 \"null\" 显示默认文本)\n"
   writeQuestTimer: '§a输入重新开始任务的冷却时间 (单位为分钟)(输入 "null" 则使用默认值)'
   writeConfirmMessage: '§a请输入玩家确认加入任务的消息: (输入 "null" 则显示默认消息)'
+  writeQuestDescription: '§a请输入显示在玩家任务菜单内的任务描述。'
+  writeQuestMaterial: '§a请输入任务物品材料名。'
   requirements:
     quest: '§c你必须先完成任务§e "{0}"§c!'
     level: '§e你必须达到 {0} 级!'
@@ -88,6 +90,7 @@ msg:
     resetPlayerQuest:
       player: '§6任务数据 {0} 已被 {1} 删除.'
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
+    resetQuest: '§6已移除{0}的任务数据。'
     startQuest: '§6你接受了任务 {0} (UUID： {1}).'
     cancelQuest: '§6你放弃了任务 {0}.'
     cancelQuestUnavailable: '§c无法取消任务 {0} .'
@@ -151,11 +154,11 @@ msg:
       chooseSkillRequired: '§a输入技能名:'
       chooseMoneyRequired: '§e输入所需金额:'
       reward:
-        permissionName: '§aWrite the permission name.'
-        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
+        permissionName: '§a请输入权限名称。'
+        permissionWorld: '§a请输入可编辑权限的世界名，输入"null"则所有世界可编辑。'
         money: '§e输入获得的钱数:'
-      chooseObjectiveRequired: '§aWrite the objective name.'
-      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
+      chooseObjectiveRequired: '§a请输入目标名。'
+      chooseObjectiveTargetScore: '§a请输入完成任务目标所需目标数。'
     selectWantedBlock: '§a用木棍点击开始任务阶段的方块.'
     itemCreator:
       itemType: '§a输入物品类型名:'
@@ -185,9 +188,9 @@ msg:
         addSound: '§eaddsound <id> <音效名>: §b给一条消息添加音效.'
         clear: '§eclear: §b删除所有消息.'
         close: '§eclose: §b退出并保存所有消息.'
-        setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
-      timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
-      timeRemoved: '§aTime has been removed for message {0}.'
+        setTime: '§6setTime <id> <时间>: §e设置自动播放下一条消息的时间(单位为刻) 。'
+      timeSet: '§a已编辑消息 {0} 的时间: 现在是 {1} 刻。'
+      timeRemoved: '§a已删除消息{0}的时间。'
     mythicmobs:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
@@ -203,17 +206,17 @@ msg:
         remove: '§6remove [id]: §e删除一条文本.'
         list: '§6list: §e查看所有已添加的文本.'
         close: '6close: §e确认添加文本并退出编辑器.'
-    noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
-    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
-    scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
-  writeCommandDelay: '§aWrite the desired command delay, in ticks.'
+    noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
+    comparisonType: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§lger或equals§r§a。输入 §onull §r§a 来使用。'
+    scoreboardObjectiveNotFound: '§c未知的计分板目标。'
+  writeCommandDelay: '§a请输入指令延迟，单位为刻。'
 advancement:
   finished: Finished
   notStarted: Not started
 inv:
   validate: '§b§l确认'
   cancel: '§c§l取消'
-  search: '§e§lSearch'
+  search: '§e§l搜索'
   confirm:
     name: '§8你确认?'
     'yes': '§a确认'
@@ -240,6 +243,7 @@ inv:
     preventBlockPlace: 防止玩家破坏方块
     editMessageType: '§e编辑要输入的消息'
     cancelMessage: 取消发送
+    ignoreCase: 忽略消息大小写
     selectItems: '§b选择所需的物品'
     selectRegion: '§7选择一片区域'
     stageStartMsg: '§e编辑阶段开始的消息'
@@ -266,6 +270,7 @@ inv:
     hologramLaunch: '§e编辑 “启动” 全息项'
     hologramLaunchNo: '§e编辑 “启动不可用” 全息项'
     customConfirmMessage: '§e编辑确认接受任务的消息'
+    customDescription: '§e编辑任务描述'
     name: '§8最终任务详细设置'
     multipleTime:
       itemName: 开关重复任务
@@ -296,6 +301,7 @@ inv:
     timer: '§b任务冷却时间'
     requirements: '{0} 个任务需求'
     rewards: '{0} 个奖励'
+    customMaterial: '§a编辑任务物品材料名'
   itemsSelect:
     name: 编辑物品
     none: |-
@@ -325,11 +331,11 @@ inv:
     click: |-
       §7左键编辑,右键删除.
   mobSelect:
-    name: Select mob type
+    name: 选择怪物类型
     bukkitEntityType: '§e选择一个生物类型'
     mythicMob: '§6选择一个MythicMob'
     epicBoss: '§6选择一个Epic Boss'
-    boss: '§6Select a Boss'
+    boss: '§6选择一个Boss'
   stageEnding:
     locationTeleport: '§a编辑传送点'
     command: '§a编辑执行的指令'
@@ -339,11 +345,11 @@ inv:
     name: 任务奖励
     commands: '指令: {0}'
     teleportation: |-
-      §aSelected:
+      §a已选取位置:
       X: {0}
       Y: {1}
       Z: {2}
-      World: {3}
+      世界: {3}
   listAllQuests:
     name: '§8任务'
   listPlayerQuests:
@@ -369,7 +375,7 @@ inv:
     name: '§8指令'
     value: '§b指令'
     console: 控制台
-    delay: '§bDelay'
+    delay: '§b延迟'
   chooseAccount:
     name: '§5选择哪一个帐号?'
   listBook:
@@ -393,16 +399,16 @@ inv:
   buckets:
     name: 桶的类型
   permission:
-    name: Choose permission
-    perm: '§aPermission'
-    world: '§aWorld'
-    worldGlobal: '§b§lGlobal'
-    remove: Remove permission
-    removeLore: '§7Permission will be taken off\n§7instead of given.'
+    name: 选择权限
+    perm: '§a权限'
+    world: '§a世界'
+    worldGlobal: '§b§l全局'
+    remove: 删除权限
+    removeLore: '§7P将收回权限\n§7而非给予权限。'
   permissionList:
-    name: Permissions list
-    removed: '§eTaken off: §6{0}'
-    world: '§eWorld: §6{0}'
+    name: 权限列表
+    removed: '§e已移除: §6{0}'
+    world: '§e世界:§6{0}'
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -451,7 +457,7 @@ misc:
     combatLevel: '§b所需战斗等级'
     experienceLevel: '§b所需经验等级'
     permissions: '§3所需权限'
-    scoreboard: '§dScore required'
+    scoreboard: '§d所需分数'
     placeholder: '§b所需占位符数值'
     quest: '§a所需前置任务'
     mcMMOSkillLevel: '§d所需技能等级'
@@ -467,7 +473,7 @@ misc:
   enabled: 已启用
   disabled: 已关闭
   unknown: 未知
-  notSet: '§cnot set'
+  notSet: '§c未设置'
   unused: '§e§l未设置'
   used: '§6§l已设置'
   remove: '§e§o点击鼠标中键删除'
@@ -478,3 +484,4 @@ misc:
   'yes': '是'
   'no': '否'
   and: 和
+	
