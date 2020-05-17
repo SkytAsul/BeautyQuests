@@ -34,13 +34,15 @@ msg:
   writeHologramText: '§aEscreve o texto do holograma: (Escreve "none" se não queres um holograma e "null" se queres o texto padrão.)'
   writeQuestTimer: '§aEscreve o tempo necessário (em minutos) antes de reiniciar a missão: (Escreve "null" se desejas o temporizador padrão.)'
   writeConfirmMessage: '§aEscreve a mensagem de confirmação mostrada quando um jogador está prestes a iniciar a missão: (Escreve "null" se queres a mensagem padrão.)'
+  writeQuestDescription: '§aEscreva a descrição da missão, exibida no meno de missões do jogador.'
+  writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: '§cTens que ter terminado a missão §e{0}§c!'
     level: '§cDeves ter pelo menos nível {0}!'
     job: '§cDeves ter pelo menos nível {0} para o trabalho §e{1}§c!'
     skill: '§cDeves ter pelo menos nível {0} para a habilidade §e{1}§c!'
     combatLevel: '§cDeves ter pelo menos nível de combate {0}!'
-    money: '§cYou must have {0}!'
+    money: '§cVocê tem que ter {0}!'
     wait: '§cDeves esperar {0} minuto(s) antes de reiniciar esta missão!'
   experience:
     edited: '§aAlteraste a experiência adquirida de {0} para {1} pontos.'
@@ -88,6 +90,7 @@ msg:
     resetPlayerQuest:
       player: '§6Todas as informações da missão {0} foram apagadas por {1}.'
       remover: '§6Informações da missão(ões) de {0} de {1} foi/foram apagada(s).'
+    resetQuest: '§6Removed datas of the quest for {0} players.'
     startQuest: '§6Foste forçado a iniciar a missão {0} (UUID de Jogador: {1}).'
     cancelQuest: '§6Cancelaste a missão {0}.'
     cancelQuestUnavailable: '§cA missão {0} não pode ser cancelada.'
@@ -151,7 +154,7 @@ msg:
       chooseSkillRequired: '§aEscreve o nome da habilidade necessária:'
       chooseMoneyRequired: '§aWrite the amount of required money:'
       reward:
-        permissionName: '§aWrite the permission name.'
+        permissionName: '§aEscreva o nome da permissão.'
         permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
         money: '§aEscreve a quantidade do dinheiro recebido:'
       chooseObjectiveRequired: '§aWrite the objective name.'
@@ -240,6 +243,7 @@ inv:
     preventBlockPlace: Impede que os jogadores quebrem os seus próprios blocos
     editMessageType: '§eEditar mensagem para escrever'
     cancelMessage: Cancelar envio
+    ignoreCase: Ignore the case of the message
     selectItems: '§eEditar itens requeridos'
     selectRegion: '§7Escolher região'
     stageStartMsg: '§eEditar mensagem inicial'
@@ -266,6 +270,7 @@ inv:
     hologramLaunch: '§eEditar item holograma de "lançamento"'
     hologramLaunchNo: '§eEditar item holograma de "launch unavailable"'
     customConfirmMessage: '§eEdit quest confirmation message'
+    customDescription: '§eEdit quest description'
     name: Detalhes da última missão
     multipleTime:
       itemName: Alternar vários usos
@@ -298,6 +303,7 @@ inv:
     timer: '§bTempo antes de reiniciar a missão.'
     requirements: '{0} requisito(s)'
     rewards: '{0} recompensa(s)'
+    customMaterial: '§eEdit quest item material'
   itemsSelect:
     name: Editar itens
     none: |-
@@ -329,7 +335,7 @@ inv:
       §7Botão esquerdo para editar.
       Botão direito para apagar.
   mobSelect:
-    name: Select mob type
+    name: Escolha o tipo de mob
     bukkitEntityType: '§eSelecionar tipo de entidade'
     mythicMob: '§6Seleciona Mob Mítico'
     epicBoss: '§6Seleciona Boss Épico'
@@ -373,7 +379,7 @@ inv:
     name: Comando
     value: '§eComando'
     console: Consola
-    delay: '§bDelay'
+    delay: '§bAtraso'
   chooseAccount:
     name: Qual conta?
   listBook:
@@ -397,26 +403,26 @@ inv:
   buckets:
     name: Tipo de balde
   permission:
-    name: Choose permission
-    perm: '§aPermission'
-    world: '§aWorld'
+    name: Escolher permissão
+    perm: '§aPermissão'
+    world: '§aMundo'
     worldGlobal: '§b§lGlobal'
-    remove: Remove permission
+    remove: Remover permissão
     removeLore: '§7Permission will be taken off\n§7instead of given.'
   permissionList:
-    name: Permissions list
+    name: Lista de permissões
     removed: '§eTaken off: §6{0}'
-    world: '§eWorld: §6{0}'
+    world: '§eMundo: §6{0}'
 scoreboard:
   name: '§6§lMissões'
   noLaunched: '§cNenhuma missão em andamento.'
   noLaunchedName: '§c§lA carregar'
   noLaunchedDescription: '§c§oA carregar'
-  textBetwteenBranch: '§e or'
+  textBetwteenBranch: '§e ou'
   stage:
     region: '§eLocalizar região §6{0}'
     npc: '§eFalar com NPC §6{0}'
-    items: '§eBring items to §6{0}§e:'
+    items: '§eLevar itens para §6{0}§e:'
     mobs: '§eMatar §6{0}'
     mine: '§eMinerar {0}'
     chat: '§eEscrever §6{0}'
@@ -447,7 +453,7 @@ misc:
     Fish: Apanhar peixe
     Craft: Criar item
     Bucket: Preencher balde
-    location: Find location
+    location: Encontrar localização
   requirement:
     class: '§bClasse(es) necessária(s)'
     faction: '§bFação(ões) necessária(s)'
@@ -471,7 +477,7 @@ misc:
   enabled: Ativado
   disabled: Desativado
   unknown: desconhecido
-  notSet: '§cnot set'
+  notSet: '§cnão configurado'
   unused: '§2§lInutilizado'
   used: '§a§lUtilizado'
   remove: '§7Botão do meio para remover'
