@@ -79,6 +79,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 
 		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
 			datas.put("target", ((T) requirement).target);
+			datas.put("comparison", ((T) requirement).comparison);
 		}
 
 		public abstract Class<? extends Number> numberClass();

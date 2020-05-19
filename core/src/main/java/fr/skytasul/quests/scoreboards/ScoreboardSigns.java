@@ -3,6 +3,7 @@ package fr.skytasul.quests.scoreboards;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
@@ -112,9 +113,9 @@ public class ScoreboardSigns {
 			if (old != null && created)
 				NMS.getNMS().sendPacket(player, removeLine(old));
 
-			while (containsValue(value, team)){
+			/*while (containsValue(value, team)){
 				value = value + " "; //add a space if a line with the value already exists
-			}
+			}*/
 			team.setValue(value);
 			sendLine(line);
 			return team;
@@ -373,10 +374,21 @@ public class ScoreboardSigns {
 		}
 
 		private void setPlayer(String name) {
-			if (this.currentPlayer == null || !this.currentPlayer.equals(name))
+			if (!Objects.equals(this.currentPlayer, name)) {
 				this.playerChanged = true;
-			this.oldPlayer = this.currentPlayer;
-			this.currentPlayer = name;
+				this.oldPlayer = this.currentPlayer;
+				check: while (true) {
+					for (VirtualTeam team : lines) {
+						if (team != this && team != null && Objects.equals(name, team.currentPlayer)) {
+							name += "§h"; // inexistant color code to keep previous colors and add "invisible" characters
+							continue check;
+						}
+					}
+					break check; // no team found with same name
+				}
+
+				this.currentPlayer = name;
+			}
 		}
 
 		public Iterable<Object> sendLine() {
