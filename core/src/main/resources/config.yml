@@ -1,9 +1,9 @@
-# General configuration
+# - General configuration -
 # Number of minutes before the quest can be redone
 redoMinuts: 5
 # Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, de_DE, it_IT, es_ES, pt_PT, sv_SE
 lang: en_US
-# > 1.13 Chosen Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
+# (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
 minecraftTranslationsFile: null
 # Enable or disable update checking on the loading
 checkUpdates: true
@@ -25,7 +25,7 @@ database:
   password: "unknown"
   ssl: false
 
-# Quests behaviors
+# - Quests behaviors -
 # Enable or disable the scoreboards - more options in scoreboard.yml
 scoreboards: true
 # Enable or disable message when a quest is updated (next stage)
@@ -52,10 +52,14 @@ fireworks: true
 mobsProgressBar: false
 # Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
 progressBarTimeoutSeconds: 15
-# Item who represents a quest in the Choose Quest GUI
+# Item which represents a quest in the Choose Quest GUI
 item: BOOK
 # Page item material
 pageItem: ARROW
+# Maxmium distance where starting particles are shown
+startParticleDistance: 20
+# Number of seconds before the plugin checks every requirements for the player to show the starting particle
+requirementUpdateTime: 1
 
 # - Integrations -
 # Enable GPS integration
@@ -94,7 +98,6 @@ stageDescriptionItemsSplit:
   showXOne: true
   # From which sources the text has to be split
   sources: [SCOREBOARD, MENU]
-  #
 
 
 # - Particles configuration -

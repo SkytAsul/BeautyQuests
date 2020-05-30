@@ -3,6 +3,7 @@ package fr.skytasul.quests.requirements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -17,7 +18,7 @@ import fr.skytasul.quests.utils.Utils;
 
 public class PermissionsRequirement extends AbstractRequirement {
 
-	public List<String> permissions = new ArrayList<>();
+	public List<Permission> permissions = new ArrayList<>();
 	public String message = null;
 	
 	public PermissionsRequirement() {
@@ -25,8 +26,8 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 
 	public boolean test(Player p) {
-		for (String perm : permissions){
-			if (!p.hasPermission(perm)) return false;
+		for (Permission perm : permissions) {
+			if (!perm.match(p)) return false;
 		}
 		return true;
 	}
@@ -37,12 +38,12 @@ public class PermissionsRequirement extends AbstractRequirement {
 
 	
 	protected void save(Map<String, Object> datas) {
-		datas.put("permissions", permissions);
+		datas.put("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
 		if (message != null) datas.put("message", message);
 	}
 	
 	protected void load(Map<String, Object> savedDatas) {
-		permissions = (List<String>) savedDatas.get("permissions");
+		permissions = ((List<String>) savedDatas.get("permissions")).stream().map(Permission::fromString).collect(Collectors.toList());
 		if (savedDatas.containsKey("message")) message = (String) savedDatas.get("message");
 	}
 
@@ -66,7 +67,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 
 		public AbstractRequirement finish(Map<String, Object> datas) {
 			PermissionsRequirement req = new PermissionsRequirement();
-			req.permissions = (List<String>) datas.get("perms");
+			req.permissions = ((List<String>) datas.get("perms")).stream().map(Permission::fromString).collect(Collectors.toList());
 			req.message = (String) datas.get("msg");
 			return req;
 		}
@@ -74,6 +75,30 @@ public class PermissionsRequirement extends AbstractRequirement {
 		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
 			datas.put("perms", new ArrayList<>(((PermissionsRequirement) requirement).permissions));
 			datas.put("msg", ((PermissionsRequirement) requirement).message);
+		}
+	}
+
+	public static class Permission {
+		private final String permission;
+		private final boolean value;
+
+		public Permission(String permission, boolean value) {
+			this.permission = permission;
+			this.value = value;
+		}
+
+		public boolean match(Player p) {
+			boolean has = p.hasPermission(permission);
+			return has == value;
+		}
+
+		public String toString() {
+			return (value ? "" : "-") + permission;
+		}
+
+		public static Permission fromString(String string) {
+			boolean neg = string.startsWith("-");
+			return new Permission(string.substring(neg ? 1 : 0), !neg);
 		}
 	}
 

@@ -35,6 +35,8 @@ public class QuestsConfiguration {
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
 	private static XMaterial item = XMaterial.BOOK;
 	private static XMaterial pageItem = XMaterial.ARROW;
+	private static int startParticleDistance;
+	private static int requirementUpdateTime;
 	private static String itemNameColor;
 	private static String itemAmountColor;
 	private static boolean enablePrefix = true;
@@ -108,6 +110,8 @@ public class QuestsConfiguration {
 		pageItem = XMaterial.fromString(config.getString("pageItem"));
 		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
+		startParticleDistance = config.getInt("startParticleDistance");
+		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		itemNameColor = config.getString("itemNameColor");
 		itemAmountColor = config.getString("itemAmountColor");
 		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
@@ -256,6 +260,14 @@ public class QuestsConfiguration {
 		return  pageItem;
 	}
 	
+	public static int getRequirementUpdateTime() {
+		return requirementUpdateTime;
+	}
+
+	public static int getStartParticleDistance() {
+		return startParticleDistance;
+	}
+
 	public static boolean isTextHologramDisabled(){
 		return disableTextHologram;
 	}

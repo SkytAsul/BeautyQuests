@@ -1,10 +1,12 @@
 package fr.skytasul.quests.structure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,8 +49,15 @@ public class NPCStarter {
 		
 		launcheableTask = new BukkitRunnable() {
 			private boolean holograms = hologramLaunch.enabled || hologramLaunchNo.enabled;
+			private int timer = 0;
 			public void run() {
 				if (!npc.isSpawned()) return;
+
+				if (timer-- == 0) {
+					timer = QuestsConfiguration.getRequirementUpdateTime();
+					return;
+				}
+
 				LivingEntity en;
 				try {
 					en = (LivingEntity) npc.getEntity();
@@ -56,10 +65,12 @@ public class NPCStarter {
 				
 				for (Quest quest : quests) quest.launcheable.clear();
 				
+				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
 				for (Player p : en.getWorld().getPlayers()){
 					if (p instanceof NPCHolder) continue;
-					if (lc.distance(p.getLocation()) > 50) continue;
+					if (lc.distance(p.getLocation()) > QuestsConfiguration.getStartParticleDistance()) continue;
+					playersInRadius.add(p);
 					try{
 						for (Quest quest : quests) {
 							if (quest.isLauncheable(p, false)) {
@@ -72,9 +83,7 @@ public class NPCStarter {
 				for (Quest quest : quests) quest.updateLauncheable(en);
 				
 				if (!holograms || !HolographicDisplays.hasProtocolLib()) return;
-				Map<Player, PlayerAccount> players = en.getWorld().getPlayers().stream().filter(
-						(x) -> !(x instanceof NPCHolder) && lc.distance(x.getLocation()) < 50
-						).collect(Collectors.toMap((x) -> x, (x) -> PlayersManager.getPlayerAccount(x)));
+				Map<Player, PlayerAccount> players = playersInRadius.stream().collect(Collectors.toMap(x -> x, x -> PlayersManager.getPlayerAccount(x)));
 				List<Player> launcheable = new ArrayList<>();
 				List<Player> unlauncheable = new ArrayList<>();
 				for (Quest qu : quests){
@@ -82,9 +91,9 @@ public class NPCStarter {
 						Entry<Player, PlayerAccount> player = iterator.next();
 						if (qu.hasFinished(player.getValue()) || qu.hasStarted(player.getValue())){
 							continue;
-						}else if (hologramLaunch.enabled && qu.isLauncheable(player.getKey(), false)){
+						}else if (hologramLaunch.enabled && qu.launcheable.contains(player.getKey())) {
 							launcheable.add(player.getKey());
-						}else if (hologramLaunchNo.enabled && qu.isLauncheable(player.getKey(), false)){
+						}else if (hologramLaunchNo.enabled && !qu.launcheable.contains(player.getKey())) {
 							unlauncheable.add(player.getKey());
 						}
 						iterator.remove();

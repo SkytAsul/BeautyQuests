@@ -63,7 +63,7 @@ public class CommandGUI implements CustomInventory {
 				cmd = (String) obj;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
-			}));
+			}, () -> p.openInventory(inv), null));
 			break;
 			
 		case 1:
