@@ -105,62 +105,67 @@ public class BeautyQuests extends JavaPlugin{
 	}
 	
 	public void onEnable(){
-		if (!getServer().getPluginManager().isPluginEnabled("Citizens")){
-			logger.severe("Citizens plugin is not installed.");
+		try {
+			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
+				throw new LoadingException("Citizens plugin is not installed.");
+			}
+
+			try {
+				DependenciesManager.initialize();
+			}catch (Throwable ex) {
+				logger.severe("Error when initializing compatibilities. Consider restarting.");
+				ex.printStackTrace();
+			}
+
+			new BukkitRunnable() {
+				public void run() {
+					try {
+						long lastMillis = System.currentTimeMillis();
+						getLogger().info(loadAllDatas() + " quests loaded ("
+								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
+
+						launchSaveCycle();
+
+						if (!lastVersion.equals(getDescription().getVersion())) { // maybe change in data structure : update of all quest files
+							DebugUtils.logMessage("Migrating from " + lastVersion + " to " + getDescription().getVersion());
+							for (Quest qu : quests) qu.saveToFile();
+							saveAllConfig(false);
+						}
+					}catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}.runTaskLater(this, 40L);
+
+			saveDefaultConfig();
+			NMS.getMCVersion();
+			registerCommands();
+
+			saveFolder = new File(getDataFolder(), "quests");
+			if (!saveFolder.exists()) saveFolder.mkdirs();
+			loadDataFile();
+			loadConfigParameters(true);
+
+			logger.launchFlushTimer();
+			try {
+				new SpigotUpdater(this, 39255);
+				DebugUtils.logMessage("Started Spigot updater");
+			}catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			Metrics metrics = new Metrics(this, 7460);
+			metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
+			metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+			metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
+			DebugUtils.logMessage("Started bStats metrics");
+		}catch (LoadingException ex) {
+			if (ex.getCause() != null) ex.getCause().printStackTrace();
+			logger.severe(ex.loggerMessage);
 			logger.severe("This is a fatal error. Now disabling.");
 			disable = true;
 			setEnabled(false);
-			return;
 		}
-		try{
-			DependenciesManager.initialize();
-		}catch (Throwable ex){
-			logger.severe("Error when initializing compatibilities. Consider restarting.");
-			ex.printStackTrace();
-		}
-		
-		new BukkitRunnable() {
-			public void run(){
-				try {
-					long lastMillis = System.currentTimeMillis();
-					getLogger().info(loadAllDatas() + " quests loaded ("
-							+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
-
-					launchSaveCycle();
-
-					if (!lastVersion.equals(getDescription().getVersion())) { // maybe change in data structure : update of all quest files
-						DebugUtils.logMessage("Migrating from " + lastVersion + " to " + getDescription().getVersion());
-						for (Quest qu : quests) qu.saveToFile();
-						saveAllConfig(false);
-					}
-				}catch (Throwable e) {
-					e.printStackTrace();
-				}
-			}
-		}.runTaskLater(this, 40L);
-
-		saveDefaultConfig();
-		NMS.getMCVersion();
-		registerCommands();
-
-		saveFolder = new File(getDataFolder(), "quests");
-		if (!saveFolder.exists()) saveFolder.mkdirs();
-		loadDataFile();
-		loadConfigParameters(true);
-		
-		logger.launchFlushTimer();
-		try {
-			new SpigotUpdater(this, 39255);
-			DebugUtils.logMessage("Started Spigot updater");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
-		Metrics metrics = new Metrics(this, 7460);
-		metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
-		metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
-		metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
-		DebugUtils.logMessage("Started bStats metrics");
 	}
 
 	public void onDisable(){
@@ -222,7 +227,7 @@ public class BeautyQuests extends JavaPlugin{
 	
 	/* ---------- YAML ---------- */
 	
-	private void loadConfigParameters(boolean init){
+	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			config = getConfig();
 			/*				static initialization				*/
@@ -242,22 +247,20 @@ public class BeautyQuests extends JavaPlugin{
 				if (db.openConnection()) {
 					logger.info("Connection to database etablished.");
 				}else {
-					logger.severe("Connection to database has failed.");
 					db.closeConnection();
 					db = null;
-					logger.severe("This is a fatal error. Now disabling.");
-					disable = true;
-					setEnabled(false);
-					return;
+					throw new LoadingException("Connection to database has failed.");
 				}
 			}
+		}catch (LoadingException ex) {
+			throw ex;
 		}catch (Exception ex){
 			getLogger().severe("Error when loading.");
 			ex.printStackTrace();
 		}
 	}
 	
-	private YamlConfiguration loadLang() {
+	private YamlConfiguration loadLang() throws LoadingException {
 		try {
 			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
@@ -296,28 +299,18 @@ public class BeautyQuests extends JavaPlugin{
 			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 			return conf;
 		} catch(Exception e) {
-			e.printStackTrace();
-			getLogger().severe("Couldn't create language file.");
-			getLogger().severe("This is a fatal error. Now disabling.");
-			disable = true;
-			this.setEnabled(false);
-			return null;
+			throw new LoadingException("Couldn't create language file.", e);
 		}
 	}
 	
-	private void loadDataFile(){
+	private void loadDataFile() throws LoadingException {
 		dataFile = new File(getDataFolder(), "data.yml");
 		if (!dataFile.exists()){
 			try {
 				dataFile.createNewFile();
 				getLogger().info("data.yml created.");
 			} catch (IOException e) {
-				e.printStackTrace();
-				getLogger().severe("Couldn't create data file.");
-				getLogger().severe("This is a fatal error. Now disabling.");
-				disable = true;
-				this.setEnabled(false);
-				return;
+				throw new LoadingException("Couldn't create data file.", e);
 			}
 		}
 		DebugUtils.logMessage("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
@@ -559,6 +552,21 @@ public class BeautyQuests extends JavaPlugin{
 
 	public static BeautyQuests getInstance(){
 		return instance;
+	}
+	
+	class LoadingException extends Exception {
+		private static final long serialVersionUID = -2811265488885752109L;
+
+		private String loggerMessage;
+
+		public LoadingException(String loggerMessage) {
+			this.loggerMessage = loggerMessage;
+		}
+
+		public LoadingException(String loggerMessage, Throwable cause) {
+			super(cause);
+			this.loggerMessage = loggerMessage;
+		}
 	}
 	
 }

@@ -73,7 +73,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 		}
 
 		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("perms", new ArrayList<>(((PermissionsRequirement) requirement).permissions));
+			datas.put("perms", ((PermissionsRequirement) requirement).permissions.stream().map(Permission::toString).collect(Collectors.toList()));
 			datas.put("msg", ((PermissionsRequirement) requirement).message);
 		}
 	}

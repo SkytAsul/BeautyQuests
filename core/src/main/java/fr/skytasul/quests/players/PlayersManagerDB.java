@@ -3,6 +3,7 @@ package fr.skytasul.quests.players;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,13 +170,14 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	private static void createTables(Database db) throws SQLException {
-		db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
+		Statement statement = db.getConnection().createStatement();
+		statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
 				+ " `id` int NOT NULL AUTO_INCREMENT ,"
 				+ " `identifier` text NOT NULL ,"
 				+ " `player_uuid` char(36) NOT NULL ,"
 				+ " PRIMARY KEY (`id`)"
 				+ " )");
-		db.getStatement().execute("CREATE TABLE IF NOT EXISTS " + DATAS_TABLE + " (" +
+		statement.execute("CREATE TABLE IF NOT EXISTS " + DATAS_TABLE + " (" +
 				" `id` int NOT NULL AUTO_INCREMENT ," +
 				" `account_id` int(11) NOT NULL," +
 				" `quest_id` int(11) NOT NULL," +
@@ -193,7 +195,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	public static String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
-		ResultSet result = db.getStatement().getConnection().getMetaData().getTables(null, null, "%", null);
+		ResultSet result = db.getConnection().getMetaData().getTables(null, null, "%", null);
 		while (result.next()) {
 			String tableName = result.getString(3);
 			if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {

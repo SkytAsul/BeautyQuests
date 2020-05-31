@@ -18,7 +18,6 @@ public class Database {
 	private int port;
 
 	private Connection connection;
-	private Statement statement;
 
 	public Database(ConfigurationSection config) {
 		this.host = config.getString("host");
@@ -50,9 +49,9 @@ public class Database {
 
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), properties);
-			statement = connection.createStatement();
+			DebugUtils.logMessage("Opened database connection.");
 		}catch (SQLException ex) {
-			BeautyQuests.logger.severe("An exception occured when connecting to the database.");
+			BeautyQuests.logger.severe("An exception occurred when connecting to the database.");
 			ex.printStackTrace();
 			return false;
 		}
@@ -69,10 +68,14 @@ public class Database {
 	}
 
 	public void closeConnection() {
-		if (isClosed()) {
+		if (!isClosed()) {
 			try {
 				connection.close();
-			}catch (SQLException e1) {}
+				DebugUtils.logMessage("Closed database connection.");
+			}catch (SQLException ex) {
+				BeautyQuests.logger.severe("An exception occurred when closing database connection.");
+				ex.printStackTrace();
+			}
 			connection = null;
 		}
 	}
@@ -85,8 +88,8 @@ public class Database {
 		return connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	}
 
-	public Statement getStatement() {
-		return statement;
+	public Connection getConnection() {
+		return connection;
 	}
 
 	public static Database getInstance(){
@@ -97,6 +100,8 @@ public class Database {
 		private final String statement;
 		private boolean returnGeneratedKeys;
 
+		private PreparedStatement prepared;
+
 		public BQStatement(String statement) {
 			this(statement, false);
 		}
@@ -105,8 +110,6 @@ public class Database {
 			this.statement = statement;
 			this.returnGeneratedKeys = returnGeneratedKeys;
 		}
-
-		private PreparedStatement prepared;
 
 		public PreparedStatement getStatement() throws SQLException {
 			if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0)) {
