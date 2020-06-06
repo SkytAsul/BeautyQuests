@@ -489,7 +489,7 @@ public enum Lang{
 	
 	
 	private String path;
-	private String value;
+	private String value = "§cnot loaded";
 
 	private Lang(String path){
 		this.path = path;

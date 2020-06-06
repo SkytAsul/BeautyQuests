@@ -110,13 +110,6 @@ public class BeautyQuests extends JavaPlugin{
 				throw new LoadingException("Citizens plugin is not installed.");
 			}
 
-			try {
-				DependenciesManager.initialize();
-			}catch (Throwable ex) {
-				logger.severe("Error when initializing compatibilities. Consider restarting.");
-				ex.printStackTrace();
-			}
-
 			new BukkitRunnable() {
 				public void run() {
 					try {
@@ -145,6 +138,13 @@ public class BeautyQuests extends JavaPlugin{
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
 			loadConfigParameters(true);
+
+			try {
+				DependenciesManager.initialize();
+			}catch (Throwable ex) {
+				logger.severe("Error when initializing compatibilities. Consider restarting.");
+				ex.printStackTrace();
+			}
 
 			logger.launchFlushTimer();
 			try {
