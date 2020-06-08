@@ -1,0 +1,489 @@
+---
+msg:
+  quest:
+    finished:
+      base: '&aSikeresen teljesítetted a következő küldetést §e{0}§a!'
+      obtain: '§aEzt kaptad: {0}!'
+    started: '&aElkezdted a következő küldetést §r§e{0}§o§6!'
+    created: '&aSiker! Létrehoztad a következő küldetést §e{0}§a ami tartalmaz {1} ágat!'
+    edited: '§aSiker! Szerkeszetted a következő küldetést §e{0}§a ami tartalmaz {1} ágat!'
+    createCancelled: '§cA szerkesztés vagy az elkészítés megszakítva egy másik plugin miatt!'
+    cancelling: '§cA küldetés elkészítése közben hiba történt.'
+    editCancelling: '§cA küldetés szerkesztése megszakítva.'
+    invalidID: '§cA következő küldetés {0} nem létezik.'
+    alreadyStarted: '§cMár elkezdted ezt a küldetést!'
+  quests:
+    nopStep: '§cEz a küldetés nem tartalmaz lépéseket.'
+    updated: '§7A következő küldetés §e{0}§7 frissítve.'
+  stageMobs:
+    noMobs: '§cEz a lépés nem igényel szörny ölést.'
+    listMobs: '§aEnnyit megkell ölnöd {0}.'
+  writeNPCText: '§aÍrd le a párbeszédet amelyet a játékos fog folytatni az NPC vel: (Használd a "help" a segítségért)'
+  writeRegionName: '§aÍrd a helyet amit kér a küldetés:'
+  writeXPGain: '§Írd ide az xp mennyiséget amit a játékos kapni fog:(Utolsó érték:{0})'
+  writeMobAmount: '§aÍrd ide a mennyiséget,hogy mennyi szörnyet kell megölni:'
+  writeChatMessage: '§aÍrd a következő üzenetet: (Add {SLASH}" az elkezdéshez.)'
+  writeEndMessage: '§aÍrd ide az üzenetet amit a játékos fog kapni mikor befejezi a küldetést:'
+  writeDescriptionText: '§aÍrd ide a szöveget ami leírja a lépéseket:'
+  writeStageText: '§aÍrd ide a szöveget amit a játékos fog kapni mikor elkezdi a lépést:'
+  moveToTeleportPoint: '§aMenj a kért teleportálás helyszínére.'
+  writeNpcName: '§aÍrd ide az NPC nevét:'
+  writeNpcSkinName: '§aÍrd ide az NPC skin nevét:'
+  writeQuestName: '§aÍrd ide a küldetést nevét:'
+  writeCommand: '§aÍrd ide a parancsot: (A parancs "/" nélkül és a szó "{PLAYER}" engedélyezett. Átlesz helyezve.)'
+  writeHologramText: '§aÍrd a hologram nevét ide: (Írd "none ha nem akarsz semmit és "null" ha az alap szöveget akarod.)'
+  writeQuestTimer: '§aÍrd a szükséges időt (percben) amielött újratudod indítani a küldetést: (Írd "null" ha az alapot akarod.)'
+  writeConfirmMessage: '§aÍrd a megerősítő üzenetet ide:(Írd "null" az alap szöveghez.)'
+  writeQuestDescription: '§aÍrd ide a leírást amit a játékos látni fog.'
+  writeQuestMaterial: '§aÍrd ide,hogy milyen tárgy legyen a küldetés.'
+  requirements:
+    quest: '§cBekell fejezned a következő küldetést §e{0}§c!'
+    level: '§cMinimum {0} kell lenned ,hogy elindítsd a küldetést!'
+    job: '§cMinimum {0} szintűnek kell lenned a következő munkához §e{1}§c!'
+    skill: '§cMinimum {0} kell lenned a skillhez §e{1}§c!'
+    combatLevel: '§cMinimum {0} kell legyen a hárc szinted!'
+    money: '§cEnnyi kell lennied nállad {0}!'
+    wait: '§cVárnod kell {0} percet mielött újra indítanád!'
+  experience:
+    edited: '§aMegkell változtatnod az xp-t {0} ről ennyire {1}.'
+  selectNPCToKill: '§aVálazd ki az NPC akit megkell ölni.'
+  npc:
+    remove: '§aNPC kitörölve.'
+    talk: '§aMenj és beszélj a következő NPC-vel §e{0}§a.'
+  regionDoesntExists: '§cNem létezik ilyen hely. (Ugyanabban a világban kell lenned.)'
+  factionDoesntExist: '§cNem létezik ilyen frakció.'
+  npcDoesntExist: '§cEz az NPC nem létezik {0}.'
+  classDoesntExist: '§cIlyen kaszt nem létezik.'
+  objectDoesntExist: '§cA következő tárgy nem létezik {0}.'
+  number:
+    negative: '§cMuszály pozitív számot írnod!'
+    zero: '§cNagyobb számot kell írnod 0-nál!'
+    invalid: '§c{0} nem érvényes szám.'
+  errorOccurred: '§cHiba történt, lépj kapcsolatba egy adminisztrátorral! §4§lHiba kód: {0}'
+  commandsDisabled: '§cJelenleg nem tudsz parancsokat végrehajtani!'
+  indexOutOfBounds: '§cA szám {0} nem jó! Muszály {1} és {2} között lennie.'
+  bringBackObjects: Hozz nekem {0}.
+  inventoryFull: '§cTele van a táskád, a tárgy el lett dobva a földre.'
+  playerNeverConnected: '§cNem lehet információkat találni a játékosról {0}.'
+  playerNotOnline: '§cA következő játékos nem elérhető {0}.'
+  command:
+    setStage:
+      branchDoesntExist: '§cA következő ág nem létezik {0}.'
+      doesntExist: '§cA következő szint {0} nem létezik.'
+      next: '§aA szint kihagyva.'
+      nextUnavailable: '§c A "kihagyás" opció nem elérhető mikor a játékos az ág végén van.'
+      set: '§aSzint {0} elindítva.'
+    playerNeeded: '§cJátékos kell lenned, hogy lefuttathasd ezt a parancsot!'
+    incorrectSyntax: '§cHelytelen szintax.'
+    noPermission: '§cNincs elég jogod, hogy futtathasd a parancsot! (Szükséges: {0})'
+    invalidCommand:
+      quests: '§cEz a parancs nem létezik, írd §e/quests help§c.'
+      simple: '§cEz a parancs nem létezik, használd §ehelp§c.'
+    needItem: '§cEgy tárgynak kell lenni a fő kezedben!'
+    itemChanged: '§aA tárgy szerkesztve. A változtatások az újraindítás után fognak működni.'
+    itemRemoved: '§aA tárgy hologram eltávolítva.'
+    removed: '§aA következő küldetés sikeresen eltávolítva {0}.'
+    leaveAll: '§aKényszerítve lettél, hogy befejezd a következő küldetést {0}. Hibák:{1}'
+    resetPlayer:
+      player: '§6Az összes információ a következő küldetésedből {0} törölve lett általa {1}.'
+      remover: '§6{0} küldetés információk törölve lettek {1}.'
+    resetPlayerQuest:
+      player: '§6Az összes infó a küldetésről {0} törölve lett általa {1}.'
+      remover: '§6Küldetés infó törölve {0} ennyiből {1}.'
+    resetQuest: '§6Küldetés adat törölve neki {0}.'
+    startQuest: '§6Kényszerítve lettél, hogy elkezd a következő küldetést {0} (Játékos UUID: {1}).'
+    cancelQuest: '§6Elutasítottad a következő küldetést {0}.'
+    cancelQuestUnavailable: '§cA küldetés nem elutasítható {0}.'
+    backupCreated: '§6Sikeresen csináltál mentést.'
+    backupPlayersFailed: '§cA mentés sikertelen.'
+    backupQuestsFailed: '§cA mentés sikertelen.'
+    adminModeEntered: '§aBeléptél az Admin Módba.'
+    adminModeLeft: '§aKiléptél az Admin Módból.'
+    scoreboard:
+      lineSet: '§6Sikeresen átírtad a sort {0}.'
+      lineReset: '§6Sikeresen újraraktad a sort {0}.'
+      lineRemoved: '§6Sikeresen eltávolítottad a sort {0}.'
+      lineInexistant: '§cA sor {0} nem létezik.'
+      resetAll: '§6Sikeres újrarakás a következő játékosnak {0}.'
+      hidden: '§6A lista a következő játékosnak {0} láthatatlan.'
+      shown: '§6A lista következő játékosnak látható {0}.'
+    help:
+      header: '§6§lBeautyQuests - Segítség'
+      create: '§6/{0} létrehoz: §eLétrehoz egy küldetést.'
+      edit: '§6/{0} szerkesztés: §eSzerkesz egy küldetést.'
+      remove: '§6/{0} eltávolít <id>:§EKitöröl egy küldetést a meghatározott id-vel vagy kattints az NPC-re.'
+      finishAll: '§6/{0} befejezmindent <player>: §eBefejezi az összes küldetést.'
+      setStage: '§6/{0} setStage <player> <id> új ág új szint: §eTovábblépi a jelenlegi szintet.'
+      resetPlayer: '§6/{0} resetPlayer <player>: §eTöröl minden információt.'
+      resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eDelete információk egy küldetést, hogy egy játékos.'
+      seePlayer: '§6/{0} seePlayer <player>: §eView információt a játékos.'
+      reload: '§6/{0} reload: §eSave, majd újra konfigurációk, valamint a fájlok. (§cdeprecated§e)'
+      start: '§6/{0} start <player> [id]: §eForce a kezdő a küldetést.'
+      setItem: '§6/{0} setItem <talk|launch>: §eSave the hologram item.'
+      adminMode: '§6/{0} adminMode: §eToggle the Admin Mode. (Useful for displaying little log messages.)'
+      version: '§6/{0} version: §eSee the current plugin version.'
+      save: '§6/{0} save: §eMake a manual plugin save.'
+      list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
+  typeCancel: '§aWrite "cancel" to come back to the last text.'
+  editor:
+    blocksToMineAmount: '§aWrite the amount of blocks to mine:'
+    blocksToMineName: '§aWrite the name of the block to mine:'
+    typeBucketAmount: '§aWrite the amount of buckets to fill:'
+    goToLocation: '§aGo to the wanted location for the stage.'
+    typeLocationRadius: '§aWrite the required distance from the location:'
+    already: '§cYou are already in the editor.'
+    enter:
+      title: '§6~ Editor Mode ~'
+      subtitle: '§6Write "/quests editor" to force leaving.'
+    chat: '§6You are currently in the Editor Mode. Write "/quests editor" to force leaving the editor. (Highly not recommended, consider using commands such as "close" or "cancel" to come back to the previous inventory.)'
+    npc:
+      enter: '§aClick on a NPC, or write "cancel".'
+      choseStarter: '§aChoose the NPC which starts the quest.'
+      notStarter: '§cThis NPC isn''t a quest starter.'
+    text:
+      argNotSupported: '§cThe argument {0} not supported.'
+      chooseLvlRequired: '§aWrite the required amount of levels:'
+      chooseJobRequired: '§aWrite name of the wanted job:'
+      choosePermissionRequired: '§aWrite the required permission to start the quest:'
+      choosePermissionMessage: '§aYou can choose a rejection message if the player doesn''t have the required permission. (To skip this step, write "null".)'
+      chooseFactionRequired: '§aWrite the required faction name:'
+      chooseClassesRequired: '§aWrite the names for the required classes to start the quest:'
+      choosePlaceholderRequired:
+        identifier: '§aWrite the name of the required placeholder without the percent characters:'
+        value: '§aWrite the required value for the placeholder §6%{0}%§a:'
+      chooseSkillRequired: '§aWrite the name of the required skill:'
+      chooseMoneyRequired: '§aWrite the amount of required money:'
+      reward:
+        permissionName: '§aWrite the permission name.'
+        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
+        money: '§aWrite the amount of the received money:'
+      chooseObjectiveRequired: '§aWrite the objective name.'
+      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
+    selectWantedBlock: '§aClick with the stick on the wanted block for the stage.'
+    itemCreator:
+      itemType: '§aWrite the name of the wanted item type:'
+      itemName: '§aWrite the item name:'
+      itemLore: '§aModify the item lore: (Write "help" for help.)'
+      unknownItemType: '§cUnknown item type.'
+      invalidItemType: '§cInvalid item type. (The item can''t be a block.)'
+    dialog:
+      syntax: '§cCorrect syntax: {0}{1} <message>'
+      syntaxRemove: '§cCorrect sytax: remove <id>'
+      player: '§aMessage "{0}" added for the player.'
+      npc: '§aMessage "{0}" added for the NPC.'
+      noSender: '§aMessage "{0}" added without a sender.'
+      messageRemoved: '§aMessage "{0}" removed.'
+      soundAdded: '§aSound "{0}" added for the message "{1}".'
+      cleared: '§a{0} removed message(s).'
+      help:
+        header: '§6§lBeautyQuests — Dialog editor help'
+        npc: '§6npc <message>: §eAdd a message said by the NPC.'
+        player: '§6játékos <message>: §eHozzáad egy szöveget amit a játékos ír.'
+        nothing: '§6noSender <message>: §eHozzáad egy szöveget küldő nélkül.'
+        remove: '§6remove <id>: §eEltávolít egy szöveget.'
+        list: '§6list: §eÖsszes szöveg megnézése.'
+        npcInsert: '§6npcInsert <id> <message>: §eHozzáadja az összes üzenetet amit az NPC mond.'
+        playerInsert: '§6playerinsert <id> <message>: §eHozzáad minden üzenetet amit a játékos mond.'
+        nothingInsert: '§6nothingInsert <id> <message>: §eHozzáad egy üzenetet prefix nélkül.'
+        addSound: '§6addSound <id> <sound>: §eHangot ad hozzá az üzenethez.'
+        clear: '§6clear: §eKitörli az összes üzenetet.'
+        close: '§6close: §eMinden üzenetet ment és kilép.'
+        setTime: '§6setTime <id> <time>: §eIdőt ad hozzá a szövegek közt.'
+      timeSet: '§aAz idő szerkesztve az üzenetnek {0}: mostmár {1} tick.'
+      timeRemoved: '§aIdő eltávolítva ennek az üzenetnek {0}.'
+    mythicmobs:
+      list: '§aAz összes Mythic Mob lista:'
+      isntMythicMob: '§cEz a Mythic Mob nem létezik.'
+      disabled: '§cMythicMob kikapcsolva.'
+    epicBossDoesntExist: '§cEz az Epic Boss nem létezik.'
+    textList:
+      syntax: '§cHelyes szintax: '
+      added: '§aSzöveg "{0}" hozzáadva.'
+      removed: '§aSzöveg "{0}" törölve.'
+      help:
+        header: '§6§lBeautyQuests - Lista szerkesztő segítség'
+        add: '§6add <message>: §eHozzáad egy szöveget.'
+        remove: '§6remove <id>: §eEltávolít egy szöveget.'
+        list: '§6list: §eÖsszes szöveg megnézése.'
+        close: '§6close: §eHozzáadott szöveg megerősítése.'
+    noSuchElement: '§cNincs ilyen elem. Engedélyezett elemek: §e{0}'
+    comparisonType: '§aVálaszd ki a kívánt összehasonlítás tipust {0}. Alap összehasonlítás ez: §e§ljobb vagy egyenlő §r§a. Tipus §onull§r§a, hogy használd.'
+    scoreboardObjectiveNotFound: '§cIsmeretlen lista objektum.'
+  writeCommandDelay: '§aÍrd a kívánt parancs késleltetést, tickben.'
+advancement:
+  finished: Teljesítve
+  notStarted: Nem elkezdett
+inv:
+  validate: '§b§lMegerősítés'
+  cancel: '§c§lElutasítás'
+  search: '§e§lKeresés'
+  confirm:
+    name: Biztos vagy benne?
+    'yes': '§aElfogad'
+    'no': '§cElutasít'
+  create:
+    stageCreate: '§aÚj szint hozzáadás'
+    stageRemove: '§cSzint eltávolítás'
+    findNPC: '§aTaláld meg az NPC-t'
+    bringBack: '§aHozz vissza tárgyakat'
+    findRegion: '§aTaláld meg a helyet'
+    killMobs: '§aÖlj szörnyeket'
+    mineBlocks: '§aTörj blokkokat'
+    talkChat: '§aÍrj a chatbe'
+    interact: '§aKattints rá a blokkra'
+    fish: '§aFogj halakat'
+    craft: '§aKészíts tárgyakat'
+    bucket: '§aTölts meg vödröket'
+    location: '§aMenj el a helyre'
+    NPCText: '§eEdit dialog'
+    hideClues: Hide particles and holograms
+    editMobsKill: '§eEdit mobs to kill'
+    mobsKillFromAFar: Needs to be killed with projectile
+    editBlocksMine: '§eEdit blocks to break'
+    preventBlockPlace: Prevent players to break their own blocks
+    editMessageType: '§eEdit message to write'
+    cancelMessage: Cancel sending
+    ignoreCase: Ignore the case of the message
+    selectItems: '§eEdit required items'
+    selectRegion: '§7Choose region'
+    stageStartMsg: '§eEdit starting message'
+    selectBlockLocation: '§eSelect block location'
+    leftClick: Click must be left-click
+    editFishes: '§eEdit fishes to catch'
+    editItem: '§eEdit item to craft'
+    editBucketType: '§eEdit type of bucket to fill'
+    editBucketAmount: '§eEdit amount of buckets to fill'
+    editLocation: '§eEdit location'
+    editRadius: '§eEdit distance from location'
+    currentRadius: '§eCurrent distance: §6{0}'
+  stages:
+    name: Create stages
+    nextPage: '§eNext page'
+    laterPage: '§ePrevious page'
+    endingItem: '§eEdit end rewards'
+    descriptionTextItem: '§eEdit description'
+    regularPage: '§aRegular stages'
+    branchesPage: '§dBranch stages'
+    previousBranch: '§eBack to previous branch'
+    newBranch: '§eGo to new branch'
+  details:
+    hologramLaunch: '§eEdit "launch" hologram item'
+    hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
+    customConfirmMessage: '§eEdit quest confirmation message'
+    customDescription: '§eEdit quest description'
+    name: Last quest details
+    multipleTime:
+      itemName: Toggle several-use
+      itemLore: |-
+        Can the quest be done
+        several times?
+    cancellable: Cancellable by player
+    scoreboardItem: Enable scoreboard
+    hideItem: Hide menu and dynmap
+    bypassLimit: Don't count quest limit
+    questName: '§a§lEdit quest name'
+    setItemsRewards: '§eEdit reward items'
+    setXPRewards: '§eEdit reward experience'
+    setPermReward: '§eEdit permissions'
+    setMoneyReward: '§eEdit money reward'
+    createStarterNPC: '§e§lCreate NPC starter'
+    selectStarterNPC: '§e§lSelect NPC starter'
+    createQuest:
+      itemName: '§lCreate quest'
+      itemLore: |-
+        One NPC must be selected and
+        a quest name needs to be defined.
+    editQuest:
+      itemName: '§lKüldetés szerkesztése'
+    endMessage: '§eBefejező üzenet szerkesztése'
+    startDialog: '§eKezdő üzenet szerkesztése'
+    editRequirements: '§eKövetelmények szerkesztése'
+    startRewards: '§6Índítási jutalmak'
+    hologramText: '§eHologram szöveg'
+    timer: '§bIdő mielött újra tudnád indítani a küldetést.'
+    requirements: '{0} követelmények'
+    rewards: '{0} jutalmak'
+    customMaterial: '§eTárgy id megváltoztatása'
+  itemsSelect:
+    name: Tárgyak szerkesztése
+    none: |-
+      §aHúzz egy tárgyat ide vagy katt az tárgy szerkszető megnyitásához.
+  itemSelect:
+    name: Tárgy választás
+  npcCreate:
+    name: NPC készítés
+    setName: '§eNPC név szerkesztés'
+    setSkin: '§eNPC kinézet szerkesztés'
+    setType: '§eNPC tipus szerkesztés'
+    move:
+      itemName: '§eElmozdít'
+      itemLore: '§aNPC hely megváltoztatás.'
+    moveItem: '§a§lHely megerősítése'
+  npcSelect:
+    name: Kiválaszt vagy készít?
+    selectStageNPC: '§eVálassz ki egy meglévő NPC-t'
+    createStageNPC: '§eNPC létrehozás'
+  entityType:
+    name: Entitás tipus kiválasztása
+  chooseQuest:
+    name: Melyik küldetés?
+  mobs:
+    name: Szörnyek kiválasztása
+    none: '§aKattints a szörny hozzáadásához.'
+    click: |-
+      §7Bal-klikk a szerkesztéshez.
+      Jobb-klikk a törléshez.
+  mobSelect:
+    name: Szörny tipus kiválasztása
+    bukkitEntityType: '§eEntitás tipus kiválasztása'
+    mythicMob: '§6Mythic Mob kiválasztása'
+    epicBoss: '§6Epic Boss kiválasztása'
+    boss: '§6Boss Kiválasztása'
+  stageEnding:
+    locationTeleport: '§eTeleportálási hely szerkesztése'
+    command: '§eParancs megváltoztatása'
+  requirements:
+    name: Követelmények
+  rewards:
+    name: Jutalmak
+    commands: 'Parancsok: {0}'
+    teleportation: |-
+      §aKiválasztott:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      Világ: {3}
+  listAllQuests:
+    name: Küldetések
+  listPlayerQuests:
+    name: '{0} küldetései'
+  listQuests:
+    notStarted: Nem elindított küldetések
+    finished: Befejezett küldetések
+    inProgress: Folyamatban lévő küldetések
+    loreCancel: '§c§oKattints a küldetés elutasításához.'
+    timeToWait: '§3§o {0} perc mielött újra elindíthatnád a küldetést.'
+    canRedo: '§3§oÚjratudod kezdeni ezt a küldetést!'
+    format:
+      normal: '§6§l§o{0}'
+      withId: '§6§l§o{0}§r      §e#{1}'
+  itemCreator:
+    name: Tárgy készítő
+    itemType: '§bTárgy tipus'
+    itemFlags: Tárgy funkciók bekapcsolása
+    itemName: '§bItem name'
+    itemLore: '§bItem lore'
+    isQuestItem: '§bQuest item:'
+  command:
+    name: Command
+    value: '§eCommand'
+    console: Console
+    delay: '§bDelay'
+  chooseAccount:
+    name: What account?
+  listBook:
+    questName: Name
+    questStarter: Starter
+    questRewards: Rewards
+    questMultiple: Several times
+    requirements: Requirements
+    questStages: Stages
+    noQuests: No quests have previously been created.
+  commandsList:
+    name: Command list
+    value: '§eCommand: {0}'
+    console: '§eConsole: {0}'
+  block:
+    name: Choose block
+    material: '§eMaterial: {0}'
+  blocksList:
+    name: Select blocks
+    addBlock: '§aClick to add a block.'
+  buckets:
+    name: Bucket type
+  permission:
+    name: Choose permission
+    perm: '§aPermission'
+    world: '§aWorld'
+    worldGlobal: '§b§lGlobal'
+    remove: Remove permission
+    removeLore: '§7Permission will be taken off\n§7instead of given.'
+  permissionList:
+    name: Permissions list
+    removed: '§eTaken off: §6{0}'
+    world: '§eWorld: §6{0}'
+scoreboard:
+  name: '§6§lQuests'
+  noLaunched: '§cNo quests in progress.'
+  noLaunchedName: '§c§lLoading'
+  noLaunchedDescription: '§c§oLoading'
+  textBetwteenBranch: '§e or'
+  stage:
+    region: '§eFind region §6{0}'
+    npc: '§eTalk with NPC §6{0}'
+    items: '§eBring items to §6{0}§e:'
+    mobs: '§eKill §6{0}'
+    mine: '§eMine {0}'
+    chat: '§eWrite §6{0}'
+    interact: '§eClick on the block at §6{0}'
+    fish: '§eFish §6{0}'
+    craft: '§eCraft §6{0}'
+    bucket: '§eFill §6{0}'
+    location: '§eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
+indication:
+  startQuest: '§7Do you want to start the quest {0}?'
+  closeInventory: '§7Are you sure you want to close the GUI?'
+  cancelQuest: '§7Biztos vagy benne, hogy megakarod szakítani ezt a küldetést {0}?'
+  removeQuest: '§7Biztos vagy benne, hogy elakarod távolítani ezt a küldetést {0}?'
+misc:
+  format:
+    prefix: '§6<§e§lKüldetések§r§6> §r'
+    npcText: '§6[{2}/{3}] §e§l{0}: §r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e {0}'
+  stageType:
+    region: Találd meg a helyet
+    npc: Találd meg őt
+    items: Hozz vissza tárgyakat
+    mobs: Ölj meg szörnyeket
+    mine: Törj blokkokat
+    chat: Írj chatbe
+    interact: Lépj interakcióba blokkokal
+    Fish: Fogj halakat
+    Craft: Készíts tárgyakat
+    Bucket: Tölts meg vödröket
+    location: Találd meg a helyet
+  requirement:
+    class: '§bKaszt szükséges'
+    faction: '§bFrakció szükséges'
+    jobLevel: '§bMunka szint szükséges'
+    combatLevel: '§bHarc szint szükséges'
+    experienceLevel: '§bXp szint szükséges'
+    permissions: '§3Jog szükséges'
+    scoreboard: '§dPont szükséges'
+    placeholder: '§bPlaceholder szám szükséges'
+    quest: '§aKüldetés szükséges'
+    mcMMOSkillLevel: '§dSkill szint szükséges'
+    money: '§dArany szükséges'
+  bucket:
+    water: Vizes vödör
+    lava: Lávás vödör
+    milk: Tejes vödör
+  questItemLore: '§e§o Küldetés Tárgy'
+  hologramText: '§7§lKüldetés NPC'
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  entityType: '§eEntitás tipus: {0}'
+  enabled: Engedélyezve
+  disabled: Kikapcsolva
+  unknown: ismeretlen
+  notSet: '§cnincs beállítva'
+  unused: '§2§lKihasználatlan'
+  used: '§a§lHasznált'
+  remove: '§7Középső-Katt az eltávolításhoz'
+  or: vagy
+  amount: '§eMennyiség: {0}'
+  items: tárgyak
+  expPoints: xp pontok
+  'yes': 'Igen'
+  'no': 'Nem'
+  and: és

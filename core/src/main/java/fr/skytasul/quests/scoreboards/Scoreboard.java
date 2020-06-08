@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
+import fr.skytasul.quests.api.events.QuestCreateEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
@@ -107,9 +108,16 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	
 	@EventHandler
 	public void onQuestRemove(QuestRemoveEvent e){
-		if (launched.contains(e.getQuest())) questRemove(e.getQuest());
+		questRemove(e.getQuest());
 	}
 	
+	@EventHandler
+	public void onQuestCreate(QuestCreateEvent e) {
+		if (e.isEdited()) {
+			if (e.getQuest().hasStarted(acc)) launched.add(e.getQuest());
+		}
+	}
+
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onQuestLaunch(QuestLaunchEvent e){
 		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
@@ -121,6 +129,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	
 	private void questRemove(Quest quest){
 		int id = launched.indexOf(quest);
+		if (id == -1) return;
 		launched.remove(quest);
 		if (quest == showed){
 			if (!launched.isEmpty()) {
@@ -152,12 +161,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 	public void refreshQuestsLines(){
 		if (!manager.refreshLines()) return;
-		if (sb == null) {
+		if (sb == null || launched.isEmpty()) {
 			changeTime = 1;
 			run();
-		}
-		for (Line line : lines){
-			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
+		}else {
+			for (Line line : lines){
+				if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
+			}
 		}
 	}
 	

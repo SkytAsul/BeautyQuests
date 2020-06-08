@@ -109,6 +109,7 @@ public class BeautyQuests extends JavaPlugin{
 			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
 				throw new LoadingException("Citizens plugin is not installed.");
 			}
+			DependenciesManager.testCompatibilities();
 
 			new BukkitRunnable() {
 				public void run() {
@@ -140,7 +141,7 @@ public class BeautyQuests extends JavaPlugin{
 			loadConfigParameters(true);
 
 			try {
-				DependenciesManager.initialize();
+				DependenciesManager.initializeCompatibilities();
 			}catch (Throwable ex) {
 				logger.severe("Error when initializing compatibilities. Consider restarting.");
 				ex.printStackTrace();
@@ -262,7 +263,7 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE" }) {
+			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}

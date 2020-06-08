@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
-import fr.skytasul.quests.utils.compatibility.mobs.EpicBosses;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 
 public class DependenciesManager {
@@ -27,60 +26,34 @@ public class DependenciesManager {
 	public static boolean mclvl = false; //	McCombatLevel
 	public static boolean boss = false; //	Boss
 	
-	public static void initialize() {
-		if (testCompatibility("WorldGuard")){
-			wg = true;
-		}
-		if (testCompatibility("MythicMobs")){
-			mm = true;
-			QuestsAPI.registerMobFactory(new MythicMobs());
-		}
-		if (testCompatibility("Vault")){
-			vault = true;
-		}
-		if (testCompatibility("PlaceholderAPI")){
-			papi = true;
-			PlaceholderAPI.registerPlaceholders();
-		}
-		if (testCompatibility("SkillAPI")){
-			skapi = true;
-		}
-		if (testCompatibility("HolographicDisplays")){
-			holod = true;
-		}
-		if (testCompatibility("Jobs")){
-			jobs = true;
-		}
-		if (testCompatibility("Factions")){
-			fac = true;
-		}
-		if (testCompatibility("AccountsHook")){
-			acc = true;
-		}
-		if (testCompatibility("dynmap")){
-			dyn = true;
-		}
-		if (testCompatibility("Parties")){
-			par = true; // not used currently
-		}
-		if (testCompatibility("EpicBosses")){
+	public static void testCompatibilities() {
+		wg = testCompatibility("WorldGuard");
+		mm = testCompatibility("MythicMobs");
+		vault = testCompatibility("Vault");
+		papi = testCompatibility("PlaceholderAPI");
+		skapi = testCompatibility("SkillAPI");
+		holod = testCompatibility("HolographicDisplays");
+		jobs = testCompatibility("Jobs");
+		fac = testCompatibility("Factions");
+		acc = testCompatibility("AccountsHook");
+		dyn = testCompatibility("dynmap");
+		par = testCompatibility("Parties");
+		/*if (testCompatibility("EpicBosses")){
 			eboss = true;
 			Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance());
-		}
-		if (testCompatibility("GPS")){
-			gps = true;
-			GPS.init();
-		}
-		if (testCompatibility("mcMMO")){
-			mmo = true;
-		}
-		if (testCompatibility("McCombatLevel")){
-			mclvl = true;
-		}
-		if (testCompatibility("Boss")) {
-			boss = true;
-			QuestsAPI.registerMobFactory(new BossAPI());
-		}
+		}*/
+		gps = testCompatibility("GPS");
+		mmo = testCompatibility("mcMMO");
+		mclvl = testCompatibility("McCombatLevel");
+		boss = testCompatibility("Boss");
+	}
+
+	public static void initializeCompatibilities() {
+		if (mm) QuestsAPI.registerMobFactory(new MythicMobs());
+		if (papi) PlaceholderAPI.registerPlaceholders();
+		// eboss
+		if (gps) GPS.init();
+		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
 	}
 	
 	private static boolean testCompatibility(String pluginName) {
