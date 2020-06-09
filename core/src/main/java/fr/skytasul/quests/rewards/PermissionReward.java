@@ -57,7 +57,7 @@ public class PermissionReward extends AbstractReward {
 		}
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<PermissionReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			if (!datas.containsKey("permissions")) datas.put("permissions", new ArrayList<>());
@@ -68,13 +68,12 @@ public class PermissionReward extends AbstractReward {
 			}).create(p);
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			PermissionReward rew = (PermissionReward) reward;
-			datas.put("permissions", new ArrayList<>(rew.permissions));
-			ItemUtils.lore(is, "Permissions : " + rew.permissions.size());
+		public void edit(Map<String, Object> datas, PermissionReward reward, ItemStack is) {
+			datas.put("permissions", new ArrayList<>(reward.permissions));
+			ItemUtils.lore(is, "Permissions : " + reward.permissions.size());
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public PermissionReward finish(Map<String, Object> datas) {
 			return new PermissionReward((List<Permission>) datas.get("permissions"));
 		}
 

@@ -4,21 +4,21 @@ import java.util.LinkedList;
 
 import org.bukkit.inventory.ItemStack;
 
-public class RewardCreator {
-	public static final LinkedList<RewardCreator> creators = new LinkedList<>();
+public class RewardCreator<T extends AbstractReward> {
+	public static final LinkedList<RewardCreator<?>> creators = new LinkedList<>();
 	
-	public final Class<? extends AbstractReward> clazz;
+	public final Class<T> clazz;
 	public final ItemStack item;
-	public final RewardCreationRunnables runnables;
+	public final RewardCreationRunnables<T> runnables;
 	
-	public RewardCreator(Class<? extends AbstractReward> clazz, ItemStack is, RewardCreationRunnables runnables){
+	public RewardCreator(Class<T> clazz, ItemStack is, RewardCreationRunnables<T> runnables) {
 		this.clazz = clazz;
 		this.item = is;
 		this.runnables = runnables;
 	}
 	
-	public static LinkedList<RewardCreator> getCreators(){
-		return (LinkedList<RewardCreator>) creators.clone();
+	public static LinkedList<RewardCreator<?>> getCreators() {
+		return creators;
 	}
 	
 }

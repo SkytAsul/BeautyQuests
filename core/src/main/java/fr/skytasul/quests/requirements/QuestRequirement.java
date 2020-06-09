@@ -52,7 +52,7 @@ public class QuestRequirement extends AbstractRequirement {
 		//Validate.notNull(QuestsAPI.getQuestFromID(questId), "Quest with id " + questId + " is null");
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<QuestRequirement> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			Utils.sendMessage(p, Lang.CHOOSE_NPC_STARTER.toString());
@@ -78,14 +78,14 @@ public class QuestRequirement extends AbstractRequirement {
 			}));
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public QuestRequirement finish(Map<String, Object> datas) {
 			QuestRequirement req = new QuestRequirement();
 			req.questId = (int) datas.get("id");
 			return req;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("id", ((QuestRequirement) requirement).questId);
+		public void edit(Map<String, Object> datas, QuestRequirement requirement) {
+			datas.put("id", requirement.questId);
 		}
 	}
 

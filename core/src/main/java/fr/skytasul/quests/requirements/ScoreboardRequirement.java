@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.ScoreboardObjectiveParser;
@@ -58,13 +57,13 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		}
 
 		@Override
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+		public void edit(Map<String, Object> datas, ScoreboardRequirement requirement) {
 			super.edit(datas, requirement);
-			datas.put("objectiveName", ((ScoreboardRequirement) requirement).objectiveName);
+			datas.put("objectiveName", requirement.objectiveName);
 		}
 
 		@Override
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public ScoreboardRequirement finish(Map<String, Object> datas) {
 			ScoreboardRequirement requirement = new ScoreboardRequirement();
 			requirement.setObjectiveName((String) datas.get("objectiveName"));
 			return super.finish(requirement, datas);

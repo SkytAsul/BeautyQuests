@@ -355,7 +355,7 @@ public class BeautyQuests extends JavaPlugin{
 			ex.printStackTrace();
 		}
 
-		for (File file : saveFolder.listFiles()){
+		for (File file : saveFolder.listFiles()) {
 			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml") || file.getName().contains("backup")) continue;
 			loadingFailure = false;
 			try{

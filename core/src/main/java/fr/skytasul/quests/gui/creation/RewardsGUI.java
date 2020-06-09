@@ -52,8 +52,8 @@ public class RewardsGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, (int) StrictMath.ceil(RewardCreator.getCreators().size() * 1.0 / 9) * 9 + 9, Lang.INVENTORY_REWARDS.toString());
 
 		inv.setItem(4, ItemUtils.itemDone);
-		LinkedList<RewardCreator> ls = RewardCreator.getCreators();
-		for (RewardCreator crea : ls){
+		LinkedList<RewardCreator<?>> ls = RewardCreator.getCreators();
+		for (@SuppressWarnings ("rawtypes") RewardCreator crea : ls){
 			int id = ls.indexOf(crea) + 9;
 			inv.setItem(id, crea.item.clone());
 			if (lastRewards.containsKey(crea.clazz)){
@@ -78,7 +78,7 @@ public class RewardsGUI implements CustomInventory {
 	}
 
 	public void remove(int slot){
-		inv.setItem(slot, ItemUtils.lore(((RewardCreator) datas.get(slot).get("666DONOTREMOVE-creator")).item.clone(), "", Lang.Unused.toString()));
+		inv.setItem(slot, ItemUtils.lore(((RewardCreator<?>) datas.get(slot).get("666DONOTREMOVE-creator")).item.clone(), "", Lang.Unused.toString()));
 		datas.remove(slot);
 	}
 
@@ -86,7 +86,7 @@ public class RewardsGUI implements CustomInventory {
 		ItemUtils.loreAdd(is, "", Lang.Used.toString(), Lang.Remove.toString());
 	}
 
-	private Map<String, Object> initDatas(int id, RewardCreator crea){
+	private Map<String, Object> initDatas(int id, RewardCreator<?> crea) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("666DONOTREMOVE-creator", crea);
 		data.put("slot", id + 9);
@@ -112,14 +112,14 @@ public class RewardsGUI implements CustomInventory {
 		if (slot == 4){
 			List<AbstractReward> req = new ArrayList<>();
 			for (Entry<Integer, Map<String, Object>> data : datas.entrySet()){
-				req.add(((RewardCreator) data.getValue().get("666DONOTREMOVE-creator")).runnables.finish(data.getValue()));
+				req.add(((RewardCreator<?>) data.getValue().get("666DONOTREMOVE-creator")).runnables.finish(data.getValue()));
 			}
 			Inventories.closeAndExit(p);
 			end.accept(req);
 			return true;
 		}
 		if (!datas.containsKey(slot)){
-			RewardCreator crea = RewardCreator.getCreators().get(slot - 9);
+			RewardCreator<?> crea = RewardCreator.getCreators().get(slot - 9);
 			datas.put(slot, initDatas(slot - 9, crea));
 			ItemUtils.lore(current);
 			crea.runnables.itemClick(p, datas.get(slot), this, current);

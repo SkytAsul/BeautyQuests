@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
@@ -56,15 +55,15 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 			}));
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public JobLevelRequirement finish(Map<String, Object> datas) {
 			JobLevelRequirement req = new JobLevelRequirement();
 			req.jobName = (String) datas.get("job");
 			return super.finish(req, datas);
 		}
 		
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+		public void edit(Map<String, Object> datas, JobLevelRequirement requirement) {
 			super.edit(datas, requirement);
-			datas.put("job", ((JobLevelRequirement) requirement).jobName);
+			datas.put("job", requirement.jobName);
 		}
 
 		@Override

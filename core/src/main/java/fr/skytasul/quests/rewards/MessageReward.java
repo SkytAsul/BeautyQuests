@@ -41,7 +41,7 @@ public class MessageReward extends AbstractReward {
 		text = (String) savedDatas.get("text");
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<MessageReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			Lang.END_MESSAGE.send(p);
@@ -57,13 +57,12 @@ public class MessageReward extends AbstractReward {
 			Editor.enterOrLeave(p, wt);
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			MessageReward rew = (MessageReward) reward;
-			datas.put("text", rew.text);
-			ItemUtils.lore(is, rew.text);
+		public void edit(Map<String, Object> datas, MessageReward reward, ItemStack is) {
+			datas.put("text", reward.text);
+			ItemUtils.lore(is, reward.text);
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public MessageReward finish(Map<String, Object> datas) {
 			return new MessageReward((String) datas.get("text"));
 		}
 

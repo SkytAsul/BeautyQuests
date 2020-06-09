@@ -56,8 +56,8 @@ public class RequirementsGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, (int) StrictMath.ceil(RequirementCreator.getCreators().size() * 1.0 / 9) * 9 + 9, Lang.INVENTORY_REQUIREMENTS.toString());
 		
 		inv.setItem(4, ItemUtils.itemDone);
-		LinkedList<RequirementCreator> ls = RequirementCreator.getCreators();
-		for (RequirementCreator crea : ls){
+		LinkedList<RequirementCreator<?>> ls = RequirementCreator.getCreators();
+		for (@SuppressWarnings ("rawtypes") RequirementCreator crea : ls){
 			int id = ls.indexOf(crea) + 9;
 			inv.setItem(id, crea.item.clone());
 			if (lastRequirements.containsKey(crea.clazz)){
@@ -120,7 +120,7 @@ public class RequirementsGUI implements CustomInventory {
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		if (slot == 4){
 			List<AbstractRequirement> req = new ArrayList<>();
-			LinkedList<RequirementCreator> ls = RequirementCreator.getCreators();
+			LinkedList<RequirementCreator<?>> ls = RequirementCreator.getCreators();
 			for (Entry<Integer, Map<String, Object>> data : datas.entrySet()){
 				req.add(ls.get((int) data.getValue().get("666DONOTREMOVE-id")).runnables.finish(data.getValue()));
 			}

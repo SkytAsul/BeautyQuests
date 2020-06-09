@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -38,7 +37,7 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 
 	public static class Creator extends TargetNumberRequirement.Creator<McCombatLevelRequirement> {
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public McCombatLevelRequirement finish(Map<String, Object> datas) {
 			return super.finish(new McCombatLevelRequirement(), datas);
 		}
 

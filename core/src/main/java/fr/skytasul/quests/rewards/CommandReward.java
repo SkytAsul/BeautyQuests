@@ -53,7 +53,7 @@ public class CommandReward extends AbstractReward {
 		}
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<CommandReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			if (!datas.containsKey("commands")) datas.put("commands", new ArrayList<>());
@@ -76,10 +76,9 @@ public class CommandReward extends AbstractReward {
 			});
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack item) {
-			CommandReward rew = (CommandReward) reward;
-			datas.put("commands", new ArrayList<>(rew.commands));
-			ItemUtils.lore(item, Lang.commands.format(rew.commands.size()));
+		public void edit(Map<String, Object> datas, CommandReward reward, ItemStack item) {
+			datas.put("commands", new ArrayList<>(reward.commands));
+			ItemUtils.lore(item, Lang.commands.format(reward.commands.size()));
 		}
 
 		public CommandReward finish(Map<String, Object> datas) {

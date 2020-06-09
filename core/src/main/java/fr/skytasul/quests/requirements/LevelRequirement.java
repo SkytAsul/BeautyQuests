@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.Lang;
 
@@ -34,7 +33,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 
 	public static class Creator extends TargetNumberRequirement.Creator<LevelRequirement> {
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public LevelRequirement finish(Map<String, Object> datas) {
 			return super.finish(new LevelRequirement(), datas);
 		}
 

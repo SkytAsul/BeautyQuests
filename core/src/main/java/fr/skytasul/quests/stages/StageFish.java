@@ -101,7 +101,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageFish> {
 		public void start(Player p, LineData datas) {
 			List<ItemStack> items = new ArrayList<>();
 			datas.put("items", items);
@@ -111,7 +111,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			}, items));
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageFish finish(LineData datas, QuestBranch branch) {
 			List<ItemStack> itemsList = (List<ItemStack>) datas.get("items");
 			Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
 			for (int i = 0; i < itemsList.size(); i++) {
@@ -124,10 +124,9 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageFish st = (StageFish) stage;
+		public void edit(LineData datas, StageFish stage) {
 			List<ItemStack> items = new ArrayList<>();
-			Map<Integer, Entry<ItemStack, Integer>> itemsMap = st.getObjects();
+			Map<Integer, Entry<ItemStack, Integer>> itemsMap = stage.getObjects();
 			for (Entry<ItemStack, Integer> itemEntry : itemsMap.values()) {
 				ItemStack item = itemEntry.getKey().clone();
 				item.setAmount(itemEntry.getValue());

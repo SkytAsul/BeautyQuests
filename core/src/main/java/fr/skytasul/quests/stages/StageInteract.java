@@ -66,7 +66,7 @@ public class StageInteract extends AbstractStage {
 		return new StageInteract(branch, Location.deserialize((Map<String, Object>) map.get("location")), (boolean) map.get("leftClick"));
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageInteract> {
 
 		public void start(Player p, LineData datas) {
 			Lang.CLICK_BLOCK.send(p);
@@ -94,14 +94,13 @@ public class StageInteract extends AbstractStage {
 			});
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageInteract st = (StageInteract) stage;
-			datas.put("lc", st.getLocation());
-			datas.put("left", st.needLeftClick());
+		public void edit(LineData datas, StageInteract stage) {
+			datas.put("lc", stage.getLocation());
+			datas.put("left", stage.needLeftClick());
 			setItems(datas);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageInteract finish(LineData datas, QuestBranch branch) {
 			return new StageInteract(branch, (Location) datas.get("lc"), datas.containsKey("left") ? (boolean) datas.get("left") : false);
 		}
 

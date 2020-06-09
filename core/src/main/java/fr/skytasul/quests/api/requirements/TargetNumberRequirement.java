@@ -50,7 +50,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		target = Utils.parseDouble(savedDatas.get("target"));
 	}
 
-	public static abstract class Creator<T extends TargetNumberRequirement> implements RequirementCreationRunnables {
+	public static abstract class Creator<T extends TargetNumberRequirement> implements RequirementCreationRunnables<T> {
 
 		private static final EnumParser<ComparisonMethod> COMPARISON_PARSER = new EnumParser<>(ComparisonMethod.class);
 
@@ -77,9 +77,9 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 			return requirement;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("target", ((T) requirement).target);
-			datas.put("comparison", ((T) requirement).comparison);
+		public void edit(Map<String, Object> datas, T requirement) {
+			datas.put("target", requirement.target);
+			datas.put("comparison", requirement.comparison);
 		}
 
 		public abstract Class<? extends Number> numberClass();

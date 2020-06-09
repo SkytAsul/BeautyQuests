@@ -119,7 +119,7 @@ public class StageBucket extends AbstractStage {
 		}
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageBucket> {
 		public void start(Player p, LineData datas) {
 			new BucketTypeGUI((bucket) -> {
 				datas.put("bucket", bucket);
@@ -132,15 +132,14 @@ public class StageBucket extends AbstractStage {
 			}).create(p);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageBucket finish(LineData datas, QuestBranch branch) {
 			StageBucket stage = new StageBucket(branch, (BucketType) datas.get("bucket"), (int) datas.get("amount"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageBucket st = (StageBucket) stage;
-			datas.put("bucket", st.getBucketType());
-			datas.put("amount", st.getBucketAmount());
+		public void edit(LineData datas, StageBucket stage) {
+			datas.put("bucket", stage.getBucketType());
+			datas.put("amount", stage.getBucketAmount());
 			setItems(datas.getLine());
 		}
 

@@ -91,7 +91,7 @@ public class StageChat extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageChat> {
 
 		public void start(Player p, LineData datas) {
 			datas.put("cancel", true);
@@ -100,16 +100,15 @@ public class StageChat extends AbstractStage{
 			launchEditor(p, datas);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageChat finish(LineData datas, QuestBranch branch) {
 			StageChat stage = new StageChat(branch, (String) datas.get("text"), (boolean) datas.get("cancel"), (boolean) datas.get("ignoreCase"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageChat st = (StageChat) stage;
-			datas.put("text", st.text);
-			datas.put("cancel", st.cancel);
-			datas.put("ignoreCase", st.ignoreCase);
+		public void edit(LineData datas, StageChat stage) {
+			datas.put("text", stage.text);
+			datas.put("cancel", stage.cancel);
+			datas.put("ignoreCase", stage.ignoreCase);
 			setItems(datas);
 		}
 

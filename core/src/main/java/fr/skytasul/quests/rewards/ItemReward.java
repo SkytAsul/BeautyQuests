@@ -47,7 +47,7 @@ public class ItemReward extends AbstractReward {
 		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<ItemReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			if (!datas.containsKey("items")) datas.put("items", new ArrayList<>());
@@ -56,11 +56,11 @@ public class ItemReward extends AbstractReward {
 			}, (List<ItemStack>) datas.get("items")));
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			datas.put("items", ((ItemReward) reward).items);
+		public void edit(Map<String, Object> datas, ItemReward reward, ItemStack is) {
+			datas.put("items", reward.items);
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public ItemReward finish(Map<String, Object> datas) {
 			return new ItemReward((List<ItemStack>) datas.get("items"));
 		}
 

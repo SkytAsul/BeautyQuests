@@ -50,7 +50,7 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 		money = (double) savedDatas.get("money");
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<MoneyRequirement> {
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			Lang.CHOOSE_MONEY_REQUIRED.send(p);
 			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
@@ -59,12 +59,11 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 			}, new NumberParser(Double.class, true, true)));
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement reward) {
-			MoneyRequirement rew = (MoneyRequirement) reward;
-			datas.put("money", rew.money);
+		public void edit(Map<String, Object> datas, MoneyRequirement reward) {
+			datas.put("money", reward.money);
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public MoneyRequirement finish(Map<String, Object> datas) {
 			return new MoneyRequirement((double) datas.get("money"));
 		}
 	}

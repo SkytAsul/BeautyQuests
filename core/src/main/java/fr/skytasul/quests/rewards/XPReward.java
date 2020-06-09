@@ -46,7 +46,7 @@ public class XPReward extends AbstractReward {
 		exp = (int) savedDatas.get("xp");
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<XPReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			String last = "" + (datas.containsKey("xp") ? datas.get("xp") : 0);
@@ -59,13 +59,12 @@ public class XPReward extends AbstractReward {
 			}, new NumberParser(Integer.class, true)));
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			XPReward rew = (XPReward) reward;
-			datas.put("xp", rew.exp);
-			ItemUtils.lore(is, rew.exp + " " + Lang.Exp.toString());
+		public void edit(Map<String, Object> datas, XPReward reward, ItemStack is) {
+			datas.put("xp", reward.exp);
+			ItemUtils.lore(is, reward.exp + " " + Lang.Exp.toString());
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public XPReward finish(Map<String, Object> datas) {
 			return new XPReward((int) datas.get("xp"));
 		}
 

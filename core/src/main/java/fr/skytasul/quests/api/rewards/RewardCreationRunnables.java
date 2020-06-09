@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 
-public interface RewardCreationRunnables {
+public interface RewardCreationRunnables<T extends AbstractReward> {
 
 	/**
 	 * Called when item clicked
@@ -25,7 +25,7 @@ public interface RewardCreationRunnables {
 	 * @param item itemStack associated
 	 * 
 	 */
-	public abstract void edit(Map<String, Object> datas, AbstractReward reward, ItemStack item);
+	public abstract void edit(Map<String, Object> datas, T reward, ItemStack item);
 
 	/**
 	 * Called when quest creation finished
@@ -33,6 +33,6 @@ public interface RewardCreationRunnables {
 	 * @return AbstractRequirement created
 	 */
 
-	public abstract AbstractReward finish(Map<String, Object> datas);
+	public abstract T finish(Map<String, Object> datas);
 	
 }

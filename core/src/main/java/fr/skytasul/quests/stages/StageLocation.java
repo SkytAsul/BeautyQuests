@@ -67,7 +67,7 @@ public class StageLocation extends AbstractStage {
 		return new StageLocation(branch, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
 	}
 	
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageLocation> {
 		public void start(Player p, LineData datas) {
 			Lang.LOCATION_GO.send(p);
 			new WaitClick(p, NPCGUI.validMove, () -> {
@@ -78,15 +78,14 @@ public class StageLocation extends AbstractStage {
 			}).enterOrLeave(p);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageLocation finish(LineData datas, QuestBranch branch) {
 			StageLocation stage = new StageLocation(branch, (Location) datas.get("location"), (int) datas.get("radius"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageLocation st = (StageLocation) stage;
-			datas.put("location", st.getLocation());
-			datas.put("radius", st.getRadius());
+		public void edit(LineData datas, StageLocation stage) {
+			datas.put("location", stage.getLocation());
+			datas.put("radius", stage.getRadius());
 			setItems(datas.getLine());
 		}
 

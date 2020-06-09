@@ -128,7 +128,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageMine> {
 		public void start(Player p, LineData datas) {
 			StagesGUI sg = datas.getGUI();
 			BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
@@ -140,16 +140,15 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 			};
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageMine finish(LineData datas, QuestBranch branch) {
 			StageMine stage = new StageMine(branch, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
 			stage.setPlaceCancelled((boolean) datas.get("prevent"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageMine st = (StageMine) stage;
-			datas.put("blocks", st.cloneObjects());
-			datas.put("prevent", st.isPlaceCancelled());
+		public void edit(LineData datas, StageMine stage) {
+			datas.put("blocks", stage.cloneObjects());
+			datas.put("prevent", stage.isPlaceCancelled());
 			setItems(datas.getLine(), datas);
 		}
 

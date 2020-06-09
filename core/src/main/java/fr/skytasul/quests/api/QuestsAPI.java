@@ -16,6 +16,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.api.rewards.RewardCreator;
+import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
@@ -34,13 +35,13 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in stages GUI when choosing stage type
 	 * @param runnables Instance of special runnables
 	 */
-	public static void registerStage(StageType type, ItemStack item, StageCreationRunnables runnables){
+	public static <T extends AbstractStage> void registerStage(StageType type, ItemStack item, StageCreationRunnables<T> runnables) {
 		if (type.dependCode != null) if (!Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
 			BeautyQuests.getInstance().getLogger().warning("Plugin " + type.dependCode + " not enabled. Stage injecting interrupted.");
 			return;
 		}
 		StageType.types.add(type);
-		StageCreator.creators.add(new StageCreator(type, item, runnables));
+		StageCreator.creators.add(new StageCreator<T>(type, item, runnables));
 		DebugUtils.logMessage("Stage registered (" + type.name + ", " + (StageCreator.creators.size()-1) + ")");
 	}
 	
@@ -50,8 +51,8 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in requirements GUI
 	 * @param runnables Instance of special runnables
 	 */
-	public static void registerRequirement(Class<? extends AbstractRequirement> clazz, ItemStack item, RequirementCreationRunnables runnables){
-		RequirementCreator.creators.add(new RequirementCreator(clazz, item, runnables));
+	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, RequirementCreationRunnables<T> runnables) {
+		RequirementCreator.creators.add(new RequirementCreator<T>(clazz, item, runnables));
 		DebugUtils.logMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
@@ -61,8 +62,8 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in rewards GUI
 	 * @param runnables Instance of special runnables
 	 */
-	public static void registerReward(Class<? extends AbstractReward> clazz, ItemStack item, RewardCreationRunnables runnables){
-		RewardCreator.creators.add(new RewardCreator(clazz, item, runnables));
+	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, RewardCreationRunnables<T> runnables) {
+		RewardCreator.creators.add(new RewardCreator<T>(clazz, item, runnables));
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
@@ -120,9 +121,9 @@ public class QuestsAPI {
 		return finished;
 	}
 
-	public static List<Quest> getQuestsAssigneds(NPC npc){
+	public static List<Quest> getQuestsAssigneds(NPC npc) {
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		return starter == null ? Collections.emptyList() : starter.getQuests();
+		return starter == null ? Collections.emptyList() : new ArrayList<>(starter.getQuests());
 	}
 	
 	public static boolean isQuestStarter(NPC npc){

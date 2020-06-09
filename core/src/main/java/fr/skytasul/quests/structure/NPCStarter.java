@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +33,7 @@ import net.citizensnpcs.npc.ai.NPCHolder;
 public class NPCStarter {
 
 	private NPC npc;
-	private List<Quest> quests = new ArrayList<>();
+	private Set<Quest> quests = new TreeSet<>((obj1, obj2) -> Integer.compare(obj1.getID(), obj2.getID()));
 	
 	private BukkitTask launcheableTask;
 	
@@ -131,7 +132,7 @@ public class NPCStarter {
 		return npc;
 	}
 	
-	public List<Quest> getQuests(){
+	public Set<Quest> getQuests() {
 		return quests;
 	}
 	

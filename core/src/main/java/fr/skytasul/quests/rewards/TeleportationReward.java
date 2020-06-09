@@ -43,7 +43,7 @@ public class TeleportationReward extends AbstractReward {
 		teleportation = Location.deserialize((Map<String, Object>) savedDatas.get("tp"));
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<TeleportationReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			Lang.MOVE_TELEPORT_POINT.send(p);
@@ -55,14 +55,13 @@ public class TeleportationReward extends AbstractReward {
 			}));
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			TeleportationReward rew = (TeleportationReward) reward;
-			Location lc = rew.teleportation;
+		public void edit(Map<String, Object> datas, TeleportationReward reward, ItemStack is) {
+			Location lc = reward.teleportation;
 			datas.put("loc", lc);
 			ItemUtils.lore(is, Utils.locationToString(lc));
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public TeleportationReward finish(Map<String, Object> datas) {
 			return new TeleportationReward((Location) datas.get("loc"));
 		}
 

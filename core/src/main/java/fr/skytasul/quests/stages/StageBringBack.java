@@ -109,7 +109,7 @@ public class StageBringBack extends StageNPC{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageBringBack> {
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 
 		public void start(Player p, LineData datas) {
@@ -137,17 +137,16 @@ public class StageBringBack extends StageNPC{
 			});
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageBringBack finish(LineData datas, QuestBranch branch) {
 			StageBringBack stage = new StageBringBack(branch, (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 			StageNPC.Creator.setFinish(stage, datas);
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageBringBack st = (StageBringBack) stage;
-			StageNPC.Creator.setEdit(st, datas);
+		public void edit(LineData datas, StageBringBack stage) {
+			StageNPC.Creator.setEdit(stage, datas);
 			datas.put("items", new ArrayList<>());
-			((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(st.getItems()));
+			((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(stage.getItems()));
 			setItem(datas.getLine());
 		}
 	}

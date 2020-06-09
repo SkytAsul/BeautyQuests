@@ -240,7 +240,7 @@ public class StageNPC extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageNPC> {
 		private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
 
 		public void start(Player p, LineData datas) {
@@ -281,15 +281,14 @@ public class StageNPC extends AbstractStage{
 			npcDone(stage.getNPC(), datas);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageNPC finish(LineData datas, QuestBranch branch) {
 			StageNPC stage = new StageNPC(branch, (NPC) datas.get("npc"));
 			setFinish(stage, datas);
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageNPC st = (StageNPC) stage;
-			setEdit(st, datas);
+		public void edit(LineData datas, StageNPC stage) {
+			setEdit(stage, datas);
 		}
 	}
 

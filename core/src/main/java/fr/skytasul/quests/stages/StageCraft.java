@@ -154,7 +154,7 @@ public class StageCraft extends AbstractStage {
 		return result;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageCraft> {
 		public void start(Player p, LineData datas) {
 			new ItemGUI((is) -> {
 				datas.put("item", is);
@@ -163,13 +163,13 @@ public class StageCraft extends AbstractStage {
 			}).create(p);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageCraft finish(LineData datas, QuestBranch branch) {
 			StageCraft stage = new StageCraft(branch, (ItemStack) datas.get("item"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			datas.put("item", ((StageCraft) stage).getItem());
+		public void edit(LineData datas, StageCraft stage) {
+			datas.put("item", stage.getItem());
 			setItem(datas.getLine());
 		}
 

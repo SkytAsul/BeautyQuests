@@ -50,7 +50,7 @@ public class MoneyReward extends AbstractReward {
 		}else this.money = (double) money;
 	}
 
-	public static class Creator implements RewardCreationRunnables {
+	public static class Creator implements RewardCreationRunnables<MoneyReward> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
 			Lang.CHOOSE_MONEY_REWARD.send(p);
@@ -61,13 +61,12 @@ public class MoneyReward extends AbstractReward {
 			}, new NumberParser(Double.class, false, true)));
 		}
 
-		public void edit(Map<String, Object> datas, AbstractReward reward, ItemStack is) {
-			MoneyReward rew = (MoneyReward) reward;
-			datas.put("money", rew.money);
-			ItemUtils.lore(is, "Money : " + rew.money);
+		public void edit(Map<String, Object> datas, MoneyReward reward, ItemStack is) {
+			datas.put("money", reward.money);
+			ItemUtils.lore(is, "Money : " + reward.money);
 		}
 
-		public AbstractReward finish(Map<String, Object> datas) {
+		public MoneyReward finish(Map<String, Object> datas) {
 			return new MoneyReward((double) datas.get("money"));
 		}
 

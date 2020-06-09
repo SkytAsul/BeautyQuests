@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
@@ -56,15 +55,15 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 			}));
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public McMMOSkillRequirement finish(Map<String, Object> datas) {
 			McMMOSkillRequirement req = new McMMOSkillRequirement();
 			req.skillName = (String) datas.get("skill");
 			return super.finish(req, datas);
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
+		public void edit(Map<String, Object> datas, McMMOSkillRequirement requirement) {
 			super.edit(datas, requirement);
-			datas.put("skill", ((McMMOSkillRequirement) requirement).skillName);
+			datas.put("skill", requirement.skillName);
 		}
 
 		@Override

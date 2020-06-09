@@ -106,7 +106,7 @@ public class StagesGUI implements CustomInventory {
 			public void run(Player p, LineData datas, ItemStack item) {
 				line.setItem(0, null, null, true, false);
 				for (int i = 0; i < StageCreator.creators.size(); i++) {
-					StageCreator creator = StageCreator.creators.get(i);
+					StageCreator<?> creator = StageCreator.creators.get(i);
 					line.setItem(i + 1, creator.item, new StageRunnable() {
 						public void run(Player p, LineData datas, ItemStack item) {
 							line.data.clear();
@@ -121,7 +121,7 @@ public class StagesGUI implements CustomInventory {
 		line.setItems(0);
 	}
 
-	private void runClick(Line line, StageCreator creator, boolean branches){
+	private void runClick(Line line, StageCreator<?> creator, boolean branches) {
 		line.removeItems();
 		line.data.put("type", creator.type);
 		line.data.put("rewards", new ArrayList<>());
@@ -332,7 +332,9 @@ public class StagesGUI implements CustomInventory {
 			line.data.put("customText", stage.getCustomText());
 			line.editItem(2, ItemUtils.lore(line.getItem(2), stage.getCustomText()));
 		}
-		StageCreator.getCreator(stage.getType()).runnables.edit(line.data, stage);
+		@SuppressWarnings ("rawtypes")
+		StageCreator creator = StageCreator.getCreator(stage.getType());
+		creator.runnables.edit(line.data, stage);
 		line.setItems(0);
 	}
 

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 
-public interface RequirementCreationRunnables {
+public interface RequirementCreationRunnables<T extends AbstractRequirement> {
 
 	/**
 	 * Called when item clicked
@@ -21,7 +21,7 @@ public interface RequirementCreationRunnables {
 	 * @param datas all datas saved when stage creation
 	 * @param requirement Existing requirement
 	 */
-	public abstract void edit(Map<String, Object> datas, AbstractRequirement requirement);
+	public abstract void edit(Map<String, Object> datas, T requirement);
 
 	/**
 	 * Called when quest creation finished
@@ -29,6 +29,6 @@ public interface RequirementCreationRunnables {
 	 * @return AbstractRequirement created
 	 */
 
-	public abstract AbstractRequirement finish(Map<String, Object> datas);
+	public abstract T finish(Map<String, Object> datas);
 	
 }

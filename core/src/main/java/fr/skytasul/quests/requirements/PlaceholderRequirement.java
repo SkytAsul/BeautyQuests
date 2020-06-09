@@ -77,7 +77,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (savedDatas.containsKey("comparison")) this.comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<PlaceholderRequirement> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
@@ -91,17 +91,16 @@ public class PlaceholderRequirement extends AbstractRequirement {
 			}).enterOrLeave(p);
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public PlaceholderRequirement finish(Map<String, Object> datas) {
 			PlaceholderRequirement req = new PlaceholderRequirement();
 			req.setPlaceholder((String) datas.get("placeholder"));
 			req.setValue((String) datas.get("value"));
 			return req;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			PlaceholderRequirement req = (PlaceholderRequirement) requirement;
-			datas.put("placeholder", req.getPlaceholder());
-			datas.put("value", req.getValue());
+		public void edit(Map<String, Object> datas, PlaceholderRequirement requirement) {
+			datas.put("placeholder", requirement.getPlaceholder());
+			datas.put("value", requirement.getValue());
 		}
 	}
 

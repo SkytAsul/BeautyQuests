@@ -84,7 +84,7 @@ public class StageArea extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageArea> {
 		private static final ItemStack regionName = ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString());
 
 		public void start(Player p, LineData datas) {
@@ -123,17 +123,16 @@ public class StageArea extends AbstractStage{
 			}, true, true);
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageArea finish(LineData datas, QuestBranch branch) {
 			StageArea stage = new StageArea(branch, (String) datas.get("region"), (String) datas.get("world"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageArea st = (StageArea) stage;
-			datas.put("region", st.getRegion().getId());
-			datas.put("world", WorldGuard.getWorld(st.getRegion().getId()).getName());
+		public void edit(LineData datas, StageArea stage) {
+			datas.put("region", stage.getRegion().getId());
+			datas.put("world", WorldGuard.getWorld(stage.getRegion().getId()).getName());
 			setItem(datas.getLine(), datas.getGUI());
-			ItemUtils.name(datas.getLine().getItem(6), st.getRegion().getId());
+			ItemUtils.name(datas.getLine().getItem(6), stage.getRegion().getId());
 		}
 	}
 

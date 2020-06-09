@@ -71,7 +71,7 @@ public class ClassRequirement extends AbstractRequirement {
 		}
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<ClassRequirement> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			if (!datas.containsKey("classes")) datas.put("classes", new ArrayList<String>());
@@ -87,14 +87,14 @@ public class ClassRequirement extends AbstractRequirement {
 			};
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public ClassRequirement finish(Map<String, Object> datas) {
 			ClassRequirement req = new ClassRequirement();
 			for (String s : (List<String>) datas.get("classes")) req.addClass(SkillAPI.getClass(s));
 			return req;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("classes", new ArrayList<>(((ClassRequirement) requirement).getClassesName()));
+		public void edit(Map<String, Object> datas, ClassRequirement requirement) {
+			datas.put("classes", new ArrayList<>(requirement.getClassesName()));
 		}
 	}
 

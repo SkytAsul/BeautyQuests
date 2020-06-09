@@ -47,7 +47,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 		if (savedDatas.containsKey("message")) message = (String) savedDatas.get("message");
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<PermissionsRequirement> {
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			if (!datas.containsKey("perms")) datas.put("perms", new ArrayList<String>());
 			Lang.CHOOSE_PERM_REQUIRED.send(p);
@@ -65,16 +65,16 @@ public class PermissionsRequirement extends AbstractRequirement {
 			}, (List<String>) datas.get("perms")));
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public PermissionsRequirement finish(Map<String, Object> datas) {
 			PermissionsRequirement req = new PermissionsRequirement();
 			req.permissions = ((List<String>) datas.get("perms")).stream().map(Permission::fromString).collect(Collectors.toList());
 			req.message = (String) datas.get("msg");
 			return req;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("perms", ((PermissionsRequirement) requirement).permissions.stream().map(Permission::toString).collect(Collectors.toList()));
-			datas.put("msg", ((PermissionsRequirement) requirement).message);
+		public void edit(Map<String, Object> datas, PermissionsRequirement requirement) {
+			datas.put("perms", requirement.permissions.stream().map(Permission::toString).collect(Collectors.toList()));
+			datas.put("msg", requirement.message);
 		}
 	}
 

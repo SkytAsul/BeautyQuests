@@ -33,8 +33,6 @@ import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 
 public class StageMobs extends AbstractCountableStage<Mob<?>> {
 
-	/*private final List<Mob<?>> mobs;
-	private Map<PlayerAccount, PlayerDatas> remaining = new HashMap<>();*/
 	private boolean shoot = false;
 	
 	public StageMobs(QuestBranch branch, Map<Integer, Entry<Mob<?>, Integer>> mobs) {
@@ -87,13 +85,6 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 	}
 
 	protected void serialize(Map<String, Object> map){
-		/*map.put("mobs", Utils.serializeList(mobs, Mob::serialize));
-		
-		Map<String, List<Map<String, Object>>> re = new HashMap<>();
-		for (Entry<PlayerAccount, PlayerDatas> m : remaining.entrySet()){
-			re.put(m.getKey().getIndex(), Utils.serializeList(m.getValue().remaining, Mob::serialize));
-		}
-		map.put("remaining", re);*/
 		super.serialize(map);
 		if (shoot) map.put("shoot", true);
 	}
@@ -129,7 +120,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables {
+	public static class Creator implements StageCreationRunnables<StageMobs> {
 		private static final ItemStack editMobs = ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString());
 
 		public void start(Player p, LineData datas) {
@@ -161,16 +152,15 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 			});
 		}
 
-		public AbstractStage finish(LineData datas, QuestBranch branch) {
+		public StageMobs finish(LineData datas, QuestBranch branch) {
 			StageMobs stage = new StageMobs(branch, (Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
 			if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
 			return stage;
 		}
 
-		public void edit(LineData datas, AbstractStage stage) {
-			StageMobs st = (StageMobs) stage;
-			datas.put("mobs", st.cloneObjects());
-			datas.put("shoot", st.isShoot());
+		public void edit(LineData datas, StageMobs stage) {
+			datas.put("mobs", stage.cloneObjects());
+			datas.put("shoot", stage.isShoot());
 			setItems(datas.getLine(), datas.getGUI(), datas);
 		}
 	}

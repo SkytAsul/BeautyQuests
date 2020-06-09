@@ -4,21 +4,21 @@ import java.util.LinkedList;
 
 import org.bukkit.inventory.ItemStack;
 
-public class RequirementCreator {
-	public static final LinkedList<RequirementCreator> creators = new LinkedList<>();
+public class RequirementCreator<T extends AbstractRequirement> {
+	public static final LinkedList<RequirementCreator<?>> creators = new LinkedList<>();
 	
-	public final Class<? extends AbstractRequirement> clazz;
+	public final Class<T> clazz;
 	public final ItemStack item;
-	public final RequirementCreationRunnables runnables;
+	public final RequirementCreationRunnables<T> runnables;
 	
-	public RequirementCreator(Class<? extends AbstractRequirement> clazz, ItemStack is, RequirementCreationRunnables runnables){
+	public RequirementCreator(Class<T> clazz, ItemStack is, RequirementCreationRunnables<T> runnables) {
 		this.clazz = clazz;
 		this.item = is;
 		this.runnables = runnables;
 	}
 	
-	public static LinkedList<RequirementCreator> getCreators(){
-		return (LinkedList<RequirementCreator>) creators.clone();
+	public static LinkedList<RequirementCreator<?>> getCreators() {
+		return creators;
 	}
 	
 }

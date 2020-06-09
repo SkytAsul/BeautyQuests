@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.structure.QuestBranch;
 
-public abstract interface StageCreationRunnables {
+public abstract interface StageCreationRunnables<T extends AbstractStage> {
 	
 	/**
 	 * Called when stage item clicked
@@ -19,7 +19,7 @@ public abstract interface StageCreationRunnables {
 	 * @param datas all datas saved when stage creation
 	 * @param stage Existing stage
 	 */
-	public abstract void edit(LineData datas, AbstractStage stage);
+	public abstract void edit(LineData datas, T stage);
 
 	/**
 	 * Called when quest creation finished
@@ -27,6 +27,6 @@ public abstract interface StageCreationRunnables {
 	 * @param branch quest created
 	 * @return AsbtractStage created
 	 */
-	public abstract AbstractStage finish(LineData datas, QuestBranch branch);
+	public abstract T finish(LineData datas, QuestBranch branch);
 	
 }

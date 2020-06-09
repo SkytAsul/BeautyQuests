@@ -68,7 +68,7 @@ public class FactionRequirement extends AbstractRequirement {
 		}
 	}
 
-	public static class Creator implements RequirementCreationRunnables {
+	public static class Creator implements RequirementCreationRunnables<FactionRequirement> {
 
 		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
 			if (!datas.containsKey("factions")) datas.put("factions", new ArrayList<String>());
@@ -84,14 +84,14 @@ public class FactionRequirement extends AbstractRequirement {
 			};
 		}
 
-		public AbstractRequirement finish(Map<String, Object> datas) {
+		public FactionRequirement finish(Map<String, Object> datas) {
 			FactionRequirement req = new FactionRequirement();
 			for (String s : (List<String>) datas.get("factions")) req.addFaction(Factions.getFaction(s));
 			return req;
 		}
 
-		public void edit(Map<String, Object> datas, AbstractRequirement requirement) {
-			datas.put("factions", new ArrayList<>(((FactionRequirement) requirement).getFactionsName()));
+		public void edit(Map<String, Object> datas, FactionRequirement requirement) {
+			datas.put("factions", new ArrayList<>(requirement.getFactionsName()));
 		}
 	}
 
