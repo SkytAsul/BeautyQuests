@@ -33,7 +33,7 @@ import net.citizensnpcs.npc.ai.NPCHolder;
 public class NPCStarter {
 
 	private NPC npc;
-	private Set<Quest> quests = new TreeSet<>((obj1, obj2) -> Integer.compare(obj1.getID(), obj2.getID()));
+	private Set<Quest> quests = new TreeSet<>();
 	
 	private BukkitTask launcheableTask;
 	

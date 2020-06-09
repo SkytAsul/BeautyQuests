@@ -43,7 +43,7 @@ import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
-public class Quest{
+public class Quest implements Comparable<Quest> {
 	
 	private final int id;
 	private final File file;
@@ -447,6 +447,11 @@ public class Quest{
 		for (AbstractRequirement req : requirements){
 			req.unload();
 		}
+	}
+
+	@Override
+	public int compareTo(Quest o) {
+		return Integer.compare(id, o.id);
 	}
 	
 	public String toString(){
