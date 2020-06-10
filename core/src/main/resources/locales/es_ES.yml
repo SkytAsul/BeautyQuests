@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aEscribe el material del item de la misión.'
   requirements:
     quest: '§cDebes haber terminado la misión §e{0}§c!'
-    level: '§cDebes ser al menos nivel {0}!'
-    job: '§cDebes ser al menos nivel {0} para el trabajo §e{1}§c!'
-    skill: '§cDebes ser al menos nivel {0} para la habilidad §e{1}§c!'
-    combatLevel: '§cDebes ser al menos nivel de combate {0}!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§aDebes tener {0}!'
     wait: '§cDebes esperar {0} minuto(s) antes de poder reiniciar esta misión!'
   experience:
@@ -454,6 +454,13 @@ misc:
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bClass(es) required'
     faction: '§bFaction(s) required'

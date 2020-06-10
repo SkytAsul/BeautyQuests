@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: '§cTens que ter terminado a missão §e{0}§c!'
-    level: '§cDeves ter pelo menos nível {0}!'
-    job: '§cDeves ter pelo menos nível {0} para o trabalho §e{1}§c!'
-    skill: '§cDeves ter pelo menos nível {0} para a habilidade §e{1}§c!'
-    combatLevel: '§cDeves ter pelo menos nível de combate {0}!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§cVocê tem que ter {0}!'
     wait: '§cDeves esperar {0} minuto(s) antes de reiniciar esta missão!'
   experience:
@@ -454,6 +454,13 @@ misc:
     Craft: Criar item
     Bucket: Preencher balde
     location: Encontrar localização
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bClasse(es) necessária(s)'
     faction: '§bFação(ões) necessária(s)'

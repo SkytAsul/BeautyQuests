@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§a请输入任务物品材料名。'
   requirements:
     quest: '§c你必须先完成任务§e "{0}"§c!'
-    level: '§e你必须达到 {0} 级!'
-    job: '§e你必须达到 {0} 级才能应聘工作 {1}!'
-    skill: '§e你的{1}技能必须要达到{0}级!'
-    combatLevel: '§e你必须达到战斗等级 {0}!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§c你必须拥有 {0}!'
     wait: '§c你必须等待 {0} 分钟才能再次接受任务!'
   experience:
@@ -450,6 +450,13 @@ misc:
     Craft: 合成物品
     Bucket: 装满桶
     location: 寻找地点
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§b所需职业'
     faction: '§b所需派系'
@@ -484,4 +491,3 @@ misc:
   'yes': '是'
   'no': '否'
   and: 和
-	

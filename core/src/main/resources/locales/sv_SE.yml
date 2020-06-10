@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aSkriv materialet för uppdragsobjektet.'
   requirements:
     quest: '§aDu måste ha avslutat uppdraget §e{0}§c!'
-    level: '§cDu måste vara minst nivå {0}!'
-    job: '§cDu måste vara minst nivå {0} för arbetet §e{1}§c!'
-    skill: '§cDu måste vara minst nivå {0} i färdigheten §e{1}§c!'
-    combatLevel: '§cDu måste vara minst nivå {0} i strid!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§cDu måste ha {0}!'
     wait: '§cDu måste vänta {0} minut(er) innan du kan göra om uppdraget!'
   experience:
@@ -454,6 +454,13 @@ misc:
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bClass(es) required'
     faction: '§bFaction(s) required'

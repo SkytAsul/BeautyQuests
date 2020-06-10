@@ -4,23 +4,22 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 
-public class ChooseQuestGUI implements CustomInventory{
+public class ChooseQuestGUI extends PagedGUI<Quest> {
 	
 	private Consumer<Quest> run;
-	public final List<Quest> quests;
 	
 	public Inventory inv;
 	
@@ -30,47 +29,39 @@ public class ChooseQuestGUI implements CustomInventory{
 	}
 	
 	public ChooseQuestGUI(List<Quest> quests, Consumer<Quest> run){
-		Validate.notNull(quests, "Quests cannot be null");
+		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);
 		Validate.notNull(run, "Runnable cannot be null");
 		
 		this.run = run;
-		this.quests = quests;
 	}
 	
 	public Inventory open(Player p){
-		if (quests.size() == 0){
-			end(p, null);
+		if (objects.size() == 0) {
+			click(null);
 			return null;
-		}else if (quests.size() == 1){
-			end(p, quests.get(0));
+		}else if (objects.size() == 1) {
+			click(objects.get(0));
 			return null;
 		}
-		
-		inv = Bukkit.createInventory(null, (int) Math.ceil((quests.size() * 1.0) / 9.0) * 9, Lang.INVENTORY_CHOOSE.toString());
 
-		for (int i = 0; i < quests.size(); i++){
-			Quest quest = quests.get(i);
-			String[] lore = new String[0];
-			if (quest.getDescription() != null) lore = new String[] { quest.getDescription() };
-			inv.setItem(i, ItemUtils.item(quest.getMaterial(), ChatColor.YELLOW + quest.getName(), lore));
-		}
-		
-		inv = p.openInventory(inv).getTopInventory();
-		return inv;
-	}
-	
-	private void end(Player p, Quest c){
-		if (inv != null) Inventories.closeAndExit(p);
-		run.accept(c);
-	}
-
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-		if (slot < quests.size()) end(p, quests.get(slot));
-		return true;
+		return super.open(p);
 	}
 	
 	public CloseBehavior onClose(Player p, Inventory inv){
 		return CloseBehavior.REMOVE;
+	}
+
+	@Override
+	public ItemStack getItemStack(Quest object) {
+		String[] lore = new String[0];
+		if (object.getDescription() != null) lore = new String[] { object.getDescription() };
+		return ItemUtils.item(object.getMaterial(), ChatColor.YELLOW + object.getName(), lore);
+	}
+
+	@Override
+	public void click(Quest existing) {
+		if (inv != null) Inventories.closeAndExit(p);
+		run.accept(existing);
 	}
 
 }

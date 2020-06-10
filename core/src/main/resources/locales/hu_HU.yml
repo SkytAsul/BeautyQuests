@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aÍrd ide,hogy milyen tárgy legyen a küldetés.'
   requirements:
     quest: '§cBekell fejezned a következő küldetést §e{0}§c!'
-    level: '§cMinimum {0} kell lenned ,hogy elindítsd a küldetést!'
-    job: '§cMinimum {0} szintűnek kell lenned a következő munkához §e{1}§c!'
-    skill: '§cMinimum {0} kell lenned a skillhez §e{1}§c!'
-    combatLevel: '§cMinimum {0} kell legyen a hárc szinted!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§cEnnyi kell lennied nállad {0}!'
     wait: '§cVárnod kell {0} percet mielött újra indítanád!'
   experience:
@@ -453,6 +453,13 @@ misc:
     Craft: Készíts tárgyakat
     Bucket: Tölts meg vödröket
     location: Találd meg a helyet
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bKaszt szükséges'
     faction: '§bFrakció szükséges'

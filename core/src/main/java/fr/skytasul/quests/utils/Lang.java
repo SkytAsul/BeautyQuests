@@ -454,6 +454,13 @@ public enum Lang{
 	Bucket("misc.stageType.Bucket"),
 	Location("misc.stageType.location"),
 	
+	ComparisonEquals("misc.comparison.equals"),
+	ComparisonDifferent("misc.comparison.different"),
+	ComparisonLess("misc.comparison.less"),
+	ComparisonLessOrEquals("misc.comparison.lessOrEquals"),
+	ComparisonGreater("misc.comparison.greater"),
+	ComparisonGreaterOrEquals("misc.comparison.greaterOrEquals"),
+
 	RClass("misc.requirement.class"),
 	RFaction("misc.requirement.faction"),
 	RJobLvl("misc.requirement.jobLevel"),

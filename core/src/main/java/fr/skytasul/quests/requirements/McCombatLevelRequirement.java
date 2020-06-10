@@ -23,7 +23,7 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	public void sendReason(Player p){
-		Lang.REQUIREMENT_COMBAT_LEVEL.send(p, (int) super.target);
+		Lang.REQUIREMENT_COMBAT_LEVEL.send(p, getFormattedValue());
 	}
 	
 	protected void save(Map<String, Object> datas) {

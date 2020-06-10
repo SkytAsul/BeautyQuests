@@ -49,10 +49,10 @@ msg:
   writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: §cYou must have finished the quest §e{0}§c!
-    level: §cYou must be at least level {0}!
-    job: §cYou must be at least level {0} for the job §e{1}§c!
-    skill: §cYou must be at least level {0} for the skill §e{1}§c!
-    combatLevel: §cYou must be at least combat level {0}!
+    level: §cYour level must be {0}!
+    job: §cYour level for the job §e{1}§c must be {0}!
+    skill: §cYour level for the skill §e{1}§c must be {0}!
+    combatLevel: §cYour combat level must be {0}!
     money: §cYou must have {0}!
     wait: §cYou must wait {0} minute(s) before you can restart this quest!
   experience:
@@ -481,6 +481,13 @@ misc:
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: §bClass(es) required
     faction: §bFaction(s) required

@@ -28,7 +28,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	public void sendReason(Player p){
-		Lang.REQUIREMENT_SKILL.send(p, (int) super.target, skillName);
+		Lang.REQUIREMENT_SKILL.send(p, getFormattedValue(), skillName);
 	}
 	
 	protected void save(Map<String, Object> datas) {

@@ -1,7 +1,17 @@
 package fr.skytasul.quests.utils;
 
 public enum ComparisonMethod {
-	EQUALS, DIFFERENT, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL;
+	EQUALS(Lang.ComparisonEquals), DIFFERENT(Lang.ComparisonDifferent), LESS(Lang.ComparisonLess), LESS_OR_EQUAL(Lang.ComparisonLessOrEquals), GREATER(Lang.ComparisonGreater), GREATER_OR_EQUAL(Lang.ComparisonGreaterOrEquals);
+
+	private Lang title;
+
+	private ComparisonMethod(Lang title) {
+		this.title = title;
+	}
+
+	public Lang getTitle() {
+		return title;
+	}
 
 	public boolean isEqualOperation() {
 		switch (this) {

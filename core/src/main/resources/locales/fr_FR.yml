@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aIndiquez le type d''item pour la quête.'
   requirements:
     quest: '§cVous devez avoir terminé la quête §e{0}§c !'
-    level: '§cVous devez être au moins niveau {0} !'
-    job: '§cVous devez avoir au moins le niveau {0} du job §e{1}§c !'
-    skill: '§cVous devez être au moins niveau {0} de la compétence §e{1}§c!'
-    combatLevel: '§cVous devez au moins avoir le niveau de combat {0}!'
+    level: '§cVotre niveau doit être {0}!'
+    job: '§cVotre niveau pour le métier §e{1}§c doit être {0}!'
+    skill: '§cVotre niveau pour la compétence §e{1}§c doit être {0}!'
+    combatLevel: '§cVotre niveau de combat doit être {0}!'
     money: '§cVous devez avoir {0} !'
     wait: '§cVous devez encore attendre {0} minutes avant de pouvoir recommencer cette quête !'
   experience:
@@ -455,6 +455,13 @@ misc:
     Craft: Fabriquer un objet
     Bucket: Remplir un seau
     location: Trouver un endroit
+  comparison:
+    equals: égal à {0}
+    different: différent de {0}
+    less: strictement inférieur à {0}
+    lessOrEquals: inférieur à {0}
+    greater: strictement supérieur à {0}
+    greaterOrEquals: supérieur à {0}
   requirement:
     class: '§bClasse(s) requise(s)'
     faction: '§bFaction(s) requise(s)'

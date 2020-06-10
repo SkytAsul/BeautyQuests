@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.requirements;
 
+import java.text.NumberFormat;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -14,6 +15,8 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 public abstract class TargetNumberRequirement extends AbstractRequirement {
+
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
 
 	protected ComparisonMethod comparison = ComparisonMethod.GREATER_OR_EQUAL;
 	protected double target;
@@ -34,6 +37,10 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	public boolean test(Player p) {
 		double diff = getPlayerTarget(p) - target;
 		return comparison.test(diff);
+	}
+
+	public String getFormattedValue() {
+		return comparison.getTitle().format(numberFormat.format(target));
 	}
 
 	public abstract double getPlayerTarget(Player p);

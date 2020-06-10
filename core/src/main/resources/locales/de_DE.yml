@@ -35,13 +35,13 @@ msg:
   writeQuestTimer: '§aSchreibe die benötigte Zeit (in Minuten), bevor ein Spieler die Quest erneut starten kann: (Schreibe „null“, wenn der Standard‐Timer verwendet werden soll.)'
   writeConfirmMessage: '§aSchreibe die Bestätigungsnachricht, die beim Startversuch der Quest dem Spieler gezeigt wird: (Schreibe „null“, wenn die Standard‐Nachricht verwendet werden soll.)'
   writeQuestDescription: '§aGebe die Beschreibung der Quest ein, welche in der Quest-GUI des Spielers angezeigt werden soll.'
-  writeQuestMaterial: '§aWrite the material of the quest item.'
+  writeQuestMaterial: '§aSchreibe das Material des Questgegenstandes.'
   requirements:
     quest: '§cDu musst die Quest §e{0}§c abgeschlossen haben!'
-    level: '§cDu musst mindestens {0} Level haben!'
-    job: '§cDu musst mindestens {0} Level für den Job §e{1}§c haben!'
-    skill: '§cDu musst mindestens {0} Level für die Fähigkeit §e{1}§c haben!'
-    combatLevel: '§cDu musst mindestens Kampflevel {0} sein!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§cDu benötigst {0}!'
     wait: '§cDu musst {0} Minute(n) warten, bevor du die Quest erneut starten kannst!'
   experience:
@@ -243,7 +243,7 @@ inv:
     preventBlockPlace: Spieler daran hindern, ihre eigenen Blöcke zu zerstören
     editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
     cancelMessage: Senden abbrechen
-    ignoreCase: Ignore the case of the message
+    ignoreCase: Fall der Nachricht ignorieren
     selectItems: '§eBenötigte Items auswählen'
     selectRegion: '§7Region auswählen'
     stageStartMsg: '§eStartnachricht bearbeiten'
@@ -303,7 +303,7 @@ inv:
     timer: '§bZeit, bevor die Quest erneut gestartet werden kann.'
     requirements: '{0} Anforderung(en)'
     rewards: '{0} Belohnung(en)'
-    customMaterial: '§eEdit quest item material'
+    customMaterial: '§eBearbeite das Material des Questgegenstandes'
   itemsSelect:
     name: Items bearbeiten
     none: |-
@@ -454,6 +454,13 @@ misc:
     Craft: Item herstellen
     Bucket: Eimer befüllen
     location: Position finden
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bBenötigte Klasse(n)'
     faction: '§bBenötigte Fraktion(en)'

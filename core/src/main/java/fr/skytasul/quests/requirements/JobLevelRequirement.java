@@ -28,7 +28,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	public void sendReason(Player p){
-		Lang.REQUIREMENT_JOB.send(p, (int) super.target, jobName);
+		Lang.REQUIREMENT_JOB.send(p, getFormattedValue(), jobName);
 	}
 	
 	protected void save(Map<String, Object> datas) {

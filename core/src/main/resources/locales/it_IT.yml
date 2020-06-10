@@ -34,12 +34,14 @@ msg:
   writeHologramText: '§aScrivi il testo dell''hologram: (Scrivi "none" se non vuoi un ologramma e "null" se vuoi il testo predefinito.)'
   writeQuestTimer: '§aScrivi il tempo richiesto (in minuti) prima di poter riavviare la quest: (Scrivi "null" se vuoi il timer predefinito.)'
   writeConfirmMessage: '§aScrivi il messaggio di conferma mostrato quando un giocatore sta per iniziare la quest: (Scrivi "null" se vuoi il messaggio predefinito.)'
+  writeQuestDescription: '§aWrite the description of the quest, shown in the player''s quest GUI.'
+  writeQuestMaterial: '§aWrite the material of the quest item.'
   requirements:
     quest: '§cDevi aver completato la missione §e{0}§c!'
-    level: '§cDevi essere almeno di livello {0}!'
-    job: '§cDevi essere almeno di livello {0} per il lavoro §e{1}§c!'
-    skill: '§cDevi essere almeno di livello {0} per l''abilità §e{1}§c!'
-    combatLevel: '§cDevi essere almeno di livello di combattimento {0}!'
+    level: '§cYour level must be {0}!'
+    job: '§cYour level for the job §e{1}§c must be {0}!'
+    skill: '§cYour level for the skill §e{1}§c must be {0}!'
+    combatLevel: '§cYour combat level must be {0}!'
     money: '§cDevi avere {0}!'
     wait: '§cDevi aspettare {0} minuto(i) prima di poter riavviare questa missione!'
   experience:
@@ -88,6 +90,7 @@ msg:
     resetPlayerQuest:
       player: '§6Tutte le informazioni sulla missione {0} sono state eliminate da {1}.'
       remover: '§6{0} informazioni delle quest di {1} sono state eliminate.'
+    resetQuest: '§6Removed datas of the quest for {0} players.'
     startQuest: '§6Hai forzato l''avvio della missione {0} (UUID giocatore: {1}).'
     cancelQuest: '§6Hai annullato la missione {0}.'
     cancelQuestUnavailable: '§cLa missione {0} non può essere annullata.'
@@ -240,6 +243,7 @@ inv:
     preventBlockPlace: Impedisci ai giocatori di rompere i propri blocchi
     editMessageType: '§eModifica messaggio da scrivere'
     cancelMessage: Annulla invio
+    ignoreCase: Ignore the case of the message
     selectItems: '§eModifica gli elementi richiesti'
     selectRegion: '§7Scegli regione'
     stageStartMsg: '§eModifica messaggio iniziale'
@@ -266,6 +270,7 @@ inv:
     hologramLaunch: '§eModifica l''oggetto dell''hologram "Avvia"'
     hologramLaunchNo: '§eModifica l''oggetto dell''hologram "avvio non disponibile"'
     customConfirmMessage: '§eModifica il messaggio di conferma della missione'
+    customDescription: '§eEdit quest description'
     name: Ultimi dettagli della missione
     multipleTime:
       itemName: Attiva/disattiva ripetizione
@@ -298,6 +303,7 @@ inv:
     timer: '§bTempo prima di poter riavviare la missione.'
     requirements: '{0} requisito(i)'
     rewards: '{0} ricompensa(e)'
+    customMaterial: '§eEdit quest item material'
   itemsSelect:
     name: Modifica oggetti
     none: |-
@@ -448,6 +454,13 @@ misc:
     Craft: Crafta oggetto
     Bucket: Riempi un secchio
     location: Trova una posizione
+  comparison:
+    equals: equal to {0}
+    different: different to {0}
+    less: strictly less than {0}
+    lessOrEquals: less than {0}
+    greater: strictly greater than {0}
+    greaterOrEquals: greater than {0}
   requirement:
     class: '§bClass(e) richiesta'
     faction: '§bFazione(i) richiesta'
