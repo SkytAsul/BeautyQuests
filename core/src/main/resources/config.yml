@@ -96,7 +96,9 @@ stageDescriptionItemsSplit:
   prefix: "§e- §6"
   # Show "x1" if there is only one object
   showXOne: true
-  # From which sources the text has to be split
+  # When there is only one object, do not put it on a new line
+  inlineAlone: true
+  # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
   sources: [SCOREBOARD, MENU]
 
 

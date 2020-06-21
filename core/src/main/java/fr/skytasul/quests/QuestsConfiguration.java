@@ -65,6 +65,7 @@ public class QuestsConfiguration {
 	// stageDescription
 	private static String descPrefix = "{nl}§e- §6";
 	private static boolean descXOne = true;
+	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 
 	private static ItemStack holoLaunchItem = null;
@@ -142,6 +143,7 @@ public class QuestsConfiguration {
 		// stageDescription
 		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
 		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
+		inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
 		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
 			try{
 				descSources.add(Source.valueOf(s));
@@ -359,6 +361,10 @@ public class QuestsConfiguration {
 		return splitDescription(source) && descXOne;
 	}
 	
+	public static boolean inlineAlone() {
+		return inlineAlone;
+	}
+
 	public static boolean splitDescription(Source source){
 		if (source == Source.FORCESPLIT) return true;
 		if (source == Source.FORCELINE) return false;

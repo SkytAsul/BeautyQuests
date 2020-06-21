@@ -174,7 +174,7 @@ public class StagesGUI implements CustomInventory {
 		});
 
 		int maxStages = branches ? 20 : 15;
-		line.setItem(0, stageRemove.clone(), new StageRunnable() {
+		line.setItem(0, ItemUtils.lore(stageRemove.clone(), creator.type.name), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.clear();
 				line.removeItems();

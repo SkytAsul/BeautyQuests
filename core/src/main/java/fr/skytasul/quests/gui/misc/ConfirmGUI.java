@@ -33,7 +33,7 @@ public class ConfirmGUI implements CustomInventory {
 		Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_CONFIRM.toString());
 		
 		inv.setItem(1, ItemUtils.item(XMaterial.LIME_DYE, Lang.confirmYes.toString()));
-		inv.setItem(2, ItemUtils.item(XMaterial.PAPER, indication, lore));
+		inv.setItem(2, ItemUtils.item(XMaterial.PAPER, indication, lore == null ? null : new String[] { lore }));
 		inv.setItem(3, ItemUtils.item(XMaterial.RED_DYE, Lang.confirmNo.toString()));
 		
 		return p.openInventory(inv).getTopInventory();

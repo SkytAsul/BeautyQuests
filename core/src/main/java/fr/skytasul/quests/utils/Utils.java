@@ -409,7 +409,7 @@ public class Utils{
 	
 	public static String descriptionLines(Source source, String... elements){
 		if (elements.length == 0) return Lang.Unknown.toString();
-		if (QuestsConfiguration.splitDescription(source) && elements.length > 1){
+		if (QuestsConfiguration.splitDescription(source) && (!QuestsConfiguration.inlineAlone() || elements.length > 1)) {
 			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
 		}
 		return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());

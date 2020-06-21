@@ -48,7 +48,7 @@ public class ItemUtils {
 		ItemStack is = XMaterial.playerSkullItem();
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
-		im.setOwner(skull);
+		if (skull != null) im.setOwner(skull);
 		is.setItemMeta(im);
 		if (lore != null && lore.length != 0) lore(is, lore);
 		return is;
