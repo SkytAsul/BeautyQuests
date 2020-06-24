@@ -103,6 +103,7 @@ public class QuestBranch {
 			}
 			return stb.toString();
 		}
+		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
 		return regularStages.get(datas.getStage()).getDescriptionLine(acc, source);
 	}
 	/**
