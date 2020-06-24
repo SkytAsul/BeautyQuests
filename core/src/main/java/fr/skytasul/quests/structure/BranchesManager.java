@@ -20,7 +20,6 @@ import fr.skytasul.quests.scoreboards.Scoreboard;
 public class BranchesManager{
 
 	private Map<Integer, QuestBranch> branches = new LinkedHashMap<>();
-	//Map<PlayerAccount, PlayerAdvancement> playerAdvancement = new HashMap<>();
 	
 	private Quest quest;
 	
@@ -64,31 +63,6 @@ public class BranchesManager{
 		if (!acc.hasQuestDatas(quest)) return null;
 		return branches.get(acc.getQuestDatas(quest).getBranch());
 	}
-	
-	/*public PlayerAdvancement getPlayerAdvancement(PlayerAccount account){
-		return playerAdvancement.get(account);
-	}*/
-	
-	/*public List<PlayerAccount> getPlayersForBranch(QuestBranch branch){
-		List<PlayerAccount> ls = new ArrayList<>();
-		int id = getID(branch);
-		for (Entry<PlayerAccount, PlayerAdvancement> en : playerAdvancement.entrySet()){
-			if (en.getValue().branch.getID() == id) ls.add(en.getKey());
-		}
-		return ls;
-	}
-	
-	public List<PlayerAccount> getAccountsLaunched(){
-		return new ArrayList<>(playerAdvancement.keySet());
-	}
-	
-	public Map<PlayerAccount, PlayerAdvancement> getPlayersAdvancement(){
-		return playerAdvancement;
-	}
-	
-	public void setPlayersStage(Map<PlayerAccount, PlayerAdvancement> players){
-		this.playerAdvancement = players;
-	}*/
 	
 	public boolean hasBranchStarted(PlayerAccount acc, QuestBranch branch){
 		if (!acc.hasQuestDatas(quest)) return false;

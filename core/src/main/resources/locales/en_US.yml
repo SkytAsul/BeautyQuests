@@ -331,6 +331,7 @@ inv:
     requirements: '{0} requirement(s)'
     rewards: '{0} reward(s)'
     customMaterial: '§eEdit quest item material'
+    loreReset: '§e§lAll players'' advancement will be reset'
   itemsSelect:
     name: Edit items
     none: |-

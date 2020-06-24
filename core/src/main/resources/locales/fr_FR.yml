@@ -305,6 +305,7 @@ inv:
     requirements: '{0} exigence(s)'
     rewards: '{0} récompense(s)'
     customMaterial: '§eModifiez l''item de la quête'
+    loreReset: '§e§lL''avancement de tous les joueurs sera réinitialisé'
   itemsSelect:
     name: Modifier les items
     none: |-

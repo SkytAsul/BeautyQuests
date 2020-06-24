@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
@@ -70,7 +69,7 @@ public class ItemUtils {
 					continue;
 				}
 				List<String> lss = new ArrayList<>();
-				for (String as : StringUtils.splitByWholeSeparator(s, "\\n")){
+				for (String as : s.split("(\\n|\n)")) {
 					lss.add(as);
 				}
 				String last = "";

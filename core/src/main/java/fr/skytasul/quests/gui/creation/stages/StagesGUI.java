@@ -256,13 +256,13 @@ public class StagesGUI implements CustomInventory {
 						}else Lang.QUEST_EDIT_CANCEL.send(p);
 					}
 				}else { // branch inventory = previous branch button
-					StagesGUI branch = previousBranch;
-					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
-					Inventories.create(p, branch);
+					Inventories.create(p, previousBranch);
 				}
 			}
 		}else {
-			stagesEdited = true;
+			StagesGUI branch = this;
+			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
+			branch.stagesEdited = true;
 			Line line = getLine((slot - slot % 9)/9 +5*page);
 			line.click(slot, p, current);
 		}
@@ -284,9 +284,13 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	private void finish(Player p){
+		System.out.println(stagesEdited);
 		if (finish == null){
 			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
-		}else Inventories.create(p, finish);
+		}else {
+			Inventories.create(p, finish);
+			if (stagesEdited) finish.setStagesEdited();
+		}
 	}
 
 	public List<LineData> getLinesDatas(){

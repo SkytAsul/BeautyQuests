@@ -33,6 +33,7 @@ import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
+import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
@@ -52,8 +53,6 @@ public class FinishGUI implements CustomInventory{
 	static ItemStack questName = ItemUtils.item(XMaterial.NAME_TAG, Lang.questName.toString());
 	static ItemStack questStarterCreate = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.questStarterCreate.toString());
 	static ItemStack questStarterSelect = ItemUtils.item(XMaterial.STICK, Lang.questStarterSelect.toString());
-	static ItemStack create = ItemUtils.item(XMaterial.NETHER_BRICK, ChatColor.DARK_PURPLE + Lang.create.toString(), Lang.createLore.toString().split("\n"));
-	static ItemStack edit = ItemUtils.item(XMaterial.NETHER_BRICK, ChatColor.DARK_PURPLE + Lang.edit.toString(), Lang.createLore.toString().split("\n"));
 	static ItemStack editRequirements = ItemUtils.item(XMaterial.ACACIA_DOOR, Lang.editRequirements.toString());
 	static ItemStack endMessage = ItemUtils.item(XMaterial.PAPER, Lang.endMessage.toString());
 	static ItemStack startDialog = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.startDialog.toString());
@@ -93,7 +92,6 @@ public class FinishGUI implements CustomInventory{
 	private Player p;
 
 	private boolean editing = false;
-	@SuppressWarnings ("unused")
 	private boolean stagesEdited = false;
 	private Quest edited;
 	
@@ -142,10 +140,11 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(24, hologramLaunch.clone());
 			inv.setItem(25, hologramLaunchNo.clone());
 			
-			inv.setItem(32, create.clone());
 			inv.setItem(30, ItemUtils.itemLaterPage);
 			
 			if (editing) setFromQuest();
+
+			refreshFinish(inv);
 		}
 
 		inv = p.openInventory(inv).getTopInventory();
@@ -377,10 +376,15 @@ public class FinishGUI implements CustomInventory{
 
 	private void refreshFinish(Inventory inv) {
 		ItemStack item = inv.getItem(32);
-		if (name != null && startNPC != null) {
+		if (item == null) {
+			item = ItemUtils.item(XMaterial.NETHER_BRICK, ChatColor.DARK_PURPLE.toString() + (editing ? Lang.edit : Lang.create), Lang.createLore.toString());
+			if (stagesEdited) ItemUtils.loreAdd(item, Lang.resetLore.toString());
+			inv.setItem(32, item);
+		}
+		if (name != null && startNPC != null && item.getType() != Material.GOLD_INGOT) {
 			item.setType(Material.GOLD_INGOT);
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
-		}else{
+		}else if (item.getType() != Material.NETHER_BRICK) {
 			item.setType(XMaterial.NETHER_BRICK.parseMaterial());
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§6", "§5"));
 		}
@@ -416,6 +420,8 @@ public class FinishGUI implements CustomInventory{
 			qu.setStartDialog(dialog);
 		}
 		
+		if (stagesEdited) PlayersManager.manager.removeQuestDatas(qu);
+
 		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
 		loadBranch(mainBranch, stages);
@@ -494,14 +500,17 @@ public class FinishGUI implements CustomInventory{
 		endMsg = edited.getEndMessage();
 		ItemUtils.lore(inv.getItem(4), endMsg);
 		dialog = edited.getStartDialog();
-		inv.setItem(32, edit.clone());
 		requirements = edited.getRequirements();
 		ItemUtils.lore(inv.getItem(12), Lang.requirements.format(requirements.size()));
 		inv.setItem(24, edited.getCustomHologramLaunch());
 		inv.setItem(25, edited.getCustomHologramLaunchNo());
 		material = edited.getCustomMaterial();
+	}
 
-		refreshFinish(inv);
+	public void setStagesEdited() {
+		if (stagesEdited) return;
+		stagesEdited = true;
+		ItemUtils.loreAdd(inv.getItem(32), Lang.resetLore.toString());
 	}
 
 }

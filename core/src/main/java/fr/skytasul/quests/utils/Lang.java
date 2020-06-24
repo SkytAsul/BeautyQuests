@@ -313,6 +313,7 @@ public enum Lang{
 	customConfirmMessage("inv.details.customConfirmMessage"),
 	customDescription("inv.details.customDescription"),
 	customMaterial("inv.details.customMaterial"),
+	resetLore("inv.details.loreReset"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
