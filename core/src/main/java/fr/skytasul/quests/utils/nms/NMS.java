@@ -92,7 +92,7 @@ public abstract class NMS{
     private static boolean versionValid = false;
 	private static NMS nms;
 	private static int MCversion;
-	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1");
+	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1", "1_16_R1");
 	
 	static {
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
@@ -102,9 +102,9 @@ public abstract class NMS{
 				versionValid = true;
 				MCversion = Integer.parseInt(version.split("_")[1]);
 			}catch (Throwable ex){
+				ex.printStackTrace();
 				versionValid = false;
 				nms = new NullNMS();
-				ex.printStackTrace();
 			}
 		}else nms = new NullNMS();
 		BeautyQuests.logger.info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Currenttly accepted versions are: " + String.join(", ", validVersions));

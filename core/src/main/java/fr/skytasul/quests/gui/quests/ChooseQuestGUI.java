@@ -21,8 +21,6 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	
 	private Consumer<Quest> run;
 	
-	public Inventory inv;
-	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
 		return this;

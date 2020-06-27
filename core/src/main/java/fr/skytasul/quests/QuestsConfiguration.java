@@ -107,8 +107,8 @@ public class QuestsConfiguration {
 		gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		item = XMaterial.fromString(config.getString("item"));
-		pageItem = XMaterial.fromString(config.getString("pageItem"));
+		item = XMaterial.matchXMaterial(config.getString("item")).orElse(null);
+		pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(null);
 		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");

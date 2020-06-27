@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.logging.log4j.core.util.FileUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +42,7 @@ public class MinecraftNames {
 				if (key.startsWith("entity.minecraft.")) {
 					cachedEntities.put(EntityType.fromName(key.substring(17)), (String) en.getValue());
 				}else if (key.startsWith("block.minecraft.")) {
-					cachedMaterials.put(XMaterial.fromString(key.substring(16)), (String) en.getValue());
+					cachedMaterials.put(XMaterial.matchXMaterial(key.substring(16)).orElse(null), (String) en.getValue());
 				}else if (key.startsWith("item.minecraft.")) {
 					String item = key.substring(15);
 					if (item.startsWith(".potion.effect.")) {
@@ -53,7 +54,7 @@ public class MinecraftNames {
 					}else if (item.startsWith(".lingering_potion.effect.")) {
 						XPotion potion = XPotion.matchFromTranslationKey(item.substring(25));
 						potion.lingering = (String) en.getValue();
-					}else cachedMaterials.put(XMaterial.fromString(item), (String) en.getValue());
+					}else cachedMaterials.put(XMaterial.matchXMaterial(item).orElse(null), (String) en.getValue());
 				}
 			}
 		}catch (Exception e) {
@@ -77,7 +78,7 @@ public class MinecraftNames {
 	}
 	
 	public static String getMaterialName(ItemStack item) {
-		XMaterial type = XMaterial.fromItemStack(item);
+		XMaterial type = XMaterial.matchXMaterial(item);
 		if (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			try {
@@ -95,7 +96,7 @@ public class MinecraftNames {
 	}
 	
 	public static String defaultFormat(String value){
-		return value.toLowerCase().replace("_", " ");
+		return WordUtils.capitalize(value.toLowerCase().replace('_', ' '));
 	}
 	
 }

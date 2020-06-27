@@ -289,7 +289,7 @@ public class StagesGUI implements CustomInventory {
 			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
 		}else {
 			Inventories.create(p, finish);
-			if (stagesEdited) finish.setStagesEdited();
+			if (edit != null && stagesEdited) finish.setStagesEdited();
 		}
 	}
 

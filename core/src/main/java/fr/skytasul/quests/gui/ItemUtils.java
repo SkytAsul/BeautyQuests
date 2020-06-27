@@ -163,7 +163,7 @@ public class ItemUtils {
 	 */
 	public static String getName(ItemStack is, boolean format) {
 		if (is == null) return null;
-		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(is) : XMaterial.fromMaterial(is.getType()).getLastName();
+		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
 		return is.getItemMeta().getDisplayName();
 	}
 	
@@ -212,7 +212,7 @@ public class ItemUtils {
 	 * @return ItemStack instance of a Stained Glass Pane
 	 */
 	public static ItemStack itemSeparator(DyeColor color){
-		return item(XMaterial.requestXMaterial("STAINED_GLASS_PANE", (byte) color.ordinal()), "§7");
+		return item(XMaterial.matchXMaterial(color.name() + "_STAINED_GLASS_PANE").get(), "§7");
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class ItemUtils {
 	 * @return ItemStack instance of the created switch
 	 */
 	public static ItemStack itemSwitch(String name, boolean enabled, String... lore){
-		return item(XMaterial.requestXMaterial("INK_SACK", (byte) (enabled ? 10 : 8)), (enabled ? "§a" : "§7") + name, lore);
+		return item(XMaterial.requestOldXMaterial("INK_SACK", (byte) (enabled ? 10 : 8)), (enabled ? "§a" : "§7") + name, lore);
 	}
 	
 	/**

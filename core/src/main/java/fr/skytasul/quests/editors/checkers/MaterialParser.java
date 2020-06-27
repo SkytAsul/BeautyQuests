@@ -16,12 +16,11 @@ public class MaterialParser implements AbstractParser {
 		this.item = item;
 	}
 	
-	
 	public Object parse(Player p, String msg) throws Throwable{
-		XMaterial tmp = XMaterial.fromString(msg);
+		XMaterial tmp = XMaterial.matchXMaterial(msg).orElse(null);
 		if (tmp == null){
 			Material mat = Material.matchMaterial(msg);
-			if (mat != null) tmp = XMaterial.fromString(mat.name());
+			if (mat != null) tmp = XMaterial.matchXMaterial(mat);
 			if (tmp == null) Lang.UNKNOWN_ITEM_TYPE.send(p);
 		}else if (item && (NMS.getMCVersion() >= 13 && !Post1_13.isItem(tmp.parseMaterial()))){
 			Lang.INVALID_ITEM_TYPE.send(p);

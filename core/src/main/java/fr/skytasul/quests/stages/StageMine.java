@@ -63,7 +63,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
 				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
 			}
-			event(acc, p, XMaterial.fromMaterial(e.getBlock().getType()), 1);
+			event(acc, p, XMaterial.matchXMaterial(e.getBlock().getType()), 1);
 		}
 	}
 	
