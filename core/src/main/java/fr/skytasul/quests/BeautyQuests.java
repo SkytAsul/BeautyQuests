@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -156,6 +155,20 @@ public class BeautyQuests extends JavaPlugin{
 			}
 
 			Metrics metrics = new Metrics(this, 7460);
+			metrics.addCustomChart(new Metrics.DrilldownPie("customPluginVersion", () -> {
+				Map<String, Map<String, Integer>> map = new HashMap<>();
+				String version = getDescription().getVersion();
+				Map<String, Integer> entry = new HashMap<>();
+				entry.put(version, 1);
+				String[] split = version.split("_");
+				if (split.length == 1) {
+					entry.put("Release", 1);
+				}else {
+					entry.put(version, 1);
+				}
+				map.put(split[0], entry);
+				return map;
+			}));
 			metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
 			metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
 			metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
@@ -433,7 +446,10 @@ public class BeautyQuests extends JavaPlugin{
 		getLogger().info(msg + " Creating backup...");
 		try {
 			File backupDir = backupDir();
-			Files.copy(saveFolder.toPath(), backupDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			backupDir.mkdir();
+			for (File file : saveFolder.listFiles()) {
+				Files.copy(file.toPath(), new File(backupDir, file.getName()).toPath());
+			}
 			getLogger().info("Quests backup created in " + backupDir.getName());
 			return true;
 		}catch (Exception e) {
