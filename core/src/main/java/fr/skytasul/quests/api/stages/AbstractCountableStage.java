@@ -83,8 +83,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		Map<Integer, Integer> amounts = new HashMap<>();
-		for (int i = 0; i < objects.size(); i++) {
-			amounts.put(i, objects.get(i).getValue());
+		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
+			amounts.put(entry.getKey(), entry.getValue().getValue());
 		}
 		datas.put("remaining", amounts);
 	}

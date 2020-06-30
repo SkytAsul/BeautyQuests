@@ -380,6 +380,7 @@ public class FinishGUI implements CustomInventory{
 			item = ItemUtils.item(XMaterial.NETHER_BRICK, ChatColor.DARK_PURPLE.toString() + (editing ? Lang.edit : Lang.create), Lang.createLore.toString());
 			if (stagesEdited) ItemUtils.loreAdd(item, Lang.resetLore.toString());
 			inv.setItem(32, item);
+			item = inv.getItem(32); // get the NMS copy
 		}
 		if (name != null && startNPC != null && item.getType() != Material.GOLD_INGOT) {
 			item.setType(Material.GOLD_INGOT);

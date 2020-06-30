@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -45,9 +46,9 @@ public class PlayerListGUI implements CustomInventory {
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		
-		setBarItem(1, ItemUtils.item(XMaterial.WRITTEN_BOOK, "§r" + Lang.finisheds.toString()));
-		setBarItem(2, ItemUtils.item(XMaterial.BOOK, "§r" + Lang.inProgress.toString()));
-		setBarItem(3, ItemUtils.item(XMaterial.WRITABLE_BOOK, "§r" + Lang.notStarteds.toString()));
+		setBarItem(1, ItemUtils.item(XMaterial.WRITTEN_BOOK, "§7" + Lang.finisheds.toString()));
+		setBarItem(2, ItemUtils.item(XMaterial.BOOK, "§7" + Lang.inProgress.toString()));
+		setBarItem(3, ItemUtils.item(XMaterial.WRITABLE_BOOK, "§7" + Lang.notStarteds.toString()));
 		
 		setCategory(Category.IN_PROGRESS);
 
@@ -56,6 +57,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 	
 	private void setCategory(Category category){
+		if (cat == category) return;
 		if (cat != Category.NONE) toggleCategoryEnchanted();
 		cat = category;
 		page = 0;
@@ -143,13 +145,17 @@ public class PlayerListGUI implements CustomInventory {
 	
 	private void toggleCategoryEnchanted(){
 		ItemStack is = inv.getItem(cat.ordinal() * 9 + 8);
-		if (!ItemUtils.hasEnchant(is, Enchantment.DURABILITY)){
-			String s = ItemUtils.getName(ItemUtils.addEnchant(is, Enchantment.DURABILITY, 0));
-			ItemUtils.name(is, "§b§l" + s.substring(2));
+		ItemMeta im = is.getItemMeta();
+		String name = im.getDisplayName();
+		if (!im.hasEnchant(Enchantment.DURABILITY)) {
+			im.addEnchant(Enchantment.DURABILITY, 0, true);
+			name = "§b§l" + name.substring(2);
 		}else{
-			String s = ItemUtils.getName(ItemUtils.removeEnchant(is, Enchantment.DURABILITY));
-			ItemUtils.name(is, "§r" + s.substring(4));
+			im.removeEnchant(Enchantment.DURABILITY);
+			name = "§7" + name.substring(4);
 		}
+		im.setDisplayName(name);
+		is.setItemMeta(im);
 	}
 
 	
