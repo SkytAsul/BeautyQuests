@@ -450,12 +450,12 @@ public class ScoreboardSigns {
 		public void setValue(String value) {
 			if (value.length() <= 16) {
 				setPrefix("");
-				setSuffix("");
 				setPlayer(value);
-			} else if (value.length() <= 32) {
-				setPrefix(value.substring(0, 16));
-				setPlayer(value.substring(16));
 				setSuffix("");
+			} else if (value.length() <= 32) {
+				setPrefix("");
+				setPlayer(value.substring(0, 16));
+				setSuffix(value.substring(16));
 			} else if (value.length() <= 48) {
 				setPrefix(value.substring(0, 16));
 				setPlayer(value.substring(16, 32));
