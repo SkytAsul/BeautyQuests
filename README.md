@@ -36,3 +36,22 @@ If you want to help us translate BeautyQuests into your native language, join th
 
 ## Discord
 If you need help, found a bug, or want to share an idea, you can join the official [Plugin Support Discord server by SkytAsul](https://discord.gg/H8fXrkD).
+
+***
+
+## Maven
+In *pom.xml*, add this to the `repositories` section:
+```xml
+<repository>
+  <id>codemc</id>
+  <url>https://repo.codemc.org/repository/maven-public</url>
+</repository>
+```
+And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.17.0`, `0.17.1-SNAPSHOT`...)
+```xml
+<dependency>
+  <groupId>fr.skytasul</groupId>
+  <artifactId>beautyquests</artifactId>
+  <version>VERSION</version>
+</dependency>
+```
