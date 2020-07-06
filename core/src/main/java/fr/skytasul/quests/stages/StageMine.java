@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +33,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class StageMine extends AbstractCountableStage<XMaterial> {
@@ -63,7 +65,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
 				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
 			}
-			event(acc, p, XMaterial.matchXMaterial(e.getBlock().getType()), 1);
+			event(acc, p, e.getBlock(), 1);
 		}
 	}
 	
@@ -81,7 +83,13 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 			}
 		}
 	}
-
+	
+	@Override
+	protected boolean objectApplies(XMaterial object, Object other) {
+		if (other instanceof Block) return XBlock.isType((Block) other, object);
+		return super.objectApplies(object, other);
+	}
+	
 	protected String getName(XMaterial object) {
 		return MinecraftNames.getMaterialName(object);
 	}

@@ -67,7 +67,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				showed = null;
 				if (sb == null) {
 					if (!manager.hideEmtptyScoreboard()) initScoreboard();
-				}else {
+				}else if (manager.hideEmtptyScoreboard()) {
 					sb.destroy();
 					sb = null;
 					for (Line line : lines) line.reset();

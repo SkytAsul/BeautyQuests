@@ -76,6 +76,10 @@ public class MobsListGUI implements CustomInventory{
 			@SuppressWarnings ("rawtypes")
 			public void click(MobFactory<?> existing) {
 				existing.itemClick(p, (obj) -> {
+					if (obj == null) {
+						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
+						return;
+					}
 					Lang.MOB_AMOUNT.send(p);
 					new TextEditor(p, (x) -> {
 						int amount = (int) x;
