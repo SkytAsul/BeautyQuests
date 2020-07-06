@@ -425,40 +425,40 @@ public class XBlock {
      * @return true if the block type is similar to the material.
      */
     public static boolean isType(Block block, XMaterial material) {
-        Material mat = block.getType();
-
-        switch (material) {
-            case CAKE:
-                return isCake(mat);
-            case NETHER_WART:
-                return isNetherWart(mat);
-            case MELON:
-            case MELON_SLICE:
-                return isMelon(mat);
-            case CARROT:
-            case CARROTS:
-                return isCarrot(mat);
-            case POTATO:
-            case POTATOES:
-                return isPotato(mat);
-            case WHEAT:
-            case WHEAT_SEEDS:
-                return isWheat(mat);
-            case BEETROOT:
-            case BEETROOT_SEEDS:
-            case BEETROOTS:
-                return isBeetroot(mat);
-            case SUGAR_CANE:
-                return isSugarCane(mat);
-            case WATER:
-                return isWater(mat);
-            case AIR:
-                // We don't look for other airs as material variable is supposed to be parsed from a user friendly string.
-                // And I don't know why would anyone use the other air types.
-                return isAir(mat);
-			default:
-				return false;
-        }
+		Material mat = block.getType();
+		
+		switch (material) {
+		case CAKE:
+			return isCake(mat);
+		case NETHER_WART:
+			return isNetherWart(mat);
+		case MELON:
+		case MELON_SLICE:
+			return isMelon(mat);
+		case CARROT:
+		case CARROTS:
+			return isCarrot(mat);
+		case POTATO:
+		case POTATOES:
+			return isPotato(mat);
+		case WHEAT:
+		case WHEAT_SEEDS:
+			return isWheat(mat);
+		case BEETROOT:
+		case BEETROOT_SEEDS:
+		case BEETROOTS:
+			return isBeetroot(mat);
+		case SUGAR_CANE:
+			return isSugarCane(mat);
+		case WATER:
+			return isWater(mat);
+		case AIR:
+			// We don't look for other airs as material variable is supposed to be parsed from a user friendly string.
+			// And I don't know why would anyone use the other air types.
+			return isAir(mat);
+		default:
+			return mat.equals(material.parseMaterial());
+		}
     }
 
     public static boolean isAir(Material material) {
