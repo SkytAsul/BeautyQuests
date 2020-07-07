@@ -12,6 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
@@ -21,7 +22,6 @@ import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.scoreboards.ScoreboardSigns.VirtualTeam;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -31,12 +31,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private PlayerAccount acc;
 	private Player p;
-	private ScoreboardSigns sb;
+	private FastBoard board;
 	private ScoreboardManager manager;
 	
 	private LinkedList<Line> lines = new LinkedList<>();
 	
-	private Quest showed = null;
+	private Quest shown = null;
 	private List<Quest> launched;
 	private boolean hid = false;
 	private int changeTime = 1;
@@ -64,37 +64,27 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			changeTime = manager.getQuestChangeTime();
 
 			if (launched.isEmpty()) {
-				showed = null;
-				if (sb == null) {
-					if (!manager.hideEmtptyScoreboard()) initScoreboard();
-					return;
-				}else if (manager.hideEmtptyScoreboard()) {
-					sb.destroy();
-					sb = null;
-					for (Line line : lines) line.reset();
+				shown = null;
+				if (manager.hideEmtptyScoreboard()) {
+					if (board != null) deleteBoard();
 					return;
 				}
 			}
-			if (sb == null) initScoreboard();
+			if (board == null) initScoreboard();
 
-			int lastID = launched.indexOf(showed);
-			int id = lastID + 1;
-			if (id >= launched.size() || lastID == -1) id = 0;
-			if (lastID != id) {
-				showed = launched.get(id);
-				refreshQuestsLines();
+			if (!launched.isEmpty()) {
+				int lastID = launched.indexOf(shown);
+				int id = lastID + 1;
+				if (id >= launched.size() || lastID == -1) id = 0;
+				if (lastID != id) {
+					shown = launched.get(id);
+					refreshQuestsLines(false);
+				}
 			}
 		}
-		if (sb == null) return;
+		if (board == null) return;
 
-		for (Line line : lines) {
-			try {
-				if (line.tryRefresh()) line.refreshLines();
-			}catch (Exception ex) {
-				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + lines.indexOf(line));
-				ex.printStackTrace();
-			}
-		}
+		updateBoard(false, true);
 	}
 	
 	@EventHandler
@@ -122,9 +112,9 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onQuestLaunch(QuestLaunchEvent e){
 		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
-			launched.add(launched.indexOf(showed) + 1, e.getQuest());
-			showed = e.getQuest();
-			refreshQuestsLines();
+			launched.add(launched.indexOf(shown) + 1, e.getQuest());
+			shown = e.getQuest();
+			refreshQuestsLines(true);
 		}
 	}
 	
@@ -132,198 +122,162 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		int id = launched.indexOf(quest);
 		if (id == -1) return;
 		launched.remove(quest);
-		if (quest == showed){
+		if (quest == shown) {
 			if (!launched.isEmpty()) {
-				showed = launched.get(id >= launched.size() ? 0 : id);
-			}else showed = null;
-			refreshQuestsLines();
+				shown = launched.get(id >= launched.size() ? 0 : id);
+			}else shown = null;
+			refreshQuestsLines(true);
 		}
 	}
 	
 	public void hide(){
 		hid = true;
-		if (sb != null){
-			sb.destroy();
-			sb = null;
+		if (board != null) {
+			deleteBoard();
 		}
 	}
 	
 	public void show(){
 		hid = false;
-		if (sb == null) initScoreboard();
+		if (board == null) {
+			initScoreboard();
+			updateBoard(true, false);
+		}
+	}
+	
+	private void deleteBoard() {
+		board.delete();
+		board = null;
+		for (Line line : lines) line.reset();
 	}
 	
 	public void setShownQuest(Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
-		showed = quest;
-		refreshQuestsLines();
+		shown = quest;
+		refreshQuestsLines(true);
 	}
 
-	public void refreshQuestsLines(){
+	public void refreshQuestsLines(boolean updateBoard) {
 		if (!manager.refreshLines()) return;
-		if (sb == null || launched.isEmpty()) {
+		for (Line line : lines) {
+			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.willRefresh = true;
+		}
+		if (board == null || launched.isEmpty()) {
 			changeTime = 1;
 			run();
 		}else {
-			for (Line line : lines){
-				if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.refreshLines();
+			if (updateBoard) updateBoard(false, false);
+		}
+	}
+	
+	private void updateBoard(boolean update, boolean time) {
+		List<String> linesStrings = new ArrayList<>(lines.size());
+		for (int i = 0; i < lines.size(); i++) {
+			Line line = lines.get(i);
+			try {
+				if (line.tryRefresh(time) && !update) update = true;
+				linesStrings.addAll(line.lines);
+			}catch (Exception ex) {
+				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i);
+				ex.printStackTrace();
+				linesStrings.add("§c§lline error");
 			}
 		}
+		if (update) board.updateLines(linesStrings);
 	}
 	
 	public void setCustomLine(int id, String value){
 		if (lines.size() <= id){
 			Line line = new Line(new ScoreboardLine(value));
 			line.createdLine = true;
-			line.setLines(lines.isEmpty() ? 0 : lines.getLast().lastLineIndex() + 1);
 			lines.add(line);
 		}else {
 			Line line = lines.get(id);
 			line.customValue = value;
-			line.refreshLines();
+			line.willRefresh = true;
 		}
+		updateBoard(true, false);
 	}
 	
 	public boolean resetLine(int id){
 		if (lines.size() <= id) return false;
 		Line line = lines.get(id);
 		if (line.createdLine){
-			line.removeLines();
 			lines.remove(id);
 		}else {
 			line.customValue = null;
-			line.refreshLines();
+			line.willRefresh = true;
 		}
+		updateBoard(true, false);
 		return true;
 	}
 	
 	public boolean removeLine(int id){
 		if (lines.size() <= id) return false;
-		Line line = lines.get(id);
-		line.removeLines();
 		lines.remove(id);
+		updateBoard(true, false);
 		return true;
 	}
 	
 	public synchronized void cancel() throws IllegalStateException {
 		super.cancel();
 		HandlerList.unregisterAll(this);
-		if (sb != null) sb.destroy();
+		if (board != null) deleteBoard();
 	}
 	
 	public void initScoreboard(){
-		sb = new ScoreboardSigns(p, Lang.SCOREBOARD_NAME.toString());
-		sb.create();
-		for (int i = 0; i < lines.size(); i++) {
-			Line line = lines.get(i);
-			line.setLines(i == 0 ? 0 : lines.get(i - 1).lastLineIndex() + 1);
-		}
+		board = new FastBoard(p);
+		board.updateTitle(Lang.SCOREBOARD_NAME.toString());
 	}
 
 	class Line{
 		ScoreboardLine param;
-		int timeLeft = 1;
-		int lastAmount = 0;
-		List<VirtualTeam> teams = new ArrayList<>();
+		int timeLeft = 0;
 		
 		String customValue = null;
 		boolean createdLine = false;
 		
-		Line(ScoreboardLine param){
+		boolean willRefresh = false;
+		String lastValue = null;
+		List<String> lines;
+		
+		private Line(ScoreboardLine param) {
 			this.param = param;
-			timeLeft = param.refresh;
 		}
 		
-		/**
-		 * Refresh all lines, based on the first index of the previous lines
-		 */
-		public void refreshLines(){
-			setLines(firstLineIndex());
-		}
-		
-		/**
-		 * How it works:
-		 * <ol>
-		 * <li> If there is no custom value, the default text will be used
-		 * <li> If there is quests placeholders (<code>{questName}</code> or <code>{questDescription}</code>) they will be replaced by the appropriated value
-		 * <li> All other placeholders are replaced
-		 * <li> The final value is split into lines, depending of its length
-		 * <li> If there is less lines than the previous time, theses lines are removed
-		 * <li> If there is more lines than the previous time, all lines up are moved forward
-		 * <li> Finally, the lines are set in the scoreboard
-		 * </ol>
-		 * @param firstLine Scoreboard line where the first line will be placed
-		 */
-		public void setLines(int firstLine){
-			String text = getValue();
-			if (text.contains("{questName}")){
-				text = showed == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", showed.getName());
-			}
-			if (text.contains("{questDescription}")){
-				text = showed == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", showed.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD));
-			}
-			text = Utils.finalFormat(p, text, true);
-			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);
-			if (lastAmount > ls.size()){
-				int toRemove = lastAmount - ls.size();
-				for (int i = 0; i < toRemove; i++){
-					sb.removeLine(sb.getTeamLine(teams.get(0)));
-					teams.remove(0);
+		private boolean tryRefresh(boolean time) {
+			if (!willRefresh && lines != null && param.getRefreshTime() == 0) return false;
+			if (timeLeft == 0 || willRefresh) {
+				willRefresh = false;
+				timeLeft = param.getRefreshTime();
+				String text = getValue();
+				if (text.contains("{questName}")) {
+					text = shown == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", shown.getName());
 				}
-			}else if (lastAmount < ls.size()){
-				sb.moveLines(firstLine + lastAmount, ls.size() - lastAmount);
-			}
-			lastAmount = ls.size();
-			for (int i = 0; i < ls.size(); i++){
-				String lineText = ls.get(i);
-				if (lineText.length() > 48) lineText = lineText.substring(0, 48);
-				setTeam(i, sb.setLine(firstLine + i, lineText));
-			}
-		}
-		
-		public void removeLines(){
-			int index = firstLineIndex();
-			for (int i = 0; i < teams.size(); i++){
-				sb.removeLine(index);
-				teams.remove(0);
-			}
-		}
-		
-		private boolean tryRefresh(){
-			if (param.refresh == 0) return false;
-			if (timeLeft == 0){
-				timeLeft = param.refresh;
+				if (text.contains("{questDescription}")) {
+					text = shown == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", shown.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD));
+				}
+				text = Utils.finalFormat(p, text, true);
+				if (text.equals(lastValue)) return false;
+				
+				lines = Utils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength());
+				
+				lastValue = text;
 				return true;
 			}
-			timeLeft--;
+			if (time) timeLeft--;
 			return false;
 		}
 		
-		private void setTeam(int index, VirtualTeam team){
-			if (teams.size() <= index){
-				teams.add(team); // theorically useless (space should be made before with sb.moveLines)
-			}else {
-				teams.set(index, team);
-			}
-		}
-		
-		void reset(){
-			teams.clear();
-			lastAmount = 0;
-			timeLeft = param.refresh;
-		}
-		
-		public int firstLineIndex(){
-			return sb.getTeamLine(teams.get(0));
-		}
-		
-		public int lastLineIndex(){
-			return sb.getTeamLine(teams.get(teams.size() - 1));
+		private void reset() {
+			timeLeft = 0;
+			lines = null;
+			lastValue = null;
 		}
 		
 		public String getValue(){
-			return customValue == null ? param.value : customValue;
+			return customValue == null ? param.getValue() : customValue;
 		}
 		
 	}

@@ -6,13 +6,13 @@ import org.apache.commons.lang.Validate;
 
 public class ScoreboardLine {
 
-	String value;
-	int refresh = 0;
-	int length = 0;
+	private String value;
+	private int refresh = 0;
+	private int length = 0;
 	
 	public ScoreboardLine(String value){
 		Validate.notNull(value);
-		this.value = value.replaceAll("&", "§");
+		this.value = value.replace("&", "§");
 	}
 	
 	public String getValue(){

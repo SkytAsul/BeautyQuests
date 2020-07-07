@@ -66,7 +66,7 @@ public class PlaceholderAPI {
 							}
 							return "§c§lError";
 						}
-						split.put(p, Utils.splitOnSpace(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
+						split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
 						return "§6" + qu.getName();
 						
 						/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);

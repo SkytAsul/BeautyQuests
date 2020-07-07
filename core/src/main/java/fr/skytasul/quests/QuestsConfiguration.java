@@ -251,7 +251,7 @@ public class QuestsConfiguration {
 	}
 
 	public static boolean showScoreboards(){
-		return scoreboard && NMS.isValid();
+		return scoreboard;
 	}
 
 	public static XMaterial getItemMaterial(){

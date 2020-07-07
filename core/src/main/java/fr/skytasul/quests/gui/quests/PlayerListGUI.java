@@ -97,7 +97,7 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					List<String> desc = Utils.splitOnSpace(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
+					List<String> desc = Utils.wordWrap(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45);
 					if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
 						desc.add(null);
 						desc.add(Lang.cancelLore.toString());
