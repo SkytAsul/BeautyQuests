@@ -5,6 +5,7 @@ import static fr.skytasul.quests.gui.ItemUtils.item;
 import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -51,6 +52,7 @@ public class SelectBlockGUI implements CustomInventory{
 	public void updateItems(){
 		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
 		inv.setItem(3, item(type, Lang.materialName.format(type.name())));
+		if (inv.getItem(3) == null || inv.getItem(3).getType() == Material.AIR) inv.setItem(3, item(XMaterial.STONE, Lang.materialName.format(type.name())));
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {

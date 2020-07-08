@@ -45,7 +45,7 @@ public class PlayersManagerDB extends PlayersManager {
 		this.db = db;
 	}
 
-	public PlayerAccount retrievePlayerAccount(Player p) {
+	public synchronized PlayerAccount retrievePlayerAccount(Player p) {
 		try {
 			String uuid = p.getUniqueId().toString();
 			PreparedStatement statement = getAccounts.getStatement();
@@ -60,6 +60,7 @@ public class PlayersManagerDB extends PlayersManager {
 					return account;
 				}
 			}
+			result.close();
 
 			AbstractAccount absacc = super.createAbstractAccount(p);
 			statement = insertAccount.getStatement();
@@ -77,7 +78,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return null;
 	}
 
-	private void retrievePlayerDatas(PlayerAccount acc) {
+	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
 		try {
 			PreparedStatement statement = getQuestsData.getStatement();
 			statement.setInt(1, acc.index);
@@ -102,7 +103,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return new PlayerQuestDatasDB(acc, quest.getID());
 	}
 
-	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {
+	public synchronized void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {
 		try {
 			for (Entry<BukkitTask, Object> entry : ((PlayerQuestDatasDB) datas).cachedDatas.values()) {
 				entry.getKey().cancel();
@@ -116,7 +117,7 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 	}
 
-	public int removeQuestDatas(Quest quest) {
+	public synchronized int removeQuestDatas(Quest quest) {
 		int amount = 0;
 		try {
 			PreparedStatement statement = removeExistingQuestDatas.getStatement();
@@ -128,12 +129,14 @@ public class PlayersManagerDB extends PlayersManager {
 		return amount;
 	}
 
-	public boolean hasAccounts(Player p) {
+	public synchronized boolean hasAccounts(Player p) {
 		try {
 			PreparedStatement statement = getAccounts.getStatement();
 			statement.setString(1, p.getUniqueId().toString());
 			ResultSet result = statement.executeQuery();
-			return result.last();
+			boolean has = result.last();
+			result.close();
+			return has;
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -192,9 +195,10 @@ public class PlayersManagerDB extends PlayersManager {
 				" `stage_4_datas` longtext DEFAULT NULL," +
 				" PRIMARY KEY (`id`)" +
 				")");
+		statement.close();
 	}
 
-	public static String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
+	public static synchronized String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
 		ResultSet result = db.getConnection().getMetaData().getTables(null, null, "%", null);
 		while (result.next()) {
 			String tableName = result.getString(3);

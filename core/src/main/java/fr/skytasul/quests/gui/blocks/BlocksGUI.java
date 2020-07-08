@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -57,7 +58,7 @@ public class BlocksGUI implements CustomInventory {
 		SelectBlockGUI sm = Inventories.create(p, new SelectBlockGUI());
 		sm.run = (type, amount) -> {
 			Inventories.put(p, openLastInv(p), inv);
-			inv.setItem(slot, createItem(type, amount));
+			setItem(inv, slot, type, type.name(), amount);
 			blocks.put(slot, new AbstractMap.SimpleEntry<>(type, amount));
 		};
 		return true;
@@ -68,14 +69,16 @@ public class BlocksGUI implements CustomInventory {
 			int id = entry.getKey();
 			Entry<XMaterial, Integer> blockEntry = entry.getValue();
 			blocks.put(id, blockEntry);
-			inv.setItem(id, createItem(blockEntry.getKey(), blockEntry.getValue()));
+			setItem(inv, id, blockEntry.getKey(), blockEntry.getKey().name(), blockEntry.getValue());
 		}
 	}
 
-	public static ItemStack createItem(XMaterial type, int amount) {
-		if (type == null) return null;
-		ItemStack is = item(type, Lang.materialName.format(type.name()), Lang.Amount.format(amount));
-		return is;
+	public static void setItem(Inventory inv, int slot, XMaterial type, String name, int amount) {
+		if (type == null) return;
+		ItemStack is = item(type, Lang.materialName.format(name), Lang.Amount.format(amount));
+		inv.setItem(slot, is);
+		is = inv.getItem(slot);
+		if (is == null || is.getType() == Material.AIR) setItem(inv, slot, XMaterial.STONE, name, amount);
 	}
 
 }
