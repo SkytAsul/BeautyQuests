@@ -284,7 +284,6 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	private void finish(Player p){
-		System.out.println(stagesEdited);
 		if (finish == null){
 			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
 		}else {
