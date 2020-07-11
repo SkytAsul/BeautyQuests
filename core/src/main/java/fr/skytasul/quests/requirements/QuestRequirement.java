@@ -32,9 +32,7 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	public void sendReason(Player p){
-		if (exists() && QuestsAPI.getQuestsAssigneds(quest.getStarter()).size() == 1){
-			Lang.REQUIREMENT_QUEST.send(p, cached.getName());
-		}
+		if (exists()) Lang.REQUIREMENT_QUEST.send(p, cached.getName());
 	}
 
 	private boolean exists(){

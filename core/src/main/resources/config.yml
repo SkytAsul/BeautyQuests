@@ -60,6 +60,8 @@ pageItem: ARROW
 startParticleDistance: 20
 # Number of seconds before the plugin checks every requirements for the player to show the starting particle
 requirementUpdateTime: 1
+# When there is several quests on the same NPC, will the server send the reason to the player if it does not match a requirement
+requirementReasonOnMultipleQuests: true
 
 # - Integrations -
 # Enable GPS integration

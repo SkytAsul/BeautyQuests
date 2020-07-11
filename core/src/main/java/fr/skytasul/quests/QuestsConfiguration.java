@@ -67,6 +67,7 @@ public class QuestsConfiguration {
 	private static boolean descXOne = true;
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
+	private static boolean requirementReasonOnMultipleQuests = true;
 
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
@@ -113,6 +114,7 @@ public class QuestsConfiguration {
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
+		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 		itemNameColor = config.getString("itemNameColor");
 		itemAmountColor = config.getString("itemAmountColor");
 		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
@@ -264,6 +266,10 @@ public class QuestsConfiguration {
 	
 	public static int getRequirementUpdateTime() {
 		return requirementUpdateTime;
+	}
+	
+	public static boolean isRequirementReasonSentOnMultipleQuests() {
+		return requirementReasonOnMultipleQuests;
 	}
 
 	public static int getStartParticleDistance() {

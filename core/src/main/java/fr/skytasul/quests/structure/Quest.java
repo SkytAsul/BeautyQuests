@@ -333,6 +333,7 @@ public class Quest implements Comparable<Quest> {
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !bypassLimit) {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}
+		sendMessage = sendMessage && (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1);
 		for (AbstractRequirement ar : requirements){
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);
