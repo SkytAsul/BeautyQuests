@@ -12,7 +12,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Utils;
+import net.md_5.bungee.api.ChatColor;
 
 public class Dynmap {
 
@@ -53,7 +53,7 @@ public class Dynmap {
 		}
 		Location lc = quest.getStarter().getStoredLocation();
 		
-		Marker marker = markers.createMarker("qu_" + quest.getID(), Utils.removeColors(quest.getName()), lc.getWorld().getName(), lc.getX(), lc.getBlockY(), lc.getBlockZ(), icon, false);
+		Marker marker = markers.createMarker("qu_" + quest.getID(), ChatColor.stripColor(quest.getName()), lc.getWorld().getName(), lc.getX(), lc.getBlockY(), lc.getBlockZ(), icon, false);
 		
 		if (marker == null) {
 			BeautyQuests.logger.severe("Problem when creating marker for quest " + quest.getID());

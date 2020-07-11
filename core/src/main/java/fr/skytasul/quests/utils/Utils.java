@@ -308,14 +308,6 @@ public class Utils{
 		if (obj instanceof String) return Double.parseDouble((String) obj);
 		return 0;
 	}
-
-	public static String removeColors(String str){
-		int i;
-		while ((i = str.indexOf("§")) != -1){
-			str = str.substring(0, i) + str.substring(i + 2);
-		}
-		return str;
-	}
 	
 	/**
 	 * Breaks a raw string up into a series of lines. Words are wrapped using

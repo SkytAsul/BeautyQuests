@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
@@ -18,6 +19,8 @@ public class Mob<Data> implements Cloneable {
 	protected final Data data;
 
 	public Mob(MobFactory<Data> factory, Data data) {
+		Validate.notNull(factory, "Mob factory cannot be null");
+		Validate.notNull(data, "Mob data cannot be null");
 		this.factory = factory;
 		this.data = data;
 	}
