@@ -151,64 +151,55 @@
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/dynmap.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.massivecraft</groupId>
 			<artifactId>factions</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/Factions.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.massivecraft</groupId>
 			<artifactId>massivecore</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/MassiveCore.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.live.bemmamin</groupId>
 			<artifactId>gps</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/GPS.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gamingmesh</groupId>
 			<artifactId>jobs</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/Jobs.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gmail.mrphpfan</groupId>
 			<artifactId>mccombatlevel</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/McCombatLevel.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gmail.nossr50</groupId>
 			<artifactId>mcmmo</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/mcMMO.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.suxy</groupId>
 			<artifactId>skillapi</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/SkillAPI.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.suxy</groupId>
 			<artifactId>boss</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/BossAPI.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
