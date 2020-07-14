@@ -159,7 +159,6 @@ public class BeautyQuests extends JavaPlugin{
 				Map<String, Map<String, Integer>> map = new HashMap<>();
 				String version = getDescription().getVersion();
 				Map<String, Integer> entry = new HashMap<>();
-				entry.put(version, 1);
 				String[] split = version.split("_");
 				if (split.length == 1) {
 					entry.put("Release", 1);

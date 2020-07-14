@@ -16,7 +16,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<build.number>unknown</build.number>
-		<spigot-latest-nms>1.16.1-R0.1-20200626.224745-9</spigot-latest-nms>
 	</properties>
 
 	<repositories>
