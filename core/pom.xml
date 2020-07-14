@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.17.2</version>
+		<version>0.17.3</version>
 	</parent>
 
 	<build>
@@ -79,7 +79,7 @@
 		</repository>
 		<repository>
 			<id>lumine</id>
-			<url>http://mvn.lumine.io/repository/maven-snapshots</url>
+			<url>http://mvn.lumine.io/repository/maven-releases</url>
 		</repository>
 	</repositories>
 
@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>io.lumine.xikage</groupId>
 			<artifactId>MythicMobs</artifactId>
-			<version>4.9.1-SNAPSHOT</version>
+			<version>4.9.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

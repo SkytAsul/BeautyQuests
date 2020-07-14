@@ -91,7 +91,7 @@ public class StageCraft extends AbstractStage {
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", --amount);
+					updateObjective(acc, p, "amount", amount -= recipeAmount);
 				}
 			}
 		}
