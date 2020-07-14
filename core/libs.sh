@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$#" -ne 2 ]; then
     echo -e "\e[91mRequired syntax: ./libs.sh <maven binary path> <jars directory>"
@@ -7,6 +7,7 @@ fi
 
 mavenPath=$1
 jarsPath=$2
+
 echo -e "\e[93mInstalling BeautyQuests dependencies jars from \"$jarsPath\" to the local repository...\e[39m"
 
 $mavenPath install:install-file -Dfile=$jarsPath/dynmap.jar -DgroupId=org.dynmap -DartifactId=dynmap -Dversion=1.0 -Dpackaging=jar
