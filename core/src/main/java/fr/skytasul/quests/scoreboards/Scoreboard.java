@@ -130,6 +130,10 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		}
 	}
 	
+	public Quest getShownQuest() {
+		return shown;
+	}
+	
 	public void hide(){
 		hid = true;
 		if (board != null) {

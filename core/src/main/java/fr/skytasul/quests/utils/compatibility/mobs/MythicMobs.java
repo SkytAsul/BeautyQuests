@@ -19,6 +19,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
 
 public class MythicMobs implements MobFactory<MythicMob> {
 
@@ -53,7 +54,9 @@ public class MythicMobs implements MobFactory<MythicMob> {
 
 	public String getName(MythicMob data) {
 		try {
-			return data.getDisplayName().get();
+			PlaceholderString displayName = data.getDisplayName();
+			if (displayName == null) return data.getInternalName();
+			return displayName.get();
 		}catch (NoSuchMethodError e) {
 			return "§cOutdated MythicMobs";
 		}

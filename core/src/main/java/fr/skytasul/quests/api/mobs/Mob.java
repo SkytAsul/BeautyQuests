@@ -37,10 +37,6 @@ public class Mob<Data> implements Cloneable {
 		lore.add(Lang.click.toString());
 		return ItemUtils.item(XMaterial.mobItem(factory.getEntityType(data)), getName(), lore.toArray(new String[0]));
 	}
-
-	public boolean isNull() {
-		return data == null;
-	}
 	
 	public boolean applies(Object data) {
 		return this.data.equals(data);
