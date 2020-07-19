@@ -24,7 +24,7 @@ import fr.skytasul.quests.utils.Utils;
 
 /**
  * <h1> Do not forget to create the <i>deserialize</i> method:</h1>
- * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
+ * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, QuestBranch branch)</code>
  * @author SkytAsul
  */
 public abstract class AbstractStage implements Listener{
@@ -193,7 +193,7 @@ public abstract class AbstractStage implements Listener{
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		branch.getBranchesManager().objectiveUpdated(p);
+		if (p != null) branch.getBranchesManager().objectiveUpdated(p);
 	}
 
 	protected <T> T getData(PlayerAccount acc, String dataKey) {

@@ -9,10 +9,12 @@ import org.bukkit.event.Listener;
 
 import fr.skytasul.accounts.Account;
 import fr.skytasul.accounts.AccountService;
-import fr.skytasul.accounts.AccountUseEvent;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
+import fr.skytasul.accounts.events.AccountLeaveEvent;
+import fr.skytasul.accounts.events.AccountUseEvent;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.accounts.HookedAccount;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 
 public class Accounts implements Listener {
 
@@ -39,6 +41,11 @@ public class Accounts implements Listener {
 	@EventHandler
 	public void onAccountUse(AccountUseEvent e) {
 		Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer()), e.isAccountCreated()));
+	}
+
+	@EventHandler
+	public void onAccountLeave(AccountLeaveEvent e) {
+		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer())));
 	}
 	
 }

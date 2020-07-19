@@ -21,8 +21,9 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
@@ -116,7 +117,11 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+		Player player = e.getPlayer();
+		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(player);
+		if (!QuestsConfiguration.hookAccounts()) {
+			Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(player, PlayersManager.getPlayerAccount(player)));
+		}
 	}
 
 	@EventHandler

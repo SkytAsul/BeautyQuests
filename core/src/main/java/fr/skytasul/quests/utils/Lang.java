@@ -155,6 +155,8 @@ public enum Lang{
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
 	
+	GAME_TICKS("msg.editor.typeGameTicks"),
+	
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
 
 	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
@@ -251,6 +253,7 @@ public enum Lang{
 	stageCraft("inv.create.craft"),
 	stageBucket("inv.create.bucket"),
 	stageLocation("inv.create.location"),
+	stagePlayTime("inv.create.playTime"),
 	stageText("inv.create.NPCText"),
 	stageHide("inv.create.hideClues"),
 	editMobs("inv.create.editMobsKill"),
@@ -272,6 +275,7 @@ public enum Lang{
 	editLocation("inv.create.editLocation"),
 	editRadius("inv.create.editRadius"),
 	currentRadius("inv.create.currentRadius"), // 0: radius
+	changeTicksRequired("inv.create.changeTicksRequired"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -428,6 +432,7 @@ public enum Lang{
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
+	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTime"), // 0: ticks
 	
 	/* Indications */
 	
@@ -454,6 +459,7 @@ public enum Lang{
 	Craft("misc.stageType.Craft"),
 	Bucket("misc.stageType.Bucket"),
 	Location("misc.stageType.location"),
+	PlayTime("misc.stageType.playTime"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),

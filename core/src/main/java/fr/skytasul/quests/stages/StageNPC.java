@@ -27,7 +27,7 @@ import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;

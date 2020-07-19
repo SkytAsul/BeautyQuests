@@ -151,6 +151,7 @@ msg:
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
+    typeGameTicks: '§aWrite the required game ticks:'
     already: §cYou are already in the editor.
     enter:
       title: §6~ Editor Mode ~
@@ -262,6 +263,7 @@ inv:
     craft: §aCraft item
     bucket: §aFill buckets
     location: §aGo to location
+    playTime: §ePlay time
     NPCText: §eEdit dialog
     hideClues: Hide particles and holograms
     editMobsKill: §eEdit mobs to kill
@@ -283,6 +285,7 @@ inv:
     editLocation: §eEdit location
     editRadius: §eEdit distance from location
     currentRadius: '§eCurrent distance: §6{0}'
+    changeTicksRequired: '§eChange played ticks required'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -459,6 +462,7 @@ scoreboard:
     craft: §eCraft §6{0}
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
+    playTime: §ePlay §6{0} game ticks
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -482,6 +486,7 @@ misc:
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+    playTime: Play time
   comparison:
     equals: equal to {0}
     different: different to {0}

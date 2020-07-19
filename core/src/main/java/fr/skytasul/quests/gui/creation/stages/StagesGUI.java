@@ -34,6 +34,7 @@ import fr.skytasul.quests.stages.StageLocation;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
+import fr.skytasul.quests.stages.StagePlayTime;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -354,6 +355,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
+	private static final ItemStack stagePlayTime = ItemUtils.item(XMaterial.CLOCK, Lang.stagePlayTime.toString());
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
@@ -369,5 +371,6 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, new StageCraft.Creator());
 		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, new StageBucket.Creator());
 		QuestsAPI.registerStage(new StageType("LOCATION", StageLocation.class, Lang.Location.name()), stageLocation, new StageLocation.Creator());
+		QuestsAPI.registerStage(new StageType("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name()), stagePlayTime, new StagePlayTime.Creator());
 	}
 }

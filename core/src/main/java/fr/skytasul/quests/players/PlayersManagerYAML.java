@@ -79,10 +79,16 @@ public class PlayersManagerYAML extends PlayersManager {
 		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experience some lags.");
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
-			PlayerAccount acc = loadFromFile(entry.getKey());
-			if (acc == null) {
-				acc = createPlayerAccount(entry.getValue(), entry.getKey());
-				addAccount(acc);
+			try {
+				PlayerAccount acc = loadFromFile(entry.getKey());
+				if (acc == null) {
+					acc = createPlayerAccount(entry.getValue(), entry.getKey());
+					addAccount(acc);
+				}
+			}catch (Exception ex) {
+				BeautyQuests.getInstance().getLogger().severe("An error occured when loading player account " + entry.getKey());
+				ex.printStackTrace();
+				continue;
 			}
 		}
 		BeautyQuests.getInstance().getLogger().info("Total loaded accounts: " + loadedAccounts.size());
