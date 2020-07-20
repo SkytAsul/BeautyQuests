@@ -76,10 +76,9 @@ public class Quest implements Comparable<Quest> {
 	List<Player> launcheable = new ArrayList<>();
 	private List<Player> particles = new ArrayList<>();
 	
-	public Quest(String name, NPC npc, int id){
+	public Quest(String name, int id) {
 		this.name = name;
 		this.manager = new BranchesManager(this);
-		this.npcStarter = npc;
 		this.id = id;
 		if (id >= BeautyQuests.lastID) BeautyQuests.lastID = id;
 		this.file = new File(BeautyQuests.saveFolder, id + ".yml");
@@ -124,7 +123,7 @@ public class Quest implements Comparable<Quest> {
 	}
 
 	public String getDescription() {
-		return customDescription != null ? customDescription : Lang.TALK_NPC.format(npcStarter.getName());
+		return customDescription != null ? customDescription : npcStarter == null ? null : Lang.TALK_NPC.format(npcStarter.getName());
 	}
 
 	public String getCustomConfirmMessage(){
@@ -208,6 +207,10 @@ public class Quest implements Comparable<Quest> {
 		return npcStarter;
 	}
 	
+	public void setStarter(NPC npcStarter) {
+		this.npcStarter = npcStarter;
+	}
+
 	public void setRepeatable(boolean multiple){
 		this.repeatable = multiple;
 	}
@@ -333,7 +336,7 @@ public class Quest implements Comparable<Quest> {
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !bypassLimit) {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}
-		sendMessage = sendMessage && (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1);
+		sendMessage = sendMessage && (npcStarter == null || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1));
 		for (AbstractRequirement ar : requirements){
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);
@@ -456,7 +459,7 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public String toString(){
-		return "Quest{id=" + id + ",npcID=" + npcStarter.getId() + ",branches=" + manager.toString() + ",name=" + name + "}";
+		return "Quest{id=" + id + ", npcID=" + (npcStarter == null ? "not set" : npcStarter.getId()) + ", branches=" + manager.toString() + ", name=" + name + "}";
 	}
 	
 
@@ -473,8 +476,8 @@ public class Quest implements Comparable<Quest> {
 		section.set("name", name);
 		section.set("id", id);
 		section.set("manager", manager.serialize());
-		section.set("starterID", npcStarter.getId());
 		section.set("scoreboard", scoreboard);
+		if (npcStarter != null) section.set("starterID", npcStarter.getId());
 		if (repeatable) section.set("repeatable", repeatable);
 		if (!cancellable) section.set("cancellable", cancellable);
 		if (hologramText != null) section.set("hologramText", hologramText);
@@ -511,18 +514,20 @@ public class Quest implements Comparable<Quest> {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;
 		}
-		NPC npc = CitizensAPI.getNPCRegistry().getById((int) map.get("starterID"));
-		if (npc == null){
-			BeautyQuests.getInstance().getLogger().severe("The NPC " + map.get("starterID") + " no longer exists. Quest " + map.get("id") + " cannot be loaded.");
-			return null;
+		
+		Quest qu = new Quest((String) map.get("name"), (int) map.get("id"));
+		
+		if (map.containsKey("starterID")) {
+			NPC npc = CitizensAPI.getNPCRegistry().getById((int) map.get("starterID"));
+			if (npc == null) {
+				BeautyQuests.getInstance().getLogger().severe("The NPC " + map.get("starterID") + " no longer exists. Quest " + map.get("id") + " cannot be loaded.");
+				return null;
+			}
 		}
-		Quest qu = new Quest((String) map.get("name"), npc, (int) map.get("id"));
 		
 		qu.manager = BranchesManager.deserialize((Map<String, Object>) map.get("manager"), qu);
-		if (qu.manager == null) {
-			//qu.unloadAll();
-			return null;
-		}
+		if (qu.manager == null) return null;
+		
 		if (map.containsKey("repeatable")) qu.repeatable = (boolean) map.get("repeatable");
 		if (map.containsKey("cancellable")) qu.cancellable = (boolean) map.get("cancellable");
 		if (map.containsKey("hid")) qu.hid = (boolean) map.get("hid");

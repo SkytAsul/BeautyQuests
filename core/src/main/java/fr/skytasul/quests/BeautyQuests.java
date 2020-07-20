@@ -530,18 +530,22 @@ public class BeautyQuests extends JavaPlugin{
 	
 	public void removeQuest(Quest quest){
 		quests.remove(quest);
-		NPCStarter starter = npcs.get(quest.getStarter());
-		starter.removeQuest(quest);
+		if (quest.getStarter() != null) {
+			NPCStarter starter = npcs.get(quest.getStarter());
+			starter.removeQuest(quest);
+		}
 	}
 
 	public void addQuest(Quest quest){
 		quests.add(quest);
-		NPCStarter starter = null;
-		if (!npcs.containsKey(quest.getStarter())) {
-			starter = new NPCStarter(quest.getStarter());
-			npcs.put(quest.getStarter(), starter);
-		}else starter = npcs.get(quest.getStarter());
-		starter.addQuest(quest);
+		if (quest.getStarter() != null) {
+			NPCStarter starter = null;
+			if (!npcs.containsKey(quest.getStarter())) {
+				starter = new NPCStarter(quest.getStarter());
+				npcs.put(quest.getStarter(), starter);
+			}else starter = npcs.get(quest.getStarter());
+			starter.addQuest(quest);
+		}
 		quest.create();
 	}
 

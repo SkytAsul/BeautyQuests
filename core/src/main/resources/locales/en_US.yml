@@ -320,9 +320,7 @@ inv:
     selectStarterNPC: §e§lSelect NPC starter
     createQuest:
       itemName: §lCreate quest
-      itemLore: |-
-        One NPC must be selected and
-        a quest name needs to be defined.
+      itemLore: You must define a name for the quest.
     editQuest:
       itemName: §lEdit quest
     endMessage: §eEdit end message

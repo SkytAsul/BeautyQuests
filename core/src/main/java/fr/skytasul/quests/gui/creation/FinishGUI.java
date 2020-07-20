@@ -382,7 +382,7 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(32, item);
 			item = inv.getItem(32); // get the NMS copy
 		}
-		if (name != null && startNPC != null && item.getType() != Material.GOLD_INGOT) {
+		if (name != null && item.getType() != Material.GOLD_INGOT) {
 			item.setType(Material.GOLD_INGOT);
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
 		}else if (item.getType() != Material.NETHER_BRICK) {
@@ -395,10 +395,11 @@ public class FinishGUI implements CustomInventory{
 		Quest qu;
 		if (editing){
 			edited.remove(false);
-			qu = new Quest(name, startNPC, edited.getID());
+			qu = new Quest(name, edited.getID());
 		}else {
-			qu = new Quest(name, startNPC, ++BeautyQuests.lastID);
+			qu = new Quest(name, ++BeautyQuests.lastID);
 		}
+		qu.setStarter(startNPC);
 		qu.setRepeatable(isRepeatable);
 		qu.setScoreboardEnabled(hasScoreboard);
 		qu.setHid(isHid);
@@ -482,7 +483,7 @@ public class FinishGUI implements CustomInventory{
 		rewardsStart = edited.getStartRewards();
 		ItemUtils.lore(inv.getItem(14), Lang.rewards.format(rewardsStart.size()));
 		startNPC = edited.getStarter();
-		ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
+		if (startNPC != null) ItemUtils.lore(inv.getItem(7), startNPC.getFullName());
 		hologramText = edited.getCustomHologramText();
 		confirmMessage = edited.getCustomConfirmMessage();
 		if (confirmMessage != null) ItemUtils.lore(inv.getItem(22), confirmMessage);
