@@ -41,8 +41,12 @@ public class Commands {
 		Inventories.create(cmd.player, new StagesGUI(null));
 	}
 	
-	@Cmd(permission = "edit", player = true, noEditorInventory = true)
+	@Cmd (permission = "edit", args = "QUESTSID", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
+		if (cmd.args.length >= 1) {
+			Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) cmd.args[0]);
+			return;
+		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, (obj) -> {
 			if (obj == null) return;

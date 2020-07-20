@@ -523,6 +523,7 @@ public class Quest implements Comparable<Quest> {
 				BeautyQuests.getInstance().getLogger().severe("The NPC " + map.get("starterID") + " no longer exists. Quest " + map.get("id") + " cannot be loaded.");
 				return null;
 			}
+			qu.setStarter(npc);
 		}
 		
 		qu.manager = BranchesManager.deserialize((Map<String, Object>) map.get("manager"), qu);

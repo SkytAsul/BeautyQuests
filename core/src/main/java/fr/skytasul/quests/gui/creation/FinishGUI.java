@@ -382,9 +382,11 @@ public class FinishGUI implements CustomInventory{
 			inv.setItem(32, item);
 			item = inv.getItem(32); // get the NMS copy
 		}
-		if (name != null && item.getType() != Material.GOLD_INGOT) {
-			item.setType(Material.GOLD_INGOT);
-			ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
+		if (name != null) {
+			if (item.getType() != Material.GOLD_INGOT) {
+				item.setType(Material.GOLD_INGOT);
+				ItemUtils.name(item, ItemUtils.getName(item).replace("§5", "§6"));
+			}
 		}else if (item.getType() != Material.NETHER_BRICK) {
 			item.setType(XMaterial.NETHER_BRICK.parseMaterial());
 			ItemUtils.name(item, ItemUtils.getName(item).replace("§6", "§5"));
