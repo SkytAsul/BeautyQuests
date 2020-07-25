@@ -10,6 +10,7 @@ import org.dynmap.markers.MarkerSet;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -46,12 +47,12 @@ public class Dynmap {
 	
 	public static void addMarker(Quest quest){
 		if (markers == null) return;
-		if (quest.getStarter() == null) return;
-		if (quest.isHid()) {
+		if (!quest.hasOption(OptionStarterNPC.class)) return;
+		if (quest.isHidden()) {
 			DebugUtils.logMessage("No marker created for quest " + quest.getID() + " : quest is hid");
 			return;
 		}
-		Location lc = quest.getStarter().getStoredLocation();
+		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getStoredLocation();
 		
 		Marker marker = markers.createMarker("qu_" + quest.getID(), ChatColor.stripColor(quest.getName()), lc.getWorld().getName(), lc.getX(), lc.getBlockY(), lc.getBlockZ(), icon, false);
 		
@@ -62,7 +63,7 @@ public class Dynmap {
 	
 	public static void removeMarker(Quest quest){
 		if (markers == null) return;
-		if (quest.isHid()) return;
+		if (quest.isHidden()) return;
 		Marker marker = markers.findMarker("qu_" + quest.getID());
 		if (marker == null) {
 			BeautyQuests.logger.warning("Unable to find marker for quest " + quest.getID());

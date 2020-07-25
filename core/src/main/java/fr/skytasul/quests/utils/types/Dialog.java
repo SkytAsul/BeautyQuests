@@ -22,7 +22,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Dialog{
+public class Dialog implements Cloneable {
 
 	private NPC npc;
 	public NumberedList<Message> messages;
@@ -116,6 +116,15 @@ public class Dialog{
 	
 	public void insert(String msg, Sender sender, int id){
 		messages.insert(id, new Message(msg, sender));
+	}
+	
+	@Override
+	public Dialog clone() {
+		Dialog clone = new Dialog(npc);
+		for (Message msg : messages) {
+			clone.messages.add(msg.clone());
+		}
+		return clone;
 	}
 	
 	public Map<String, Object> serialize(){

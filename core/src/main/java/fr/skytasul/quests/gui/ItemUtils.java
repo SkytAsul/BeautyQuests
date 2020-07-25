@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemUtils {
@@ -65,11 +66,12 @@ public class ItemUtils {
 		if (lore != null && lore.length != 0){
 			for (String s : lore){
 				if (s == null) {
+					if (lore.length == 1) break;
 					ls.add("§a");
 					continue;
 				}
 				List<String> lss = new ArrayList<>();
-				for (String as : s.split("(\\n|\n)")) {
+				for (String as : Utils.wordWrap(s, 30)) {
 					lss.add(as);
 				}
 				String last = "";

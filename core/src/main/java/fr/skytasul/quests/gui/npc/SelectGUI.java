@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,10 +37,10 @@ public class SelectGUI implements CustomInventory{
 	}
 	
 	public Inventory open(Player p){
-		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_SELECT.toString());
+		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_SELECT.toString());
 		
-		inv.setItem(6, createNPC.clone());
-		inv.setItem(7, selectNPC.clone());
+		inv.setItem(1, createNPC.clone());
+		inv.setItem(3, selectNPC.clone());
 		
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -48,7 +49,7 @@ public class SelectGUI implements CustomInventory{
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 
-		case 6:
+		case 1:
 			NPCGUI tmp = (NPCGUI) Inventories.create(p, new NPCGUI());
 			tmp.run = (obj) -> {
 				if (obj == null){
@@ -57,7 +58,7 @@ public class SelectGUI implements CustomInventory{
 			};
 			break;
 
-		case 7:
+		case 3:
 			Editor.enterOrLeave(p, new SelectNPC(p, (obj) -> {
 				if (obj == null){
 					p.openInventory(inv);

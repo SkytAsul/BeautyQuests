@@ -21,6 +21,9 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.options.OptionHologramLaunch;
+import fr.skytasul.quests.options.OptionHologramLaunchNo;
+import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
@@ -139,9 +142,9 @@ public class NPCStarter {
 	public void addQuest(Quest quest) {
 		if (quests.contains(quest)) return;
 		quests.add(quest);
-		if (hologramText.enabled && quest.getCustomHologramText() != null) hologramText.setText(quest.getCustomHologramText());
-		if (hologramLaunch.enabled && quest.getCustomHologramLaunch() != null) hologramLaunch.item = quest.getCustomHologramLaunch();
-		if (hologramLaunchNo.enabled && quest.getCustomHologramLaunchNo() != null) hologramLaunchNo.item = quest.getCustomHologramLaunchNo();
+		if (hologramText.enabled && quest.hasOption(OptionHologramText.class)) hologramText.setText(quest.getOption(OptionHologramText.class).getValue());
+		if (hologramLaunch.enabled && quest.hasOption(OptionHologramLaunch.class)) hologramLaunch.item = quest.getOption(OptionHologramLaunch.class).getValue();
+		if (hologramLaunchNo.enabled && quest.hasOption(OptionHologramLaunchNo.class)) hologramLaunchNo.item = quest.getOption(OptionHologramLaunchNo.class).getValue();
 	}
 	
 	public boolean removeQuest(Quest quest) {

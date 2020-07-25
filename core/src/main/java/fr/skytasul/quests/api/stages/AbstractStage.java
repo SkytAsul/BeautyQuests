@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.BranchesManager;
@@ -142,8 +143,8 @@ public abstract class AbstractStage implements Listener{
 			Player p = acc.getPlayer();
 			if (startMessage != null){
 				if (startMessage.length() > 0){
-					if (branch.getID(this) == 0 && branch.getQuest().getStarter() != null) {
-						Lang.NpcText.sendWP(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
+					if (branch.getID(this) == 0 && branch.getQuest().hasOption(OptionStarterNPC.class)) {
+						Lang.NpcText.sendWP(p, branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1);
 					}else {
 						Utils.sendOffMessage(p, startMessage);
 					}

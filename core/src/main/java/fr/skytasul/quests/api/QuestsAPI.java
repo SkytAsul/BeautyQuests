@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -67,12 +69,22 @@ public class QuestsAPI {
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
+	/**
+	 * Register new mob factory
+	 * @param factory MobFactory instance
+	 */
 	public static void registerMobFactory(MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
 		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
 		DebugUtils.logMessage("Mob factory registered (id: " + factory.getID() + ")");
 	}
 	
+	public static void registerQuestOption(QuestOptionCreator<?, ?> creator) {
+		Validate.notNull(creator);
+		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass), "This quest option was already registered");
+		QuestOptionCreator.creators.put(creator.optionClass, creator);
+		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
+	}
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){
 		return getQuestsStarteds(acc, false);
@@ -115,7 +127,7 @@ public class QuestsAPI {
 	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide){
 		List<Quest> finished = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (hide && qu.isHid()) continue;
+			if (hide && qu.isHidden()) continue;
 			if (!qu.hasFinished(acc) && !qu.hasStarted(acc)) finished.add(qu);
 		}
 		return finished;

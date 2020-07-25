@@ -31,10 +31,12 @@ import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -249,6 +251,7 @@ public class BeautyQuests extends JavaPlugin{
 				StagesGUI.initialize(); // 			initializing default stage types
 				RequirementsGUI.initialize(); //	initializing default requirements
 				RewardsGUI.initialize(); //			initializing default rewards
+				FinishGUI.initialize(); //				initializing default quest options
 				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
 				QuestsAPI.registerMobFactory(new CitizensFactory());
 			}
@@ -530,20 +533,21 @@ public class BeautyQuests extends JavaPlugin{
 	
 	public void removeQuest(Quest quest){
 		quests.remove(quest);
-		if (quest.getStarter() != null) {
-			NPCStarter starter = npcs.get(quest.getStarter());
+		if (quest.hasOption(OptionStarterNPC.class)) {
+			NPCStarter starter = npcs.get(quest.getOptionValueOrDef(OptionStarterNPC.class));
 			starter.removeQuest(quest);
 		}
 	}
 
 	public void addQuest(Quest quest){
 		quests.add(quest);
-		if (quest.getStarter() != null) {
+		if (quest.hasOption(OptionStarterNPC.class)) {
+			NPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
 			NPCStarter starter = null;
-			if (!npcs.containsKey(quest.getStarter())) {
-				starter = new NPCStarter(quest.getStarter());
-				npcs.put(quest.getStarter(), starter);
-			}else starter = npcs.get(quest.getStarter());
+			if (!npcs.containsKey(npc)) {
+				starter = new NPCStarter(npc);
+				npcs.put(npc, starter);
+			}else starter = npcs.get(npc);
 			starter.addQuest(quest);
 		}
 		quest.create();

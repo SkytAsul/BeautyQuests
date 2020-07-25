@@ -276,7 +276,7 @@ public class StageNPC extends AbstractStage{
 		}
 
 		public static void setEdit(StageNPC stage, LineData datas) {
-			if (stage.getDialog() != null) datas.put("npcText", new Dialog(stage.getDialog().getNPC(), stage.getDialog().messages.clone()));
+			if (stage.getDialog() != null) datas.put("npcText", stage.getDialog().clone());
 			if (stage.isHid()) datas.put("hide", true);
 			npcDone(stage.getNPC(), datas);
 		}

@@ -18,6 +18,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
+import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -37,6 +38,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	}
 
 	private XMaterial type;
+	private int amount = 1;
 	private String name;
 	private List<String> lore = new ArrayList<>();
 	private boolean quest = false;
@@ -48,7 +50,8 @@ public class ItemCreatorGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
 
 		inv.setItem(0, ItemUtils.item(XMaterial.ARROW, Lang.itemType.toString()));
-		inv.setItem(1, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
+		inv.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
+		inv.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
 		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
 		inv.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
 		inv.setItem(6, ItemUtils.item(QuestsConfiguration.getItemMaterial(), Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
@@ -72,7 +75,6 @@ public class ItemCreatorGUI implements CustomInventory {
 		}
 	}
 
-
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 		case 0:
@@ -84,6 +86,15 @@ public class ItemCreatorGUI implements CustomInventory {
 			break;
 
 		case 1:
+			Lang.CHOOSE_ITEM_AMOUNT.send(p);
+			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				amount = (int) obj;
+				ItemUtils.name(current, Lang.Amount.format(amount));
+				reopen();
+			}, new NumberParser(Integer.class, true, true)));
+			break;
+		
+		case 2:
 			flags = ItemUtils.toggle(current);
 			refresh();
 			break;
@@ -141,6 +152,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		if (name != null) im.setDisplayName(name);
 		if (flags) im.addItemFlags(ItemFlag.values());
 		is.setItemMeta(im);
+		is.setAmount(amount);
 
 		if (lore != null) ItemUtils.lore(is, lore.toArray(new String[0]));
 

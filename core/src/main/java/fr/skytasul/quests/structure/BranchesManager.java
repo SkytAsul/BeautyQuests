@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -119,10 +120,10 @@ public class BranchesManager{
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 	
-	public static BranchesManager deserialize(Map<String, Object> map, Quest qu){
+	public static BranchesManager deserialize(ConfigurationSection config, Quest qu) {
 		BranchesManager bm = new BranchesManager(qu);
 		
-		List<Map<String, Object>> branches = (List<Map<String, Object>>) map.get("branches");
+		List<Map<?, ?>> branches = config.getMapList("branches");
 		branches.sort((x, y) -> {
 			int xid = (int) x.get("order");
 			int yid = (int) y.get("order");
@@ -135,7 +136,7 @@ public class BranchesManager{
 
 		for (int i = 0; i < branches.size(); i++) {
 			try{
-				if (!bm.getBranch(i).load(branches.get(i))){
+				if (!bm.getBranch(i).load((Map<String, Object>) branches.get(i))) {
 					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
@@ -148,16 +149,16 @@ public class BranchesManager{
 			}
 		}
 		
-		if (!map.containsKey("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
+		if (!config.contains("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
 		new BukkitRunnable() {
 			public void run(){
 				PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-				((Map<String, Object>) map.get("playersAdvancement")).forEach((accId, advancement) -> {
+				config.getConfigurationSection("playersAdvancement").getValues(false).forEach((accId, advancement) -> {
 					try{
 						PlayerAccount acc = managerYAML.getByIndex(accId);
 						if (acc == null) return;
 						
-						String adv = (String) advancement;
+						String adv = advancement.toString();
 						int separator = adv.indexOf('|');
 						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
 						if (branch == null){

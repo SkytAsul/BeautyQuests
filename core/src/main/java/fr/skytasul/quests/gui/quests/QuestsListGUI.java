@@ -31,7 +31,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	}
 
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.item(qu.getMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
+		return ItemUtils.item(qu.getQuestMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
 	}
 
 	public void click(Quest existing){

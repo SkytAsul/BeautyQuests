@@ -5,15 +5,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -24,11 +21,26 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.options.OptionBypassLimit;
+import fr.skytasul.quests.options.OptionCancellable;
+import fr.skytasul.quests.options.OptionConfirmMessage;
+import fr.skytasul.quests.options.OptionDescription;
+import fr.skytasul.quests.options.OptionEndMessage;
+import fr.skytasul.quests.options.OptionHide;
+import fr.skytasul.quests.options.OptionName;
+import fr.skytasul.quests.options.OptionQuestMaterial;
+import fr.skytasul.quests.options.OptionRepeatable;
+import fr.skytasul.quests.options.OptionScoreboardEnabled;
+import fr.skytasul.quests.options.OptionStartDialog;
+import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.options.OptionTimer;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -39,9 +51,6 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
-import fr.skytasul.quests.utils.types.Dialog;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 
 public class Quest implements Comparable<Quest> {
 	
@@ -49,35 +58,20 @@ public class Quest implements Comparable<Quest> {
 	private final File file;
 	private BranchesManager manager;
 	
-	private String name;
-	private String endMessage;
-	private String hologramText;
-	private String customDescription;
-	private String customConfirmMessage;
-	private NPC npcStarter;
-	private Dialog dialog;
+	private List<QuestOption<?>> options = new ArrayList<>();
+	
 	private List<AbstractRequirement> requirements = new ArrayList<>();
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractReward> startRewards = new ArrayList<>();
-	private boolean repeatable = false;
-	private boolean cancellable = true;
-	private boolean scoreboard = true;
-	private boolean hid = false;
-	private boolean bypassLimit = false;
-	private int timer = -1;
-	private ItemStack hologramLaunch;
-	private ItemStack hologramLaunchNo;
-	private XMaterial customMaterial;
 	
 	private boolean removed = false;
-	private boolean asyncEnd = false;
-	private List<Player> asyncStart = null;
+	public boolean asyncEnd = false;
+	public List<Player> asyncStart = null;
 	
 	List<Player> launcheable = new ArrayList<>();
 	private List<Player> particles = new ArrayList<>();
 	
-	public Quest(String name, int id) {
-		this.name = name;
+	public Quest(int id) {
 		this.manager = new BranchesManager(this);
 		this.id = id;
 		if (id >= BeautyQuests.lastID) BeautyQuests.lastID = id;
@@ -97,66 +91,82 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
+	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
+		for (QuestOption<?> option : options) {
+			if (clazz.isInstance(option)) return (D) option.getValue();
+		}
+		return (D) QuestOptionCreator.creators.get(clazz).defaultValue;
+	}
+	
+	public <T extends QuestOption<?>> T getOption(Class<T> clazz) {
+		for (QuestOption<?> option : options) {
+			if (clazz.isInstance(option)) return (T) option;
+		}
+		QuestOptionCreator<?, T> creator = (QuestOptionCreator<?, T>) QuestOptionCreator.creators.get(clazz);
+		if (creator == null) throw new IllegalArgumentException(clazz.getName() + " has not been registered as a quest option via the API.");
+		T option = creator.optionSupplier.get();
+		addOption(option);
+		return option;
+	}
+	
+	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {
+		for (QuestOption<?> option : options) {
+			if (clazz.isInstance(option)) return true;
+		}
+		return false;
+	}
+	
+	public void addOption(QuestOption<?> option) {
+		options.add(option);
+		option.attach(this);
+	}
+	
+	public boolean isRemoved(){
+		return removed;
+	}
+	
+	public int getID(){
+		return id;
+	}
+	
+	public File getFile(){
+		return file;
+	}
 	
 	public String getName(){
-		return name;
+		return getOptionValueOrDef(OptionName.class);
+	}
+	
+	public String getDescription() {
+		return getOptionValueOrDef(OptionDescription.class);
+	}
+	
+	public XMaterial getQuestMaterial() {
+		return getOptionValueOrDef(OptionQuestMaterial.class);
+	}
+	
+	public boolean isScoreboardEnabled() {
+		return getOptionValueOrDef(OptionScoreboardEnabled.class);
+	}
+	
+	public boolean isCancellable() {
+		return getOptionValueOrDef(OptionCancellable.class);
+	}
+	
+	public boolean isRepeatable() {
+		return getOptionValueOrDef(OptionRepeatable.class);
+	}
+	
+	public boolean isHidden() {
+		return getOptionValueOrDef(OptionHide.class);
+	}
+	
+	public boolean canBypassLimit() {
+		return getOptionValueOrDef(OptionBypassLimit.class);
 	}
 	
 	public BranchesManager getBranchesManager(){
 		return manager;
-	}
-	
-	public String getCustomHologramText(){
-		return hologramText;
-	}
-	
-	public void setHologramText(String hologramText) {
-		this.hologramText = hologramText;
-	}
-	
-	public String getCustomDescription() {
-		return customDescription;
-	}
-
-	public void setCustomDescription(String customDescription) {
-		this.customDescription = customDescription;
-	}
-
-	public String getDescription() {
-		return customDescription != null ? customDescription : npcStarter == null ? null : Lang.TALK_NPC.format(npcStarter.getName());
-	}
-
-	public String getCustomConfirmMessage(){
-		return customConfirmMessage;
-	}
-	
-	public void setCustomConfirmMessage(String message) {
-		this.customConfirmMessage = message;
-	}
-	
-	public XMaterial getCustomMaterial() {
-		return customMaterial;
-	}
-
-	public void setCustomMaterial(XMaterial material) {
-		this.customMaterial = material;
-	}
-
-	public XMaterial getMaterial() {
-		return customMaterial == null ? QuestsConfiguration.getItemMaterial() : customMaterial;
-	}
-
-	public int getRawTimer(){
-		return timer;
-	}
-	
-	public int getTimer() {
-		if (timer == -1) return QuestsConfiguration.getTimeBetween();
-		return timer;
-	}
-	
-	public void setTimer(int timer) {
-		this.timer = timer;
 	}
 	
 	public List<AbstractReward> getRewards() {
@@ -195,98 +205,6 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
-	public Dialog getStartDialog(){
-		return dialog;
-	}
-	
-	public void setStartDialog(Dialog dialog){
-		this.dialog = dialog;
-	}
-
-	public NPC getStarter() {
-		return npcStarter;
-	}
-	
-	public void setStarter(NPC npcStarter) {
-		this.npcStarter = npcStarter;
-	}
-
-	public void setRepeatable(boolean multiple){
-		this.repeatable = multiple;
-	}
-	
-	public boolean isRepeatable(){
-		return repeatable;
-	}
-	
-	public void setCancellable(boolean cancellable){
-		this.cancellable = cancellable;
-	}
-	
-	public boolean isCancellable(){
-		return cancellable;
-	}
-	
-	public boolean isRemoved(){
-		return removed;
-	}
-	
-	public boolean isScoreboardEnabled(){
-		return scoreboard;
-	}
-
-	public void setScoreboardEnabled(boolean enableScoreboard){
-		this.scoreboard = enableScoreboard;
-	}
-	
-	public boolean canBypassLimit(){
-		return bypassLimit;
-	}
-	
-	public void setBypassLimit(boolean bypassLimit){
-		this.bypassLimit = bypassLimit;
-	}
-
-	public boolean isHid(){
-		return hid;
-	}
-
-	public void setHid(boolean hid){
-		this.hid = hid;
-	}
-	
-	public void setEndMessage(String msg){
-		this.endMessage = msg;
-	}
-	
-	public String getEndMessage(){
-		return endMessage;
-	}
-	
-	public ItemStack getCustomHologramLaunch(){
-		return hologramLaunch == null ? QuestsConfiguration.getHoloLaunchItem() : hologramLaunch;
-	}
-	
-	public void setHologramLaunch(ItemStack hologram){
-		this.hologramLaunch = hologram;
-	}
-	
-	public ItemStack getCustomHologramLaunchNo(){
-		return hologramLaunchNo == null ? QuestsConfiguration.getHoloLaunchNoItem() : hologramLaunchNo;
-	}
-	
-	public void setHologramLaunchNo(ItemStack hologram){
-		this.hologramLaunchNo = hologram;
-	}
-	
-	public int getID(){
-		return id;
-	}
-	
-	public File getFile(){
-		return file;
-	}
-	
 	public int getTimeLeft(PlayerAccount acc){
 		return Math.max((int) Math.ceil((acc.getQuestDatas(this).getTimer() - System.currentTimeMillis()) / 60000D), 0);
 	}
@@ -315,7 +233,7 @@ public class Quest implements Comparable<Quest> {
 			cancelPlayer(acc);
 			c = true;
 		}
-		if (acc.isCurrent() && dialog == null ? false : dialog.remove(acc.getPlayer())) c = true;
+		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getValue().remove(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -325,7 +243,7 @@ public class Quest implements Comparable<Quest> {
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!repeatable && hasFinished(acc)) return false;
+		if (!getOption(OptionRepeatable.class).getValue() && hasFinished(acc)) return false;
 		if (!testTimer(p, acc, sendMessage)) return false;
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
@@ -333,10 +251,10 @@ public class Quest implements Comparable<Quest> {
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
-		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !bypassLimit) {
+		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !getOptionValueOrDef(OptionBypassLimit.class)) {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}
-		sendMessage = sendMessage && (npcStarter == null || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(npcStarter).size() == 1));
+		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(getOption(OptionStarterNPC.class).getValue()).size() == 1));
 		for (AbstractRequirement ar : requirements){
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);
@@ -347,7 +265,7 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public boolean testTimer(Player p, PlayerAccount acc, boolean sendMessage){
-		if (repeatable && acc.hasQuestDatas(this)) {
+		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()){
 				if (sendMessage) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
@@ -359,18 +277,18 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public boolean isInDialog(Player p) {
-		return dialog == null ? false : dialog.isInDialog(p);
+		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getValue().isInDialog(p);
 	}
 	
 	public void clickNPC(Player p){
-		if (dialog != null) {
-			dialog.send(p, () -> attemptStart(p));
+		if (hasOption(OptionStartDialog.class)) {
+			getOption(OptionStartDialog.class).getValue().send(p, () -> attemptStart(p));
 		}else attemptStart(p);
 	}
 
 	private void attemptStart(Player p) {
 		if (QuestsConfiguration.questConfirmGUI()) {
-			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(name), getCustomConfirmMessage()).create(p);
+			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), getOptionValueOrDef(OptionConfirmMessage.class)).create(p);
 		}else start(p);
 	}
 	
@@ -386,7 +304,7 @@ public class Quest implements Comparable<Quest> {
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
 		acc.getQuestDatas(this).setTimer(0);
-		Lang.STARTED_QUEST.send(p, name);
+		Lang.STARTED_QUEST.send(p, getName());
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
@@ -413,15 +331,16 @@ public class Quest implements Comparable<Quest> {
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
 				List<String> msg = Utils.giveRewards(p, rewards);
-				Utils.sendMessage(p, Lang.FINISHED_BASE.format(name) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
+				Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
 				
+				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
 				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
 				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
 				questDatas.setFinished(true);
-				if (repeatable){
+				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MINUTE, getTimer());
+					cal.add(Calendar.MINUTE, getOption(OptionTimer.class).getValue());
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation());
@@ -439,18 +358,15 @@ public class Quest implements Comparable<Quest> {
 		if (file.exists()) file.delete();
 		removed = true;
 		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this));
-		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + name + "\" has been removed");
+		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + getName() + "\" has been removed");
 	}
 	
 	public void unloadAll(){
 		manager.remove();
 		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
-		for (AbstractReward rew : rewards){
-			rew.unload();
-		}
-		for (AbstractRequirement req : requirements){
-			req.unload();
-		}
+		rewards.forEach(AbstractReward::unload);
+		requirements.forEach(AbstractRequirement::unload);
+		options.forEach(QuestOption::detach);
 	}
 
 	@Override
@@ -459,49 +375,38 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public String toString(){
-		return "Quest{id=" + id + ", npcID=" + (npcStarter == null ? "not set" : npcStarter.getId()) + ", branches=" + manager.toString() + ", name=" + name + "}";
+		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}
-	
 
 	public void saveToFile() throws Exception {
 		if (!file.exists()) file.createNewFile();
 		YamlConfiguration fc = new YamlConfiguration();
 		
+		BeautyQuests.savingFailure = false;
 		save(fc);
 		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
 		fc.save(file);
 	}
 	
 	private void save(ConfigurationSection section) throws Exception{
-		section.set("name", name);
+		for (QuestOption<?> option : options) {
+			try {
+				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
+			}catch (Exception ex) {
+				BeautyQuests.logger.warning("An exception occured when saving an option for quest " + id);
+				ex.printStackTrace();
+			}
+		}
+		
 		section.set("id", id);
 		section.set("manager", manager.serialize());
-		section.set("scoreboard", scoreboard);
-		if (npcStarter != null) section.set("starterID", npcStarter.getId());
-		if (repeatable) section.set("repeatable", repeatable);
-		if (!cancellable) section.set("cancellable", cancellable);
-		if (hologramText != null) section.set("hologramText", hologramText);
-		if (customConfirmMessage != null) section.set("confirmMessage", customConfirmMessage);
-		if (customDescription != null) section.set("customDescription", customDescription);
-		if (hid) section.set("hid", true);
-		if (endMessage != null) section.set("endMessage", endMessage);
-		if (dialog != null) section.set("startDialog", dialog.serialize());
-		if (bypassLimit) section.set("bypassLimit", bypassLimit);
-		if (timer > -1) section.set("timer", timer);
-		if (hologramLaunch != null) section.set("hologramLaunch", hologramLaunch.serialize());
-		if (hologramLaunchNo != null) section.set("hologramLaunchNo", hologramLaunchNo.serialize());
-		if (customMaterial != null) section.set("customMaterial", customMaterial.name());
-		
-		section.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
-		section.set("rewardsList", Utils.serializeList(rewards, AbstractReward::serialize));
-		section.set("startRewardsList", Utils.serializeList(startRewards, AbstractReward::serialize));
 	}
 	
 
 	public static Quest loadFromFile(File file){
 		try {
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-			return deserialize(config.isList("quest") ? (Map<String, Object>) config.getMapList("quest").get(0) : Utils.mapFromConfigurationSection(config));
+			return deserialize(config);
 		}catch (Exception e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
@@ -509,103 +414,51 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
-	private static Quest deserialize(Map<String, Object> map){
-		if (!map.containsKey("id")) {
+	private static Quest deserialize(ConfigurationSection map) {
+		if (!map.contains("id")) {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;
 		}
 		
-		Quest qu = new Quest((String) map.get("name"), (int) map.get("id"));
+		Quest qu = new Quest(map.getInt("id"));
 		
-		if (map.containsKey("starterID")) {
-			NPC npc = CitizensAPI.getNPCRegistry().getById((int) map.get("starterID"));
-			if (npc == null) {
-				BeautyQuests.getInstance().getLogger().severe("The NPC " + map.get("starterID") + " no longer exists. Quest " + map.get("id") + " cannot be loaded.");
-				return null;
-			}
-			qu.setStarter(npc);
-		}
-		
-		qu.manager = BranchesManager.deserialize((Map<String, Object>) map.get("manager"), qu);
+		qu.manager = BranchesManager.deserialize(map.getConfigurationSection("manager"), qu);
 		if (qu.manager == null) return null;
 		
-		if (map.containsKey("repeatable")) qu.repeatable = (boolean) map.get("repeatable");
-		if (map.containsKey("cancellable")) qu.cancellable = (boolean) map.get("cancellable");
-		if (map.containsKey("hid")) qu.hid = (boolean) map.get("hid");
-		if (map.containsKey("scoreboard")) qu.scoreboard = (boolean) map.get("scoreboard");
-		if (map.containsKey("endMessage")) qu.endMessage = (String) map.get("endMessage");
-		if (map.containsKey("startDialog")) qu.dialog = Dialog.deserialize((Map<String, Object>) map.get("startDialog"));
-		if (map.containsKey("hologramText")) qu.hologramText = (String) map.get("hologramText");
-		if (map.containsKey("customDescription")) qu.customDescription = (String) map.get("customDescription");
-		if (map.containsKey("confirmMessage")) qu.customConfirmMessage = (String) map.get("confirmMessage");
-		if (map.containsKey("bypassLimit")) qu.bypassLimit = (boolean) map.get("bypassLimit");
-		if (map.containsKey("hologramLaunch")) qu.hologramLaunch = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunch"));
-		if (map.containsKey("hologramLaunchNo")) qu.hologramLaunchNo = ItemStack.deserialize((Map<String, Object>) map.get("hologramLaunchNo"));
-		if (map.containsKey("timer")) qu.timer = (int) map.get("timer");
-		if (map.containsKey("customMaterial")) qu.customMaterial = XMaterial.valueOf((String) map.get("customMaterial"));
-		
-		if (map.containsKey("requirements")){
-			List<Map<String, Object>> rlist = (List<Map<String, Object>>) map.get("requirements");
-			for (Map<String, Object> rmap : rlist){
-				try {
-					qu.requirements.add(AbstractRequirement.deserialize(rmap, qu));
-				} catch (Throwable e) {
-					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + rmap.get("class") + ").");
-					BeautyQuests.loadingFailure = true;
-					e.printStackTrace();
-					continue;
-				}
-			}
-		}
-		if (map.containsKey("rewardsList")){
-			List<Map<String, Object>> rlist = (List<Map<String, Object>>) map.get("rewardsList");
-			for (Map<String, Object> rmap : rlist){
-				try {
-					AbstractReward rew = AbstractReward.deserialize(rmap, qu);
-					qu.rewards.add(rew);
-					if (rew.isAsync()) qu.asyncEnd = true;
-				} catch (Throwable e) {
-					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rmap.get("class") + ").");
-					BeautyQuests.loadingFailure = true;
-					e.printStackTrace();
-					continue;
-				}
-			}
-		}
-		if (map.containsKey("startRewardsList")){
-			List<Map<String, Object>> rlist = (List<Map<String, Object>>) map.get("startRewardsList");
-			for (Map<String, Object> rmap : rlist){
-				try {
-					AbstractReward rew = AbstractReward.deserialize(rmap, qu);
-					qu.startRewards.add(rew);
-					if (rew.isAsync() && qu.asyncStart != null) qu.asyncStart = new ArrayList<>();
-				} catch (Throwable e) {
-					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rmap.get("class") + ").");
-					BeautyQuests.loadingFailure = true;
-					e.printStackTrace();
-					continue;
+		for (String key : map.getKeys(false)) {
+			for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
+				if (creator.applies(key)) {
+					try {
+						QuestOption<?> option = creator.optionSupplier.get();
+						qu.addOption(option);
+						option.load(map, key);
+					}catch (Exception ex) {
+						BeautyQuests.logger.warning("An exception occured when loading the option " + key + " for quest " + qu.id);
+						BeautyQuests.loadingFailure = true;
+						ex.printStackTrace();
+					}
+					break;
 				}
 			}
 		}
 		
-		// migration from old player datas - TODO delete on 0.20
-		if (map.containsKey("finished")) {
+		// migration from old player datas - TODO delete on 0.19
+		if (map.contains("finished")) {
 			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
 			for (String id : (List<String>) map.get("finished")) {
 				managerYAML.getByIndex(id).getQuestDatas(qu).setFinished(true);
 			}
 		}
-		if (map.get("inTimer") != null) {
+		if (map.contains("inTimer")) {
 			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-			for (Entry<String, String> en : ((Map<String, String>) map.get("inTimer")).entrySet()) {
+			map.getConfigurationSection("inTimer").getValues(false).forEach((account, time) -> {
 				try {
-					PlayerAccount acc = managerYAML.getByIndex(en.getKey());
-					acc.getQuestDatas(qu).setTimer(Utils.getDateFormat().parse(en.getValue()).getTime());
+					PlayerAccount acc = managerYAML.getByIndex(account);
+					acc.getQuestDatas(qu).setTimer(Utils.getDateFormat().parse((String) time).getTime());
 				}catch (ParseException e) {
 					BeautyQuests.loadingFailure = true;
-					continue;
 				}
-			}
+			});
 		}
 
 		return qu;

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,6 +68,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private synchronized PlayerAccount createPlayerAccount(String identifier, int index) {
+		Validate.notNull(identifier, "Identifier cannot be null (index: " + index + ")");
 		AbstractAccount abs = super.createAccountFromIdentifier(identifier);
 		if (abs == null) {
 			BeautyQuests.logger.info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
@@ -181,7 +183,12 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private PlayerAccount loadFromConfig(int index, ConfigurationSection datas) {
-		PlayerAccount acc = createPlayerAccount((String) datas.get("identifier"), index);
+		String identifier = datas.getString("identifier");
+		if (identifier == null) {
+			BeautyQuests.logger.warning("No identifier found in file for index " + index + ".");
+			identifier = identifiersIndex.get(index);
+		}
+		PlayerAccount acc = createPlayerAccount(identifier, index);
 		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
 			PlayerQuestDatas questDatas = PlayerQuestDatas.deserialize(acc, (Map<String, Object>) questConfig);
 			acc.datas.put(questDatas.questID, questDatas);

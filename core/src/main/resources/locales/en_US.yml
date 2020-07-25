@@ -303,10 +303,8 @@ inv:
     customDescription: §eEdit quest description
     name: Last quest details
     multipleTime:
-      itemName: Toggle several-use
-      itemLore: |-
-        Can the quest be done
-        several times?
+      itemName: Toggle repeatable
+      itemLore: Can the quest be done several times?
     cancellable: Cancellable by player
     scoreboardItem: Enable scoreboard
     hideItem: Hide menu and dynmap
@@ -316,7 +314,6 @@ inv:
     setXPRewards: §eEdit reward experience
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
-    createStarterNPC: §e§lCreate NPC starter
     selectStarterNPC: §e§lSelect NPC starter
     createQuest:
       itemName: §lCreate quest
@@ -333,6 +330,7 @@ inv:
     rewards: '{0} reward(s)'
     customMaterial: '§eEdit quest item material'
     loreReset: '§e§lAll players'' advancement will be reset'
+    optionValue: '§8Value: §7{0}'
   itemsSelect:
     name: Edit items
     none: |-

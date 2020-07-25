@@ -183,6 +183,7 @@ public enum Lang{
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
+	CHOOSE_ITEM_AMOUNT("msg.editor.itemCreator.itemAmount"),
 	CHOOSE_ITEM_NAME("msg.editor.itemCreator.itemName"),
 	CHOOSE_ITEM_LORE("msg.editor.itemCreator.itemLore"),
 	UNKNOWN_ITEM_TYPE("msg.editor.itemCreator.unknownItemType"),
@@ -299,7 +300,6 @@ public enum Lang{
 	rewardXP("inv.details.setXPRewards"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
-	questStarterCreate("inv.details.createStarterNPC"),
 	questStarterSelect("inv.details.selectStarterNPC"),
 	create("inv.details.createQuest.itemName"),
 	createLore("inv.details.createQuest.itemLore"),
@@ -318,6 +318,7 @@ public enum Lang{
 	customDescription("inv.details.customDescription"),
 	customMaterial("inv.details.customMaterial"),
 	resetLore("inv.details.loreReset"),
+	optionValue("inv.details.optionValue"), // 0: value
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),

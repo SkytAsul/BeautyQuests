@@ -47,7 +47,7 @@ public class ItemGUI implements CustomInventory {
 	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
 		end.accept(cursor);
 		p.setItemOnCursor(null);
-		return true;
+		return false; // TODO test if item still dropped
 	}
 
 }
