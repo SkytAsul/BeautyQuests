@@ -26,7 +26,7 @@ public abstract class QuestOption<T> implements Cloneable {
 		this.creator = (QuestOptionCreator<T, QuestOption<T>>) QuestOptionCreator.creators.get(getClass());
 		if (creator == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a quest option via the API.");
 		
-		setValue(creator.defaultValue);
+		setValue(creator.defaultValue == null ? null : cloneValue(creator.defaultValue));
 	}
 	
 	public QuestOptionCreator<T, QuestOption<T>> getOptionCreator() {
@@ -74,12 +74,12 @@ public abstract class QuestOption<T> implements Cloneable {
 	
 	public abstract void load(ConfigurationSection config, String key);
 	
-	public abstract T cloneValue();
+	public abstract T cloneValue(T value);
 	
 	@Override
 	public QuestOption<T> clone() {
 		QuestOption<T> clone = creator.optionSupplier.get();
-		clone.setValue(getValue() == null ? null : cloneValue());
+		clone.setValue(value == null ? null : cloneValue(value));
 		return clone;
 	}
 	

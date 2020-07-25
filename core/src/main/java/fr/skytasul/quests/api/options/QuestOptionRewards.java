@@ -42,8 +42,8 @@ public abstract class QuestOptionRewards extends QuestOption<List<AbstractReward
 	}
 	
 	@Override
-	public List<AbstractReward> cloneValue() {
-		return new ArrayList<>(getValue());
+	public List<AbstractReward> cloneValue(List<AbstractReward> value) {
+		return new ArrayList<>(value);
 	}
 	
 	protected abstract void addedAsyncReward();
@@ -65,7 +65,7 @@ public abstract class QuestOptionRewards extends QuestOption<List<AbstractReward
 			setValue(rewards);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, getValue());
+		}, getValue()).create(p);
 	}
 	
 	public abstract XMaterial getItemMaterial();

@@ -41,8 +41,8 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 	}
 	
 	@Override
-	public List<AbstractRequirement> cloneValue() {
-		return new ArrayList<>(getValue());
+	public List<AbstractRequirement> cloneValue(List<AbstractRequirement> value) {
+		return new ArrayList<>(value);
 	}
 	
 	private String[] getLore() {
@@ -60,7 +60,7 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 			setValue(requirements);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, getValue());
+		}, getValue()).create(p);
 	}
 	
 }

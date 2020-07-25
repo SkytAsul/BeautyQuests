@@ -26,8 +26,8 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	}
 	
 	@Override
-	public String cloneValue() {
-		return getValue();
+	public String cloneValue(String value) {
+		return value;
 	}
 	
 	private String[] getLore() {

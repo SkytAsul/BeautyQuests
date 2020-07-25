@@ -25,8 +25,8 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 	}
 	
 	@Override
-	public XMaterial cloneValue() {
-		return getValue();
+	public XMaterial cloneValue(XMaterial value) {
+		return value;
 	}
 	
 	private String[] getLore() {

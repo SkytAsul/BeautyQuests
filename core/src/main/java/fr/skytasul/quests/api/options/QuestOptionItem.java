@@ -32,8 +32,8 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	}
 	
 	@Override
-	public ItemStack cloneValue() {
-		return getValue().clone();
+	public ItemStack cloneValue(ItemStack value) {
+		return value.clone();
 	}
 	
 	private String[] getLore() {

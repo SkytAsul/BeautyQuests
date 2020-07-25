@@ -32,8 +32,8 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	}
 	
 	@Override
-	public Dialog cloneValue() {
-		return getValue().clone();
+	public Dialog cloneValue(Dialog value) {
+		return value.clone();
 	}
 	
 	@Override

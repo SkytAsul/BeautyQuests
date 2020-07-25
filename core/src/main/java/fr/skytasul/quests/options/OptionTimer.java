@@ -30,8 +30,8 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 	
 	@Override
-	public Integer cloneValue() {
-		return getValue();
+	public Integer cloneValue(Integer value) {
+		return value;
 	}
 	
 	@Override

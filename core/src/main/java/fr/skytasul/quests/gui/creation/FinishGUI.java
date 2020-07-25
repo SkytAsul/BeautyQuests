@@ -194,7 +194,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		if (stagesEdited) PlayersManager.manager.removeQuestDatas(qu);
 		
 		for (QuestOption<?> option : this) {
-			qu.addOption(option);
+			if (option.hasCustomValue()) qu.addOption(option);
 		}
 
 		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());

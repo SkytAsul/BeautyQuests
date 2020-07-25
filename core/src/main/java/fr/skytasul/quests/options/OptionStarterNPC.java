@@ -26,8 +26,8 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 	}
 	
 	@Override
-	public NPC cloneValue() {
-		return getValue();
+	public NPC cloneValue(NPC value) {
+		return value;
 	}
 	
 	private String[] getLore() {

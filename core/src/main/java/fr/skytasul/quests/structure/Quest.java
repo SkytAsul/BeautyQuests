@@ -102,11 +102,7 @@ public class Quest implements Comparable<Quest> {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
 		}
-		QuestOptionCreator<?, T> creator = (QuestOptionCreator<?, T>) QuestOptionCreator.creators.get(clazz);
-		if (creator == null) throw new IllegalArgumentException(clazz.getName() + " has not been registered as a quest option via the API.");
-		T option = creator.optionSupplier.get();
-		addOption(option);
-		return option;
+		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
 	}
 	
 	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {

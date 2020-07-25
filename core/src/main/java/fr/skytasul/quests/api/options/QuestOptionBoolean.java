@@ -24,8 +24,8 @@ public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	}
 	
 	@Override
-	public Boolean cloneValue() {
-		return getValue();
+	public Boolean cloneValue(Boolean value) {
+		return value;
 	}
 	
 	public abstract String getName();
