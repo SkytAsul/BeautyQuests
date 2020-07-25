@@ -58,7 +58,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 			}
 		}
 		
-		return lore.toArray(String[]::new);
+		return lore.<String>toArray(String[]::new);
 	}
 	
 	@Override

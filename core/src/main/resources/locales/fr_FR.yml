@@ -131,6 +131,7 @@ msg:
     typeBucketAmount: '§aÉcrivez la quantité de seaux à remplir :'
     goToLocation: '§aAllez à l''emplacement souhaité pour l''étape.'
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
+    typeGameTicks: '§aEcrivez la quantité de ticks requis :'
     already: '§cVous êtes déjà dans un éditeur.'
     enter:
       title: '§6~ mode éditeur ~'
@@ -162,6 +163,7 @@ msg:
     selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
     itemCreator:
       itemType: '§aEntrez le nom du type d''item voulu :'
+      itemAmount: '§aÉcrivez le nombre d''item(s) :'
       itemName: '§aEntrez le nom de l''item :'
       itemLore: '§aModifiez la description de l''item. (Tapez "help" pour obtenir de l''aide.)'
       unknownItemType: '§cType d''item inconnu.'
@@ -235,6 +237,7 @@ inv:
     craft: '§aFabriquer un objet'
     bucket: '§aRemplir des seaux'
     location: '§aAller à un endroit'
+    playTime: '§eTemps de jeu'
     NPCText: '§eModifier le dialogue'
     hideClues: Cacher les particules et les hologrammes
     editMobsKill: '§eModifier les mobs à tuer'
@@ -256,6 +259,7 @@ inv:
     editLocation: '§eModifier l''endroit'
     editRadius: '§eModifier la distance à partir de l''endroit'
     currentRadius: '§eDistance actuelle : §6{0}'
+    changeTicksRequired: '§eChanger la quantité de ticks requis'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -268,44 +272,56 @@ inv:
     newBranch: '§eAller à la nouvelle branche'
   details:
     hologramLaunch: '§eModifier l''item de l''hologramme "lancement"'
+    hologramLaunchLore: Hologramme affiché au-dessus de la tête du NPC de démarrage lorsque le joueur peut commencer la quête.
     hologramLaunchNo: '§eModifier l''item de l''hologramme "lancement impossible"'
+    hologramLaunchNoLore: Hologramme affiché au-dessus de la tête du NPC de démarrage lorsque le joueur ne peut PAS démarrer la quête.
     customConfirmMessage: '§eModifier le message de confirmation de quête'
+    customConfirmMessageLore: Message affiché dans l'interface de confirmation lorsqu'un joueur est sur le point de commencer la quête.
     customDescription: '§eModifier la description de la quête'
+    customDescriptionLore: Description affichée sous le nom de la quête dans les interfaces graphiques.
     name: Derniers détails de la quête
     multipleTime:
-      itemName: Inverser la multi-utilisation
-      itemLore: |-
-        La quête peut-elle être
-        faite plusieurs fois ?
+      itemName: Activer/désactiver la répétition
+      itemLore: "La quête peut-elle être\nfaite plusieurs fois ?"
     cancellable: Annulable par le joueur
+    cancellableLore: Permet au joueur d'annuler la quête par l'intermédiaire de son menu de Quêtes.
     scoreboardItem: Activer le scoreboard
+    scoreboardItemLore: Si désactivée, la quête ne sera pas affichée dans le scoreboard.
     hideItem: Cacher la quête du menu et de la dynmap
+    hideItemLore: Si activé, la quête ne sera pas affichée sur la dynmap ni dans le menu de Quêtes.
     bypassLimit: Ne pas compter la limite de quêtes
+    bypassLimitLore: Si activé, la quête sera démarrée même si le joueur a atteint son nombre maximum de quêtes en cours.
     questName: '§a§lModifier le nom de la quête'
+    questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
-    createStarterNPC: '§e§lCréer le NPC de départ'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
-    createQuest:
-      itemName: '§lCréer la quête'
-      itemLore: |-
-        Il te faut :
-        - un NPC de sélectionné/créé
-        - avoir choisi un nom de quête
-    editQuest:
-      itemName: '§lModifier la quête'
+    selectStarterNPCLore: Cliquer sur le PNJ sélectionné commencera la quête.
+    createQuestName: '§lCréer la quête'
+    createQuestLore: Vous devez définir le nom de la quête.
+    editQuestName: '§lModifier la quête'
     endMessage: '§eModifier le message de fin'
+    endMessageLore: Message qui sera envoyé au joueur à la fin de la quête.
     startDialog: '§eModifier le dialogue de début'
+    startDialogLore: Dialogue qui sera joué avant le début de la quête lorsque les joueurs cliquent sur le NPC de démarrage.
     editRequirements: '§eModifier les nécessités'
+    editRequirementsLore: Toutes les conditions doivent s’appliquer au joueur avant de pouvoir commencer la quête.
     startRewards: '§6Récompenses de début'
+    startRewardsLore: Actions effectuées au démarrage de la quête.
     hologramText: '§eTexte de l''hologramme'
-    timer: '§bTemps avant de pouvoir refaire la quête'
+    hologramTextLore: Texte affiché sur l'hologramme au-dessus de la tête du NPC de démarrage.
+    timer: '§bTimer de redémarrage'
+    timerLore: Temps avant que le joueur puisse recommencer la quête.
     requirements: '{0} exigence(s)'
     rewards: '{0} récompense(s)'
+    rewardsLore: Actions effectuées à la fin de la quête.
     customMaterial: '§eModifiez l''item de la quête'
+    customMaterialLore: Item représentant cette quête dans le menu de Quêtes.
     loreReset: '§e§lL''avancement de tous les joueurs sera réinitialisé'
+    optionValue: '§8Valeur : §7{0}'
+    defaultValue: '§8(valeur par défaut)'
   itemsSelect:
     name: Modifier les items
     none: |-
@@ -433,6 +449,7 @@ scoreboard:
     craft: '§eFabriquez §6{0}'
     bucket: '§eRemplissez §6{0}'
     location: '§eAllez à §6{0}§e, §6{1}§e, §6{2}§e dans §6{3}'
+    playTime: '§eJouez §6{0} ticks de jeu'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -456,6 +473,7 @@ misc:
     Craft: Fabriquer un objet
     Bucket: Remplir un seau
     location: Trouver un endroit
+    playTime: Temps de jeu
   comparison:
     equals: égal à {0}
     different: différent de {0}

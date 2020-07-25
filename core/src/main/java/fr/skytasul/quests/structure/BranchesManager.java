@@ -125,8 +125,8 @@ public class BranchesManager{
 		
 		List<Map<?, ?>> branches = config.getMapList("branches");
 		branches.sort((x, y) -> {
-			int xid = (int) x.get("order");
-			int yid = (int) y.get("order");
+			int xid = (Integer) x.get("order");
+			int yid = (Integer) y.get("order");
 			if (xid < yid) return -1;
 			if (xid > yid) return 1;
 			BeautyQuests.logger.warning("Two branches with same order in quest " + qu.getID());
