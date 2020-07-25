@@ -31,7 +31,7 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.questStarterSelectLore.toString()), "", getValue() == null ? Lang.Unknown.toString() : "§7" + getValue().getName() + " §8(" + getValue().getId() + ")" };
+		return new String[] { formatDescription(Lang.questStarterSelectLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().getName() + " §8(" + getValue().getId() + ")" };
 	}
 	
 	@Override
