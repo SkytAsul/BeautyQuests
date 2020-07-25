@@ -23,4 +23,9 @@ public class OptionDescription extends QuestOptionString {
 		return Lang.customDescription.toString();
 	}
 	
+	@Override
+	public String getItemDescription() {
+		return Lang.customDescriptionLore.toString();
+	}
+	
 }

@@ -10,4 +10,9 @@ public class OptionBypassLimit extends QuestOptionBoolean {
 		return Lang.bypass.toString();
 	}
 	
+	@Override
+	public String getDescription() {
+		return Lang.bypassLore.toString();
+	}
+	
 }

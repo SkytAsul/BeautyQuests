@@ -45,7 +45,7 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 	
 	private String[] getLore() {
-		return new String[] { "§7" + getValue().toString() + " minutes" };
+		return new String[] { formatDescription(Lang.timerLore.toString()), "", formatValue(getValue() + " minutes") };
 	}
 	
 	@Override

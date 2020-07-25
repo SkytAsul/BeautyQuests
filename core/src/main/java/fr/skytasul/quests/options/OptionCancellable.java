@@ -17,4 +17,9 @@ public class OptionCancellable extends QuestOptionBoolean {
 		return Lang.cancellable.toString();
 	}
 	
+	@Override
+	public String getDescription() {
+		return Lang.cancellableLore.toString();
+	}
+	
 }

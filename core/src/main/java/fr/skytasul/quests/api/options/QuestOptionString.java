@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 public abstract class QuestOptionString extends QuestOption<String> {
@@ -32,14 +31,10 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	}
 	
 	private String[] getLore() {
-		if (getItemDescription() == null) {
-			if (getValue() == null) return null;
-			return new String[] { Lang.optionValue.format(getValue()) };
-		}else {
-			String description = formatDescription(getItemDescription());
-			if (getValue() == null) return new String[] { description };
-			return new String[] { description, "", Lang.optionValue.format(getValue()) };
-		}
+		if (getItemDescription() == null) return new String[] { formatValue(getValue()) };
+		
+		String description = formatDescription(getItemDescription());
+		return new String[] { description, "", formatValue(getValue()) };
 	}
 	
 	@Override

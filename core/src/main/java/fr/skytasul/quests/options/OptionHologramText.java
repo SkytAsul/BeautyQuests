@@ -11,6 +11,10 @@ import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class OptionHologramText extends QuestOptionString {
 	
+	public OptionHologramText() {
+		super(OptionStarterNPC.class);
+	}
+	
 	@Override
 	public void sendIndication(Player p) {
 		Lang.HOLOGRAM_TEXT.send(p);
@@ -27,8 +31,13 @@ public class OptionHologramText extends QuestOptionString {
 	}
 	
 	@Override
+	public String getItemDescription() {
+		return Lang.hologramTextLore.toString();
+	}
+	
+	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return !QuestsConfiguration.isTextHologramDisabled() && (DependenciesManager.holod || getValue() != null); // not shown if text hologram disabled, shown if set a custom value or if HD enabled
+		return !QuestsConfiguration.isTextHologramDisabled() && DependenciesManager.holod && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

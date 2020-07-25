@@ -8,6 +8,10 @@ import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class OptionHologramLaunchNo extends QuestOptionItem {
 	
+	public OptionHologramLaunchNo() {
+		super(OptionStarterNPC.class);
+	}
+	
 	@Override
 	public XMaterial getDefaultMaterial() {
 		return XMaterial.RED_STAINED_GLASS_PANE;
@@ -15,12 +19,17 @@ public class OptionHologramLaunchNo extends QuestOptionItem {
 	
 	@Override
 	public String getItemName() {
-		return Lang.hologramLaunch.toString();
+		return Lang.hologramLaunchNo.toString();
+	}
+	
+	@Override
+	public String getItemDescription() {
+		return Lang.hologramLaunchNoLore.toString();
 	}
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return DependenciesManager.holod || getValue() != null;
+		return DependenciesManager.holod && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

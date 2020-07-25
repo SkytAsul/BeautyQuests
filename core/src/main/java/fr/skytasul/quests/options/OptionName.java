@@ -23,4 +23,9 @@ public class OptionName extends QuestOptionString {
 		return Lang.questName.toString();
 	}
 	
+	@Override
+	public String getItemDescription() {
+		return Lang.questNameLore.toString();
+	}
+	
 }

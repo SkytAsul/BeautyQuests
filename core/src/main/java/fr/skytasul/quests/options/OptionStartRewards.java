@@ -23,4 +23,9 @@ public class OptionStartRewards extends QuestOptionRewards {
 		return Lang.startRewards.toString();
 	}
 	
+	@Override
+	public String getItemDescription() {
+		return Lang.startRewardsLore.toString();
+	}
+	
 }

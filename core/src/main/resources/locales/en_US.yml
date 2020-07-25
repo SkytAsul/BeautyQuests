@@ -189,6 +189,7 @@ msg:
     selectWantedBlock: §aClick with the stick on the wanted block for the stage.
     itemCreator:
       itemType: '§aWrite the name of the wanted item type:'
+      itemAmount: '§aWrite the amount of item(s):'
       itemName: '§aWrite the item name:'
       itemLore: '§aModify the item lore: (Write "help" for help.)'
       unknownItemType: §cUnknown item type.
@@ -298,39 +299,56 @@ inv:
     newBranch: §eGo to new branch
   details:
     hologramLaunch: §eEdit "launch" hologram item
+    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
     hologramLaunchNo: §eEdit "launch unavailable" hologram item
+    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
     customConfirmMessage: §eEdit quest confirmation message
+    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
     customDescription: §eEdit quest description
+    customDescriptionLore: Description shown below the name of the quest in GUIs.
     name: Last quest details
     multipleTime:
       itemName: Toggle repeatable
       itemLore: Can the quest be done several times?
     cancellable: Cancellable by player
+    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
     scoreboardItem: Enable scoreboard
+    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap
+    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     bypassLimit: Don't count quest limit
+    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: §a§lEdit quest name
+    questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
     setXPRewards: §eEdit reward experience
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     selectStarterNPC: §e§lSelect NPC starter
-    createQuest:
-      itemName: §lCreate quest
-      itemLore: You must define a name for the quest.
-    editQuest:
-      itemName: §lEdit quest
+    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    createQuestName: §lCreate quest
+    createQuestLore: You must define a quest name.
+    editQuestName: §lEdit quest
     endMessage: §eEdit end message
+    endMessageLore: Message which will be sent to the player at the end of the quest.
     startDialog: §eEdit start dialog
+    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: §eEdit requirements
+    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: §6Start rewards
+    startRewardsLore: Actions performed when the quest starts.
     hologramText: §eHologram text
-    timer: §bTime before you can restart the quest.
+    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
+    timer: §bRestart timer
+    timerLore: Time before the player can start the quest again.
     requirements: '{0} requirement(s)'
     rewards: '{0} reward(s)'
+    rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEdit quest item material'
+    customMaterialLore: Item representative of this quest in the Quests Menu.
     loreReset: '§e§lAll players'' advancement will be reset'
     optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value)'
   itemsSelect:
     name: Edit items
     none: |-

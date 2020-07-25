@@ -21,4 +21,9 @@ public class OptionEndRewards extends QuestOptionRewards {
 		return Lang.ending.toString();
 	}
 	
+	@Override
+	public String getItemDescription() {
+		return Lang.rewardsLore.toString();
+	}
+	
 }

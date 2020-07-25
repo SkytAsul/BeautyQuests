@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -35,7 +36,15 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	public void itemClick(Player p, Consumer<MythicMob> run) {
 		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, x -> x.getInternalName()) {
 			public ItemStack getItemStack(MythicMob object) {
-				return ItemUtils.item(XMaterial.mobItem(getEntityType(object)), object.getInternalName());
+				XMaterial mobItem;
+				try {
+					mobItem = XMaterial.mobItem(getEntityType(object));
+				}catch (Exception ex) {
+					mobItem = XMaterial.SPONGE;
+					BeautyQuests.logger.warning("Unknow entity type for MythicMob " + object.getInternalName());
+					ex.printStackTrace();
+				}
+				return ItemUtils.item(mobItem, object.getInternalName());
 			}
 
 			public void click(MythicMob existing) {

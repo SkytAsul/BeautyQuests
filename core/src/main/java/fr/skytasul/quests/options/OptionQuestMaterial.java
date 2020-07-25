@@ -29,9 +29,15 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 		return getValue();
 	}
 	
+	private String[] getLore() {
+		String description = formatDescription(Lang.customMaterialLore.toString());
+		if (!hasCustomValue()) return new String[] { description, "", Lang.defaultValue.toString() };
+		return new String[] { description };
+	}
+	
 	@Override
 	public ItemStack getItemStack() {
-		return ItemUtils.item(getValue(), Lang.customMaterial.toString());
+		return ItemUtils.item(getValue(), Lang.customMaterial.toString(), getLore());
 	}
 
 	@Override
@@ -40,10 +46,12 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 		new TextEditor(p, (obj) -> {
 			setValue((XMaterial) obj);
 			item.setType(getValue().parseMaterial());
+			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}, new MaterialParser(false), () -> gui.reopen(p), () -> {
 			resetValue();
 			item.setType(getValue().parseMaterial());
+			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}).enterOrLeave(p);
 	}

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.Lang;
 
 public abstract class QuestOption<T> implements Cloneable {
 	
@@ -89,6 +90,12 @@ public abstract class QuestOption<T> implements Cloneable {
 	public abstract ItemStack getItemStack();
 	
 	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot);
+	
+	public String formatValue(String valueString) {
+		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString).toString();
+		if (!hasCustomValue()) valueString += " " + Lang.defaultValue.toString();
+		return valueString;
+	}
 	
 	public static String formatDescription(String description) {
 		return description == null ? null : "§8> §7" + description;

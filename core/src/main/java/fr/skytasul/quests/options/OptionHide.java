@@ -10,4 +10,9 @@ public class OptionHide extends QuestOptionBoolean {
 		return Lang.hide.toString();
 	}
 	
+	@Override
+	public String getDescription() {
+		return Lang.hideLore.toString();
+	}
+	
 }

@@ -23,4 +23,9 @@ public class OptionEndMessage extends QuestOptionString {
 		return Lang.endMessage.toString();
 	}
 	
+	@Override
+	public String getItemDescription() {
+		return Lang.endMessageLore.toString();
+	}
+	
 }

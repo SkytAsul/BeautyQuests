@@ -139,14 +139,16 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					boolean enabled = getOption(OptionName.class).getValue() != null;
 					XMaterial type = enabled ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
 					String itemName = (enabled ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString() + (editing ? Lang.edit : Lang.create).toString();
+					String itemLore = QuestOption.formatDescription(Lang.createLore.toString()) + (enabled ? " §a✔" : " §c✖");
 					
 					ItemStack item = inv.getItem(slot);
 					
 					if (item == null) {
-						inv.setItem(slot, ItemUtils.item(type, itemName, QuestOption.formatDescription(Lang.createLore.toString())));
+						inv.setItem(slot, ItemUtils.item(type, itemName, itemLore));
 					}else if (!type.isSimilar(item)) {
 						type.setType(item);
 						ItemUtils.name(item, itemName);
+						ItemUtils.lore(item, itemLore);
 					}
 				}
 				

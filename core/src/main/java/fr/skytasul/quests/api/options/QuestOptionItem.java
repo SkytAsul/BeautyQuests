@@ -52,6 +52,10 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 				lore.add("Item lore:");
 				lore.addAll(Arrays.asList(itemLore));
 			}
+			if (!hasCustomValue()) {
+				lore.add("");
+				lore.add(Lang.defaultValue.toString());
+			}
 		}
 		
 		return lore.toArray(String[]::new);

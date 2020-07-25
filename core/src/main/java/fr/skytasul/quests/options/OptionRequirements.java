@@ -46,7 +46,7 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 	}
 	
 	private String[] getLore() {
-		return new String[] { "§7" + Lang.requirements.format(getValue().size()) };
+		return new String[] { formatDescription(Lang.editRequirementsLore.toString()), "", "§7" + Lang.requirements.format(getValue().size()) };
 	}
 	
 	@Override

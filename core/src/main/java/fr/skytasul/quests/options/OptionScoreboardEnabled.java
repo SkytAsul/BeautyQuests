@@ -10,4 +10,9 @@ public class OptionScoreboardEnabled extends QuestOptionBoolean {
 		return Lang.scoreboard.toString();
 	}
 	
+	@Override
+	public String getDescription() {
+		return Lang.scoreboardLore.toString();
+	}
+	
 }

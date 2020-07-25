@@ -36,7 +36,7 @@ public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	
 	@Override
 	public ItemStack getItemStack() {
-		return ItemUtils.itemSwitch(getName(), getValue(), getDescription() == null ? null : formatDescription(getDescription()));
+		return ItemUtils.itemSwitch(getName(), getValue(), formatDescription(getDescription()));
 	}
 	
 	@Override
