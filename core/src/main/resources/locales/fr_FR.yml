@@ -62,6 +62,7 @@ msg:
   errorOccurred: '§cUne erreur est survenue, prévenez un administrateur ! §4§lCode d''erreur : {0}'
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
+  invalidBlockData: '§cLa blockdata {0} est invalide ou incompatible avec le bloc {1}.'
   bringBackObjects: Rapporte-moi {0}.
   inventoryFull: '§cVotre inventaire est plein, l''item a été jeté au sol.'
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
@@ -126,8 +127,9 @@ msg:
       list: '§6/{0} list : §eVoir la liste des quêtes (seulement pour les versions supportées).'
   typeCancel: '§aTapez "cancel" pour revenir à l''ancien texte.'
   editor:
-    blocksToMineAmount: '§aÉcrivez le nombre de blocs à miner :'
-    blocksToMineName: '§aÉcrivez le nom du bloc à miner :'
+    blockAmount: '§aÉcrivez le nombre de blocs :'
+    blockName: '§aÉcrivez le nom du bloc :'
+    blockData: '§aÉcrivez la blockdata (blockdatas disponibles : {0}) :'
     typeBucketAmount: '§aÉcrivez la quantité de seaux à remplir :'
     goToLocation: '§aAllez à l''emplacement souhaité pour l''étape.'
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
@@ -231,6 +233,7 @@ inv:
     findRegion: '§aTrouver une région'
     killMobs: '§aTuer des mobs'
     mineBlocks: '§aCasser des blocs'
+    placeBlocks: '§aPoser des blocs'
     talkChat: '§aEcrire dans le chat'
     interact: '§aCliquez sur un bloc'
     fish: '§aPêcher'
@@ -244,6 +247,7 @@ inv:
     mobsKillFromAFar: Doit être tué de loin
     editBlocksMine: '§eModifier les blocs à casser'
     preventBlockPlace: Empêcher les joueurs de casser leurs propres blocs
+    editBlocksPlace: '§eModifier les blocs à poser'
     editMessageType: '§eModifier le message à écrire'
     cancelMessage: Annuler l'envoi
     ignoreCase: Ignorer la casse du message
@@ -415,6 +419,7 @@ inv:
   block:
     name: Choisir un bloc
     material: '§eType de bloc : {0}'
+    blockData: '§dBlockdata (avancé)'
   blocksList:
     name: Sélectionner des blocs
     addBlock: '§aCliquez pour ajouter un block.'
@@ -443,6 +448,7 @@ scoreboard:
     items: '§eRapporte des items à §6{0} §e:'
     mobs: '§eTue {0}'
     mine: '§eMine {0}'
+    placeBlocks: '§ePose {0}'
     chat: '§eEcrivez §6{0}'
     interact: '§eCliquez sur le bloc à §6{0}'
     fish: '§ePêchez §6{0}'
@@ -467,6 +473,7 @@ misc:
     items: Rapporter des items
     mobs: Tuer des mobs
     mine: Casser des blocs
+    placeBlocks: Poser des blocs
     chat: Parler dans le chat
     interact: Intéragir avec un bloc
     Fish: Pêcher

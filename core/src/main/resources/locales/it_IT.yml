@@ -62,6 +62,7 @@ msg:
   errorOccurred: '§cSi è verificato un errore, contatta un amministratore! §4§lCodice di errore: {0}'
   commandsDisabled: '§cAttualmente non sei autorizzato a eseguire comandi!'
   indexOutOfBounds: '§cIl numero {0} è fuori dai limiti! Deve essere compreso tra {1} e {2}.'
+  invalidBlockData: '§cThe blockdata {0} is invalid or incompatible with the block {1}.'
   bringBackObjects: Riportami {0}.
   inventoryFull: '§cIl tuo inventario è pieno, l''oggetto è stato droppato sul pavimento.'
   playerNeverConnected: '§cImpossibile trovare informazioni sul giocatore {0}.'
@@ -126,11 +127,13 @@ msg:
       list: '§6/{0} list: §eVisualizza la lista delle missioni. (Solo per versioni supportate.)'
   typeCancel: '§aScrivi "Annulla" per tornare all''ultimo testo.'
   editor:
-    blocksToMineAmount: '§aScrivi la quantità di blocchi da scavare:'
-    blocksToMineName: '§aScrivi il nome del blocco da scavare:'
+    blockAmount: '§aWrite the amount of blocks:'
+    blockName: '§aWrite the name of the block:'
+    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
     typeBucketAmount: '§aScrivi la quantità di secchi da riempire:'
     goToLocation: '§aVai alla posizione desiderata per la fase.'
     typeLocationRadius: '§aScrivi la distanza richiesta dalla posizione:'
+    typeGameTicks: '§aWrite the required game ticks:'
     already: '§cSei già nell''editor.'
     enter:
       title: '§6~ Modalità Editor ~'
@@ -162,6 +165,7 @@ msg:
     selectWantedBlock: '§aClicca con il bastone sul blocco desiderato per la fase.'
     itemCreator:
       itemType: '§aScrivi il nome del tipo di oggetto desiderato:'
+      itemAmount: '§aWrite the amount of item(s):'
       itemName: '§aScrivi il nome dell''oggetto:'
       itemLore: '§aModifica la lore dell''oggetto: (Scrivi "help" per aiuto.)'
       unknownItemType: '§cTipo oggetto sconosciuto.'
@@ -229,18 +233,21 @@ inv:
     findRegion: '§aTrova regione'
     killMobs: '§aUccidi mob'
     mineBlocks: '§aRompi blocchi'
+    placeBlocks: '§aPlace blocks'
     talkChat: '§aScrivi in chat'
     interact: '§aInteragisci con un blocco'
     fish: '§aPesca pesci'
     craft: '§aCrafta oggetto'
     bucket: '§aRiempi secchi'
     location: '§aVai alla posizione'
+    playTime: '§ePlay time'
     NPCText: '§eModifica dialogo'
     hideClues: Nascondi particelle e holograms
     editMobsKill: '§eModifica mob da uccidere'
     mobsKillFromAFar: Deve essere ucciso con una freccia
     editBlocksMine: '§eModifica blocchi da rompere'
     preventBlockPlace: Impedisci ai giocatori di rompere i propri blocchi
+    editBlocksPlace: '§eEdit blocks to place'
     editMessageType: '§eModifica messaggio da scrivere'
     cancelMessage: Annulla invio
     ignoreCase: Ignore the case of the message
@@ -256,6 +263,7 @@ inv:
     editLocation: '§eModifica posizione'
     editRadius: '§eModifica distanza dalla posizione'
     currentRadius: '§eDistanza attuale: §6{0}'
+    changeTicksRequired: '§eChange played ticks required'
   stages:
     name: Crea fasi
     nextPage: '§ePagina successiva'
@@ -268,42 +276,56 @@ inv:
     newBranch: '§eVai al nuovo branch'
   details:
     hologramLaunch: '§eModifica l''oggetto dell''hologram "Avvia"'
+    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
     hologramLaunchNo: '§eModifica l''oggetto dell''hologram "avvio non disponibile"'
+    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
     customConfirmMessage: '§eModifica il messaggio di conferma della missione'
+    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
     customDescription: '§eEdit quest description'
+    customDescriptionLore: Description shown below the name of the quest in GUIs.
     name: Ultimi dettagli della missione
     multipleTime:
-      itemName: Attiva/disattiva ripetizione
-      itemLore: |-
-        La missione può essere 
-        avviata più volte?
+      itemName: Toggle repeatable
+      itemLore: "La missione può essere \navviata più volte?"
     cancellable: Annullabile dal giocatore
+    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
     scoreboardItem: Abilita scoreboard
+    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Nascondi menu e dynmap
+    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     bypassLimit: Non contare il limite della quest
+    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: '§a§lModifica il nome della quest'
+    questNameLore: A name must be set to complete quest creation.
     setItemsRewards: '§eModifica ricompense'
     setXPRewards: '§eModifica esperienza ricevuta'
     setPermReward: '§eModifica i permessi'
     setMoneyReward: '§eModifica la ricompensa in denaro'
-    createStarterNPC: '§e§lCrea un NPC di avvio'
     selectStarterNPC: '§e§lSeleziona un NPC di avvio'
-    createQuest:
-      itemName: '§lCrea quest'
-      itemLore: |-
-        Un NPC deve essere selezionato e
-        deve essere inserito il nome della quest.
-    editQuest:
-      itemName: '§lModifica quest'
+    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    createQuestName: '§lCreate quest'
+    createQuestLore: You must define a quest name.
+    editQuestName: '§lEdit quest'
     endMessage: '§eModifica messaggio finale'
+    endMessageLore: Message which will be sent to the player at the end of the quest.
     startDialog: '§eModifica dialogo di avvio'
+    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: '§eModifica i requisiti'
+    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: '§6Premi di avvio'
+    startRewardsLore: Actions performed when the quest starts.
     hologramText: '§eTesto dell''Hologram'
-    timer: '§bTempo prima di poter riavviare la missione.'
+    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
+    timer: '§bRestart timer'
+    timerLore: Time before the player can start the quest again.
     requirements: '{0} requisito(i)'
     rewards: '{0} ricompensa(e)'
+    rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEdit quest item material'
+    customMaterialLore: Item representative of this quest in the Quests Menu.
+    loreReset: '§e§lAll players'' advancement will be reset'
+    optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value)'
   itemsSelect:
     name: Modifica oggetti
     none: |-
@@ -397,6 +419,7 @@ inv:
   block:
     name: Scegli blocco
     material: '§eMateriale: {0}'
+    blockData: '§dBlockdata (advanced)'
   blocksList:
     name: Seleziona blocchi
     addBlock: '§aClicca per aggiungere un blocco.'
@@ -425,12 +448,14 @@ scoreboard:
     items: '§ePorta gli oggetti a §6{0}§e:'
     mobs: '§eUccidi §6{0}'
     mine: '§eMina {0}'
+    placeBlocks: '§ePlace {0}'
     chat: '§eScrivi §6{0}'
     interact: '§eClicca sul blocco a §6{0}'
     fish: '§ePesca §6{0}'
     craft: '§eCrafta §6{0}'
     bucket: '§eRiempi §6{0}'
     location: '§eVai a §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
+    playTime: '§ePlay §6{0} game ticks'
 indication:
   startQuest: '§7Vuoi iniziare la missione {0}?'
   closeInventory: '§7Sei sicuro di voler chiudere la GUI?'
@@ -448,12 +473,14 @@ misc:
     items: Riporta gli oggetti
     mobs: Uccidi mob
     mine: Rompi blocchi
+    placeBlocks: Place blocks
     chat: Scrivi in chat
     interact: Interagisci con un blocco
     Fish: Pesca pesci
     Craft: Crafta oggetto
     Bucket: Riempi un secchio
     location: Trova una posizione
+    playTime: Play time
   comparison:
     equals: equal to {0}
     different: different to {0}

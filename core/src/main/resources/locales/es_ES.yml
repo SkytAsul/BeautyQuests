@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aEscribe el material del item de la misión.'
   requirements:
     quest: '§cDebes haber terminado la misión §e{0}§c!'
-    level: '§cYour level must be {0}!'
-    job: '§cYour level for the job §e{1}§c must be {0}!'
-    skill: '§cYour level for the skill §e{1}§c must be {0}!'
-    combatLevel: '§cYour combat level must be {0}!'
+    level: '§c¡Tu nivel debe ser {0}!'
+    job: '§c¡Tu nivel para el trabajo §e{1}§c debe ser {0}!'
+    skill: '§c¡Tu nivel para la habilidad §e{1}§c debe ser {0}!'
+    combatLevel: '§c¡Tu nivel de combate debe ser {0}!'
     money: '§aDebes tener {0}!'
     wait: '§cDebes esperar {0} minuto(s) antes de poder reiniciar esta misión!'
   experience:
@@ -62,6 +62,7 @@ msg:
   errorOccurred: '§cHa ocurrido un error, ¡contacta con un administrador! §4§lError: {0}'
   commandsDisabled: '§cActualmente no tienes permisos para ejecutar comandos!'
   indexOutOfBounds: '§cEl número {0} está fuera de límites! Debe estar entre {1} y {2}.'
+  invalidBlockData: '§cThe blockdata {0} is invalid or incompatible with the block {1}.'
   bringBackObjects: Tráeme de nuevo {0}.
   inventoryFull: '§cTu inventario está lleno, el objeto ha sido abandonado en el suelo.'
   playerNeverConnected: '§cNo se puede encontrar información sobre el jugador {0}.'
@@ -88,17 +89,17 @@ msg:
       player: '§6Todas las informaciones de tu misión(s) {0} han sido eliminadas por {1}.'
       remover: '§6{0} quest information(s) of {1} has/have been deleted.'
     resetPlayerQuest:
-      player: '§6All informations about the quest {0} have been deleted by {1}.'
-      remover: '§6{0} quest information(s) of {1} has/have been deleted.'
-    resetQuest: '§6Removed datas of the quest for {0} players.'
-    startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
-    cancelQuest: '§6You have cancelled the quest {0}.'
-    cancelQuestUnavailable: '§cThe quest {0} can''t be cancelled.'
-    backupCreated: '§6You have successfully created backups of all quests and player informations.'
+      player: '§6Toda la información sobre la misión {0} fue borrada por {1}.'
+      remover: '§6{0} información de {1} ha sido eliminado.'
+    resetQuest: '§6Removida información de misiones de {0} jugadores.'
+    startQuest: '§6Obligaste a empezar la misión {0} (UUID de Jugador: {1}).'
+    cancelQuest: '§6Cancelaste la misión {0}.'
+    cancelQuestUnavailable: '&cLa misión {0} no puede ser cancelada.'
+    backupCreated: '&6Creaste correctamente copias de seguridad de misiones e información.'
     backupPlayersFailed: '§cCreating a backup for all the player informations has failed.'
     backupQuestsFailed: '§cCreating a backup for all the quests has failed.'
-    adminModeEntered: '§aYou have entered the Admin Mode.'
-    adminModeLeft: '§aYou have left the Admin Mode.'
+    adminModeEntered: '&aEntraste en el modo Admin.'
+    adminModeLeft: '&aSaliste del modo Admin.'
     scoreboard:
       lineSet: '§6You have successfully edited the line {0}.'
       lineReset: '§6You have successfully reset the line {0}.'
@@ -126,11 +127,13 @@ msg:
       list: '§6/{0} list: §eVer la lista de misiones. (Sólo para versiones soportadas.)'
   typeCancel: '§aEscribe "cancel" para volver al último texto.'
   editor:
-    blocksToMineAmount: '§aEscribe la cantidad de bloques para minar:'
-    blocksToMineName: '§aEscribe el nombre del bloque para minar:'
+    blockAmount: '§aWrite the amount of blocks:'
+    blockName: '§aWrite the name of the block:'
+    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
     typeBucketAmount: '§aEscribe la cantidad de cubos a rellenar:'
     goToLocation: '§aVe a la ubicación deseada para la etapa y click a la esmeralda.'
     typeLocationRadius: '§aEscribe la distancia requerida de la ubicación:'
+    typeGameTicks: '§aWrite the required game ticks:'
     already: '§cYa estás en el editor.'
     enter:
       title: '§6~ Modo editor ~'
@@ -162,6 +165,7 @@ msg:
     selectWantedBlock: '§aHaz clic con el palo en el bloque deseado para la etapa.'
     itemCreator:
       itemType: '§aEscribe el nombre del tipo de elemento deseado:'
+      itemAmount: '§aWrite the amount of item(s):'
       itemName: '§aEscribe el nombre del item:'
       itemLore: '§aModificar la descripción del objeto: (Escribe "help" para ayuda.)'
       unknownItemType: '§cTipo de elemento desconocido.'
@@ -186,13 +190,13 @@ msg:
         playerInsert: '§6playerInsert <id> <message>: §eInsert a message said by player.'
         nothingInsert: '§6nothingInsert <id> <message>: §eInsert a message without any prefix.'
         addSound: '§6addSound <id> <sound>: §eAdd a sound to a message.'
-        clear: '§6clear: §eRemove all messages.'
-        close: '§6close: §eValidate all messages.'
+        clear: '§6clear: §eBorra todos los mensajes.'
+        close: '&6close: &eGuardas y validas los mensajes.'
         setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
       timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
       timeRemoved: '§aTime has been removed for message {0}.'
     mythicmobs:
-      list: '§aA list of all Mythic Mobs:'
+      list: '&aToda la lista de "Mythic Mobs":'
       isntMythicMob: '§cThis Mythic Mob doesn''t exist.'
       disabled: '§cMythicMob is disabled.'
     epicBossDoesntExist: '§cEste Epic Boss no existe.'
@@ -229,18 +233,21 @@ inv:
     findRegion: '§aFind region'
     killMobs: '§aKill mobs'
     mineBlocks: '§aBreak blocks'
+    placeBlocks: '§aPlace blocks'
     talkChat: '§aWrite in chat'
     interact: '§aInteract with block'
     fish: '§aCatch fishes'
     craft: '§aCraft item'
     bucket: '§aFill buckets'
     location: '§aGo to location'
+    playTime: '§ePlay time'
     NPCText: '§eEdit dialog'
     hideClues: Hide particles and holograms
     editMobsKill: '§eEdit mobs to kill'
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: '§eEdit blocks to break'
     preventBlockPlace: Prevent players to break their own blocks
+    editBlocksPlace: '§eEdit blocks to place'
     editMessageType: '§eEdit message to write'
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
@@ -256,6 +263,7 @@ inv:
     editLocation: '§eEditar ubicación'
     editRadius: '§eEditar distancia de la ubicación'
     currentRadius: '§eDistancia actual: §6{0}'
+    changeTicksRequired: '§eChange played ticks required'
   stages:
     name: Crear etapas
     nextPage: '§eSiguiente página'
@@ -268,42 +276,56 @@ inv:
     newBranch: '§eIr a una nueva rama'
   details:
     hologramLaunch: '§eEditar "launch" item del holograma'
+    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
     hologramLaunchNo: '§eEditar "launch unavailable" holograma no disponible"'
+    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
     customConfirmMessage: '§eEditar mensaje de confirmación de búsqueda'
+    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
     customDescription: '§eEdit quest description'
+    customDescriptionLore: Description shown below the name of the quest in GUIs.
     name: Últimos detalles de la misión
     multipleTime:
-      itemName: Activar varios usos
-      itemLore: |-
-        ¿Puede hacerse la misión
-        varias veces?
+      itemName: Toggle repeatable
+      itemLore: "¿Puede hacerse la misión\nvarias veces?"
     cancellable: Cancelar por jugador
+    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
     scoreboardItem: Habilitar el scoreboard
+    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Ocultar menú y dynmap
+    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     bypassLimit: No cuente el límite de misiones
+    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: '§a§lEditar nombre de misión'
+    questNameLore: A name must be set to complete quest creation.
     setItemsRewards: '§eEditar objetos de recompensa'
     setXPRewards: '§eEditar experiencia de recompensa'
     setPermReward: '§eEditar permisos'
     setMoneyReward: '§eEditar recompensa de dinero'
-    createStarterNPC: '§e§lCrear NPC iniciador de misión'
     selectStarterNPC: '§e§lSelecciona el NPC iniciador'
-    createQuest:
-      itemName: '§lCrear misión'
-      itemLore: |-
-        Debe seleccionar un NPC y
-        un nombre de misión debe ser definido.
-    editQuest:
-      itemName: '§lEditar misión'
+    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    createQuestName: '§lCreate quest'
+    createQuestLore: You must define a quest name.
+    editQuestName: '§lEdit quest'
     endMessage: '§eEditar mensaje final'
+    endMessageLore: Message which will be sent to the player at the end of the quest.
     startDialog: '§eEditar diálogo de inicio'
+    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: '§eEditar requisitos'
+    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: '§6Recompensas de inicio'
+    startRewardsLore: Actions performed when the quest starts.
     hologramText: '§eTexto del holograma'
-    timer: '§bTiempo antes de reiniciar la misión.'
+    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
+    timer: '§bRestart timer'
+    timerLore: Time before the player can start the quest again.
     requirements: '{0} requisito(s)'
     rewards: '{0} recompensa(s)'
+    rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEditar material del objeto de la misión'
+    customMaterialLore: Item representative of this quest in the Quests Menu.
+    loreReset: '§e§lAll players'' advancement will be reset'
+    optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value)'
   itemsSelect:
     name: Editar elementos
     none: |-
@@ -397,6 +419,7 @@ inv:
   block:
     name: Elegir bloque
     material: '§eMaterial: {0}'
+    blockData: '§dBlockdata (advanced)'
   blocksList:
     name: Seleccionar bloques
     addBlock: '§aClick para añadir un bloque.'
@@ -425,12 +448,14 @@ scoreboard:
     items: '§eBring items to §6{0}§e:'
     mobs: '§eMata §6{0}'
     mine: '§eMina {0}'
+    placeBlocks: '§ePlace {0}'
     chat: '§eEscribir §6{0}'
     interact: '§eClick en el bloque en §6{0}'
     fish: '§ePez §6{0}'
     craft: '§eCraftear §6{0}'
     bucket: '§eRellenar §6{0}'
     location: '§eIr a §6{0}§e, §6{1}§e, §6{2}§e en §6{3}'
+    playTime: '§ePlay §6{0} game ticks'
 indication:
   startQuest: '§7Quieres iniciar la misión {0}?'
   closeInventory: '§7¿Estás seguro de que quieres cerrar la GUI?'
@@ -448,12 +473,14 @@ misc:
     items: Bring back items
     mobs: Kill mobs
     mine: Break blocks
+    placeBlocks: Place blocks
     chat: Write in chat
     interact: Interact with block
     Fish: Catch fishes
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+    playTime: Play time
   comparison:
     equals: equal to {0}
     different: different to {0}

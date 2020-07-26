@@ -62,6 +62,7 @@ msg:
   errorOccurred: '§cHiba történt, lépj kapcsolatba egy adminisztrátorral! §4§lHiba kód: {0}'
   commandsDisabled: '§cJelenleg nem tudsz parancsokat végrehajtani!'
   indexOutOfBounds: '§cA szám {0} nem jó! Muszály {1} és {2} között lennie.'
+  invalidBlockData: '§cThe blockdata {0} is invalid or incompatible with the block {1}.'
   bringBackObjects: Hozz nekem {0}.
   inventoryFull: '§cTele van a táskád, a tárgy el lett dobva a földre.'
   playerNeverConnected: '§cNem lehet információkat találni a játékosról {0}.'
@@ -126,11 +127,13 @@ msg:
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: '§aWrite "cancel" to come back to the last text.'
   editor:
-    blocksToMineAmount: '§aWrite the amount of blocks to mine:'
-    blocksToMineName: '§aWrite the name of the block to mine:'
+    blockAmount: '§aWrite the amount of blocks:'
+    blockName: '§aWrite the name of the block:'
+    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: '§aGo to the wanted location for the stage.'
     typeLocationRadius: '§aWrite the required distance from the location:'
+    typeGameTicks: '§aWrite the required game ticks:'
     already: '§cYou are already in the editor.'
     enter:
       title: '§6~ Editor Mode ~'
@@ -162,6 +165,7 @@ msg:
     selectWantedBlock: '§aClick with the stick on the wanted block for the stage.'
     itemCreator:
       itemType: '§aWrite the name of the wanted item type:'
+      itemAmount: '§aWrite the amount of item(s):'
       itemName: '§aWrite the item name:'
       itemLore: '§aModify the item lore: (Write "help" for help.)'
       unknownItemType: '§cUnknown item type.'
@@ -229,18 +233,21 @@ inv:
     findRegion: '§aTaláld meg a helyet'
     killMobs: '§aÖlj szörnyeket'
     mineBlocks: '§aTörj blokkokat'
+    placeBlocks: '§aPlace blocks'
     talkChat: '§aÍrj a chatbe'
     interact: '§aKattints rá a blokkra'
     fish: '§aFogj halakat'
     craft: '§aKészíts tárgyakat'
     bucket: '§aTölts meg vödröket'
     location: '§aMenj el a helyre'
+    playTime: '§ePlay time'
     NPCText: '§eEdit dialog'
     hideClues: Hide particles and holograms
     editMobsKill: '§eEdit mobs to kill'
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: '§eEdit blocks to break'
     preventBlockPlace: Prevent players to break their own blocks
+    editBlocksPlace: '§eEdit blocks to place'
     editMessageType: '§eEdit message to write'
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
@@ -256,6 +263,7 @@ inv:
     editLocation: '§eEdit location'
     editRadius: '§eEdit distance from location'
     currentRadius: '§eCurrent distance: §6{0}'
+    changeTicksRequired: '§eChange played ticks required'
   stages:
     name: Create stages
     nextPage: '§eNext page'
@@ -268,42 +276,56 @@ inv:
     newBranch: '§eGo to new branch'
   details:
     hologramLaunch: '§eEdit "launch" hologram item'
+    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
     hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
+    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
     customConfirmMessage: '§eEdit quest confirmation message'
+    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
     customDescription: '§eEdit quest description'
+    customDescriptionLore: Description shown below the name of the quest in GUIs.
     name: Last quest details
     multipleTime:
-      itemName: Toggle several-use
-      itemLore: |-
-        Can the quest be done
-        several times?
+      itemName: Toggle repeatable
+      itemLore: Can the quest be done several times?
     cancellable: Cancellable by player
+    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
     scoreboardItem: Enable scoreboard
+    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap
+    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     bypassLimit: Don't count quest limit
+    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: '§a§lEdit quest name'
+    questNameLore: A name must be set to complete quest creation.
     setItemsRewards: '§eEdit reward items'
     setXPRewards: '§eEdit reward experience'
     setPermReward: '§eEdit permissions'
     setMoneyReward: '§eEdit money reward'
-    createStarterNPC: '§e§lCreate NPC starter'
     selectStarterNPC: '§e§lSelect NPC starter'
-    createQuest:
-      itemName: '§lCreate quest'
-      itemLore: |-
-        One NPC must be selected and
-        a quest name needs to be defined.
-    editQuest:
-      itemName: '§lKüldetés szerkesztése'
+    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    createQuestName: '§lCreate quest'
+    createQuestLore: You must define a quest name.
+    editQuestName: '§lEdit quest'
     endMessage: '§eBefejező üzenet szerkesztése'
+    endMessageLore: Message which will be sent to the player at the end of the quest.
     startDialog: '§eKezdő üzenet szerkesztése'
+    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: '§eKövetelmények szerkesztése'
+    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: '§6Índítási jutalmak'
+    startRewardsLore: Actions performed when the quest starts.
     hologramText: '§eHologram szöveg'
-    timer: '§bIdő mielött újra tudnád indítani a küldetést.'
+    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
+    timer: '§bRestart timer'
+    timerLore: Time before the player can start the quest again.
     requirements: '{0} követelmények'
     rewards: '{0} jutalmak'
+    rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eTárgy id megváltoztatása'
+    customMaterialLore: Item representative of this quest in the Quests Menu.
+    loreReset: '§e§lAll players'' advancement will be reset'
+    optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value)'
   itemsSelect:
     name: Tárgyak szerkesztése
     none: |-
@@ -396,6 +418,7 @@ inv:
   block:
     name: Choose block
     material: '§eMaterial: {0}'
+    blockData: '§dBlockdata (advanced)'
   blocksList:
     name: Select blocks
     addBlock: '§aClick to add a block.'
@@ -424,12 +447,14 @@ scoreboard:
     items: '§eBring items to §6{0}§e:'
     mobs: '§eKill §6{0}'
     mine: '§eMine {0}'
+    placeBlocks: '§ePlace {0}'
     chat: '§eWrite §6{0}'
     interact: '§eClick on the block at §6{0}'
     fish: '§eFish §6{0}'
     craft: '§eCraft §6{0}'
     bucket: '§eFill §6{0}'
     location: '§eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
+    playTime: '§ePlay §6{0} game ticks'
 indication:
   startQuest: '§7Do you want to start the quest {0}?'
   closeInventory: '§7Are you sure you want to close the GUI?'
@@ -447,12 +472,14 @@ misc:
     items: Hozz vissza tárgyakat
     mobs: Ölj meg szörnyeket
     mine: Törj blokkokat
+    placeBlocks: Place blocks
     chat: Írj chatbe
     interact: Lépj interakcióba blokkokal
     Fish: Fogj halakat
     Craft: Készíts tárgyakat
     Bucket: Tölts meg vödröket
     location: Találd meg a helyet
+    playTime: Play time
   comparison:
     equals: equal to {0}
     different: different to {0}

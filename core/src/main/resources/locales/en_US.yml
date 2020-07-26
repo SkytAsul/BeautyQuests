@@ -274,7 +274,7 @@ inv:
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break
     preventBlockPlace: Prevent players to break their own blocks
-    editBlockPlace: §eEdit blocks to place
+    editBlocksPlace: §eEdit blocks to place
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
