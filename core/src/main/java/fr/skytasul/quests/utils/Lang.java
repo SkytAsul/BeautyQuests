@@ -74,6 +74,7 @@ public enum Lang{
 	ERROR_OCCURED("msg.errorOccurred"),
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
+	INVALID_BLOCK_DATA("msg.invalidBlockData"), // 0: blockdata, 1: material
 	
 	NEED_OBJECTS("msg.bringBackObjects"),
 	ITEM_DROPPED("msg.inventoryFull"),
@@ -147,8 +148,9 @@ public enum Lang{
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
 	
 	CLICK_BLOCK("msg.editor.selectWantedBlock"),
-	BLOCKS_AMOUNT("msg.editor.blocksToMineAmount"),
-	BLOCKS_NAME("msg.editor.blocksToMineName"),
+	BLOCKS_AMOUNT("msg.editor.blockAmount"),
+	BLOCK_NAME("msg.editor.blockName"),
+	BLOCK_DATA("msg.editor.blockData"), // 0: available block datas
 	
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
 	
@@ -248,6 +250,7 @@ public enum Lang{
 	stageGoTo("inv.create.findRegion"),
 	stageMobs("inv.create.killMobs"),
 	stageMine("inv.create.mineBlocks"),
+	stagePlace("inv.create.placeBlocks"),
 	stageChat("inv.create.talkChat"),
 	stageInteract("inv.create.interact"),
 	stageFish("inv.create.fish"),
@@ -259,8 +262,9 @@ public enum Lang{
 	stageHide("inv.create.hideClues"),
 	editMobs("inv.create.editMobsKill"),
 	mobsKillType("inv.create.mobsKillFromAFar"),
-	editBlocks("inv.create.editBlocksMine"),
+	editBlocksMine("inv.create.editBlocksMine"),
 	preventBlockPlace("inv.create.preventBlockPlace"),
+	editBlocksPlace("inv.create.editBlocksPlace"),
 	editMessage("inv.create.editMessageType"),
 	cancelEvent("inv.create.cancelMessage"),
 	ignoreCase("inv.create.ignoreCase"),
@@ -409,6 +413,7 @@ public enum Lang{
 	
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
+	blockData("inv.block.blockData"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
 	addBlock("inv.blocksList.addBlock"),
@@ -446,6 +451,7 @@ public enum Lang{
 	SCOREBOARD_ITEMS("scoreboard.stage.items"),
 	SCOREBOARD_MOBS("scoreboard.stage.mobs"),
 	SCOREBOARD_MINE("scoreboard.stage.mine"),
+	SCOREBOARD_PLACE("scoreboard.stage.place"),
 	SCOREBOARD_CHAT("scoreboard.stage.chat"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
@@ -473,6 +479,7 @@ public enum Lang{
 	Items("misc.stageType.items"),
 	Mobs("misc.stageType.mobs"),
 	Mine("misc.stageType.mine"),
+	Place("misc.stageType.placeBlock"),
 	Chat("misc.stageType.chat"),
 	Interact("misc.stageType.interact"),
 	Fish("misc.stageType.Fish"),

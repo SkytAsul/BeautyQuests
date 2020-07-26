@@ -61,12 +61,16 @@ public class Inventories{
 
 		if (!inv.equals(g.get(p).getValue())) return;
 		
-		if (e.getCursor().getType() == Material.AIR) {
-			if (current == null || current.getType() == Material.AIR) return;
-			if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
-		}else {
-			if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot()))
-				e.setCancelled(true);
+		try {
+			if (e.getCursor().getType() == Material.AIR) {
+				if (current == null || current.getType() == Material.AIR) return;
+				if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
+			}else {
+				if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			e.setCancelled(true);
 		}
 	}
 

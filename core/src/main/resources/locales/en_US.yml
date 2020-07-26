@@ -74,6 +74,7 @@ msg:
   commandsDisabled: §cCurrently you aren't allowed to execute commands!
   indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and
     {2}.
+  invalidBlockData: §cThe blockdata {0} is invalid or incompatible with the block {1}.
   bringBackObjects: Bring me back {0}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   playerNeverConnected: §cUnable to find informations about the player {0}.
@@ -146,8 +147,9 @@ msg:
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.
   editor:
-    blocksToMineAmount: '§aWrite the amount of blocks to mine:'
-    blocksToMineName: '§aWrite the name of the block to mine:'
+    blockAmount: '§aWrite the amount of blocks:'
+    blockName: '§aWrite the name of the block:'
+    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
@@ -258,6 +260,7 @@ inv:
     findRegion: §aFind region
     killMobs: §aKill mobs
     mineBlocks: §aBreak blocks
+    placeBlocks: §aPlace blocks
     talkChat: §aWrite in chat
     interact: §aInteract with block
     fish: §aCatch fishes
@@ -271,6 +274,7 @@ inv:
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break
     preventBlockPlace: Prevent players to break their own blocks
+    editBlockPlace: §eEdit blocks to place
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
@@ -442,6 +446,7 @@ inv:
   block:
     name: Choose block
     material: '§eMaterial: {0}'
+    blockData: '§dBlockdata (advanced)'
   blocksList:
     name: Select blocks
     addBlock: §aClick to add a block.
@@ -470,6 +475,7 @@ scoreboard:
     items: '§eBring items to §6{0}§e:'
     mobs: §eKill §6{0}
     mine: §eMine {0}
+    placeBlocks: §ePlace {0}
     chat: §eWrite §6{0}
     interact: §eClick on the block at §6{0}
     fish: §eFish §6{0}
@@ -494,6 +500,7 @@ misc:
     items: Bring back items
     mobs: Kill mobs
     mine: Break blocks
+    placeBlocks: Place blocks
     chat: Write in chat
     interact: Interact with block
     Fish: Catch fishes

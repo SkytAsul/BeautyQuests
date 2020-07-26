@@ -33,14 +33,14 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.BQBlock;
 
-public class StageMine extends AbstractCountableStage<XMaterial> {
+public class StageMine extends AbstractCountableStage<BQBlock> {
 
 	private boolean placeCancelled;
 	
-	public StageMine(QuestBranch branch, Map<Integer, Entry<XMaterial, Integer>> blocks) {
+	public StageMine(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> blocks) {
 		super(branch, blocks);
 	}
 	
@@ -77,7 +77,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		if (!branch.hasStageLaunched(acc, this)) return;
 		Map<Integer, Integer> playerBlocks = getPlayerRemainings(acc);
 		for (Integer id : playerBlocks.keySet()) {
-			if (super.objects.get(id).getKey().isSameMaterial(e.getBlock())) {
+			if (objectApplies(super.objects.get(id).getKey(), e.getBlock())) {
 				e.getBlock().setMetadata("playerInStage", new FixedMetadataValue(BeautyQuests.getInstance(), p.getName()));
 				return;
 			}
@@ -85,21 +85,21 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 	}
 	
 	@Override
-	protected boolean objectApplies(XMaterial object, Object other) {
-		if (other instanceof Block) return XBlock.isType((Block) other, object);
+	protected boolean objectApplies(BQBlock object, Object other) {
+		if (other instanceof Block) return object.applies((Block) other);
 		return super.objectApplies(object, other);
 	}
 	
-	protected String getName(XMaterial object) {
-		return MinecraftNames.getMaterialName(object);
+	protected String getName(BQBlock object) {
+		return MinecraftNames.getMaterialName(object.getMaterial());
 	}
 
-	protected Object serialize(XMaterial object) {
-		return object.name();
+	protected Object serialize(BQBlock object) {
+		return object.getAsString();
 	}
 
-	protected XMaterial deserialize(Object object) {
-		return XMaterial.valueOf((String) object);
+	protected BQBlock deserialize(Object object) {
+		return BQBlock.fromString((String) object);
 	}
 
 	protected void serialize(Map<String, Object> map){
@@ -108,13 +108,13 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		Map<Integer, Entry<XMaterial, Integer>> objects = new HashMap<>();
+		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
 
 		if (map.containsKey("blocks")) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("blocks");
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> blockData = list.get(i);
-				objects.put(i, new AbstractMap.SimpleEntry<>(XMaterial.valueOf((String) blockData.get("type")), (int) blockData.get("amount")));
+				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
 			}
 		}
 
@@ -124,9 +124,9 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		if (map.containsKey("remaining")) {
 			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
 			((Map<String, List<Map<String, Object>>>) map.get("remaining")).forEach((acc, blocks) -> {
-				Map<XMaterial, Integer> blocksMap = new HashMap<>();
+				Map<BQBlock, Integer> blocksMap = new HashMap<>();
 				for (Map<String, Object> block : blocks) {
-					blocksMap.put(XMaterial.valueOf((String) block.get("type")), (int) block.get("amount"));
+					blocksMap.put(new BQBlock(XMaterial.valueOf((String) block.get("type"))), (int) block.get("amount"));
 				}
 				stage.migrateDatas(migration.getByIndex(acc), blocksMap);
 			});
@@ -149,7 +149,7 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		}
 
 		public StageMine finish(LineData datas, QuestBranch branch) {
-			StageMine stage = new StageMine(branch, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
+			StageMine stage = new StageMine(branch, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
 			stage.setPlaceCancelled((boolean) datas.get("prevent"));
 			return stage;
 		}
@@ -161,10 +161,10 @@ public class StageMine extends AbstractCountableStage<XMaterial> {
 		}
 
 		public static void setItems(Line line, LineData datas) {
-			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocks.toString()), new StageRunnable() {
+			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<XMaterial, Integer>>) datas.get("blocks"));
+					blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
 					blocks.run = (obj) -> {
 						datas.getGUI().reopen(p, true);
 						datas.put("blocks", obj);

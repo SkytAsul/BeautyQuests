@@ -51,7 +51,7 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 	
 	@Override
 	public ItemStack getItemStack() {
-		return ItemUtils.item(XMaterial.ACACIA_DOOR, Lang.editRequirements.toString(), getLore());
+		return ItemUtils.item(XMaterial.NETHER_STAR, Lang.editRequirements.toString(), getLore());
 	}
 	
 	@Override

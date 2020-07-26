@@ -24,6 +24,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
@@ -161,8 +162,9 @@ public class NPCStarter {
 	}
 	
 	public void delete() {
-		for (Quest qu : new ArrayList<>(quests)) {
-			qu.remove(true);
+		for (Quest qu : quests) {
+			BeautyQuests.logger.warning("Starter NPC has been removed from quest " + qu.getID());
+			qu.removeOption(OptionStarterNPC.class);
 		}
 		quests = null;
 		BeautyQuests.getInstance().getNPCs().remove(npc);

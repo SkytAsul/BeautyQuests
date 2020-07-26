@@ -565,7 +565,7 @@ public class BeautyQuests extends JavaPlugin{
 		return data;
 	}
 	
-	public Database getDatabase() {
+	public Database getBQDatabase() {
 		return db;
 	}
 

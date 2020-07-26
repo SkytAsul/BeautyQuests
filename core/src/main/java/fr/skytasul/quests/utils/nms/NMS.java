@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -58,6 +59,10 @@ public abstract class NMS{
 	public abstract Object getIChatBaseComponent(String text);
 	
 	public abstract Object getEnumChatFormat(int value);
+	
+	public List<String> getAvailableBlockProperties(Material material){
+		throw new UnsupportedOperationException();
+	}
 	
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
 		unhandledTags.setAccessible(true);

@@ -19,16 +19,17 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.BQBlock;
 
 public class BlocksGUI implements CustomInventory {
 
 	private ItemStack none = item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.addBlock.toString());
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
-	public Map<Integer, Entry<XMaterial, Integer>> blocks = new HashMap<>();
+	public Map<Integer, Entry<BQBlock, Integer>> blocks = new HashMap<>();
 	
 	public Inventory inv;
-	public Consumer<Map<Integer, Entry<XMaterial, Integer>>> run;
+	public Consumer<Map<Integer, Entry<BQBlock, Integer>>> run;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -58,18 +59,18 @@ public class BlocksGUI implements CustomInventory {
 		SelectBlockGUI sm = Inventories.create(p, new SelectBlockGUI());
 		sm.run = (type, amount) -> {
 			Inventories.put(p, openLastInv(p), inv);
-			setItem(inv, slot, type, type.name(), amount);
+			setItem(inv, slot, type.getMaterial(), type.getAsString(), amount);
 			blocks.put(slot, new AbstractMap.SimpleEntry<>(type, amount));
 		};
 		return true;
 	}
 	
-	public void setBlocksFromMap(Inventory inv, Map<Integer, Entry<XMaterial, Integer>> map) {
-		for (Entry<Integer, Entry<XMaterial, Integer>> entry : map.entrySet()) {
+	public void setBlocksFromMap(Inventory inv, Map<Integer, Entry<BQBlock, Integer>> map) {
+		for (Entry<Integer, Entry<BQBlock, Integer>> entry : map.entrySet()) {
 			int id = entry.getKey();
-			Entry<XMaterial, Integer> blockEntry = entry.getValue();
+			Entry<BQBlock, Integer> blockEntry = entry.getValue();
 			blocks.put(id, blockEntry);
-			setItem(inv, id, blockEntry.getKey(), blockEntry.getKey().name(), blockEntry.getValue());
+			setItem(inv, id, blockEntry.getKey().getMaterial(), blockEntry.getKey().getAsString(), blockEntry.getValue());
 		}
 	}
 

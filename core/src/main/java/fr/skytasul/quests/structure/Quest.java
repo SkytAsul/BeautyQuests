@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -115,6 +116,17 @@ public class Quest implements Comparable<Quest> {
 	public void addOption(QuestOption<?> option) {
 		options.add(option);
 		option.attach(this);
+	}
+	
+	public void removeOption(Class<? extends QuestOption<?>> clazz) {
+		for (Iterator<QuestOption<?>> iterator = options.iterator(); iterator.hasNext();) {
+			QuestOption<?> option = iterator.next();
+			if (clazz.isInstance(option)) {
+				option.detach();
+				iterator.remove();
+				break;
+			}
+		}
 	}
 	
 	public boolean isRemoved(){

@@ -34,6 +34,7 @@ import fr.skytasul.quests.stages.StageLocation;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
+import fr.skytasul.quests.stages.StagePlaceBlocks;
 import fr.skytasul.quests.stages.StagePlayTime;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -349,8 +350,9 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageArea = ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString());
 	private static final ItemStack stageMobs = ItemUtils.item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString());
 	private static final ItemStack stageMine = ItemUtils.item(XMaterial.WOODEN_PICKAXE, Lang.stageMine.toString());
+	private static final ItemStack stagePlace = ItemUtils.item(XMaterial.OAK_STAIRS, Lang.stagePlace.toString());
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
-	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.OAK_PLANKS, Lang.stageInteract.toString());
+	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.STICK, Lang.stageInteract.toString());
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
@@ -365,6 +367,7 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("ITEMS", StageBringBack.class, Lang.Items.name()), stageItems, new StageBringBack.Creator());
 		QuestsAPI.registerStage(new StageType("MOBS", StageMobs.class, Lang.Mobs.name()), stageMobs, new StageMobs.Creator());
 		QuestsAPI.registerStage(new StageType("MINE", StageMine.class, Lang.Mine.name()), stageMine, new StageMine.Creator());
+		QuestsAPI.registerStage(new StageType("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name()), stagePlace, new StagePlaceBlocks.Creator());
 		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, new StageChat.Creator());
 		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, new StageInteract.Creator());
 		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new StageFish.Creator());
