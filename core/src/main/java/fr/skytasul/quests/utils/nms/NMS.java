@@ -27,12 +27,14 @@ public abstract class NMS{
 	private Method equalsCommon;
 
 	public NMS() {
-		try {
-			Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
-			unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
-			equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
-		}catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+		if (versionValid) {
+			try {
+				Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
+				unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
+				equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
+			}catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -103,10 +105,10 @@ public abstract class NMS{
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
 		if (validVersions.contains(version)){
 			try{
-				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
 				versionValid = true;
+				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
 				MCversion = Integer.parseInt(version.split("_")[1]);
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				ex.printStackTrace();
 				versionValid = false;
 				nms = new NullNMS();
