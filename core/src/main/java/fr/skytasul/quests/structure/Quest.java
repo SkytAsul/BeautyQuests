@@ -372,7 +372,7 @@ public class Quest implements Comparable<Quest> {
 	public void unloadAll(){
 		manager.remove();
 		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
-		rewards.forEach(AbstractReward::unload);
+		rewards.forEach(AbstractReward::detach);
 		requirements.forEach(AbstractRequirement::unload);
 		options.forEach(QuestOption::detach);
 	}

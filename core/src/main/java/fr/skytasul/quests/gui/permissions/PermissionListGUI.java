@@ -27,7 +27,7 @@ public class PermissionListGUI extends ListGUI<Permission> {
 		return ItemUtils.item(XMaterial.PAPER, "§e" + object.permission, Lang.permRemoved.format(object.take ? Lang.Yes : Lang.No), Lang.permWorld.format(object.world == null ? Lang.worldGlobal.toString() : object.world));
 	}
 
-	public void click(Permission existing) {
+	public void click(Permission existing, ItemStack item) {
 		new PermissionGUI((perm) -> {
 			super.finishItem(perm);
 		}, existing).create(p);

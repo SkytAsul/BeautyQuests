@@ -216,7 +216,7 @@ public abstract class AbstractStage implements Listener{
 	public void unload(){
         HandlerList.unregisterAll(this);
         for (AbstractReward rew : rewards){
-        	rew.unload();
+        	rew.detach();
         }
 	}
 	

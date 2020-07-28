@@ -65,13 +65,13 @@ public abstract class ListGUI<T> implements CustomInventory {
 			finish();
 		}else {
 			if (current.equals(none)){
-				click(null);
+				click(null, null);
 			}else if (click == ClickType.MIDDLE){
 				remove(slot);
 			}else {
 				T obj = objects.get(slot);
 				remove(slot);
-				click(obj);
+				click(obj, current);
 			}
 		}
 		return true;
@@ -106,8 +106,9 @@ public abstract class ListGUI<T> implements CustomInventory {
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object (may be null if there was no previous object)
+	 * @param item clicked item
 	 */
-	public abstract void click(T existing);
+	public abstract void click(T existing, ItemStack item);
 	
 	/**
 	 * Called when the player hit the finish button

@@ -11,9 +11,9 @@ import fr.skytasul.quests.utils.DebugUtils;
 
 public class Command {
 
-	public String label;
-	public boolean console;
-	public int delay;
+	public final String label;
+	public final boolean console;
+	public final int delay;
 	
 	public Command(String label, boolean console, int delay) {
 		this.label = label;

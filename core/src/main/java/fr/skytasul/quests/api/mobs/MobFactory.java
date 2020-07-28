@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.mobs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -73,6 +74,10 @@ public abstract interface MobFactory<T> extends Listener {
 		return Collections.EMPTY_LIST;
 	}
 
+	public default boolean mobApplies(T first, Object other) {
+		return Objects.equals(first, other);
+	}
+	
 	/**
 	 * Has to be called when a mob corresponding to this factory has been killed
 	 * @param data mob killed

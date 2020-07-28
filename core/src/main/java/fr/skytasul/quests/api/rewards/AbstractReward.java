@@ -4,19 +4,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.structure.Quest;
 
-public abstract class AbstractReward {
+public abstract class AbstractReward implements Cloneable {
 
+	private final RewardCreator<?> creator;
+	
 	protected boolean async = false;
 	protected final String name;
 	protected Quest quest;
 	
 	protected AbstractReward(String name){
 		this.name = name;
+		
+		this.creator = RewardCreator.creators.get(getClass());
+		if (getCreator() == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a reward via the API.");
 	}
 	
+	public RewardCreator<?> getCreator() {
+		return creator;
+	}
+
 	/**
 	 * Called when the reward should be given to the player
 	 * @param p Player to give the reward
@@ -27,11 +38,6 @@ public abstract class AbstractReward {
 	protected abstract void save(Map<String, Object> datas);
 	protected abstract void load(Map<String, Object> savedDatas);
 	
-	/**
-	 * Called when the reward is unloaded
-	 */
-	public void unload(){}
-	
 	public String getName(){
 		return name;
 	}
@@ -40,9 +46,20 @@ public abstract class AbstractReward {
 		return async;
 	}
 	
-	public void setQuest(Quest quest){
+	public void attach(Quest quest) {
 		this.quest = quest;
 	}
+	
+	public void detach() {}
+	
+	@Override
+	public abstract AbstractReward clone();
+	
+	public ItemStack getItemStack() {
+		return creator.item.clone();
+	}
+	
+	public abstract void itemClick(Player p, RewardsGUI gui, ItemStack clicked);
 	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.CommandGUI;
@@ -40,6 +39,37 @@ public class CommandReward extends AbstractReward {
 		return null;
 	}
 
+	@Override
+	public AbstractReward clone() {
+		return new CommandReward(commands);
+	}
+	
+	@Override
+	public ItemStack getItemStack() {
+		return ItemUtils.lore(super.getItemStack(), Lang.commands.format(commands.size()));
+	}
+	
+	@Override
+	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
+		Inventories.create(p, new ListGUI<Command>(commands, 9) {
+			public void click(Command existing, ItemStack item) {
+				Inventories.create(p, new CommandGUI((cmd) -> this.finishItem(cmd))).setFromExistingCommand(existing);
+			}
+
+			public String name() {
+				return Lang.INVENTORY_COMMANDS_LIST.toString();
+			}
+
+			public void finish() {
+				ItemUtils.lore(clicked, Lang.commands.format(commands.size()));
+				gui.reopen(p);
+			}
+
+			public ItemStack getItemStack(Command cmd) {
+				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
+			}
+		});
+	}
 	
 	protected void save(Map<String, Object> datas){
 		datas.put("commands", Utils.serializeList(commands, Command::serialize));
@@ -51,40 +81,6 @@ public class CommandReward extends AbstractReward {
 		}else {
 			commands.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("commands"), Command::deserialize));
 		}
-	}
-
-	public static class Creator implements RewardCreationRunnables<CommandReward> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
-			if (!datas.containsKey("commands")) datas.put("commands", new ArrayList<>());
-			Inventories.create(p, new ListGUI<Command>((List<Command>) datas.get("commands"), 9) {
-				public void click(Command existing) {
-					Inventories.create(p, new CommandGUI((cmd) -> this.finishItem(cmd))).setFromExistingCommand(existing);
-				}
-
-				public String name() {
-					return Lang.INVENTORY_COMMANDS_LIST.toString();
-				}
-
-				public void finish() {
-					gui.reopen(p, true);
-				}
-
-				public ItemStack getItemStack(Command cmd) {
-					return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
-				}
-			});
-		}
-
-		public void edit(Map<String, Object> datas, CommandReward reward, ItemStack item) {
-			datas.put("commands", new ArrayList<>(reward.commands));
-			ItemUtils.lore(item, Lang.commands.format(reward.commands.size()));
-		}
-
-		public CommandReward finish(Map<String, Object> datas) {
-			return new CommandReward((List<Command>) datas.get("commands"));
-		}
-
 	}
 
 }

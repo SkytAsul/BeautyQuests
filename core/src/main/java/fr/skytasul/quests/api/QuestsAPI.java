@@ -16,7 +16,6 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
@@ -64,9 +63,9 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in rewards GUI
 	 * @param runnables Instance of special runnables
 	 */
-	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, RewardCreationRunnables<T> runnables) {
-		RewardCreator.creators.add(new RewardCreator<T>(clazz, item, runnables));
-		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
+	public static <T extends AbstractReward> void registerReward(RewardCreator<T> creator) {
+		RewardCreator.creators.add(creator);
+		DebugUtils.logMessage("Reward registered (class: " + creator.clazz.getSimpleName() + ")");
 	}
 	
 	/**

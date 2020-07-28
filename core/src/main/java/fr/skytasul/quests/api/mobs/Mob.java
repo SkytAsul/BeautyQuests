@@ -48,7 +48,7 @@ public class Mob<Data> implements Cloneable {
 	}
 	
 	public boolean applies(Object data) {
-		return this.data.equals(data);
+		return factory.mobApplies(this.data, data);
 	}
 	
 	public int hashCode() {
