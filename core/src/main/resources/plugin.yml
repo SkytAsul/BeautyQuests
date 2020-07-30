@@ -1,7 +1,7 @@
 name: BeautyQuests
 author: SkytAsul
 #version: 0.17.1_BUILD${build.number}
-version: 0.17.3
+version: 0.17.4
 api-version: 1.13
 description: Quests system with a simple graphical interface.
 depend: [Citizens]

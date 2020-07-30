@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.17.3</version>
+		<version>0.17.4</version>
 	</parent>
 
 	<build>
@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.5</version>
+			<version>2.10.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

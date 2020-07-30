@@ -40,7 +40,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.PlaceholderAPI;
+import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -111,7 +111,7 @@ public class Utils{
 	}
 	
 	public static String finalFormat(CommandSender sender, String text, boolean playerName){
-		if (DependenciesManager.papi && sender instanceof Player) text = PlaceholderAPI.setPlaceholders((Player) sender, text);	
+		if (DependenciesManager.papi && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);	
 		if (playerName) text = text.replace("{PLAYER}", sender.getName());
 		return text;
 	}

@@ -50,7 +50,7 @@ public class DependenciesManager {
 
 	public static void initializeCompatibilities() {
 		if (mm) QuestsAPI.registerMobFactory(new MythicMobs());
-		if (papi) PlaceholderAPI.registerPlaceholders();
+		if (papi) QuestsPlaceholders.registerPlaceholders();
 		// eboss
 		if (gps) GPS.init();
 		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
