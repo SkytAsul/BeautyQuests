@@ -3,6 +3,7 @@ package fr.skytasul.quests.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -63,9 +64,9 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in rewards GUI
 	 * @param runnables Instance of special runnables
 	 */
-	public static <T extends AbstractReward> void registerReward(RewardCreator<T> creator) {
-		RewardCreator.creators.add(creator);
-		DebugUtils.logMessage("Reward registered (class: " + creator.clazz.getSimpleName() + ")");
+	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack is, Supplier<T> newRewardSupplier) {
+		RewardCreator.creators.put(clazz, new RewardCreator<>(clazz, is, newRewardSupplier));
+		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
 	/**

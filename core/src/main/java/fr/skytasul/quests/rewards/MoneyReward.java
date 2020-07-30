@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -38,38 +37,27 @@ public class MoneyReward extends AbstractReward {
 		return Vault.format(money);
 	}
 
+	@Override
+	public AbstractReward clone() {
+		return new MoneyReward(money);
+	}
 	
-	protected void save(Map<String, Object> datas){
+	@Override
+	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
+		Lang.CHOOSE_MONEY_REWARD.send(p);
+		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+			money = (double) obj;
+			ItemUtils.lore(clicked, "Money : " + obj);
+			gui.reopen(p);
+		}, new NumberParser(Double.class, false, true)));
+	}
+	
+	protected void save(Map<String, Object> datas) {
 		datas.put("money", money);
 	}
-
-	protected void load(Map<String, Object> savedDatas){
-		Object money = savedDatas.get("money");
-		if (money instanceof Integer) { // TODO remove on 0.18
-			this.money = ((Integer) money).doubleValue();
-		}else this.money = (double) money;
+	
+	protected void load(Map<String, Object> savedDatas) {
+		money = (double) savedDatas.get("money");
 	}
-
-	public static class Creator implements RewardCreationRunnables<MoneyReward> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
-			Lang.CHOOSE_MONEY_REWARD.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				datas.put("money", (double) obj);
-				gui.reopen(p, false);
-				ItemUtils.lore(clicked, "Money : " + obj);
-			}, new NumberParser(Double.class, false, true)));
-		}
-
-		public void edit(Map<String, Object> datas, MoneyReward reward, ItemStack is) {
-			datas.put("money", reward.money);
-			ItemUtils.lore(is, "Money : " + reward.money);
-		}
-
-		public MoneyReward finish(Map<String, Object> datas) {
-			return new MoneyReward((double) datas.get("money"));
-		}
-
-	}
-
+	
 }

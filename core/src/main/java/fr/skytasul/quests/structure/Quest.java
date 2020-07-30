@@ -185,7 +185,7 @@ public class Quest implements Comparable<Quest> {
 		this.rewards = rewards;
 		for(AbstractReward rew : rewards){
 			if (rew.isAsync()) asyncEnd = true;
-			rew.setQuest(this);
+			rew.attach(this);
 		}
 	}
 	
@@ -198,7 +198,7 @@ public class Quest implements Comparable<Quest> {
 		this.asyncStart = null;
 		for(AbstractReward rew : startRewards){
 			if (rew.isAsync() && asyncStart == null) asyncStart = new ArrayList<>();
-			rew.setQuest(this);
+			rew.attach(this);
 		}
 	}
 

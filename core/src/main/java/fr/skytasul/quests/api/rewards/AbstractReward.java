@@ -27,16 +27,6 @@ public abstract class AbstractReward implements Cloneable {
 	public RewardCreator<?> getCreator() {
 		return creator;
 	}
-
-	/**
-	 * Called when the reward should be given to the player
-	 * @param p Player to give the reward
-	 * @return title of the reward (for instance : "4 gold")
-	 */
-	public abstract String give(Player p);
-	
-	protected abstract void save(Map<String, Object> datas);
-	protected abstract void load(Map<String, Object> savedDatas);
 	
 	public String getName(){
 		return name;
@@ -52,6 +42,13 @@ public abstract class AbstractReward implements Cloneable {
 	
 	public void detach() {}
 	
+	/**
+	 * Called when the reward should be given to the player
+	 * @param p Player to give the reward
+	 * @return title of the reward (for instance : "4 gold")
+	 */
+	public abstract String give(Player p);
+	
 	@Override
 	public abstract AbstractReward clone();
 	
@@ -61,7 +58,11 @@ public abstract class AbstractReward implements Cloneable {
 	
 	public abstract void itemClick(Player p, RewardsGUI gui, ItemStack clicked);
 	
-	public Map<String, Object> serialize(){
+	protected abstract void save(Map<String, Object> datas);
+	
+	protected abstract void load(Map<String, Object> savedDatas);
+	
+	public final Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
 		
 		save(map);
@@ -71,9 +72,9 @@ public abstract class AbstractReward implements Cloneable {
 	}
 	
 	public static AbstractReward deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
-		AbstractReward req = (AbstractReward) Class.forName((String) map.get("class")).newInstance();
-		req.quest = quest;
+		AbstractReward req = RewardCreator.creators.get(Class.forName((String) map.get("class"))).newRewardSupplier.get();
 		req.load(map);
+		req.attach(quest);
 		return req;
 	}
 	
