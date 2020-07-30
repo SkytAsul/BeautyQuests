@@ -43,11 +43,16 @@ public class MoneyReward extends AbstractReward {
 	}
 	
 	@Override
+	protected String[] getLore() {
+		return new String[] { Lang.optionValue.format(money), "", Lang.Remove.toString() };
+	}
+	
+	@Override
 	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
 		Lang.CHOOSE_MONEY_REWARD.send(p);
 		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 			money = (double) obj;
-			ItemUtils.lore(clicked, "Money : " + obj);
+			ItemUtils.lore(clicked, getLore());
 			gui.reopen(p);
 		}, new NumberParser(Double.class, false, true)));
 	}

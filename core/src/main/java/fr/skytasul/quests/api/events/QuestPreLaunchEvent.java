@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
 
 import fr.skytasul.quests.structure.Quest;
 
@@ -23,5 +24,15 @@ public class QuestPreLaunchEvent extends PlayerQuestEvent implements Cancellable
 	public void setCancelled(boolean paramBoolean){
 		this.cancel = paramBoolean;
 	}
+	
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+	
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+	
+	private static final HandlerList handlers = new HandlerList();
 
 }

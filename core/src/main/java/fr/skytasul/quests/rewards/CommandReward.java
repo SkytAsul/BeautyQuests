@@ -45,8 +45,8 @@ public class CommandReward extends AbstractReward {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
-		return ItemUtils.lore(super.getItemStack(), Lang.commands.format(commands.size()));
+	protected String[] getLore() {
+		return new String[] { "§8> §7" + Lang.commands.format(commands.size()), "", Lang.Remove.toString() };
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class CommandReward extends AbstractReward {
 			}
 
 			public void finish() {
-				ItemUtils.lore(clicked, Lang.commands.format(commands.size()));
+				ItemUtils.lore(clicked, getLore());
 				gui.reopen(p);
 			}
 

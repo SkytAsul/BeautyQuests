@@ -14,11 +14,24 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
+	
+	@Override
+	public void attach(Quest quest) {
+		super.attach(quest);
+		getValue().forEach(requirement -> requirement.setQuest(quest));
+	}
+	
+	@Override
+	public void detach() {
+		super.detach();
+		getValue().forEach(AbstractRequirement::unload);
+	}
 	
 	@Override
 	public Object save() {

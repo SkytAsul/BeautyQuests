@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -42,8 +43,16 @@ public class ItemReward extends AbstractReward {
 	}
 	
 	@Override
+	protected String[] getLore() {
+		return new String[] { "§8> §7" + items.size() + " " + Lang.Item.toString(), "", Lang.Remove.toString() };
+	}
+	
+	@Override
 	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
-		new ItemsGUI(() -> gui.reopen(p), items);
+		new ItemsGUI(() -> {
+			ItemUtils.lore(clicked, getLore());
+			gui.reopen(p);
+		}, items).create(p);
 	}
 	
 	protected void save(Map<String, Object> datas){

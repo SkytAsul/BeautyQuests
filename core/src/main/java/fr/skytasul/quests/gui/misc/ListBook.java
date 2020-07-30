@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
@@ -30,7 +31,7 @@ public class ListBook{
 					+ formatLine(Lang.BOOK_SEVERAL.toString(), (qu.isRepeatable()) ? Lang.Yes.toString() : Lang.No.toString())
 					/*+ formatLine(Lang.BOOK_LVL.toString(), "" + qu.lvlRequired)
 					+ ((qu.hasQuestRequirement()) ? formatLine(Lang.BOOK_QUEST_REQUIREMENT.toString(), qu.getQuestRequired().getName()) : "")*/
-					+ formatLine(Lang.BOOK_REQUIREMENTS.toString(), qu.getRequirements().size() + "")
+					+ formatLine(Lang.BOOK_REQUIREMENTS.toString(), qu.getOptionValueOrDef(OptionRequirements.class).size() + "")
 					+ "\n"
 					+ formatLine(Lang.BOOK_STAGES.toString(), "")
 					+ "unsupported");

@@ -141,6 +141,7 @@ public class Utils{
 	}
 
 	public static String locationToString(Location lc){
+		if (lc == null) return null;
 		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName());
 	}
 	

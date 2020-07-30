@@ -6,8 +6,10 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.RewardsGUI;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.Lang;
 
 public abstract class AbstractReward implements Cloneable {
 
@@ -52,8 +54,12 @@ public abstract class AbstractReward implements Cloneable {
 	@Override
 	public abstract AbstractReward clone();
 	
+	protected String[] getLore() {
+		return new String[] { Lang.Remove.toString() };
+	}
+	
 	public ItemStack getItemStack() {
-		return creator.item.clone();
+		return ItemUtils.lore(creator.item.clone(), getLore());
 	}
 	
 	public abstract void itemClick(Player p, RewardsGUI gui, ItemStack clicked);

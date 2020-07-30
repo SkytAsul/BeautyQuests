@@ -37,18 +37,9 @@ public class RewardsGUI extends ListGUI<AbstractReward> {
 		this.end = end;
 	}
 
-	/**
-	 * Get the RewardsGUI, open it for player if specified, and re implement the player in the inventories system if on true
-	 * @param p player to open (can be null)
-	 * @param reImplement re implement the player in the inventories system
-	 * @return this RewardsGUI
-	 */
-	public RewardsGUI reopen(Player p) {
-		if (p != null){
-			Inventories.put(p, this, inv);
-			p.openInventory(inv);
-		}
-		return this;
+	public void reopen(Player p) {
+		Inventories.put(p, this, inv);
+		p.openInventory(inv);
 	}
 
 	@Override
@@ -58,7 +49,7 @@ public class RewardsGUI extends ListGUI<AbstractReward> {
 	
 	@Override
 	public ItemStack getItemStack(AbstractReward object) {
-		return ItemUtils.loreAdd(object.getItemStack(), "", Lang.Remove.toString());
+		return object.getItemStack();
 	}
 	
 	@Override
@@ -73,10 +64,11 @@ public class RewardsGUI extends ListGUI<AbstractReward> {
 				
 				@Override
 				public void click(RewardCreator<?> existing) {
-					finishItem(existing.newRewardSupplier.get());
+					AbstractReward reward = existing.newRewardSupplier.get();
+					reward.itemClick(p, RewardsGUI.this, finishItem(reward));
 				}
 				
-			};
+			}.create(p);
 		}else existing.itemClick(p, this, item);
 	}
 	
@@ -93,9 +85,9 @@ public class RewardsGUI extends ListGUI<AbstractReward> {
 		QuestsAPI.registerReward(ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), ItemReward::new);
 		QuestsAPI.registerReward(MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new);
 		if (DependenciesManager.vault) QuestsAPI.registerReward(MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new);
-		if (DependenciesManager.vault) QuestsAPI.registerReward(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), new PermissionReward.Creator());
-		QuestsAPI.registerReward(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), new TeleportationReward.Creator());
-		QuestsAPI.registerReward(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), new XPReward.Creator());
+		if (DependenciesManager.vault) QuestsAPI.registerReward(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new);
+		QuestsAPI.registerReward(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new);
+		QuestsAPI.registerReward(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new);
 	}
 
 }

@@ -69,9 +69,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 			}else if (click == ClickType.MIDDLE){
 				remove(slot);
 			}else {
-				T obj = objects.get(slot);
-				remove(slot);
-				click(obj, current);
+				click(objects.get(slot), current);
 			}
 		}
 		return true;

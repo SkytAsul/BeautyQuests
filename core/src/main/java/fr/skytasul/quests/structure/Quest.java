@@ -26,7 +26,6 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
-import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.options.OptionBypassLimit;
@@ -34,12 +33,15 @@ import fr.skytasul.quests.options.OptionCancellable;
 import fr.skytasul.quests.options.OptionConfirmMessage;
 import fr.skytasul.quests.options.OptionDescription;
 import fr.skytasul.quests.options.OptionEndMessage;
+import fr.skytasul.quests.options.OptionEndRewards;
 import fr.skytasul.quests.options.OptionHide;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.options.OptionQuestMaterial;
 import fr.skytasul.quests.options.OptionRepeatable;
+import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionScoreboardEnabled;
 import fr.skytasul.quests.options.OptionStartDialog;
+import fr.skytasul.quests.options.OptionStartRewards;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.options.OptionTimer;
 import fr.skytasul.quests.players.AdminMode;
@@ -60,10 +62,6 @@ public class Quest implements Comparable<Quest> {
 	private BranchesManager manager;
 	
 	private List<QuestOption<?>> options = new ArrayList<>();
-	
-	private List<AbstractRequirement> requirements = new ArrayList<>();
-	private List<AbstractReward> rewards = new ArrayList<>();
-	private List<AbstractReward> startRewards = new ArrayList<>();
 	
 	private boolean removed = false;
 	public boolean asyncEnd = false;
@@ -177,42 +175,6 @@ public class Quest implements Comparable<Quest> {
 		return manager;
 	}
 	
-	public List<AbstractReward> getRewards() {
-		return new ArrayList<>(rewards);
-	}
-
-	public void setRewards(List<AbstractReward> rewards) {
-		this.rewards = rewards;
-		for(AbstractReward rew : rewards){
-			if (rew.isAsync()) asyncEnd = true;
-			rew.attach(this);
-		}
-	}
-	
-	public List<AbstractReward> getStartRewards() {
-		return new ArrayList<>(startRewards);
-	}
-
-	public void setStartRewards(List<AbstractReward> rewards) {
-		this.startRewards = rewards;
-		this.asyncStart = null;
-		for(AbstractReward rew : startRewards){
-			if (rew.isAsync() && asyncStart == null) asyncStart = new ArrayList<>();
-			rew.attach(this);
-		}
-	}
-
-	public List<AbstractRequirement> getRequirements(){
-		return new ArrayList<>(requirements);
-	}
-
-	public void setRequirements(List<AbstractRequirement> requirements) {
-		this.requirements = requirements;
-		for(AbstractRequirement req : requirements){
-			req.setQuest(this);
-		}
-	}
-	
 	public int getTimeLeft(PlayerAccount acc){
 		return Math.max((int) Math.ceil((acc.getQuestDatas(this).getTimer() - System.currentTimeMillis()) / 60000D), 0);
 	}
@@ -263,7 +225,7 @@ public class Quest implements Comparable<Quest> {
 			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
 		}
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(getOption(OptionStarterNPC.class).getValue()).size() == 1));
-		for (AbstractRequirement ar : requirements){
+		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);
 				return false;
@@ -316,8 +278,8 @@ public class Quest implements Comparable<Quest> {
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
-				List<String> msg = Utils.giveRewards(p, startRewards);
-				requirements.stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
+				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
 
@@ -338,7 +300,7 @@ public class Quest implements Comparable<Quest> {
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			public void run(){
-				List<String> msg = Utils.giveRewards(p, rewards);
+				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
 				Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
 				
 				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
@@ -372,8 +334,6 @@ public class Quest implements Comparable<Quest> {
 	public void unloadAll(){
 		manager.remove();
 		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
-		rewards.forEach(AbstractReward::detach);
-		requirements.forEach(AbstractRequirement::unload);
 		options.forEach(QuestOption::detach);
 	}
 

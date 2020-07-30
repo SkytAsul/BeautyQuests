@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -34,37 +33,32 @@ public class TeleportationReward extends AbstractReward {
 		return null;
 	}
 
+	@Override
+	public AbstractReward clone() {
+		return new TeleportationReward(teleportation.clone());
+	}
 	
-	protected void save(Map<String, Object> datas){
+	@Override
+	protected String[] getLore() {
+		return new String[] { "§8> §7" + Utils.locationToString(teleportation), "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
+		Lang.MOVE_TELEPORT_POINT.send(p);
+		Editor.enterOrLeave(p, new WaitClick(p, NPCGUI.validMove.clone(), () -> {
+			teleportation = p.getLocation();
+			ItemUtils.lore(clicked, getLore());
+			gui.reopen(p);
+		}));
+	}
+	
+	protected void save(Map<String, Object> datas) {
 		datas.put("tp", teleportation.serialize());
 	}
-
-	protected void load(Map<String, Object> savedDatas){
+	
+	protected void load(Map<String, Object> savedDatas) {
 		teleportation = Location.deserialize((Map<String, Object>) savedDatas.get("tp"));
 	}
-
-	public static class Creator implements RewardCreationRunnables<TeleportationReward> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
-			Lang.MOVE_TELEPORT_POINT.send(p);
-			Editor.enterOrLeave(p, new WaitClick(p, NPCGUI.validMove.clone(), () -> {
-				Location lc = p.getLocation();
-				datas.put("loc", lc);
-				ItemUtils.lore(clicked, Utils.locationToString(lc));
-				gui.reopen(p, false);
-			}));
-		}
-
-		public void edit(Map<String, Object> datas, TeleportationReward reward, ItemStack is) {
-			Location lc = reward.teleportation;
-			datas.put("loc", lc);
-			ItemUtils.lore(is, Utils.locationToString(lc));
-		}
-
-		public TeleportationReward finish(Map<String, Object> datas) {
-			return new TeleportationReward((Location) datas.get("loc"));
-		}
-
-	}
-
+	
 }
