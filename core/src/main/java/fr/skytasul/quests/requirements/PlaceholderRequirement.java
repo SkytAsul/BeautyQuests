@@ -4,31 +4,39 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class PlaceholderRequirement extends AbstractRequirement {
 
 	private String rawPlaceholder;
 	
-	private PlaceholderHook hook;
+	private PlaceholderExpansion hook;
 	private String params;
 	
 	private String value;
-	private ComparisonMethod comparison = ComparisonMethod.EQUALS;
+	private ComparisonMethod comparison;
 
 	public PlaceholderRequirement(){
+		this(null, null, ComparisonMethod.EQUALS);
+	}
+	
+	public PlaceholderRequirement(String placeholder, String value, ComparisonMethod comparison) {
 		super("placeholderRequired");
 		if (!DependenciesManager.papi) throw new MissingDependencyException("PlaceholderAPI");
+		if (placeholder != null) setPlaceholder(placeholder);
+		this.value = value;
+		this.comparison = comparison;
 	}
 
 	public boolean test(Player p){
@@ -49,7 +57,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	public void setPlaceholder(String placeholder){
 		this.rawPlaceholder = placeholder;
 		int index = placeholder.indexOf("_");
-		hook = PlaceholderAPI.getPlaceholders().get(placeholder.substring(0, index).toLowerCase());
+		hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(placeholder.substring(0, index).toLowerCase());
 		params = placeholder.substring(index + 1);
 	}
 	
@@ -77,31 +85,27 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (savedDatas.containsKey("comparison")) this.comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
 	}
 
-	public static class Creator implements RequirementCreationRunnables<PlaceholderRequirement> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
-			new TextEditor(p, (id) -> {
-				datas.put("placeholder", id);
-				Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(p, id);
-				new TextEditor(p, (value) -> {
-					datas.put("value", value);
-					gui.reopen(p, false);
-				}).enterOrLeave(p);
-			}).enterOrLeave(p);
-		}
-
-		public PlaceholderRequirement finish(Map<String, Object> datas) {
-			PlaceholderRequirement req = new PlaceholderRequirement();
-			req.setPlaceholder((String) datas.get("placeholder"));
-			req.setValue((String) datas.get("value"));
-			return req;
-		}
-
-		public void edit(Map<String, Object> datas, PlaceholderRequirement requirement) {
-			datas.put("placeholder", requirement.getPlaceholder());
-			datas.put("value", requirement.getValue());
-		}
+	@Override
+	public String[] getLore() {
+		return new String[] { "§8> §7" + rawPlaceholder, "§8> §7" + comparison.getTitle().format(value), "", Lang.Remove.toString() };
 	}
-
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
+		new TextEditor(p, (id) -> {
+			setPlaceholder((String) id);
+			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(p, id);
+			new TextEditor(p, (value) -> {
+				this.value = (String) value;
+				gui.reopen(p);
+			}).enterOrLeave(p);
+		}).enterOrLeave(p);
+	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new PlaceholderRequirement(rawPlaceholder, value, comparison);
+	}
+	
 }

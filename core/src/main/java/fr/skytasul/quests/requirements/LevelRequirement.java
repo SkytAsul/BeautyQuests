@@ -4,13 +4,18 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.Lang;
 
 public class LevelRequirement extends TargetNumberRequirement {
 	
 	public LevelRequirement() {
-		super("levelRequired");
+		this(0);
+	}
+	
+	public LevelRequirement(double target) {
+		super("levelRequired", target);
 	}
 
 	@Override
@@ -22,6 +27,21 @@ public class LevelRequirement extends TargetNumberRequirement {
 		Lang.REQUIREMENT_LEVEL.send(p, getFormattedValue());
 	}
 	
+	@Override
+	public Class<? extends Number> numberClass() {
+		return Integer.class;
+	}
+	
+	@Override
+	public void sendHelpString(Player p) {
+		Lang.CHOOSE_XP_REQUIRED.send(p);
+	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new LevelRequirement(target);
+	}
+	
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 	}
@@ -29,23 +49,6 @@ public class LevelRequirement extends TargetNumberRequirement {
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
-	}
-
-	public static class Creator extends TargetNumberRequirement.Creator<LevelRequirement> {
-
-		public LevelRequirement finish(Map<String, Object> datas) {
-			return super.finish(new LevelRequirement(), datas);
-		}
-
-		@Override
-		public Class<? extends Number> numberClass() {
-			return Integer.class;
-		}
-
-		@Override
-		public void sendHelpString(Player p) {
-			Lang.CHOOSE_XP_REQUIRED.send(p);
-		}
 	}
 
 }

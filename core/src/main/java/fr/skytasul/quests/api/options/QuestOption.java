@@ -43,11 +43,15 @@ public abstract class QuestOption<T> implements Cloneable {
 	
 	public void setValue(T value) {
 		this.value = value;
-		if (valueUpdateListener != null) valueUpdateListener.run();
+		valueUpdated();
 	}
 	
 	public void resetValue() {
 		setValue(creator.defaultValue);
+	}
+	
+	protected void valueUpdated() {
+		if (valueUpdateListener != null) valueUpdateListener.run();
 	}
 	
 	public void setValueUpdaterListener(Runnable listener) {

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.Collection;
+
 import org.bukkit.entity.Player;
 
 import com.sucy.skill.api.classes.RPGClass;
@@ -17,6 +19,10 @@ public class SkillAPI {
 	
 	public static RPGClass getClass(String name) {
 		return com.sucy.skill.SkillAPI.getClass(name);
+	}
+	
+	public static Collection<RPGClass> getClasses() {
+		return com.sucy.skill.SkillAPI.getClasses().values();
 	}
 	
 }

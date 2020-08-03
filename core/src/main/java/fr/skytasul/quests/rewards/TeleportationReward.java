@@ -6,11 +6,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -39,12 +40,12 @@ public class TeleportationReward extends AbstractReward {
 	}
 	
 	@Override
-	protected String[] getLore() {
+	public String[] getLore() {
 		return new String[] { "§8> §7" + Utils.locationToString(teleportation), "", Lang.Remove.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, RewardsGUI gui, ItemStack clicked) {
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.MOVE_TELEPORT_POINT.send(p);
 		Editor.enterOrLeave(p, new WaitClick(p, NPCGUI.validMove.clone(), () -> {
 			teleportation = p.getLocation();

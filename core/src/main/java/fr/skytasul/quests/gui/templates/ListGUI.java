@@ -53,6 +53,13 @@ public abstract class ListGUI<T> implements CustomInventory {
 		return inv;
 	}
 	
+	public boolean remove(T object) {
+		int index = objects.indexOf(object);
+		if (index == -1) return false;
+		remove(index);
+		return true;
+	}
+	
 	public void remove(int slot){
 		objects.remove(slot);
 		for (int i = slot; i <= objects.size(); i++){

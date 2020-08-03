@@ -4,12 +4,15 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
 
+import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.ScoreboardObjectiveParser;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 
 public class ScoreboardRequirement extends TargetNumberRequirement {
@@ -18,7 +21,12 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	private String objectiveName;
 
 	public ScoreboardRequirement() {
-		super("scoreboardRequired");
+		this(null, 0);
+	}
+	
+	public ScoreboardRequirement(String objectiveName, double target) {
+		super("scoreboardRequired", target);
+		if (objectiveName != null) this.objectiveName = objectiveName;
 	}
 
 	@Override
@@ -32,6 +40,37 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 
 	@Override
+	public Class<? extends Number> numberClass() {
+		return Double.class;
+	}
+	
+	@Override
+	public void sendHelpString(Player p) {
+		Lang.CHOOSE_SCOREBOARD_TARGET.send(p);
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { getValueLore(), "§8>Objective name: §7" + objectiveName, "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(p);
+		new TextEditor(p, (obj) -> {
+			this.objective = (Objective) obj;
+			this.objectiveName = objective.getName();
+			super.itemClick(p, gui, clicked);
+		}, new ScoreboardObjectiveParser(), () -> {
+			if (objectiveName == null) gui.remove(this);
+			gui.reopen(p);
+		}, () -> {
+			gui.remove(this);
+			gui.reopen(p);
+		}).enterOrLeave(p);
+	}
+	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 		datas.put("objective", objectiveName);
@@ -43,42 +82,9 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		setObjectiveName((String) savedDatas.get("objective"));
 	}
 
-	public static class Creator extends TargetNumberRequirement.Creator<ScoreboardRequirement> {
-
-		@Override
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(p);
-			new TextEditor(p, (obj) -> {
-				Objective objective = (Objective) obj;
-				datas.put("objectiveName", objective.getName());
-				super.itemClick(p, datas, gui);
-			}, new ScoreboardObjectiveParser()).enterOrLeave(p);
-			super.itemClick(p, datas, gui);
-		}
-
-		@Override
-		public void edit(Map<String, Object> datas, ScoreboardRequirement requirement) {
-			super.edit(datas, requirement);
-			datas.put("objectiveName", requirement.objectiveName);
-		}
-
-		@Override
-		public ScoreboardRequirement finish(Map<String, Object> datas) {
-			ScoreboardRequirement requirement = new ScoreboardRequirement();
-			requirement.setObjectiveName((String) datas.get("objectiveName"));
-			return super.finish(requirement, datas);
-		}
-
-		@Override
-		public Class<? extends Number> numberClass() {
-			return Double.class;
-		}
-
-		@Override
-		public void sendHelpString(Player p) {
-			Lang.CHOOSE_SCOREBOARD_TARGET.send(p);
-		}
-
+	@Override
+	public AbstractRequirement clone() {
+		return new ScoreboardRequirement(objectiveName, target);
 	}
 
 }

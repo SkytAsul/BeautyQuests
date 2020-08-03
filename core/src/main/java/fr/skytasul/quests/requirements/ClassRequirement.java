@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.sucy.skill.api.classes.RPGClass;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
-import fr.skytasul.quests.editors.Editor;
-import fr.skytasul.quests.editors.TextListEditor;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.gui.templates.ListGUI;
+import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -21,11 +24,16 @@ import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
 public class ClassRequirement extends AbstractRequirement {
 
-	public List<RPGClass> classes = new ArrayList<>();
+	public List<RPGClass> classes;
 	
 	public ClassRequirement() {
+		this(new ArrayList<>());
+	}
+	
+	public ClassRequirement(List<RPGClass> classes) {
 		super("classRequired");
 		if (!DependenciesManager.skapi) throw new MissingDependencyException("SkillAPI");
+		this.classes = classes;
 	}
 
 	public List<String> getClassesName(){
@@ -46,56 +54,79 @@ public class ClassRequirement extends AbstractRequirement {
 		return false;
 	}
 
+	@Override
+	public String[] getLore() {
+		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		new ListGUI<RPGClass>(classes, 9) {
+			
+			@Override
+			public String name() {
+				return Lang.INVENTORY_CLASSES_REQUIRED.toString();
+			}
+			
+			@Override
+			public ItemStack getItemStack(RPGClass object) {
+				return ItemUtils.loreAdd(object.getIcon(), "", Lang.Remove.toString());
+			}
+			
+			@Override
+			public void click(RPGClass existing, ItemStack item) {
+				if (existing == null) {
+					new PagedGUI<RPGClass>(Lang.INVENTORY_CLASSES_LIST.toString(), DyeColor.PURPLE, SkillAPI.getClasses()) {
+						
+						@Override
+						public ItemStack getItemStack(RPGClass object) {
+							return object.getIcon();
+						}
+						
+						@Override
+						public void click(RPGClass existing) {
+							finishItem(existing);
+						}
+					}.create(p);
+				}
+			}
+			
+			@Override
+			public void finish() {
+				ItemUtils.lore(clicked, getLore());
+				gui.reopen(p);
+			}
+			
+		}.create(p);
+	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new ClassRequirement(new ArrayList<>(classes));
+	}
 	
 	protected void save(Map<String, Object> datas) {
 		if (classes.isEmpty()) return;
 		List<String> ls = new ArrayList<>();
-		for (RPGClass cl : classes){
+		for (RPGClass cl : classes) {
 			ls.add(cl.getName());
 		}
 		datas.put("classes", ls);
 	}
 	
 	protected void load(Map<String, Object> savedDatas) {
-		if (!savedDatas.containsKey("classes")){
+		if (!savedDatas.containsKey("classes")) {
 			BeautyQuests.getInstance().getLogger().warning("ClassRequirement for quest \"" + quest.getName() + "\", ID " + quest.getID() + " is empty");
 			return;
 		}
-		for (String s : (List<String>) savedDatas.get("classes")){
+		for (String s : (List<String>) savedDatas.get("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());
-			if (classe == null){
+			if (classe == null) {
 				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists. Quest \"" + quest.getName() + "\", ID " + quest.getID());
 				continue;
 			}
 			classes.add(classe);
 		}
 	}
-
-	public static class Creator implements RequirementCreationRunnables<ClassRequirement> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			if (!datas.containsKey("classes")) datas.put("classes", new ArrayList<String>());
-			Lang.CHOOSE_CLASSES_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
-				gui.reopen(p, false);
-			}, (List<String>) datas.get("classes"))).valid = (string) -> {
-				if (!SkillAPI.classExists(string)) {
-					Lang.CLASS_DOESNT_EXIST.send(p);
-					return false;
-				}
-				return true;
-			};
-		}
-
-		public ClassRequirement finish(Map<String, Object> datas) {
-			ClassRequirement req = new ClassRequirement();
-			for (String s : (List<String>) datas.get("classes")) req.addClass(SkillAPI.getClass(s));
-			return req;
-		}
-
-		public void edit(Map<String, Object> datas, ClassRequirement requirement) {
-			datas.put("classes", new ArrayList<>(requirement.getClassesName()));
-		}
-	}
-
+	
 }

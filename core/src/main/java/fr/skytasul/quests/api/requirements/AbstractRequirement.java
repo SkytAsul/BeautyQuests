@@ -3,19 +3,45 @@ package fr.skytasul.quests.api.requirements;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.Quest;
 
-public abstract class AbstractRequirement {
+public abstract class AbstractRequirement implements QuestObject {
 
-	public final String name;
+	private final QuestObjectCreator<? extends AbstractRequirement> creator;
+	
+	protected final String name;
 	protected Quest quest;
 	
 	protected AbstractRequirement(String name){
 		this.name = name;
+		
+		this.creator = QuestsAPI.requirements.get(getClass());
+		if (getCreator() == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a reward via the API.");
 	}
+	
+	public QuestObjectCreator<? extends AbstractRequirement> getCreator() {
+		return creator;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public void attach(Quest quest) {
+		this.quest = quest;
+	}
+	
+	@Override
+	public void detach() {}
 	
 	/**
 	 * Called when the plugin has to check if a player can start a quest with this requirement
@@ -30,17 +56,16 @@ public abstract class AbstractRequirement {
 	 */
 	public void sendReason(Player p) {}
 	
+	@Override
+	public abstract AbstractRequirement clone();
+	
+	@Override
+	public ItemStack getItemStack() {
+		return ItemUtils.lore(creator.item.clone(), getLore());
+	}
+	
 	protected abstract void save(Map<String, Object> datas);
 	protected abstract void load(Map<String, Object> savedDatas);
-	
-	/**
-	 * Called when the requirement is unloaded
-	 */
-	public void unload(){}
-	
-	public void setQuest(Quest quest){
-		this.quest = quest;
-	}
 	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
@@ -52,11 +77,10 @@ public abstract class AbstractRequirement {
 	}
 	
 	public static AbstractRequirement deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
-		Validate.notNull(quest, "Quest cannot be null");
-		AbstractRequirement req = (AbstractRequirement) Class.forName((String) map.get("class")).newInstance();
-		req.quest = quest;
-		req.load(map);
-		return req;
+		AbstractRequirement requirement = QuestsAPI.requirements.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
+		requirement.load(map);
+		requirement.attach(quest);
+		return requirement;
 	}
 	
 }

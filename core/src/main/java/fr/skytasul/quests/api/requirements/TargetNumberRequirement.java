@@ -4,25 +4,31 @@ import java.text.NumberFormat;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.EnumParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 public abstract class TargetNumberRequirement extends AbstractRequirement {
 
+	private static final EnumParser<ComparisonMethod> COMPARISON_PARSER = new EnumParser<>(ComparisonMethod.class);
+	
 	private static NumberFormat numberFormat = NumberFormat.getInstance();
 
 	protected ComparisonMethod comparison = ComparisonMethod.GREATER_OR_EQUAL;
 	protected double target;
-
-	public TargetNumberRequirement(String name) {
+	
+	public TargetNumberRequirement(String name, double target) {
 		super(name);
+		this.target = target;
 	}
 	
 	public double getTarget(){
@@ -42,9 +48,22 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	public String getFormattedValue() {
 		return comparison.getTitle().format(numberFormat.format(target));
 	}
+	
+	protected String getValueLore() {
+		return "§8> §7" + getFormattedValue();
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { getValueLore(), "", Lang.Remove.toString() };
+	}
 
 	public abstract double getPlayerTarget(Player p);
 
+	public abstract Class<? extends Number> numberClass();
+	
+	public abstract void sendHelpString(Player p);
+	
 	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("comparison", comparison.name());
@@ -56,43 +75,29 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		if (savedDatas.containsKey("comparison")) comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
 		target = Utils.parseDouble(savedDatas.get("target"));
 	}
-
-	public static abstract class Creator<T extends TargetNumberRequirement> implements RequirementCreationRunnables<T> {
-
-		private static final EnumParser<ComparisonMethod> COMPARISON_PARSER = new EnumParser<>(ComparisonMethod.class);
-
-		@Override
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			sendHelpString(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				if (datas.containsKey("target")) datas.remove("target");
-				datas.put("target", ((Number) obj).doubleValue());
-				Lang.COMPARISON_TYPE.send(p, COMPARISON_PARSER.getNames());
-				new TextEditor(p, (comp) -> {
-					datas.put("comparison", comp);
-					gui.reopen(p, true);
-				}, COMPARISON_PARSER, null, () -> {
-					datas.put("comparison", ComparisonMethod.GREATER_OR_EQUAL);
-					gui.reopen(p, true);
-				}).enterOrLeave(p);
-			}, new NumberParser(numberClass(), true)));
-		}
-
-		public T finish(T requirement, Map<String, Object> datas) {
-			requirement.target = (double) datas.get("target");
-			requirement.comparison = (ComparisonMethod) datas.get("comparison");
-			return requirement;
-		}
-
-		public void edit(Map<String, Object> datas, T requirement) {
-			datas.put("target", requirement.target);
-			datas.put("comparison", requirement.comparison);
-		}
-
-		public abstract Class<? extends Number> numberClass();
-
-		public abstract void sendHelpString(Player p);
-
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		sendHelpString(p);
+		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+			target = ((Number) obj).doubleValue();
+			Lang.COMPARISON_TYPE.send(p, COMPARISON_PARSER.getNames());
+			new TextEditor(p, (comp) -> {
+				this.comparison = (ComparisonMethod) comp;
+				ItemUtils.lore(clicked, getLore());
+				gui.reopen(p);
+			}, COMPARISON_PARSER, null, () -> {
+				this.comparison = ComparisonMethod.GREATER_OR_EQUAL;
+				ItemUtils.lore(clicked, getLore());
+				gui.reopen(p);
+			}).enterOrLeave(p);
+		}, new NumberParser(numberClass(), true), () -> {
+			if (target == 0) gui.remove(this);
+			gui.reopen(p);
+		}, () -> {
+			gui.remove(this);
+			gui.reopen(p);
+		}));
 	}
 
 }

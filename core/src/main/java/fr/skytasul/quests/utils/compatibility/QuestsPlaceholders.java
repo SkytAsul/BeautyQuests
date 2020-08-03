@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -38,17 +36,17 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	@Override
-	public @NotNull String getAuthor() {
+	public String getAuthor() {
 		return BeautyQuests.getInstance().getDescription().getAuthors().toString();
 	}
 	
 	@Override
-	public @NotNull String getIdentifier() {
+	public String getIdentifier() {
 		return "beautyquests";
 	}
 	
 	@Override
-	public @NotNull String getVersion() {
+	public String getVersion() {
 		return BeautyQuests.getInstance().getDescription().getVersion();
 	}
 	
@@ -63,7 +61,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	@Override
-	public @Nullable String onRequest(@Nullable OfflinePlayer off, @NotNull String identifier) {
+	public String onRequest(OfflinePlayer off, String identifier) {
 		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();

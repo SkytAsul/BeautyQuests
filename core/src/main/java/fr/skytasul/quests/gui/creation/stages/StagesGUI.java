@@ -22,7 +22,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
 import fr.skytasul.quests.stages.StageBucket;
@@ -128,14 +128,13 @@ public class StagesGUI implements CustomInventory {
 		line.data.put("type", creator.type);
 		line.data.put("rewards", new ArrayList<>());
 
-		line.setItem(1, ending, new StageRunnable() {
-			public void run(Player p, LineData datas, ItemStack item){
-				Inventories.create(p, new RewardsGUI((rewards) -> {
+		line.setItem(1, ending, (p, datas, item) -> new QuestObjectGUI<>(
+				Lang.INVENTORY_REWARDS.toString(),
+				QuestsAPI.rewards.values(), rewards -> {
 					datas.put("rewards", rewards);
 					reopen(p, true);
-				}, (List<AbstractReward>) datas.get("rewards")));
-			}
-		});
+				},
+				(List<AbstractReward>) datas.get("rewards")).create(p));
 
 		line.setItem(2, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){

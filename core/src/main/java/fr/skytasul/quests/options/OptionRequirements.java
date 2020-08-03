@@ -9,11 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -24,13 +25,13 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		getValue().forEach(requirement -> requirement.setQuest(quest));
+		getValue().forEach(requirement -> requirement.attach(quest));
 	}
 	
 	@Override
 	public void detach() {
 		super.detach();
-		getValue().forEach(AbstractRequirement::unload);
+		getValue().forEach(AbstractRequirement::detach);
 	}
 	
 	@Override
@@ -69,7 +70,7 @@ public class OptionRequirements extends QuestOption<List<AbstractRequirement>> {
 	
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
-		new RequirementsGUI(requirements -> {
+		new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestsAPI.requirements.values(), requirements -> {
 			setValue(requirements);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);

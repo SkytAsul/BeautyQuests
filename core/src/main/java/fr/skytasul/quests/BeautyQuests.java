@@ -22,7 +22,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,8 +31,7 @@ import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionStarterNPC;
@@ -119,6 +117,8 @@ public class BeautyQuests extends JavaPlugin{
 						getLogger().info(loadAllDatas() + " quests loaded ("
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
+						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
+						
 						launchSaveCycle();
 
 						if (!lastVersion.equals(getDescription().getVersion())) { // maybe change in data structure : update of all quest files
@@ -221,7 +221,7 @@ public class BeautyQuests extends JavaPlugin{
 				public void run() {
 					try {
 						saveAllConfig(false);
-						logger.info("Datas saved ~ periodic save");
+						if (QuestsConfiguration.saveCycleMessage) logger.info("Datas saved ~ periodic save");
 					}catch (Exception e) {
 						logger.severe("Error when saving!");
 						e.printStackTrace();
@@ -249,8 +249,7 @@ public class BeautyQuests extends JavaPlugin{
 			if (init){
 				if (loadLang() == null) return;
 				StagesGUI.initialize(); // 			initializing default stage types
-				RequirementsGUI.initialize(); //	initializing default requirements
-				RewardsGUI.initialize(); //			initializing default rewards
+				QuestObjectGUI.initialize(); //			initializing default rewards and requirements
 				FinishGUI.initialize(); //				initializing default quest options
 				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
 				QuestsAPI.registerMobFactory(new CitizensFactory());
@@ -386,8 +385,6 @@ public class BeautyQuests extends JavaPlugin{
 		}
 		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
 
-		getServer().getPluginManager().registerEvents(new QuestsListener(), this);
-
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
@@ -438,7 +435,7 @@ public class BeautyQuests extends JavaPlugin{
 		quests.clear();
 		npcs.clear();
 		if (db != null) db.closeConnection();
-		HandlerList.unregisterAll(this);
+		//HandlerList.unregisterAll(this);
 		if (DependenciesManager.dyn) Dynmap.unload();
 	}
 	
@@ -499,7 +496,6 @@ public class BeautyQuests extends JavaPlugin{
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
 			saveAllConfig(true);
 			sender.sendMessage("§aDatas saved!");
-			resetDatas();
 		}catch (Exception e) {
 			sender.sendMessage("§cError when saving datas. §lInterrupting operation!");
 			e.printStackTrace();

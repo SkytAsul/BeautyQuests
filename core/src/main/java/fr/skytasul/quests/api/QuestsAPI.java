@@ -2,7 +2,9 @@ package fr.skytasul.quests.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
@@ -12,12 +14,10 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
-import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.api.stages.StageCreator;
@@ -30,6 +30,9 @@ import fr.skytasul.quests.utils.DebugUtils;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsAPI {
+	
+	public static Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
+	public static Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
 	
 	/**
 	 * Register new stage type into the plugin
@@ -48,24 +51,24 @@ public class QuestsAPI {
 	}
 	
 	/**
-	 * Register new requirement type into the plugin
-	 * @param clazz Class who extends AbstractRequirement
+	 * Registers a new requirement type into the plugin
+	 * @param clazz Class extending {@link AbstractRequirement}
 	 * @param item ItemStack shown in requirements GUI
-	 * @param runnables Instance of special runnables
+	 * @param newRequirementSupplier lambda returning an instance of this Requirement (Requirement::new)
 	 */
-	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, RequirementCreationRunnables<T> runnables) {
-		RequirementCreator.creators.add(new RequirementCreator<T>(clazz, item, runnables));
+	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack is, Supplier<T> newRequirementSupplier) {
+		requirements.put(clazz, (QuestObjectCreator<AbstractRequirement>) new QuestObjectCreator<T>(clazz, is, newRequirementSupplier));
 		DebugUtils.logMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
 	/**
-	 * Register new reward type into the plugin
-	 * @param clazz Class who extends AbstractReward
+	 * Registers a new reward type into the plugin
+	 * @param clazz Class extending {@link AbstractReward}
 	 * @param item ItemStack shown in rewards GUI
-	 * @param runnables Instance of special runnables
+	 * @param newRewardSupplier lambda returning an instance of this Reward (Reward::new)
 	 */
 	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack is, Supplier<T> newRewardSupplier) {
-		RewardCreator.creators.put(clazz, new RewardCreator<>(clazz, is, newRewardSupplier));
+		rewards.put(clazz, (QuestObjectCreator<AbstractReward>) new QuestObjectCreator<T>(clazz, is, newRewardSupplier));
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	

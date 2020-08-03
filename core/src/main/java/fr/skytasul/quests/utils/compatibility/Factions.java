@@ -1,5 +1,8 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.Collection;
+
+import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 
 public class Factions {
@@ -10,6 +13,10 @@ public class Factions {
 	
 	public static Object getFaction(String name){
 		return FactionColl.get().getByName(name);
+	}
+	
+	public static Collection<Faction> getFactions() {
+		return FactionColl.get().getAll();
 	}
 	
 }

@@ -68,13 +68,14 @@ public class QuestsConfiguration {
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
-
+	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
 
 	public static Quest firstQuest;
 
+	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
 	static int firstQuestID = -1;
 
@@ -94,6 +95,7 @@ public class QuestsConfiguration {
 			}
 		}
 		saveCycle = config.getInt("saveCycle");
+		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		firstQuestID = config.getInt("firstQuest");
 		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");

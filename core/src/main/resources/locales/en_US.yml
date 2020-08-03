@@ -62,9 +62,7 @@ msg:
     remove: §aNPC deleted.
     talk: §aGo and talk to the NPC named §e{0}§a.
   regionDoesntExists: §cThis region doesn't exist. (You have to be in the same world.)
-  factionDoesntExist: §cThis faction doesn't exist.
   npcDoesntExist: §cThe NPC with the id {0} doesn't exist.
-  classDoesntExist: §cThis class doesn't exist.
   objectDoesntExist: §cThe specified item with the id {0} doesn't exist.
   number:
     negative: §cYou must enter a positive number!
@@ -172,9 +170,6 @@ msg:
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
       choosePermissionMessage: §aYou can choose a rejection message if the player
         doesn't have the required permission. (To skip this step, write "null".)
-      chooseFactionRequired: '§aWrite the required faction name:'
-      chooseClassesRequired: '§aWrite the names for the required classes to start
-        the quest:'
       choosePlaceholderRequired:
         identifier: '§aWrite the name of the required placeholder without the percent
           characters:'
@@ -463,6 +458,10 @@ inv:
     name: Permissions list
     removed: '§eTaken off: §6{0}'
     world: '§eWorld: §6{0}'
+  classesRequired.name: Classes required
+  classesList.name: Classes list
+  factionsRequired.name: Factions required
+  factionsList.name: Factions list
 scoreboard:
   name: §6§lQuests
   noLaunched: §cNo quests in progress.

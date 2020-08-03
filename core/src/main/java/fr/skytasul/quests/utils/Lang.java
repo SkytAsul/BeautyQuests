@@ -64,9 +64,7 @@ public enum Lang{
 	TALK_NPC("msg.npc.talk"),
 	
 	REGION_DOESNT_EXIST("msg.regionDoesntExists"),
-	FACTION_DOESNT_EXIST("msg.factionDoesntExist"),
 	NPC_DOESNT_EXIST("msg.npcDoesntExist"),
-	CLASS_DOESNT_EXIST("msg.classDoesntExist"),
 	OBJECT_DOESNT_EXIST("msg.objectDoesntExist"),
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
@@ -170,8 +168,6 @@ public enum Lang{
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
 	CHOOSE_PERM_REQUIRED("msg.editor.text.choosePermissionRequired"),
 	CHOOSE_PERM_REQUIRED_MESSAGE("msg.editor.text.choosePermissionMessage"),
-	CHOOSE_FAC_REQUIRED("msg.editor.text.chooseFactionRequired"),
-	CHOOSE_CLASSES_REQUIRED("msg.editor.text.chooseClassesRequired"),
 	CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER("msg.editor.text.choosePlaceholderRequired.identifier"),
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value"),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
@@ -430,6 +426,12 @@ public enum Lang{
 	INVENTORY_PERMISSION_LIST("inv.permissionList.name"),
 	permRemoved("inv.permissionList.removed"),
 	permWorld("inv.permissionList.world"),
+	
+	INVENTORY_CLASSES_REQUIRED("inv.classesRequired.name"),
+	INVENTORY_CLASSES_LIST("inv.classesList.name"),
+	
+	INVENTORY_FACTIONS_REQUIRED("inv.factionsRequired.name"),
+	INVENTORY_FACTIONS_LIST("inv.factionsList.name"),
 
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),

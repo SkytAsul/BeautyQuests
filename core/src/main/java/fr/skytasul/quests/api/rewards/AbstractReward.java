@@ -6,14 +6,16 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
 
-public abstract class AbstractReward implements Cloneable {
+public abstract class AbstractReward implements QuestObject {
 
-	private final RewardCreator<?> creator;
+	private final QuestObjectCreator<? extends AbstractReward> creator;
 	
 	protected boolean async = false;
 	protected final String name;
@@ -22,14 +24,15 @@ public abstract class AbstractReward implements Cloneable {
 	protected AbstractReward(String name){
 		this.name = name;
 		
-		this.creator = RewardCreator.creators.get(getClass());
+		this.creator = QuestsAPI.rewards.get(getClass());
 		if (getCreator() == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a reward via the API.");
 	}
 	
-	public RewardCreator<?> getCreator() {
+	public QuestObjectCreator<? extends AbstractReward> getCreator() {
 		return creator;
 	}
 	
+	@Override
 	public String getName(){
 		return name;
 	}
@@ -38,10 +41,12 @@ public abstract class AbstractReward implements Cloneable {
 		return async;
 	}
 	
+	@Override
 	public void attach(Quest quest) {
 		this.quest = quest;
 	}
 	
+	@Override
 	public void detach() {}
 	
 	/**
@@ -54,15 +59,13 @@ public abstract class AbstractReward implements Cloneable {
 	@Override
 	public abstract AbstractReward clone();
 	
-	protected String[] getLore() {
-		return new String[] { Lang.Remove.toString() };
-	}
-	
+	@Override
 	public ItemStack getItemStack() {
 		return ItemUtils.lore(creator.item.clone(), getLore());
 	}
 	
-	public abstract void itemClick(Player p, RewardsGUI gui, ItemStack clicked);
+	@Override
+	public abstract void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked);
 	
 	protected abstract void save(Map<String, Object> datas);
 	
@@ -78,10 +81,10 @@ public abstract class AbstractReward implements Cloneable {
 	}
 	
 	public static AbstractReward deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
-		AbstractReward req = RewardCreator.creators.get(Class.forName((String) map.get("class"))).newRewardSupplier.get();
-		req.load(map);
-		req.attach(quest);
-		return req;
+		AbstractReward reward = QuestsAPI.rewards.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
+		reward.load(map);
+		reward.attach(quest);
+		return reward;
 	}
 	
 }
