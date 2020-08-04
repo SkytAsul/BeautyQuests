@@ -1,11 +1,11 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.live.bemmamin.gps.api.GPSAPI;
 
 import fr.skytasul.quests.BeautyQuests;
-import net.citizensnpcs.api.npc.NPC;
 
 public class GPS {
 
@@ -15,9 +15,9 @@ public class GPS {
 		api = new GPSAPI(BeautyQuests.getInstance());
 	}
 	
-	public static boolean launchCompass(Player p, NPC npc){
+	public static boolean launchCompass(Player p, Location location) {
 		if (api.gpsIsActive(p)) return false;
-		api.startCompass(p, npc.getStoredLocation());
+		api.startCompass(p, location);
 		return true;
 	}
 	

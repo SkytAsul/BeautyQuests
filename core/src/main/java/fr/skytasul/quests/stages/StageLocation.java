@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.editors.TextEditor;
@@ -17,10 +18,13 @@ import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.GPS;
 
 public class StageLocation extends AbstractStage {
 
@@ -52,6 +56,16 @@ public class StageLocation extends AbstractStage {
 		if (hasStarted(e.getPlayer())){
 			if (e.getTo().distance(lc) <= radius) finishStage(e.getPlayer());
 		}
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerAccountJoinEvent e) {
+		if (QuestsConfiguration.handleGPS() && branch.hasStageLaunched(e.getPlayerAccount(), this)) GPS.launchCompass(e.getPlayer(), lc);
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerAccountLeaveEvent e) {
+		if (QuestsConfiguration.handleGPS() && branch.hasStageLaunched(e.getPlayerAccount(), this)) GPS.stopCompass(e.getPlayer());
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){

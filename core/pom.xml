@@ -91,12 +91,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>19.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizens</artifactId>
 			<version>2.0.27-SNAPSHOT</version>
@@ -112,7 +106,7 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.8</version>
+			<version>2.10.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

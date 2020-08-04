@@ -28,6 +28,7 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -187,8 +188,16 @@ public class StageNPC extends AbstractStage{
 	public void onJoin(PlayerAccountJoinEvent e) {
 		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
 			cached.add(e.getPlayer());
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(e.getPlayer(), npc);
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(e.getPlayer(), npc.getStoredLocation());
 		}else cached.remove(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerAccountLeaveEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			cached.remove(e.getPlayer());
+			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(e.getPlayer());
+		}
 	}
 	
 	public void start(PlayerAccount acc) {
@@ -196,7 +205,7 @@ public class StageNPC extends AbstractStage{
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cached.add(p);
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
 		}
 	}
 	
