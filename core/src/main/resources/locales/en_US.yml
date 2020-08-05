@@ -407,6 +407,8 @@ inv:
     finished: Finished quests
     inProgress: Quests in progress
     loreCancel: §c§oClick to cancel the quest.
+    loreStart: §a§oClick to start the quest.
+    loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
     timeToWait: §3§o{0} minute(s) before you can restart this quest.
     canRedo: §3§oYou can restart this quest!
     format:

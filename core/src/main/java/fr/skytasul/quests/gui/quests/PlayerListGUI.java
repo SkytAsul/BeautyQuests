@@ -19,6 +19,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -118,7 +119,11 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				setMainItem(i - page * 35, createQuestItem(qu, qu.getDescription()));
+				String[] lore;
+				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
+					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
+				}else lore = new String[] { qu.getDescription() };
+				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
 			break;
 
@@ -199,6 +204,13 @@ public class PlayerListGUI implements CustomInventory {
 					p.openInventory(inv);
 					Inventories.put(p, thiz, inv);
 				}, Lang.INDICATION_CANCEL.format(qu.getName())));
+			}else if (cat == Category.NOT_STARTED) {
+				int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
+				Quest qu = quests.get(id);
+				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
+				if (!acc.isCurrent()) break;
+				Player target = acc.getPlayer();
+				if (qu.isLauncheable(target, true)) qu.attemptStart(target);
 			}
 			break;
 			

@@ -51,9 +51,7 @@ msg:
     remove: '§aSuppression du NPC.'
     talk: '§aVa parler à un NPC nommé §e{0}§a.'
   regionDoesntExists: '§cCette région n''existe pas. (Vous devez être dans le même monde.)'
-  factionDoesntExist: '§cCette faction n''existe pas.'
   npcDoesntExist: '§cLa quête avec l''id {0} n''existe pas.'
-  classDoesntExist: '§cCette classe n''existe pas.'
   objectDoesntExist: '§cL''objet avec l''id {0} n''existe pas.'
   number:
     negative: '§cTu dois entrer un nombre positif !'
@@ -149,8 +147,6 @@ msg:
       chooseJobRequired: '§aEntrez le nom du le métier voulu :'
       choosePermissionRequired: '§aEntrez les permissions requises pour commencer la quête :'
       choosePermissionMessage: '§aVous pouvez choisir un message de refus si le joueur n''a pas la permission requise. (pour passer cette étape, entrez "null" et aucun message ne sera envoyé)'
-      chooseFactionRequired: '§aEntrez le nom des factions requises :'
-      chooseClassesRequired: '§aEntrez le nom des classes requises pour commencer la quête :'
       choosePlaceholderRequired:
         identifier: '§aEntrez le nom du placeholder requis, sans les pourcentages de début et de fin :'
         value: '§aEntrez la valeur requise pour le placeholder §6%{0}%§a :'
@@ -385,6 +381,8 @@ inv:
     finished: Quêtes terminées
     inProgress: Quêtes en cours
     loreCancel: '§c§oCliquez pour annuler la quête.'
+    loreStart: '§a§oCliquez pour commencer la quête.'
+    loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
     format:
@@ -436,6 +434,10 @@ inv:
     name: Liste des permissions
     removed: '§eRetiré : §6{0}'
     world: '§eMonde : §6{0}'
+  classesRequired.name: Classes requises
+  classesList.name: Liste des classes
+  factionsRequired.name: Factions requises
+  factionsList.name: Liste des factions
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'

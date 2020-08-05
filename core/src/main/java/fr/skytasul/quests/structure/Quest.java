@@ -213,7 +213,7 @@ public class Quest implements Comparable<Quest> {
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!getOption(OptionRepeatable.class).getValue() && hasFinished(acc)) return false;
+		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(acc)) return false;
 		if (!testTimer(p, acc, sendMessage)) return false;
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
@@ -256,7 +256,7 @@ public class Quest implements Comparable<Quest> {
 		}else attemptStart(p);
 	}
 
-	private void attemptStart(Player p) {
+	public void attemptStart(Player p) {
 		if (QuestsConfiguration.questConfirmGUI()) {
 			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), getOptionValueOrDef(OptionConfirmMessage.class)).create(p);
 		}else start(p);
@@ -310,7 +310,7 @@ public class Quest implements Comparable<Quest> {
 				questDatas.setFinished(true);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MINUTE, getOption(OptionTimer.class).getValue());
+					cal.add(Calendar.MINUTE, getOptionValueOrDef(OptionTimer.class));
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation());
