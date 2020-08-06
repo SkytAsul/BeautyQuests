@@ -28,8 +28,9 @@ import fr.skytasul.quests.utils.compatibility.GPS;
 
 public class StageLocation extends AbstractStage {
 
-	private Location lc;
-	private int radius;
+	private final Location lc;
+	private final int radius;
+	private final int radiusSquared;
 	
 	private String descMessage;
 	
@@ -37,6 +38,7 @@ public class StageLocation extends AbstractStage {
 		super(branch);
 		this.lc = lc;
 		this.radius = radius;
+		this.radiusSquared = radius * radius;
 		
 		this.descMessage = Lang.SCOREBOARD_LOCATION.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName());
 	}
@@ -54,7 +56,7 @@ public class StageLocation extends AbstractStage {
 		if (e.getTo().getWorld() != lc.getWorld()) return;
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return; // only rotation
 		if (hasStarted(e.getPlayer())){
-			if (e.getTo().distance(lc) <= radius) finishStage(e.getPlayer());
+			if (e.getTo().distanceSquared(lc) <= radiusSquared) finishStage(e.getPlayer());
 		}
 	}
 	

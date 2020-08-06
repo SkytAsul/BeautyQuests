@@ -174,6 +174,7 @@ public enum Lang{
 	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
 	CHOOSE_SCOREBOARD_OBJECTIVE("msg.editor.text.chooseObjectiveRequired"),
 	CHOOSE_SCOREBOARD_TARGET("msg.editor.text.chooseObjectiveTargetScore"),
+	CHOOSE_REGION_REQUIRED("msg.editor.text.chooseRegionRequired"),
 	
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
@@ -508,6 +509,7 @@ public enum Lang{
 	RLevel("misc.requirement.experienceLevel"),
 	RPermissions("misc.requirement.permissions"),
 	RScoreboard("misc.requirement.scoreboard"),
+	RRegion("misc.requirement.region"),
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),

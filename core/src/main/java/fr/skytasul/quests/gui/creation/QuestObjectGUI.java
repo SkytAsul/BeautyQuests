@@ -27,6 +27,7 @@ import fr.skytasul.quests.requirements.MoneyRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
+import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.requirements.ScoreboardRequirement;
 import fr.skytasul.quests.rewards.CommandReward;
 import fr.skytasul.quests.rewards.ItemReward;
@@ -115,6 +116,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerRequirement(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new);
 		QuestsAPI.registerRequirement(PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new);
 		QuestsAPI.registerRequirement(ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new);
+		if (DependenciesManager.wg) QuestsAPI.registerRequirement(RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new);
 		if (DependenciesManager.jobs) QuestsAPI.registerRequirement(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new);
 		if (DependenciesManager.fac) QuestsAPI.registerRequirement(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new);
 		if (DependenciesManager.skapi) QuestsAPI.registerRequirement(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new);

@@ -183,6 +183,7 @@ msg:
         money: '§aWrite the amount of the received money:'
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
+      chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
     selectWantedBlock: §aClick with the stick on the wanted block for the stage.
     itemCreator:
       itemType: '§aWrite the name of the wanted item type:'
@@ -524,6 +525,7 @@ misc:
     experienceLevel: §bExperience levels required
     permissions: §3Permission(s) required
     scoreboard: §dScore required
+    region: §dRegion required
     placeholder: §bPlaceholder value required
     quest: §aQuest required
     mcMMOSkillLevel: §dSkill level required
