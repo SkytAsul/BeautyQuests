@@ -20,6 +20,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreator;
@@ -229,6 +230,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				StageType type = (StageType) ln.get("type");
 				AbstractStage stage = StageCreator.getCreator(type).runnables.finish(ln, branch);
 				stage.setRewards((List<AbstractReward>) ln.get("rewards"));
+				stage.setValidationRequirements((List<AbstractRequirement>) ln.get("requirements"));
 				stage.setCustomText((String) ln.get("customText"));
 				stage.setStartMessage((String) ln.get("startMessage"));
 				if (ln.containsKey("branch")){

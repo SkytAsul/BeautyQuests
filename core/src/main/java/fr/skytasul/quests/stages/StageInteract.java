@@ -47,9 +47,11 @@ public class StageInteract extends AbstractStage {
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (!e.getClickedBlock().getLocation().equals(lc)) return;
-		if (hasStarted(e.getPlayer())){
+		
+		Player p = e.getPlayer();
+		if (hasStarted(p) && canUpdate(p)) {
 			if (left) e.setCancelled(true);
-			finishStage(e.getPlayer());
+			finishStage(p);
 		}
 	}
 	

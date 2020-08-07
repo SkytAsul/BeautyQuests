@@ -150,6 +150,7 @@ public class StageNPC extends AbstractStage{
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
 		if (!hasStarted(p)) return;
+		if (!canUpdate(p)) return;
 		
 		if (!branch.isRegularStage(this)) { // is ending stage
 			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items

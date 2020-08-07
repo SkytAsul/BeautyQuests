@@ -48,7 +48,7 @@ public class StageBucket extends AbstractStage {
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this)) {
+		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
 				int amount = getPlayerAmount(acc);
 				if (amount <= 1) {

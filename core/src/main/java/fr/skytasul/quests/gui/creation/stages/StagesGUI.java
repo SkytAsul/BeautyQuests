@@ -12,6 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreator;
@@ -50,6 +52,7 @@ public class StagesGUI implements CustomInventory {
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
 	private static final ItemStack descMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
 	private static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
+	private static final ItemStack validationRequirements = ItemUtils.item(XMaterial.NETHER_STAR, Lang.validationRequirements.toString(), QuestOption.formatDescription(Lang.validationRequirementsLore.toString()));
 
 	private List<Line> lines = new ArrayList<>();
 	
@@ -127,6 +130,7 @@ public class StagesGUI implements CustomInventory {
 		line.removeItems();
 		line.data.put("type", creator.type);
 		line.data.put("rewards", new ArrayList<>());
+		line.data.put("requirements", new ArrayList<>());
 
 		line.setItem(1, ending, (p, datas, item) -> new QuestObjectGUI<>(
 				Lang.INVENTORY_REWARDS.toString(),
@@ -172,6 +176,13 @@ public class StagesGUI implements CustomInventory {
 					reopen(p, false);
 				};
 			}
+		});
+		
+		line.setItem(4, validationRequirements.clone(), (p, datas, item) -> {
+			new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestsAPI.requirements.values(), requirements -> {
+				datas.put("requirements", requirements);
+				reopen(p, true);
+			}, (List<AbstractRequirement>) datas.get("requirements")).create(p);
 		});
 
 		int maxStages = branches ? 20 : 15;
@@ -328,6 +339,7 @@ public class StagesGUI implements CustomInventory {
 	
 	private void stageDatas(Line line, AbstractStage stage){
 		line.data.put("rewards", stage.getRewards());
+		line.data.put("requirements", stage.getValidationRequirements());
 		if (stage.getStartMessage() != null){
 			line.data.put("startMessage", stage.getStartMessage());
 			line.editItem(3, ItemUtils.lore(line.getItem(3), stage.getStartMessage()));

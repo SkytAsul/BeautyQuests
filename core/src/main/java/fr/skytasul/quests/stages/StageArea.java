@@ -49,7 +49,7 @@ public class StageArea extends AbstractStage{
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
-		if (hasStarted(e.getPlayer())){
+		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
 			if (WorldGuard.isInRegion(region, e.getTo())){
 				finishStage(e.getPlayer());
 			}

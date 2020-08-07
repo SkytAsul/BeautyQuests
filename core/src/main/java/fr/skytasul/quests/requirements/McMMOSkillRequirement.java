@@ -75,7 +75,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new McCombatLevelRequirement(target);
+		return new McMMOSkillRequirement(target);
 	}
 	
 }

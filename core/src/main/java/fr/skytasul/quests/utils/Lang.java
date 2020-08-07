@@ -285,6 +285,8 @@ public enum Lang{
 	regularPage("inv.stages.regularPage"),
 	branchesPage("inv.stages.branchesPage"),
 	ending("inv.stages.endingItem"),
+	validationRequirements("inv.stages.validationRequirements"),
+	validationRequirementsLore("inv.stages.validationRequirementsLore"),
 	descMessage("inv.stages.descriptionTextItem"),
 	previousBranch("inv.stages.previousBranch"),
 	newBranch("inv.stages.newBranch"),

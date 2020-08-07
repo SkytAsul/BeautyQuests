@@ -297,6 +297,8 @@ inv:
     branchesPage: §dBranch stages
     previousBranch: §eBack to previous branch
     newBranch: §eGo to new branch
+    validationRequirements: §eValidation requirements
+    validationRequirementsLore: All the requirements must match the player that tries to complete the stage. If not, the stage can not be completed.
   details:
     hologramLaunch: §eEdit "launch" hologram item
     hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
