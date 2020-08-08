@@ -18,30 +18,28 @@ msg:
   stageMobs:
     noMobs: '§cНа этом этапе не нужно убивать мобов.'
     listMobs: '§aВам нужно убить {0}.'
-  writeNPCText: '§aНапишите текст, который будет говорить NPC игроку: (Напишите "help" для помощи.)'
+  writeNPCText: '§aНапишите диалог, который будет отправлен игроку от NPC: (Напишите "help" для помощи.)'
   writeRegionName: '§aВведите название региона, необходимого для этапа:'
   writeXPGain: '§aНапишите количество очков опыта, которые получит игрок: (Крайнее значение: {0})'
   writeMobAmount: '§aНапишите количество мобов для убийства:'
   writeChatMessage: '§aНапишите требуемое сообщение: (Добавьте "{SLASH}" в начало если вы хотите выполнить команду.)'
   writeEndMessage: '§aНапишите сообщение, которое будет отправлено в конце квеста или этапа:'
   writeDescriptionText: '§aНапишите текст, который описывает цель этапа:'
-  writeStageText: '§aWrite the text that will be sent to the player at the beginning of the step:'
+  writeStageText: '§aНапишите текст, который будет отправлен игроку в начале этапа:'
   moveToTeleportPoint: '§aПерейдите к локации для телепорта.'
   writeNpcName: '§aНапишите название NPC:'
   writeNpcSkinName: '§aНапишите название скина NPC:'
   writeQuestName: '§aНапишите название вашего квеста:'
-  writeCommand: '§aWrite the wanted command: (The command is without the "/" and the placeholder "{PLAYER}" is supported. It will be replaced with the name of the executor.)'
-  writeHologramText: '§aWrite text of the hologram: (Write "none" if you don''t want a hologram and "null" if you want the default text.)'
-  writeQuestTimer: '§aWrite the required time (in minutes) before you can restart the quest: (Write "null" if you want the default timer.)'
-  writeConfirmMessage: '§aWrite the confirmation message shown when a player is about to start the quest: (Write "null" if you want the default message.)'
-  writeQuestDescription: '§aWrite the description of the quest, shown in the player''s quest GUI.'
-  writeQuestMaterial: '§aWrite the material of the quest item.'
+  writeCommand: '§aВведите нужную команду: (Команда без "/" и заполнения"{PLAYER} поддерживается. Оно будет заменено на имя исполнителя команды.)'
+  writeHologramText: '§aЗапишите текст голограммы: (Напишите "none", если вы не желаете добавлять голограмму и «null", если хотите текст по умолчанию.)'
+  writeQuestTimer: '§aЗапишите необходимое время (в минутах), прежде чем вы сможете перезагрузить квест: (Напишите "null", если вы хотите установить время по умолчанию.)'
+  writeConfirmMessage: '§aНапишите сообщение для подтверждения, которое будет показано когда игрок собирается начать задание: (Напишите "null", если вы хотите отправить сообщение по умолчанию.)'
+  writeQuestDescription: '§aНапишите описание квеста, которое будет отображаться в квестовом интерфейсе игрока.'
+  writeQuestMaterial: '§aНапишите материал квестового предмета.'
   requirements:
     quest: '§cВы должны выполнить квест §e{0}§c!'
     level: '§cВаш уровень должен быть {0}!'
-    job: '§cYour level for the job §e{1}§c must be {0}!'
-    skill: '§cYour level for the skill §e{1}§c must be {0}!'
-    combatLevel: '§cYour combat level must be {0}!'
+    skill: '§cВаш уровень навыка §e{1}§c должен быть {0}!'
     money: '§cВы должны иметь {0}!'
     wait: '§cВы должны подождать {0} минут(ы), прежде чем перезагрузить этот квест!'
   experience:
@@ -51,9 +49,7 @@ msg:
     remove: '§aNPC удален.'
     talk: '§aПойдите и поговорите с NPC по имени §e{0}§a.'
   regionDoesntExists: '§cЭтот регион не существует. (Вы должны быть в том же мире.)'
-  factionDoesntExist: '§cЭта фракция не существует.'
   npcDoesntExist: '§cNPC с идентификатором {0} не существует.'
-  classDoesntExist: '§cЭтот класс не существует.'
   objectDoesntExist: '§cУказанный предмет с идентификатором {0} не существует.'
   number:
     negative: '§cВы должны ввести положительное число!'
@@ -61,9 +57,9 @@ msg:
     invalid: '§c{0} не допустимое число.'
   errorOccurred: '§cПроизошла ошибка, свяжитесь с администратором! §4§lКод ошибки: {0}'
   commandsDisabled: '§cВ настоящее время у вас нет прав на выполнение команд!'
-  indexOutOfBounds: '§cThe number {0} is out of bounds! It has to be between {1} and {2}.'
-  invalidBlockData: '§cThe blockdata {0} is invalid or incompatible with the block {1}.'
-  bringBackObjects: Верните меня {0}.
+  indexOutOfBounds: '§cЧисло {0} за пределами! Оно должно между {1} и {2}.'
+  invalidBlockData: '§cДанные блока {0} недопустимы или несовместимы с блоком {1}.'
+  bringBackObjects: Принеси мне {0}.
   inventoryFull: '§cВаш инвентарь переполнен, предмет выпал на землю.'
   playerNeverConnected: '§cНе удалось найти информацию о игроке {0}.'
   playerNotOnline: '§cИгрок {0} не в сети.'
@@ -79,22 +75,21 @@ msg:
     noPermission: '§cУ Вас недостаточно прав для выполнения данной команды! (Требуется: {0})'
     invalidCommand:
       quests: '§cЭта команда не существует, напишите §e/quests help§c.'
-      simple: '§cThis command doesn''t exist, write §ehelp§c.'
-    needItem: '§cYou must hold an item in your main hand!'
-    itemChanged: '§aThe item has been edited. The changes will affect after a restart.'
-    itemRemoved: '§aThe hologram item has been removed.'
+      simple: '§cЭта команда не существует, напишите §ehelp§c.'
+    needItem: '§cВы должны держать предмет в вашей основной руке!'
+    itemChanged: '§aПредмет отредактирован. Изменения вступят в силу после перезапуска.'
+    itemRemoved: '§aГолографический предмет удален.'
     removed: '§aКвест {0} успешно удален.'
-    leaveAll: '§aYou have forced the end of {0} quest(s). Errors: {1}'
+    leaveAll: '§aВы принудительно завершили {0} квест(а). Ошибки: {1}'
     resetPlayer:
-      player: '§6All informations of your {0} quest(s) has/have been deleted by {1}.'
-      remover: '§6{0} quest information(s) of {1} has/have been deleted.'
+      remover: '§6{0} информация о квесте(ах) {1} удалена.'
     resetPlayerQuest:
-      player: '§6All informations about the quest {0} have been deleted by {1}.'
-      remover: '§6{0} quest information(s) of {1} has/have been deleted.'
-    resetQuest: '§6Removed datas of the quest for {0} players.'
-    startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
+      player: '§6Все данные о квесте {0} были удалены пользователем {1}.'
+      remover: '§6{0} Данные о квесте(ах) {1} удалены.'
+    resetQuest: '§6Удалены данные квеста для {0} игроков.'
+    startQuest: '§6Вы принудительно начали задание {0} (UUID игрока: {1}).'
     cancelQuest: '§6Вы отменили квест {0}.'
-    cancelQuestUnavailable: '§cThe quest {0} can''t be cancelled.'
+    cancelQuestUnavailable: '§cЗадание {0} не может быть отменено.'
     backupCreated: '§6Вы успешно создали резервную копию всех квестов и информации о игроках.'
     backupPlayersFailed: '§cНе удалось создать резервную копию всей информации о игроках.'
     backupQuestsFailed: '§cНе удалось создать резервную копию всех квестов.'
@@ -107,418 +102,138 @@ msg:
       lineInexistant: '§cСтрока {0} не существует.'
       resetAll: '§6Вы успешно сбросили табло игрока {0}.'
       hidden: '§6Табло игрока {0} был скрыт.'
-      shown: '§6The scoreboard of the player {0} has been shown.'
+      shown: '§6Табло игрока {0} показано.'
     help:
-      header: '§6§lBeautyQuests — Help'
       create: '§6/{0} create: §eСоздать квест.'
       edit: '§6/{0} edit: §eОтредактировать квест.'
       remove: '§6/{0} remove <id>: §eУдалить квест с указанным идентификатором или нажать на NPC, если квест не будет определен.'
       finishAll: '§6/{0} finishAll <игрок>: §eЗавершить все квесты игрока.'
-      setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the current stage/start the branch/set a stage for a branch.'
-      resetPlayer: '§6/{0} resetPlayer <player>: §eRemove all informations about a player.'
-      resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eDelete informations of a quest for a player.'
-      seePlayer: '§6/{0} seePlayer <player>: §eView informations about a player.'
-      reload: '§6/{0} reload: §eSave and reload all configurations and files. (§cdeprecated§e)'
-      start: '§6/{0} start <player> [id]: §eForce the starting of a quest.'
-      setItem: '§6/{0} setItem <talk|launch>: §eSave the hologram item.'
+      setStage: '§6/{0} setStage <игрок> <id> [новое ответвление] [новый этап]: §eПропустить текущий этап/запустить ответвление/установить этап для ответвления.'
+      resetPlayer: '§6/{0} resetPlayer <игрок>: §eУдалить всю информацию о игроке.'
+      resetPlayerQuest: '§6/{0} resetPlayerQuest <игрок> [id]: §eУдалить информацию о квестах игрока.'
+      seePlayer: '§6/{0} seePlayer <игрок>: §e Посмотреть информацию об игроке.'
+      reload: '§6/{0} reload: §eСохранить и перезагрузить все настройки и файлы. (§cустарело§e)'
+      start: '§6/{0} start <игрок> [id]: §eПринудительно начинает квест.'
+      setItem: '§6/{0} setitem <talk|launch>: §eСохранить голографический предмет.'
       adminMode: '§6/{0} adminMode: §eПереключить режим администратора. (полезно для отображения небольших log сообщений.)'
       version: '§6/{0} version: §eПосмотреть текущую версию плагина.'
       save: '§6/{0} save: §eСохранить справочник плагина.'
       list: '§6/{0} list: §eПосмотреть список заданий. (Только для поддерживаемых версий.)'
-  typeCancel: '§aWrite "cancel" to come back to the last text.'
+  typeCancel: '§aНапишите "cancel", чтобы вернуться к прежнему тексту.'
   editor:
-    blockAmount: '§aWrite the amount of blocks:'
-    blockName: '§aWrite the name of the block:'
-    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
+    blockAmount: '§aНапишите количество блоков:'
+    blockName: '§aНапишите название блока:'
+    blockData: '§aЗапишите данные блоков (доступные данные: {0}):'
     typeBucketAmount: '§aНапишите количество вёдер для заполнения:'
-    goToLocation: '§aGo to the wanted location for the stage.'
+    goToLocation: '§aПерейдите в нужное место для этапа.'
     typeLocationRadius: '§aЗапишите требуемое расстояние от локации:'
-    typeGameTicks: '§aWrite the required game ticks:'
+    typeGameTicks: '§aНапишите необходимое количество игровых тактов:'
     already: '§cВы уже в редакторе.'
     enter:
       title: '§6~ Режим редактирования ~'
-      subtitle: '§6Write "/quests editor" to force leaving.'
-    chat: '§6You are currently in the Editor Mode. Write "/quests editor" to force leaving the editor. (Highly not recommended, consider using commands such as "close" or "cancel" to come back to the previous inventory.)'
+      subtitle: '§6Напишите "/quests editor" для принудительного выхода.'
+    chat: '§6Вы находитесь в режиме редактора. Напишите "/quests editor" для принудительного выхода из редактора. (Не рекомендуется использовать команды, такие как "close" или "cancel", чтобы вернуться к предыдущему инвентарю.)'
     npc:
-      enter: '§aClick on a NPC, or write "cancel".'
-      choseStarter: '§aChoose the NPC which starts the quest.'
-      notStarter: '§cThis NPC isn''t a quest starter.'
+      enter: '§aНажмите на NPC или напишите "cancel".'
+      choseStarter: '§aВыберите NPC который начинает квест.'
+      notStarter: '§cЭтот NPC не начинает квест.'
     text:
-      argNotSupported: '§cThe argument {0} not supported.'
-      chooseLvlRequired: '§aWrite the required amount of levels:'
-      chooseJobRequired: '§aWrite name of the wanted job:'
-      choosePermissionRequired: '§aWrite the required permission to start the quest:'
-      choosePermissionMessage: '§aYou can choose a rejection message if the player doesn''t have the required permission. (To skip this step, write "null".)'
-      chooseFactionRequired: '§aWrite the required faction name:'
-      chooseClassesRequired: '§aWrite the names for the required classes to start the quest:'
-      choosePlaceholderRequired:
-        identifier: '§aWrite the name of the required placeholder without the percent characters:'
-        value: '§aWrite the required value for the placeholder §6%{0}%§a:'
+      chooseLvlRequired: '§aНапишите необходимое количество уровней:'
+      choosePermissionRequired: '§aНапишите необходимое разрешение для запуска квеста:'
       chooseSkillRequired: '§aНапишите название необходимого навыка:'
-      chooseMoneyRequired: '§aWrite the amount of required money:'
-      reward:
-        permissionName: '§aWrite the permission name.'
-        permissionWorld: '§aWrite the world in which the permission will be edited, or "null" if you want to be global.'
-        money: '§aWrite the amount of the received money:'
-      chooseObjectiveRequired: '§aWrite the objective name.'
-      chooseObjectiveTargetScore: '§aWrite the target score for the objective.'
-    selectWantedBlock: '§aClick with the stick on the wanted block for the stage.'
     itemCreator:
-      itemType: '§aWrite the name of the wanted item type:'
-      itemAmount: '§aWrite the amount of item(s):'
-      itemName: '§aWrite the item name:'
-      itemLore: '§aModify the item lore: (Write "help" for help.)'
-      unknownItemType: '§cUnknown item type.'
-      invalidItemType: '§cInvalid item type. (The item can''t be a block.)'
+      itemName: '§aВведите название предмета:'
+      itemLore: '§aИзмените описание предмета: (Напишите "help" для помощи)'
+      unknownItemType: '§cНеизвестный тип предмета.'
+      invalidItemType: '§cНедопустимый тип предмета. (Предмет не может быть блоком.)'
     dialog:
-      syntax: '§cCorrect syntax: {0}{1} <message>'
-      syntaxRemove: '§cCorrect sytax: remove <id>'
-      player: '§aMessage "{0}" added for the player.'
-      npc: '§aMessage "{0}" added for the NPC.'
-      noSender: '§aMessage "{0}" added without a sender.'
-      messageRemoved: '§aMessage "{0}" removed.'
-      soundAdded: '§aSound "{0}" added for the message "{1}".'
-      cleared: '§a{0} removed message(s).'
+      syntax: '§cCorrect syntax: {0}{1} <сообщение>'
+      syntaxRemove: '§cCorrect syntax: удалить <id>'
+      player: '§aСообщение "{0}" добавлено для игрока.'
+      npc: '§aСообщение "{0}" добавлено для NPC.'
+      noSender: '§aСообщение "{0}" добавлено без отправителя.'
+      messageRemoved: '§aСообщение "{0}" удалено.'
+      soundAdded: '§aЗвук "{0}" добавлен для сообщения "{1}".'
+      cleared: '§a{0} удаленное(ых) сообщение(й).'
       help:
-        header: '§6§lBeautyQuests — Dialog editor help'
-        npc: '§6npc <message>: §eAdd a message said by the NPC.'
-        player: '§6player <message>: §eAdd a message said by the player.'
-        nothing: '§6noSender <message>: §eAdd a message without a sender.'
+        npc: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
+        player: '§6player <сообщение>: §eДобавить сообщение, которое будет отправлено игроком.'
+        nothing: '§6noSender <сообщение>: §eДобавить сообщение без отправителя.'
         remove: '§6remove <id>: §eУдалить сообщение.'
-        list: '§6list: §eView all messages.'
-        npcInsert: '§6npcInsert <id> <message>: §eInsert a message said by the NPC.'
-        playerInsert: '§6playerInsert <id> <message>: §eInsert a message said by player.'
-        nothingInsert: '§6nothingInsert <id> <message>: §eInsert a message without any prefix.'
-        addSound: '§6addSound <id> <sound>: §eAdd a sound to a message.'
-        clear: '§6clear: §eRemove all messages.'
-        close: '§6close: §eValidate all messages.'
-        setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
-      timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
-      timeRemoved: '§aTime has been removed for message {0}.'
+        clear: '§6clear: §eУдалить все сообщения.'
+        close: '§6close: §eПодтвердить все сообщения.'
+        setTime: '§6setTime <id> <время>: §eУстановить время (в тактах) до того как следующее сообщение воспроизведется автоматически.'
+      timeSet: '§aВремя отредактировано для сообщения {0}: Теперь {1} тактов.'
+      timeRemoved: '§aВремя было удалено для сообщения {0}.'
     mythicmobs:
       list: '§aСписок всех Mythic Mobs:'
       isntMythicMob: '§cЭтот Mythic Mob не существует.'
       disabled: '§cMythicMob отключен.'
-    epicBossDoesntExist: '§cThis Epic Boss doesn''t exist.'
+    epicBossDoesntExist: '§cЭтот Epic Boss не существует.'
     textList:
-      syntax: '§cCorrect syntax: '
+      syntax: '§cПравильный синтаксис: '
       added: '§aТекст "{0}" добавлен.'
       removed: '§aТекст "{0}" удален.'
       help:
-        header: '§6§lBeautyQuests — List editor help'
         add: '§6add <сообщение>: §eДобавить текст.'
-        remove: '§6remove <id>: §eRemove a text.'
-        list: '§6list: §eView all added texts.'
-        close: '§6close: §eValidate the added texts.'
-    noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
-    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
-    scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
-  writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
-  finished: Finished
-  notStarted: Not started
+  finished: Завершено
 inv:
-  validate: '§b§lValidate'
-  cancel: '§c§lCancel'
-  search: '§e§lSearch'
+  validate: '§b§lПодтвердить'
+  cancel: '§c§lОтменить'
   confirm:
-    name: Are you sure?
-    'yes': '§aConfirm'
-    'no': '§cCancel'
+    name: Вы уверены?
+    'yes': '§aПодтвердить'
+    'no': '§cОтменить'
   create:
-    stageCreate: '§aCreate new step'
-    stageRemove: '§cDelete this step'
-    findNPC: '§aFind NPC'
-    bringBack: '§aBring back items'
-    findRegion: '§aFind region'
-    killMobs: '§aKill mobs'
-    mineBlocks: '§aBreak blocks'
-    placeBlocks: '§aPlace blocks'
-    talkChat: '§aWrite in chat'
-    interact: '§aInteract with block'
-    fish: '§aCatch fishes'
-    craft: '§aCraft item'
-    bucket: '§aFill buckets'
-    location: '§aGo to location'
-    playTime: '§ePlay time'
-    NPCText: '§eEdit dialog'
-    hideClues: Hide particles and holograms
-    editMobsKill: '§eEdit mobs to kill'
-    mobsKillFromAFar: Needs to be killed with projectile
-    editBlocksMine: '§eEdit blocks to break'
-    preventBlockPlace: Prevent players to break their own blocks
-    editBlocksPlace: '§eEdit blocks to place'
-    editMessageType: '§eEdit message to write'
-    cancelMessage: Cancel sending
-    ignoreCase: Ignore the case of the message
-    selectItems: '§eEdit required items'
-    selectRegion: '§7Choose region'
-    stageStartMsg: '§eEdit starting message'
-    selectBlockLocation: '§eSelect block location'
-    leftClick: Click must be left-click
-    editFishes: '§eEdit fishes to catch'
-    editItem: '§eEdit item to craft'
-    editBucketType: '§eEdit type of bucket to fill'
-    editBucketAmount: '§eEdit amount of buckets to fill'
-    editLocation: '§eEdit location'
-    editRadius: '§eEdit distance from location'
-    currentRadius: '§eCurrent distance: §6{0}'
-    changeTicksRequired: '§eChange played ticks required'
+    stageCreate: '§aСоздать новый этап'
+    stageRemove: '§cУдалить этот этап'
+    findNPC: '§aНайти NPC'
+    bringBack: '§aВернуть предметы'
+    findRegion: '§aНайти регион'
+    killMobs: '§aУбить мобов'
+    mineBlocks: '§aСломать блоки'
+    placeBlocks: '§aПоставить блоки'
+    talkChat: '§aНаписать в чат'
+    interact: '§aВзаимодействовать с блоком'
+    fish: '§aНаловить рыбы'
+    craft: '§aСкрафтить предмет'
+    bucket: '§aЗаполнить ведро'
+    location: '§aДойти до локации'
+    NPCText: '§eОтредактировать диалог'
+    hideClues: Скрыть частицы и голограммы
+    editMobsKill: '§eСменить мобов, для убийства'
+    mobsKillFromAFar: Требует убийства снарядом
+    editBlocksMine: '§eСменить блоки для разрушения'
+    editBlocksPlace: '§eСменить блоки для размещения'
+    cancelMessage: Отменить отправку
+    selectItems: '§eОтредактировать требуемые предметы'
+    selectRegion: '§7Выберите регион'
+    stageStartMsg: '§eОтредактировать стартовое сообщение'
   stages:
-    name: Create stages
-    nextPage: '§eNext page'
-    laterPage: '§ePrevious page'
-    endingItem: '§eEdit end rewards'
-    descriptionTextItem: '§eEdit description'
-    regularPage: '§aRegular stages'
-    branchesPage: '§dBranch stages'
-    previousBranch: '§eBack to previous branch'
-    newBranch: '§eGo to new branch'
+    name: Создать этапы
+    nextPage: '§eСледующая страница'
+    laterPage: '§eПредыдущая страница'
+    endingItem: '§eРедактировать конечные награды'
+    descriptionTextItem: '§eРедактировать описание'
+    branchesPage: '§dЭтапы ответвления'
+    previousBranch: '§eВернуться к предыдущему ответвлению'
+    newBranch: '§eПерейти к новому ответвлению'
   details:
-    hologramLaunch: '§eEdit "launch" hologram item'
-    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
-    hologramLaunchNo: '§eEdit "launch unavailable" hologram item'
-    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
-    customConfirmMessage: '§eEdit quest confirmation message'
-    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
-    customDescription: '§eEdit quest description'
-    customDescriptionLore: Description shown below the name of the quest in GUIs.
-    name: Last quest details
-    multipleTime:
-      itemName: Toggle repeatable
-      itemLore: Can the quest be done several times?
-    cancellable: Cancellable by player
-    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
-    scoreboardItem: Enable scoreboard
-    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
-    hideItem: Hide menu and dynmap
-    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
-    bypassLimit: Don't count quest limit
-    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
-    questName: '§a§lEdit quest name'
-    questNameLore: A name must be set to complete quest creation.
-    setItemsRewards: '§eEdit reward items'
-    setXPRewards: '§eEdit reward experience'
-    setPermReward: '§eEdit permissions'
-    setMoneyReward: '§eEdit money reward'
-    selectStarterNPC: '§e§lSelect NPC starter'
-    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
-    createQuestName: '§lCreate quest'
-    createQuestLore: You must define a quest name.
-    editQuestName: '§lEdit quest'
-    endMessage: '§eEdit end message'
-    endMessageLore: Message which will be sent to the player at the end of the quest.
-    startDialog: '§eEdit start dialog'
-    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
-    editRequirements: '§eEdit requirements'
-    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
-    startRewards: '§6Start rewards'
-    startRewardsLore: Actions performed when the quest starts.
-    hologramText: '§eHologram text'
-    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
-    timer: '§bRestart timer'
-    timerLore: Time before the player can start the quest again.
-    requirements: '{0} requirement(s)'
-    rewards: '{0} reward(s)'
-    rewardsLore: Actions performed when the quest ends.
-    customMaterial: '§eEdit quest item material'
-    customMaterialLore: Item representative of this quest in the Quests Menu.
-    loreReset: '§e§lAll players'' advancement will be reset'
-    optionValue: '§8Value: §7{0}'
-    defaultValue: '§8(default value)'
-  itemsSelect:
-    name: Edit items
-    none: |-
-      §aMove an item to here or
-      click to open the item editor.
-  itemSelect:
-    name: Choose item
-  npcCreate:
-    name: Create NPC
-    setName: '§eEdit NPC name'
-    setSkin: '§eEdit NPC skin'
-    setType: '§eEdit NPC type'
-    move:
-      itemName: '§eMove'
-      itemLore: '§aChange the NPC location.'
-    moveItem: '§a§lValidate place'
-  npcSelect:
-    name: Select or create?
-    selectStageNPC: '§eSelect existing NPC'
-    createStageNPC: '§eCreate NPC'
-  entityType:
-    name: Choose entity type
-  chooseQuest:
-    name: Which quest?
-  mobs:
-    name: Select mobs
-    none: '§aClick to add a mob.'
-    click: |-
-      §7Left-click to edit.
-      Right-click to delete.
-  mobSelect:
-    name: Select mob type
-    bukkitEntityType: '§eSelect entity type'
-    mythicMob: '§6Select Mythic Mob'
-    epicBoss: '§6Select Epic Boss'
-    boss: '§6Select a Boss'
-  stageEnding:
-    locationTeleport: '§eEdit teleport location'
-    command: '§eEdit executed command'
-  requirements:
-    name: Requirements
-  rewards:
-    name: Rewards
-    commands: 'Commands: {0}'
-    teleportation: |-
-      §aSelected:
-      X: {0}
-      Y: {1}
-      Z: {2}
-      World: {3}
-  listAllQuests:
-    name: Quests
-  listPlayerQuests:
-    name: '{0}''s quests'
+    customConfirmMessage: '§eОтредактировать сообщение для подтверждения квеста'
   listQuests:
-    notStarted: Not started quests
-    finished: Finished quests
-    inProgress: Quests in progress
-    loreCancel: '§c§oClick to cancel the quest.'
-    timeToWait: '§3§o{0} minute(s) before you can restart this quest.'
-    canRedo: '§3§oYou can restart this quest!'
-    format:
-      normal: '§6§l§o{0}'
-      withId: '§6§l§o{0}§r      §e#{1}'
-  itemCreator:
-    name: Item creator
-    itemType: '§bItem type'
-    itemFlags: Toggle item flags
-    itemName: '§bItem name'
-    itemLore: '§bItem lore'
-    isQuestItem: '§bQuest item:'
-  command:
-    name: Command
-    value: '§eCommand'
-    console: Console
-    delay: '§bDelay'
-  chooseAccount:
-    name: What account?
-  listBook:
-    questName: Name
-    questStarter: Starter
-    questRewards: Rewards
-    questMultiple: Several times
-    requirements: Requirements
-    questStages: Stages
-    noQuests: No quests have previously been created.
-  commandsList:
-    name: Command list
-    value: '§eCommand: {0}'
-    console: '§eConsole: {0}'
-  block:
-    name: Choose block
-    material: '§eMaterial: {0}'
-    blockData: '§dBlockdata (advanced)'
-  blocksList:
-    name: Select blocks
-    addBlock: '§aClick to add a block.'
-  buckets:
-    name: Bucket type
-  permission:
-    name: Choose permission
-    perm: '§aPermission'
-    world: '§aWorld'
-    worldGlobal: '§b§lGlobal'
-    remove: Remove permission
-    removeLore: '§7Permission will be taken off\n§7instead of given.'
-  permissionList:
-    name: Permissions list
-    removed: '§eTaken off: §6{0}'
-    world: '§eWorld: §6{0}'
+    notStarted: Не начатые квесты
+    finished: Завершенные квесты
+    inProgress: Квесты в процессе выполнения
+    loreCancel: '§c§oНажмите, чтобы отменить квест.'
+    canRedo: '§3§oВы можете перевыполнить этот квест!'
 scoreboard:
-  name: '§6§lQuests'
-  noLaunched: '§cNo quests in progress.'
-  noLaunchedName: '§c§lLoading'
-  noLaunchedDescription: '§c§oLoading'
-  textBetwteenBranch: '§e or'
   stage:
-    region: '§eFind region §6{0}'
-    npc: '§eTalk with NPC §6{0}'
-    items: '§eBring items to §6{0}§e:'
-    mobs: '§eKill §6{0}'
-    mine: '§eMine {0}'
-    placeBlocks: '§ePlace {0}'
-    chat: '§eWrite §6{0}'
-    interact: '§eClick on the block at §6{0}'
-    fish: '§eFish §6{0}'
-    craft: '§eCraft §6{0}'
-    bucket: '§eFill §6{0}'
-    location: '§eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
-    playTime: '§ePlay §6{0} game ticks'
+    items: '§eВерните предметы §6{0}§e:'
 indication:
-  startQuest: '§7Do you want to start the quest {0}?'
-  closeInventory: '§7Are you sure you want to close the GUI?'
-  cancelQuest: '§7Are you sure you want to cancel the quest {0}?'
-  removeQuest: '§7Are you sure you want to remove the quest {0}?'
+  startQuest: '§7Вы хотите начать квест {0}?'
+  cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'
+  removeQuest: '§7Вы уверены, что хотите удалить квест {0}?'
 misc:
-  format:
-    prefix: '§6<§e§lQuests§r§6> §r'
-    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e {0}'
-  stageType:
-    region: Find region
-    npc: Find NPC
-    items: Bring back items
-    mobs: Kill mobs
-    mine: Break blocks
-    placeBlocks: Place blocks
-    chat: Write in chat
-    interact: Interact with block
-    Fish: Catch fishes
-    Craft: Craft item
-    Bucket: Fill bucket
-    location: Find location
-    playTime: Play time
-  comparison:
-    equals: equal to {0}
-    different: different to {0}
-    less: strictly less than {0}
-    lessOrEquals: less than {0}
-    greater: strictly greater than {0}
-    greaterOrEquals: greater than {0}
-  requirement:
-    class: '§bClass(es) required'
-    faction: '§bFaction(s) required'
-    jobLevel: '§bJob level required'
-    combatLevel: '§bCombat level required'
-    experienceLevel: '§bExperience levels required'
-    permissions: '§3Permission(s) required'
-    scoreboard: '§dScore required'
-    placeholder: '§bPlaceholder value required'
-    quest: '§aQuest required'
-    mcMMOSkillLevel: '§dSkill level required'
-    money: '§dMoney required'
-  bucket:
-    water: Water bucket
-    lava: Lava bucket
-    milk: Milk bucket
-  questItemLore: '§e§oQuest Item'
-  hologramText: '§8§lQuest NPC'
-  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
-  entityType: '§eEntity type: {0}'
-  enabled: Enabled
-  disabled: Disabled
-  unknown: unknown
-  notSet: '§cnot set'
-  unused: '§2§lUnused'
-  used: '§a§lUsed'
-  remove: '§7Middle-click to remove'
-  or: or
-  amount: '§eAmount: {0}'
   items: Предметы
-  expPoints: experience points
-  'yes': 'Yes'
-  'no': 'No'
-  and: and
+  expPoints: опыта

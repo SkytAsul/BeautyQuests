@@ -51,9 +51,7 @@ msg:
     remove: '§a已删除NPC.'
     talk: '§a和§e{0}§a谈话.'
   regionDoesntExists: '§c这个区域不存在... (你必须在目标区域同一世界内)'
-  factionDoesntExist: '§c派系不存在...'
   npcDoesntExist: '§cID为{0}的NPC不存在.'
-  classDoesntExist: '§c这一职业不存在...'
   objectDoesntExist: '§c特殊物品 (ID为{0}) 不存在.'
   number:
     negative: '§c你必须输入正数!'
@@ -62,7 +60,7 @@ msg:
   errorOccurred: '§c插件发生错误，请联系管理员！错误代码为: {0}'
   commandsDisabled: '§c你不能在这时输入指令.'
   indexOutOfBounds: '§c数字 ({0}) 超过了区间 [{1}, {2}].'
-  invalidBlockData: '§cThe blockdata {0} is invalid or incompatible with the block {1}.'
+  invalidBlockData: '§c方块数据{0} 无效或者不兼容方块{1}。'
   bringBackObjects: 把 {0} 带回给我.
   inventoryFull: '§c你的背包已满, 任务奖励已掉落在地上.'
   playerNeverConnected: '§c在玩家{0}身上找不到数据.'
@@ -127,9 +125,9 @@ msg:
       list: '§e/{0} list: §a查看任务列表 (部分版本无效)'
   typeCancel: '§a输入 "cancel" 返回到上一条消息.'
   editor:
-    blockAmount: '§aWrite the amount of blocks:'
-    blockName: '§aWrite the name of the block:'
-    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
+    blockAmount: '§e请输入所需方块数：'
+    blockName: '§a请输入方块名：'
+    blockData: '§a请输入方块数据 (可用的方块数据: {0})：'
     typeBucketAmount: '§a请输入要装满桶的数量:'
     goToLocation: '§a前往该任务阶段指定地点。'
     typeLocationRadius: '§a请输入距离指定位置所需的距离：'
@@ -149,8 +147,6 @@ msg:
       chooseJobRequired: '§a输入所需的工作名:'
       choosePermissionRequired: '§a输入开始任务所需权限:'
       choosePermissionMessage: '§e如果玩家没有所需权限则显示的拒绝消息. (输入 "null" 跳过这步)'
-      chooseFactionRequired: '§a输入所需的派系名:'
-      chooseClassesRequired: '§e输入开始任务所需的职业名.'
       choosePlaceholderRequired:
         identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
         value: '§a输入所需的 §6%{0}% 占位符的数值§a:'
@@ -233,7 +229,7 @@ inv:
     findRegion: '§a找到一片区域'
     killMobs: '§a击杀怪物'
     mineBlocks: '§a破坏方块'
-    placeBlocks: '§aPlace blocks'
+    placeBlocks: '§a放置方块'
     talkChat: '§a在聊天框内输入'
     interact: '§a点击方块'
     fish: '§a钓鱼'
@@ -247,7 +243,7 @@ inv:
     mobsKillFromAFar: 需要远程击杀怪物
     editBlocksMine: '§e编辑要破坏的方块'
     preventBlockPlace: 防止玩家破坏方块
-    editBlocksPlace: '§eEdit blocks to place'
+    editBlocksPlace: '§e编辑要放置的方块'
     editMessageType: '§e编辑要输入的消息'
     cancelMessage: 取消发送
     ignoreCase: 忽略消息大小写
@@ -383,11 +379,10 @@ inv:
     finished: 已完成的任务
     inProgress: 进行中的任务
     loreCancel: '§c§o点击取消任务'
+    loreStart: '§a§o点击开始任务。'
+    loreStartUnavailable: '§c§o你不满足任务需求，无法开始任务。'
     timeToWait: '§3§o你需要等待{0} 分钟才能再次接受任务'
     canRedo: '§3§o你可以再次接受这个任务!'
-    format:
-      normal: '§6§l§o{0}'
-      withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
     name: '§8物品编辑器'
     itemType: '§b物品类型'
@@ -417,7 +412,7 @@ inv:
   block:
     name: 选择方块
     material: '§e材料: {0}'
-    blockData: '§dBlockdata (advanced)'
+    blockData: '§d方块数据(高级)'
   blocksList:
     name: 选择方块
     addBlock: '§a点击添加一个方块.'
@@ -434,6 +429,10 @@ inv:
     name: 权限列表
     removed: '§e已移除: §6{0}'
     world: '§e世界:§6{0}'
+  classesRequired.name: 所需职业
+  classesList.name: 职业列表
+  factionsRequired.name: 所需派系
+  factionsList.name: 派系列表
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -446,7 +445,7 @@ scoreboard:
     items: '§e将物品带给§6{0}§e:'
     mobs: '§e击杀 §6{0}'
     mine: '§e挖掘 {0}'
-    placeBlocks: '§ePlace {0}'
+    placeBlocks: '§e放置{0}'
     chat: '§e输入 §6{0}'
     interact: '§e点击在§6{0}的方块'
     fish: '§e钓鱼 §6{0}'
@@ -464,14 +463,13 @@ misc:
     prefix: '§6<§e§l任务§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e {0}'
   stageType:
     region: 寻找区域
     npc: 寻找 NPC
     items: 带回物品
     mobs: 击杀怪物
     mine: 破坏方块
-    placeBlocks: Place blocks
+    placeBlocks: 放置方块
     chat: 在聊天框内说话
     interact: 与方块交互
     Fish: 钓鱼

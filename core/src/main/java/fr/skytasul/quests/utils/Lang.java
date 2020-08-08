@@ -571,9 +571,10 @@ public enum Lang{
 	}
 
 
-	public static void loadStrings(YamlConfiguration config) {
+	public static void loadStrings(YamlConfiguration defaultConfig, YamlConfiguration config) {
 		for (Lang l : values()){
 			String value = config.getString(l.path, null);
+			if (value == null) value = defaultConfig.getString(l.path, null);
 			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
 			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
 		}

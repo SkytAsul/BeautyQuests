@@ -158,6 +158,7 @@ msg:
         money: '§aEntrez la quantité de monnaie gagnée :'
       chooseObjectiveRequired: '§aÉcrivez le nom de l''objectif.'
       chooseObjectiveTargetScore: '§aIndiquez le score visé pour cet objectif.'
+      chooseRegionRequired: '§aÉcrivez le nom de la région requise (vous devez être dans le même monde).'
     selectWantedBlock: '§aCliquez avec le bâton sur le bloc voulu pour l''étape.'
     itemCreator:
       itemType: '§aEntrez le nom du type d''item voulu :'
@@ -270,6 +271,8 @@ inv:
     branchesPage: '§dÉtapes d''embranchement'
     previousBranch: '§eRetourner à la branche précédente'
     newBranch: '§eAller à la nouvelle branche'
+    validationRequirements: '§eConditions de validation'
+    validationRequirementsLore: Toutes les conditions doivent s'appliquer au joueur qui tente de terminer l'étape. Sinon, l'étape ne peut pas être terminée.
   details:
     hologramLaunch: '§eModifier l''item de l''hologramme "lancement"'
     hologramLaunchLore: Hologramme affiché au-dessus de la tête du NPC de démarrage lorsque le joueur peut commencer la quête.
@@ -385,9 +388,6 @@ inv:
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
-    format:
-      normal: '§6§l§o{0}'
-      withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
     name: Créateur d'item
     itemType: '§bType d''item'
@@ -468,7 +468,6 @@ misc:
     prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
-    offText: '§r§e {0}'
   stageType:
     region: Trouver une region
     npc: Trouver un NPC
@@ -498,6 +497,7 @@ misc:
     experienceLevel: '§bNiveau d''expérience requis'
     permissions: '§3Permission(s) requise(s)'
     scoreboard: '§dScore requis'
+    region: '§dRégion requise'
     placeholder: '§bPlaceholder requis'
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'

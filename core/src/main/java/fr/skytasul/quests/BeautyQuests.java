@@ -25,6 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.base.Charsets;
+
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
@@ -308,7 +310,7 @@ public class BeautyQuests extends JavaPlugin{
 					}
 				}
 			}
-			Lang.loadStrings(conf);
+			Lang.loadStrings(YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("locales/en_US.yml"), Charsets.UTF_8)), conf);
 
 			if (changes) conf.save(file); // if there has been changes before, save the edited file
 			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
