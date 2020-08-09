@@ -398,8 +398,8 @@ public class Quest implements Comparable<Quest> {
 				if (creator.applies(key)) {
 					try {
 						QuestOption<?> option = creator.optionSupplier.get();
-						qu.addOption(option);
 						option.load(map, key);
+						qu.addOption(option);
 					}catch (Exception ex) {
 						BeautyQuests.logger.warning("An exception occured when loading the option " + key + " for quest " + qu.id);
 						BeautyQuests.loadingFailure = true;

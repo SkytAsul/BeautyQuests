@@ -80,10 +80,9 @@ public abstract class AbstractReward implements QuestObject {
 		return map;
 	}
 	
-	public static AbstractReward deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
+	public static AbstractReward deserialize(Map<String, Object> map) throws ClassNotFoundException {
 		AbstractReward reward = QuestsAPI.rewards.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
 		reward.load(map);
-		reward.attach(quest);
 		return reward;
 	}
 	

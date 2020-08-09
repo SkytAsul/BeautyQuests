@@ -76,10 +76,9 @@ public abstract class AbstractRequirement implements QuestObject {
 		return map;
 	}
 	
-	public static AbstractRequirement deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
+	public static AbstractRequirement deserialize(Map<String, Object> map) throws ClassNotFoundException {
 		AbstractRequirement requirement = QuestsAPI.requirements.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
 		requirement.load(map);
-		requirement.attach(quest);
 		return requirement;
 	}
 	

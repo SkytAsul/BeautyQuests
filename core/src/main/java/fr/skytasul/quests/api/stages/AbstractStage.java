@@ -69,6 +69,7 @@ public abstract class AbstractStage implements Listener{
 	
 	public void setRewards(List<AbstractReward> rewards){
 		this.rewards = rewards;
+		rewards.forEach(reward -> reward.attach(branch.getQuest()));
 		checkAsync();
 	}
 
@@ -78,6 +79,7 @@ public abstract class AbstractStage implements Listener{
 
 	public void setValidationRequirements(List<AbstractRequirement> validationRequirements) {
 		this.validationRequirements = validationRequirements;
+		validationRequirements.forEach(requirement -> requirement.attach(branch.getQuest()));
 	}
 
 	public String getCustomText(){
@@ -277,10 +279,11 @@ public abstract class AbstractStage implements Listener{
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
 			for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
 				try {
-					AbstractReward reward = AbstractReward.deserialize(rew, branch.getQuest());
+					AbstractReward reward = AbstractReward.deserialize(rew);
 					st.rewards.add(reward);
+					reward.attach(branch.getQuest());
 					if (reward.isAsync()) st.asyncEnd = true;
-				}catch (InstantiationException | ClassNotFoundException e) {
+				}catch (ClassNotFoundException e) {
 					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
 					e.printStackTrace();
 					continue;
@@ -289,9 +292,10 @@ public abstract class AbstractStage implements Listener{
 
 			for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
 				try {
-					AbstractRequirement requirement = AbstractRequirement.deserialize(req, branch.getQuest());
+					AbstractRequirement requirement = AbstractRequirement.deserialize(req);
+					requirement.attach(branch.getQuest());
 					st.validationRequirements.add(requirement);
-				}catch (InstantiationException | ClassNotFoundException e) {
+				}catch (ClassNotFoundException e) {
 					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
 					e.printStackTrace();
 					continue;
