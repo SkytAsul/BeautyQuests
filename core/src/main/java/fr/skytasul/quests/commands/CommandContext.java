@@ -25,9 +25,9 @@ public class CommandContext {
 		return player != null;
 	}
 	
-	public Object get(int arg) {
+	public <T> T get(int arg) {
 		if (args.length <= arg) return null;
-		return args[arg];
+		return (T) args[arg];
 	}
 
 }

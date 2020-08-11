@@ -26,6 +26,7 @@ public abstract class AbstractRequirement implements QuestObject {
 		if (getCreator() == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a reward via the API.");
 	}
 	
+	@Override
 	public QuestObjectCreator<? extends AbstractRequirement> getCreator() {
 		return creator;
 	}

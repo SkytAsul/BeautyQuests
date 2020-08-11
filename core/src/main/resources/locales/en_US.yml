@@ -16,6 +16,7 @@ msg:
   quests:
     nopStep: §cThis quest doesn't have any step.
     updated: §7Quest §e{0}§7 updated.
+    checkpoint: §7Quest checkpoint reached!
   stageMobs:
     noMobs: §cThis stage doesn't need any mobs to kill.
     listMobs: §aYou must kill {0}.
@@ -78,6 +79,9 @@ msg:
   playerNeverConnected: §cUnable to find informations about the player {0}.
   playerNotOnline: §cThe player {0} is offline.
   command:
+    checkpoint:
+      noCheckpoint: §cNo checkpoint found for the quest {0}.
+      questNotStarted: §cYou are not doing this quest.
     setStage:
       branchDoesntExist: §cThe branch with the id {0} doesn't exist.
       doesntExist: §cThe stage with the id {0} doesn't exist.
@@ -327,6 +331,7 @@ inv:
     questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
     setXPRewards: §eEdit reward experience
+    setCheckpointReward: §eEdit checkpoint rewards
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     selectStarterNPC: §e§lSelect NPC starter
@@ -348,6 +353,7 @@ inv:
     timerLore: Time before the player can start the quest again.
     requirements: '{0} requirement(s)'
     rewards: '{0} reward(s)'
+    actions: '{0} action(s)'
     rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEdit quest item material'
     customMaterialLore: Item representative of this quest in the Quests Menu.
@@ -404,6 +410,8 @@ inv:
        Y: {1}
        Z: {2}
        World: {3}
+  checkpointActions:
+    name: Checkpoint actions
   listAllQuests:
     name: Quests
   listPlayerQuests:

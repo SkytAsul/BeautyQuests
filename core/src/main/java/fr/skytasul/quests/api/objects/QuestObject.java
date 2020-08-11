@@ -9,6 +9,8 @@ import fr.skytasul.quests.utils.Lang;
 
 public interface QuestObject extends Cloneable {
 	
+	QuestObjectCreator<? extends QuestObject> getCreator();
+	
 	String getName();
 	
 	void attach(Quest quest);

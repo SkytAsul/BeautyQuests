@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
@@ -29,6 +30,7 @@ import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
 import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.requirements.ScoreboardRequirement;
+import fr.skytasul.quests.rewards.CheckpointReward;
 import fr.skytasul.quests.rewards.CommandReward;
 import fr.skytasul.quests.rewards.ItemReward;
 import fr.skytasul.quests.rewards.MessageReward;
@@ -47,10 +49,10 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	private Collection<QuestObjectCreator<T>> creators;
 	private Consumer<List<T>> end;
 
-	public QuestObjectGUI(String name, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
+	public QuestObjectGUI(String name, QuestObjectLocation objectLocation, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
 		super((List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toCollection(ArrayList::new)), 18);
 		this.name = name;
-		this.creators = creators;
+		this.creators = creators.stream().filter(creator -> creator.isAllowed(objectLocation) && (creator.multiple || !objects.stream().anyMatch(object -> object.getCreator() == creator))).collect(Collectors.toList());
 		this.end = end;
 	}
 
@@ -74,6 +76,11 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	}
 	
 	@Override
+	protected void removed(T object) {
+		if (!object.getCreator().multiple) creators.add((QuestObjectCreator<T>) object.getCreator());
+	}
+	
+	@Override
 	public void click(QuestObject existing, ItemStack item) {
 		if (existing == null) {
 			new PagedGUI<QuestObjectCreator<T>>(name, DyeColor.CYAN, creators) {
@@ -86,6 +93,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 				@Override
 				public void click(QuestObjectCreator<T> existing) {
 					T object = existing.newObjectSupplier.get();
+					if (!existing.multiple) creators.remove(existing);
 					object.itemClick(p, QuestObjectGUI.this, finishItem(object));
 				}
 				
@@ -107,8 +115,9 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerReward(MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new);
 		if (DependenciesManager.vault) QuestsAPI.registerReward(MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new);
 		if (DependenciesManager.vault) QuestsAPI.registerReward(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new);
-		QuestsAPI.registerReward(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new);
+		QuestsAPI.registerReward(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false);
 		QuestsAPI.registerReward(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new);
+		QuestsAPI.registerReward(CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE);
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		

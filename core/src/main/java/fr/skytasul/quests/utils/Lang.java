@@ -24,6 +24,7 @@ public enum Lang{
 	
 	QUEST_NOSTEPS("msg.quests.nopStep"),
 	QUEST_UPDATED("msg.quests.updated"),
+	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
@@ -103,6 +104,7 @@ public enum Lang{
 	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed"),
 	ADMIN_MODE_ENTERED("msg.command.adminModeEntered"),
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
+	
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id
 	COMMAND_SCOREBOARD_LINEREMOVE("msg.command.scoreboard.lineRemoved"), // 0: line id
@@ -115,6 +117,8 @@ public enum Lang{
 	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),
 	COMMAND_SETSTAGE_NEXT_UNAVAILABLE("msg.command.setStage.nextUnavailable"),
 	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
+	COMMAND_CHECKPOINT_NO("msg.command.checkpoint.noCheckpoint"), // 0: quest name
+	COMMAND_CHECKPOINT_NOT_STARTED("msg.command.checkpoint.questNotStarted"),
 	
 	COMMAND_HELP("msg.command.help.header"),
 	COMMAND_HELP_CREATE("msg.command.help.create"),
@@ -309,6 +313,7 @@ public enum Lang{
 	questNameLore("inv.details.questNameLore"),
 	rewardItems("inv.details.setItemsRewards"),
 	rewardXP("inv.details.setXPRewards"),
+	rewardCheckpoint("inv.details.setCheckpointReward"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
@@ -330,6 +335,7 @@ public enum Lang{
 	timerLore("inv.details.timerLore"),
 	requirements("inv.details.requirements"),
 	rewards("inv.details.rewards"),
+	actions("inv.details.actions"),
 	rewardsLore("inv.details.rewardsLore"),
 	hologramLaunch("inv.details.hologramLaunch"),
 	hologramLaunchLore("inv.details.hologramLaunchLore"),
@@ -383,6 +389,8 @@ public enum Lang{
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
 	teleportation("inv.rewards.teleportation"),
+	
+	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
 
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),

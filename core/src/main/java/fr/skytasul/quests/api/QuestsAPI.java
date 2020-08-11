@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -56,8 +57,20 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in requirements GUI
 	 * @param newRequirementSupplier lambda returning an instance of this Requirement (Requirement::new)
 	 */
-	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack is, Supplier<T> newRequirementSupplier) {
-		requirements.put(clazz, (QuestObjectCreator<AbstractRequirement>) new QuestObjectCreator<T>(clazz, is, newRequirementSupplier));
+	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, Supplier<T> newRequirementSupplier) {
+		registerRequirement(clazz, item, newRequirementSupplier, true);
+	}
+	
+	/**
+	 * Registers a new requirement type into the plugin
+	 * @param clazz Class extending {@link AbstractRequirement}
+	 * @param item ItemStack shown in requirements GUI
+	 * @param newRequirementSupplier lambda returning an instance of this Requirement (Requirement::new)
+	 * @param multiple can the requirement be present multiple times
+	 * @param allowedLocations if present, specifies where the requirement can be used
+	 */
+	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, Supplier<T> newRequirementSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
+		requirements.put(clazz, (QuestObjectCreator<AbstractRequirement>) new QuestObjectCreator<T>(clazz, item, newRequirementSupplier, multiple, allowedLocations));
 		DebugUtils.logMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
 	}
 	
@@ -67,8 +80,20 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in rewards GUI
 	 * @param newRewardSupplier lambda returning an instance of this Reward (Reward::new)
 	 */
-	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack is, Supplier<T> newRewardSupplier) {
-		rewards.put(clazz, (QuestObjectCreator<AbstractReward>) new QuestObjectCreator<T>(clazz, is, newRewardSupplier));
+	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, Supplier<T> newRewardSupplier) {
+		registerReward(clazz, item, newRewardSupplier, true);
+	}
+	
+	/**
+	 * Registers a new reward type into the plugin
+	 * @param clazz Class extending {@link AbstractReward}
+	 * @param item ItemStack shown in rewards GUI
+	 * @param newRewardSupplier lambda returning an instance of this Reward (Reward::new)
+	 * @param multiple can the reward be present multiple times
+	 * @param allowedLocations if present, specifies where the reward can be used
+	 */
+	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, Supplier<T> newRewardSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
+		rewards.put(clazz, (QuestObjectCreator<AbstractReward>) new QuestObjectCreator<T>(clazz, item, newRewardSupplier, multiple, allowedLocations));
 		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
 	}
 	

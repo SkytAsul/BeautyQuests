@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -134,8 +135,10 @@ public class StagesGUI implements CustomInventory {
 
 		line.setItem(1, ending, (p, datas, item) -> new QuestObjectGUI<>(
 				Lang.INVENTORY_REWARDS.toString(),
+				QuestObjectLocation.STAGE,
 				QuestsAPI.rewards.values(), rewards -> {
 					datas.put("rewards", rewards);
+					line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(rewards.size()))));
 					reopen(p, true);
 				},
 				(List<AbstractReward>) datas.get("rewards")).create(p));
@@ -145,7 +148,7 @@ public class StagesGUI implements CustomInventory {
 				Lang.DESC_MESSAGE.send(p);
 				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 					datas.put("customText", obj);
-					line.editItem(2, ItemUtils.lore(line.getItem(2), (String) obj));
+					line.editItem(2, ItemUtils.lore(line.getItem(2), Lang.optionValue.format(obj)));
 					reopen(p, false);
 				}));
 				text.nul = () -> {
@@ -164,7 +167,7 @@ public class StagesGUI implements CustomInventory {
 				Lang.START_TEXT.send(p);
 				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
 					datas.put("startMessage", obj);
-					line.editItem(3, ItemUtils.lore(line.getItem(3), (String) obj));
+					line.editItem(3, ItemUtils.lore(line.getItem(3), Lang.optionValue.format(obj)));
 					reopen(p, false);
 				}));
 				text.nul = () -> {
@@ -179,14 +182,18 @@ public class StagesGUI implements CustomInventory {
 		});
 		
 		line.setItem(4, validationRequirements.clone(), (p, datas, item) -> {
-			new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestsAPI.requirements.values(), requirements -> {
-				datas.put("requirements", requirements);
-				reopen(p, true);
-			}, (List<AbstractRequirement>) datas.get("requirements")).create(p);
+			new QuestObjectGUI<>(
+					Lang.INVENTORY_REQUIREMENTS.toString(), 
+					QuestObjectLocation.STAGE,
+					QuestsAPI.requirements.values(), requirements -> {
+						datas.put("requirements", requirements);
+						reopen(p, true);
+					},
+					(List<AbstractRequirement>) datas.get("requirements")).create(p);
 		});
 
 		int maxStages = branches ? 20 : 15;
-		line.setItem(0, ItemUtils.lore(stageRemove.clone(), creator.type.name), new StageRunnable() {
+		line.setItem(0, ItemUtils.lore(stageRemove.clone(), QuestOption.formatDescription(creator.type.name)), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.clear();
 				line.removeItems();
@@ -339,14 +346,15 @@ public class StagesGUI implements CustomInventory {
 	
 	private void stageDatas(Line line, AbstractStage stage){
 		line.data.put("rewards", stage.getRewards());
+		line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(stage.getRewards().size()))));
 		line.data.put("requirements", stage.getValidationRequirements());
 		if (stage.getStartMessage() != null){
 			line.data.put("startMessage", stage.getStartMessage());
-			line.editItem(3, ItemUtils.lore(line.getItem(3), stage.getStartMessage()));
+			line.editItem(3, ItemUtils.lore(line.getItem(3), Lang.optionValue.format(stage.getStartMessage())));
 		}
 		if (stage.getCustomText() != null){
 			line.data.put("customText", stage.getCustomText());
-			line.editItem(2, ItemUtils.lore(line.getItem(2), stage.getCustomText()));
+			line.editItem(2, ItemUtils.lore(line.getItem(2), Lang.optionValue.format(stage.getCustomText())));
 		}
 		@SuppressWarnings ("rawtypes")
 		StageCreator creator = StageCreator.getCreator(stage.getType());

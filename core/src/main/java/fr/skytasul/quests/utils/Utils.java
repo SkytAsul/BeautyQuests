@@ -21,6 +21,7 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -420,8 +421,10 @@ public class Utils{
 	
 	public static <T> List<T> deserializeList(List<Map<String, Object>> serialized, Function<Map<String, Object>, T> deserialize){
 		List<T> ls = new ArrayList<>();
-		for (Map<String, Object> map : serialized){
-			ls.add(deserialize.apply(map));
+		if (serialized != null) {
+			for (Map<String, Object> map : serialized) {
+				ls.add(deserialize.apply(map));
+			}
 		}
 		return ls;
 	}
@@ -459,28 +462,35 @@ public class Utils{
 		}
 	}
 	
-	/*public static List<String> serializeAccountsList(List<PlayerAccount> from){
-		List<String> to = new ArrayList<>();
-		for (PlayerAccount acc : from){
-			to.add(acc.getIndex());
+	public static String convertLocationToString(Location loc) {
+		String world = loc.getWorld().getName();
+		double x = loc.getX();
+		double y = loc.getY();
+		double z = loc.getZ();
+		if ((int) loc.getPitch() != 0) {
+			int yaw = (int) loc.getYaw();
+			int pitch = (int) loc.getPitch();
+			return world + " " + x + " " + y + " " + z + " " + yaw + " " + pitch;
 		}
-		return to;
+		return world + " " + x + " " + y + " " + z;
 	}
 	
-	public static void deserializeAccountsList(List<PlayerAccount> to, List<String> from){
-		for (String id : from){
-			PlayerAccount acc = PlayersManager.manager.getByIndex(id);
-			if (acc != null) to.add(acc);
+	public static Location convertStringToLocation(String loc) {
+		if (loc != null) {
+			String[] coords = loc.split(" ");
+			World w = Bukkit.getWorld(coords[0]);
+			double x = Double.parseDouble(coords[1]);
+			double y = Double.parseDouble(coords[2]);
+			double z = Double.parseDouble(coords[3]);
+			if (coords.length == 6) {
+				float yaw = Float.parseFloat(coords[4]);
+				float pitch = Float.parseFloat(coords[5]);
+				return new Location(w, x, y, z, yaw, pitch);
+			}
+			return new Location(w, x, y, z);
 		}
+		return null;
 	}
-	
-	public static <T, R> void deserializeAccountsMap(Map<String, T> from, Map<PlayerAccount, R> to, Function<T, R> fun){
-		for (Entry<String, T> en : from.entrySet()){
-			PlayerAccount acc = PlayersManager.manager.getByIndex(en.getKey());
-			if (acc == null) continue;
-			to.put(acc, fun.apply(en.getValue()));
-		}
-	}*/
 	
 	public static String descriptionLines(Source source, String... elements){
 		if (elements.length == 0) return Lang.Unknown.toString();

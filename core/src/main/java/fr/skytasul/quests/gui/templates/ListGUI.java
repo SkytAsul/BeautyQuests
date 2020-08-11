@@ -61,11 +61,15 @@ public abstract class ListGUI<T> implements CustomInventory {
 	}
 	
 	public void remove(int slot){
-		objects.remove(slot);
+		T removed = objects.remove(slot);
+		if (removed == null) return;
 		for (int i = slot; i <= objects.size(); i++){
 			inv.setItem(i, i == objects.size() ? none : inv.getItem(i+1));
 		}
+		removed(removed);
 	}
+	
+	protected void removed(T object) {}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == size - 1){

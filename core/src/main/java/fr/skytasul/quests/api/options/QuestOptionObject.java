@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
@@ -86,7 +87,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
-		new QuestObjectGUI<>(getInventoryName(), getCreators(), objects -> {
+		new QuestObjectGUI<>(getInventoryName(), QuestObjectLocation.QUEST, getCreators(), objects -> {
 			setValue(objects);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
