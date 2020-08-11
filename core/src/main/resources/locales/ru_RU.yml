@@ -235,5 +235,9 @@ indication:
   cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'
   removeQuest: '§7Вы уверены, что хотите удалить квест {0}?'
 misc:
+  stageType:
+    npc: Найти NPC
+    items: Вернуть предметы
+    mine: Сломать блоки
   items: Предметы
   expPoints: опыта

@@ -315,6 +315,8 @@ inv:
       itemLore: Can the quest be done several times?
     cancellable: Cancellable by player
     cancellableLore: Allows the player to cancel the quest through its Quests Menu.
+    startableFromGUI: Startable from GUI
+    startableFromGUILore: Allows the player to start the quest from the Quests Menu.
     scoreboardItem: Enable scoreboard
     scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap

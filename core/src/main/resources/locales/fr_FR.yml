@@ -250,6 +250,7 @@ inv:
     ignoreCase: Ignorer la casse du message
     selectItems: '§eChoisir les items nécessaires'
     selectRegion: '§7Choisir la région'
+    toggleRegionExit: À la sortie
     stageStartMsg: '§eModifier le message de départ'
     selectBlockLocation: '§eSélectionner la position du bloc'
     leftClick: Clic gauche nécessaire
@@ -288,6 +289,8 @@ inv:
       itemLore: "La quête peut-elle être\nfaite plusieurs fois ?"
     cancellable: Annulable par le joueur
     cancellableLore: Permet au joueur d'annuler la quête par l'intermédiaire de son menu de Quêtes.
+    startableFromGUI: Démarrable depuis le GUI
+    startableFromGUILore: Permet au joueur de commencer la quête depuis son menu de Quêtes.
     scoreboardItem: Activer le scoreboard
     scoreboardItemLore: Si désactivée, la quête ne sera pas affichée dans le scoreboard.
     hideItem: Cacher la quête du menu et de la dynmap

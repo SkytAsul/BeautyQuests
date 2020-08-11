@@ -158,6 +158,7 @@ msg:
         money: '§e输入获得的钱数:'
       chooseObjectiveRequired: '§a请输入目标名。'
       chooseObjectiveTargetScore: '§a请输入完成任务目标所需目标数。'
+      chooseRegionRequired: '§a请输入所需区域名 (你必须与该区域在同一个世界中)。'
     selectWantedBlock: '§a用木棍点击开始任务阶段的方块.'
     itemCreator:
       itemType: '§a输入物品类型名:'
@@ -270,6 +271,8 @@ inv:
     branchesPage: '§d分支任务阶段'
     previousBranch: '§e返回上一个分支'
     newBranch: '§e前往新的任务分支'
+    validationRequirements: '§e验证需求'
+    validationRequirementsLore: 所有需求必须匹配尝试完成阶段的玩家。否则该阶段无法完成。
   details:
     hologramLaunch: '§e编辑 “启动” 全息项'
     hologramLaunchLore: 显示在接受任务的NPC头上的全息文字。
@@ -492,6 +495,7 @@ misc:
     experienceLevel: '§b所需经验等级'
     permissions: '§3所需权限'
     scoreboard: '§d所需分数'
+    region: '§d需要区域'
     placeholder: '§b所需占位符数值'
     quest: '§a所需前置任务'
     mcMMOSkillLevel: '§d所需技能等级'
