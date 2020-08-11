@@ -234,9 +234,8 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void unload(){
         HandlerList.unregisterAll(this);
-        for (AbstractReward rew : rewards){
-        	rew.detach();
-        }
+		rewards.forEach(AbstractReward::detach);
+		validationRequirements.forEach(AbstractRequirement::detach);
 	}
 	
 	/**

@@ -276,6 +276,7 @@ inv:
     ignoreCase: Ignore the case of the message
     selectItems: §eEdit required items
     selectRegion: §7Choose region
+    toggleRegionExit: On exit
     stageStartMsg: §eEdit starting message
     selectBlockLocation: §eSelect block location
     leftClick: Click must be left-click
