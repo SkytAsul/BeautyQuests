@@ -250,6 +250,7 @@ inv:
     ignoreCase: 忽略消息大小写
     selectItems: '§b选择所需的物品'
     selectRegion: '§7选择一片区域'
+    toggleRegionExit: 退出时
     stageStartMsg: '§e编辑阶段开始的消息'
     selectBlockLocation: '§6选择方块位置'
     leftClick: 必须左击
@@ -288,6 +289,8 @@ inv:
       itemLore: 任务是否可以多次完成?
     cancellable: 玩家可取消任务
     cancellableLore: 允许玩家在任务菜单中取消任务。
+    startableFromGUI: 可从GUI菜单中开始任务
+    startableFromGUILore: 允许玩家在任务菜单中开始任务。
     scoreboardItem: 启用计分版
     scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
     hideItem: 隐藏任务 (菜单和卫星地图)

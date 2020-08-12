@@ -15,6 +15,7 @@ msg:
   quests:
     nopStep: '§cCette quête ne comporte aucune étape.'
     updated: '§7Quête §e{0}§7 actualisée.'
+    checkpoint: '§7Checkpoint de quête atteint !'
   stageMobs:
     noMobs: '§cCette étape ne nécessite de tuer aucun mob.'
     listMobs: '§aIl faut que vous tuiez {0}.'
@@ -66,6 +67,9 @@ msg:
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   command:
+    checkpoint:
+      noCheckpoint: '§cAucun checkpoint trouvé pour la quête {0}.'
+      questNotStarted: '§cVous ne faites pas cette quête.'
     setStage:
       branchDoesntExist: '§cLa branche avec l''id {0} n''existe pas.'
       doesntExist: '§cL''étape avec l''id {0} n''existe pas.'
@@ -301,6 +305,7 @@ inv:
     questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
+    setCheckpointReward: '§eModifier les récompenses du checkpoints'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
@@ -322,6 +327,7 @@ inv:
     timerLore: Temps avant que le joueur puisse recommencer la quête.
     requirements: '{0} exigence(s)'
     rewards: '{0} récompense(s)'
+    actions: '{0} action(s)'
     rewardsLore: Actions effectuées à la fin de la quête.
     customMaterial: '§eModifiez l''item de la quête'
     customMaterialLore: Item représentant cette quête dans le menu de Quêtes.
@@ -378,6 +384,8 @@ inv:
        Y : {1}
        Z : {2}
        World : {3}
+  checkpointActions:
+    name: Actions du checkpoint
   listAllQuests:
     name: Quêtes
   listPlayerQuests:
@@ -391,6 +399,9 @@ inv:
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
+    format:
+      normal: '§6§l§o{0}'
+      withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
     name: Créateur d'item
     itemType: '§bType d''item'
@@ -471,6 +482,7 @@ misc:
     prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
+    offText: '§r§e {0}'
   stageType:
     region: Trouver une region
     npc: Trouver un NPC
