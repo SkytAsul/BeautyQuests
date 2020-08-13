@@ -64,6 +64,7 @@ public class QuestsConfiguration {
 	private static int dMinZoom = 0;
 	// stageDescription
 	private static String descPrefix = "{nl}§e- §6";
+	private static String descAmountFormat = "x{0}";
 	private static boolean descXOne = true;
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
@@ -146,6 +147,7 @@ public class QuestsConfiguration {
 		
 		// stageDescription
 		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
+		descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
 		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
 		inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
 		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
@@ -363,6 +365,10 @@ public class QuestsConfiguration {
 	
 	public static String getDescriptionItemPrefix(){
 		return descPrefix;
+	}
+	
+	public static String getDescriptionAmountFormat() {
+		return descAmountFormat;
 	}
 	
 	public static boolean showDescriptionItemsXOne(Source source){

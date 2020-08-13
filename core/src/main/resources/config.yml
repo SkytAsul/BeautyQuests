@@ -98,7 +98,9 @@ itemAmountColor: "§e"
 stageDescriptionItemsSplit:
   # Prefix before each line
   prefix: "§e- §6"
-  # Show "x1" if there is only one object
+  # Format of object amounts. Placeholders: {0} = remaining (decreasing), {1} = done (increasing), {2} = total. Example: "{1}/{2}"
+  amountFormat: "x{0}"
+  # Show amount format if there is only one object remaining
   showXOne: true
   # When there is only one object, do not put it on a new line
   inlineAlone: true

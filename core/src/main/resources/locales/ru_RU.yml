@@ -142,6 +142,7 @@ msg:
       choosePermissionRequired: '§aНапишите необходимое разрешение для запуска квеста:'
       chooseSkillRequired: '§aНапишите название необходимого навыка:'
     itemCreator:
+      itemAmount: '§aНапишите количество предметов:'
       itemName: '§aВведите название предмета:'
       itemLore: '§aИзмените описание предмета: (Напишите "help" для помощи)'
       unknownItemType: '§cНеизвестный тип предмета.'
@@ -221,6 +222,18 @@ inv:
     newBranch: '§eПерейти к новому ответвлению'
   details:
     customConfirmMessage: '§eОтредактировать сообщение для подтверждения квеста'
+    scoreboardItem: Включить табло
+    selectStarterNPC: '§e§lВыберите NPC, который будет начинать квест'
+    startRewards: '§6Начальные награды'
+    requirements: '{0} требование(я)'
+    rewards: '{0} награда(ы)'
+  requirements:
+    name: Требования
+  rewards:
+    name: Награды
+    commands: 'Команды: {0}'
+  listAllQuests:
+    name: Квесты
   listQuests:
     notStarted: Не начатые квесты
     finished: Завершенные квесты
@@ -229,7 +242,11 @@ inv:
     canRedo: '§3§oВы можете перевыполнить этот квест!'
 scoreboard:
   stage:
+    npc: '§eПоговорить с NPC §6{0}'
     items: '§eВерните предметы §6{0}§e:'
+    mobs: '§eУбить §6{0}'
+    placeBlocks: '§eРазместить {0}'
+    chat: '§eНаписать §6{0}'
 indication:
   startQuest: '§7Вы хотите начать квест {0}?'
   cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'

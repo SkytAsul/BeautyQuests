@@ -69,11 +69,11 @@ public class StageBucket extends AbstractStage {
 	}
 
 	protected String descriptionLine(PlayerAccount acc, Source source) {
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
+		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
+		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
 	}
 
 	protected void serialize(Map<String, Object> map) {

@@ -75,8 +75,10 @@ public class BranchesManager{
 	 * @param p Player
 	 */
 	public final void objectiveUpdated(Player p) {
-		Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-		if (sb != null) sb.setShownQuest(quest);
+		if (quest.isScoreboardEnabled()) {
+			Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+			if (sb != null) sb.setShownQuest(quest);
+		}
 	}
 
 	public void startPlayer(PlayerAccount acc){

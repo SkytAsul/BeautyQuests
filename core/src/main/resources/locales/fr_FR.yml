@@ -16,6 +16,7 @@ msg:
     nopStep: '§cCette quête ne comporte aucune étape.'
     updated: '§7Quête §e{0}§7 actualisée.'
     checkpoint: '§7Checkpoint de quête atteint !'
+    failed: '§cVous avez échoué à la quête {0}...'
   stageMobs:
     noMobs: '§cCette étape ne nécessite de tuer aucun mob.'
     listMobs: '§aIl faut que vous tuiez {0}.'
@@ -331,6 +332,8 @@ inv:
     rewardsLore: Actions effectuées à la fin de la quête.
     customMaterial: '§eModifiez l''item de la quête'
     customMaterialLore: Item représentant cette quête dans le menu de Quêtes.
+    failOnDeath: Échec lors de la mort
+    failOnDeathLore: La quête sera-t-elle annulée à la mort du joueur ?
     loreReset: '§e§lL''avancement de tous les joueurs sera réinitialisé'
     optionValue: '§8Valeur : §7{0}'
     defaultValue: '§8(valeur par défaut)'
@@ -399,9 +402,6 @@ inv:
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
-    format:
-      normal: '§6§l§o{0}'
-      withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
     name: Créateur d'item
     itemType: '§bType d''item'
@@ -482,7 +482,6 @@ misc:
     prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
-    offText: '§r§e {0}'
   stageType:
     region: Trouver une region
     npc: Trouver un NPC

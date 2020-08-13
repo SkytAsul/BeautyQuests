@@ -93,12 +93,12 @@ public class Utils{
 		return msg;
 	}
 
-	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne){
-		return getStringFromNameAndAmount(ItemUtils.getName(is, true), amountColor, is.getAmount(), showXOne);
+	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
+		return "§o" + ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
 	}
 	
-	public static String getStringFromNameAndAmount(String name, String amountColor, int amount, boolean showXOne){
-		return "§o" + name + ((amount > 1 || showXOne) ? "§r" + amountColor + " x" + amount : "");
+	public static String getStringFromNameAndAmount(String name, String amountColor, int remaining, int total, boolean showXOne) {
+		return "§o" + name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, total - remaining, total) : "");
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
