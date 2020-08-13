@@ -4,13 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.structure.Quest;
 
 public abstract class AbstractReward implements QuestObject {
@@ -19,7 +16,7 @@ public abstract class AbstractReward implements QuestObject {
 	
 	protected boolean async = false;
 	protected final String name;
-	protected Quest quest;
+	private Quest quest;
 	
 	protected AbstractReward(String name){
 		this.name = name;
@@ -48,7 +45,14 @@ public abstract class AbstractReward implements QuestObject {
 	}
 	
 	@Override
-	public void detach() {}
+	public void detach() {
+		this.quest = null;
+	}
+	
+	@Override
+	public Quest getAttachedQuest() {
+		return quest;
+	}
 	
 	/**
 	 * Called when the reward should be given to the player
@@ -59,14 +63,6 @@ public abstract class AbstractReward implements QuestObject {
 	
 	@Override
 	public abstract AbstractReward clone();
-	
-	@Override
-	public ItemStack getItemStack() {
-		return ItemUtils.lore(creator.item.clone(), getLore());
-	}
-	
-	@Override
-	public abstract void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked);
 	
 	protected abstract void save(Map<String, Object> datas);
 	

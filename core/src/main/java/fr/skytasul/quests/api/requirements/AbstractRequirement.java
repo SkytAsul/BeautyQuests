@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.Quest;
 
 public abstract class AbstractRequirement implements QuestObject {
@@ -17,7 +15,7 @@ public abstract class AbstractRequirement implements QuestObject {
 	private final QuestObjectCreator<? extends AbstractRequirement> creator;
 	
 	protected final String name;
-	protected Quest quest;
+	private Quest quest;
 	
 	protected AbstractRequirement(String name){
 		this.name = name;
@@ -42,7 +40,14 @@ public abstract class AbstractRequirement implements QuestObject {
 	}
 	
 	@Override
-	public void detach() {}
+	public void detach() {
+		this.quest = null;
+	}
+	
+	@Override
+	public Quest getAttachedQuest() {
+		return quest;
+	}
 	
 	/**
 	 * Called when the plugin has to check if a player can start a quest with this requirement
@@ -59,11 +64,6 @@ public abstract class AbstractRequirement implements QuestObject {
 	
 	@Override
 	public abstract AbstractRequirement clone();
-	
-	@Override
-	public ItemStack getItemStack() {
-		return ItemUtils.lore(creator.item.clone(), getLore());
-	}
 	
 	protected abstract void save(Map<String, Object> datas);
 	protected abstract void load(Map<String, Object> savedDatas);

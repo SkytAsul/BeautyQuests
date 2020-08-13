@@ -58,7 +58,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 	public void onNPCKilled(NPCDeathEvent e) {
 		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
 		if (en.getKiller() == null) return;
-		callEvent(e.getNPC(), en, en.getKiller());
+		callEvent(e, e.getNPC(), en, en.getKiller());
 	}
 
 }

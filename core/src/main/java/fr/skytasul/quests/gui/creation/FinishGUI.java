@@ -36,6 +36,7 @@ import fr.skytasul.quests.options.OptionConfirmMessage;
 import fr.skytasul.quests.options.OptionDescription;
 import fr.skytasul.quests.options.OptionEndMessage;
 import fr.skytasul.quests.options.OptionEndRewards;
+import fr.skytasul.quests.options.OptionFailOnDeath;
 import fr.skytasul.quests.options.OptionHide;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
@@ -283,19 +284,20 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 19, OptionCancellable.class, OptionCancellable::new, true));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 20, OptionStartable.class, OptionStartable::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("scoreboard", 21, OptionScoreboardEnabled.class, OptionScoreboardEnabled::new, true));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hide", 22, OptionHide.class, OptionHide::new, false, "hid"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 23, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 32, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 21, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 24, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class, OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class, OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 27, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 29, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 30, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 31, OptionStartDialog.class, OptionStartDialog::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 33, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMessage", 34, OptionEndMessage.class, OptionEndMessage::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class, OptionScoreboardEnabled::new, true));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hide", 28, OptionHide.class, OptionHide::new, false, "hid"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 29, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 30, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 39, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 40, OptionStartDialog.class, OptionStartDialog::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 42, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMessage", 43, OptionEndMessage.class, OptionEndMessage::new, null));
 	}
 	
 }

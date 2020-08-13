@@ -91,7 +91,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
 		if (!(e.getKiller() instanceof Player)) return;
-		callEvent(e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
+		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
 	}
 	
 	public static void sendMythicMobsList(Player p){

@@ -25,6 +25,7 @@ public enum Lang{
 	QUEST_NOSTEPS("msg.quests.nopStep"),
 	QUEST_UPDATED("msg.quests.updated"),
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
+	QUEST_FAILED("msg.quests.failed"),
 	
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
@@ -347,6 +348,8 @@ public enum Lang{
 	customDescriptionLore("inv.details.customDescriptionLore"),
 	customMaterial("inv.details.customMaterial"),
 	customMaterialLore("inv.details.customMaterialLore"),
+	failOnDeath("inv.details.failOnDeath"),
+	failOnDeathLore("inv.details.failOnDeathLore"),
 	resetLore("inv.details.loreReset"),
 	optionValue("inv.details.optionValue"), // 0: value
 	defaultValue("inv.details.defaultValue"),

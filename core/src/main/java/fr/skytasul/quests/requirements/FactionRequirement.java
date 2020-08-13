@@ -114,7 +114,7 @@ public class FactionRequirement extends AbstractRequirement {
 	protected void load(Map<String, Object> savedDatas) {
 		for (String s : (List<String>) savedDatas.get("factions")) {
 			if (!FactionColl.get().containsId(s)) {
-				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists. Quest \"" + quest.getName() + "\", ID " + quest.getID());
+				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists.");
 				continue;
 			}
 			factions.add(FactionColl.get().get(s));

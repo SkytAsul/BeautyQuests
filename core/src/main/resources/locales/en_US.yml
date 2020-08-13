@@ -17,6 +17,7 @@ msg:
     nopStep: §cThis quest doesn't have any step.
     updated: §7Quest §e{0}§7 updated.
     checkpoint: §7Quest checkpoint reached!
+    failed: §cYou have failed the quest {0}...
   stageMobs:
     noMobs: §cThis stage doesn't need any mobs to kill.
     listMobs: §aYou must kill {0}.
@@ -357,6 +358,8 @@ inv:
     rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEdit quest item material'
     customMaterialLore: Item representative of this quest in the Quests Menu.
+    failOnDeath: Fail on death
+    failOnDeathLore: Will the quest be cancelled when the player dies?
     loreReset: '§e§lAll players'' advancement will be reset'
     optionValue: '§8Value: §7{0}'
     defaultValue: '§8(default value)'

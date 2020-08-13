@@ -115,14 +115,11 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	protected void load(Map<String, Object> savedDatas) {
-		if (!savedDatas.containsKey("classes")) {
-			BeautyQuests.getInstance().getLogger().warning("ClassRequirement for quest \"" + quest.getName() + "\", ID " + quest.getID() + " is empty");
-			return;
-		}
+		if (!savedDatas.containsKey("classes")) return;
 		for (String s : (List<String>) savedDatas.get("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());
 			if (classe == null) {
-				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists. Quest \"" + quest.getName() + "\", ID " + quest.getID());
+				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists.");
 				continue;
 			}
 			classes.add(classe);
