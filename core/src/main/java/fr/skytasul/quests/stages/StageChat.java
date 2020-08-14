@@ -74,8 +74,7 @@ public class StageChat extends AbstractStage{
 	private boolean check(String message, Player p) {
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text))) return false;
 		if (!hasStarted(p)) return false;
-		if (!canUpdate(p));
-		Utils.runSync(() -> finishStage(p));
+		if (canUpdate(p)) Utils.runSync(() -> finishStage(p));
 		return true;
 	}
 

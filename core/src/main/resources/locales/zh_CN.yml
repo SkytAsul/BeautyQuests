@@ -15,6 +15,8 @@ msg:
   quests:
     nopStep: '§c这个任务没有任何阶段...  :-)'
     updated: '§7已更新任务 {0} !'
+    checkpoint: '§7已到达任务记录点！'
+    failed: '§6任务{0}失败……'
   stageMobs:
     noMobs: '§c这个任务阶段没有要杀的怪物 :-)'
     listMobs: '§a你需要杀死 {0}.'
@@ -66,6 +68,9 @@ msg:
   playerNeverConnected: '§c在玩家{0}身上找不到数据.'
   playerNotOnline: '§c玩家 {0} 不在线.'
   command:
+    checkpoint:
+      noCheckpoint: '§c未找到任务{0}的记录点。'
+      questNotStarted: '§c你没有接受这个任务。'
     setStage:
       branchDoesntExist: '§cid为{0}的任务分支不存在。'
       doesntExist: '§cID为{0}的任务阶段不存在.'
@@ -301,6 +306,7 @@ inv:
     questNameLore: 必须设置一个名称来创建任务。
     setItemsRewards: '§7编辑获得的物品'
     setXPRewards: '§e编辑获得的经验'
+    setCheckpointReward: '§e编辑记录点奖励'
     setPermReward: '§e编辑权限'
     setMoneyReward: '§e编辑获得的金钱'
     selectStarterNPC: '§6§l选择接受任务的NPC'
@@ -322,9 +328,12 @@ inv:
     timerLore: 玩家可以再次开始任务的时间。
     requirements: '{0} 个任务需求'
     rewards: '{0} 个奖励'
+    actions: '{0}行动'
     rewardsLore: 任务接受时执行的行动。
     customMaterial: '§a编辑任务物品材料名'
     customMaterialLore: 在任务菜单中代表该任务的物品图标。
+    failOnDeath: 玩家死亡时任务失败
+    failOnDeathLore: 当玩家死亡时是否取消任务？
     loreReset: '§e§l所有玩家的进度将被重置'
     optionValue: '§8数值：§7{0}'
     defaultValue: '§8(默认值)'
@@ -376,6 +385,8 @@ inv:
       Y: {1}
       Z: {2}
       世界: {3}
+  checkpointActions:
+    name: 记录点行动
   listAllQuests:
     name: '§8任务'
   listPlayerQuests:

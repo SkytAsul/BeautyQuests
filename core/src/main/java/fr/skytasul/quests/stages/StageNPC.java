@@ -167,7 +167,7 @@ public class StageNPC extends AbstractStage{
 
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
 		if (di != null){ // dialog exists
-			di.send(p, () -> {
+			di.send(p, npc, () -> {
 				if (bringBack != null) {
 					if (!bringBack.checkItems(p, true)) return;
 					bringBack.removeItems(p);
@@ -269,7 +269,7 @@ public class StageNPC extends AbstractStage{
 					Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 						datas.getGUI().reopen(p, false);
 						datas.put("npcText", obj);
-					}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog((NPC) datas.get("npc"))));
+					}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog()));
 				}
 			}, true, true);
 

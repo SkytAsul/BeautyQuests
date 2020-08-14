@@ -252,7 +252,7 @@ public class Quest implements Comparable<Quest> {
 	
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getValue().send(p, () -> attemptStart(p));
+			getOption(OptionStartDialog.class).getValue().send(p, getOptionValueOrDef(OptionStarterNPC.class), () -> attemptStart(p));
 		}else attemptStart(p);
 	}
 
