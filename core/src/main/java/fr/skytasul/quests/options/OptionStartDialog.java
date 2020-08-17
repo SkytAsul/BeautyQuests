@@ -53,7 +53,7 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
 		Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-		if (getValue() == null) setValue(new Dialog(null));
+		if (getValue() == null) setValue(new Dialog());
 		Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
