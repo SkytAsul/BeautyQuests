@@ -111,7 +111,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onQuestLaunch(QuestLaunchEvent e){
-		if (e.getPlayerAccount() == acc && e.getQuest().isCancellable()) {
+		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
 			launched.add(launched.indexOf(shown) + 1, e.getQuest());
 			shown = e.getQuest();
 			refreshQuestsLines(true);
@@ -156,7 +156,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	public void setShownQuest(Quest quest) {
-		if (!quest.isCancellable()) return;
+		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 		shown = quest;
 		refreshQuestsLines(true);

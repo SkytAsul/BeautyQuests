@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -56,6 +57,11 @@ public class Inventories{
 		
 		if (inv == p.getInventory()){
 			if (e.isShiftClick()) e.setCancelled(true);
+			return;
+		}
+		
+		if (e.getClick() == ClickType.NUMBER_KEY) {
+			e.setCancelled(true);
 			return;
 		}
 
