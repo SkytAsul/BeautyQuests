@@ -124,11 +124,14 @@ public class StageBucket extends AbstractStage {
 			new BucketTypeGUI((bucket) -> {
 				datas.put("bucket", bucket);
 				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor(p, (obj) -> {
+				new TextEditor<>(p, () -> {
+					datas.getGUI().deleteStageLine(datas, p);
+					datas.getGUI().reopen(p, true);
+				}, obj -> {
 					datas.put("amount", obj);
 					datas.getGUI().reopen(p, true);
 					setItems(datas.getLine());
-				}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			}).create(p);
 		}
 
@@ -146,11 +149,11 @@ public class StageBucket extends AbstractStage {
 		public static void setItems(Line line) {
 			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.get("amount"))), (p, datas, item) -> {
 				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor(p, (obj) -> {
+				new TextEditor<>(p, () -> datas.getGUI().reopen(p, true), obj -> {
+					ItemUtils.lore(item, Lang.Amount.format(obj));
 					datas.put("amount", obj);
 					datas.getGUI().reopen(p, true);
-					ItemUtils.lore(item, Lang.Amount.format(obj));
-				}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			});
 			BucketType type = (BucketType) line.data.get("bucket");
 			line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {

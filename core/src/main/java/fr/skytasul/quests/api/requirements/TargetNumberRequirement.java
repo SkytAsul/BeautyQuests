@@ -79,25 +79,25 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		sendHelpString(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			target = ((Number) obj).doubleValue();
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (target == 0) gui.remove(this);
+			gui.reopen(p);
+		}, number -> {
+			target = number.doubleValue();
 			Lang.COMPARISON_TYPE.send(p, COMPARISON_PARSER.getNames());
-			new TextEditor(p, (comp) -> {
-				this.comparison = (ComparisonMethod) comp;
+			new TextEditor<>(p, null, comp -> {
+				this.comparison = comp;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen(p);
-			}, COMPARISON_PARSER, null, () -> {
+			}, () -> {
 				this.comparison = ComparisonMethod.GREATER_OR_EQUAL;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen(p);
-			}).enterOrLeave(p);
-		}, new NumberParser(numberClass(), true), () -> {
-			if (target == 0) gui.remove(this);
-			gui.reopen(p);
+			}, COMPARISON_PARSER).enterOrLeave(p);
 		}, () -> {
 			gui.remove(this);
 			gui.reopen(p);
-		}));
+		}, new NumberParser<>(numberClass(), true)));
 	}
 
 }

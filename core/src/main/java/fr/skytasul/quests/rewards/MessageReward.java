@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
@@ -45,13 +44,14 @@ public class MessageReward extends AbstractReward {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.END_MESSAGE.send(p);
-		TextEditor wt = new TextEditor(p, (obj) -> {
-			this.text = (String) obj;
+		new TextEditor<String>(p, () -> {
+			if (text == null) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
+			this.text = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen(p);
-		});
-		wt.cancel = () -> gui.reopen(p);
-		Editor.enterOrLeave(p, wt);
+		}).enterOrLeave(p);
 	}
 	
 	protected void save(Map<String, Object> datas) {

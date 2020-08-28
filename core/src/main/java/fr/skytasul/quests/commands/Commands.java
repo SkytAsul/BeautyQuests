@@ -51,7 +51,7 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
-		new SelectNPC(cmd.player, (obj) -> {
+		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){
@@ -79,7 +79,7 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
-		new SelectNPC(cmd.player, (obj) -> {
+		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){

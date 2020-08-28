@@ -72,7 +72,10 @@ public class StageInteract extends AbstractStage {
 
 		public void start(Player p, LineData datas) {
 			Lang.CLICK_BLOCK.send(p);
-			new WaitBlockClick(p, (obj) -> {
+			new WaitBlockClick(p, () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, false);
+			}, obj -> {
 				datas.put("lc", obj);
 				datas.getGUI().reopen(p, false);
 				setItems(datas);
@@ -88,7 +91,7 @@ public class StageInteract extends AbstractStage {
 			datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString()), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					Lang.CLICK_BLOCK.send(p);
-					new WaitBlockClick(p, (obj) -> {
+					new WaitBlockClick(p, () -> datas.getGUI().reopen(p, false), obj -> {
 						datas.getGUI().reopen(p, false);
 						datas.put("lc", obj);
 					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);

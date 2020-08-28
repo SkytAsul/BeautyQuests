@@ -62,8 +62,11 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_JOB_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			jobName = (String) obj;
+		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+			if (jobName == null) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
+			jobName = obj;
 			super.itemClick(p, gui, clicked);
 		}));
 	}

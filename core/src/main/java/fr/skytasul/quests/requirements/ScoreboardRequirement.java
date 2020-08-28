@@ -57,17 +57,17 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(p);
-		new TextEditor(p, (obj) -> {
-			this.objective = (Objective) obj;
-			this.objectiveName = objective.getName();
-			super.itemClick(p, gui, clicked);
-		}, new ScoreboardObjectiveParser(), () -> {
+		new TextEditor<>(p, () -> {
 			if (objectiveName == null) gui.remove(this);
 			gui.reopen(p);
+		}, obj -> {
+			this.objective = obj;
+			this.objectiveName = objective.getName();
+			super.itemClick(p, gui, clicked);
 		}, () -> {
 			gui.remove(this);
 			gui.reopen(p);
-		}).enterOrLeave(p);
+		}, new ScoreboardObjectiveParser()).enterOrLeave(p);
 	}
 	
 	@Override

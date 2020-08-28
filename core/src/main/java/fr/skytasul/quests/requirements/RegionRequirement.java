@@ -53,8 +53,11 @@ public class RegionRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_REGION_REQUIRED.toString();
-		new TextEditor(p, obj -> {
-			this.region = WorldGuard.getRegion((String) obj, p.getWorld());
+		new TextEditor<String>(p, () -> {
+			if (regionName == null) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
+			this.region = WorldGuard.getRegion(obj, p.getWorld());
 			if (region != null) {
 				this.worldName = p.getWorld().getName();
 				this.regionName = region.getId();

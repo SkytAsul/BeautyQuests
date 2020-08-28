@@ -60,25 +60,23 @@ public class NPCGUI implements CustomInventory{
 		switch (slot){
 		
 		case 0:
-			Editor.enterOrLeave(p, new WaitClick(p, validMove.clone(), () -> {
-				openLastInv(p);
-			}));
+			Editor.enterOrLeave(p, new WaitClick(p, () -> openLastInv(p), validMove.clone(), () -> openLastInv(p)));
 			break;
 
 		case 1:
 			Lang.NPC_NAME.send(p);
-			new TextEditor(p, (obj) -> {
-				ItemUtils.name(inv.getItem(1), (String) obj);
-				p.openInventory(inv);
+			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
+				ItemUtils.name(inv.getItem(1), Lang.optionValue.format(obj));
+				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
 
 		case 3:
 			Lang.NPC_SKIN.send(p);
 			Inventories.closeWithoutExit(p);
-			new TextEditor(p, (obj) -> {
+			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
 				if (obj != null) inv.setItem(slot, ItemUtils.skull(ItemUtils.getName(skin), (String) obj, ItemUtils.getLore(skin)));
-				p.openInventory(inv);
+				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
 			

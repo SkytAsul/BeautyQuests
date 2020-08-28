@@ -43,17 +43,17 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
 		Lang.QUEST_MATERIAL.send(p);
-		new TextEditor(p, (obj) -> {
-			setValue((XMaterial) obj);
+		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
+			setValue(obj);
 			item.setType(getValue().parseMaterial());
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, new MaterialParser(false), () -> gui.reopen(p), () -> {
+		}, () -> {
 			resetValue();
 			item.setType(getValue().parseMaterial());
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}).enterOrLeave(p);
+		}, new MaterialParser(false)).enterOrLeave(p);
 	}
 	
 }

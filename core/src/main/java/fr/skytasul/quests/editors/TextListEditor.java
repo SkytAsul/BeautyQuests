@@ -19,7 +19,7 @@ public class TextListEditor extends Editor{
 	private List<String> texts;
 	
 	public TextListEditor(Player p, Consumer<List<String>> end, List<String> texts){
-		super(p);
+		super(p, null);
 		Validate.notNull(texts, "Text list in Editor cannot be null.");
 		this.run = end;
 		this.texts = texts;

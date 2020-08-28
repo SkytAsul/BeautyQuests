@@ -146,38 +146,30 @@ public class StagesGUI implements CustomInventory {
 		line.setItem(2, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.DESC_MESSAGE.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(p, false), (obj) -> {
 					datas.put("customText", obj);
 					line.editItem(2, ItemUtils.lore(line.getItem(2), Lang.optionValue.format(obj)));
 					reopen(p, false);
-				}));
-				text.nul = () -> {
+				}, () -> {
 					datas.remove("customText");
 					line.editItem(2,  ItemUtils.lore(line.getItem(2)));
 					reopen(p, false);
-				};
-				text.cancel = () -> {
-					reopen(p, false);
-				};
+				}));
 			}
 		});
 
 		line.setItem(3, startMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.START_TEXT.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(p, false), (obj) -> {
 					datas.put("startMessage", obj);
 					line.editItem(3, ItemUtils.lore(line.getItem(3), Lang.optionValue.format(obj)));
 					reopen(p, false);
-				}));
-				text.nul = () -> {
+				}, () -> {
 					datas.remove("startMessage");
 					line.editItem(3, ItemUtils.lore(line.getItem(3)));
 					reopen(p, false);
-				};
-				text.cancel = () -> {
-					reopen(p, false);
-				};
+				}));
 			}
 		});
 		
@@ -240,6 +232,12 @@ public class StagesGUI implements CustomInventory {
 	public boolean isEmpty(){
 		if (lines.isEmpty()) return true; // if this StagesGUI has never been opened
 		return !isActiveLine(getLine(0)) && !isActiveLine(getLine(15));
+	}
+	
+	public void deleteStageLine(LineData datas, Player p) {
+		if (datas.containsKey("type")) { // stage line
+			datas.getLine().click(0, p, null); // non-used item in remove runnable
+		}
 	}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {

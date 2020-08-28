@@ -96,21 +96,24 @@ public class StagePlayTime extends AbstractStage {
 		@Override
 		public void start(Player p, LineData datas) {
 			Lang.GAME_TICKS.send(p);
-			new TextEditor(p, obj -> {
-				setItem(datas.getLine(), (long) obj);
+			new TextEditor<>(p, () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, false);
+			}, obj -> {
+				setItem(datas.getLine(), obj);
 				datas.put("ticks", obj);
 				datas.getGUI().reopen(p, false);
-			}, new NumberParser(Long.class, true, true)).enterOrLeave(p);
+			}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
 		}
 		
 		private void setItem(Line line, long ticks) {
 			line.setItem(5, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString(), "§6Ticks: §e§l" + ticks), (p, datas, item) -> {
 				Lang.GAME_TICKS.send(p);
-				new TextEditor(p, obj -> {
+				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), obj -> {
 					ItemUtils.lore(item, "§6Ticks: §e§l" + obj);
 					datas.put("ticks", obj);
 					datas.getGUI().reopen(p, false);
-				}, new NumberParser(Long.class, true, true)).enterOrLeave(p);
+				}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
 			});
 		}
 		

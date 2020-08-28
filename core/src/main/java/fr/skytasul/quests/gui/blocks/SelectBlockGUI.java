@@ -68,17 +68,16 @@ public class SelectBlockGUI implements CustomInventory{
 			
 		case 1:
 			Lang.BLOCKS_AMOUNT.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				amount = (int) obj;
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), obj -> {
+				amount = obj;
 				ItemUtils.lore(current, Lang.Amount.format(amount));
 				openLastInv(p);
-			}, new NumberParser(Integer.class, true, true)));
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 			break;
 			
 		case 3:
 			Lang.BLOCK_NAME.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				XMaterial type = (XMaterial) obj;
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), type -> {
 				this.type = type;
 				if (blockData != null) {
 					try {
@@ -96,7 +95,7 @@ public class SelectBlockGUI implements CustomInventory{
 		
 		case 5:
 			Lang.BLOCK_DATA.send(p, String.join(", ", NMS.getNMS().getAvailableBlockProperties(type.parseMaterial())));
-			new TextEditor(p, obj -> {
+			new TextEditor<>(p, () -> openLastInv(p), obj -> {
 				String tmp = "[" + obj + "]";
 				try {
 					Bukkit.createBlockData(type.parseMaterial(), tmp);

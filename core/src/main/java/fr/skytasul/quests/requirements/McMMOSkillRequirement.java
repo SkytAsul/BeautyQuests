@@ -56,8 +56,11 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_SKILL_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			this.skillName = (String) obj;
+		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+			if (skillName == null) gui.remove(this);
+			gui.reopen(p);
+		}, (obj) -> {
+			this.skillName = obj;
 			super.itemClick(p, gui, clicked);
 		}));
 	}

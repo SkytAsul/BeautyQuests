@@ -18,7 +18,7 @@ public class DialogEditor extends Editor{
 	public Dialog d;
 
 	public DialogEditor(Player p, Consumer<Dialog> run, Dialog dialog) {
-		super(p);
+		super(p, null);
 		this.run = run;
 		this.d = dialog;
 	}

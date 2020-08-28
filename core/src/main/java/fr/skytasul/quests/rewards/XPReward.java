@@ -51,12 +51,15 @@ public class XPReward extends AbstractReward {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Utils.sendMessage(p, Lang.XP_GAIN.toString(), exp);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (exp == 0) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
 			Utils.sendMessage(p, Lang.XP_EDITED.toString(), exp, obj);
-			exp = (int) obj;
+			exp = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen(p);
-		}, new NumberParser(Integer.class, true)));
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 	}
 	
 	protected void save(Map<String, Object> datas) {

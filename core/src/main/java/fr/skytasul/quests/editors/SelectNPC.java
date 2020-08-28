@@ -5,7 +5,9 @@ import java.util.function.Consumer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerInteractEvent;
 
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -15,8 +17,8 @@ public class SelectNPC extends InventoryClear{
 	
 	private Consumer<NPC> run;
 	
-	public SelectNPC(Player p, Consumer<NPC> end){
-		super(p);
+	public SelectNPC(Player p, Runnable cancel, Consumer<NPC> end) {
+		super(p, cancel);
 		this.run = end;
 	}
 	
@@ -28,13 +30,13 @@ public class SelectNPC extends InventoryClear{
 		run.accept(e.getNPC());
 	}
 	
-	public boolean chat(String msg, String strippedMessage){
-		if (strippedMessage.equals("cancel")) {
-			leave(p);
-			run.accept(null);
-			return true;
+	@EventHandler (priority = EventPriority.LOW)
+	public void onClick(PlayerInteractEvent e) {
+		if (e.getPlayer() != p) return;
+		if (ItemUtils.itemCancel.equals(e.getItem())) {
+			e.setCancelled(true);
+			cancel();
 		}
-		return false;
 	}
 
 	protected String cancelWord(){
@@ -44,6 +46,7 @@ public class SelectNPC extends InventoryClear{
 	public void begin(){
 		super.begin();
 		Utils.sendMessage(p, Lang.NPC_EDITOR_ENTER.toString());
+		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
 	
 	public void end(){

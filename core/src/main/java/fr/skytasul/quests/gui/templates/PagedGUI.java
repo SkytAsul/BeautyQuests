@@ -128,12 +128,12 @@ public abstract class PagedGUI<T> implements CustomInventory {
 				break;
 
 			case 3:
-				new TextEditor(p, (obj) -> {
+				new TextEditor<String>(p, () -> p.openInventory(inv), (obj) -> {
 					//objects.stream().filter(x -> getName(x).contains((String) obj));
-					objects.sort(comparator.setReference((String) obj));
+					objects.sort(comparator.setReference(obj));
 					setItems();
 					p.openInventory(inv);
-				}, () -> p.openInventory(inv), null).enterOrLeave(p);
+				}).enterOrLeave(p);
 				break;
 			}
 			break;

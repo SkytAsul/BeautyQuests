@@ -8,7 +8,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 
-public class MaterialParser implements AbstractParser {
+public class MaterialParser implements AbstractParser<XMaterial> {
 
 	private boolean item;
 	
@@ -16,7 +16,7 @@ public class MaterialParser implements AbstractParser {
 		this.item = item;
 	}
 	
-	public Object parse(Player p, String msg) throws Throwable{
+	public XMaterial parse(Player p, String msg) throws Throwable {
 		XMaterial tmp = XMaterial.matchXMaterial(msg).orElse(null);
 		if (tmp == null){
 			Material mat = Material.matchMaterial(msg);

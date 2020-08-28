@@ -59,8 +59,8 @@ public class CommandGUI implements CustomInventory {
 		switch (slot){
 		case 0:
 			Lang.COMMAND.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				cmd = (String) obj;
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> p.openInventory(inv), cmd -> {
+				this.cmd = cmd;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
 			}, () -> p.openInventory(inv), null));
@@ -72,10 +72,10 @@ public class CommandGUI implements CustomInventory {
 			
 		case 2:
 			Lang.COMMAND_DELAY.send(p);
-			new TextEditor(p, (x) -> {
-				delay = (int) x;
+			new TextEditor<>(p, () -> p.openInventory(inv), x -> {
+				delay = x;
 				p.openInventory(inv);
-			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			break;
 
 		case 4:
