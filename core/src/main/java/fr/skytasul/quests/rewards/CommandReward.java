@@ -54,7 +54,7 @@ public class CommandReward extends AbstractReward {
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Inventories.create(p, new ListGUI<Command>(commands, 9) {
 			public void click(Command existing, ItemStack item) {
-				Inventories.create(p, new CommandGUI((cmd) -> this.finishItem(cmd))).setFromExistingCommand(existing);
+				Inventories.create(p, new CommandGUI(this::finishItem, this::reopen)).setFromExistingCommand(existing);
 			}
 
 			public String name() {

@@ -85,4 +85,9 @@ public class PermissionGUI implements CustomInventory {
 		p.openInventory(inv);
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
+	
 }

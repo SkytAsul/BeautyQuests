@@ -18,9 +18,11 @@ import fr.skytasul.quests.utils.Lang;
 public class ItemGUI implements CustomInventory {
 
 	private Consumer<ItemStack> end;
+	private Runnable cancel;
 	
-	public ItemGUI(Consumer<ItemStack> end){
+	public ItemGUI(Consumer<ItemStack> end, Runnable cancel) {
 		this.end = end;
+		this.cancel = cancel;
 	}
 	
 	public Inventory open(Player p){
@@ -48,6 +50,12 @@ public class ItemGUI implements CustomInventory {
 		p.setItemOnCursor(null);
 		end.accept(cursor);
 		return false;
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		cancel.run();
+		return CloseBehavior.NOTHING;
 	}
 
 }

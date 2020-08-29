@@ -73,6 +73,11 @@ public class BlocksGUI implements CustomInventory {
 			setItem(inv, id, blockEntry.getKey().getMaterial(), blockEntry.getKey().getAsString(), blockEntry.getValue());
 		}
 	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
 
 	public static void setItem(Inventory inv, int slot, XMaterial type, String name, int amount) {
 		if (type == null) return;

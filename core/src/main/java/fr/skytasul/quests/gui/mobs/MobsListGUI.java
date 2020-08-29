@@ -93,4 +93,9 @@ public class MobsListGUI implements CustomInventory{
 		return true;
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
+	
 }

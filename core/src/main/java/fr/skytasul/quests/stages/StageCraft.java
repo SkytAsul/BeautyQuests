@@ -156,10 +156,13 @@ public class StageCraft extends AbstractStage {
 
 	public static class Creator implements StageCreationRunnables<StageCraft> {
 		public void start(Player p, LineData datas) {
-			new ItemGUI((is) -> {
+			new ItemGUI(is -> {
 				datas.put("item", is);
 				datas.getGUI().reopen(p, true);
 				setItem(datas.getLine());
+			}, () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
 			}).create(p);
 		}
 
@@ -178,7 +181,7 @@ public class StageCraft extends AbstractStage {
 				new ItemGUI((is) -> {
 					datas.put("item", is);
 					datas.getGUI().reopen(p, true);
-				}).create(p);
+				}, () -> datas.getGUI().reopen(p, true)).create(p);
 			});
 		}
 	}

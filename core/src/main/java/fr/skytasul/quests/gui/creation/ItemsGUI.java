@@ -122,8 +122,9 @@ public class ItemsGUI implements CustomInventory{
 		items.add(add);
 	}
 
-	public CloseBehavior onClose(Player p, Inventory inv){
-		return CloseBehavior.CONFIRM;
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
@@ -106,6 +107,10 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		end.accept(objects);
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default rewards.");

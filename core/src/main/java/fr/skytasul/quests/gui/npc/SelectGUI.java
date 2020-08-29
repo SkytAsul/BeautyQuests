@@ -52,12 +52,7 @@ public class SelectGUI implements CustomInventory{
 		switch (slot){
 
 		case 1:
-			NPCGUI tmp = Inventories.create(p, new NPCGUI());
-			tmp.run = (obj) -> {
-				if (obj == null){
-					Inventories.put(p, openLastInv(p), inv);
-				}else run.accept(obj);
-			};
+			new NPCGUI(run, () -> Inventories.put(p, openLastInv(p), inv)).create(p);
 			break;
 
 		case 3:
