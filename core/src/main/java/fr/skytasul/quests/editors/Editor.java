@@ -23,10 +23,13 @@ import fr.skytasul.quests.utils.nms.NMS;
 public abstract class Editor implements Listener{
 
 	private static Map<Player, Editor> players = new HashMap<>();
-	protected final Player p;
 	
-	public Editor(Player p){
+	protected final Player p;
+	protected final Runnable cancel;
+	
+	public Editor(Player p, Runnable cancel) {
 		this.p = p;
+		this.cancel = cancel;
 	}
 	
 	public void begin(){
@@ -40,6 +43,11 @@ public abstract class Editor implements Listener{
 	}
 
 	public void end(){}
+	
+	protected void cancel() {
+		leave(p);
+		cancel.run();
+	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
@@ -66,7 +74,11 @@ public abstract class Editor implements Listener{
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
 		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		if (!chat(ChatColor.translateAlternateColorCodes('&', rawText), ChatColor.stripColor(rawText))) {
+		String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawText);
+		String strippedMessage = ChatColor.stripColor(rawText);
+		if (cancel != null && strippedMessage.equalsIgnoreCase("cancel")) {
+			cancel();
+		}else if (!chat(coloredMessage, strippedMessage)) {
 			Lang.CHAT_EDITOR.send(p);
 		}
 	}

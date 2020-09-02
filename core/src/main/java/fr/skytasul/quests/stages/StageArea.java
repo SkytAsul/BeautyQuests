@@ -99,23 +99,21 @@ public class StageArea extends AbstractStage{
 
 		private static void launchRegionEditor(Player p, Line line, StagesGUI sg, LineData datas, boolean first) {
 			Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
-			TextEditor wt = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				String msg = (String) obj;
-				if (WorldGuard.regionExists(msg, p.getWorld())) {
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+				sg.reopen(p, false);
+				if (first) line.click(0, p, line.getItem(0));
+			}, obj -> {
+				if (WorldGuard.regionExists(obj, p.getWorld())) {
 					sg.reopen(p, false);
-					ItemUtils.name(line.getItem(6), msg);
-					datas.put("region", msg);
+					ItemUtils.name(line.getItem(6), obj);
+					datas.put("region", obj);
 					datas.put("world", p.getWorld().getName());
 				}else {
 					Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
+					if (first) sg.deleteStageLine(datas, p);
 					sg.reopen(p, false);
-					if (first) line.click(0, p, line.getItem(0));
 				}
 			}));
-			wt.cancel = () -> {
-				sg.reopen(p, false);
-				if (first) line.click(0, p, line.getItem(0));
-			};
 		}
 
 		public static void setItems(Line line, StagesGUI sg) {

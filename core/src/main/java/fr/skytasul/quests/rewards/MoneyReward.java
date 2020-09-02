@@ -51,11 +51,14 @@ public class MoneyReward extends AbstractReward {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_MONEY_REWARD.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			money = (double) obj;
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (money == 0) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
+			money = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen(p);
-		}, new NumberParser(Double.class, false, true)));
+		}, new NumberParser<>(Double.class, false, true)));
 	}
 	
 	protected void save(Map<String, Object> datas) {

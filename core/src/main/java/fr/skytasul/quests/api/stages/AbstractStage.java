@@ -250,11 +250,11 @@ public abstract class AbstractStage implements Listener{
 		
 		if (branch.isRegularStage(this)) map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
-		map.put("text", startMessage);
 		map.put("customText", customText);
+		if (startMessage != null) map.put("text", startMessage);
 		
-		map.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
-		map.put("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
+		if (!rewards.isEmpty()) map.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
+		if (!validationRequirements.isEmpty()) map.put("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
 		
 		serialize(map);
 		return map;
@@ -276,7 +276,7 @@ public abstract class AbstractStage implements Listener{
 			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);
 			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-			for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
+			for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
 				try {
 					AbstractReward reward = AbstractReward.deserialize(rew);
 					st.rewards.add(reward);

@@ -9,22 +9,29 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.gui.ItemUtils;
+
 public class WaitBlockClick extends InventoryClear{
 	
 	private Consumer<Location> run;
 	private ItemStack item;
 	
-	public WaitBlockClick(Player p, Consumer<Location> end, ItemStack is){
-		super(p);
+	public WaitBlockClick(Player p, Runnable cancel, Consumer<Location> end, ItemStack is) {
+		super(p, cancel);
 		this.run = end;
 		this.item = is;
 	}
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent e){
+		if (e.getPlayer() != p) return;
+		if (e.getItem() == null) return;
+		if (e.getItem().equals(ItemUtils.itemCancel)) {
+			cancel();
+			return;
+		}
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (e.getClickedBlock() == null) return;
-		if (e.getItem() == null) return;
 		if (!e.getItem().equals(item)) return;
 		e.setCancelled(true);
 		leave(e.getPlayer());
@@ -34,6 +41,7 @@ public class WaitBlockClick extends InventoryClear{
 	public void begin(){
 		super.begin();
 		p.getInventory().setItem(4, item);
+		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
 	
 	public void end(){

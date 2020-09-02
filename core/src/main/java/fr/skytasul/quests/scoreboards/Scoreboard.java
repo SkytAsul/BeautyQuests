@@ -53,7 +53,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 		launched = QuestsAPI.getQuestsStarteds(acc, true);
 
-		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 5L, 20L);
+		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
 
 	public void run() {

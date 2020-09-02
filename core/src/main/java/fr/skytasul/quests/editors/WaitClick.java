@@ -7,6 +7,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.gui.ItemUtils;
+
 public class WaitClick extends InventoryClear{
 	
 	private ItemStack validateItem;
@@ -14,12 +16,12 @@ public class WaitClick extends InventoryClear{
 	private Runnable validate;
 	private Runnable none;
 
-	public WaitClick(Player p, ItemStack validateItem, Runnable validate){
-		this(p, validateItem, validate, null, null);
+	public WaitClick(Player p, Runnable cancel, ItemStack validateItem, Runnable validate) {
+		this(p, cancel, validateItem, validate, null, null);
 	}
 	
-	public WaitClick(Player p, ItemStack validateItem, Runnable validate, ItemStack noneItem, Runnable none){
-		super(p);
+	public WaitClick(Player p, Runnable cancel, ItemStack validateItem, Runnable validate, ItemStack noneItem, Runnable none) {
+		super(p, cancel);
 		this.validateItem = validateItem;
 		this.noneItem = noneItem;
 		this.validate = validate;
@@ -28,15 +30,20 @@ public class WaitClick extends InventoryClear{
 	
 	@EventHandler (priority = EventPriority.LOW)
 	public void onClick(PlayerInteractEvent e){
+		if (e.getPlayer() != p) return;
 		if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (e.getItem() == null) return;
+		Runnable run;
 		if (e.getItem().equals(validateItem)){
-			validate.run();
+			run = validate;
 		}else if (e.getItem().equals(noneItem)){
-			none.run();
+			run = none;
+		}else if (e.getItem().equals(ItemUtils.itemCancel)) {
+			run = cancel;
 		}else return;
 		e.setCancelled(true);
 		leave(e.getPlayer());
+		run.run();
 	}
 
 	public void begin(){
@@ -47,6 +54,7 @@ public class WaitClick extends InventoryClear{
 			p.getInventory().setItem(3, validateItem);
 			p.getInventory().setItem(5, noneItem);
 		}
+		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
 	
 	public void end(){

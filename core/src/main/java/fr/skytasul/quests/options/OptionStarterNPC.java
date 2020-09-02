@@ -41,7 +41,7 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
-		new SelectGUI(npc -> {
+		new SelectGUI(() -> gui.reopen(p), npc -> {
 			setValue(npc);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);

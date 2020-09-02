@@ -105,7 +105,7 @@ public class QuestsListener implements Listener{
 			boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
 			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
-			}, 5L);
+			}, 2L);
 		}
 	}
 

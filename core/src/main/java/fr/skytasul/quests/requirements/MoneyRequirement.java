@@ -57,11 +57,14 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_MONEY_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-			this.money = (double) obj;
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (money == 0) gui.remove(this);
+			gui.reopen(p);
+		}, obj -> {
+			this.money = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen(p);
-		}, new NumberParser(Double.class, true, true)));
+		}, new NumberParser<>(Double.class, true, true)));
 	}
 
 	protected void save(Map<String, Object> datas) {

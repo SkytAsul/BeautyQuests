@@ -53,6 +53,12 @@ public abstract class ListGUI<T> implements CustomInventory {
 		return inv;
 	}
 	
+	public void reopen() {
+		Inventories.closeWithoutExit(p);
+		inv = p.openInventory(inv).getTopInventory();
+		Inventories.put(p, this, inv);
+	}
+	
 	public boolean remove(T object) {
 		int index = objects.indexOf(object);
 		if (index == -1) return false;
@@ -92,9 +98,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	 * @return ItemStack created with {@link #getItemStack(Object)}
 	 */
 	public ItemStack finishItem(T object){
-		Inventories.closeWithoutExit(p);
-		inv = p.openInventory(inv).getTopInventory();
-		Inventories.put(p, this, inv);
+		reopen();
 		objects.add(object);
 		int slot = objects.size() - 1;
 		inv.setItem(slot, getItemStack(object));

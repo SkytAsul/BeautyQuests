@@ -79,19 +79,19 @@ public class ItemCreatorGUI implements CustomInventory {
 		switch (slot){
 		case 0:
 			Lang.CHOOSE_ITEM_TYPE.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				type = (XMaterial) obj;
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> reopen(), obj -> {
+				type = obj;
 				reopen();
 			}, new MaterialParser(true)));
 			break;
 
 		case 1:
 			Lang.CHOOSE_ITEM_AMOUNT.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				amount = (int) obj;
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> reopen(), obj -> {
+				amount = obj;
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				reopen();
-			}, new NumberParser(Integer.class, true, true)));
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 			break;
 		
 		case 2:
@@ -101,8 +101,8 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		case 3:
 			Lang.CHOOSE_ITEM_NAME.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				name = (String) obj;
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(), obj -> {
+				name = obj;
 				reopen();
 			}));
 			break;

@@ -32,10 +32,16 @@ public class NPCGUI implements CustomInventory{
 	private ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
-	public Consumer<NPC> run;
-	public Inventory inv;
+	private Consumer<NPC> end;
+	private Runnable cancel;
 	
+	private Inventory inv;
 	private EntityType en = EntityType.VILLAGER;
+	
+	public NPCGUI(Consumer<NPC> end, Runnable cancel) {
+		this.end = end;
+		this.cancel = cancel;
+	}
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -60,25 +66,23 @@ public class NPCGUI implements CustomInventory{
 		switch (slot){
 		
 		case 0:
-			Editor.enterOrLeave(p, new WaitClick(p, validMove.clone(), () -> {
-				openLastInv(p);
-			}));
+			Editor.enterOrLeave(p, new WaitClick(p, () -> openLastInv(p), validMove.clone(), () -> openLastInv(p)));
 			break;
 
 		case 1:
 			Lang.NPC_NAME.send(p);
-			new TextEditor(p, (obj) -> {
-				ItemUtils.name(inv.getItem(1), (String) obj);
-				p.openInventory(inv);
+			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
+				ItemUtils.name(inv.getItem(1), Lang.optionValue.format(obj));
+				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
 
 		case 3:
 			Lang.NPC_SKIN.send(p);
 			Inventories.closeWithoutExit(p);
-			new TextEditor(p, (obj) -> {
+			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
 				if (obj != null) inv.setItem(slot, ItemUtils.skull(ItemUtils.getName(skin), (String) obj, ItemUtils.getLore(skin)));
-				p.openInventory(inv);
+				openLastInv(p);
 			}).enterOrLeave(p);
 			break;
 			
@@ -94,7 +98,7 @@ public class NPCGUI implements CustomInventory{
 			
 		case 7:
 			Inventories.closeAndExit(p);
-			run.accept(null);
+			cancel.run();
 			break;
 			
 		case 8:
@@ -107,11 +111,17 @@ public class NPCGUI implements CustomInventory{
 			npc.spawn(p.getLocation());
 			((Citizens) CitizensAPI.getPlugin()).getNPCSelector().select(p, npc);
 			Inventories.closeAndExit(p);
-			run.accept(npc);
+			end.accept(npc);
 			break;
 		
 		}
 		return true;
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		cancel.run();
+		return CloseBehavior.NOTHING;
+	}
+	
 }

@@ -93,11 +93,17 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
-		new TextEditor(p, (id) -> {
-			setPlaceholder((String) id);
+		new TextEditor<String>(p, () -> {
+			if (rawPlaceholder == null) gui.remove(this);
+			gui.reopen(p);
+		}, id -> {
+			setPlaceholder(id);
 			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(p, id);
-			new TextEditor(p, (value) -> {
-				this.value = (String) value;
+			new TextEditor<String>(p, () -> {
+				if (value == null) gui.remove(this);
+				gui.reopen(p);
+			}, value -> {
+				this.value = value;
 				gui.reopen(p);
 			}).enterOrLeave(p);
 		}).enterOrLeave(p);

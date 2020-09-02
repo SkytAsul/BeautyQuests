@@ -45,11 +45,11 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
 		sendIndication(p);
-		new TextEditor(p, (obj) -> {
-			setValue((String) obj);
+		new TextEditor<String>(p, () -> gui.reopen(p), (obj) -> {
+			setValue(obj);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, () -> gui.reopen(p), () -> {
+		}, () -> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);

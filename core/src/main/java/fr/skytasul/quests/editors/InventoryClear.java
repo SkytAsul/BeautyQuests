@@ -7,8 +7,8 @@ public abstract class InventoryClear extends Editor{
 	
 	private ItemStack[] contents = new ItemStack[0];
 
-	public InventoryClear(Player p){
-		super(p);
+	public InventoryClear(Player p, Runnable cancel) {
+		super(p, cancel);
 	}
 
 	public void begin(){

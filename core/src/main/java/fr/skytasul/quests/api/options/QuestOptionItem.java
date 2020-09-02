@@ -76,7 +76,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 			setValue(is);
 			gui.inv.setItem(slot, getItemStack());
 			gui.reopen(p);
-		}).create(p);
+		}, () -> gui.reopen(p)).create(p);
 	}
 	
 	public abstract XMaterial getDefaultMaterial();

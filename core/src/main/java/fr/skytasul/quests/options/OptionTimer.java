@@ -51,17 +51,15 @@ public class OptionTimer extends QuestOption<Integer> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
 		Lang.TIMER.send(p);
-		new TextEditor(p, (obj) -> {
-			setValue((int) obj);
+		new TextEditor<>(p, () -> gui.reopen(p), (obj) -> {
+			setValue(obj);
 			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
-		}, new NumberParser(Integer.class, true), () -> {
 			gui.reopen(p);
 		}, () -> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}).enterOrLeave(p);
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 	}
 	
 }

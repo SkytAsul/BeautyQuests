@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-public class WorldParser implements AbstractParser {
+public class WorldParser implements AbstractParser<World> {
 
-	public Object parse(Player p, String msg) throws Throwable {
+	public World parse(Player p, String msg) throws Throwable {
 		World world = Bukkit.getWorld(msg);
 		if (world == null) p.sendMessage("§cThis world does not exist.");
 		return world;

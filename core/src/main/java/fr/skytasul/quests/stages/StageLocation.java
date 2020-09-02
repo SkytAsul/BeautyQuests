@@ -88,7 +88,10 @@ public class StageLocation extends AbstractStage {
 	public static class Creator implements StageCreationRunnables<StageLocation> {
 		public void start(Player p, LineData datas) {
 			Lang.LOCATION_GO.send(p);
-			new WaitClick(p, NPCGUI.validMove, () -> {
+			new WaitClick(p, () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, false);
+			}, NPCGUI.validMove, () -> {
 				datas.put("location", p.getLocation());
 				datas.put("radius", 5);
 				datas.getGUI().reopen(p, false);
@@ -110,15 +113,15 @@ public class StageLocation extends AbstractStage {
 		public static void setItems(Line line) {
 			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
 				Lang.LOCATION_RADIUS.send(p);
-				new TextEditor(p, (x) -> {
+				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), x -> {
+					ItemUtils.lore(item, Lang.currentRadius.format(x));
 					datas.put("radius", x);
 					datas.getGUI().reopen(p, false);
-					ItemUtils.lore(item, Lang.currentRadius.format(x));
-				}, new NumberParser(Integer.class, true, true), () -> datas.getGUI().reopen(p, false), null).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			});
 			line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
 				Lang.LOCATION_GO.send(p);
-				new WaitClick(p, NPCGUI.validMove, () -> {
+				new WaitClick(p, () -> datas.getGUI().reopen(p, false), NPCGUI.validMove, () -> {
 					datas.put("location", p.getLocation());
 					datas.getGUI().reopen(p, false);
 				}).enterOrLeave(p);

@@ -2,6 +2,8 @@ package fr.skytasul.quests.gui.permissions;
 
 import java.util.List;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
@@ -36,4 +38,11 @@ public class PermissionListGUI extends ListGUI<Permission> {
 	public void finish() {
 		end.run();
 	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		end.run();
+		return CloseBehavior.NOTHING;
+	}
+	
 }

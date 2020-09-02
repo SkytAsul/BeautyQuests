@@ -67,8 +67,8 @@ public class PermissionsRequirement extends AbstractRequirement {
 			public void click(Permission existing, ItemStack item) {
 				if (existing == null) {
 					Lang.CHOOSE_PERM_REQUIRED.send(p);
-					new TextEditor(p, obj -> {
-						finishItem(Permission.fromString((String) obj));
+					new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
+						finishItem(Permission.fromString(obj));
 					}).enterOrLeave(p);
 				}
 			}
@@ -76,11 +76,11 @@ public class PermissionsRequirement extends AbstractRequirement {
 			@Override
 			public void finish() {
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor(p, obj -> {
-					message = (String) obj;
+				new TextEditor<String>(p, () -> gui.reopen(p), obj -> {
+					message = obj;
 					ItemUtils.lore(clicked, getLore());
 					gui.reopen(p);
-				}, null, () -> {
+				}, () -> {
 					message = null;
 					ItemUtils.lore(clicked, getLore());
 					gui.reopen(p);

@@ -120,8 +120,11 @@ public class StageChat extends AbstractStage{
 
 		public static void launchEditor(Player p, LineData datas) {
 			Lang.CHAT_MESSAGE.send(p);
-			new TextEditor(p, (obj) -> {
-				String msg = ((String) obj).replace("{SLASH}", "/");
+			new TextEditor<String>(p, () -> {
+				if (datas.containsKey("text")) datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
+			}, obj -> {
+				String msg = obj.replace("{SLASH}", "/");
 				datas.put("text", msg);
 				datas.getGUI().reopen(p, false);
 				ItemUtils.lore(datas.getLine().getItem(6), msg);

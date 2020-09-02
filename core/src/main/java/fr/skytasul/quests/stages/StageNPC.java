@@ -255,7 +255,10 @@ public class StageNPC extends AbstractStage{
 
 		public void start(Player p, LineData datas) {
 			StagesGUI sg = datas.getGUI();
-			Inventories.create(p, new SelectGUI((npc) -> {
+			Inventories.create(p, new SelectGUI(() -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
+			}, npc -> {
 				sg.reopen(p, true);
 				npcDone(npc, datas);
 			}));

@@ -23,11 +23,13 @@ public class SelectGUI implements CustomInventory{
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 	
+	private Runnable cancel;
 	private Consumer<NPC> run;
 	
 	public Inventory inv;
 	
-	public SelectGUI(Consumer<NPC> run) {
+	public SelectGUI(Runnable cancel, Consumer<NPC> run) {
+		this.cancel = cancel;
 		this.run = run;
 	}
 	
@@ -50,23 +52,20 @@ public class SelectGUI implements CustomInventory{
 		switch (slot){
 
 		case 1:
-			NPCGUI tmp = (NPCGUI) Inventories.create(p, new NPCGUI());
-			tmp.run = (obj) -> {
-				if (obj == null){
-					Inventories.put(p, openLastInv(p), inv);
-				}else run.accept(obj);
-			};
+			new NPCGUI(run, () -> Inventories.put(p, openLastInv(p), inv)).create(p);
 			break;
 
 		case 3:
-			Editor.enterOrLeave(p, new SelectNPC(p, (obj) -> {
-				if (obj == null){
-					p.openInventory(inv);
-				}else run.accept(obj);
-			}));
+			Editor.enterOrLeave(p, new SelectNPC(p, () -> openLastInv(p), run));
 			break;
 		}
 		return true;
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		cancel.run();
+		return CloseBehavior.NOTHING;
 	}
 
 }

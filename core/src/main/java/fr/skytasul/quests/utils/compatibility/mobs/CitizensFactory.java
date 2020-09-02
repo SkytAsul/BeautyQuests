@@ -31,7 +31,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 
 	public void itemClick(Player p, Consumer<NPC> run) {
 		Lang.SELECT_KILL_NPC.send(p);
-		new SelectNPC(p, run).enterOrLeave(p);
+		new SelectNPC(p, () -> run.accept(null), run).enterOrLeave(p);
 	}
 
 	public NPC fromValue(String value) {
