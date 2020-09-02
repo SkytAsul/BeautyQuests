@@ -54,7 +54,7 @@ public class PermissionReward extends AbstractReward {
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		new PermissionListGUI(permissions, () -> {
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}).create(p);
 	}
 	

@@ -76,14 +76,14 @@ public class PermissionsRequirement extends AbstractRequirement {
 			@Override
 			public void finish() {
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor<String>(p, () -> gui.reopen(p), obj -> {
+				new TextEditor<String>(p, gui::reopen, obj -> {
 					message = obj;
 					ItemUtils.lore(clicked, getLore());
-					gui.reopen(p);
+					gui.reopen();
 				}, () -> {
 					message = null;
 					ItemUtils.lore(clicked, getLore());
-					gui.reopen(p);
+					gui.reopen();
 				}).enterOrLeave(p);
 			}
 			

@@ -59,14 +59,14 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(p);
 		new TextEditor<>(p, () -> {
 			if (objectiveName == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			this.objective = obj;
 			this.objectiveName = objective.getName();
 			super.itemClick(p, gui, clicked);
 		}, () -> {
 			gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, new ScoreboardObjectiveParser()).enterOrLeave(p);
 	}
 	

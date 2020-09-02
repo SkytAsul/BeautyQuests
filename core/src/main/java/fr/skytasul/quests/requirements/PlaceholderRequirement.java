@@ -95,16 +95,16 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
 		new TextEditor<String>(p, () -> {
 			if (rawPlaceholder == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, id -> {
 			setPlaceholder(id);
 			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(p, id);
 			new TextEditor<String>(p, () -> {
 				if (value == null) gui.remove(this);
-				gui.reopen(p);
+				gui.reopen();
 			}, value -> {
 				this.value = value;
-				gui.reopen(p);
+				gui.reopen();
 			}).enterOrLeave(p);
 		}).enterOrLeave(p);
 	}

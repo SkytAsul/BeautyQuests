@@ -81,22 +81,22 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		sendHelpString(p);
 		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
 			if (target == 0) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, number -> {
 			target = number.doubleValue();
 			Lang.COMPARISON_TYPE.send(p, COMPARISON_PARSER.getNames());
 			new TextEditor<>(p, null, comp -> {
 				this.comparison = comp;
 				ItemUtils.lore(clicked, getLore());
-				gui.reopen(p);
+				gui.reopen();
 			}, () -> {
 				this.comparison = ComparisonMethod.GREATER_OR_EQUAL;
 				ItemUtils.lore(clicked, getLore());
-				gui.reopen(p);
+				gui.reopen();
 			}, COMPARISON_PARSER).enterOrLeave(p);
 		}, () -> {
 			gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, new NumberParser<>(numberClass(), true)));
 	}
 

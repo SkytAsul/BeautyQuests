@@ -63,7 +63,7 @@ public class CommandReward extends AbstractReward {
 
 			public void finish() {
 				ItemUtils.lore(clicked, getLore());
-				gui.reopen(p);
+				gui.reopen();
 			}
 
 			public ItemStack getItemStack(Command cmd) {

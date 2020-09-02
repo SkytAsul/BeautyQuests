@@ -155,7 +155,6 @@ public class Line {
 	}
 	
 	public void click(int slot, Player p, ItemStack is){
-		slot = slot - (line - data.getGUI().page*5)*9;
 		if (slot == 0 && activePage > 0){
 			activePage--;
 			setItems(activePage);
@@ -168,8 +167,12 @@ public class Line {
 			int item = (activePage == 0 ? 0 : activePage * 7) + slot;
 			if (items.get(item) == null) return;
 			if (items.get(item).getValue() == null) return;
-			items.get(item).getValue().run(p, data, is);
+			execute(item, p, is);
 		}
+	}
+	
+	public void execute(int lineSlot, Player p, ItemStack is) {
+		items.get(lineSlot).getValue().run(p, data, is);
 	}
 	
 	private void clearLine(){

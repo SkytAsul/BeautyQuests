@@ -54,7 +54,7 @@ public class QuestRequirement extends AbstractRequirement {
 		new ChooseQuestGUI(BeautyQuests.getInstance().getQuests(), quest -> {
 			this.questId = quest.getID();
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}).create(p);
 	}
 	

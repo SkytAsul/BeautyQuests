@@ -15,7 +15,6 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -41,6 +40,7 @@ import fr.skytasul.quests.rewards.TeleportationReward;
 import fr.skytasul.quests.rewards.XPReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
@@ -57,9 +57,9 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		this.end = end;
 	}
 
+	@Deprecated
 	public void reopen(Player p) {
-		Inventories.put(p, this, inv);
-		p.openInventory(inv);
+		super.reopen();
 	}
 
 	@Override
@@ -98,6 +98,12 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 					object.itemClick(p, QuestObjectGUI.this, finishItem(object));
 				}
 				
+				@Override
+				public CloseBehavior onClose(Player p, Inventory inv) {
+					Utils.runSync(QuestObjectGUI.super::reopen);
+					return CloseBehavior.NOTHING;
+				}
+				
 			}.create(p);
 		}else existing.itemClick(p, this, item);
 	}
@@ -105,11 +111,6 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	@Override
 	public void finish() {
 		end.accept(objects);
-	}
-
-	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REOPEN;
 	}
 
 	public static void initialize(){

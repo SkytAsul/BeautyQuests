@@ -92,7 +92,7 @@ public class FactionRequirement extends AbstractRequirement {
 			@Override
 			public void finish() {
 				ItemUtils.lore(clicked, getLore());
-				gui.reopen(p);
+				gui.reopen();
 			}
 			
 		}.create(p);

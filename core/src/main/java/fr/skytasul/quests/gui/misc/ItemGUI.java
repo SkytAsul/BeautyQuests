@@ -14,6 +14,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 
 public class ItemGUI implements CustomInventory {
 
@@ -54,7 +55,7 @@ public class ItemGUI implements CustomInventory {
 	
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
-		cancel.run();
+		Utils.runSync(cancel);
 		return CloseBehavior.NOTHING;
 	}
 

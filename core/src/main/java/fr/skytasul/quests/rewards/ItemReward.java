@@ -52,7 +52,7 @@ public class ItemReward extends AbstractReward {
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		new ItemsGUI(() -> {
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}, items).create(p);
 	}
 	

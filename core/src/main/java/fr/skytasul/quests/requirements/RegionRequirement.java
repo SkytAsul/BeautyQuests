@@ -55,7 +55,7 @@ public class RegionRequirement extends AbstractRequirement {
 		Lang.CHOOSE_REGION_REQUIRED.toString();
 		new TextEditor<String>(p, () -> {
 			if (regionName == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			this.region = WorldGuard.getRegion(obj, p.getWorld());
 			if (region != null) {
@@ -66,7 +66,7 @@ public class RegionRequirement extends AbstractRequirement {
 				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
 				gui.remove(this);
 			}
-			gui.reopen(p);
+			gui.reopen();
 		});
 	}
 	

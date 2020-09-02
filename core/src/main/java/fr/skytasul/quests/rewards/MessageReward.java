@@ -46,11 +46,11 @@ public class MessageReward extends AbstractReward {
 		Lang.END_MESSAGE.send(p);
 		new TextEditor<String>(p, () -> {
 			if (text == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			this.text = obj;
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}).enterOrLeave(p);
 	}
 	

@@ -53,12 +53,12 @@ public class XPReward extends AbstractReward {
 		Utils.sendMessage(p, Lang.XP_GAIN.toString(), exp);
 		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
 			if (exp == 0) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			Utils.sendMessage(p, Lang.XP_EDITED.toString(), exp, obj);
 			exp = obj;
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 	}
 	

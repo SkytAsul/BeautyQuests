@@ -64,7 +64,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 		Lang.CHOOSE_JOB_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
 			if (jobName == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			jobName = obj;
 			super.itemClick(p, gui, clicked);

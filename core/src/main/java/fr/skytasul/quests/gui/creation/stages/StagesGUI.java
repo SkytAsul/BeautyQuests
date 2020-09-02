@@ -236,7 +236,7 @@ public class StagesGUI implements CustomInventory {
 	
 	public void deleteStageLine(LineData datas, Player p) {
 		if (datas.containsKey("type")) { // stage line
-			datas.getLine().click(0, p, null); // non-used item in remove runnable
+			datas.getLine().execute(0, p, null); // non-used item in remove runnable
 		}
 	}
 
@@ -281,7 +281,7 @@ public class StagesGUI implements CustomInventory {
 			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 			branch.stagesEdited = true;
 			Line line = getLine((slot - slot % 9)/9 +5*page);
-			line.click(slot, p, current);
+			line.click(slot - (line.getLine() - page * 5) * 9, p, current);
 		}
 		return true;
 	}

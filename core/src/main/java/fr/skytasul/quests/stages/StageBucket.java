@@ -121,13 +121,14 @@ public class StageBucket extends AbstractStage {
 
 	public static class Creator implements StageCreationRunnables<StageBucket> {
 		public void start(Player p, LineData datas) {
-			new BucketTypeGUI((bucket) -> {
+			Runnable cancel = () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
+			};
+			new BucketTypeGUI(cancel, bucket -> {
 				datas.put("bucket", bucket);
 				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor<>(p, () -> {
-					datas.getGUI().deleteStageLine(datas, p);
-					datas.getGUI().reopen(p, true);
-				}, obj -> {
+				new TextEditor<>(p, cancel, obj -> {
 					datas.put("amount", obj);
 					datas.getGUI().reopen(p, true);
 					setItems(datas.getLine());
@@ -157,7 +158,7 @@ public class StageBucket extends AbstractStage {
 			});
 			BucketType type = (BucketType) line.data.get("bucket");
 			line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
-				new BucketTypeGUI((bucket) -> {
+				new BucketTypeGUI(() -> datas.getGUI().reopen(p, true), bucket -> {
 					datas.put("bucket", bucket);
 					datas.getGUI().reopen(p, true);
 					item.setType(bucket.getMaterial().parseMaterial());

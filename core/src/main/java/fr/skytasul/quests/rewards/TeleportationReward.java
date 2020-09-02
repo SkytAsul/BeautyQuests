@@ -49,11 +49,11 @@ public class TeleportationReward extends AbstractReward {
 		Lang.MOVE_TELEPORT_POINT.send(p);
 		Editor.enterOrLeave(p, new WaitClick(p, () -> {
 			if (teleportation == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, NPCGUI.validMove.clone(), () -> {
 			teleportation = p.getLocation();
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}));
 	}
 	

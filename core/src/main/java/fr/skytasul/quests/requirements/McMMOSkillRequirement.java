@@ -58,7 +58,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 		Lang.CHOOSE_SKILL_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
 			if (skillName == null) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, (obj) -> {
 			this.skillName = obj;
 			super.itemClick(p, gui, clicked);

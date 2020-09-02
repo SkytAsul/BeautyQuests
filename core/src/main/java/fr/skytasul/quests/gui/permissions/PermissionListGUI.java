@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Permission;
 
@@ -41,7 +42,7 @@ public class PermissionListGUI extends ListGUI<Permission> {
 	
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
-		end.run();
+		Utils.runSync(end);
 		return CloseBehavior.NOTHING;
 	}
 	

@@ -56,7 +56,7 @@ public class CheckpointReward extends AbstractReward {
 		new QuestObjectGUI<>(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, QuestsAPI.rewards.values(), rewards -> {
 			actions = rewards;
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}, actions).create(p);
 	}
 	

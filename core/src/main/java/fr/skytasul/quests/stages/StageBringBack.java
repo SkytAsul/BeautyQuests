@@ -116,17 +116,15 @@ public class StageBringBack extends StageNPC{
 			setItem(datas.getLine());
 			List<ItemStack> items = new ArrayList<>();
 			datas.put("items", items);
-			SelectGUI npcGUI = new SelectGUI(() -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
-			}, npc -> {
-				datas.getGUI().reopen(p, true);
-				if (npc != null) StageNPC.Creator.npcDone(npc, datas);
-			});
-			ItemsGUI itemsGUI = new ItemsGUI(() -> {
-				Inventories.create(p, npcGUI);
-			}, items);
-			Inventories.create(p, itemsGUI);
+			new ItemsGUI(() -> {
+				new SelectGUI(() -> {
+					datas.getGUI().deleteStageLine(datas, p);
+					datas.getGUI().reopen(p, true);
+				}, npc -> {
+					datas.getGUI().reopen(p, true);
+					StageNPC.Creator.npcDone(npc, datas);
+				}).create(p);
+			}, items).create(p);
 		}
 
 		public static void setItem(Line line) {

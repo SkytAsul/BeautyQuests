@@ -17,6 +17,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Command;
 
@@ -93,8 +94,8 @@ public class CommandGUI implements CustomInventory {
 	
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
-		cancel.run();
-		return CloseBehavior.NOTHING; // TODO test
+		Utils.runSync(cancel);
+		return CloseBehavior.NOTHING;
 	}
 
 }

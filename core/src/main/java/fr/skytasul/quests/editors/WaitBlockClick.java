@@ -25,8 +25,7 @@ public class WaitBlockClick extends InventoryClear{
 	@EventHandler
 	public void onClick(PlayerInteractEvent e){
 		if (e.getPlayer() != p) return;
-		if (e.getItem() == null) return;
-		if (e.getItem().equals(ItemUtils.itemCancel)) {
+		if (ItemUtils.itemCancel.equals(e.getItem())) {
 			cancel();
 			return;
 		}

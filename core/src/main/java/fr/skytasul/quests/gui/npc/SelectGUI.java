@@ -15,6 +15,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -64,7 +65,7 @@ public class SelectGUI implements CustomInventory{
 	
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
-		cancel.run();
+		Utils.runSync(cancel);
 		return CloseBehavior.NOTHING;
 	}
 

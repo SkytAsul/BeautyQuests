@@ -54,9 +54,8 @@ public abstract class ListGUI<T> implements CustomInventory {
 	}
 	
 	public void reopen() {
-		Inventories.closeWithoutExit(p);
-		inv = p.openInventory(inv).getTopInventory();
 		Inventories.put(p, this, inv);
+		inv = p.openInventory(inv).getTopInventory();
 	}
 	
 	public boolean remove(T object) {
@@ -90,6 +89,11 @@ public abstract class ListGUI<T> implements CustomInventory {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
 	}
 	
 	/**

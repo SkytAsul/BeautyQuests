@@ -29,7 +29,7 @@ public class WaitClick extends InventoryClear{
 	}
 	
 	@EventHandler (priority = EventPriority.LOW)
-	public void onClick(PlayerInteractEvent e){
+	public void onInteract(PlayerInteractEvent e) {
 		if (e.getPlayer() != p) return;
 		if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (e.getItem() == null) return;
@@ -38,7 +38,7 @@ public class WaitClick extends InventoryClear{
 			run = validate;
 		}else if (e.getItem().equals(noneItem)){
 			run = none;
-		}else if (e.getItem().equals(ItemUtils.itemCancel)) {
+		}else if (ItemUtils.itemCancel.equals(e.getItem())) {
 			run = cancel;
 		}else return;
 		e.setCancelled(true);

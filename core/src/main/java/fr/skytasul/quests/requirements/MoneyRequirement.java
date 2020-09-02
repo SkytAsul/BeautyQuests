@@ -59,11 +59,11 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 		Lang.CHOOSE_MONEY_REQUIRED.send(p);
 		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
 			if (money == 0) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			this.money = obj;
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}, new NumberParser<>(Double.class, true, true)));
 	}
 

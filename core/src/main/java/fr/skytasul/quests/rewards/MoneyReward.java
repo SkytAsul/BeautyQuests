@@ -53,11 +53,11 @@ public class MoneyReward extends AbstractReward {
 		Lang.CHOOSE_MONEY_REWARD.send(p);
 		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
 			if (money == 0) gui.remove(this);
-			gui.reopen(p);
+			gui.reopen();
 		}, obj -> {
 			money = obj;
 			ItemUtils.lore(clicked, getLore());
-			gui.reopen(p);
+			gui.reopen();
 		}, new NumberParser<>(Double.class, false, true)));
 	}
 	
