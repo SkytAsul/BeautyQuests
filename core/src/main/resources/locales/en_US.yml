@@ -18,6 +18,9 @@ msg:
     updated: §7Quest §e{0}§7 updated.
     checkpoint: §7Quest checkpoint reached!
     failed: §cYou have failed the quest {0}...
+  questItem:
+    drop: §cYou can't drop a quest item!
+    craft: §cYou can't use a quest item to craft!
   stageMobs:
     noMobs: §cThis stage doesn't need any mobs to kill.
     listMobs: §aYou must kill {0}.

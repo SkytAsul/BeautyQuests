@@ -279,7 +279,7 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU" }) {
+			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}

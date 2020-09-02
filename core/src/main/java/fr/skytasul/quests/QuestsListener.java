@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -26,6 +27,7 @@ import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -124,19 +126,28 @@ public class QuestsListener implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGH)
 	public void onDrop(PlayerDropItemEvent e){
-		String lore = Lang.QuestItemLore.toString();
-		if (lore.isEmpty()) return;
-		ItemStack is = e.getItemDrop().getItemStack();
-		if (is.getItemMeta().hasLore()){
-			if (is.getItemMeta().getLore().contains(lore)) e.setCancelled(true);
+		if (Utils.isQuestItem(e.getItemDrop().getItemStack())) {
+			e.setCancelled(true);
+			Lang.QUEST_ITEM_DROP.send(e.getPlayer());
 		}
 	}
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent e) { // firework damage
 		if (e.getDamager().hasMetadata("questFinish")) e.setCancelled(true);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onCraft(CraftItemEvent e) {
+		for (ItemStack item : e.getInventory().getMatrix()) {
+			if (Utils.isQuestItem(item)) {
+				e.setCancelled(true);
+				Lang.QUEST_ITEM_CRAFT.send(e.getWhoClicked());
+				break;
+			}
+		}
 	}
 	
 }

@@ -98,7 +98,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 						if (ls.size() <= i - 2) return "";
 						return ls.get(i - 2);
 					}
-					return "§c§lError";
+					return "";
 				}
 				split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
 				return "§6" + qu.getName();

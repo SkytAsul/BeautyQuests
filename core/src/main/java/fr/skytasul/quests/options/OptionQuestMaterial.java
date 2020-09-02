@@ -15,6 +15,12 @@ import fr.skytasul.quests.utils.XMaterial;
 public class OptionQuestMaterial extends QuestOption<XMaterial> {
 	
 	@Override
+	public void setValue(XMaterial value) {
+		if (value == XMaterial.AIR) value = XMaterial.BOOK;
+		super.setValue(value);
+	}
+	
+	@Override
 	public Object save() {
 		return getValue().name();
 	}

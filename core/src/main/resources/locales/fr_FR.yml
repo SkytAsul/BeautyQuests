@@ -17,6 +17,9 @@ msg:
     updated: '§7Quête §e{0}§7 actualisée.'
     checkpoint: '§7Checkpoint de quête atteint !'
     failed: '§cVous avez échoué à la quête {0}...'
+  questItem:
+    drop: '§cVous ne pouvez pas jeter un objet de quête !'
+    craft: '§cVous ne pouvez pas utiliser un objet de quête pour crafter !'
   stageMobs:
     noMobs: '§cCette étape ne nécessite de tuer aucun mob.'
     listMobs: '§aIl faut que vous tuiez {0}.'

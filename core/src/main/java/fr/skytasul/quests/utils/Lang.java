@@ -27,6 +27,9 @@ public enum Lang{
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
+	QUEST_ITEM_DROP("msg.questItem.drop"),
+	QUEST_ITEM_CRAFT("msg.questItem.craft"),
+	
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
 	

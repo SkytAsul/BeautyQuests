@@ -94,11 +94,11 @@ public class Utils{
 	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
-		return "§o" + ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
+		return ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
 	}
 	
 	public static String getStringFromNameAndAmount(String name, String amountColor, int remaining, int total, boolean showXOne) {
-		return "§o" + name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, total - remaining, total) : "");
+		return name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, total - remaining, total) : "");
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
@@ -498,6 +498,15 @@ public class Utils{
 			return QuestsConfiguration.getDescriptionItemPrefix() + buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
 		}
 		return itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
+	}
+	
+	public static boolean isQuestItem(ItemStack item) {
+		String lore = Lang.QuestItemLore.toString();
+		if (!lore.isEmpty() && item.hasItemMeta()) {
+			ItemMeta meta = item.getItemMeta();
+			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
+		}
+		return false;
 	}
 	
 }
