@@ -78,7 +78,10 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 					if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc, true));
 					List<Quest> left = ordered.get(p);
 					QuestsAPI.updateQuestsStarteds(acc, true, left);
-					if (left.isEmpty()) return Lang.SCOREBOARD_NONE.toString();
+					if (left.isEmpty()) {
+						split.remove(p);
+						return Lang.SCOREBOARD_NONE.toString();
+					}
 					while (!(qu = left.get(0)).hasStarted(acc)) {
 						left.remove(0);
 					}
@@ -94,10 +97,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				if (i > 1) {
 					if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
 					List<String> ls = split.get(p);
-					if (ls != null) {
-						if (ls.size() <= i - 2) return "";
-						return ls.get(i - 2);
-					}
+					if (ls != null && ls.size() > i - 2) return ls.get(i - 2);
 					return "";
 				}
 				split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
@@ -105,11 +105,11 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				
 				/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
 				return "§6" + qu.getName() + " §e: §o" + (stage == null ? "finishing" : stage.getDescriptionLine(acc));*/
-			}catch (Throwable ex) {
+			}catch (Exception ex) {
 				ordered.remove(p);
 				split.remove(p);
+				return ex.getMessage();
 			}
-			return "";
 		}
 		
 		if (identifier.startsWith("advancement_")) {

@@ -247,15 +247,6 @@ public class BeautyQuests extends JavaPlugin{
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			config = getConfig();
-			/*				static initialization				*/
-			if (init){
-				if (loadLang() == null) return;
-				StagesGUI.initialize(); // 			initializing default stage types
-				QuestObjectGUI.initialize(); //			initializing default rewards and requirements
-				FinishGUI.initialize(); //				initializing default quest options
-				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
-				QuestsAPI.registerMobFactory(new CitizensFactory());
-			}
 			
 			QuestsConfiguration.initConfiguration(config);
 			ConfigurationSection dbConfig = config.getConfigurationSection("database");
@@ -268,6 +259,16 @@ public class BeautyQuests extends JavaPlugin{
 					db = null;
 					throw new LoadingException("Connection to database has failed.");
 				}
+			}
+			
+			/*				static initialization				*/
+			if (init) {
+				if (loadLang() == null) return;
+				StagesGUI.initialize(); // 			initializing default stage types
+				QuestObjectGUI.initialize(); //			initializing default rewards and requirements
+				FinishGUI.initialize(); //				initializing default quest options
+				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
+				QuestsAPI.registerMobFactory(new CitizensFactory());
 			}
 		}catch (LoadingException ex) {
 			throw ex;

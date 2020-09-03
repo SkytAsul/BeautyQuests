@@ -501,6 +501,7 @@ public class Utils{
 	}
 	
 	public static boolean isQuestItem(ItemStack item) {
+		if (item == null) return false;
 		String lore = Lang.QuestItemLore.toString();
 		if (!lore.isEmpty() && item.hasItemMeta()) {
 			ItemMeta meta = item.getItemMeta();

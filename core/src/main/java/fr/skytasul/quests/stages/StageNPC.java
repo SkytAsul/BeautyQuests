@@ -57,6 +57,7 @@ public class StageNPC extends AbstractStage{
 	public StageNPC(QuestBranch branch, NPC npc){
 		super(branch);
 		this.npc = npc;
+		if (npc == null) BeautyQuests.logger.warning("No NPC specified for " + debugName());
 	}
 	
 	private void launchRefreshTask(){
@@ -231,7 +232,6 @@ public class StageNPC extends AbstractStage{
 			if (!hide) launchRefreshTask();
 		}
 	}
-	
 
 	protected void loadDatas(Map<String, Object> map) {
 		setDialog(map.get("msg"));
@@ -245,7 +245,7 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		StageNPC st = new StageNPC(branch, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
+		StageNPC st = new StageNPC(branch, map.containsKey("npcID") ? CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")) : null);
 		st.loadDatas(map);
 		return st;
 	}
