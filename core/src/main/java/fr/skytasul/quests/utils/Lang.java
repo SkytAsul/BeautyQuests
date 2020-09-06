@@ -353,6 +353,8 @@ public enum Lang{
 	customMaterialLore("inv.details.customMaterialLore"),
 	failOnDeath("inv.details.failOnDeath"),
 	failOnDeathLore("inv.details.failOnDeathLore"),
+	keepDatas("inv.details.keepDatas"),
+	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
 	optionValue("inv.details.optionValue"), // 0: value
 	defaultValue("inv.details.defaultValue"),

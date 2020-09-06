@@ -27,8 +27,6 @@ import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -186,20 +184,18 @@ public class StageNPC extends AbstractStage{
 		return (npc != null) ? npc.getName() : "§c§lerror";
 	}
 	
-	@EventHandler
-	public void onJoin(PlayerAccountJoinEvent e) {
-		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			cached.add(e.getPlayer());
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(e.getPlayer(), npc.getStoredLocation());
-		}else cached.remove(e.getPlayer());
+	@Override
+	public void joins(PlayerAccount acc, Player p) {
+		super.joins(acc, p);
+		cached.add(p);
+		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
 	}
 	
-	@EventHandler
-	public void onLeave(PlayerAccountLeaveEvent e) {
-		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			cached.remove(e.getPlayer());
-			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(e.getPlayer());
-		}
+	@Override
+	public void leaves(PlayerAccount acc, Player p) {
+		super.leaves(acc, p);
+		cached.remove(p);
+		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
 	public void start(PlayerAccount acc) {
@@ -222,8 +218,9 @@ public class StageNPC extends AbstractStage{
 	
 	public void unload() {
 		super.unload();
-		if (task !=null) task.cancel();
+		if (task != null) task.cancel();
 		if (holo != null) removeHoloLaunch();
+		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
 	}
 	
 	public void load(){

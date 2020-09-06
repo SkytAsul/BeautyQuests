@@ -17,6 +17,9 @@ msg:
     updated: '§7已更新任务 {0} !'
     checkpoint: '§7已到达任务记录点！'
     failed: '§6任务{0}失败……'
+  questItem:
+    drop: '§c你不能丢弃任务物品！'
+    craft: '§c你不能用任务物品来合成物品！'
   stageMobs:
     noMobs: '§c这个任务阶段没有要杀的怪物 :-)'
     listMobs: '§a你需要杀死 {0}.'

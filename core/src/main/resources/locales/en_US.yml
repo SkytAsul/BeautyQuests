@@ -363,6 +363,10 @@ inv:
     customMaterialLore: Item representative of this quest in the Quests Menu.
     failOnDeath: Fail on death
     failOnDeathLore: Will the quest be cancelled when the player dies?
+    keepDatas: Preserve players datas
+    keepDatasLore: |-
+      Force the plugin to preserve players datas, even though stages have been edited.
+      §c§lWARNING §c- enabling this option may break your players datas.
     loreReset: '§e§lAll players'' advancement will be reset'
     optionValue: '§8Value: §7{0}'
     defaultValue: '§8(default value)'

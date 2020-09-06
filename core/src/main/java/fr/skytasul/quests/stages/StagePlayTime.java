@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -17,8 +16,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -44,25 +41,21 @@ public class StagePlayTime extends AbstractStage {
 		tasks.put(acc, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p), remaining < 0 ? 0 : remaining));
 	}
 	
-	@EventHandler
-	public void onJoin(PlayerAccountJoinEvent e) {
-		PlayerAccount acc = e.getPlayerAccount();
-		if (branch.hasStageLaunched(acc, this)) {
-			updateObjective(acc, null, "lastJoin", System.currentTimeMillis());
-			launchTask(acc, e.getPlayer(), Utils.parseLong(getData(acc, "remainingTime")));
-		}
+	@Override
+	public void joins(PlayerAccount acc, Player p) {
+		super.joins(acc, p);
+		updateObjective(acc, null, "lastJoin", System.currentTimeMillis());
+		launchTask(acc, p, Utils.parseLong(getData(acc, "remainingTime")));
 	}
 	
-	@EventHandler
-	public void onLeave(PlayerAccountLeaveEvent e) {
-		PlayerAccount acc = e.getPlayerAccount();
-		if (branch.hasStageLaunched(acc, this)) {
-			tasks.remove(acc).cancel();
-			long remaining = Utils.parseLong(getData(acc, "remainingTime"));
-			long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
-			long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
-			updateObjective(acc, null, "remainingTime", remaining - playedTicks);
-		}
+	@Override
+	public void leaves(PlayerAccount acc, Player p) {
+		super.leaves(acc, p);
+		tasks.remove(acc).cancel();
+		long remaining = Utils.parseLong(getData(acc, "remainingTime"));
+		long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
+		long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
+		updateObjective(acc, null, "remainingTime", remaining - playedTicks);
 	}
 	
 	@Override
@@ -78,6 +71,13 @@ public class StagePlayTime extends AbstractStage {
 		super.initPlayerDatas(acc, datas);
 		datas.put("remainingTime", playTicks);
 		datas.put("lastJoin", System.currentTimeMillis());
+	}
+	
+	@Override
+	public void unload() {
+		super.unload();
+		tasks.keySet().forEach(acc -> leaves(acc, null));
+		tasks.clear();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
@@ -19,6 +20,8 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -185,6 +188,18 @@ public abstract class AbstractStage implements Listener{
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
 	}
 	
+	/**
+	 * Called when an account with this stage launched joins
+	 * @param acc PlayerAccount which just joined
+	 */
+	public void joins(PlayerAccount acc, Player p) {}
+	
+	/**
+	 * Called when an account with this stage launched leaves
+	 * @param acc PlayerAccount which just left
+	 */
+	public void leaves(PlayerAccount acc, Player p) {}
+	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
 		try{
@@ -242,6 +257,20 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage loads
 	 */
 	public void load() {}
+	
+	@EventHandler
+	public void onJoin(PlayerAccountJoinEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			joins(e.getPlayerAccount(), e.getPlayer());
+		}
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerAccountLeaveEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			leaves(e.getPlayerAccount(), e.getPlayer());
+		}
+	}
 	
 	protected abstract void serialize(Map<String, Object> map);
 	

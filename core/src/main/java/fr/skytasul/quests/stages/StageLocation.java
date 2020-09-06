@@ -18,8 +18,6 @@ import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -62,14 +60,16 @@ public class StageLocation extends AbstractStage {
 		}
 	}
 	
-	@EventHandler
-	public void onJoin(PlayerAccountJoinEvent e) {
-		if (QuestsConfiguration.handleGPS() && branch.hasStageLaunched(e.getPlayerAccount(), this)) GPS.launchCompass(e.getPlayer(), lc);
+	@Override
+	public void joins(PlayerAccount acc, Player p) {
+		super.joins(acc, p);
+		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, lc);
 	}
 	
-	@EventHandler
-	public void onLeave(PlayerAccountLeaveEvent e) {
-		if (QuestsConfiguration.handleGPS() && branch.hasStageLaunched(e.getPlayerAccount(), this)) GPS.stopCompass(e.getPlayer());
+	@Override
+	public void leaves(PlayerAccount acc, Player p) {
+		super.leaves(acc, p);
+		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
 	protected String descriptionLine(PlayerAccount acc, Source source){

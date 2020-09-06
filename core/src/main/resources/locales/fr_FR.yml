@@ -337,6 +337,10 @@ inv:
     customMaterialLore: Item représentant cette quête dans le menu de Quêtes.
     failOnDeath: Échec lors de la mort
     failOnDeathLore: La quête sera-t-elle annulée à la mort du joueur ?
+    keepDatas: Conserver les données des joueurs
+    keepDatasLore: |-
+      Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées.
+      §c§lAVERTISSEMENT §c- activer cette option peut endommager les données de vos joueurs.
     loreReset: '§e§lL''avancement de tous les joueurs sera réinitialisé'
     optionValue: '§8Valeur : §7{0}'
     defaultValue: '§8(valeur par défaut)'

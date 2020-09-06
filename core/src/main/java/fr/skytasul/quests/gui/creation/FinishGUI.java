@@ -51,6 +51,8 @@ import fr.skytasul.quests.options.OptionStartRewards;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -73,7 +75,10 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 	private boolean editing = false;
 	private boolean stagesEdited = false;
+	private boolean keepPlayerDatas = true;
 	private Quest edited;
+	
+	private UpdatableItem done;
 	
 	public FinishGUI(StagesGUI gui){
 		stages = gui;
@@ -83,6 +88,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		stages = gui;
 		this.edited = edited;
 		this.stagesEdited = stagesEdited;
+		this.keepPlayerDatas = !stagesEdited;
 		editing = true;
 	}
 
@@ -91,7 +97,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		if (inv == null){
 			String invName = Lang.INVENTORY_DETAILS.toString();
 			if (editing){
-				invName = invName + " ID: " + edited.getID();
+				invName = invName + " #" + edited.getID();
 				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
 			}
 			inv = Bukkit.createInventory(null, (int) Math.ceil(QuestOptionCreator.creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt() / 9D) * 9, invName);
@@ -135,24 +141,25 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			});
 			inv.setItem(pageSlot, ItemUtils.itemLaterPage);
 
-			int doneSlot = QuestOptionCreator.calculateSlot(5);
-			UpdatableItem done = new UpdatableItem(doneSlot) {
+			done = new UpdatableItem(QuestOptionCreator.calculateSlot(5)) {
 				@Override
 				public void update() {
 					boolean enabled = getOption(OptionName.class).getValue() != null;
 					XMaterial type = enabled ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
 					String itemName = (enabled ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString() + (editing ? Lang.edit : Lang.create).toString();
 					String itemLore = QuestOption.formatDescription(Lang.createLore.toString()) + (enabled ? " §a✔" : " §c✖");
+					String[] lore = keepPlayerDatas ? new String[] { itemLore } : new String[] { itemLore, "", Lang.resetLore.toString() };
 					
 					ItemStack item = inv.getItem(slot);
 					
 					if (item == null) {
-						inv.setItem(slot, ItemUtils.item(type, itemName, itemLore));
+						inv.setItem(slot, ItemUtils.item(type, itemName, lore));
+						return;
 					}else if (!type.isSimilar(item)) {
 						type.setType(item);
 						ItemUtils.name(item, itemName);
-						ItemUtils.lore(item, itemLore);
 					}
+					ItemUtils.lore(item, lore);
 				}
 				
 				@Override
@@ -160,9 +167,12 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					finish();
 				}
 			};
+			
 			done.update();
-			clicks.put(doneSlot, done);
+			clicks.put(done.slot, done);
 			getWrapper(OptionName.class).dependent.add(done);
+			
+			if (stagesEdited) setStagesEdited(true);
 		}
 
 		inv = p.openInventory(inv).getTopInventory();
@@ -179,7 +189,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		try {
 			clicks.get(slot).click(p, current);
 		}catch (Exception ex) {
-			Lang.ERROR_OCCURED.send(p, "click slot " + slot);
+			Lang.ERROR_OCCURED.send(p, "Finish GUI click slot #" + slot);
 			ex.printStackTrace();
 		}
 		return true;
@@ -194,7 +204,11 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			qu = new Quest(++BeautyQuests.lastID);
 		}
 		
-		if (stagesEdited) PlayersManager.manager.removeQuestDatas(qu);
+		if (stagesEdited) {
+			if (keepPlayerDatas) {
+				BeautyQuests.logger.warning("Players quests datas will be kept for quest #" + qu.getID() + " - this may cause datas issues.");
+			}else PlayersManager.manager.removeQuestDatas(qu);
+		}
 		
 		for (QuestOption<?> option : this) {
 			if (option.hasCustomValue()) qu.addOption(option);
@@ -222,6 +236,20 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				e.printStackTrace();
 			}
 		}
+		
+		if (keepPlayerDatas) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				PlayerAccount account = PlayersManager.getPlayerAccount(p);
+				if (account.hasQuestDatas(qu)) {
+					PlayerQuestDatas datas = account.getQuestDatas(qu);
+					QuestBranch branch = qu.getBranchesManager().getBranch(datas.getBranch());
+					if (datas.isInEndingStages()) {
+						branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, p));
+					}else branch.getRegularStage(datas.getStage()).joins(account, p);
+				}
+			}
+		}
+		
 		Inventories.closeAndExit(p);
 	}
 	
@@ -252,10 +280,22 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		}
 	}
 
-	public void setStagesEdited() {
-		if (stagesEdited) return;
+	public void setStagesEdited(boolean force) {
+		if (!force && stagesEdited) return;
 		stagesEdited = true;
-		ItemUtils.loreAdd(inv.getItem(32), Lang.resetLore.toString());
+		keepPlayerDatas = false;
+		int resetSlot = QuestOptionCreator.calculateSlot(6);
+		inv.setItem(resetSlot, ItemUtils.itemSwitch(Lang.keepDatas.toString(), false, QuestOption.formatDescription(Lang.keepDatasLore.toString())));
+		clicks.put(resetSlot, new Item(resetSlot) {
+			
+			@Override
+			public void click(Player p, ItemStack item) {
+				keepPlayerDatas = ItemUtils.toggle(item);
+				done.update();
+			}
+			
+		});
+		done.update();
 	}
 	
 	abstract class Item {

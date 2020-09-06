@@ -50,8 +50,10 @@ public class WaitClick extends InventoryClear{
 		super.begin();
 		if (none == null){
 			p.getInventory().setItem(4, validateItem);
+			p.getInventory().setHeldItemSlot(4);
 		}else {
 			p.getInventory().setItem(3, validateItem);
+			p.getInventory().setHeldItemSlot(3);
 			p.getInventory().setItem(5, noneItem);
 		}
 		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
