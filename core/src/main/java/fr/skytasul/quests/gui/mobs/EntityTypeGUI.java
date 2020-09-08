@@ -31,7 +31,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	private Consumer<EntityType> run;
 	
 	public EntityTypeGUI(Consumer<EntityType> run){
-		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet(), null, x -> x.getName());
+		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet(), null, EntityType::getName);
 		this.run = run;
 	}
 

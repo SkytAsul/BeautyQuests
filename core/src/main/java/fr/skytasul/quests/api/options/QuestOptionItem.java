@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
@@ -42,20 +43,22 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 		if (getItemDescription() != null) lore.add(formatDescription(getItemDescription()));
 		
 		if (getValue() == null) {
-			lore.add(Lang.NotSet.toString());
+			lore.add(Lang.NotSet.toString() + (hasCustomValue() ? "" : " " + Lang.defaultValue.toString()));
 		}else {
 			lore.add("");
-			lore.add("Item name: " + ItemUtils.getName(getValue()));
+			lore.add("§7Item name: §f" + ItemUtils.getName(getValue()));
 			String[] itemLore = ItemUtils.getLore(getValue());
 			if (itemLore != null) {
 				lore.add("");
-				lore.add("Item lore:");
+				lore.add("§7Item lore:");
 				lore.addAll(Arrays.asList(itemLore));
 			}
 			if (!hasCustomValue()) {
 				lore.add("");
 				lore.add(Lang.defaultValue.toString());
 			}
+			lore.add("");
+			lore.add(Lang.Remove.toString());
 		}
 		
 		return lore.stream().toArray(String[]::new);
@@ -71,12 +74,17 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
-		new ItemGUI(is -> {
-			setValue(is);
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
+		if (click == ClickType.MIDDLE) {
+			setValue(null);
 			gui.inv.setItem(slot, getItemStack());
-			gui.reopen(p);
-		}, () -> gui.reopen(p)).create(p);
+		}else {
+			new ItemGUI(is -> {
+				setValue(is);
+				gui.inv.setItem(slot, getItemStack());
+				gui.reopen(p);
+			}, () -> gui.reopen(p)).create(p);
+		}
 	}
 	
 	public abstract XMaterial getDefaultMaterial();

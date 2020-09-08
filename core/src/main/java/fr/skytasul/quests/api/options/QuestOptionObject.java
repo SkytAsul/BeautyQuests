@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -86,7 +87,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		new QuestObjectGUI<>(getInventoryName(), QuestObjectLocation.QUEST, getCreators(), objects -> {
 			setValue(objects);
 			ItemUtils.lore(item, getLore());

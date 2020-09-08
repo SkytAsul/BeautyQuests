@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.creation.FinishGUI;
@@ -93,7 +94,7 @@ public abstract class QuestOption<T> implements Cloneable {
 	
 	public abstract ItemStack getItemStack();
 	
-	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot);
+	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click);
 	
 	public String formatValue(String valueString) {
 		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString).toString();

@@ -2,6 +2,7 @@ package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.options.QuestOption;
@@ -47,7 +48,7 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Lang.QUEST_MATERIAL.send(p);
 		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
 			setValue(obj);

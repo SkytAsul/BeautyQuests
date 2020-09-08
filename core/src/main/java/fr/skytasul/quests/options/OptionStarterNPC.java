@@ -2,6 +2,7 @@ package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.options.QuestOption;
@@ -40,7 +41,7 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		new SelectGUI(() -> gui.reopen(p), npc -> {
 			setValue(npc);
 			ItemUtils.lore(item, getLore());

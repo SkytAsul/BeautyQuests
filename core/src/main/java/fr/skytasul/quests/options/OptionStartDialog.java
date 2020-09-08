@@ -2,6 +2,7 @@ package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.options.OptionSet;
@@ -51,7 +52,7 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 		if (getValue() == null) setValue(new Dialog());
 		Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {

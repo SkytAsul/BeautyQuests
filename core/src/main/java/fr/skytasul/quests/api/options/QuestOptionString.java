@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.options;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.editors.TextEditor;
@@ -43,7 +44,7 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot) {
+	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		sendIndication(p);
 		new TextEditor<String>(p, () -> gui.reopen(p), (obj) -> {
 			setValue(obj);

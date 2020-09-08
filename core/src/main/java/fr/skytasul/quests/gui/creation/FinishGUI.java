@@ -112,8 +112,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				UpdatableItem item = new UpdatableItem(creator.slot) {
 					
 					@Override
-					public void click(Player p, ItemStack item) {
-						option.click(FinishGUI.this, p, item, slot);
+					public void click(Player p, ItemStack item, ClickType click) {
+						option.click(FinishGUI.this, p, item, slot, click);
 					}
 					
 					@Override
@@ -135,7 +135,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			int pageSlot = QuestOptionCreator.calculateSlot(3);
 			clicks.put(pageSlot, new Item(pageSlot) {
 				@Override
-				public void click(Player p, ItemStack item) {
+				public void click(Player p, ItemStack item, ClickType click) {
 					Inventories.create(p, stages);
 				}
 			});
@@ -163,7 +163,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				}
 				
 				@Override
-				public void click(Player p, ItemStack item) {
+				public void click(Player p, ItemStack item, ClickType click) {
 					finish();
 				}
 			};
@@ -187,7 +187,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		try {
-			clicks.get(slot).click(p, current);
+			clicks.get(slot).click(p, current, click);
 		}catch (Exception ex) {
 			Lang.ERROR_OCCURED.send(p, "Finish GUI click slot #" + slot);
 			ex.printStackTrace();
@@ -289,7 +289,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		clicks.put(resetSlot, new Item(resetSlot) {
 			
 			@Override
-			public void click(Player p, ItemStack item) {
+			public void click(Player p, ItemStack item, ClickType click) {
 				keepPlayerDatas = ItemUtils.toggle(item);
 				done.update();
 			}
@@ -305,7 +305,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			this.slot = slot;
 		}
 		
-		public abstract void click(Player p, ItemStack item);
+		public abstract void click(Player p, ItemStack item, ClickType click);
 	}
 	
 	abstract class UpdatableItem extends Item implements Updatable {

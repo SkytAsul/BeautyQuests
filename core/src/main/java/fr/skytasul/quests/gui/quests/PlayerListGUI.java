@@ -1,6 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -24,7 +23,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PlayerListGUI implements CustomInventory {
@@ -99,12 +97,8 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					List<String> desc = new ArrayList<>(Utils.wordWrap(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45));
-					if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
-						desc.add(null);
-						desc.add(Lang.cancelLore.toString());
-					}
-					item = createQuestItem(qu, desc.toArray(new String[0]));
+					String desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU);
+					item = createQuestItem(qu, QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable() ? new String[] { desc, null, Lang.cancelLore.toString() } : new String[] { desc });
 				}catch (Exception ex) {
 					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
 					BeautyQuests.getInstance().getLogger().severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier());
