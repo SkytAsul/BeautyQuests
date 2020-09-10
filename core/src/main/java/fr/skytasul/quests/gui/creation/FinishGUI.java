@@ -242,6 +242,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				PlayerAccount account = PlayersManager.getPlayerAccount(p);
 				if (account.hasQuestDatas(qu)) {
 					PlayerQuestDatas datas = account.getQuestDatas(qu);
+					if (datas.getBranch() == -1) continue;
 					QuestBranch branch = qu.getBranchesManager().getBranch(datas.getBranch());
 					if (datas.isInEndingStages()) {
 						branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, p));
