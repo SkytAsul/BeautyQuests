@@ -164,7 +164,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				
 				@Override
 				public void click(Player p, ItemStack item, ClickType click) {
-					finish();
+					if (getOption(OptionName.class).getValue() != null) finish();
 				}
 			};
 			
