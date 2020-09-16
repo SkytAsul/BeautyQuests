@@ -41,7 +41,8 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class StageNPC extends AbstractStage{
 	
-	protected NPC npc;
+	private NPC npc;
+	private int npcID;
 	protected Dialog di = null;
 	protected boolean hide = false;
 	
@@ -52,10 +53,8 @@ public class StageNPC extends AbstractStage{
 	private List<Player> cached = new ArrayList<>();
 	protected Object holo;
 	
-	public StageNPC(QuestBranch branch, NPC npc){
+	public StageNPC(QuestBranch branch) {
 		super(branch);
-		this.npc = npc;
-		if (npc == null) BeautyQuests.logger.warning("No NPC specified for " + debugName());
 	}
 	
 	private void launchRefreshTask(){
@@ -104,6 +103,12 @@ public class StageNPC extends AbstractStage{
 
 	public NPC getNPC(){
 		return npc;
+	}
+
+	public void setNPC(int npcID) {
+		this.npcID = npcID;
+		this.npc = CitizensAPI.getNPCRegistry().getById(npcID);
+		if (npc == null) BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
 	}
 	
 	public void setDialog(Object obj){
@@ -181,7 +186,7 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	protected String npcName(){
-		return (npc != null) ? npc.getName() : "§c§lerror";
+		return (npc != null) ? npc.getName() : "§c§lunknown NPC " + npcID;
 	}
 	
 	@Override
@@ -232,23 +237,27 @@ public class StageNPC extends AbstractStage{
 
 	protected void loadDatas(Map<String, Object> map) {
 		setDialog(map.get("msg"));
+		if (map.containsKey("npcID")) {
+			setNPC((int) map.get("npcID"));
+		}else BeautyQuests.logger.warning("No NPC specified for " + debugName());
 		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
 	}
 	
 	public void serialize(Map<String, Object> map){
-		if (npc != null) map.put("npcID", npc.getId());
+		map.put("npcID", npcID);
 		if (di != null) map.put("msg", di.serialize());
 		if (hide) map.put("hid", true);
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		StageNPC st = new StageNPC(branch, map.containsKey("npcID") ? CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")) : null);
+		StageNPC st = new StageNPC(branch);
 		st.loadDatas(map);
 		return st;
 	}
 
 	public static class Creator implements StageCreationRunnables<StageNPC> {
 		private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
+		private static final ItemStack stageNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString());
 
 		public void start(Player p, LineData datas) {
 			StagesGUI sg = datas.getGUI();
@@ -257,12 +266,20 @@ public class StageNPC extends AbstractStage{
 				datas.getGUI().reopen(p, true);
 			}, npc -> {
 				sg.reopen(p, true);
-				npcDone(npc, datas);
+				npcDone(npc.getId(), datas);
 			}));
 		}
 
-		public static void npcDone(NPC npc, LineData datas) {
-			datas.put("npc", npc);
+		public static void npcDone(int npcID, LineData datas) {
+			datas.put("npcID", npcID);
+			datas.getLine().setItem(7, ItemUtils.lore(stageNPC.clone(), Lang.optionValue.format(npcID)), (p, datass, item) -> {
+				new SelectGUI(() -> datas.getGUI().reopen(p, true), npc -> {
+					ItemUtils.lore(item, Lang.optionValue.format(npc.getId()));
+					datas.put("npcID", npc.getId());
+					datas.getGUI().reopen(p, true);
+				}).create(p);
+			});
+			
 			datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					Utils.sendMessage(p, Lang.NPC_TEXT.toString());
@@ -283,16 +300,17 @@ public class StageNPC extends AbstractStage{
 		public static void setFinish(StageNPC stage, LineData datas) {
 			if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
 			if (datas.containsKey("hide")) stage.setHid((boolean) datas.get("hide"));
+			if (datas.containsKey("npcID")) stage.setNPC((int) datas.get("npcID"));
 		}
 
 		public static void setEdit(StageNPC stage, LineData datas) {
 			if (stage.getDialog() != null) datas.put("npcText", stage.getDialog().clone());
 			if (stage.isHid()) datas.put("hide", true);
-			npcDone(stage.getNPC(), datas);
+			npcDone(stage.npcID, datas);
 		}
 
 		public StageNPC finish(LineData datas, QuestBranch branch) {
-			StageNPC stage = new StageNPC(branch, (NPC) datas.get("npc"));
+			StageNPC stage = new StageNPC(branch);
 			setFinish(stage, datas);
 			return stage;
 		}

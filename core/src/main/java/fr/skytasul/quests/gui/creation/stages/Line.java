@@ -117,11 +117,11 @@ public class Line {
 		clearLine();
 		this.activePage = page;
 
-		int maxLineCapacity = page == 0 ? 8 : 7;
+		int maxLineCapacity = page == 0 || maxPage == 1 ? 8 : 7;
 		int firstID = page == 0 ? 0 : 8 + (page - 1) * 7;
-
+		
 		int slot = page == 0 ? 0 : 1;
-		for (int id = firstID; id < firstID /*+ 1*/ + maxLineCapacity; id++) {
+		for (int id = firstID; id <= firstID + maxLineCapacity; id++) {
 			if (items.contains(id)) {
 				Pair<ItemStack, StageRunnable> pair = items.get(id);
 				int RSlot = getRSlot(slot);
@@ -191,6 +191,7 @@ public class Line {
 	 */
 	public void removeItems(){
 		items.clear();
+		maxPage = 1;
 		clearLine();
 	}
 	

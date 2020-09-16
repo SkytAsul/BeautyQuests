@@ -107,7 +107,7 @@ public class BranchesManager{
 				Map<String, Object> datas = branch.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Throwable ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
@@ -139,12 +139,12 @@ public class BranchesManager{
 		for (int i = 0; i < branches.size(); i++) {
 			try{
 				if (!bm.getBranch(i).load((Map<String, Object>) branches.get(i))) {
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (false return)");
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
 				return null;
@@ -164,14 +164,14 @@ public class BranchesManager{
 						int separator = adv.indexOf('|');
 						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
 						if (branch == null){
-							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName() + ": branch is null");
+							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID() + ": branch is null");
 							BeautyQuests.loadingFailure = true;
 							return;
 						}
 						acc.getQuestDatas(qu).setBranch(branch.getID());
 						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)));
 					}catch (Exception ex){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName());
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID());
 						ex.printStackTrace();
 						BeautyQuests.loadingFailure = true;
 					}

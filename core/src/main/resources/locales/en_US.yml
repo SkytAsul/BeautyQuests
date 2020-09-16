@@ -273,6 +273,7 @@ inv:
     location: §aGo to location
     playTime: §ePlay time
     NPCText: §eEdit dialog
+    NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
     editMobsKill: §eEdit mobs to kill
     mobsKillFromAFar: Needs to be killed with projectile

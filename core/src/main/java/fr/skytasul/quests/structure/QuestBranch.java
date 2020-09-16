@@ -249,7 +249,7 @@ public class QuestBranch {
 				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getID());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
@@ -266,7 +266,7 @@ public class QuestBranch {
 					st.add(datas);
 				}
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getID());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
@@ -296,13 +296,13 @@ public class QuestBranch {
 			try{
 				AbstractStage st = AbstractStage.deserialize(stages.get(i), this);
 				if (st == null){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName() + " (stage null)");
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID() + " (stage null)");
 					BeautyQuests.loadingFailure = true;
 					return false;
 				}
 				addRegularStage(st);
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
 				return false;
@@ -314,13 +314,13 @@ public class QuestBranch {
 				try{
 					AbstractStage st = AbstractStage.deserialize(endMap, this);
 					if (st == null){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getName() + " (stage null)");
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID() + " (stage null)");
 						BeautyQuests.loadingFailure = true;
 						return false;
 					}
 					addEndStage(st, manager.getBranch((int) endMap.get("branchLinked")));
 				}catch (Exception ex){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getName());
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID());
 					ex.printStackTrace();
 					BeautyQuests.loadingFailure = true;
 					return false;

@@ -26,8 +26,6 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 
 public class StageBringBack extends StageNPC{
 	
@@ -36,8 +34,8 @@ public class StageBringBack extends StageNPC{
 	private String splitted;
 	private String line;
 	
-	public StageBringBack(QuestBranch branch, NPC npc, ItemStack[] items) {
-		super(branch, npc);
+	public StageBringBack(QuestBranch branch, ItemStack[] items) {
+		super(branch);
 		this.bringBack = this;
 		this.items = items;
 		for (ItemStack item : items) {
@@ -67,7 +65,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Lang.NpcText.sendWP(p, npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+		if (msg) Lang.NpcText.sendWP(p, npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 		return false;
 	}
 	
@@ -92,7 +90,7 @@ public class StageBringBack extends StageNPC{
 
 	public void start(PlayerAccount acc) {
 		super.start(acc);
-		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npc.getName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
 	
@@ -102,9 +100,7 @@ public class StageBringBack extends StageNPC{
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		StageBringBack st = new StageBringBack(branch,
-				CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")),
-				((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
+		StageBringBack st = new StageBringBack(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 		st.loadDatas(map);
 		return st;
 	}
@@ -122,13 +118,13 @@ public class StageBringBack extends StageNPC{
 					datas.getGUI().reopen(p, true);
 				}, npc -> {
 					datas.getGUI().reopen(p, true);
-					StageNPC.Creator.npcDone(npc, datas);
+					StageNPC.Creator.npcDone(npc.getId(), datas);
 				}).create(p);
 			}, items).create(p);
 		}
 
 		public static void setItem(Line line) {
-			line.setItem(7, stageItems.clone(), new StageRunnable() {
+			line.setItem(8, stageItems.clone(), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					Inventories.create(p, new ItemsGUI(() -> {
 						datas.getGUI().reopen(p, true);
@@ -138,7 +134,7 @@ public class StageBringBack extends StageNPC{
 		}
 
 		public StageBringBack finish(LineData datas, QuestBranch branch) {
-			StageBringBack stage = new StageBringBack(branch, (NPC) datas.get("npc"), ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+			StageBringBack stage = new StageBringBack(branch, ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
 			StageNPC.Creator.setFinish(stage, datas);
 			return stage;
 		}

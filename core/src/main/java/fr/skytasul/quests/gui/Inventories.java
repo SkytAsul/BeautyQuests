@@ -60,7 +60,7 @@ public class Inventories{
 			return;
 		}
 		
-		if (e.getClick() == ClickType.NUMBER_KEY) {
+		if (e.getClick() == ClickType.NUMBER_KEY || e.getClick() == ClickType.DOUBLE_CLICK) {
 			e.setCancelled(true);
 			return;
 		}
