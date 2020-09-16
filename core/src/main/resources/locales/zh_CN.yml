@@ -337,6 +337,10 @@ inv:
     customMaterialLore: 在任务菜单中代表该任务的物品图标。
     failOnDeath: 玩家死亡时任务失败
     failOnDeathLore: 当玩家死亡时是否取消任务？
+    keepDatas: 保留玩家数据
+    keepDatasLore: |-
+      强制插件保存玩家数据，即使是已编辑阶段也会保存。
+      §c§l警告§c- 启用此选项可能会损坏你的玩家数据。
     loreReset: '§e§l所有玩家的进度将被重置'
     optionValue: '§8数值：§7{0}'
     defaultValue: '§8(默认值)'

@@ -247,6 +247,7 @@ inv:
     location: '§aAller à un endroit'
     playTime: '§eTemps de jeu'
     NPCText: '§eModifier le dialogue'
+    NPCSelect: '§eChoisir ou créer un NPC'
     hideClues: Cacher les particules et les hologrammes
     editMobsKill: '§eModifier les mobs à tuer'
     mobsKillFromAFar: Doit être tué de loin
