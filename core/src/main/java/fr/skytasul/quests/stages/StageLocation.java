@@ -72,6 +72,22 @@ public class StageLocation extends AbstractStage {
 		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
+	public void start(PlayerAccount acc) {
+		super.start(acc);
+		if (acc.isCurrent()) {
+			Player p = acc.getPlayer();
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, lc);
+		}
+	}
+	
+	public void end(PlayerAccount acc) {
+		super.end(acc);
+		if (acc.isCurrent()) {
+			Player p = acc.getPlayer();
+			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+		}
+	}
+	
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return descMessage;
 	}
