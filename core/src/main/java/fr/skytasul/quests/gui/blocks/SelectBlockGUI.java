@@ -90,7 +90,7 @@ public class SelectBlockGUI implements CustomInventory{
 				}
 				updateTypeItem();
 				openLastInv(p);
-			}, new MaterialParser(false)));
+			}, new MaterialParser(false, true)));
 			break;
 		
 		case 5:

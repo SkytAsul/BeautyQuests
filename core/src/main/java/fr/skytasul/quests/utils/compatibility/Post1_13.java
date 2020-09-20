@@ -13,6 +13,10 @@ public class Post1_13 {
 		return mat.isItem();
 	}
 	
+	public static boolean isBlock(Material mat) {
+		return mat.isBlock();
+	}
+	
 	public static boolean equalBlockData(Object data){
 		return data instanceof BlockData;
 	}

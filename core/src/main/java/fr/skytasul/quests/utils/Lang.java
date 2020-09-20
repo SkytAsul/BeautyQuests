@@ -195,6 +195,8 @@ public enum Lang{
 	CHOOSE_ITEM_LORE("msg.editor.itemCreator.itemLore"),
 	UNKNOWN_ITEM_TYPE("msg.editor.itemCreator.unknownItemType"),
 	INVALID_ITEM_TYPE("msg.editor.itemCreator.invalidItemType"),
+	UNKNOWN_BLOCK_TYPE("msg.editor.itemCreator.unknownBlockType"),
+	INVALID_BLOCK_TYPE("msg.editor.itemCreator.invalidBlockType"),
 	
 	DIALOG_SYNTAX("msg.editor.dialog.syntax"),
 	DIALOG_REMOVE_SYNTAX("msg.editor.dialog.syntaxRemove"),
@@ -279,6 +281,7 @@ public enum Lang{
 	stageRegionExit("inv.create.toggleRegionExit"),
 	startMsg("inv.create.stageStartMsg"),
 	blockLocation("inv.create.selectBlockLocation"),
+	blockMaterial("inv.create.selectBlockMaterial"),
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
 	editItem("inv.create.editItem"),
@@ -439,6 +442,10 @@ public enum Lang{
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
 	addBlock("inv.blocksList.addBlock"),
 	
+	INVENTORY_BLOCK_ACTION("inv.blockAction.name"),
+	clickLocation("inv.blockAction.location"),
+	clickMaterial("inv.blockAction.material"),
+	
 	INVENTORY_BUCKETS("inv.buckets.name"),
 	
 	INVENTORY_PERMISSION("inv.permission.name"),
@@ -481,6 +488,7 @@ public enum Lang{
 	SCOREBOARD_PLACE("scoreboard.stage.place"),
 	SCOREBOARD_CHAT("scoreboard.stage.chat"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
+	SCOREBOARD_INTERACT_MATERIAL("scoreboard.stage.interactMaterial"),
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),

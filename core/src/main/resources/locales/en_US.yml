@@ -200,6 +200,8 @@ msg:
       itemLore: '§aModify the item lore: (Write "help" for help.)'
       unknownItemType: §cUnknown item type.
       invalidItemType: §cInvalid item type. (The item can't be a block.)
+      unknownBlockType: §cUnknown block type.
+      invalidBlockType: §cInvalid block type.
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
@@ -288,6 +290,7 @@ inv:
     toggleRegionExit: On exit
     stageStartMsg: §eEdit starting message
     selectBlockLocation: §eSelect block location
+    selectBlockMaterial: §eSelect block material
     leftClick: Click must be left-click
     editFishes: §eEdit fishes to catch
     editItem: §eEdit item to craft
@@ -472,6 +475,10 @@ inv:
   blocksList:
     name: Select blocks
     addBlock: §aClick to add a block.
+  blockAction:
+    name: Select block action
+    location: §eSelect a precise location
+    material: §eSelect a block material
   buckets:
     name: Bucket type
   permission:
@@ -504,6 +511,7 @@ scoreboard:
     placeBlocks: §ePlace {0}
     chat: §eWrite §6{0}
     interact: §eClick on the block at §6{0}
+    interactMaterial: §eClick on a §6{0}§e block
     fish: §eFish §6{0}
     craft: §eCraft §6{0}
     bucket: §eFill §6{0}

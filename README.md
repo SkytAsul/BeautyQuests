@@ -47,11 +47,11 @@ In *pom.xml*, add this to the `repositories` section:
   <url>https://repo.codemc.org/repository/maven-public</url>
 </repository>
 ```
-And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.17.0`, `0.17.1-SNAPSHOT`...)
+And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.17.4`, `0.18.0-SNAPSHOT`...)
 ```xml
 <dependency>
   <groupId>fr.skytasul</groupId>
-  <artifactId>beautyquests</artifactId>
+  <artifactId>beautyquests-core</artifactId>
   <version>VERSION</version>
 </dependency>
 ```

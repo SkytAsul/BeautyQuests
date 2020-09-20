@@ -38,7 +38,6 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
-import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
@@ -2028,11 +2027,6 @@ public enum XMaterial {
 	}
 
 	/* CUSTOM */
-	
-	public boolean isSameMaterial(Block comp) {
-		if (isNewVersion()) return comp.getType() == this.parseMaterial();
-		return comp.getType() == this.parseMaterial() && comp.getData() == this.data;
-	}
 	
 	public static ItemStack playerSkullItem() {
 		Material mat = PLAYER_HEAD.parseMaterial();
