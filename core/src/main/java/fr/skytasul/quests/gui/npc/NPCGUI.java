@@ -27,10 +27,10 @@ import net.citizensnpcs.trait.LookClose;
 
 public class NPCGUI implements CustomInventory{
 
-	private ItemStack name = ItemUtils.item(XMaterial.NAME_TAG, Lang.name.toString());
-	private ItemStack skin = ItemUtils.skull(Lang.skin.toString(), "Knight");
-	private ItemStack type = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.type.toString(), "villager");
-	private ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
+	private static final ItemStack nameItem = ItemUtils.item(XMaterial.NAME_TAG, Lang.name.toString());
+	private static final ItemStack skin = ItemUtils.skull(Lang.skin.toString(), "Knight");
+	private static final ItemStack type = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.type.toString(), "villager");
+	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
 	private Consumer<NPC> end;
@@ -38,6 +38,7 @@ public class NPCGUI implements CustomInventory{
 	
 	private Inventory inv;
 	private EntityType en = EntityType.VILLAGER;
+	private String name = "§cno name selected";
 	
 	public NPCGUI(Consumer<NPC> end, Runnable cancel) {
 		this.end = end;
@@ -53,7 +54,7 @@ public class NPCGUI implements CustomInventory{
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_NPC.toString());
 		
 		inv.setItem(0, move.clone());
-		inv.setItem(1, name.clone());
+		inv.setItem(1, nameItem.clone());
 		inv.setItem(3, skin.clone());
 		inv.setItem(5, type.clone());
 		inv.setItem(7, ItemUtils.itemCancel);
@@ -73,6 +74,7 @@ public class NPCGUI implements CustomInventory{
 		case 1:
 			Lang.NPC_NAME.send(p);
 			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
+				name = obj;
 				ItemUtils.name(inv.getItem(1), Lang.optionValue.format(obj));
 				openLastInv(p);
 			}).enterOrLeave(p);
@@ -103,12 +105,9 @@ public class NPCGUI implements CustomInventory{
 			break;
 			
 		case 8:
-			NPC npc = CitizensAPI.getNPCRegistry().createNPC(
-					en,
-					ItemUtils.getName(inv.getItem(1)));
+			NPC npc = CitizensAPI.getNPCRegistry().createNPC(en, name);
 			npc.data().setPersistent("player-skin-name", ItemUtils.getOwner(inv.getItem(3)));
-			if (!Settings.Setting.DEFAULT_LOOK_CLOSE.asBoolean()) npc.getTrait(LookClose.class).toggle();
-			if (ItemUtils.getName(inv.getItem(1)).equals(ItemUtils.getName(name))) npc.data().setPersistent("nameplate-visible", false);
+			if (!Settings.Setting.DEFAULT_LOOK_CLOSE.asBoolean()) npc.getOrAddTrait(LookClose.class).toggle();
 			npc.spawn(p.getLocation());
 			((Citizens) CitizensAPI.getPlugin()).getNPCSelector().select(p, npc);
 			Inventories.closeAndExit(p);

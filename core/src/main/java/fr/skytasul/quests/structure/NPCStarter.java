@@ -125,9 +125,9 @@ public class NPCStarter {
 				}
 				hologramsRemoved = false;
 				
-				if (hologramText.enabled) hologramText.refresh(en);
-				if (hologramLaunch.enabled) hologramLaunch.refresh(en);
-				if (hologramLaunchNo.enabled) hologramLaunchNo.refresh(en);
+				if (hologramText.canAppear) hologramText.refresh(en);
+				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
+				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
@@ -144,8 +144,8 @@ public class NPCStarter {
 		if (quests.contains(quest)) return;
 		quests.add(quest);
 		if (hologramText.enabled && quest.hasOption(OptionHologramText.class)) hologramText.setText(quest.getOption(OptionHologramText.class).getValue());
-		if (hologramLaunch.enabled && quest.hasOption(OptionHologramLaunch.class)) hologramLaunch.item = quest.getOption(OptionHologramLaunch.class).getValue();
-		if (hologramLaunchNo.enabled && quest.hasOption(OptionHologramLaunchNo.class)) hologramLaunchNo.item = quest.getOption(OptionHologramLaunchNo.class).getValue();
+		if (hologramLaunch.enabled && quest.hasOption(OptionHologramLaunch.class)) hologramLaunch.setItem(quest.getOption(OptionHologramLaunch.class).getValue());
+		if (hologramLaunchNo.enabled && quest.hasOption(OptionHologramLaunchNo.class)) hologramLaunchNo.setItem(quest.getOption(OptionHologramLaunchNo.class).getValue());
 	}
 	
 	public boolean removeQuest(Quest quest) {
@@ -176,6 +176,7 @@ public class NPCStarter {
 	class Hologram{
 		boolean visible;
 		boolean enabled;
+		boolean canAppear;
 		Object hologram;
 		
 		String text;
@@ -183,15 +184,14 @@ public class NPCStarter {
 		
 		public Hologram(boolean visible, boolean enabled, String text){
 			this.visible = visible;
-			this.enabled = enabled && !StringUtils.isEmpty(text) && !"none".equals(text);
-			this.text = text;
+			this.enabled = enabled;
+			setText(text);
 		}
 		
 		public Hologram(boolean visible, boolean enabled, ItemStack item){
 			this.visible = visible;
-			this.enabled = enabled && item != null;
-			this.item = item;
-			if (this.enabled && QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) this.text = item.getItemMeta().getDisplayName();
+			this.enabled = enabled;
+			setItem(item);
 		}
 		
 		public void refresh(LivingEntity en){
@@ -211,9 +211,15 @@ public class NPCStarter {
 		
 		public void setText(String text){
 			this.text = text;
-			if (item != null) return; // no need to test if none
-			enabled = enabled && !StringUtils.isEmpty(text) && !"none".equals(text);
-			if (!enabled) delete();
+			canAppear = enabled && !StringUtils.isEmpty(text) && !"none".equals(text);
+			if (!canAppear) delete();
+		}
+		
+		public void setItem(ItemStack item) {
+			this.item = item;
+			canAppear = enabled && item != null;
+			if (canAppear && QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) this.text = item.getItemMeta().getDisplayName();
+			if (!canAppear) delete();
 		}
 		
 		public void create(Location lc){
