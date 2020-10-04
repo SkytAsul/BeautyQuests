@@ -112,6 +112,7 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public void addOption(QuestOption<?> option) {
+		if (!option.hasCustomValue()) return;
 		options.add(option);
 		option.attach(this);
 		option.setValueUpdaterListener(() -> {

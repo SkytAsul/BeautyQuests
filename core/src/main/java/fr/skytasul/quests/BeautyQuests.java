@@ -533,8 +533,11 @@ public class BeautyQuests extends JavaPlugin{
 	public void removeQuest(Quest quest){
 		quests.remove(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
-			NPCStarter starter = npcs.get(quest.getOptionValueOrDef(OptionStarterNPC.class));
-			starter.removeQuest(quest);
+			NPC value = quest.getOptionValueOrDef(OptionStarterNPC.class);
+			NPCStarter starter = npcs.get(value);
+			if (starter == null) {
+				logger.warning("NPC Starter not registered for quest " + quest.getID() + ". NPC: " + (value == null ? "not set" : value.getId()));
+			}else starter.removeQuest(quest);
 		}
 	}
 
@@ -542,12 +545,14 @@ public class BeautyQuests extends JavaPlugin{
 		quests.add(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
 			NPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
-			NPCStarter starter = null;
-			if (!npcs.containsKey(npc)) {
-				starter = new NPCStarter(npc);
-				npcs.put(npc, starter);
-			}else starter = npcs.get(npc);
-			starter.addQuest(quest);
+			if (npc != null) {
+				NPCStarter starter = null;
+				if (!npcs.containsKey(npc)) {
+					starter = new NPCStarter(npc);
+					npcs.put(npc, starter);
+				}else starter = npcs.get(npc);
+				starter.addQuest(quest);
+			}
 		}
 		quest.create();
 	}
