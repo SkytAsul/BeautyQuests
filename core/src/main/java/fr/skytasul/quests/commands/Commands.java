@@ -178,7 +178,7 @@ public class Commands {
 			if (cmd.args.length > 3){
 				stageID = Utils.parseInt(cmd.sender, (String) cmd.args[3]);
 				if (stageID == null) return;
-				if (currentBranch.getRegularStages().size() >= stageID) {
+				if (currentBranch.getRegularStages().size() <= stageID) {
 					Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.send(cmd.sender, stageID);
 					return;
 				}
