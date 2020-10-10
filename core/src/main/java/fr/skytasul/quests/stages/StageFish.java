@@ -112,7 +112,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		}
 
 		public StageFish finish(LineData datas, QuestBranch branch) {
-			List<ItemStack> itemsList = (List<ItemStack>) datas.get("items");
+			List<ItemStack> itemsList = datas.get("items");
 			Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
 			for (int i = 0; i < itemsList.size(); i++) {
 				ItemStack item = itemsList.get(i);
@@ -141,7 +141,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 				public void run(Player p, LineData datas, ItemStack item) {
 					Inventories.create(p, new ItemsGUI(() -> {
 						datas.getGUI().reopen(p, true);
-					}, (List<ItemStack>) datas.get("items")));
+					}, datas.get("items")));
 				}
 			});
 		}

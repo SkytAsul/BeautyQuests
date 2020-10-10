@@ -286,7 +286,7 @@ public class StageNPC extends AbstractStage{
 					Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 						datas.getGUI().reopen(p, false);
 						datas.put("npcText", obj);
-					}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog()));
+					}, datas.containsKey("npcText") ? datas.get("npcText") : new Dialog()));
 				}
 			}, true, true);
 
@@ -299,8 +299,8 @@ public class StageNPC extends AbstractStage{
 
 		public static void setFinish(StageNPC stage, LineData datas) {
 			if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
-			if (datas.containsKey("hide")) stage.setHid((boolean) datas.get("hide"));
-			if (datas.containsKey("npcID")) stage.setNPC((int) datas.get("npcID"));
+			if (datas.containsKey("hide")) stage.setHid(datas.get("hide"));
+			if (datas.containsKey("npcID")) stage.setNPC(datas.get("npcID"));
 		}
 
 		public static void setEdit(StageNPC stage, LineData datas) {

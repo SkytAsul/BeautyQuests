@@ -14,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
@@ -141,7 +139,7 @@ public class StagesGUI implements CustomInventory {
 					line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(rewards.size()))));
 					reopen(p, true);
 				},
-				(List<AbstractReward>) datas.get("rewards")).create(p));
+				datas.get("rewards")).create(p));
 
 		line.setItem(2, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
@@ -181,7 +179,7 @@ public class StagesGUI implements CustomInventory {
 						datas.put("requirements", requirements);
 						reopen(p, true);
 					},
-					(List<AbstractRequirement>) datas.get("requirements")).create(p);
+					datas.get("requirements")).create(p);
 		});
 
 		int maxStages = branches ? 20 : 15;
@@ -213,7 +211,7 @@ public class StagesGUI implements CustomInventory {
 		if (branches){
 			if (!line.data.containsKey("branch")) line.data.put("branch", new StagesGUI(this));
 			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
-				Inventories.create(p, (StagesGUI) datas.get("branch"));
+				Inventories.create(p, datas.get("branch"));
 			});
 		}
 	}

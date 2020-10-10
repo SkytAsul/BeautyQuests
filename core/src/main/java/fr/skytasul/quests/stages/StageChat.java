@@ -101,7 +101,7 @@ public class StageChat extends AbstractStage{
 		}
 
 		public StageChat finish(LineData datas, QuestBranch branch) {
-			StageChat stage = new StageChat(branch, (String) datas.get("text"), (boolean) datas.get("cancel"), (boolean) datas.get("ignoreCase"));
+			StageChat stage = new StageChat(branch, datas.get("text"), datas.get("cancel"), datas.get("ignoreCase"));
 			return stage;
 		}
 
@@ -113,9 +113,9 @@ public class StageChat extends AbstractStage{
 		}
 
 		public static void setItems(LineData datas) {
-			datas.getLine().setItem(5, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? (String) datas.get("text") : "§lx"), (p, datasx, item) -> launchEditor(p, datas));
-			datas.getLine().setItem(6, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), (boolean) datas.get("ignoreCase")), (p, datasx, item) -> datas.put("ignoreCase", ItemUtils.toggle(item)));
-			datas.getLine().setItem(7, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), (boolean) datas.get("cancel")), (p, datasx, item) -> datas.put("cancel", ItemUtils.toggle(item)));
+			datas.getLine().setItem(5, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? datas.get("text") : "§lx"), (p, datasx, item) -> launchEditor(p, datas));
+			datas.getLine().setItem(6, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), datas.get("ignoreCase")), (p, datasx, item) -> datas.put("ignoreCase", ItemUtils.toggle(item)));
+			datas.getLine().setItem(7, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), datas.get("cancel")), (p, datasx, item) -> datas.put("cancel", ItemUtils.toggle(item)));
 		}
 
 		public static void launchEditor(Player p, LineData datas) {

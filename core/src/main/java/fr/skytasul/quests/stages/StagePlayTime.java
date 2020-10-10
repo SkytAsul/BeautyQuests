@@ -126,7 +126,7 @@ public class StagePlayTime extends AbstractStage {
 		@Override
 		public StagePlayTime finish(LineData datas, QuestBranch branch) {
 			StagePlayTime stage = new StagePlayTime(branch);
-			stage.playTicks = (long) datas.get("ticks");
+			stage.playTicks = datas.get("ticks");
 			return stage;
 		}
 		

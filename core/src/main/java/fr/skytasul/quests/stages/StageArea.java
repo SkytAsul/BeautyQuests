@@ -122,13 +122,13 @@ public class StageArea extends AbstractStage{
 					launchRegionEditor(p, line, sg, datas, false);
 				}
 			}, true, true);
-			line.setItem(7, ItemUtils.itemSwitch(Lang.stageRegion.toString(), (boolean) line.data.get("exit")), (p, datas, item) -> {
+			line.setItem(7, ItemUtils.itemSwitch(Lang.stageRegion.toString(), line.data.get("exit")), (p, datas, item) -> {
 				datas.put("exit", ItemUtils.toggle(item));
 			});
 		}
 
 		public StageArea finish(LineData datas, QuestBranch branch) {
-			StageArea stage = new StageArea(branch, (String) datas.get("region"), (String) datas.get("world"), (boolean) datas.get("exit"));
+			StageArea stage = new StageArea(branch, datas.get("region"), datas.get("world"), datas.get("exit"));
 			return stage;
 		}
 

@@ -116,7 +116,7 @@ public class StageLocation extends AbstractStage {
 		}
 
 		public StageLocation finish(LineData datas, QuestBranch branch) {
-			StageLocation stage = new StageLocation(branch, (Location) datas.get("location"), (int) datas.get("radius"));
+			StageLocation stage = new StageLocation(branch, datas.get("location"), datas.get("radius"));
 			return stage;
 		}
 
@@ -127,7 +127,7 @@ public class StageLocation extends AbstractStage {
 		}
 
 		public static void setItems(Line line) {
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.get("radius"))), (p, datas, item) -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.<Integer>get("radius"))), (p, datas, item) -> {
 				Lang.LOCATION_RADIUS.send(p);
 				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), x -> {
 					ItemUtils.lore(item, Lang.currentRadius.format(x));

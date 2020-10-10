@@ -2,7 +2,6 @@ package fr.skytasul.quests.gui.creation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -20,8 +19,6 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
@@ -257,14 +254,14 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	private void loadBranch(QuestBranch branch, StagesGUI gui){
 		for (LineData ln : gui.getLinesDatas()){
 			try{
-				StageType type = (StageType) ln.get("type");
+				StageType type = ln.get("type");
 				AbstractStage stage = StageCreator.getCreator(type).runnables.finish(ln, branch);
-				stage.setRewards((List<AbstractReward>) ln.get("rewards"));
-				stage.setValidationRequirements((List<AbstractRequirement>) ln.get("requirements"));
-				stage.setCustomText((String) ln.get("customText"));
-				stage.setStartMessage((String) ln.get("startMessage"));
+				stage.setRewards(ln.get("rewards"));
+				stage.setValidationRequirements(ln.get("requirements"));
+				stage.setCustomText(ln.get("customText"));
+				stage.setStartMessage(ln.get("startMessage"));
 				if (ln.containsKey("branch")){
-					StagesGUI newGUI = (StagesGUI) ln.get("branch");
+					StagesGUI newGUI = ln.get("branch");
 					QuestBranch newBranch = null;
 					if (!newGUI.isEmpty()){
 						newBranch = new QuestBranch(branch.getBranchesManager());

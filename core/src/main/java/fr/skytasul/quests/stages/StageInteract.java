@@ -119,7 +119,7 @@ public class StageInteract extends AbstractStage {
 		}
 
 		public static void setItems(LineData datas) {
-			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), (boolean) datas.get("left")), (p, datass, item) -> datas.put("left", ItemUtils.toggle(item)));
+			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.get("left")), (p, datass, item) -> datas.put("left", ItemUtils.toggle(item)));
 			if (datas.containsKey("lc")) {
 				datas.getLine().setItem(6, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, datass, item) -> {
 					Lang.CLICK_BLOCK.send(p);
@@ -129,7 +129,7 @@ public class StageInteract extends AbstractStage {
 					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
 				});
 			}else {
-				datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString(), Lang.optionValue.format(datas.get("material"))), (p, datass, item) -> {
+				datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString(), Lang.optionValue.format(datas.<XMaterial>get("material").toString())), (p, datass, item) -> {
 					Lang.BLOCK_NAME.send(p);
 					new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), material -> {
 						ItemUtils.lore(item, Lang.optionValue.format(material.name()));
@@ -150,8 +150,8 @@ public class StageInteract extends AbstractStage {
 
 		public StageInteract finish(LineData datas, QuestBranch branch) {
 			if (datas.containsKey("lc")) {
-				return new StageInteract(branch, (boolean) datas.get("left"), (Location) datas.get("lc"));
-			}else return new StageInteract(branch, (boolean) datas.get("left"), (XMaterial) datas.get("material"));
+				return new StageInteract(branch, datas.get("left"), datas.<Location>get("lc"));
+			}else return new StageInteract(branch, datas.get("left"), datas.<XMaterial>get("material"));
 		}
 		
 		private class ChooseActionGUI implements CustomInventory {

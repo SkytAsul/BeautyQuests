@@ -149,8 +149,8 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		}
 
 		public StageMine finish(LineData datas, QuestBranch branch) {
-			StageMine stage = new StageMine(branch, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
-			stage.setPlaceCancelled((boolean) datas.get("prevent"));
+			StageMine stage = new StageMine(branch, datas.get("blocks"));
+			stage.setPlaceCancelled(datas.get("prevent"));
 			return stage;
 		}
 
@@ -164,14 +164,14 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
+					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
 					blocks.run = (obj) -> {
 						datas.getGUI().reopen(p, true);
 						datas.put("blocks", obj);
 					};
 				}
 			});
-			line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), (boolean) datas.get("prevent")), new StageRunnable() {
+			line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), datas.get("prevent")), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					datas.put("prevent", ItemUtils.toggle(item));
 				}

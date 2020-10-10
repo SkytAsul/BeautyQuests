@@ -16,6 +16,7 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
+import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
@@ -93,8 +94,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	@EventHandler
-	public void onStageReset(PlayerQuestResetEvent e){
+	public void onQuestReset(PlayerQuestResetEvent e) {
 		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
+	}
+	
+	@EventHandler
+	public void onStageSet(PlayerSetStageEvent e) {
+		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest());
 	}
 	
 	@EventHandler

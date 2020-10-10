@@ -128,13 +128,13 @@ public class StageBringBack extends StageNPC{
 				public void run(Player p, LineData datas, ItemStack item) {
 					Inventories.create(p, new ItemsGUI(() -> {
 						datas.getGUI().reopen(p, true);
-					}, (List<ItemStack>) datas.get("items")));
+					}, datas.get("items")));
 				}
 			});
 		}
 
 		public StageBringBack finish(LineData datas, QuestBranch branch) {
-			StageBringBack stage = new StageBringBack(branch, ((List<ItemStack>) datas.get("items")).toArray(new ItemStack[0]));
+			StageBringBack stage = new StageBringBack(branch, datas.<List<ItemStack>>get("items").toArray(new ItemStack[0]));
 			StageNPC.Creator.setFinish(stage, datas);
 			return stage;
 		}
@@ -142,7 +142,7 @@ public class StageBringBack extends StageNPC{
 		public void edit(LineData datas, StageBringBack stage) {
 			StageNPC.Creator.setEdit(stage, datas);
 			datas.put("items", new ArrayList<>());
-			((List<ItemStack>) datas.get("items")).addAll(Arrays.asList(stage.getItems()));
+			datas.<List<ItemStack>>get("items").addAll(Arrays.asList(stage.getItems()));
 			setItem(datas.getLine());
 		}
 	}

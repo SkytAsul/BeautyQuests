@@ -32,8 +32,8 @@ public class LineData {
 		datas.remove(key);
 	}
 	
-	public Object get(String key){
-		return datas.get(key);
+	public <T> T get(String key) {
+		return (T) datas.get(key);
 	}
 	
 	public void clear(){

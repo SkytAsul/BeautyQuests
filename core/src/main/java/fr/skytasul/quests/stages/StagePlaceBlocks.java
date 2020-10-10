@@ -89,7 +89,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		}
 
 		public StagePlaceBlocks finish(LineData datas, QuestBranch branch) {
-			return new StagePlaceBlocks(branch, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
+			return new StagePlaceBlocks(branch, datas.get("blocks"));
 		}
 
 		public void edit(LineData datas, StagePlaceBlocks stage) {
@@ -101,7 +101,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 			line.setItem(6, ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString()), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, (Map<Integer, Entry<BQBlock, Integer>>) datas.get("blocks"));
+					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
 					blocks.run = (obj) -> {
 						datas.getGUI().reopen(p, true);
 						datas.put("blocks", obj);
