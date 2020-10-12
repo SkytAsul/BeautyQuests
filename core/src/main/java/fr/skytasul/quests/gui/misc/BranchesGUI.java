@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class BranchesGUI implements CustomInventory {
@@ -30,8 +31,6 @@ public class BranchesGUI implements CustomInventory {
 		
 		inv.setItem(52, ItemUtils.item(XMaterial.ARROW, "§aScroll left"));
 		inv.setItem(53, ItemUtils.item(XMaterial.ARROW, "§aScroll right"));
-		
-		// TODO voir fichier image schéma
 		
 		main.things.add(new Thing());
 		main.things.add(new Thing());
@@ -76,7 +75,7 @@ public class BranchesGUI implements CustomInventory {
 		}
 		for (int i = xOffset; i < to; i++) {
 			IThing thing = branch.things.get(i);
-			inv.setItem(start + i - xOffset, thing.getItem(i == to - 1 ? branch.choices.isEmpty() ? XMaterial.RED_STAINED_GLASS_PANE : XMaterial.ORANGE_STAINED_GLASS_PANE : XMaterial.LIGHT_BLUE_STAINED_GLASS_PANE));
+			inv.setItem(start + i - xOffset, thing.getItem(i == to - 1 ? branch.choices.isEmpty() ? ThingType.END : ThingType.BRANCHING : ThingType.NORMAL));
 		}
 		if (!showBranches) return;
 		if (branch.choices.isEmpty()) { // no branch at the end
@@ -105,7 +104,7 @@ public class BranchesGUI implements CustomInventory {
 				refresh();
 			}
 		}else if (slot == 53) {
-			if (xOffset < main.things.size()) {
+			if (xOffset < shown.things.size()) {
 				xOffset++;
 				refresh();
 			}
@@ -122,7 +121,7 @@ public class BranchesGUI implements CustomInventory {
 					p.sendMessage("You want to create thing at place " + xThing);
 					if (click.isLeftClick()) {
 						create(thing -> {
-							main.things.add(thing);
+							shown.things.add(thing);
 							refresh();
 						});
 					}else if (click.isRightClick()) {
@@ -130,7 +129,7 @@ public class BranchesGUI implements CustomInventory {
 						create(thing -> {
 							Branch branch = new Branch(shown);
 							branch.things.add(thing);
-							main.choices.add(branch);
+							shown.choices.add(branch);
 							refresh();
 						});
 					}
@@ -138,13 +137,13 @@ public class BranchesGUI implements CustomInventory {
 					Branch branch = shown.choices.get(y);
 					xThing -= shown.things.size();
 					p.sendMessage("You clicked on thing " + branch.things.get(xThing).getID());
-					if (branch != shown) setBranch(shown);
+					if (branch != shown) setBranch(branch);
 				}else {
 					p.sendMessage("You want to create a branch at place " + y);
 					create(thing -> {
 						Branch branch = new Branch(shown);
 						branch.things.add(thing);
-						main.choices.add(branch);
+						shown.choices.add(branch);
 						refresh();
 					});
 				}
@@ -169,10 +168,22 @@ public class BranchesGUI implements CustomInventory {
 		}
 	}
 	
+	static enum ThingType {
+		NORMAL(XMaterial.LIGHT_BLUE_STAINED_GLASS_PANE, "§bBasic step"), BRANCHING(XMaterial.ORANGE_STAINED_GLASS_PANE, "§6Branching step"), END(XMaterial.RED_STAINED_GLASS_PANE, "§cEnding step");
+		
+		private XMaterial material;
+		private String name;
+		
+		private ThingType(XMaterial material, String name) {
+			this.material = material;
+			this.name = name;
+		}
+	}
+	
 	static interface IThing {
 		int getID();
 		
-		ItemStack getItem(XMaterial type);
+		ItemStack getItem(ThingType type);
 	}
 	
 	static class Thing implements IThing {
@@ -186,8 +197,8 @@ public class BranchesGUI implements CustomInventory {
 		}
 		
 		@Override
-		public ItemStack getItem(XMaterial type) {
-			return ItemUtils.item(type, "§4Thing §b§l" + id);
+		public ItemStack getItem(ThingType type) {
+			return ItemUtils.item(type.material, "§4Thing §b§l" + id, Lang.Remove.toString(), type.name);
 		}
 	}
 	
