@@ -131,7 +131,7 @@ public class StagesGUI implements CustomInventory {
 		line.data.put("rewards", new ArrayList<>());
 		line.data.put("requirements", new ArrayList<>());
 
-		line.setItem(1, ending, (p, datas, item) -> new QuestObjectGUI<>(
+		line.setItem(1, ending.clone(), (p, datas, item) -> new QuestObjectGUI<>(
 				Lang.INVENTORY_REWARDS.toString(),
 				QuestObjectLocation.STAGE,
 				QuestsAPI.rewards.values(), rewards -> {

@@ -100,7 +100,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	
 	@EventHandler
 	public void onStageSet(PlayerSetStageEvent e) {
-		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest());
+		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest(), false);
 	}
 	
 	@EventHandler
@@ -161,11 +161,14 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		for (Line line : lines) line.reset();
 	}
 	
-	public void setShownQuest(Quest quest) {
+	public void setShownQuest(Quest quest, boolean errorWhenUnknown) {
 		if (!quest.isScoreboardEnabled()) return;
-		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
-		shown = quest;
-		refreshQuestsLines(true);
+		if (!launched.contains(quest)) {
+			if (errorWhenUnknown) throw new IllegalArgumentException("Quest is not running for player.");
+		}else {
+			shown = quest;
+			refreshQuestsLines(true);
+		}
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {

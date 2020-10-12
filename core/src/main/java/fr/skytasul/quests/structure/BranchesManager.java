@@ -77,7 +77,7 @@ public class BranchesManager{
 	public final void objectiveUpdated(Player p) {
 		if (quest.isScoreboardEnabled()) {
 			Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-			if (sb != null) sb.setShownQuest(quest);
+			if (sb != null) sb.setShownQuest(quest, true);
 		}
 	}
 

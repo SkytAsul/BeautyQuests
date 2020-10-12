@@ -197,7 +197,7 @@ public class QuestBranch {
 		}
 	}
 	
-	public void setStage(PlayerAccount acc, int id){
+	public void setStage(PlayerAccount acc, int id) {
 		AbstractStage stage = regularStages.get(id);
 		Player p = acc.getPlayer();
 		if (stage == null){
@@ -216,7 +216,7 @@ public class QuestBranch {
 		}
 	}
 	
-	public void setEndingStages(PlayerAccount acc, boolean launchStage){
+	public void setEndingStages(PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
 		if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && launchStage) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
 		acc.getQuestDatas(getQuest()).setInEndingStages();
