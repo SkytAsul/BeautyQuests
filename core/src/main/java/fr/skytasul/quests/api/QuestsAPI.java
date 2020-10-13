@@ -34,6 +34,8 @@ public class QuestsAPI {
 	public static Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
 	public static Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
 	
+	private static AbstractHolograms<?> hologramsManager = null;
+	
 	/**
 	 * Register new stage type into the plugin
 	 * @param type StageType object
@@ -107,6 +109,20 @@ public class QuestsAPI {
 		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass), "This quest option was already registered");
 		QuestOptionCreator.creators.put(creator.optionClass, creator);
 		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
+	}
+	
+	public static boolean hasHologramsManager() {
+		return hologramsManager != null;
+	}
+	
+	public static AbstractHolograms<?> getHologramsManager() {
+		return hologramsManager;
+	}
+	
+	public static void setHologramsManager(AbstractHolograms<?> newHologramsManager) {
+		Validate.notNull(newHologramsManager);
+		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
+		hologramsManager = newHologramsManager;
 	}
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){

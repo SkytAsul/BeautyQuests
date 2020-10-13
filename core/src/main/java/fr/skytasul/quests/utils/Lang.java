@@ -485,7 +485,7 @@ public enum Lang{
 	SCOREBOARD_ITEMS("scoreboard.stage.items"),
 	SCOREBOARD_MOBS("scoreboard.stage.mobs"),
 	SCOREBOARD_MINE("scoreboard.stage.mine"),
-	SCOREBOARD_PLACE("scoreboard.stage.place"),
+	SCOREBOARD_PLACE("scoreboard.stage.placeBlocks"),
 	SCOREBOARD_CHAT("scoreboard.stage.chat"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
 	SCOREBOARD_INTERACT_MATERIAL("scoreboard.stage.interactMaterial"),

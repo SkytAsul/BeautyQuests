@@ -25,6 +25,7 @@ public class DependenciesManager {
 	public static boolean mmo = false; //	mcMMO
 	public static boolean mclvl = false; //	McCombatLevel
 	public static boolean boss = false; //	Boss
+	public static boolean cmi = false; //	CMI
 	
 	public static void testCompatibilities() {
 		wg = testCompatibility("WorldGuard");
@@ -46,6 +47,7 @@ public class DependenciesManager {
 		mmo = testCompatibility("mcMMO");
 		mclvl = testCompatibility("McCombatLevel");
 		boss = testCompatibility("Boss");
+		cmi = testCompatibility("CMI");
 	}
 
 	public static void initializeCompatibilities() {
@@ -54,6 +56,8 @@ public class DependenciesManager {
 		// eboss
 		if (gps) GPS.init();
 		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
+		if (holod) QuestsAPI.setHologramsManager(new BQHolographicDisplays());
+		if (cmi) QuestsAPI.setHologramsManager(new BQCMI());
 	}
 	
 	private static boolean testCompatibility(String pluginName) {

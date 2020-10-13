@@ -21,6 +21,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -29,8 +31,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.npc.ai.NPCHolder;
 
@@ -44,9 +44,9 @@ public class NPCStarter {
 	/* Holograms */
 	private BukkitTask hologramsTask;
 	private boolean hologramsRemoved = true;
-	private Hologram hologramText = new Hologram(true, DependenciesManager.holod && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
-	private Hologram hologramLaunch = new Hologram(false, DependenciesManager.holod, QuestsConfiguration.getHoloLaunchItem());
-	private Hologram hologramLaunchNo = new Hologram(false, DependenciesManager.holod && HolographicDisplays.hasProtocolLib(), QuestsConfiguration.getHoloLaunchNoItem());
+	private Hologram hologramText = new Hologram(true, QuestsAPI.hasHologramsManager() && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
+	private Hologram hologramLaunch = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems(), QuestsConfiguration.getHoloLaunchItem());
+	private Hologram hologramLaunchNo = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility(), QuestsConfiguration.getHoloLaunchNoItem());
 	
 	public NPCStarter(NPC npc){
 		Validate.notNull(npc, "NPC cannot be null");
@@ -87,7 +87,7 @@ public class NPCStarter {
 				}
 				for (Quest quest : quests) quest.updateLauncheable(en);
 				
-				if (!holograms || !HolographicDisplays.hasProtocolLib()) return;
+				if (!holograms || !QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) return;
 				Map<Player, PlayerAccount> players = playersInRadius.stream().collect(Collectors.toMap(x -> x, x -> PlayersManager.getPlayerAccount(x)));
 				List<Player> launcheable = new ArrayList<>();
 				List<Player> unlauncheable = new ArrayList<>();
@@ -177,7 +177,7 @@ public class NPCStarter {
 		boolean visible;
 		boolean enabled;
 		boolean canAppear;
-		Object hologram;
+		AbstractHolograms<?>.BQHologram hologram;
 		
 		String text;
 		ItemStack item;
@@ -198,15 +198,11 @@ public class NPCStarter {
 			Location lc = Utils.upLocationForEntity(en, item == null ? 0 : 1);
 			if (hologram == null){
 				create(lc);
-			}else HolographicDisplays.teleport(hologram, lc);
+			}else hologram.teleport(lc);
 		}
 		
 		public void setVisible(List<Player> players){
-			try {
-				HolographicDisplays.setPlayersVisible(hologram, players);
-			}catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-			}
+			if (hologram != null) hologram.setPlayersVisible(players);
 		}
 		
 		public void setText(String text){
@@ -224,14 +220,14 @@ public class NPCStarter {
 		
 		public void create(Location lc){
 			if (hologram != null) return;
-			hologram = HolographicDisplays.createHologram(lc, visible);
-			if (text != null) HolographicDisplays.appendTextLine(hologram, text);
-			if (item != null) HolographicDisplays.appendItem(hologram, item);
+			hologram = QuestsAPI.getHologramsManager().createHologram(lc, visible);
+			if (text != null) hologram.appendTextLine(text);
+			if (item != null) hologram.appendItem(item);
 		}
 		
 		public void delete(){
 			if (hologram == null) return;
-			HolographicDisplays.delete(hologram);
+			hologram.delete();
 			hologram = null;
 		}
 	}

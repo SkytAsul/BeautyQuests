@@ -16,6 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.editors.DialogEditor;
@@ -33,7 +35,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
-import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -51,7 +52,7 @@ public class StageNPC extends AbstractStage{
 	private BukkitTask task;
 	
 	private List<Player> cached = new ArrayList<>();
-	protected Object holo;
+	protected AbstractHolograms<?>.BQHologram hologram;
 	
 	public StageNPC(QuestBranch branch) {
 		super(branch);
@@ -73,14 +74,10 @@ public class StageNPC extends AbstractStage{
 					tmp.add(p);
 				}
 				
-				if (QuestsConfiguration.getHoloTalkItem() != null && HolographicDisplays.hasProtocolLib()) {
-					if (holo == null) createHoloLaunch();
-					try {
-						HolographicDisplays.setPlayersVisible(holo, tmp);
-					}catch (ReflectiveOperationException e) {
-						e.printStackTrace();
-					}
-					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 1));
+				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) {
+					if (hologram == null) createHoloLaunch();
+					hologram.setPlayersVisible(tmp);
+					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));
 				}
 				
 				if (QuestsConfiguration.showTalkParticles()) {
@@ -92,13 +89,14 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	private void createHoloLaunch(){
-		holo = HolographicDisplays.createHologram(npc.getStoredLocation(), false);
-		HolographicDisplays.appendItem(holo, QuestsConfiguration.getHoloTalkItem());
+		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getStoredLocation(), false);
+		hologram.appendItem(QuestsConfiguration.getHoloTalkItem());
 	}
 	
 	private void removeHoloLaunch(){
-		HolographicDisplays.delete(holo);
-		holo = null;
+		if (hologram == null) return;
+		hologram.delete();
+		hologram = null;
 	}
 
 	public NPC getNPC(){
@@ -224,7 +222,7 @@ public class StageNPC extends AbstractStage{
 	public void unload() {
 		super.unload();
 		if (task != null) task.cancel();
-		if (holo != null) removeHoloLaunch();
+		if (hologram != null) removeHoloLaunch();
 		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
 	}
 	
