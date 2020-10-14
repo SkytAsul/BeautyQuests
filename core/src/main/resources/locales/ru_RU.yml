@@ -115,6 +115,7 @@ msg:
       hidden: '§6Табло игрока {0} был скрыт.'
       shown: '§6Табло игрока {0} показано.'
     help:
+      header: '§6§lBeautyQuests — Помощь'
       create: '§6/{0} create: §eСоздать квест.'
       edit: '§6/{0} edit: §eОтредактировать квест.'
       remove: '§6/{0} remove <id>: §eУдалить квест с указанным идентификатором или нажать на NPC, если квест не будет определен.'
@@ -149,10 +150,26 @@ msg:
       choseStarter: '§aВыберите NPC который начинает квест.'
       notStarter: '§cЭтот NPC не начинает квест.'
     text:
+      argNotSupported: '§cАргумент {0} не поддерживается.'
       chooseLvlRequired: '§aНапишите необходимое количество уровней:'
+      chooseJobRequired: '§aНапишите имя нужной работы:'
       choosePermissionRequired: '§aНапишите необходимое разрешение для запуска квеста:'
+      choosePermissionMessage: '§aВы можете выбрать сообщение об отказе игроку, если у него нет необходимого разрешения. (Чтобы пропустить этот шаг, напишите "null".)'
+      choosePlaceholderRequired:
+        identifier: '§aЗапишите имя необходимого плейсхолдера без процентов символов:'
+        value: '§aЗапишите необходимое значение для заполнителя §6%{0}%§a:'
       chooseSkillRequired: '§aНапишите название необходимого навыка:'
+      chooseMoneyRequired: '§aНапишите количество предметов:'
+      reward:
+        permissionName: '§aЗапишите имя разрешения.'
+        permissionWorld: '§aНапишите мир, в котором разрешение будет отредактировано, или "null", если вы хотите быть глобальным.'
+        money: '§aНапишите сумму полученных денег:'
+      chooseObjectiveRequired: '§aЗапишите название цели.'
+      chooseObjectiveTargetScore: '§aНапишите целевой показатель для цели.'
+      chooseRegionRequired: '§aВведите название нужного региона (вы должны быть в том же мире).'
+    selectWantedBlock: '§aНажмите с палкой на нужном блоке для сцены.'
     itemCreator:
+      itemType: '§aНапишите название блока для добычи:'
       itemAmount: '§aНапишите количество предметов:'
       itemName: '§aВведите название предмета:'
       itemLore: '§aИзмените описание предмета: (Напишите "help" для помощи)'
@@ -168,10 +185,16 @@ msg:
       soundAdded: '§aЗвук "{0}" добавлен для сообщения "{1}".'
       cleared: '§a{0} удаленное(ых) сообщение(й).'
       help:
+        header: '§6§lBeautyQuests — помощь редактора диалогов'
         npc: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
         player: '§6player <сообщение>: §eДобавить сообщение, которое будет отправлено игроком.'
         nothing: '§6noSender <сообщение>: §eДобавить сообщение без отправителя.'
         remove: '§6remove <id>: §eУдалить сообщение.'
+        list: '§6close: §eПодтвердить все сообщения.'
+        npcInsert: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
+        playerInsert: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
+        nothingInsert: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
+        addSound: '§6Добавил звук <id> <sound>: §eДобавить звук к сообщению.'
         clear: '§6clear: §eУдалить все сообщения.'
         close: '§6close: §eПодтвердить все сообщения.'
         setTime: '§6setTime <id> <время>: §eУстановить время (в тактах) до того как следующее сообщение воспроизведется автоматически.'
@@ -187,12 +210,22 @@ msg:
       added: '§aТекст "{0}" добавлен.'
       removed: '§aТекст "{0}" удален.'
       help:
+        header: '§6§lBeautyQuests — помощь редактора диалогов'
         add: '§6add <сообщение>: §eДобавить текст.'
+        remove: '§6remove <id>: §eУдалить сообщение.'
+        list: '§6close: §eПодтвердить все сообщения.'
+        close: '§6close: §eValidate the added texts.'
+    noSuchElement: '§cНет такого элемента. Допустимые элементы: §e{0}'
+    comparisonType: '§aВыберите тип сравнения, который вы хотите среди {0}. Сравнение по умолчанию: §e§lgreater или equals§r§a. Введите §onull§r§a чтобы использовать его.'
+    scoreboardObjectiveNotFound: '§cНеизвестный объект таблицы.'
+  writeCommandDelay: '§aНапишите нужную задержку команд в галочках.'
 advancement:
   finished: Завершено
+  notStarted: Не начато
 inv:
   validate: '§b§lПодтвердить'
   cancel: '§c§lОтменить'
+  search: '§e§lПоиск'
   confirm:
     name: Вы уверены?
     'yes': '§aПодтвердить'
@@ -212,45 +245,149 @@ inv:
     craft: '§aСкрафтить предмет'
     bucket: '§aЗаполнить ведро'
     location: '§aДойти до локации'
+    playTime: '§eВремя игры'
     NPCText: '§eОтредактировать диалог'
+    NPCSelect: '§eВыберите или создайте NPC'
     hideClues: Скрыть частицы и голограммы
     editMobsKill: '§eСменить мобов, для убийства'
     mobsKillFromAFar: Требует убийства снарядом
     editBlocksMine: '§eСменить блоки для разрушения'
+    preventBlockPlace: Запретить игрокам ломать свои блоки
     editBlocksPlace: '§eСменить блоки для размещения'
+    editMessageType: '§eРедактировать сообщение для записи'
     cancelMessage: Отменить отправку
+    ignoreCase: Игнорировать регистр сообщения
     selectItems: '§eОтредактировать требуемые предметы'
     selectRegion: '§7Выберите регион'
+    toggleRegionExit: При выходе
     stageStartMsg: '§eОтредактировать стартовое сообщение'
+    selectBlockLocation: '§eВыберите местоположение блока'
+    leftClick: Щелчок должен быть левой кнопкой
+    editFishes: '§eРедактируйте рыбы, чтобы поймать'
+    editItem: '§eРедактировать предмет для создания'
+    editBucketType: '§eРедактировать тип ведра для заполнения'
+    editBucketAmount: '§aНапишите количество вёдер для заполнения'
+    editLocation: '§eРедактировать местоположение'
+    editRadius: '§eРедактировать расстояние от места'
+    currentRadius: '§eТекущее расстояние: §6{0}'
+    changeTicksRequired: '§eТребуются изменения галочек игры'
   stages:
     name: Создать этапы
     nextPage: '§eСледующая страница'
     laterPage: '§eПредыдущая страница'
     endingItem: '§eРедактировать конечные награды'
     descriptionTextItem: '§eРедактировать описание'
+    regularPage: '§aОбычные этапы'
     branchesPage: '§dЭтапы ответвления'
     previousBranch: '§eВернуться к предыдущему ответвлению'
     newBranch: '§eПерейти к новому ответвлению'
+    validationRequirements: '§eТребования к валидации'
+    validationRequirementsLore: Все требования должны соответствовать игроку, который пытается завершить стадию. Если нет, стадия не может быть завершена.
   details:
+    hologramLaunch: '§eРедактировать пункт "Launch" голограммы'
+    hologramLaunchLore: Когда игрок может начать квест, голограмма отображается над головой Стартового NPC.
+    hologramLaunchNo: '§eРедактировать пункт соси хуй мудак "Launch" голограммы'
+    hologramLaunchNoLore: Когда игрок может начать квест, человек который читает это соси хуй голограмма отображается над головой Стартового NPC.
     customConfirmMessage: '§eОтредактировать сообщение для подтверждения квеста'
+    customConfirmMessageLore: Сообщение, отображаемое в интерфейсе подтверждения когда игрок собирается начать квест.
+    customDescription: '§eРедактировать описание'
+    customDescriptionLore: Описание, показанное под названием квеста в GUI.
+    name: Информация о последней ошибке
+    multipleTime:
+      itemName: Переключить повтор.
+      itemLore: Можно ли выполнить квест несколько раз?
     scoreboardItem: Включить табло
     selectStarterNPC: '§e§lВыберите NPC, который будет начинать квест'
     startRewards: '§6Начальные награды'
     requirements: '{0} требование(я)'
     rewards: '{0} награда(ы)'
+  npcCreate:
+    move:
+      itemLore: '§aИзменить местоположение NPC.'
+    moveItem: '§a§lПроверить место'
+  npcSelect:
+    name: Выбрать или создать?
+    selectStageNPC: '§eВыберите существующий NPC'
+    createStageNPC: '§eСоздать NPC'
+  entityType:
+    name: Выберите тип сущности
+  chooseQuest:
+    name: Какой квест?
+  mobs:
+    name: Выберите мобов
+    none: '§aНажмите, чтобы добавить моба.'
+    click: |-
+      §7Нажмите левой кнопкой мыши для редактирования.
+      Нажмите правой кнопкой мыши для удаления.
+  mobSelect:
+    name: Установите тип моба
+    bukkitEntityType: '§eВыберите тип объекта'
+    mythicMob: '§6Выберите мифический моб'
+    epicBoss: '§6Выберите эпического босса'
+    boss: '§6Выберите босса'
+  stageEnding:
+    locationTeleport: '§eРедактировать местоположение телепорта'
+    command: '§eРедактировать выполненную команду'
   requirements:
     name: Требования
   rewards:
     name: Награды
     commands: 'Команды: {0}'
+    teleportation: |-
+      §aВыбрано:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      World: {3}
+  checkpointActions:
+    name: Значок контрольной точки
   listAllQuests:
     name: Квесты
+  listPlayerQuests:
+    name: 'Задания {0}'
   listQuests:
     notStarted: Не начатые квесты
     finished: Завершенные квесты
     inProgress: Квесты в процессе выполнения
     loreCancel: '§c§oНажмите, чтобы отменить квест.'
+    loreStart: '§a§oНажмите, чтобы начать задание.'
+    loreStartUnavailable: '§c§oВы не соответствуете требованиям для начала задания.'
+    timeToWait: '§3§o{0} минут(ы), прежде чем вы сможете перезапустить задание.'
     canRedo: '§3§oВы можете перевыполнить этот квест!'
+  itemCreator:
+    name: Создатель предмета
+    itemType: '§bТип предмета'
+    itemFlags: Вкл/выкл флаги элемента
+    itemName: '§bНазвание предмета'
+    itemLore: '§bЛор'
+    isQuestItem: '§bQuest предмет:'
+  command:
+    name: Команда
+    value: '§eКоманда'
+    console: Консоль
+    delay: '§bЗадержка'
+  chooseAccount:
+    name: Какой аккаунт?
+  listBook:
+    questName: Имя
+    questStarter: Старт
+    questRewards: Награды
+    questMultiple: Несколько раз
+    requirements: Требования
+    questStages: Этапы
+    noQuests: Ранее заданий не создано.
+  commandsList:
+    name: Список команд
+    value: '§Команды: {0}'
+    console: '§eКонсоль: {0}'
+  block:
+    name: Выбрать блок
+    material: '§eMaterial: {0}'
+  blocksList:
+    name: Выбрать блок
+    addBlock: '§aНажмите, чтобы добавить блок.'
+  buckets:
+    name: Тип ведра
 scoreboard:
   stage:
     npc: '§eПоговорить с NPC §6{0}'
