@@ -1,45 +1,44 @@
 package fr.skytasul.quests.utils.types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 
 import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public class BQBlock {
 	
 	private static final String BLOCKDATA_HEADER = "blockdata:";
 	
 	private final XMaterial material;
-	private final BlockData blockData;
+	private final Object blockData;
 	
 	public BQBlock(XMaterial material) {
 		this.material = material;
 		this.blockData = null;
 	}
 	
-	public BQBlock(BlockData blockData) {
+	public BQBlock(Object blockData) {
 		this.blockData = blockData;
 		this.material = null;
 	}
 	
 	public XMaterial getMaterial() {
-		return blockData == null ? material : XMaterial.matchXMaterial(blockData.getMaterial());
+		return material != null ? material : XMaterial.matchXMaterial(Post1_13.blockDataGetMaterial(blockData));
 	}
 	
 	public boolean applies(Block block) {
 		if (material != null) return XBlock.isType(block, material);
-		return blockData.matches(block.getBlockData());
+		return Post1_13.blockDataMatches(blockData, block);
 	}
 	
 	public String getAsString() {
 		if (material != null) return material.name();
-		return BLOCKDATA_HEADER + blockData.getAsString(true);
+		return BLOCKDATA_HEADER + Post1_13.blockDataAsString(blockData);
 	}
 	
 	public static BQBlock fromString(String string) {
-		if (string.startsWith(BLOCKDATA_HEADER)) return new BQBlock(Bukkit.createBlockData(string.substring(BLOCKDATA_HEADER.length())));
+		if (string.startsWith(BLOCKDATA_HEADER)) return new BQBlock(Post1_13.createBlockData(string.substring(BLOCKDATA_HEADER.length())));
 		return new BQBlock(XMaterial.valueOf(string));
 	}
 	
