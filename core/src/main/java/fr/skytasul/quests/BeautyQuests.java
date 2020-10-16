@@ -132,7 +132,7 @@ public class BeautyQuests extends JavaPlugin{
 						e.printStackTrace();
 					}
 				}
-			}.runTaskLater(this, 40L);
+			}.runTaskLater(this, 2L);
 
 			saveDefaultConfig();
 			NMS.getMCVersion();

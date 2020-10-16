@@ -198,9 +198,9 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public void cancelPlayer(PlayerAccount acc){
-		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		manager.remove(acc);
 		acc.removeQuestDatas(this);
+		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
@@ -290,7 +290,7 @@ public class Quest implements Comparable<Quest> {
 				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
 
-				Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this));
+				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
 			}
 		};
 		if (asyncStart != null){
@@ -301,8 +301,6 @@ public class Quest implements Comparable<Quest> {
 	
 	public void finish(Player p){
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		QuestFinishEvent event = new QuestFinishEvent(p, this);
-		Bukkit.getPluginManager().callEvent(event);
 		AdminMode.broadcast(p.getName() + " completed the quest " + id);
 		
 		BukkitRunnable run = new BukkitRunnable() {
@@ -322,6 +320,9 @@ public class Quest implements Comparable<Quest> {
 				}
 				Utils.spawnFirework(p.getLocation());
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
+				
+				QuestFinishEvent event = new QuestFinishEvent(p, Quest.this);
+				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(event));
 			}
 		};
 		if (asyncEnd){

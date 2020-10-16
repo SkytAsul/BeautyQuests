@@ -134,6 +134,7 @@ public class QuestsAPI {
 		List<Quest> launched = new ArrayList<>();
 		for (PlayerQuestDatas datas : acc.getQuestsDatas()) {
 			Quest quest = datas.getQuest();
+			if (quest == null) continue; // non-existent quest
 			if (datas.hasStarted() && (!withoutScoreboard || quest.isScoreboardEnabled())) launched.add(quest);
 		}
 		return launched;

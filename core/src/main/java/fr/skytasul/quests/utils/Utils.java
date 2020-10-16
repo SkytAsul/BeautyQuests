@@ -403,6 +403,12 @@ public class Utils{
 		return lines;
 	}
 	
+	public static void runOrSync(Runnable run) {
+		if (Bukkit.isPrimaryThread()) {
+			run.run();
+		}else Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+	}
+	
 	public static void runSync(Runnable run){
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
 	}
