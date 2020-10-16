@@ -3,6 +3,8 @@ package fr.skytasul.quests.players;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Utils;
 
 public class PlayerQuestDatas {
@@ -32,6 +34,10 @@ public class PlayerQuestDatas {
 		this.stageDatas[2] = stage2datas;
 		this.stageDatas[3] = stage3datas;
 		this.stageDatas[4] = stage4datas;
+	}
+	
+	public Quest getQuest() {
+		return QuestsAPI.getQuestFromID(questID);
 	}
 
 	public boolean isFinished() {
@@ -64,6 +70,10 @@ public class PlayerQuestDatas {
 
 	public void setStage(int stage) {
 		this.stage = stage;
+	}
+	
+	public boolean hasStarted() {
+		return branch != -1;
 	}
 
 	public boolean isInEndingStages() {

@@ -40,8 +40,7 @@ public class RegionRequirement extends AbstractRequirement {
 	
 	private void setRegionName(String regionName) {
 		this.regionName = regionName;
-		this.regionName = regionName;
-		this.region = WorldGuard.getRegion(regionName, Bukkit.getWorld(worldName));
+		if (worldName != null) this.region = WorldGuard.getRegion(regionName, Bukkit.getWorld(worldName));
 		if (region == null) BeautyQuests.logger.warning("Region " + regionName + " no longer exist in world " + worldName);
 	}
 	

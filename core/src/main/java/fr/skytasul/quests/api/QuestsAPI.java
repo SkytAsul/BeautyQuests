@@ -23,6 +23,7 @@ import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
@@ -131,8 +132,9 @@ public class QuestsAPI {
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard){
 		List<Quest> launched = new ArrayList<>();
-		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) launched.add(qu);
+		for (PlayerQuestDatas datas : acc.getQuestsDatas()) {
+			Quest quest = datas.getQuest();
+			if (datas.hasStarted() && (!withoutScoreboard || quest.isScoreboardEnabled())) launched.add(quest);
 		}
 		return launched;
 	}

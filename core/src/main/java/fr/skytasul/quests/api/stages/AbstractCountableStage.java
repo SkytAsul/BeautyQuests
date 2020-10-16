@@ -88,7 +88,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		datas.put("remaining", amounts);
 	}
 
-	protected void event(PlayerAccount acc, Player p, Object object, int amount) {
+	public void event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		if (!canUpdate(p)) return;
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
