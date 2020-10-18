@@ -57,7 +57,7 @@ public class DependenciesManager {
 		if (gps) GPS.init();
 		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
 		if (holod) QuestsAPI.setHologramsManager(new BQHolographicDisplays());
-		if (cmi) QuestsAPI.setHologramsManager(new BQCMI());
+		if (cmi && BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
 	}
 	
 	private static boolean testCompatibility(String pluginName) {

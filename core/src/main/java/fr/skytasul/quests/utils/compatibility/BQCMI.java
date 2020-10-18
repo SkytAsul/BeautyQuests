@@ -1,10 +1,9 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.List;
-
 import org.bukkit.Location;
 
 import com.Zrips.CMI.CMI;
+import com.Zrips.CMI.Containers.CMILocation;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -23,7 +22,7 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 	
 	@Override
 	public AbstractHolograms<CMIHologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
-		CMIHologram hologram = new CMIHologram("BQ Hologram " + hashCode(), lc);
+		CMIHologram hologram = new CMIHologram("BQ Hologram " + hashCode(), new CMILocation(lc));
 		CMI.getInstance().getHologramManager().addHologram(hologram);
 		return new BQCMIHologram(hologram);
 	}
@@ -36,9 +35,7 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 		
 		@Override
 		public void appendTextLine(String text) {
-			List<String> lines = hologram.getLinesAsList();
-			lines.add(text);
-			hologram.setLines(lines);
+			hologram.addLine(text);
 			hologram.update();
 		}
 		
@@ -52,6 +49,10 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 			CMI.getInstance().getHologramManager().removeHolo(hologram);
 		}
 		
+	}
+	
+	public static boolean areHologramsEnabled() {
+		return CMI.getInstance().getHologramManager() != null;
 	}
 	
 }

@@ -335,6 +335,8 @@ public class Utils{
 		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
 		StringBuilder word = new StringBuilder();
 		StringBuilder line = new StringBuilder();
+		String colors = "";
+		boolean colorsSkip = true;
 		List<String> lines = new LinkedList<String>();
 		
 		for (int i = 0; i < rawChars.length; i++) {
@@ -342,27 +344,40 @@ public class Utils{
 			
 			// skip chat color modifiers
 			if (c == ChatColor.COLOR_CHAR) {
-				word.append(ChatColor.getByChar(rawChars[i + 1]));
+				String color = ChatColor.getByChar(rawChars[i + 1]).toString();
+				word.append(color);
+				colors = ChatColor.getLastColors(colors + color);
 				i++; // Eat the next character as we have already processed it
+				colorsSkip = true;
 				continue;
 			}
 			
 			if (c == ' ' || c == '\n') {
 				if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
+					//System.out.println("long word : " + word);
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
 						lines.add(partialWord);
 					}
 				}else if (line.length() + 1 + word.length() == lineLength) { // Line exactly the correct length...newline
+					//System.out.println("good length");
 					if (line.length() > 0) {
 						line.append(' ');
 					}
 					line.append(word);
 					lines.add(line.toString());
 					line = new StringBuilder();
-				}else if (line.length() + 1 + word.length() > lineLength) { // Line too long...break the line
+					line.append(colors);
+				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
+					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
 						lines.add(line.toString());
+						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord);
 						line = new StringBuilder(partialWord);
+						if (colorsSkip) {
+							colorsSkip = false;
+						}else {
+							line.insert(0, colors);
+						}
 					}
 				}else {
 					if (line.length() > 0) {
@@ -375,7 +390,9 @@ public class Utils{
 				if (c == '\n') { // Newline forces the line to flush
 					lines.add(line.toString());
 					line = new StringBuilder();
+					line.append(colors);
 				}
+				colorsSkip = false;
 			}else {
 				word.append(c);
 			}
@@ -389,7 +406,7 @@ public class Utils{
 		/*if (lines.get(0).length() == 0 || lines.get(0).charAt(0) != ChatColor.COLOR_CHAR) {
 			lines.set(0, ChatColor.WHITE + lines.get(0));
 		}*/
-		for (int i = 1; i < lines.size(); i++) {
+		/*for (int i = 1; i < lines.size(); i++) {
 			final String pLine = lines.get(i - 1);
 			final String subLine = lines.get(i);
 			
@@ -398,7 +415,7 @@ public class Utils{
 			if (subLine.length() == 0 || subLine.charAt(0) != ChatColor.COLOR_CHAR) {
 				lines.set(i, color + subLine);
 			}
-		}
+		}*/
 		
 		return lines;
 	}
