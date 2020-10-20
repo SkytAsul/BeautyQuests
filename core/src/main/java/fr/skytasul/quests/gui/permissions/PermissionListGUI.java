@@ -2,11 +2,14 @@ package fr.skytasul.quests.gui.permissions;
 
 import java.util.List;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Permission;
 
@@ -27,7 +30,7 @@ public class PermissionListGUI extends ListGUI<Permission> {
 		return ItemUtils.item(XMaterial.PAPER, "§e" + object.permission, Lang.permRemoved.format(object.take ? Lang.Yes : Lang.No), Lang.permWorld.format(object.world == null ? Lang.worldGlobal.toString() : object.world));
 	}
 
-	public void click(Permission existing) {
+	public void click(Permission existing, ItemStack item) {
 		new PermissionGUI((perm) -> {
 			super.finishItem(perm);
 		}, existing).create(p);
@@ -36,4 +39,11 @@ public class PermissionListGUI extends ListGUI<Permission> {
 	public void finish() {
 		end.run();
 	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		Utils.runSync(end);
+		return CloseBehavior.NOTHING;
+	}
+	
 }

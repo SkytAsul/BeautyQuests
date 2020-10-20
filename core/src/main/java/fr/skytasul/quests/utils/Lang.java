@@ -24,6 +24,11 @@ public enum Lang{
 	
 	QUEST_NOSTEPS("msg.quests.nopStep"),
 	QUEST_UPDATED("msg.quests.updated"),
+	QUEST_CHECKPOINT("msg.quests.checkpoint"),
+	QUEST_FAILED("msg.quests.failed"),
+	
+	QUEST_ITEM_DROP("msg.questItem.drop"),
+	QUEST_ITEM_CRAFT("msg.questItem.craft"),
 	
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
@@ -64,9 +69,7 @@ public enum Lang{
 	TALK_NPC("msg.npc.talk"),
 	
 	REGION_DOESNT_EXIST("msg.regionDoesntExists"),
-	FACTION_DOESNT_EXIST("msg.factionDoesntExist"),
 	NPC_DOESNT_EXIST("msg.npcDoesntExist"),
-	CLASS_DOESNT_EXIST("msg.classDoesntExist"),
 	OBJECT_DOESNT_EXIST("msg.objectDoesntExist"),
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
@@ -74,6 +77,7 @@ public enum Lang{
 	ERROR_OCCURED("msg.errorOccurred"),
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
+	INVALID_BLOCK_DATA("msg.invalidBlockData"), // 0: blockdata, 1: material
 	
 	NEED_OBJECTS("msg.bringBackObjects"),
 	ITEM_DROPPED("msg.inventoryFull"),
@@ -104,6 +108,7 @@ public enum Lang{
 	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed"),
 	ADMIN_MODE_ENTERED("msg.command.adminModeEntered"),
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
+	
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id
 	COMMAND_SCOREBOARD_LINEREMOVE("msg.command.scoreboard.lineRemoved"), // 0: line id
@@ -116,6 +121,8 @@ public enum Lang{
 	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),
 	COMMAND_SETSTAGE_NEXT_UNAVAILABLE("msg.command.setStage.nextUnavailable"),
 	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
+	COMMAND_CHECKPOINT_NO("msg.command.checkpoint.noCheckpoint"), // 0: quest name
+	COMMAND_CHECKPOINT_NOT_STARTED("msg.command.checkpoint.questNotStarted"),
 	
 	COMMAND_HELP("msg.command.help.header"),
 	COMMAND_HELP_CREATE("msg.command.help.create"),
@@ -147,13 +154,16 @@ public enum Lang{
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
 	
 	CLICK_BLOCK("msg.editor.selectWantedBlock"),
-	BLOCKS_AMOUNT("msg.editor.blocksToMineAmount"),
-	BLOCKS_NAME("msg.editor.blocksToMineName"),
+	BLOCKS_AMOUNT("msg.editor.blockAmount"),
+	BLOCK_NAME("msg.editor.blockName"),
+	BLOCK_DATA("msg.editor.blockData"), // 0: available block datas
 	
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
 	
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
+	
+	GAME_TICKS("msg.editor.typeGameTicks"),
 	
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
 
@@ -166,14 +176,13 @@ public enum Lang{
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
 	CHOOSE_PERM_REQUIRED("msg.editor.text.choosePermissionRequired"),
 	CHOOSE_PERM_REQUIRED_MESSAGE("msg.editor.text.choosePermissionMessage"),
-	CHOOSE_FAC_REQUIRED("msg.editor.text.chooseFactionRequired"),
-	CHOOSE_CLASSES_REQUIRED("msg.editor.text.chooseClassesRequired"),
 	CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER("msg.editor.text.choosePlaceholderRequired.identifier"),
 	CHOOSE_PLACEHOLDER_REQUIRED_VALUE("msg.editor.text.choosePlaceholderRequired.value"),
 	CHOOSE_SKILL_REQUIRED("msg.editor.text.chooseSkillRequired"),
 	CHOOSE_MONEY_REQUIRED("msg.editor.text.chooseMoneyRequired"),
 	CHOOSE_SCOREBOARD_OBJECTIVE("msg.editor.text.chooseObjectiveRequired"),
 	CHOOSE_SCOREBOARD_TARGET("msg.editor.text.chooseObjectiveTargetScore"),
+	CHOOSE_REGION_REQUIRED("msg.editor.text.chooseRegionRequired"),
 	
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
@@ -181,10 +190,13 @@ public enum Lang{
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
+	CHOOSE_ITEM_AMOUNT("msg.editor.itemCreator.itemAmount"),
 	CHOOSE_ITEM_NAME("msg.editor.itemCreator.itemName"),
 	CHOOSE_ITEM_LORE("msg.editor.itemCreator.itemLore"),
 	UNKNOWN_ITEM_TYPE("msg.editor.itemCreator.unknownItemType"),
 	INVALID_ITEM_TYPE("msg.editor.itemCreator.invalidItemType"),
+	UNKNOWN_BLOCK_TYPE("msg.editor.itemCreator.unknownBlockType"),
+	INVALID_BLOCK_TYPE("msg.editor.itemCreator.invalidBlockType"),
 	
 	DIALOG_SYNTAX("msg.editor.dialog.syntax"),
 	DIALOG_REMOVE_SYNTAX("msg.editor.dialog.syntaxRemove"),
@@ -245,25 +257,31 @@ public enum Lang{
 	stageGoTo("inv.create.findRegion"),
 	stageMobs("inv.create.killMobs"),
 	stageMine("inv.create.mineBlocks"),
+	stagePlace("inv.create.placeBlocks"),
 	stageChat("inv.create.talkChat"),
 	stageInteract("inv.create.interact"),
 	stageFish("inv.create.fish"),
 	stageCraft("inv.create.craft"),
 	stageBucket("inv.create.bucket"),
 	stageLocation("inv.create.location"),
+	stagePlayTime("inv.create.playTime"),
 	stageText("inv.create.NPCText"),
+	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
 	editMobs("inv.create.editMobsKill"),
 	mobsKillType("inv.create.mobsKillFromAFar"),
-	editBlocks("inv.create.editBlocksMine"),
+	editBlocksMine("inv.create.editBlocksMine"),
 	preventBlockPlace("inv.create.preventBlockPlace"),
+	editBlocksPlace("inv.create.editBlocksPlace"),
 	editMessage("inv.create.editMessageType"),
 	cancelEvent("inv.create.cancelMessage"),
 	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
 	stageRegion("inv.create.selectRegion"),
+	stageRegionExit("inv.create.toggleRegionExit"),
 	startMsg("inv.create.stageStartMsg"),
 	blockLocation("inv.create.selectBlockLocation"),
+	blockMaterial("inv.create.selectBlockMaterial"),
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
 	editItem("inv.create.editItem"),
@@ -272,6 +290,7 @@ public enum Lang{
 	editLocation("inv.create.editLocation"),
 	editRadius("inv.create.editRadius"),
 	currentRadius("inv.create.currentRadius"), // 0: radius
+	changeTicksRequired("inv.create.changeTicksRequired"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -279,6 +298,8 @@ public enum Lang{
 	regularPage("inv.stages.regularPage"),
 	branchesPage("inv.stages.branchesPage"),
 	ending("inv.stages.endingItem"),
+	validationRequirements("inv.stages.validationRequirements"),
+	validationRequirementsLore("inv.stages.validationRequirementsLore"),
 	descMessage("inv.stages.descriptionTextItem"),
 	previousBranch("inv.stages.previousBranch"),
 	newBranch("inv.stages.newBranch"),
@@ -287,33 +308,60 @@ public enum Lang{
 	multiple("inv.details.multipleTime.itemName"),
 	multipleLore("inv.details.multipleTime.itemLore"),
 	cancellable("inv.details.cancellable"),
+	cancellableLore("inv.details.cancellableLore"),
+	startableFromGUI("inv.details.startableFromGUI"),
+	startableFromGUILore("inv.details.startableFromGUILore"),
 	scoreboard("inv.details.scoreboardItem"),
+	scoreboardLore("inv.details.scoreboardItemLore"),
 	hide("inv.details.hideItem"),
+	hideLore("inv.details.hideItemLore"),
 	bypass("inv.details.bypassLimit"),
+	bypassLore("inv.details.bypassLimitLore"),
 	questName("inv.details.questName"),
+	questNameLore("inv.details.questNameLore"),
 	rewardItems("inv.details.setItemsRewards"),
 	rewardXP("inv.details.setXPRewards"),
+	rewardCheckpoint("inv.details.setCheckpointReward"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
-	questStarterCreate("inv.details.createStarterNPC"),
 	questStarterSelect("inv.details.selectStarterNPC"),
-	create("inv.details.createQuest.itemName"),
-	createLore("inv.details.createQuest.itemLore"),
-	edit("inv.details.editQuest.itemName"),
+	questStarterSelectLore("inv.details.selectStarterNPCLore"),
+	create("inv.details.createQuestName"),
+	createLore("inv.details.createQuestLore"),
+	edit("inv.details.editQuestName"),
 	endMessage("inv.details.endMessage"),
+	endMessageLore("inv.details.endMessageLore"),
 	startDialog("inv.details.startDialog"),
+	startDialogLore("inv.details.startDialogLore"),
 	editRequirements("inv.details.editRequirements"),
+	editRequirementsLore("inv.details.editRequirementsLore"),
 	startRewards("inv.details.startRewards"),
+	startRewardsLore("inv.details.startRewardsLore"),
 	hologramText("inv.details.hologramText"),
+	hologramTextLore("inv.details.hologramTextLore"),
 	timer("inv.details.timer"),
+	timerLore("inv.details.timerLore"),
 	requirements("inv.details.requirements"),
 	rewards("inv.details.rewards"),
+	actions("inv.details.actions"),
+	rewardsLore("inv.details.rewardsLore"),
 	hologramLaunch("inv.details.hologramLaunch"),
+	hologramLaunchLore("inv.details.hologramLaunchLore"),
 	hologramLaunchNo("inv.details.hologramLaunchNo"),
+	hologramLaunchNoLore("inv.details.hologramLaunchNoLore"),
 	customConfirmMessage("inv.details.customConfirmMessage"),
+	customConfirmMessageLore("inv.details.customConfirmMessageLore"),
 	customDescription("inv.details.customDescription"),
+	customDescriptionLore("inv.details.customDescriptionLore"),
 	customMaterial("inv.details.customMaterial"),
+	customMaterialLore("inv.details.customMaterialLore"),
+	failOnDeath("inv.details.failOnDeath"),
+	failOnDeathLore("inv.details.failOnDeathLore"),
+	keepDatas("inv.details.keepDatas"),
+	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
+	optionValue("inv.details.optionValue"), // 0: value
+	defaultValue("inv.details.defaultValue"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
@@ -353,6 +401,8 @@ public enum Lang{
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
 	teleportation("inv.rewards.teleportation"),
+	
+	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
 
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),
@@ -360,6 +410,8 @@ public enum Lang{
 	finisheds("inv.listQuests.finished"),
 	inProgress("inv.listQuests.inProgress"),
 	cancelLore("inv.listQuests.loreCancel"),
+	startLore("inv.listQuests.loreStart"),
+	startImpossibleLore("inv.listQuests.loreStartImpossible"),
 	timeWait("inv.listQuests.timeToWait"),
 	canRedo("inv.listQuests.canRedo"),
 	formatNormal("inv.listQuests.format.normal"),
@@ -385,9 +437,14 @@ public enum Lang{
 	
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
+	blockData("inv.block.blockData"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
 	addBlock("inv.blocksList.addBlock"),
+	
+	INVENTORY_BLOCK_ACTION("inv.blockAction.name"),
+	clickLocation("inv.blockAction.location"),
+	clickMaterial("inv.blockAction.material"),
 	
 	INVENTORY_BUCKETS("inv.buckets.name"),
 	
@@ -401,6 +458,12 @@ public enum Lang{
 	INVENTORY_PERMISSION_LIST("inv.permissionList.name"),
 	permRemoved("inv.permissionList.removed"),
 	permWorld("inv.permissionList.world"),
+	
+	INVENTORY_CLASSES_REQUIRED("inv.classesRequired.name"),
+	INVENTORY_CLASSES_LIST("inv.classesList.name"),
+	
+	INVENTORY_FACTIONS_REQUIRED("inv.factionsRequired.name"),
+	INVENTORY_FACTIONS_LIST("inv.factionsList.name"),
 
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
@@ -422,12 +485,15 @@ public enum Lang{
 	SCOREBOARD_ITEMS("scoreboard.stage.items"),
 	SCOREBOARD_MOBS("scoreboard.stage.mobs"),
 	SCOREBOARD_MINE("scoreboard.stage.mine"),
+	SCOREBOARD_PLACE("scoreboard.stage.placeBlocks"),
 	SCOREBOARD_CHAT("scoreboard.stage.chat"),
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
+	SCOREBOARD_INTERACT_MATERIAL("scoreboard.stage.interactMaterial"),
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
+	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTime"), // 0: ticks
 	
 	/* Indications */
 	
@@ -448,12 +514,14 @@ public enum Lang{
 	Items("misc.stageType.items"),
 	Mobs("misc.stageType.mobs"),
 	Mine("misc.stageType.mine"),
+	Place("misc.stageType.placeBlock"),
 	Chat("misc.stageType.chat"),
 	Interact("misc.stageType.interact"),
 	Fish("misc.stageType.Fish"),
 	Craft("misc.stageType.Craft"),
 	Bucket("misc.stageType.Bucket"),
 	Location("misc.stageType.location"),
+	PlayTime("misc.stageType.playTime"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),
@@ -469,6 +537,7 @@ public enum Lang{
 	RLevel("misc.requirement.experienceLevel"),
 	RPermissions("misc.requirement.permissions"),
 	RScoreboard("misc.requirement.scoreboard"),
+	RRegion("misc.requirement.region"),
 	RPlaceholder("misc.requirement.placeholder"),
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
@@ -528,9 +597,10 @@ public enum Lang{
 	}
 
 
-	public static void loadStrings(YamlConfiguration config) {
+	public static void loadStrings(YamlConfiguration defaultConfig, YamlConfiguration config) {
 		for (Lang l : values()){
 			String value = config.getString(l.path, null);
+			if (value == null) value = defaultConfig.getString(l.path, null);
 			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
 			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
 		}

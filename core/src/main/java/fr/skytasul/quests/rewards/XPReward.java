@@ -6,13 +6,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -38,36 +38,36 @@ public class XPReward extends AbstractReward {
 		return exp + " " + Lang.Exp.toString();
 	}
 
+	@Override
+	public AbstractReward clone() {
+		return new XPReward(exp);
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		Utils.sendMessage(p, Lang.XP_GAIN.toString(), exp);
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (exp == 0) gui.remove(this);
+			gui.reopen();
+		}, obj -> {
+			Utils.sendMessage(p, Lang.XP_EDITED.toString(), exp, obj);
+			exp = obj;
+			ItemUtils.lore(clicked, getLore());
+			gui.reopen();
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
+	}
+	
 	protected void save(Map<String, Object> datas) {
 		datas.put("xp", exp);
 	}
-
+	
 	protected void load(Map<String, Object> savedDatas) {
 		exp = (int) savedDatas.get("xp");
 	}
-
-	public static class Creator implements RewardCreationRunnables<XPReward> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
-			String last = "" + (datas.containsKey("xp") ? datas.get("xp") : 0);
-			Utils.sendMessage(p, Lang.XP_GAIN.toString(), last);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				Utils.sendMessage(p, Lang.XP_EDITED.toString(), last, obj);
-				datas.put("xp", (int) obj);
-				gui.reopen(p, false);
-				ItemUtils.lore(clicked, obj + " " + Lang.Exp.toString());
-			}, new NumberParser(Integer.class, true)));
-		}
-
-		public void edit(Map<String, Object> datas, XPReward reward, ItemStack is) {
-			datas.put("xp", reward.exp);
-			ItemUtils.lore(is, reward.exp + " " + Lang.Exp.toString());
-		}
-
-		public XPReward finish(Map<String, Object> datas) {
-			return new XPReward((int) datas.get("xp"));
-		}
-
-	}
-
+	
 }

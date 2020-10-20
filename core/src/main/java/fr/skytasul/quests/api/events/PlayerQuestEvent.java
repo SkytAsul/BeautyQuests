@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.events;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 import fr.skytasul.quests.players.PlayerAccount;
@@ -26,15 +25,5 @@ public abstract class PlayerQuestEvent extends PlayerEvent{
 	public PlayerAccount getPlayerAccount(){
 		return acc;
 	}
-
-	public HandlerList getHandlers(){
-		return handlers;
-	}
-	
-	public static HandlerList getHandlerList() {
-	  return handlers;
-	}
-
-	private static final HandlerList handlers = new HandlerList();
 
 }

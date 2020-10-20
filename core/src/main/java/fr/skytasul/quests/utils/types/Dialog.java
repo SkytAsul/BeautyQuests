@@ -17,28 +17,25 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Message.Sender;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Dialog{
+public class Dialog implements Cloneable {
 
-	private NPC npc;
 	public NumberedList<Message> messages;
 	
 	private Map<Player, PlayerStatus> players = new HashMap<>();
 	
-	public Dialog(NPC npc) {
-		this(npc, new NumberedList<>());
+	public Dialog() {
+		this(new NumberedList<>());
 	}
 	
-	public Dialog(NPC npc, NumberedList<Message> messages) {
-		this.npc = npc;
+	public Dialog(NumberedList<Message> messages) {
 		this.messages = messages;
 	}
 	
-	public void send(Player p, final Runnable end) {
+	public void send(Player p, NPC npc, final Runnable end) {
 		if (messages.isEmpty()) {
 			end.run();
 			return;
@@ -74,7 +71,7 @@ public class Dialog{
 			text = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), msg.text, id+1, messages.valuesSize()), true);
 			break;
 		case NPC:
-			text = Utils.finalFormat(p, Lang.NpcText.format(npc.getName(), msg.text, id+1, messages.valuesSize()), true);
+			text = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), msg.text, id + 1, messages.valuesSize()), true);
 			break;
 		case NOSENDER:
 			text = Utils.finalFormat(p, msg.text, true);
@@ -88,7 +85,7 @@ public class Dialog{
 			status.task = new BukkitRunnable() {
 				public void run() {
 					status.task = null;
-					send(p, end);
+					send(p, npc, end);
 				}
 			}.runTaskLater(BeautyQuests.getInstance(), msg.getWaitTime());
 		}
@@ -101,14 +98,6 @@ public class Dialog{
 	public boolean remove(Player player) {
 		return players.remove(player) != null;
 	}
-
-	public NPC getNPC(){
-		return npc;
-	}
-	
-	public void setNPC(NPC npc){
-		this.npc = npc;
-	}
 	
 	public void add(String msg, Sender sender){
 		messages.add(new Message(msg, sender));
@@ -118,10 +107,17 @@ public class Dialog{
 		messages.insert(id, new Message(msg, sender));
 	}
 	
+	@Override
+	public Dialog clone() {
+		Dialog clone = new Dialog();
+		for (Message msg : messages) {
+			clone.messages.add(msg.clone());
+		}
+		return clone;
+	}
+	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("npc", npc.getId());
 		
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (Entry<Integer, Message> en : messages.getOriginalMap().entrySet()){
@@ -136,7 +132,7 @@ public class Dialog{
 	}
 	
 	public static Dialog deserialize(Map<String, Object> map){
-		Dialog di = new Dialog(CitizensAPI.getNPCRegistry().getById((int) map.get("npc")));
+		Dialog di = new Dialog();
 		
 		List<Map<String, Object>> ls = (List<Map<String, Object>>) map.get("msgs");
 		for (Map<String, Object> tmp : ls){

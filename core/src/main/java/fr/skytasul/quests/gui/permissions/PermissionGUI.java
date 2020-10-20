@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
@@ -51,11 +50,11 @@ public class PermissionGUI implements CustomInventory {
 		switch (slot) {
 		case 0:
 			Lang.CHOOSE_PERM_REWARD.send(p);
-			new TextEditor(p, (x) -> {
-				perm = (String) x;
+			new TextEditor<String>(p, () -> p.openInventory(inv), x -> {
+				perm = x;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
-			}, () -> p.openInventory(inv), () -> {
+			}, () -> {
 				perm = null;
 				inv.getItem(4).setType(Material.COAL);
 				p.openInventory(inv);
@@ -63,11 +62,11 @@ public class PermissionGUI implements CustomInventory {
 			break;
 		case 1:
 			Lang.CHOOSE_PERM_WORLD.send(p);
-			new TextEditor(p, (worldS) -> {
-				updateWorld(p, ((World) worldS).getName(), inv);
-			}, new WorldParser(), () -> p.openInventory(inv), () -> {
+			new TextEditor<>(p, () -> p.openInventory(inv), worldS -> {
+				updateWorld(p, worldS.getName(), inv);
+			}, () -> {
 				updateWorld(p, null, inv);
-			}).enterOrLeave(p);
+			}, new WorldParser()).enterOrLeave(p);
 			break;
 		case 2:
 			take = ItemUtils.toggle(current);
@@ -86,4 +85,9 @@ public class PermissionGUI implements CustomInventory {
 		p.openInventory(inv);
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
+	
 }

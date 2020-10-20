@@ -15,6 +15,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemsGUI implements CustomInventory{
@@ -68,6 +69,7 @@ public class ItemsGUI implements CustomInventory{
 		if (slot == 8) return true;
 		if (none.equals(current)){
 			inv.setItem(slot, cursor);
+			Utils.runSync(() -> p.setItemOnCursor(null)); // AIR ?
 			return true;
 		}
 		return false;
@@ -120,8 +122,9 @@ public class ItemsGUI implements CustomInventory{
 		items.add(add);
 	}
 
-	public CloseBehavior onClose(Player p, Inventory inv){
-		return CloseBehavior.CONFIRM;
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
 	}
 
 }

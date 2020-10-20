@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -21,10 +22,12 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -102,7 +105,7 @@ public class QuestsListener implements Listener{
 			boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
 			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
-			}, 5L);
+			}, 2L);
 		}
 	}
 
@@ -116,22 +119,35 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+		Player player = e.getPlayer();
+		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(player);
+		if (!QuestsConfiguration.hookAccounts()) {
+			Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(player, PlayersManager.getPlayerAccount(player)));
+		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGH)
 	public void onDrop(PlayerDropItemEvent e){
-		String lore = Lang.QuestItemLore.toString();
-		if (lore.isEmpty()) return;
-		ItemStack is = e.getItemDrop().getItemStack();
-		if (is.getItemMeta().hasLore()){
-			if (is.getItemMeta().getLore().contains(lore)) e.setCancelled(true);
+		if (Utils.isQuestItem(e.getItemDrop().getItemStack())) {
+			e.setCancelled(true);
+			Lang.QUEST_ITEM_DROP.send(e.getPlayer());
 		}
 	}
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent e) { // firework damage
 		if (e.getDamager().hasMetadata("questFinish")) e.setCancelled(true);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onCraft(CraftItemEvent e) {
+		for (ItemStack item : e.getInventory().getMatrix()) {
+			if (Utils.isQuestItem(item)) {
+				e.setCancelled(true);
+				Lang.QUEST_ITEM_CRAFT.send(e.getWhoClicked());
+				break;
+			}
+		}
 	}
 	
 }

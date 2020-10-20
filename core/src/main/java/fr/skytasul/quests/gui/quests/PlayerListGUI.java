@@ -1,6 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -19,11 +18,11 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PlayerListGUI implements CustomInventory {
@@ -98,12 +97,8 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					List<String> desc = new ArrayList<>(Utils.wordWrap(qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU), 45));
-					if (QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable()) {
-						desc.add(null);
-						desc.add(Lang.cancelLore.toString());
-					}
-					item = createQuestItem(qu, desc.toArray(new String[0]));
+					String desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU);
+					item = createQuestItem(qu, QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable() ? new String[] { desc, null, Lang.cancelLore.toString() } : new String[] { desc });
 				}catch (Exception ex) {
 					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
 					BeautyQuests.getInstance().getLogger().severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier());
@@ -118,7 +113,11 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				setMainItem(i - page * 35, createQuestItem(qu, qu.getDescription()));
+				String[] lore;
+				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
+					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
+				}else lore = new String[] { qu.getDescription() };
+				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
 			break;
 
@@ -141,7 +140,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 	
 	private ItemStack createQuestItem(Quest qu, String... lore){
-		return ItemUtils.item(qu.getMaterial(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
+		return ItemUtils.item(qu.getQuestMaterial(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
 	}
 	
 	private void toggleCategoryEnchanted(){
@@ -199,6 +198,13 @@ public class PlayerListGUI implements CustomInventory {
 					p.openInventory(inv);
 					Inventories.put(p, thiz, inv);
 				}, Lang.INDICATION_CANCEL.format(qu.getName())));
+			}else if (cat == Category.NOT_STARTED) {
+				int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
+				Quest qu = quests.get(id);
+				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
+				if (!acc.isCurrent()) break;
+				Player target = acc.getPlayer();
+				if (qu.isLauncheable(target, true)) qu.attemptStart(target);
 			}
 			break;
 			

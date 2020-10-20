@@ -6,14 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
@@ -74,7 +72,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		String[] elements = new String[playerAmounts.size()];
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
-			elements[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(objects.get(obj.getKey()).getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
+			Entry<T, Integer> object = objects.get(obj.getKey());
+			elements[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
 			i++;
 		}
 		return elements;
@@ -89,8 +88,9 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		datas.put("remaining", amounts);
 	}
 
-	protected void event(PlayerAccount acc, Player p, Object object, int amount) {
+	public void event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
+		if (!canUpdate(p)) return;
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
@@ -135,23 +135,24 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	public void unload() {
 		super.unload();
-		for (BossBar bar : bars.values()) {
-			bar.remove();
-		}
+		bars.values().forEach(BossBar::remove);
 	}
 
-	@EventHandler
-	public void onAccountUse(PlayerAccountJoinEvent e) {
-		Player p = e.getPlayer();
-		removeBar(p);
-		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			Map<Integer, Integer> remainings = getPlayerRemainings(e.getPlayerAccount());
-			if (remainings == null) {
-				BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + debugName() + ". This is a bug!");
-				return;
-			}
-			createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
+	@Override
+	public void joins(PlayerAccount acc, Player p) {
+		super.joins(acc, p);
+		Map<Integer, Integer> remainings = getPlayerRemainings(acc);
+		if (remainings == null) {
+			BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + debugName() + ". This is a bug!");
+			return;
 		}
+		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
+	}
+	
+	@Override
+	public void leaves(PlayerAccount acc, Player p) {
+		super.leaves(acc, p);
+		removeBar(p);
 	}
 
 	protected void createBar(Player p, int amount) {

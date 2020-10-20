@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -58,15 +59,24 @@ public class Inventories{
 			if (e.isShiftClick()) e.setCancelled(true);
 			return;
 		}
+		
+		if (e.getClick() == ClickType.NUMBER_KEY || e.getClick() == ClickType.DOUBLE_CLICK) {
+			e.setCancelled(true);
+			return;
+		}
 
 		if (!inv.equals(g.get(p).getValue())) return;
 		
-		if (e.getCursor().getType() == Material.AIR) {
-			if (current == null || current.getType() == Material.AIR) return;
-			if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
-		}else {
-			if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot()))
-				e.setCancelled(true);
+		try {
+			if (e.getCursor().getType() == Material.AIR) {
+				if (current == null || current.getType() == Material.AIR) return;
+				if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
+			}else {
+				if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			e.setCancelled(true);
 		}
 	}
 

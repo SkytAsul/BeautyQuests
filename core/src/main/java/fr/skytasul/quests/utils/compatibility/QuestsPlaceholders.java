@@ -1,14 +1,11 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -29,18 +26,27 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	
 	private QuestsPlaceholders() {}
 	
+	public static String setPlaceholders(OfflinePlayer p, String text) {
+		return PlaceholderAPI.setPlaceholders(p, text);
+	}
+	
+	static void registerPlaceholders(){
+		new QuestsPlaceholders().register();
+		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
+	}
+	
 	@Override
-	public @NotNull String getAuthor() {
+	public String getAuthor() {
 		return BeautyQuests.getInstance().getDescription().getAuthors().toString();
 	}
 	
 	@Override
-	public @NotNull String getIdentifier() {
+	public String getIdentifier() {
 		return "beautyquests";
 	}
 	
 	@Override
-	public @NotNull String getVersion() {
+	public String getVersion() {
 		return BeautyQuests.getInstance().getDescription().getVersion();
 	}
 	
@@ -55,12 +61,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	@Override
-	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "started_ordered");
-	}
-	
-	@Override
-	public @Nullable String onRequest(@Nullable OfflinePlayer off, @NotNull String identifier) {
+	public String onRequest(OfflinePlayer off, String identifier) {
 		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
@@ -77,7 +78,10 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 					if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc, true));
 					List<Quest> left = ordered.get(p);
 					QuestsAPI.updateQuestsStarteds(acc, true, left);
-					if (left.isEmpty()) return Lang.SCOREBOARD_NONE.toString();
+					if (left.isEmpty()) {
+						split.remove(p);
+						return Lang.SCOREBOARD_NONE.toString();
+					}
 					while (!(qu = left.get(0)).hasStarted(acc)) {
 						left.remove(0);
 					}
@@ -93,22 +97,19 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				if (i > 1) {
 					if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
 					List<String> ls = split.get(p);
-					if (ls != null) {
-						if (ls.size() <= i - 2) return "";
-						return ls.get(i - 2);
-					}
-					return "§c§lError";
+					if (ls != null && ls.size() > i - 2) return ls.get(i - 2);
+					return "";
 				}
 				split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
 				return "§6" + qu.getName();
 				
 				/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
 				return "§6" + qu.getName() + " §e: §o" + (stage == null ? "finishing" : stage.getDescriptionLine(acc));*/
-			}catch (Throwable ex) {
+			}catch (Exception ex) {
 				ordered.remove(p);
 				split.remove(p);
+				return ex.getMessage();
 			}
-			return "";
 		}
 		
 		if (identifier.startsWith("advancement_")) {
@@ -129,15 +130,6 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 			}
 		}
 		return null;
-	}
-	
-	public static String setPlaceholders(OfflinePlayer p, String text) {
-		return PlaceholderAPI.setPlaceholders(p, text);
-	}
-	
-	static void registerPlaceholders() {
-		new QuestsPlaceholders().register();
-		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
 	}
 	
 }

@@ -81,17 +81,21 @@ public class MobsListGUI implements CustomInventory{
 						return;
 					}
 					Lang.MOB_AMOUNT.send(p);
-					new TextEditor(p, (x) -> {
-						int amount = (int) x;
+					new TextEditor<>(p, () -> Inventories.put(p, openLastInv(p), MobsListGUI.this.inv), amount -> {
 						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
 						Mob<?> mob = new Mob(existing, obj);
 						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(amount));
 						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, amount));
-					}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+					}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 				});
 			}
 		}.create(p);
 		return true;
 	}
 
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
+	
 }

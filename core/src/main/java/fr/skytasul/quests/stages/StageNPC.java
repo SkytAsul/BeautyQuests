@@ -16,6 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.editors.DialogEditor;
@@ -27,14 +29,12 @@ import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
-import fr.skytasul.quests.utils.compatibility.HolographicDisplays;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -42,7 +42,8 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class StageNPC extends AbstractStage{
 	
-	protected NPC npc;
+	private NPC npc;
+	private int npcID;
 	protected Dialog di = null;
 	protected boolean hide = false;
 	
@@ -51,11 +52,10 @@ public class StageNPC extends AbstractStage{
 	private BukkitTask task;
 	
 	private List<Player> cached = new ArrayList<>();
-	protected Object holo;
+	protected AbstractHolograms<?>.BQHologram hologram;
 	
-	public StageNPC(QuestBranch branch, NPC npc){
+	public StageNPC(QuestBranch branch) {
 		super(branch);
-		this.npc = npc;
 	}
 	
 	private void launchRefreshTask(){
@@ -74,14 +74,10 @@ public class StageNPC extends AbstractStage{
 					tmp.add(p);
 				}
 				
-				if (QuestsConfiguration.getHoloTalkItem() != null && HolographicDisplays.hasProtocolLib()) {
-					if (holo == null) createHoloLaunch();
-					try {
-						HolographicDisplays.setPlayersVisible(holo, tmp);
-					}catch (ReflectiveOperationException e) {
-						e.printStackTrace();
-					}
-					HolographicDisplays.teleport(holo, Utils.upLocationForEntity((LivingEntity) en, 1));
+				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) {
+					if (hologram == null) createHoloLaunch();
+					hologram.setPlayersVisible(tmp);
+					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));
 				}
 				
 				if (QuestsConfiguration.showTalkParticles()) {
@@ -93,17 +89,24 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	private void createHoloLaunch(){
-		holo = HolographicDisplays.createHologram(npc.getStoredLocation(), false);
-		HolographicDisplays.appendItem(holo, QuestsConfiguration.getHoloTalkItem());
+		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getStoredLocation(), false);
+		hologram.appendItem(QuestsConfiguration.getHoloTalkItem());
 	}
 	
 	private void removeHoloLaunch(){
-		HolographicDisplays.delete(holo);
-		holo = null;
+		if (hologram == null) return;
+		hologram.delete();
+		hologram = null;
 	}
 
 	public NPC getNPC(){
 		return npc;
+	}
+
+	public void setNPC(int npcID) {
+		this.npcID = npcID;
+		this.npc = CitizensAPI.getNPCRegistry().getById(npcID);
+		if (npc == null) BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
 	}
 	
 	public void setDialog(Object obj){
@@ -149,6 +152,7 @@ public class StageNPC extends AbstractStage{
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
 		if (!hasStarted(p)) return;
+		if (!canUpdate(p)) return;
 		
 		if (!branch.isRegularStage(this)) { // is ending stage
 			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items
@@ -165,7 +169,7 @@ public class StageNPC extends AbstractStage{
 
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
 		if (di != null){ // dialog exists
-			di.send(p, () -> {
+			di.send(p, npc, () -> {
 				if (bringBack != null) {
 					if (!bringBack.checkItems(p, true)) return;
 					bringBack.removeItems(p);
@@ -180,15 +184,21 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	protected String npcName(){
-		return (npc != null) ? npc.getName() : "§c§lerror";
+		return (npc != null) ? npc.getName() : "§c§lunknown NPC " + npcID;
 	}
 	
-	@EventHandler
-	public void onJoin(PlayerAccountJoinEvent e) {
-		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
-			cached.add(e.getPlayer());
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(e.getPlayer(), npc);
-		}else cached.remove(e.getPlayer());
+	@Override
+	public void joins(PlayerAccount acc, Player p) {
+		super.joins(acc, p);
+		cached.add(p);
+		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
+	}
+	
+	@Override
+	public void leaves(PlayerAccount acc, Player p) {
+		super.leaves(acc, p);
+		cached.remove(p);
+		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
 	public void start(PlayerAccount acc) {
@@ -196,7 +206,7 @@ public class StageNPC extends AbstractStage{
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cached.add(p);
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc);
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
 		}
 	}
 	
@@ -211,8 +221,9 @@ public class StageNPC extends AbstractStage{
 	
 	public void unload() {
 		super.unload();
-		if (task !=null) task.cancel();
-		if (holo != null) removeHoloLaunch();
+		if (task != null) task.cancel();
+		if (hologram != null) removeHoloLaunch();
+		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
 	}
 	
 	public void load(){
@@ -221,45 +232,59 @@ public class StageNPC extends AbstractStage{
 			if (!hide) launchRefreshTask();
 		}
 	}
-	
 
 	protected void loadDatas(Map<String, Object> map) {
 		setDialog(map.get("msg"));
+		if (map.containsKey("npcID")) {
+			setNPC((int) map.get("npcID"));
+		}else BeautyQuests.logger.warning("No NPC specified for " + debugName());
 		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
 	}
 	
 	public void serialize(Map<String, Object> map){
-		if (npc != null) map.put("npcID", npc.getId());
+		map.put("npcID", npcID);
 		if (di != null) map.put("msg", di.serialize());
 		if (hide) map.put("hid", true);
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		StageNPC st = new StageNPC(branch, CitizensAPI.getNPCRegistry().getById((int) map.get("npcID")));
+		StageNPC st = new StageNPC(branch);
 		st.loadDatas(map);
 		return st;
 	}
 
 	public static class Creator implements StageCreationRunnables<StageNPC> {
 		private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
+		private static final ItemStack stageNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString());
 
 		public void start(Player p, LineData datas) {
 			StagesGUI sg = datas.getGUI();
-			Inventories.create(p, new SelectGUI((npc) -> {
+			Inventories.create(p, new SelectGUI(() -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
+			}, npc -> {
 				sg.reopen(p, true);
-				npcDone(npc, datas);
+				npcDone(npc.getId(), datas);
 			}));
 		}
 
-		public static void npcDone(NPC npc, LineData datas) {
-			datas.put("npc", npc);
+		public static void npcDone(int npcID, LineData datas) {
+			datas.put("npcID", npcID);
+			datas.getLine().setItem(7, ItemUtils.lore(stageNPC.clone(), Lang.optionValue.format(npcID)), (p, datass, item) -> {
+				new SelectGUI(() -> datas.getGUI().reopen(p, true), npc -> {
+					ItemUtils.lore(item, Lang.optionValue.format(npc.getId()));
+					datas.put("npcID", npc.getId());
+					datas.getGUI().reopen(p, true);
+				}).create(p);
+			});
+			
 			datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 					Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
 						datas.getGUI().reopen(p, false);
 						datas.put("npcText", obj);
-					}, datas.containsKey("npcText") ? (Dialog) datas.get("npcText") : new Dialog((NPC) datas.get("npc"))));
+					}, datas.containsKey("npcText") ? datas.get("npcText") : new Dialog()));
 				}
 			}, true, true);
 
@@ -272,17 +297,18 @@ public class StageNPC extends AbstractStage{
 
 		public static void setFinish(StageNPC stage, LineData datas) {
 			if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
-			if (datas.containsKey("hide")) stage.setHid((boolean) datas.get("hide"));
+			if (datas.containsKey("hide")) stage.setHid(datas.get("hide"));
+			if (datas.containsKey("npcID")) stage.setNPC(datas.get("npcID"));
 		}
 
 		public static void setEdit(StageNPC stage, LineData datas) {
-			if (stage.getDialog() != null) datas.put("npcText", new Dialog(stage.getDialog().getNPC(), stage.getDialog().messages.clone()));
+			if (stage.getDialog() != null) datas.put("npcText", stage.getDialog().clone());
 			if (stage.isHid()) datas.put("hide", true);
-			npcDone(stage.getNPC(), datas);
+			npcDone(stage.npcID, datas);
 		}
 
 		public StageNPC finish(LineData datas, QuestBranch branch) {
-			StageNPC stage = new StageNPC(branch, (NPC) datas.get("npc"));
+			StageNPC stage = new StageNPC(branch);
 			setFinish(stage, datas);
 			return stage;
 		}

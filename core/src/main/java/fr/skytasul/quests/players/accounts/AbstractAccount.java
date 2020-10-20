@@ -17,9 +17,7 @@ public abstract class AbstractAccount {
 	
 	protected abstract boolean equalsAccount(AbstractAccount acc);
 	
-	
 	public abstract int hashCode();
-	
 	
 	public boolean equals(Object arg0) {
 		if (arg0 == this) return true;

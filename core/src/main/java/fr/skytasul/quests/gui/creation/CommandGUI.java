@@ -17,21 +17,24 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Command;
 
 public class CommandGUI implements CustomInventory {
 	
-	public CommandGUI(Consumer<Command> end){
-		run = end;
-	}
-	
-	private Consumer<Command> run;
+	private Consumer<Command> end;
+	private Runnable cancel;
 	private Inventory inv;
 	
 	private String cmd;
 	private boolean console = false;
 	private int delay = 0;
+	
+	public CommandGUI(Consumer<Command> end, Runnable cancel) {
+		this.end = end;
+		this.cancel = cancel;
+	}
 	
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_COMMAND.toString());
@@ -59,8 +62,8 @@ public class CommandGUI implements CustomInventory {
 		switch (slot){
 		case 0:
 			Lang.COMMAND.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				cmd = (String) obj;
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> p.openInventory(inv), cmd -> {
+				this.cmd = cmd;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
 			}, () -> p.openInventory(inv), null));
@@ -72,21 +75,27 @@ public class CommandGUI implements CustomInventory {
 			
 		case 2:
 			Lang.COMMAND_DELAY.send(p);
-			new TextEditor(p, (x) -> {
-				delay = (int) x;
+			new TextEditor<>(p, () -> p.openInventory(inv), x -> {
+				delay = x;
 				p.openInventory(inv);
-			}, new NumberParser(Integer.class, true, true)).enterOrLeave(p);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			break;
 
 		case 4:
 			if (current.getType() == Material.DIAMOND){
 				Inventories.closeAndExit(p);
-				run.accept(new Command(cmd, console, delay));
+				end.accept(new Command(cmd, console, delay));
 			}
 			break;
 			
 		}
 		return true;
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		Utils.runSync(cancel);
+		return CloseBehavior.NOTHING;
 	}
 
 }

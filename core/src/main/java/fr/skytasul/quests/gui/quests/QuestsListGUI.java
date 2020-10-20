@@ -15,7 +15,6 @@ import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class QuestsListGUI extends PagedGUI<Quest> {
 	
@@ -32,7 +31,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	}
 
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.item(qu.getMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), Utils.format(Lang.TALK_NPC.toString(), qu.getStarter().getName()));
+		return ItemUtils.item(qu.getQuestMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
 	}
 
 	public void click(Quest existing){

@@ -93,7 +93,7 @@ public class Database {
 	}
 
 	public static Database getInstance(){
-		return BeautyQuests.getInstance().getDatabase();
+		return BeautyQuests.getInstance().getBQDatabase();
 	}
 
 	public class BQStatement {

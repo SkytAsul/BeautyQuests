@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -35,15 +36,19 @@ public class Mob<Data> implements Cloneable {
 		lore.addAll(factory.getDescriptiveLore(data));
 		lore.add("");
 		lore.add(Lang.click.toString());
-		return ItemUtils.item(XMaterial.mobItem(factory.getEntityType(data)), getName(), lore.toArray(new String[0]));
-	}
-
-	public boolean isNull() {
-		return data == null;
+		XMaterial mobItem;
+		try {
+			mobItem = XMaterial.mobItem(factory.getEntityType(data));
+		}catch (Exception ex) {
+			mobItem = XMaterial.SPONGE;
+			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data));
+			ex.printStackTrace();
+		}
+		return ItemUtils.item(mobItem, getName(), lore.toArray(new String[0]));
 	}
 	
 	public boolean applies(Object data) {
-		return this.data.equals(data);
+		return factory.mobApplies(this.data, data);
 	}
 	
 	public int hashCode() {

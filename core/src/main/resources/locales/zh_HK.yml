@@ -1,0 +1,530 @@
+---
+msg:
+  quest:
+    finished:
+      base: '§a恭喜你完成了任務 §o§6{0}§r§a!'
+      obtain: '§a你獲得了 {0}!'
+    started: '§a你接受了任務 §r§e{0}§o§6!'
+    created: '§a你成功地創建了 "§e{0}§a" 任務, 包含 {1} 個階段!'
+    edited: '§a你成功地修改了 "§e{0}§a", 包含 {1} 個階段!'
+    createCancelled: '§c抱歉，任務創建/編輯已被其他插件取消...'
+    cancelling: '§c已取消創建任務.'
+    editCancelling: '§c已取消編輯任務.'
+    invalidID: '§cID為 {0} 的任務不存在.'
+    alreadyStarted: '§c你已經接受了這個任務!'
+  quests:
+    nopStep: '§c這個任務沒有任何階段...  :-)'
+    updated: '§7已更新任務 {0} !'
+    checkpoint: '§7已到達任務記錄點！'
+    failed: '§6任務{0}失敗……'
+  stageMobs:
+    noMobs: '§c這個任務階段沒有要殺的怪物 :-)'
+    listMobs: '§a你需要殺死 {0}.'
+  writeNPCText: '輸入玩家需要對NPC說的話. 輸入 "help" 來獲取幫助. (指令不需要輸入 /)'
+  writeRegionName: '輸入任務階段所需前往的區域名.'
+  writeXPGain: '輸入玩家獲得的經驗點. 最終獲得: §a{0}'
+  writeMobAmount: '輸入要擊殺的怪物數.'
+  writeChatMessage: '要玩家輸入的消息 (在開頭加上 {SLASH} 來讓玩家輸入指令).'
+  writeEndMessage: '輸入在任務或任務階段結束後發送給玩家的消息'
+  writeDescriptionText: '任務階段目標描述.'
+  writeStageText: '任務開始時發送的消息.'
+  moveToTeleportPoint: 前往指定的傳送點.
+  writeNpcName: '輸入NPC名稱.'
+  writeNpcSkinName: '輸入NPC皮膚名.'
+  writeQuestName: '§a輸入任務名：'
+  writeCommand: '§a輸入指令. (開頭無需加上斜杠/) 你可以用 {PLAYER}來代表玩家名.'
+  writeHologramText: '§a輸入全息文字. (輸入 "none" 則不顯示, 輸入 "null" 顯示默認文本)'
+  writeQuestTimer: '§a輸入重新開始任務的冷卻時間 (單位為分鐘)(輸入 "null" 則使用默認值)'
+  writeConfirmMessage: '§a請輸入玩家確認加入任務的消息: (輸入 "null" 則顯示默認消息)'
+  writeQuestDescription: '§a請輸入顯示在玩家任務菜單內的任務描述。'
+  writeQuestMaterial: '§a請輸入任務物品材料名。'
+  requirements:
+    quest: '§c你必須先完成任務§e "{0}"§c!'
+    level: '§e你必須達到 {0} 級!'
+    job: '§e你必須達到 {0} 級才能應聘工作 {1}!'
+    skill: '§e你的{1}技能必須要達到{0}級!'
+    combatLevel: '§e你必須達到戰鬥等級 {0}!'
+    money: '§c你必須擁有{0}!'
+    wait: '§c你必須等待 {0} 分鐘才能再次接受任務!'
+  experience:
+    edited: '已編輯獲得的經驗: {0}pts. 改為 {1}pts.'
+  selectNPCToKill: 選擇要擊殺的NPC.
+  npc:
+    remove: '§a已刪除NPC.'
+    talk: '§a和§e{0}§a談話.'
+  regionDoesntExists: '§c這個區域不存在... (你必須在目標區域同一世界內)'
+  npcDoesntExist: '§cID為{0}的NPC不存在.'
+  objectDoesntExist: '§c特殊物品 (ID為{0}) 不存在.'
+  number:
+    negative: '§c你必須輸入正數!'
+    zero: '§c你必須輸入大於0的數!'
+    invalid: '§c"{0}" 不是有效的數字.'
+  errorOccurred: '§c插件發生錯誤，請聯系管理員！錯誤代碼為: {0}'
+  commandsDisabled: '§c你不能在這時輸入指令.'
+  indexOutOfBounds: '§c數字 ({0}) 超過了區間 [{1}, {2}].'
+  invalidBlockData: '§c此方塊 Data {0} 並不能用在 {1} 上'
+  bringBackObjects: 把 {0} 帶回給我.
+  inventoryFull: '§c你的背包已滿, 任務獎勵已掉落在地上.'
+  playerNeverConnected: '§c在玩家{0}身上找不到數據.'
+  playerNotOnline: '§c玩家 {0} 不在線.'
+  command:
+    checkpoint:
+      noCheckpoint: '§c未找到任務{0}的記錄點。'
+      questNotStarted: '§c你沒有接受這個任務。'
+    setStage:
+      branchDoesntExist: '§cid為{0}的任務分支不存在。'
+      doesntExist: '§cID為{0}的任務階段不存在.'
+      next: '§a已跳過該任務階段.'
+      nextUnavailable: '§c"skip"選項在玩家到達任務分支結尾時無法使用。'
+      set: '§a已進入任務階段 {0} .'
+    playerNeeded: '§c你必須是玩家才能使用這個指令.'
+    incorrectSyntax: '§c錯誤用法.'
+    noPermission: '§c你沒有足夠的權限以執行這個指令! (需要權限: {0})'
+    invalidCommand:
+      quests: '§c指令不存在, 輸入 §e/quests help 查看幫助§c.'
+      simple: '§c指令不存在, 輸入 §ehelp §c查看幫助(不需要 /)'
+    needItem: '§c你必須在主手手持該物品!'
+    itemChanged: '§a已編輯物品. 更改會在重啟後生效.'
+    itemRemoved: '§a已刪除全息物品.'
+    removed: '§a成功刪除任務 {0}。'
+    leaveAll: '§e你強制結束了{0}個任務. §c出現{1}個錯誤.'
+    resetPlayer:
+      player: '§6你的所有任務數據 ({0}) 被 {1} 刪除了.'
+      remover: '§6已刪除 {1} 的 {0} 條任務數據.'
+    resetPlayerQuest:
+      player: '§6任務數據 {0} 已被 {1} 刪除.'
+      remover: '§6{1} 的 {0} 條任務信息已被刪除.'
+    resetQuest: '§6已移除{0}的任務數據。'
+    startQuest: '§6你接受了任務 {0} (UUID： {1}).'
+    cancelQuest: '§6你放棄了任務 {0}.'
+    cancelQuestUnavailable: '§c無法取消任務 {0} .'
+    backupCreated: '§6你成功地創建了任務和玩家數據的備份文件.'
+    backupPlayersFailed: '§c創建玩家數據備份失敗.'
+    backupQuestsFailed: '§c創建任務數據備份失敗.'
+    adminModeEntered: '§a你已進入管理員模式.'
+    adminModeLeft: '§a你退出了管理員模式.'
+    scoreboard:
+      lineSet: '§6你成功地編輯了第 {0} 行.'
+      lineReset: '§6你成功地重置了第 {0} 行.'
+      lineRemoved: '§6你成功地刪除了第 {0} 行.'
+      lineInexistant: '§c第 {0} 行不存在.'
+      resetAll: '§6你成功地清空了 {0} 的計分版.'
+      hidden: '§6已隱藏{0}的計分版.'
+      shown: '§6已重新顯示{0}的計分版。'
+    help:
+      header: '§6§lBeautyQuests - §6幫助§r'
+      create: '§6/{0} create: §a創建任務'
+      edit: '§6/{0} edit: §a編輯任務'
+      remove: '§6/{0} remove [id]: §a刪除ID為 [id] 的任務或點擊任務NPC來刪除'
+      finishAll: '§6/{0} finishAll <玩家名>: §a結束一名玩家所有進行中的任務。'
+      setStage: '§6/{0} setStage <玩家名> <id> [新任務分支] [新任務階段]: §e跳過玩家當前的任務階段/開始任務分支/s為任務分支設置任務階段。'
+      resetPlayer: '§6/{0} resetPlayer <玩家名>: §e刪除一名玩家的所有任務數據。'
+      resetPlayerQuest: '§6/{0} resetPlayerQuest <玩家名> [id]: §e刪除一名玩家的一個任務數據'
+      seePlayer: '§6/{0} seePlayer <玩家名>: §a查看玩家的任務數據。'
+      reload: '§e/{0} reload: §a保存並重載配置和插件數據 - §c§o不推薦使用'
+      start: '§6/{0} start <玩家名> [id] : §e強制玩家接受任務.'
+      setItem: '§6/{0} setItem <talk|launch> : §e保存全息物品到數據文件內.'
+      adminMode: '§6/{0} adminMode : §e切換管理員模式 (顯示消息)'
+      version: '§6/{0} version: §e查看插件版本.'
+      save: '§6/{0} save: §a手動保存數據.'
+      list: '§e/{0} list: §a查看任務列表 (部分版本無效)'
+  typeCancel: '§a輸入 "cancel" 返回到上一條消息.'
+  editor:
+    blockAmount: '§a請輸入所需的數量:'
+    blockName: '§a請輸入所需的方塊名稱:'
+    blockData: '§a請輸入所需的方塊 Data (可用的 Data: {0}):'
+    typeBucketAmount: '§a請輸入要裝滿桶的數量:'
+    goToLocation: '§a前往該任務階段指定地點。'
+    typeLocationRadius: '§a請輸入距離指定位置所需的距離：'
+    typeGameTicks: '§a請輸入所需的 Ticks：'
+    already: '§c你已在編輯器中.'
+    enter:
+      title: '§6~ 進入編輯器模式 ~'
+      subtitle: '§e輸入 "/quests exitEditor" 強制離開任務編輯器.'
+    chat: '§6你已進入編輯器模式. 輸入"/quests exitEditor" 強制退出編輯器(不推薦使用, 最好使用 "close" 或 "cancel" 回到上一個菜單).'
+    npc:
+      enter: '§a點擊一個NPC，或輸入"cancel"取消.'
+      choseStarter: '§a選擇接受任務的NPC.'
+      notStarter: '§c這個NPC沒有可以接受的任務...'
+    text:
+      argNotSupported: '§c不支持 {0} 參數.'
+      chooseLvlRequired: '§a輸入所需等級:'
+      chooseJobRequired: '§a輸入所需的工作名:'
+      choosePermissionRequired: '§a輸入開始任務所需權限:'
+      choosePermissionMessage: '§e如果玩家沒有所需權限則顯示的拒絕消息. (輸入 "null" 跳過這步)'
+      choosePlaceholderRequired:
+        identifier: '§e輸入所需的占位符名 (§l不用加上 %%§r§e).'
+        value: '§a輸入所需的 §6%{0}% 占位符的數值§a:'
+      chooseSkillRequired: '§a輸入技能名:'
+      chooseMoneyRequired: '§e輸入所需金額:'
+      reward:
+        permissionName: '§a請輸入權限名稱。'
+        permissionWorld: '§a請輸入可編輯權限的世界名，輸入"null"則所有世界可編輯。'
+        money: '§e輸入獲得的錢數:'
+      chooseObjectiveRequired: '§a請輸入目標名。'
+      chooseObjectiveTargetScore: '§a請輸入完成任務目標所需目標數。'
+      chooseRegionRequired: '§a請輸入所需區域名 (你必須與該區域在同一個世界中)。'
+    selectWantedBlock: '§a用木棍點擊開始任務階段的方塊.'
+    itemCreator:
+      itemType: '§a輸入物品類型名:'
+      itemAmount: '§e請輸入所需物品數：'
+      itemName: '§a輸入物品名:'
+      itemLore: '§e修改物品描述. 輸入 "help" 查看幫助.'
+      unknownItemType: '§c未知的物品類型.'
+      invalidItemType: '§c無效的物品類型 (必須是物品而不能是方塊).'
+    dialog:
+      syntax: '§c正確用法 : {0}{1} <消息>'
+      syntaxRemove: '§c正確用法: remove <id>'
+      player: '§a已為玩家增加消息“{0}”。'
+      npc: '§a已為NPC增加消息“{0}”。'
+      noSender: '§a已增加沒有發送者的消息“{0}”。'
+      messageRemoved: '§a已刪除消息 {0}.'
+      soundAdded: '§a已為消息 {1} 增加音效 {0}.'
+      cleared: '§a已刪除{0}條消息.'
+      help:
+        header: '§e§lBeautyQuest  - §6對話編輯器幫助'
+        npc: '§npc <message>: §b增加一條由NPC說出的消息。'
+        player: '§6player <message>: §b增加一條由玩家說出的消息。'
+        nothing: '§6noSender <消息>: §e增加一條沒有發送者的消息.'
+        remove: '§6emove <id>: §e刪除一條消息.'
+        list: '§elist: §b查看所有的消息.'
+        npcInsert: '§enpcinsert <id> <消息>: §b插入一條由NPC說出的話.'
+        playerInsert: '§eplayerinsert <id> <消息>: §b插入一條由玩家說出的話.'
+        nothingInsert: '§enothinginsert <id> <消息>: §b插入一條沒有任何前綴的消息.'
+        addSound: '§eaddsound <id> <音效名>: §b給一條消息增加音效.'
+        clear: '§eclear: §b刪除所有消息.'
+        close: '§eclose: §b退出並保存所有消息.'
+        setTime: '§6setTime <id> <時間>: §e設置自動播放下一條消息的時間(單位為刻) 。'
+      timeSet: '§a已編輯消息 {0} 的時間: 現在是 {1} 刻。'
+      timeRemoved: '§a已刪除消息{0}的時間。'
+    mythicmobs:
+      list: '§a所有的MythocMobs:'
+      isntMythicMob: '§c這個MythicMob不存在.'
+      disabled: '§cMythicMob已關閉.'
+    epicBossDoesntExist: '§c這個EpicBoss 不存在.'
+    textList:
+      syntax: '§c正確用法: '
+      added: '§a已增加 {0}.'
+      removed: '§a已刪除 {0} .'
+      help:
+        header: '§6§lBeautyQuests — 編輯器列表幫助'
+        add: '§6add [消息]: §e增加一條文本.'
+        remove: '§6remove [id]: §e刪除一條文本.'
+        list: '§6list: §e查看所有已增加的文本.'
+        close: '6close: §e確認增加文本並退出編輯器.'
+    noSuchElement: '§c沒有這樣的元素。可用元素：§e{0}'
+    comparisonType: '§a請選擇你想要在{0}中使用的比較類型。默認比較類型為：§e§lger或equals§r§a。輸入 §onull §r§a 來使用。'
+    scoreboardObjectiveNotFound: '§c未知的計分板目標。'
+  writeCommandDelay: '§a請輸入指令延遲，單位為刻。'
+inv:
+  validate: '§b§l確認'
+  cancel: '§c§l取消'
+  search: '§e§l搜索'
+  confirm:
+    name: '§8你確認?'
+    'yes': '§a確認'
+    'no': '§c讓我再想想'
+  create:
+    stageCreate: '§a創建新的階段'
+    stageRemove: '§c刪除這一階段'
+    findNPC: '§a尋找一個NPC'
+    bringBack: '§a帶回物品'
+    findRegion: '§a找到一片區域'
+    killMobs: '§a擊殺怪物'
+    mineBlocks: '§a破壞方塊'
+    placeBlocks: '§a放置方塊'
+    talkChat: '§a在聊天框內輸入'
+    interact: '§a點擊方塊'
+    fish: '§a釣魚'
+    craft: '§a合成物品'
+    bucket: '§a裝滿桶'
+    location: 前往指定位置
+    playTime: '§e遊戲時間'
+    NPCText: '§e編輯NPC的文本對話'
+    hideClues: 隱藏任務指示 (粒子效果和全息文字)
+    editMobsKill: '§e編輯要擊殺的怪物'
+    mobsKillFromAFar: 需要遠程擊殺怪物
+    editBlocksMine: '§e編輯要破壞的方塊'
+    preventBlockPlace: 防止玩家破壞方塊
+    editBlocksPlace: '§e編輯要放置的方塊'
+    editMessageType: '§e編輯要輸入的消息'
+    cancelMessage: 取消發送
+    ignoreCase: 忽略消息大小寫
+    selectItems: '§b選擇所需的物品'
+    selectRegion: '§7選擇一片區域'
+    toggleRegionExit: 退出時
+    stageStartMsg: '§e編輯階段開始的消息'
+    selectBlockLocation: '§6選擇方塊位置'
+    leftClick: 必須左擊
+    editFishes: '§e編輯所需的魚'
+    editItem: '§e編輯要合成的物品'
+    editBucketType: '§e編輯要裝滿的桶類型'
+    editBucketAmount: '§e編輯要裝滿的桶數量'
+    editLocation: '§e編輯位置'
+    editRadius: '§e編輯離目的地的距離'
+    currentRadius: '§e當前距離: §6{0}'
+    changeTicksRequired: '§e需要更改遊玩刻'
+  stages:
+    name: '§8創建任務階段'
+    nextPage: '§e下一頁'
+    laterPage: '§e上一頁'
+    endingItem: '§e編輯階段結束獎勵'
+    descriptionTextItem: '§e編輯文本描述'
+    regularPage: '§a普通任務階段'
+    branchesPage: '§d分支任務階段'
+    previousBranch: '§e返回上一個分支'
+    newBranch: '§e前往新的任務分支'
+    validationRequirements: '§e驗證需求'
+    validationRequirementsLore: 所有需求必須匹配嘗試完成階段的玩家。否則該階段無法完成。
+  details:
+    hologramLaunch: '§e編輯 “啟動” 全息項'
+    hologramLaunchLore: 顯示在接受任務的NPC頭上的全息文字。
+    hologramLaunchNo: '§e編輯 “啟動不可用” 全息項'
+    hologramLaunchNoLore: 在玩家沒有接受任務時顯示在NPC頭上的全息文字。
+    customConfirmMessage: '§e編輯確認接受任務的消息'
+    customConfirmMessageLore: 顯示在確認菜單中的消息。
+    customDescription: '§e編輯任務描述'
+    customDescriptionLore: 在GUI中顯示在任務名下方的描述。
+    name: '§8最終任務詳細設置'
+    multipleTime:
+      itemName: 開關重覆任務
+      itemLore: 任務是否可以多次完成?
+    cancellable: 玩家可取消任務
+    cancellableLore: 允許玩家在任務菜單中取消任務。
+    startableFromGUI: 介面開始任務
+    startableFromGUILore: 允許玩家可於介面開始任務。
+    scoreboardItem: 啟用計分版
+    scoreboardItemLore: 如果禁用，則該任務目標不會顯示在計分板上。
+    hideItem: 隱藏任務 (菜單和衛星地圖)
+    hideItemLore: 如果啟用，任務將不會在dynmap或任務菜單中顯示。
+    bypassLimit: 忽略任務上限
+    bypassLimitLore: 如果啟用，即使玩家已經達到任務上限也能接受任務。
+    questName: '§a§l編輯任務名'
+    questNameLore: 必須設置一個名稱來創建任務。
+    setItemsRewards: '§7編輯獲得的物品'
+    setXPRewards: '§e編輯獲得的經驗'
+    setCheckpointReward: '§e編輯記錄點獎勵'
+    setPermReward: '§e編輯權限'
+    setMoneyReward: '§e編輯獲得的金錢'
+    selectStarterNPC: '§6§l選擇接受任務的NPC'
+    selectStarterNPCLore: 點擊選中的NPC將開始任務。
+    createQuestName: '§l創建任務'
+    createQuestLore: 你必須設定任務名。
+    editQuestName: '§l編輯任務'
+    endMessage: '§a編輯任務結束消息'
+    endMessageLore: 將在任務結束時發送給玩家的消息。
+    startDialog: '§e編輯任務開場白'
+    startDialogLore: 當玩家點擊任務NPC時，在任務開始之前播放的對話框。
+    editRequirements: '§e編輯需求'
+    editRequirementsLore: 接受任務所需前置。
+    startRewards: '§6開始任務的獎勵'
+    startRewardsLore: 玩家接受任務時執行的行動。
+    hologramText: '§e全息文字'
+    hologramTextLore: 顯示在可接受任務的NPC的頭上的全息文字。
+    timer: '§b任務冷卻時間'
+    timerLore: 玩家可以再次開始任務的時間。
+    requirements: '{0} 個任務需求'
+    rewards: '{0} 個獎勵'
+    actions: '{0}行動'
+    rewardsLore: 任務接受時執行的行動。
+    customMaterial: '§a編輯任務物品材料名'
+    customMaterialLore: 在任務菜單中代表該任務的物品圖標。
+    failOnDeath: 玩家死亡時任務失敗
+    failOnDeathLore: 當玩家死亡時是否取消任務？
+    loreReset: '§e§l所有玩家的進度將被重置'
+    optionValue: '§8數值：§7{0}'
+    defaultValue: '§8(默認值)'
+  itemsSelect:
+    name: 編輯物品
+    none: |-
+      §a把物品放到這里或點擊打開物品編輯器.
+  itemSelect:
+    name: 選擇物品
+  npcCreate:
+    name: 創建NPC
+    setName: '§a編輯NPC名稱'
+    setSkin: '§e編輯NPC皮膚'
+    setType: '§a編輯NPC類型'
+    move:
+      itemName: '§6傳送'
+      itemLore: '§a更改NPC位置.'
+    moveItem: '§a§l確認前往'
+  npcSelect:
+    name: 選擇還是創建NPC?
+    selectStageNPC: '§6選擇 NPC'
+    createStageNPC: '§e創建 NPC'
+  entityType:
+    name: '§5選擇生物類型'
+  chooseQuest:
+    name: '§f괐괦광§8選擇哪一個任務?'
+  mobs:
+    name: 選擇怪物
+    none: '§a點擊增加怪物'
+    click: |-
+      §7左鍵編輯,右鍵刪除.
+  mobSelect:
+    name: 選擇怪物
+    bukkitEntityType: '§e選擇一個生物類型'
+    mythicMob: '§6選擇一個MythicMob'
+    epicBoss: '§6選擇一個Epic Boss'
+    boss: '§6選擇一個Boss'
+  stageEnding:
+    locationTeleport: '§a編輯傳送點'
+    command: '§a編輯執行的指令'
+  requirements:
+    name: 任務需求
+  rewards:
+    name: 任務獎勵
+    commands: '指令: {0}'
+    teleportation: |-
+      §a已選擇:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      世界: {3}
+  checkpointActions:
+    name: 記錄點行動
+  listAllQuests:
+    name: '§8任務'
+  listPlayerQuests:
+    name: '§f괐괦광§8{0} 的任務'
+  listQuests:
+    notStarted: 沒有已開始的任務
+    finished: 已完成的任務
+    inProgress: 進行中的任務
+    loreCancel: '§c§o點擊取消任務'
+    loreStart: '§a§o點擊開始任務。'
+    loreStartUnavailable: '§c§o你不滿足任務需求，無法開始任務。'
+    timeToWait: '§3§o你需要等待{0} 分鐘才能再次接受任務'
+    canRedo: '§3§o你可以再次接受這個任務!'
+  itemCreator:
+    name: '§8物品編輯器'
+    itemType: '§b物品類型'
+    itemFlags: 開關物品標志顯示
+    itemName: '§b物品名'
+    itemLore: '§b物品描述'
+    isQuestItem: '§b任務物品:'
+  command:
+    name: '§8指令'
+    value: '§b指令'
+    console: 控制台
+    delay: '§b延遲'
+  chooseAccount:
+    name: '§5選擇哪一個帳號?'
+  listBook:
+    questName: 任務名
+    questStarter: 開始任務方式
+    questRewards: 任務獎勵
+    questMultiple: 可重覆次數
+    requirements: 任務需求
+    questStages: 任務階段
+    noQuests: 沒有已創建的任務
+  commandsList:
+    name: 指令列表
+    value: '§e指令: {0}'
+    console: '§e控制台: {0}'
+  block:
+    name: 選擇方塊
+    material: '§e材料: {0}'
+    blockData: '§d方塊Data'
+  blocksList:
+    name: 選擇方塊
+    addBlock: '§a點擊增加一個方塊.'
+  buckets:
+    name: 桶的類型
+  permission:
+    name: 選擇權限
+    perm: '§a權限'
+    world: '§a世界'
+    worldGlobal: '§b§l全局'
+    remove: 刪除權限
+    removeLore: '§7P將收回權限\n§7而非給予權限。'
+  permissionList:
+    name: 權限列表
+    removed: '§e已移除: §6{0}'
+    world: '§e世界:§6{0}'
+scoreboard:
+  name: '§6§l任務'
+  noLaunched: '§c你沒有進行中的任務.'
+  noLaunchedName: '§c§l載入中'
+  noLaunchedDescription: '§c§o載入中'
+  textBetwteenBranch: '§e或'
+  stage:
+    region: '§e找到區域 §6{0}'
+    npc: '§e和NPC談話 §6{0}'
+    items: '§e將物品帶給§6{0}§e:'
+    mobs: '§e擊殺 §6{0}'
+    mine: '§e挖掘 {0}'
+    placeBlocks: '§e放置 {0}'
+    chat: '§e輸入 §6{0}'
+    interact: '§e點擊在§6{0}的方塊'
+    fish: '§e釣魚 §6{0}'
+    craft: '§e合成 §6{0}'
+    bucket: '§e裝滿 §6{0}'
+    location: '§e前往位於 §6{3}的坐標§6{0}§e, §6{1}§e, §6{2}§e '
+    playTime: '§e遊玩遊戲§6{0}刻'
+indication:
+  startQuest: '§7您是否想要接受任務 {0}?'
+  closeInventory: '§7你確定要關閉該頁面嗎？'
+  cancelQuest: '§7您確定要取消任務 {0}?'
+  removeQuest: '§7您確定要刪除任務 {0}?'
+misc:
+  format:
+    prefix: '§f<§e任務§f> §r'
+    npcText: '§f<§e任務§f> §7[§f{2}§8/§7{3}] §f{0} §8§l»§f {1}'
+    selfText: '§f<§e任務§f> §7[§f{2}§8/§7{3}] §f{0} §8§l»§f {1}'
+  stageType:
+    region: 尋找區域
+    npc: 尋找 NPC
+    items: 帶回物品
+    mobs: 擊殺怪物
+    mine: 破壞方塊
+    placeBlocks: 放置方塊
+    chat: 在聊天框內說話
+    interact: 與方塊交互
+    Fish: 釣魚
+    Craft: 合成物品
+    Bucket: 裝滿桶
+    location: 尋找地點
+    playTime: 遊戲時間
+  comparison:
+    equals: 等於{0}
+    different: 不同於{0}
+    less: 精確小於 {0}
+    lessOrEquals: 小於{0}
+    greater: 精確大於{0}
+    greaterOrEquals: 大於{0}
+  requirement:
+    class: '§b所需職業'
+    faction: '§b所需派系'
+    jobLevel: '§b所需工作等級'
+    combatLevel: '§b所需戰鬥等級'
+    experienceLevel: '§b所需經驗等級'
+    permissions: '§3所需權限'
+    scoreboard: '§d所需分數'
+    region: '§d需要區域'
+    placeholder: '§b所需占位符數值'
+    quest: '§a所需前置任務'
+    mcMMOSkillLevel: '§d所需技能等級'
+    money: '§d所需金額'
+  bucket:
+    water: 水桶
+    lava: 巖漿桶
+    milk: 牛奶桶
+  questItemLore: '§e§o任務物品'
+  mobsProgression: '§f階段進度 §8§l» §f{1}§8/§7{2}'
+  entityType: '§e生物類型: {0}'
+  enabled: 已啟用
+  disabled: 已關閉
+  unknown: 未知
+  notSet: '§c未設置'
+  unused: '§e§l未設置'
+  used: '§6§l已設置'
+  remove: '§e§o點擊鼠標中鍵刪除'
+  or: 或
+  amount: '§e數量: {0}'
+  items: 物品
+  expPoints: 經驗點數
+  'yes': '是'
+  'no': '否'
+  and: 和

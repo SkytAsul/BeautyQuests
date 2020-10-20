@@ -16,6 +16,7 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
+import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
@@ -53,7 +54,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 		launched = QuestsAPI.getQuestsStarteds(acc, true);
 
-		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 5L, 20L);
+		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
 
 	public void run() {
@@ -93,8 +94,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	@EventHandler
-	public void onStageReset(PlayerQuestResetEvent e){
+	public void onQuestReset(PlayerQuestResetEvent e) {
 		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
+	}
+	
+	@EventHandler
+	public void onStageSet(PlayerSetStageEvent e) {
+		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest(), false);
 	}
 	
 	@EventHandler
@@ -130,6 +136,10 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		}
 	}
 	
+	public Quest getShownQuest() {
+		return shown;
+	}
+	
 	public void hide(){
 		hid = true;
 		if (board != null) {
@@ -151,11 +161,14 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		for (Line line : lines) line.reset();
 	}
 	
-	public void setShownQuest(Quest quest) {
+	public void setShownQuest(Quest quest, boolean errorWhenUnknown) {
 		if (!quest.isScoreboardEnabled()) return;
-		if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
-		shown = quest;
-		refreshQuestsLines(true);
+		if (!launched.contains(quest)) {
+			if (errorWhenUnknown) throw new IllegalArgumentException("Quest is not running for player.");
+		}else {
+			shown = quest;
+			refreshQuestsLines(true);
+		}
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {

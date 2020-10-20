@@ -68,6 +68,6 @@ public class BossAPI implements MobFactory<Boss> {
 		LivingEntity en = e.getEntity();
 		Player killer = en.getKiller();
 		if (killer == null) return;
-		callEvent(e.getBoss(), en, en.getKiller());
+		callEvent(e, e.getBoss(), en, en.getKiller());
 	}
 }

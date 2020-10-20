@@ -207,7 +207,7 @@ public enum ParticleEffect {
 	 * @return Whether the data type is correct or not
 	 */
 	private static boolean isDataCorrect(ParticleEffect effect, Object data) {
-		return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && (NMS.getMCVersion() < 13 ? data instanceof MaterialData : Post1_13.equalBlockData(data))) || (effect == ITEM_CRACK && data instanceof ItemStack);
+		return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && (NMS.getMCVersion() < 13 ? data instanceof MaterialData : Post1_13.isBlockData(data))) || (effect == ITEM_CRACK && data instanceof ItemStack);
 	}
 
 	/**

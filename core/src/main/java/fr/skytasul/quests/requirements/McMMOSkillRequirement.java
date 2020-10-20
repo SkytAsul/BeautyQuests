@@ -3,11 +3,14 @@ package fr.skytasul.quests.requirements;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.McMMO;
@@ -18,7 +21,11 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	public String skillName;
 
 	public McMMOSkillRequirement(){
-		super("mcmmoSklillLevelRequired");
+		this(0);
+	}
+	
+	public McMMOSkillRequirement(double target) {
+		super("mcmmoSklillLevelRequired", target);
 		if (!DependenciesManager.mmo) throw new MissingDependencyException("mcMMO");
 	}
 
@@ -29,6 +36,33 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_SKILL.send(p, getFormattedValue(), skillName);
+	}
+	
+	@Override
+	public Class<? extends Number> numberClass() {
+		return Integer.class;
+	}
+	
+	@Override
+	public void sendHelpString(Player p) {
+		Lang.CHOOSE_XP_REQUIRED.send(p);
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { getValueLore(), "§8> Skill name: §7" + skillName, "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		Lang.CHOOSE_SKILL_REQUIRED.send(p);
+		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+			if (skillName == null) gui.remove(this);
+			gui.reopen();
+		}, (obj) -> {
+			this.skillName = obj;
+			super.itemClick(p, gui, clicked);
+		}));
 	}
 	
 	protected void save(Map<String, Object> datas) {
@@ -42,39 +76,9 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
 	}
 
-	public static class Creator extends TargetNumberRequirement.Creator<McMMOSkillRequirement> {
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			Lang.CHOOSE_SKILL_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				if (datas.containsKey("skill")) {
-					datas.remove("lvl");
-					datas.remove("skill");
-				}
-				datas.put("skill", obj);
-				super.itemClick(p, datas, gui);
-			}));
-		}
-
-		public McMMOSkillRequirement finish(Map<String, Object> datas) {
-			McMMOSkillRequirement req = new McMMOSkillRequirement();
-			req.skillName = (String) datas.get("skill");
-			return super.finish(req, datas);
-		}
-
-		public void edit(Map<String, Object> datas, McMMOSkillRequirement requirement) {
-			super.edit(datas, requirement);
-			datas.put("skill", requirement.skillName);
-		}
-
-		@Override
-		public Class<? extends Number> numberClass() {
-			return Integer.class;
-		}
-
-		@Override
-		public void sendHelpString(Player p) {
-			Lang.CHOOSE_XP_REQUIRED.send(p);
-		}
+	@Override
+	public AbstractRequirement clone() {
+		return new McMMOSkillRequirement(target);
 	}
-
+	
 }

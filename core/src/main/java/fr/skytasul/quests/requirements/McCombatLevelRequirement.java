@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -13,7 +14,11 @@ import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 public class McCombatLevelRequirement extends TargetNumberRequirement {
 
 	public McCombatLevelRequirement(){
-		super("mcmmoCombatLevelRequirement");
+		this(0);
+	}
+	
+	public McCombatLevelRequirement(double target) {
+		super("mcmmoCombatLevelRequirement", target);
 		if (!DependenciesManager.mmo) throw new MissingDependencyException("McCombatLevel");
 	}
 
@@ -26,6 +31,21 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 		Lang.REQUIREMENT_COMBAT_LEVEL.send(p, getFormattedValue());
 	}
 	
+	@Override
+	public Class<? extends Number> numberClass() {
+		return Integer.class;
+	}
+	
+	@Override
+	public void sendHelpString(Player p) {
+		Lang.CHOOSE_XP_REQUIRED.send(p);
+	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new McCombatLevelRequirement(target);
+	}
+	
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 	}
@@ -33,23 +53,6 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
-	}
-
-	public static class Creator extends TargetNumberRequirement.Creator<McCombatLevelRequirement> {
-
-		public McCombatLevelRequirement finish(Map<String, Object> datas) {
-			return super.finish(new McCombatLevelRequirement(), datas);
-		}
-
-		@Override
-		public Class<? extends Number> numberClass() {
-			return Integer.class;
-		}
-
-		@Override
-		public void sendHelpString(Player p) {
-			Lang.CHOOSE_XP_REQUIRED.send(p);
-		}
 	}
 
 }

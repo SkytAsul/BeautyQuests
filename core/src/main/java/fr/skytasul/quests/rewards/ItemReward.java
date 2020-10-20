@@ -7,11 +7,11 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
-import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -38,6 +38,23 @@ public class ItemReward extends AbstractReward {
 		return amount + " " + Lang.Item.toString();
 	}
 
+	@Override
+	public AbstractReward clone() {
+		return new ItemReward(new ArrayList<>(items));
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { "§8> §7" + items.size() + " " + Lang.Item.toString(), "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		new ItemsGUI(() -> {
+			ItemUtils.lore(clicked, getLore());
+			gui.reopen();
+		}, items).create(p);
+	}
 	
 	protected void save(Map<String, Object> datas){
 		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
@@ -45,25 +62,6 @@ public class ItemReward extends AbstractReward {
 
 	protected void load(Map<String, Object> savedDatas){
 		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
-	}
-
-	public static class Creator implements RewardCreationRunnables<ItemReward> {
-
-		public void itemClick(Player p, Map<String, Object> datas, RewardsGUI gui, ItemStack clicked) {
-			if (!datas.containsKey("items")) datas.put("items", new ArrayList<>());
-			Inventories.create(p, new ItemsGUI(() -> {
-				gui.reopen(p, true);
-			}, (List<ItemStack>) datas.get("items")));
-		}
-
-		public void edit(Map<String, Object> datas, ItemReward reward, ItemStack is) {
-			datas.put("items", reward.items);
-		}
-
-		public ItemReward finish(Map<String, Object> datas) {
-			return new ItemReward((List<ItemStack>) datas.get("items"));
-		}
-
 	}
 
 }

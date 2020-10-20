@@ -2,25 +2,28 @@ package fr.skytasul.quests.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
-import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.RewardCreationRunnables;
-import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreationRunnables;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
@@ -28,6 +31,11 @@ import fr.skytasul.quests.utils.DebugUtils;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsAPI {
+	
+	public static Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
+	public static Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
+	
+	private static AbstractHolograms<?> hologramsManager = null;
 	
 	/**
 	 * Register new stage type into the plugin
@@ -46,33 +54,77 @@ public class QuestsAPI {
 	}
 	
 	/**
-	 * Register new requirement type into the plugin
-	 * @param clazz Class who extends AbstractRequirement
+	 * Registers a new requirement type into the plugin
+	 * @param clazz Class extending {@link AbstractRequirement}
 	 * @param item ItemStack shown in requirements GUI
-	 * @param runnables Instance of special runnables
+	 * @param newRequirementSupplier lambda returning an instance of this Requirement (Requirement::new)
+	 * @deprecated use {@link QuestsAPI#registerRequirement(QuestObjectCreator)}
 	 */
-	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, RequirementCreationRunnables<T> runnables) {
-		RequirementCreator.creators.add(new RequirementCreator<T>(clazz, item, runnables));
-		DebugUtils.logMessage("Requirement registered (class: " + clazz.getSimpleName() + ")");
+	@Deprecated
+	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, Supplier<T> newRequirementSupplier) {
+		registerRequirement(new QuestObjectCreator<>(clazz, item, newRequirementSupplier, true));
 	}
 	
 	/**
-	 * Register new reward type into the plugin
-	 * @param clazz Class who extends AbstractReward
-	 * @param item ItemStack shown in rewards GUI
-	 * @param runnables Instance of special runnables
+	 * Registers a new requirement type into the plugin
+	 * @param creator {@link QuestObjectCreator} instance of an {@link AbstractRequirement}
 	 */
-	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, RewardCreationRunnables<T> runnables) {
-		RewardCreator.creators.add(new RewardCreator<T>(clazz, item, runnables));
-		DebugUtils.logMessage("Reward registered (class: " + clazz.getSimpleName() + ")");
+	public static <T extends AbstractRequirement> void registerRequirement(QuestObjectCreator<T> creator) {
+		requirements.put(creator.clazz, (QuestObjectCreator<AbstractRequirement>) creator);
+		DebugUtils.logMessage("Requirement registered (class: " + creator.clazz.getSimpleName() + ")");
 	}
 	
+	/**
+	 * Registers a new reward type into the plugin
+	 * @param clazz Class extending {@link AbstractReward}
+	 * @param item ItemStack shown in rewards GUI
+	 * @param newRewardSupplier lambda returning an instance of this Reward (Reward::new)
+	 * @deprecated use {@link QuestsAPI#registerReward(QuestObjectCreator)}
+	 */
+	@Deprecated
+	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, Supplier<T> newRewardSupplier) {
+		registerReward(new QuestObjectCreator<T>(clazz, item, newRewardSupplier, true));
+	}
+	
+	/**
+	 * Registers a new reward type into the plugin
+	 * @param creator {@link QuestObjectCreator} instance of an {@link AbstractReward}
+	 */
+	public static <T extends AbstractReward> void registerReward(QuestObjectCreator<T> creator) {
+		rewards.put(creator.clazz, (QuestObjectCreator<AbstractReward>) creator);
+		DebugUtils.logMessage("Reward registered (class: " + creator.clazz.getSimpleName() + ")");
+	}
+	
+	/**
+	 * Register new mob factory
+	 * @param factory MobFactory instance
+	 */
 	public static void registerMobFactory(MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
 		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
 		DebugUtils.logMessage("Mob factory registered (id: " + factory.getID() + ")");
 	}
 	
+	public static void registerQuestOption(QuestOptionCreator<?, ?> creator) {
+		Validate.notNull(creator);
+		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass), "This quest option was already registered");
+		QuestOptionCreator.creators.put(creator.optionClass, creator);
+		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
+	}
+	
+	public static boolean hasHologramsManager() {
+		return hologramsManager != null;
+	}
+	
+	public static AbstractHolograms<?> getHologramsManager() {
+		return hologramsManager;
+	}
+	
+	public static void setHologramsManager(AbstractHolograms<?> newHologramsManager) {
+		Validate.notNull(newHologramsManager);
+		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
+		hologramsManager = newHologramsManager;
+	}
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){
 		return getQuestsStarteds(acc, false);
@@ -80,8 +132,10 @@ public class QuestsAPI {
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard){
 		List<Quest> launched = new ArrayList<>();
-		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) launched.add(qu);
+		for (PlayerQuestDatas datas : acc.getQuestsDatas()) {
+			Quest quest = datas.getQuest();
+			if (quest == null) continue; // non-existent quest
+			if (datas.hasStarted() && (!withoutScoreboard || quest.isScoreboardEnabled())) launched.add(quest);
 		}
 		return launched;
 	}
@@ -115,7 +169,7 @@ public class QuestsAPI {
 	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide){
 		List<Quest> finished = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (hide && qu.isHid()) continue;
+			if (hide && qu.isHidden()) continue;
 			if (!qu.hasFinished(acc) && !qu.hasStarted(acc)) finished.add(qu);
 		}
 		return finished;

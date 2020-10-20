@@ -5,16 +5,53 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.structure.Quest;
 
-public abstract class AbstractReward {
+public abstract class AbstractReward implements QuestObject {
 
+	private final QuestObjectCreator<? extends AbstractReward> creator;
+	
 	protected boolean async = false;
 	protected final String name;
-	protected Quest quest;
+	private Quest quest;
 	
 	protected AbstractReward(String name){
 		this.name = name;
+		
+		this.creator = QuestsAPI.rewards.get(getClass());
+		if (getCreator() == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a reward via the API.");
+	}
+	
+	@Override
+	public QuestObjectCreator<? extends AbstractReward> getCreator() {
+		return creator;
+	}
+	
+	@Override
+	public String getName(){
+		return name;
+	}
+
+	public boolean isAsync(){
+		return async;
+	}
+	
+	@Override
+	public void attach(Quest quest) {
+		this.quest = quest;
+	}
+	
+	@Override
+	public void detach() {
+		this.quest = null;
+	}
+	
+	@Override
+	public Quest getAttachedQuest() {
+		return quest;
 	}
 	
 	/**
@@ -24,27 +61,14 @@ public abstract class AbstractReward {
 	 */
 	public abstract String give(Player p);
 	
+	@Override
+	public abstract AbstractReward clone();
+	
 	protected abstract void save(Map<String, Object> datas);
+	
 	protected abstract void load(Map<String, Object> savedDatas);
 	
-	/**
-	 * Called when the reward is unloaded
-	 */
-	public void unload(){}
-	
-	public String getName(){
-		return name;
-	}
-
-	public boolean isAsync(){
-		return async;
-	}
-	
-	public void setQuest(Quest quest){
-		this.quest = quest;
-	}
-	
-	public Map<String, Object> serialize(){
+	public final Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
 		
 		save(map);
@@ -53,11 +77,10 @@ public abstract class AbstractReward {
 		return map;
 	}
 	
-	public static AbstractReward deserialize(Map<String, Object> map, Quest quest) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
-		AbstractReward req = (AbstractReward) Class.forName((String) map.get("class")).newInstance();
-		req.quest = quest;
-		req.load(map);
-		return req;
+	public static AbstractReward deserialize(Map<String, Object> map) throws ClassNotFoundException {
+		AbstractReward reward = QuestsAPI.rewards.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
+		reward.load(map);
+		return reward;
 	}
 	
 }

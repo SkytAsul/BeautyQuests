@@ -1,22 +1,18 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
-public class PlayerAccountJoinEvent extends PlayerEvent {
+import fr.skytasul.quests.players.PlayerAccount;
 
-	private PlayerAccount account;
+public class PlayerAccountJoinEvent extends PlayerAccountEvent {
+
 	private boolean firstJoin;
 
 	public PlayerAccountJoinEvent(Player who, PlayerAccount account, boolean firstJoin) {
 		super(who);
 		this.account = account;
 		this.firstJoin = firstJoin;
-	}
-
-	public PlayerAccount getPlayerAccount(){
-		return account;
 	}
 
 	public boolean isFirstJoin() {

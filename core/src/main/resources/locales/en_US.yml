@@ -16,6 +16,11 @@ msg:
   quests:
     nopStep: §cThis quest doesn't have any step.
     updated: §7Quest §e{0}§7 updated.
+    checkpoint: §7Quest checkpoint reached!
+    failed: §cYou have failed the quest {0}...
+  questItem:
+    drop: §cYou can't drop a quest item!
+    craft: §cYou can't use a quest item to craft!
   stageMobs:
     noMobs: §cThis stage doesn't need any mobs to kill.
     listMobs: §aYou must kill {0}.
@@ -62,9 +67,7 @@ msg:
     remove: §aNPC deleted.
     talk: §aGo and talk to the NPC named §e{0}§a.
   regionDoesntExists: §cThis region doesn't exist. (You have to be in the same world.)
-  factionDoesntExist: §cThis faction doesn't exist.
   npcDoesntExist: §cThe NPC with the id {0} doesn't exist.
-  classDoesntExist: §cThis class doesn't exist.
   objectDoesntExist: §cThe specified item with the id {0} doesn't exist.
   number:
     negative: §cYou must enter a positive number!
@@ -74,11 +77,15 @@ msg:
   commandsDisabled: §cCurrently you aren't allowed to execute commands!
   indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and
     {2}.
+  invalidBlockData: §cThe blockdata {0} is invalid or incompatible with the block {1}.
   bringBackObjects: Bring me back {0}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   playerNeverConnected: §cUnable to find informations about the player {0}.
   playerNotOnline: §cThe player {0} is offline.
   command:
+    checkpoint:
+      noCheckpoint: §cNo checkpoint found for the quest {0}.
+      questNotStarted: §cYou are not doing this quest.
     setStage:
       branchDoesntExist: §cThe branch with the id {0} doesn't exist.
       doesntExist: §cThe stage with the id {0} doesn't exist.
@@ -146,11 +153,13 @@ msg:
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.
   editor:
-    blocksToMineAmount: '§aWrite the amount of blocks to mine:'
-    blocksToMineName: '§aWrite the name of the block to mine:'
+    blockAmount: '§aWrite the amount of blocks:'
+    blockName: '§aWrite the name of the block:'
+    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
+    typeGameTicks: '§aWrite the required game ticks:'
     already: §cYou are already in the editor.
     enter:
       title: §6~ Editor Mode ~
@@ -169,9 +178,6 @@ msg:
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
       choosePermissionMessage: §aYou can choose a rejection message if the player
         doesn't have the required permission. (To skip this step, write "null".)
-      chooseFactionRequired: '§aWrite the required faction name:'
-      chooseClassesRequired: '§aWrite the names for the required classes to start
-        the quest:'
       choosePlaceholderRequired:
         identifier: '§aWrite the name of the required placeholder without the percent
           characters:'
@@ -185,13 +191,17 @@ msg:
         money: '§aWrite the amount of the received money:'
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
+      chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
     selectWantedBlock: §aClick with the stick on the wanted block for the stage.
     itemCreator:
       itemType: '§aWrite the name of the wanted item type:'
+      itemAmount: '§aWrite the amount of item(s):'
       itemName: '§aWrite the item name:'
       itemLore: '§aModify the item lore: (Write "help" for help.)'
       unknownItemType: §cUnknown item type.
       invalidItemType: §cInvalid item type. (The item can't be a block.)
+      unknownBlockType: §cUnknown block type.
+      invalidBlockType: §cInvalid block type.
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
@@ -256,25 +266,31 @@ inv:
     findRegion: §aFind region
     killMobs: §aKill mobs
     mineBlocks: §aBreak blocks
+    placeBlocks: §aPlace blocks
     talkChat: §aWrite in chat
     interact: §aInteract with block
     fish: §aCatch fishes
     craft: §aCraft item
     bucket: §aFill buckets
     location: §aGo to location
+    playTime: §ePlay time
     NPCText: §eEdit dialog
+    NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
     editMobsKill: §eEdit mobs to kill
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break
     preventBlockPlace: Prevent players to break their own blocks
+    editBlocksPlace: §eEdit blocks to place
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
     selectItems: §eEdit required items
     selectRegion: §7Choose region
+    toggleRegionExit: On exit
     stageStartMsg: §eEdit starting message
     selectBlockLocation: §eSelect block location
+    selectBlockMaterial: §eSelect block material
     leftClick: Click must be left-click
     editFishes: §eEdit fishes to catch
     editItem: §eEdit item to craft
@@ -283,6 +299,7 @@ inv:
     editLocation: §eEdit location
     editRadius: §eEdit distance from location
     currentRadius: '§eCurrent distance: §6{0}'
+    changeTicksRequired: '§eChange played ticks required'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -293,45 +310,70 @@ inv:
     branchesPage: §dBranch stages
     previousBranch: §eBack to previous branch
     newBranch: §eGo to new branch
+    validationRequirements: §eValidation requirements
+    validationRequirementsLore: All the requirements must match the player that tries to complete the stage. If not, the stage can not be completed.
   details:
     hologramLaunch: §eEdit "launch" hologram item
+    hologramLaunchLore: Hologram displayed above Starter NPC's head when the player can start the quest.
     hologramLaunchNo: §eEdit "launch unavailable" hologram item
+    hologramLaunchNoLore: Hologram displayed above Starter NPC's head when the player can NOT start the quest.
     customConfirmMessage: §eEdit quest confirmation message
+    customConfirmMessageLore: Message displayed in the Confirmation GUI when a player is about to start the quest.
     customDescription: §eEdit quest description
+    customDescriptionLore: Description shown below the name of the quest in GUIs.
     name: Last quest details
     multipleTime:
-      itemName: Toggle several-use
-      itemLore: |-
-        Can the quest be done
-        several times?
+      itemName: Toggle repeatable
+      itemLore: Can the quest be done several times?
     cancellable: Cancellable by player
+    cancellableLore: Allows the player to cancel the quest through its Quests Menu.
+    startableFromGUI: Startable from GUI
+    startableFromGUILore: Allows the player to start the quest from the Quests Menu.
     scoreboardItem: Enable scoreboard
+    scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap
+    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     bypassLimit: Don't count quest limit
+    bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: §a§lEdit quest name
+    questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
     setXPRewards: §eEdit reward experience
+    setCheckpointReward: §eEdit checkpoint rewards
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
-    createStarterNPC: §e§lCreate NPC starter
     selectStarterNPC: §e§lSelect NPC starter
-    createQuest:
-      itemName: §lCreate quest
-      itemLore: |-
-        One NPC must be selected and
-        a quest name needs to be defined.
-    editQuest:
-      itemName: §lEdit quest
+    selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    createQuestName: §lCreate quest
+    createQuestLore: You must define a quest name.
+    editQuestName: §lEdit quest
     endMessage: §eEdit end message
+    endMessageLore: Message which will be sent to the player at the end of the quest.
     startDialog: §eEdit start dialog
+    startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: §eEdit requirements
+    editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: §6Start rewards
+    startRewardsLore: Actions performed when the quest starts.
     hologramText: §eHologram text
-    timer: §bTime before you can restart the quest.
+    hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
+    timer: §bRestart timer
+    timerLore: Time before the player can start the quest again.
     requirements: '{0} requirement(s)'
     rewards: '{0} reward(s)'
+    actions: '{0} action(s)'
+    rewardsLore: Actions performed when the quest ends.
     customMaterial: '§eEdit quest item material'
+    customMaterialLore: Item representative of this quest in the Quests Menu.
+    failOnDeath: Fail on death
+    failOnDeathLore: Will the quest be cancelled when the player dies?
+    keepDatas: Preserve players datas
+    keepDatasLore: |-
+      Force the plugin to preserve players datas, even though stages have been edited.
+      §c§lWARNING §c- enabling this option may break your players datas.
     loreReset: '§e§lAll players'' advancement will be reset'
+    optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value)'
   itemsSelect:
     name: Edit items
     none: |-
@@ -382,6 +424,8 @@ inv:
        Y: {1}
        Z: {2}
        World: {3}
+  checkpointActions:
+    name: Checkpoint actions
   listAllQuests:
     name: Quests
   listPlayerQuests:
@@ -391,6 +435,8 @@ inv:
     finished: Finished quests
     inProgress: Quests in progress
     loreCancel: §c§oClick to cancel the quest.
+    loreStart: §a§oClick to start the quest.
+    loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
     timeToWait: §3§o{0} minute(s) before you can restart this quest.
     canRedo: §3§oYou can restart this quest!
     format:
@@ -425,9 +471,14 @@ inv:
   block:
     name: Choose block
     material: '§eMaterial: {0}'
+    blockData: '§dBlockdata (advanced)'
   blocksList:
     name: Select blocks
     addBlock: §aClick to add a block.
+  blockAction:
+    name: Select block action
+    location: §eSelect a precise location
+    material: §eSelect a block material
   buckets:
     name: Bucket type
   permission:
@@ -441,6 +492,10 @@ inv:
     name: Permissions list
     removed: '§eTaken off: §6{0}'
     world: '§eWorld: §6{0}'
+  classesRequired.name: Classes required
+  classesList.name: Classes list
+  factionsRequired.name: Factions required
+  factionsList.name: Factions list
 scoreboard:
   name: §6§lQuests
   noLaunched: §cNo quests in progress.
@@ -453,12 +508,15 @@ scoreboard:
     items: '§eBring items to §6{0}§e:'
     mobs: §eKill §6{0}
     mine: §eMine {0}
+    placeBlocks: §ePlace {0}
     chat: §eWrite §6{0}
     interact: §eClick on the block at §6{0}
+    interactMaterial: §eClick on a §6{0}§e block
     fish: §eFish §6{0}
     craft: §eCraft §6{0}
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
+    playTime: §ePlay §6{0} game ticks
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -476,12 +534,14 @@ misc:
     items: Bring back items
     mobs: Kill mobs
     mine: Break blocks
+    placeBlocks: Place blocks
     chat: Write in chat
     interact: Interact with block
     Fish: Catch fishes
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
+    playTime: Play time
   comparison:
     equals: equal to {0}
     different: different to {0}
@@ -497,6 +557,7 @@ misc:
     experienceLevel: §bExperience levels required
     permissions: §3Permission(s) required
     scoreboard: §dScore required
+    region: §dRegion required
     placeholder: §bPlaceholder value required
     quest: §aQuest required
     mcMMOSkillLevel: §dSkill level required

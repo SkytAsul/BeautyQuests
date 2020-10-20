@@ -3,14 +3,16 @@ package fr.skytasul.quests.requirements;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -41,6 +43,29 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	public void sendReason(Player p) {
 		Lang.REQUIREMENT_MONEY.send(p, Vault.format(money));
 	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new MoneyRequirement(money);
+	}
+	
+	@Override
+	public String[] getLore() {
+		return new String[] { Lang.optionValue.format(money), "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		Lang.CHOOSE_MONEY_REQUIRED.send(p);
+		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+			if (money == 0) gui.remove(this);
+			gui.reopen();
+		}, obj -> {
+			this.money = obj;
+			ItemUtils.lore(clicked, getLore());
+			gui.reopen();
+		}, new NumberParser<>(Double.class, true, true)));
+	}
 
 	protected void save(Map<String, Object> datas) {
 		datas.put("money", money);
@@ -48,24 +73,6 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 
 	protected void load(Map<String, Object> savedDatas) {
 		money = (double) savedDatas.get("money");
-	}
-
-	public static class Creator implements RequirementCreationRunnables<MoneyRequirement> {
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			Lang.CHOOSE_MONEY_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				datas.put("money", (double) obj);
-				gui.reopen(p, false);
-			}, new NumberParser(Double.class, true, true)));
-		}
-
-		public void edit(Map<String, Object> datas, MoneyRequirement reward) {
-			datas.put("money", reward.money);
-		}
-
-		public MoneyRequirement finish(Map<String, Object> datas) {
-			return new MoneyRequirement((double) datas.get("money"));
-		}
 	}
 
 }

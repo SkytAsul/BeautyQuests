@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -19,6 +20,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
 
 public class MythicMobs implements MobFactory<MythicMob> {
 
@@ -34,7 +36,15 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	public void itemClick(Player p, Consumer<MythicMob> run) {
 		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, x -> x.getInternalName()) {
 			public ItemStack getItemStack(MythicMob object) {
-				return ItemUtils.item(XMaterial.mobItem(getEntityType(object)), object.getInternalName());
+				XMaterial mobItem;
+				try {
+					mobItem = XMaterial.mobItem(getEntityType(object));
+				}catch (Exception ex) {
+					mobItem = XMaterial.SPONGE;
+					BeautyQuests.logger.warning("Unknow entity type for MythicMob " + object.getInternalName());
+					ex.printStackTrace();
+				}
+				return ItemUtils.item(mobItem, object.getInternalName());
 			}
 
 			public void click(MythicMob existing) {
@@ -53,10 +63,10 @@ public class MythicMobs implements MobFactory<MythicMob> {
 
 	public String getName(MythicMob data) {
 		try {
-			return data.getDisplayName().get();
-		}catch (NoSuchMethodError e) {
-			return "§cOutdated MythicMobs";
-		}
+			PlaceholderString displayName = data.getDisplayName();
+			if (displayName != null) return displayName.get();
+		}catch (NoSuchMethodError e) {}
+		return data.getInternalName();
 	}
 
 	public EntityType getEntityType(MythicMob data) {
@@ -81,7 +91,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
 		if (!(e.getKiller() instanceof Player)) return;
-		callEvent(e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
+		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
 	}
 	
 	public static void sendMythicMobsList(Player p){

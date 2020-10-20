@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
 
-public class EnumParser<T extends Enum<T>> implements AbstractParser {
+public class EnumParser<T extends Enum<T>> implements AbstractParser<T> {
 
 	private Map<String, T> names;
 	private String namesString;

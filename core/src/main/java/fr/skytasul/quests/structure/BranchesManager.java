@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -74,8 +75,10 @@ public class BranchesManager{
 	 * @param p Player
 	 */
 	public final void objectiveUpdated(Player p) {
-		Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-		if (sb != null) sb.setShownQuest(quest);
+		if (quest.isScoreboardEnabled()) {
+			Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+			if (sb != null) sb.setShownQuest(quest, true);
+		}
 	}
 
 	public void startPlayer(PlayerAccount acc){
@@ -104,7 +107,7 @@ public class BranchesManager{
 				Map<String, Object> datas = branch.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Throwable ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
 				continue;
@@ -119,13 +122,13 @@ public class BranchesManager{
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 	
-	public static BranchesManager deserialize(Map<String, Object> map, Quest qu){
+	public static BranchesManager deserialize(ConfigurationSection config, Quest qu) {
 		BranchesManager bm = new BranchesManager(qu);
 		
-		List<Map<String, Object>> branches = (List<Map<String, Object>>) map.get("branches");
+		List<Map<?, ?>> branches = config.getMapList("branches");
 		branches.sort((x, y) -> {
-			int xid = (int) x.get("order");
-			int yid = (int) y.get("order");
+			int xid = (Integer) x.get("order");
+			int yid = (Integer) y.get("order");
 			if (xid < yid) return -1;
 			if (xid > yid) return 1;
 			BeautyQuests.logger.warning("Two branches with same order in quest " + qu.getID());
@@ -135,40 +138,40 @@ public class BranchesManager{
 
 		for (int i = 0; i < branches.size(); i++) {
 			try{
-				if (!bm.getBranch(i).load(branches.get(i))){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName() + " (false return)");
+				if (!bm.getBranch(i).load((Map<String, Object>) branches.get(i))) {
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getName());
+				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID());
 				ex.printStackTrace();
 				BeautyQuests.loadingFailure = true;
 				return null;
 			}
 		}
 		
-		if (!map.containsKey("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
+		if (!config.contains("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
 		new BukkitRunnable() {
 			public void run(){
 				PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-				((Map<String, Object>) map.get("playersAdvancement")).forEach((accId, advancement) -> {
+				config.getConfigurationSection("playersAdvancement").getValues(false).forEach((accId, advancement) -> {
 					try{
 						PlayerAccount acc = managerYAML.getByIndex(accId);
 						if (acc == null) return;
 						
-						String adv = (String) advancement;
+						String adv = advancement.toString();
 						int separator = adv.indexOf('|');
 						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
 						if (branch == null){
-							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName() + ": branch is null");
+							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID() + ": branch is null");
 							BeautyQuests.loadingFailure = true;
 							return;
 						}
 						acc.getQuestDatas(qu).setBranch(branch.getID());
 						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)));
 					}catch (Exception ex){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getName());
+						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID());
 						ex.printStackTrace();
 						BeautyQuests.loadingFailure = true;
 					}

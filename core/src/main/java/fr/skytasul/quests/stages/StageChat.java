@@ -74,7 +74,7 @@ public class StageChat extends AbstractStage{
 	private boolean check(String message, Player p) {
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text))) return false;
 		if (!hasStarted(p)) return false;
-		Utils.runSync(() -> finishStage(p));
+		if (canUpdate(p)) Utils.runSync(() -> finishStage(p));
 		return true;
 	}
 
@@ -101,7 +101,7 @@ public class StageChat extends AbstractStage{
 		}
 
 		public StageChat finish(LineData datas, QuestBranch branch) {
-			StageChat stage = new StageChat(branch, (String) datas.get("text"), (boolean) datas.get("cancel"), (boolean) datas.get("ignoreCase"));
+			StageChat stage = new StageChat(branch, datas.get("text"), datas.get("cancel"), datas.get("ignoreCase"));
 			return stage;
 		}
 
@@ -113,15 +113,18 @@ public class StageChat extends AbstractStage{
 		}
 
 		public static void setItems(LineData datas) {
-			datas.getLine().setItem(6, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? (String) datas.get("text") : "§lx"), (p, datasx, item) -> launchEditor(p, datas));
-			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), (boolean) datas.get("cancel")), (p, datasx, item) -> datas.put("cancel", ItemUtils.toggle(item)));
-			datas.getLine().setItem(4, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), (boolean) datas.get("ignoreCase")), (p, datasx, item) -> datas.put("ignoreCase", ItemUtils.toggle(item)));
+			datas.getLine().setItem(5, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? datas.get("text") : "§lx"), (p, datasx, item) -> launchEditor(p, datas));
+			datas.getLine().setItem(6, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), datas.get("ignoreCase")), (p, datasx, item) -> datas.put("ignoreCase", ItemUtils.toggle(item)));
+			datas.getLine().setItem(7, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), datas.get("cancel")), (p, datasx, item) -> datas.put("cancel", ItemUtils.toggle(item)));
 		}
 
 		public static void launchEditor(Player p, LineData datas) {
 			Lang.CHAT_MESSAGE.send(p);
-			new TextEditor(p, (obj) -> {
-				String msg = ((String) obj).replace("{SLASH}", "/");
+			new TextEditor<String>(p, () -> {
+				if (datas.containsKey("text")) datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
+			}, obj -> {
+				String msg = obj.replace("{SLASH}", "/");
 				datas.put("text", msg);
 				datas.getGUI().reopen(p, false);
 				ItemUtils.lore(datas.getLine().getItem(6), msg);

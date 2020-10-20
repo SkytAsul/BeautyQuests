@@ -32,6 +32,11 @@ public abstract class ChooseGUI<T> implements CustomInventory {
 		finish(available.get(slot));
 		return true;
 	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
 
 	/**
 	 * @return Inventory's name

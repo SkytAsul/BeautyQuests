@@ -51,9 +51,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 
 	@Override
 	public ItemStack getItemStack(Quest object) {
-		String[] lore = new String[0];
-		if (object.getDescription() != null) lore = new String[] { object.getDescription() };
-		return ItemUtils.item(object.getMaterial(), ChatColor.YELLOW + object.getName(), lore);
+		return ItemUtils.item(object.getQuestMaterial(), ChatColor.YELLOW + object.getName(), object.getDescription());
 	}
 
 	@Override

@@ -12,7 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
@@ -22,7 +23,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.creation.RewardsGUI;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.stages.StageBringBack;
 import fr.skytasul.quests.stages.StageBucket;
@@ -34,6 +35,8 @@ import fr.skytasul.quests.stages.StageLocation;
 import fr.skytasul.quests.stages.StageMine;
 import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
+import fr.skytasul.quests.stages.StagePlaceBlocks;
+import fr.skytasul.quests.stages.StagePlayTime;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -48,6 +51,7 @@ public class StagesGUI implements CustomInventory {
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
 	private static final ItemStack descMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
 	private static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
+	private static final ItemStack validationRequirements = ItemUtils.item(XMaterial.NETHER_STAR, Lang.validationRequirements.toString(), QuestOption.formatDescription(Lang.validationRequirementsLore.toString()));
 
 	private List<Line> lines = new ArrayList<>();
 	
@@ -125,56 +129,61 @@ public class StagesGUI implements CustomInventory {
 		line.removeItems();
 		line.data.put("type", creator.type);
 		line.data.put("rewards", new ArrayList<>());
+		line.data.put("requirements", new ArrayList<>());
 
-		line.setItem(1, ending, new StageRunnable() {
-			public void run(Player p, LineData datas, ItemStack item){
-				Inventories.create(p, new RewardsGUI((rewards) -> {
+		line.setItem(1, ending.clone(), (p, datas, item) -> new QuestObjectGUI<>(
+				Lang.INVENTORY_REWARDS.toString(),
+				QuestObjectLocation.STAGE,
+				QuestsAPI.rewards.values(), rewards -> {
 					datas.put("rewards", rewards);
+					line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(rewards.size()))));
 					reopen(p, true);
-				}, (List<AbstractReward>) datas.get("rewards")));
-			}
-		});
+				},
+				datas.get("rewards")).create(p));
 
 		line.setItem(2, descMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.DESC_MESSAGE.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(p, false), (obj) -> {
 					datas.put("customText", obj);
-					line.editItem(2, ItemUtils.lore(line.getItem(2), (String) obj));
+					line.editItem(2, ItemUtils.lore(line.getItem(2), Lang.optionValue.format(obj)));
 					reopen(p, false);
-				}));
-				text.nul = () -> {
+				}, () -> {
 					datas.remove("customText");
 					line.editItem(2,  ItemUtils.lore(line.getItem(2)));
 					reopen(p, false);
-				};
-				text.cancel = () -> {
-					reopen(p, false);
-				};
+				}));
 			}
 		});
 
 		line.setItem(3, startMessage.clone(), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item){
 				Lang.START_TEXT.send(p);
-				TextEditor text = Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
+				Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(p, false), (obj) -> {
 					datas.put("startMessage", obj);
-					line.editItem(3, ItemUtils.lore(line.getItem(3), (String) obj));
+					line.editItem(3, ItemUtils.lore(line.getItem(3), Lang.optionValue.format(obj)));
 					reopen(p, false);
-				}));
-				text.nul = () -> {
+				}, () -> {
 					datas.remove("startMessage");
 					line.editItem(3, ItemUtils.lore(line.getItem(3)));
 					reopen(p, false);
-				};
-				text.cancel = () -> {
-					reopen(p, false);
-				};
+				}));
 			}
+		});
+		
+		line.setItem(4, validationRequirements.clone(), (p, datas, item) -> {
+			new QuestObjectGUI<>(
+					Lang.INVENTORY_REQUIREMENTS.toString(), 
+					QuestObjectLocation.STAGE,
+					QuestsAPI.requirements.values(), requirements -> {
+						datas.put("requirements", requirements);
+						reopen(p, true);
+					},
+					datas.get("requirements")).create(p);
 		});
 
 		int maxStages = branches ? 20 : 15;
-		line.setItem(0, ItemUtils.lore(stageRemove.clone(), creator.type.name), new StageRunnable() {
+		line.setItem(0, ItemUtils.lore(stageRemove.clone(), QuestOption.formatDescription(creator.type.name)), new StageRunnable() {
 			public void run(Player p, LineData datas, ItemStack item) {
 				datas.clear();
 				line.removeItems();
@@ -202,7 +211,7 @@ public class StagesGUI implements CustomInventory {
 		if (branches){
 			if (!line.data.containsKey("branch")) line.data.put("branch", new StagesGUI(this));
 			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, datas, item) -> {
-				Inventories.create(p, (StagesGUI) datas.get("branch"));
+				Inventories.create(p, datas.get("branch"));
 			});
 		}
 	}
@@ -221,6 +230,12 @@ public class StagesGUI implements CustomInventory {
 	public boolean isEmpty(){
 		if (lines.isEmpty()) return true; // if this StagesGUI has never been opened
 		return !isActiveLine(getLine(0)) && !isActiveLine(getLine(15));
+	}
+	
+	public void deleteStageLine(LineData datas, Player p) {
+		if (datas.containsKey("type")) { // stage line
+			datas.getLine().execute(0, p, null); // non-used item in remove runnable
+		}
 	}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
@@ -264,7 +279,7 @@ public class StagesGUI implements CustomInventory {
 			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 			branch.stagesEdited = true;
 			Line line = getLine((slot - slot % 9)/9 +5*page);
-			line.click(slot, p, current);
+			line.click(slot - (line.getLine() - page * 5) * 9, p, current);
 		}
 		return true;
 	}
@@ -288,7 +303,7 @@ public class StagesGUI implements CustomInventory {
 			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
 		}else {
 			Inventories.create(p, finish);
-			if (edit != null && stagesEdited) finish.setStagesEdited();
+			if (edit != null && stagesEdited) finish.setStagesEdited(false);
 		}
 	}
 
@@ -327,13 +342,15 @@ public class StagesGUI implements CustomInventory {
 	
 	private void stageDatas(Line line, AbstractStage stage){
 		line.data.put("rewards", stage.getRewards());
+		line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(stage.getRewards().size()))));
+		line.data.put("requirements", stage.getValidationRequirements());
 		if (stage.getStartMessage() != null){
 			line.data.put("startMessage", stage.getStartMessage());
-			line.editItem(3, ItemUtils.lore(line.getItem(3), stage.getStartMessage()));
+			line.editItem(3, ItemUtils.lore(line.getItem(3), Lang.optionValue.format(stage.getStartMessage())));
 		}
 		if (stage.getCustomText() != null){
 			line.data.put("customText", stage.getCustomText());
-			line.editItem(2, ItemUtils.lore(line.getItem(2), stage.getCustomText()));
+			line.editItem(2, ItemUtils.lore(line.getItem(2), Lang.optionValue.format(stage.getCustomText())));
 		}
 		@SuppressWarnings ("rawtypes")
 		StageCreator creator = StageCreator.getCreator(stage.getType());
@@ -348,12 +365,14 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageArea = ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString());
 	private static final ItemStack stageMobs = ItemUtils.item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString());
 	private static final ItemStack stageMine = ItemUtils.item(XMaterial.WOODEN_PICKAXE, Lang.stageMine.toString());
+	private static final ItemStack stagePlace = ItemUtils.item(XMaterial.OAK_STAIRS, Lang.stagePlace.toString());
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
-	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.OAK_PLANKS, Lang.stageInteract.toString());
+	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.STICK, Lang.stageInteract.toString());
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
+	private static final ItemStack stagePlayTime = ItemUtils.item(XMaterial.CLOCK, Lang.stagePlayTime.toString());
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
@@ -363,11 +382,13 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("ITEMS", StageBringBack.class, Lang.Items.name()), stageItems, new StageBringBack.Creator());
 		QuestsAPI.registerStage(new StageType("MOBS", StageMobs.class, Lang.Mobs.name()), stageMobs, new StageMobs.Creator());
 		QuestsAPI.registerStage(new StageType("MINE", StageMine.class, Lang.Mine.name()), stageMine, new StageMine.Creator());
+		QuestsAPI.registerStage(new StageType("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name()), stagePlace, new StagePlaceBlocks.Creator());
 		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, new StageChat.Creator());
 		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, new StageInteract.Creator());
 		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new StageFish.Creator());
 		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, new StageCraft.Creator());
 		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, new StageBucket.Creator());
 		QuestsAPI.registerStage(new StageType("LOCATION", StageLocation.class, Lang.Location.name()), stageLocation, new StageLocation.Creator());
+		QuestsAPI.registerStage(new StageType("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name()), stagePlayTime, new StagePlayTime.Creator());
 	}
 }

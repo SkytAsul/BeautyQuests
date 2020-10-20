@@ -1,6 +1,10 @@
 package fr.skytasul.quests.utils.nms;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.Validate;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_13_R2.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -9,8 +13,14 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.ParticleEffect;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.server.v1_13_R2.Block;
+import net.minecraft.server.v1_13_R2.BlockStateList;
 import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.EnumChatFormat;
+import net.minecraft.server.v1_13_R2.IBlockData;
+import net.minecraft.server.v1_13_R2.IBlockState;
+import net.minecraft.server.v1_13_R2.IRegistry;
+import net.minecraft.server.v1_13_R2.MinecraftKey;
 import net.minecraft.server.v1_13_R2.Packet;
 import net.minecraft.server.v1_13_R2.PacketDataSerializer;
 import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload;
@@ -43,6 +53,13 @@ public class v1_13_R2 extends NMS{
 
 	public Object getEnumChatFormat(int value){
 		return EnumChatFormat.a(value);
+	}
+	
+	@Override
+	public List<String> getAvailableBlockProperties(Material material) {
+		Block block = IRegistry.BLOCK.get(new MinecraftKey(material.getKey().getKey()));
+		BlockStateList<Block, IBlockData> stateList = block.getStates();
+		return stateList.d().stream().map(IBlockState::a).collect(Collectors.toList());
 	}
 	
 }

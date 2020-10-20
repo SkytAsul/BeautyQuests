@@ -1,5 +1,6 @@
 package fr.skytasul.quests.players;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +61,10 @@ public class PlayerAccount {
 		PlayerQuestDatas removed = datas.remove(quest.getID());
 		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, quest, removed);
 		return removed;
+	}
+	
+	public Collection<PlayerQuestDatas> getQuestsDatas() {
+		return datas.values();
 	}
 
 	public boolean equals(Object arg0) {

@@ -3,16 +3,24 @@ package fr.skytasul.quests.api.mobs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 import net.citizensnpcs.npc.ai.NPCHolder;
 
@@ -73,17 +81,35 @@ public abstract interface MobFactory<T> extends Listener {
 		return Collections.EMPTY_LIST;
 	}
 
+	public default boolean mobApplies(T first, Object other) {
+		return Objects.equals(first, other);
+	}
+	
 	/**
 	 * Has to be called when a mob corresponding to this factory has been killed
-	 * @param data mob killed
+	 * @param originalEvent original event
+	 * @param pluginMob mob killed
 	 * @param entity bukkit entity killed
-	 * @param p killer
+	 * @param player killer
 	 */
-	public default void callEvent(T data, Entity entity, Player p) {
-		if (p instanceof NPCHolder) return;
-		Bukkit.getPluginManager().callEvent(new CompatMobDeathEvent(data, p, entity));
+	public default void callEvent(Event originalEvent, T pluginMob, Entity entity, Player player) {
+		if (player instanceof NPCHolder) return;
+		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
+		Validate.notNull(entity, "Bukkit entity object cannot be null");
+		Validate.notNull(player, "Player cannot be null");
+		if (originalEvent != null) {
+			CompatMobDeathEvent existingCompat = eventsCache.getIfPresent(originalEvent);
+			if (existingCompat != null && mobApplies(pluginMob, existingCompat.getPluginMob())) {
+				BeautyQuests.logger.warning("MobFactory.callEvent() called twice!");
+				return;
+			}
+		}
+		CompatMobDeathEvent compatEvent = new CompatMobDeathEvent(pluginMob, player, entity);
+		if (originalEvent != null) eventsCache.put(originalEvent, compatEvent);
+		Bukkit.getPluginManager().callEvent(compatEvent);
 	}
 
+	static final Cache<Event, CompatMobDeathEvent> eventsCache = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS).build();
 	public static final List<MobFactory<?>> factories = new ArrayList<>();
 
 	public static MobFactory<?> getMobFactory(String id) {

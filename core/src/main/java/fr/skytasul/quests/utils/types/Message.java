@@ -5,7 +5,7 @@ import java.util.Map;
 
 import fr.skytasul.quests.QuestsConfiguration;
 
-public class Message{
+public class Message implements Cloneable {
 	public String text;
 	public Sender sender;
 	public String sound;
@@ -20,6 +20,14 @@ public class Message{
 		return wait == -1 ? QuestsConfiguration.getDialogsDefaultTime() : wait;
 	}
 
+	@Override
+	public Message clone() {
+		Message clone = new Message(text, sender);
+		clone.sound = sound;
+		clone.wait = wait;
+		return clone;
+	}
+	
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		map.put("text", text);

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.commands;
 
+import java.util.Optional;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -24,6 +26,7 @@ import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
+import fr.skytasul.quests.rewards.CheckpointReward;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.Quest;
@@ -41,10 +44,14 @@ public class Commands {
 		Inventories.create(cmd.player, new StagesGUI(null));
 	}
 	
-	@Cmd(permission = "edit", player = true, noEditorInventory = true)
+	@Cmd (permission = "edit", args = "QUESTSID", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
+		if (cmd.args.length >= 1) {
+			Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) cmd.args[0]);
+			return;
+		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
-		new SelectNPC(cmd.player, (obj) -> {
+		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){
@@ -72,7 +79,7 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
-		new SelectNPC(cmd.player, (obj) -> {
+		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
 			NPC npc = (NPC) obj;
 			if (QuestsAPI.isQuestStarter(npc)){
@@ -171,6 +178,10 @@ public class Commands {
 			if (cmd.args.length > 3){
 				stageID = Utils.parseInt(cmd.sender, (String) cmd.args[3]);
 				if (stageID == null) return;
+				if (currentBranch.getRegularStages().size() <= stageID) {
+					Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.send(cmd.sender, stageID);
+					return;
+				}
 			}
 			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
 			if (currentBranch != null) {
@@ -406,6 +417,26 @@ public class Commands {
 			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
 			break;
 		}
+	}
+	
+	@Cmd (player = true, args = "QUESTSID", min = 1)
+	public void checkpoint(CommandContext cmd) {
+		Quest quest = cmd.get(0);
+		PlayerAccount account = PlayersManager.getPlayerAccount(cmd.player);
+		if (account.hasQuestDatas(quest)) {
+			PlayerQuestDatas datas = account.getQuestDatas(quest);
+			QuestBranch branch = quest.getBranchesManager().getBranch(datas.getBranch());
+			int max = datas.isInEndingStages() ? branch.getStageSize() : datas.getStage();
+			for (int id = max - 1; id >= 0; id--) {
+				AbstractStage stage = branch.getRegularStage(id);
+				Optional<CheckpointReward> optionalCheckpoint = stage.getRewards().stream().filter(CheckpointReward.class::isInstance).findAny().map(CheckpointReward.class::cast);
+				if (optionalCheckpoint.isPresent()) {
+					optionalCheckpoint.get().applies(cmd.player);
+					return;
+				}
+			}
+			Lang.COMMAND_CHECKPOINT_NO.send(cmd.sender, quest.getName());
+		}else Lang.COMMAND_CHECKPOINT_NOT_STARTED.send(cmd.sender);
 	}
 	
 	@Cmd (permission = "reload")

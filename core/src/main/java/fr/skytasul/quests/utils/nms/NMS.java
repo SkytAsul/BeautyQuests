@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,12 +27,14 @@ public abstract class NMS{
 	private Method equalsCommon;
 
 	public NMS() {
-		try {
-			Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
-			unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
-			equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
-		}catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+		if (versionValid) {
+			try {
+				Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
+				unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
+				equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
+			}catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -58,6 +61,10 @@ public abstract class NMS{
 	public abstract Object getIChatBaseComponent(String text);
 	
 	public abstract Object getEnumChatFormat(int value);
+	
+	public List<String> getAvailableBlockProperties(Material material){
+		throw new UnsupportedOperationException();
+	}
 	
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
 		unhandledTags.setAccessible(true);
@@ -92,16 +99,16 @@ public abstract class NMS{
     private static boolean versionValid = false;
 	private static NMS nms;
 	private static int MCversion;
-	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1", "1_16_R1");
+	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1", "1_16_R1", "1_16_R2");
 	
 	static {
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
 		if (validVersions.contains(version)){
 			try{
-				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
 				versionValid = true;
+				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
 				MCversion = Integer.parseInt(version.split("_")[1]);
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				ex.printStackTrace();
 				versionValid = false;
 				nms = new NullNMS();

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,6 +68,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private synchronized PlayerAccount createPlayerAccount(String identifier, int index) {
+		Validate.notNull(identifier, "Identifier cannot be null (index: " + index + ")");
 		AbstractAccount abs = super.createAccountFromIdentifier(identifier);
 		if (abs == null) {
 			BeautyQuests.logger.info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
@@ -79,10 +81,16 @@ public class PlayersManagerYAML extends PlayersManager {
 		BeautyQuests.getInstance().getLogger().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experience some lags.");
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
-			PlayerAccount acc = loadFromFile(entry.getKey());
-			if (acc == null) {
-				acc = createPlayerAccount(entry.getValue(), entry.getKey());
-				addAccount(acc);
+			try {
+				PlayerAccount acc = loadFromFile(entry.getKey());
+				if (acc == null) {
+					acc = createPlayerAccount(entry.getValue(), entry.getKey());
+					addAccount(acc);
+				}
+			}catch (Exception ex) {
+				BeautyQuests.getInstance().getLogger().severe("An error occured when loading player account " + entry.getKey());
+				ex.printStackTrace();
+				continue;
 			}
 		}
 		BeautyQuests.getInstance().getLogger().info("Total loaded accounts: " + loadedAccounts.size());
@@ -175,7 +183,12 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private PlayerAccount loadFromConfig(int index, ConfigurationSection datas) {
-		PlayerAccount acc = createPlayerAccount((String) datas.get("identifier"), index);
+		String identifier = datas.getString("identifier");
+		if (identifier == null) {
+			BeautyQuests.logger.warning("No identifier found in file for index " + index + ".");
+			identifier = identifiersIndex.get(index);
+		}
+		PlayerAccount acc = createPlayerAccount(identifier, index);
 		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
 			PlayerQuestDatas questDatas = PlayerQuestDatas.deserialize(acc, (Map<String, Object>) questConfig);
 			acc.datas.put(questDatas.questID, questDatas);

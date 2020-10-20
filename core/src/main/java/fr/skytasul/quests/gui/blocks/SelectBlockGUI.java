@@ -17,18 +17,22 @@ import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
+import fr.skytasul.quests.utils.types.BQBlock;
 
 public class SelectBlockGUI implements CustomInventory{
 	
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
-	public BiConsumer<XMaterial, Integer> run;
+	public BiConsumer<BQBlock, Integer> run;
 	
 	public Inventory inv;
 	
 	private XMaterial type = XMaterial.STONE;
+	private String blockData = null;
 	private int amount = 1;
 	
 	public String name() {
@@ -43,14 +47,15 @@ public class SelectBlockGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, name());
 		
+		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+		if (NMS.getMCVersion() >= 13) inv.setItem(5, item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(), Lang.NotSet.toString()));
 		inv.setItem(8, done.clone());
-		updateItems();
+		updateTypeItem();
 		
 		return inv = p.openInventory(inv).getTopInventory();
 	}
 
-	public void updateItems(){
-		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+	private void updateTypeItem() {
 		inv.setItem(3, item(type, Lang.materialName.format(type.name())));
 		if (inv.getItem(3) == null || inv.getItem(3).getType() == Material.AIR) inv.setItem(3, item(XMaterial.STONE, Lang.materialName.format(type.name())));
 	}
@@ -62,29 +67,52 @@ public class SelectBlockGUI implements CustomInventory{
 			break;
 			
 		case 1:
-			Inventories.closeWithoutExit(p);
 			Lang.BLOCKS_AMOUNT.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				amount = (int) obj;
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), obj -> {
+				amount = obj;
+				ItemUtils.name(current, Lang.Amount.format(amount));
 				openLastInv(p);
-				updateItems();
-			}, new NumberParser(Integer.class, true, true)));
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 			break;
 			
 		case 3:
-			Inventories.closeWithoutExit(p);
-			Lang.BLOCKS_NAME.send(p);
-			Editor.enterOrLeave(p, new TextEditor(p, (obj) -> {
-				XMaterial type = (XMaterial) obj;
+			Lang.BLOCK_NAME.send(p);
+			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), type -> {
 				this.type = type;
+				if (blockData != null) {
+					try {
+						Bukkit.createBlockData(type.parseMaterial(), blockData);
+					}catch (Exception ex) {
+						Lang.INVALID_BLOCK_DATA.send(p, blockData, type.name());
+						blockData = null;
+						ItemUtils.lore(inv.getItem(5), Lang.NotSet.toString());
+					}
+				}
+				updateTypeItem();
 				openLastInv(p);
-				updateItems();
-			}, new MaterialParser(false)));
+			}, new MaterialParser(false, true)));
+			break;
+		
+		case 5:
+			Lang.BLOCK_DATA.send(p, String.join(", ", NMS.getNMS().getAvailableBlockProperties(type.parseMaterial())));
+			new TextEditor<>(p, () -> openLastInv(p), obj -> {
+				String tmp = "[" + obj + "]";
+				try {
+					Bukkit.createBlockData(type.parseMaterial(), tmp);
+					blockData = tmp;
+				}catch (Exception ex) {
+					ex.printStackTrace();
+					Lang.INVALID_BLOCK_DATA.send(p, tmp, type.name());
+					blockData = null;
+				}
+				ItemUtils.lore(current, blockData == null ? Lang.NotSet.toString() : blockData);
+				openLastInv(p);
+			}).enterOrLeave(p);
 			break;
 
 		case 8:
 			Inventories.closeAndExit(p);
-			run.accept(type, amount);
+			run.accept(blockData == null ? new BQBlock(type) : new BQBlock(Bukkit.createBlockData(type.parseMaterial(), blockData)), amount);
 			break;
 			
 		}

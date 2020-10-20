@@ -138,14 +138,14 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 			line.setItem(6, editMobs.clone(), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					MobsListGUI mobs = Inventories.create(p, new MobsListGUI());
-					mobs.setMobsFromMap((Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
+					mobs.setMobsFromMap(datas.get("mobs"));
 					mobs.run = (obj) -> {
 						sg.reopen(p, true);
 						datas.put("mobs", obj);
 					};
 				}
 			});
-			line.setItem(5, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), datas.containsKey("shoot") ? (boolean) datas.get("shoot") : false), new StageRunnable() {
+			line.setItem(5, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), datas.containsKey("shoot") ? datas.get("shoot") : false), new StageRunnable() {
 				public void run(Player p, LineData datas, ItemStack item) {
 					datas.put("shoot", ItemUtils.toggle(datas.getLine().getItem(5)));
 				}
@@ -153,8 +153,8 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		}
 
 		public StageMobs finish(LineData datas, QuestBranch branch) {
-			StageMobs stage = new StageMobs(branch, (Map<Integer, Entry<Mob<?>, Integer>>) datas.get("mobs"));
-			if (datas.containsKey("shoot")) stage.setShoot((boolean) datas.get("shoot"));
+			StageMobs stage = new StageMobs(branch, datas.get("mobs"));
+			if (datas.containsKey("shoot")) stage.setShoot(datas.get("shoot"));
 			return stage;
 		}
 

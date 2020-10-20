@@ -2,20 +2,26 @@ package fr.skytasul.quests.api.stages;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
+import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -24,26 +30,26 @@ import fr.skytasul.quests.utils.Utils;
 
 /**
  * <h1> Do not forget to create the <i>deserialize</i> method:</h1>
- * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, StageManager manager)</code>
+ * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, QuestBranch branch)</code>
  * @author SkytAsul
  */
 public abstract class AbstractStage implements Listener{
 	
-	private StageType type = null;
+	private final StageType type;
 	protected boolean asyncEnd = false;
 	
 	protected final QuestBranch branch;
 	
 	private String startMessage = null;
-	private List<AbstractReward> rewards = new ArrayList<>();
 	private String customText = null;
+	private List<AbstractReward> rewards = new ArrayList<>();
+	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
 	
 	public AbstractStage(QuestBranch branch){
 		this.branch = branch;
 		
-		for (StageType type : StageType.types){
-			if (type.stageClass == getClass()) this.type = type;
-		}
+		this.type = StageType.types.stream().filter(type -> type.stageClass == getClass()).findAny()
+				.orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
@@ -66,7 +72,17 @@ public abstract class AbstractStage implements Listener{
 	
 	public void setRewards(List<AbstractReward> rewards){
 		this.rewards = rewards;
+		rewards.forEach(reward -> reward.attach(branch.getQuest()));
 		checkAsync();
+	}
+
+	public List<AbstractRequirement> getValidationRequirements() {
+		return validationRequirements;
+	}
+
+	public void setValidationRequirements(List<AbstractRequirement> validationRequirements) {
+		this.validationRequirements = validationRequirements;
+		validationRequirements.forEach(requirement -> requirement.attach(branch.getQuest()));
 	}
 
 	public String getCustomText(){
@@ -111,6 +127,13 @@ public abstract class AbstractStage implements Listener{
 		return index;
 	}
 
+	protected boolean canUpdate(Player p) {
+		for (AbstractRequirement requirement : validationRequirements) {
+			if (!requirement.test(p)) return false;
+		}
+		return true;
+	}
+	
 	public String debugName() {
 		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID();
 	}
@@ -142,8 +165,8 @@ public abstract class AbstractStage implements Listener{
 			Player p = acc.getPlayer();
 			if (startMessage != null){
 				if (startMessage.length() > 0){
-					if (branch.getID(this) == 0){
-						Lang.NpcText.sendWP(p, branch.getQuest().getStarter().getName(), startMessage, 1, 1);
+					if (branch.getID(this) == 0 && branch.getQuest().hasOption(OptionStarterNPC.class)) {
+						Lang.NpcText.sendWP(p, branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1);
 					}else {
 						Utils.sendOffMessage(p, startMessage);
 					}
@@ -164,6 +187,18 @@ public abstract class AbstractStage implements Listener{
 	public void end(PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
 	}
+	
+	/**
+	 * Called when an account with this stage launched joins
+	 * @param acc PlayerAccount which just joined
+	 */
+	public void joins(PlayerAccount acc, Player p) {}
+	
+	/**
+	 * Called when an account with this stage launched leaves
+	 * @param acc PlayerAccount which just left
+	 */
+	public void leaves(PlayerAccount acc, Player p) {}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
@@ -193,7 +228,7 @@ public abstract class AbstractStage implements Listener{
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		branch.getBranchesManager().objectiveUpdated(p);
+		if (p != null) branch.getBranchesManager().objectiveUpdated(p);
 	}
 
 	protected <T> T getData(PlayerAccount acc, String dataKey) {
@@ -214,15 +249,28 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void unload(){
         HandlerList.unregisterAll(this);
-        for (AbstractReward rew : rewards){
-        	rew.unload();
-        }
+		rewards.forEach(AbstractReward::detach);
+		validationRequirements.forEach(AbstractRequirement::detach);
 	}
 	
 	/**
 	 * Called when the stage loads
 	 */
 	public void load() {}
+	
+	@EventHandler
+	public void onJoin(PlayerAccountJoinEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			joins(e.getPlayerAccount(), e.getPlayer());
+		}
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerAccountLeaveEvent e) {
+		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
+			leaves(e.getPlayerAccount(), e.getPlayer());
+		}
+	}
 	
 	protected abstract void serialize(Map<String, Object> map);
 	
@@ -231,14 +279,11 @@ public abstract class AbstractStage implements Listener{
 		
 		if (branch.isRegularStage(this)) map.put("order", branch.getID(this));
 		map.put("stageType", type.id);
-		map.put("text", startMessage);
 		map.put("customText", customText);
+		if (startMessage != null) map.put("text", startMessage);
 		
-		List<Map<String, Object>> rewls = new ArrayList<>();
-		for (AbstractReward reward : rewards){
-			rewls.add(reward.serialize());
-		}
-		map.put("rewards", rewls);
+		if (!rewards.isEmpty()) map.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
+		if (!validationRequirements.isEmpty()) map.put("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
 		
 		serialize(map);
 		return map;
@@ -260,21 +305,34 @@ public abstract class AbstractStage implements Listener{
 			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);
 			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-			for (Map<String, Object> rew : (List<Map<String, Object>>) map.get("rewards")){
+			for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
 				try {
-					AbstractReward reward = AbstractReward.deserialize(rew, branch.getQuest());
+					AbstractReward reward = AbstractReward.deserialize(rew);
 					st.rewards.add(reward);
+					reward.attach(branch.getQuest());
 					if (reward.isAsync()) st.asyncEnd = true;
-				}catch (InstantiationException | ClassNotFoundException e) {
+				}catch (ClassNotFoundException e) {
 					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
 					e.printStackTrace();
 					continue;
 				}
 			}
 
+			for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
+				try {
+					AbstractRequirement requirement = AbstractRequirement.deserialize(req);
+					requirement.attach(branch.getQuest());
+					st.validationRequirements.add(requirement);
+				}catch (ClassNotFoundException e) {
+					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
+					e.printStackTrace();
+					continue;
+				}
+			}
+			
 			return st;
 		}catch (NoSuchMethodException e){
-			BeautyQuests.getInstance().getLogger().severe("No deserialize method for the class " + type.stageClass.getName() + ". Prevent SkytAsul on SpigotMC.org");
+			BeautyQuests.getInstance().getLogger().severe("No deserialize method for the class " + type.stageClass.getName() + ".");
 		}
 		return null;
 	}

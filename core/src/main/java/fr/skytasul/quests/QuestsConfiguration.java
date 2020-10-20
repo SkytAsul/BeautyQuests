@@ -64,17 +64,19 @@ public class QuestsConfiguration {
 	private static int dMinZoom = 0;
 	// stageDescription
 	private static String descPrefix = "{nl}§e- §6";
+	private static String descAmountFormat = "x{0}";
 	private static boolean descXOne = true;
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
-
+	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
 
 	public static Quest firstQuest;
 
+	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
 	static int firstQuestID = -1;
 
@@ -94,6 +96,7 @@ public class QuestsConfiguration {
 			}
 		}
 		saveCycle = config.getInt("saveCycle");
+		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		firstQuestID = config.getInt("firstQuest");
 		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
@@ -108,8 +111,8 @@ public class QuestsConfiguration {
 		gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		item = XMaterial.matchXMaterial(config.getString("item")).orElse(null);
-		pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(null);
+		item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
+		pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
 		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
@@ -144,6 +147,7 @@ public class QuestsConfiguration {
 		
 		// stageDescription
 		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
+		descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
 		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
 		inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
 		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
@@ -361,6 +365,10 @@ public class QuestsConfiguration {
 	
 	public static String getDescriptionItemPrefix(){
 		return descPrefix;
+	}
+	
+	public static String getDescriptionAmountFormat() {
+		return descAmountFormat;
 	}
 	
 	public static boolean showDescriptionItemsXOne(Source source){

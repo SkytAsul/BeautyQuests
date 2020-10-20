@@ -6,10 +6,10 @@ import org.bukkit.scoreboard.Objective;
 
 import fr.skytasul.quests.utils.Lang;
 
-public class ScoreboardObjectiveParser implements AbstractParser {
+public class ScoreboardObjectiveParser implements AbstractParser<Objective> {
 
 	@Override
-	public Object parse(Player p, String msg) throws Throwable {
+	public Objective parse(Player p, String msg) throws Throwable {
 		Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(msg);
 		if (objective == null) Lang.SCOREBOARD_OBJECTIVE_NOT_FOUND.send(p);
 		return objective;

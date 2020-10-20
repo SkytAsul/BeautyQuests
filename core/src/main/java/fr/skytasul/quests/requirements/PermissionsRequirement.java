@@ -6,23 +6,31 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.requirements.RequirementCreationRunnables;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.TextListEditor;
-import fr.skytasul.quests.gui.creation.RequirementsGUI;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class PermissionsRequirement extends AbstractRequirement {
 
-	public List<Permission> permissions = new ArrayList<>();
-	public String message = null;
+	public List<Permission> permissions;
+	public String message;
 	
 	public PermissionsRequirement() {
+		this(new ArrayList<>(), null);
+	}
+	
+	public PermissionsRequirement(List<Permission> permissions, String message) {
 		super("permissionRequired");
+		this.permissions = permissions;
+		this.message = message;
 	}
 
 	public boolean test(Player p) {
@@ -36,6 +44,56 @@ public class PermissionsRequirement extends AbstractRequirement {
 		if (message != null) Utils.IsendMessage(p, message, true);
 	}
 
+	@Override
+	public String[] getLore() {
+		return new String[] { "§8> §7" + permissions.size() + " permission(s)", "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.Remove.toString() };
+	}
+	
+	@Override
+	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+		new ListGUI<Permission>(permissions, 9) {
+			
+			@Override
+			public String name() {
+				return Lang.INVENTORY_PERMISSION_LIST.toString();
+			}
+			
+			@Override
+			public ItemStack getItemStack(Permission object) {
+				return ItemUtils.item(XMaterial.PAPER, object.toString(), "", Lang.Remove.toString());
+			}
+			
+			@Override
+			public void click(Permission existing, ItemStack item) {
+				if (existing == null) {
+					Lang.CHOOSE_PERM_REQUIRED.send(p);
+					new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
+						finishItem(Permission.fromString(obj));
+					}).enterOrLeave(p);
+				}
+			}
+			
+			@Override
+			public void finish() {
+				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
+				new TextEditor<String>(p, gui::reopen, obj -> {
+					message = obj;
+					ItemUtils.lore(clicked, getLore());
+					gui.reopen();
+				}, () -> {
+					message = null;
+					ItemUtils.lore(clicked, getLore());
+					gui.reopen();
+				}).enterOrLeave(p);
+			}
+			
+		}.create(p);
+	}
+	
+	@Override
+	public AbstractRequirement clone() {
+		return new PermissionsRequirement(new ArrayList<>(permissions), message);
+	}
 	
 	protected void save(Map<String, Object> datas) {
 		datas.put("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
@@ -45,37 +103,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 	protected void load(Map<String, Object> savedDatas) {
 		permissions = ((List<String>) savedDatas.get("permissions")).stream().map(Permission::fromString).collect(Collectors.toList());
 		if (savedDatas.containsKey("message")) message = (String) savedDatas.get("message");
-	}
-
-	public static class Creator implements RequirementCreationRunnables<PermissionsRequirement> {
-		public void itemClick(Player p, Map<String, Object> datas, RequirementsGUI gui) {
-			if (!datas.containsKey("perms")) datas.put("perms", new ArrayList<String>());
-			Lang.CHOOSE_PERM_REQUIRED.send(p);
-			Editor.enterOrLeave(p, new TextListEditor(p, (obj) -> {
-				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor(p, (text) -> {
-					datas.put("msg", text);
-					gui.reopen(p, false);
-				}, () -> {
-					gui.reopen(p, false);
-				}, () -> {
-					datas.put("msg", null);
-					gui.reopen(p, false);
-				}).enterOrLeave(p);
-			}, (List<String>) datas.get("perms")));
-		}
-
-		public PermissionsRequirement finish(Map<String, Object> datas) {
-			PermissionsRequirement req = new PermissionsRequirement();
-			req.permissions = ((List<String>) datas.get("perms")).stream().map(Permission::fromString).collect(Collectors.toList());
-			req.message = (String) datas.get("msg");
-			return req;
-		}
-
-		public void edit(Map<String, Object> datas, PermissionsRequirement requirement) {
-			datas.put("perms", requirement.permissions.stream().map(Permission::toString).collect(Collectors.toList()));
-			datas.put("msg", requirement.message);
-		}
 	}
 
 	public static class Permission {
@@ -101,5 +128,5 @@ public class PermissionsRequirement extends AbstractRequirement {
 			return new Permission(string.substring(neg ? 1 : 0), !neg);
 		}
 	}
-
+	
 }

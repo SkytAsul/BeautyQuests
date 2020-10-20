@@ -1,7 +1,7 @@
 # - General configuration -
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL
 lang: en_US
 # (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
 minecraftTranslationsFile: null
@@ -11,6 +11,8 @@ checkUpdates: true
 enablePrefix: true
 # Number of minutes between two periodic saves
 saveCycle: 15
+# Enable "periodic save" message in console
+saveCycleMessage: true
 # ID of the quest who will be started on first connection of players (to disable: -1)
 firstQuest: -1
 # Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
@@ -90,13 +92,15 @@ dynmap:
 
 # - Stage descriptions -
 # Prefix before object's name in lists (example: §6first, §6second and §6third)
-itemNameColor: "§6"
+itemNameColor: "§6§o"
 # Prefix before object's amount in lists (example: first§ex2, second§ex7 and third§ex4)
 itemAmountColor: "§e"
 stageDescriptionItemsSplit:
   # Prefix before each line
   prefix: "§e- §6"
-  # Show "x1" if there is only one object
+  # Format of object amounts. Placeholders: {0} = remaining (decreasing), {1} = done (increasing), {2} = total. Example: "{1}/{2}"
+  amountFormat: "x{0}"
+  # Show amount format if there is only one object remaining
   showXOne: true
   # When there is only one object, do not put it on a new line
   inlineAlone: true

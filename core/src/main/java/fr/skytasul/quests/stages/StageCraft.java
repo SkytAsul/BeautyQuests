@@ -49,7 +49,7 @@ public class StageCraft extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		ItemStack item = e.getRecipe().getResult();
 		
-		if (branch.hasStageLaunched(acc, this)){
+		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (e.getRecipe().getResult().isSimilar(result)){
 				
 				int recipeAmount = item.getAmount();
@@ -87,11 +87,11 @@ public class StageCraft extends AbstractStage {
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				int amount = getPlayerAmount(acc);
-				if (amount <= 1) {
+				int amount = getPlayerAmount(acc) - recipeAmount;
+				if (amount <= 0) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", amount -= recipeAmount);
+					updateObjective(acc, p, "amount", amount);
 				}
 			}
 		}
@@ -107,11 +107,11 @@ public class StageCraft extends AbstractStage {
 	}
 
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false));
+		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
 	}
 
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), false) };
+		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
 	}
 	
 	protected void serialize(Map<String, Object> map){
@@ -156,15 +156,18 @@ public class StageCraft extends AbstractStage {
 
 	public static class Creator implements StageCreationRunnables<StageCraft> {
 		public void start(Player p, LineData datas) {
-			new ItemGUI((is) -> {
+			new ItemGUI(is -> {
 				datas.put("item", is);
 				datas.getGUI().reopen(p, true);
 				setItem(datas.getLine());
+			}, () -> {
+				datas.getGUI().deleteStageLine(datas, p);
+				datas.getGUI().reopen(p, true);
 			}).create(p);
 		}
 
 		public StageCraft finish(LineData datas, QuestBranch branch) {
-			StageCraft stage = new StageCraft(branch, (ItemStack) datas.get("item"));
+			StageCraft stage = new StageCraft(branch, datas.get("item"));
 			return stage;
 		}
 
@@ -174,11 +177,12 @@ public class StageCraft extends AbstractStage {
 		}
 
 		public static void setItem(Line line) {
-			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), ItemUtils.getName(((ItemStack) line.data.get("item")))), (p, datas, item) -> {
+			ItemStack setItem = line.data.get("item");
+			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), Lang.optionValue.format(Utils.getStringFromItemStack(setItem, "§8", true))), (p, datas, item) -> {
 				new ItemGUI((is) -> {
 					datas.put("item", is);
 					datas.getGUI().reopen(p, true);
-				}).create(p);
+				}, () -> datas.getGUI().reopen(p, true)).create(p);
 			});
 		}
 	}

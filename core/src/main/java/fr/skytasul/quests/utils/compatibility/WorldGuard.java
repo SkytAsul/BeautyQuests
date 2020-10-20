@@ -82,6 +82,7 @@ public class WorldGuard {
 	}
 	
 	public static ProtectedRegion getRegion(String name, World w){
+		if (w == null) return null;
 		return getRegionManager(w).getRegion(name);
 	}
 	

@@ -53,28 +53,47 @@ public abstract class ListGUI<T> implements CustomInventory {
 		return inv;
 	}
 	
+	public void reopen() {
+		Inventories.put(p, this, inv);
+		inv = p.openInventory(inv).getTopInventory();
+	}
+	
+	public boolean remove(T object) {
+		int index = objects.indexOf(object);
+		if (index == -1) return false;
+		remove(index);
+		return true;
+	}
+	
 	public void remove(int slot){
-		objects.remove(slot);
+		T removed = objects.remove(slot);
+		if (removed == null) return;
 		for (int i = slot; i <= objects.size(); i++){
 			inv.setItem(i, i == objects.size() ? none : inv.getItem(i+1));
 		}
+		removed(removed);
 	}
+	
+	protected void removed(T object) {}
 
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == size - 1){
 			finish();
 		}else {
 			if (current.equals(none)){
-				click(null);
+				click(null, null);
 			}else if (click == ClickType.MIDDLE){
 				remove(slot);
 			}else {
-				T obj = objects.get(slot);
-				remove(slot);
-				click(obj);
+				click(objects.get(slot), current);
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
 	}
 	
 	/**
@@ -83,9 +102,7 @@ public abstract class ListGUI<T> implements CustomInventory {
 	 * @return ItemStack created with {@link #getItemStack(Object)}
 	 */
 	public ItemStack finishItem(T object){
-		Inventories.closeWithoutExit(p);
-		inv = p.openInventory(inv).getTopInventory();
-		Inventories.put(p, this, inv);
+		reopen();
 		objects.add(object);
 		int slot = objects.size() - 1;
 		inv.setItem(slot, getItemStack(object));
@@ -106,8 +123,9 @@ public abstract class ListGUI<T> implements CustomInventory {
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object (may be null if there was no previous object)
+	 * @param item clicked item
 	 */
-	public abstract void click(T existing);
+	public abstract void click(T existing, ItemStack item);
 	
 	/**
 	 * Called when the player hit the finish button

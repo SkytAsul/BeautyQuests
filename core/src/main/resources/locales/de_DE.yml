@@ -38,10 +38,10 @@ msg:
   writeQuestMaterial: '§aSchreibe das Material des Questgegenstandes.'
   requirements:
     quest: '§cDu musst die Quest §e{0}§c abgeschlossen haben!'
-    level: '§cYour level must be {0}!'
-    job: '§cYour level for the job §e{1}§c must be {0}!'
-    skill: '§cYour level for the skill §e{1}§c must be {0}!'
-    combatLevel: '§cYour combat level must be {0}!'
+    level: '§cDein Level muss {0} sein!'
+    job: '§cDein Level für den Job §e{1}§c muss {0} sein!'
+    skill: '§cDein Level für die Fertigkeit §e{1}§c muss {0} sein!'
+    combatLevel: '§cDein Kampflevel muss {0} sein!'
     money: '§cDu benötigst {0}!'
     wait: '§cDu musst {0} Minute(n) warten, bevor du die Quest erneut starten kannst!'
   experience:
@@ -51,9 +51,7 @@ msg:
     remove: '§aNPC gelöscht.'
     talk: '§aGehe und rede mit dem NPC namens §e{0}§a.'
   regionDoesntExists: '§cDie Region existiert nicht. (Du musst dich in der selben Welt befinden.)'
-  factionDoesntExist: '§cDiese Fraktion existiert nicht.'
   npcDoesntExist: '§cDer NPC mit der ID {0} existiert nicht.'
-  classDoesntExist: '§cDiese Klasse existiert nicht.'
   objectDoesntExist: '§cDas angegebene Item mit der ID {0} existiert nicht.'
   number:
     negative: '§cDu musst eine positive Zahl eingeben!'
@@ -126,8 +124,6 @@ msg:
       list: '§6/{0} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
   typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
   editor:
-    blocksToMineAmount: '§aSchreibe die Anzahl an zu zerstörende Blöcke:'
-    blocksToMineName: '§aSchreibe den Namen des abzubauenden Blocks:'
     typeBucketAmount: '§aSchreibe die Anzahl an zu füllenden Eimern:'
     goToLocation: '§aGehe zur gewünschten Position für den Schritt.'
     typeLocationRadius: '§aSchreibe die benötigte Distanz von der Position:'
@@ -146,8 +142,6 @@ msg:
       chooseJobRequired: '§aSchreibe den Namen des gewünschten Jobs:'
       choosePermissionRequired: '§aSchreibe die benötigte Berechtigung, um die Quest zu starten:'
       choosePermissionMessage: '§aDu kannst eine Verweigerungs‐Nachricht für Spieler ohne ausreichende Berechtigungen festlegen. (Um diesen Schritt zu überspringen, schreibe „null”.)'
-      chooseFactionRequired: '§aSchreibe den benötigten Fraktionsnamen:'
-      chooseClassesRequired: '§aSchreibe die für den Start der Quest benötigten Klassennamen:'
       choosePlaceholderRequired:
         identifier: '§aSchreibe den Namen des benötigten Platzhalters ohne die Prozentzeichen:'
         value: '§aSchreibe den benötigten Wert für den Platzhalter §6%{0}%§a:'
@@ -273,10 +267,7 @@ inv:
     customDescription: '§eBearbeite Quest Beschreibung'
     name: Letzte Questdetails
     multipleTime:
-      itemName: Mehrfachverwendung umschalten
-      itemLore: |-
-        Kann die Quest mehrmals
-        abgeschlossen werden?
+      itemLore: "Kann die Quest mehrmals\nabgeschlossen werden?"
     cancellable: Vom Spieler abbrechbar
     scoreboardItem: Scoreboard aktivieren
     hideItem: Menü und Dynmap verstecken
@@ -286,21 +277,12 @@ inv:
     setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
     setPermReward: '§eBerechtigungen bearbeiten'
     setMoneyReward: '§eGeldbelohnung bearbeiten'
-    createStarterNPC: '§e§lNPC‐Starter erstellen'
     selectStarterNPC: '§e§lNPC‐Starter auswählen'
-    createQuest:
-      itemName: '§lQuest erstellen'
-      itemLore: |-
-        Ein NPC muss ausgewählt und
-        ein Questname definiert sein.
-    editQuest:
-      itemName: '§lQuest bearbeiten'
     endMessage: '§eAbschlussnachricht bearbeiten'
     startDialog: '§eStart‐Dialog bearbeiten'
     editRequirements: '§eAnforderungen bearbeiten'
     startRewards: '§6Startbelohnungen'
     hologramText: '§eHologrammtext'
-    timer: '§bZeit, bevor die Quest erneut gestartet werden kann.'
     requirements: '{0} Anforderung(en)'
     rewards: '{0} Belohnung(en)'
     customMaterial: '§eBearbeite das Material des Questgegenstandes'
@@ -365,9 +347,6 @@ inv:
     loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
     timeToWait: '§3§o{0} Minute(n), bevor du die Quest erneut starten kannst.'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
-    format:
-      normal: '§6§l§o{0}'
-      withId: '§6§l§o{0}§r      §e#{1}'
   itemCreator:
     name: Item‐Ersteller
     itemType: '§bItem‐Typ'
@@ -441,7 +420,6 @@ misc:
     prefix: '§6<§e§lQuests§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e {0}'
   stageType:
     region: Region finden
     npc: NPC finden
@@ -455,12 +433,9 @@ misc:
     Bucket: Eimer befüllen
     location: Position finden
   comparison:
-    equals: equal to {0}
-    different: different to {0}
-    less: strictly less than {0}
-    lessOrEquals: less than {0}
-    greater: strictly greater than {0}
-    greaterOrEquals: greater than {0}
+    different: anders als {0}
+    lessOrEquals: weniger als {0}
+    greaterOrEquals: größer als {0}
   requirement:
     class: '§bBenötigte Klasse(n)'
     faction: '§bBenötigte Fraktion(en)'

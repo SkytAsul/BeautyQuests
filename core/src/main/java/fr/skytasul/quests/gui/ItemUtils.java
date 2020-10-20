@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemUtils {
@@ -61,27 +62,19 @@ public class ItemUtils {
 	 */
 	public static ItemStack lore(ItemStack is, String... lore) {
 		ItemMeta im = is.getItemMeta();
-		List<String> ls = new ArrayList<>();
+		List<String> finalLines = new ArrayList<>();
 		if (lore != null && lore.length != 0){
-			for (String s : lore){
-				if (s == null) {
-					ls.add("§a");
+			for (int i = 0; i < lore.length; i++) {
+				String line = lore[i];
+				if (line == null) {
+					if (i + 1 == lore.length) break; // last lien = null : not shown
+					finalLines.add("§a");
 					continue;
 				}
-				List<String> lss = new ArrayList<>();
-				for (String as : s.split("(\\n|\n)")) {
-					lss.add(as);
-				}
-				String last = "";
-				for (String ss : lss){
-					ss = last + ss;
-					int i = ss.lastIndexOf("§");
-					if (i != -1) last = ss.charAt(i) + "" + ss.charAt(i + 1);
-					ls.add(ss);
-				}
+				finalLines.addAll(Utils.wordWrap(line, 40));
 			}
 		}
-		im.setLore(ls);
+		im.setLore(finalLines);
 		is.setItemMeta(im);
 		
 		return is;

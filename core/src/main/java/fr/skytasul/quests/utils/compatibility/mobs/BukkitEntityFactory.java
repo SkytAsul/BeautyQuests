@@ -57,7 +57,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType> {
 	public void onEntityKilled(EntityDeathEvent e) {
 		LivingEntity en = e.getEntity();
 		if (en.getKiller() == null) return;
-		callEvent(en.getType(), en, en.getKiller());
+		callEvent(e, en.getType(), en, en.getKiller());
 	}
 	
 }

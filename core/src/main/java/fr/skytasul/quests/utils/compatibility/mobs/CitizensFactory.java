@@ -31,7 +31,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 
 	public void itemClick(Player p, Consumer<NPC> run) {
 		Lang.SELECT_KILL_NPC.send(p);
-		new SelectNPC(p, run).enterOrLeave(p);
+		new SelectNPC(p, () -> run.accept(null), run).enterOrLeave(p);
 	}
 
 	public NPC fromValue(String value) {
@@ -58,7 +58,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 	public void onNPCKilled(NPCDeathEvent e) {
 		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
 		if (en.getKiller() == null) return;
-		callEvent(e.getNPC(), en, en.getKiller());
+		callEvent(e, e.getNPC(), en, en.getKiller());
 	}
 
 }

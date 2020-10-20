@@ -1,7 +1,7 @@
 name: BeautyQuests
 author: SkytAsul
-#version: 0.17.1_BUILD${build.number}
-version: 0.17.4
+version: 0.18_BUILD${build.number}
+#version: 0.18_PRE
 api-version: 1.13
 description: Quests system with a simple graphical interface.
 depend: [Citizens]
@@ -48,6 +48,7 @@ permissions:
       beautyquests.command.cancel: true
       beautyquests.command.cancel.other: true
       beautyquests.command.scoreboard: true
+      beautyquests.command.checkpoint: true
   beautyquests.command.listPlayer:
     decription: Gives access to the menu inventory
     default: true
@@ -108,6 +109,9 @@ permissions:
   beautyquests.command.scoreboard:
     description: Gives access to "/quests scoreboard"
     default: op
+  beautyquests.command.checkpoint:
+    description: Allows player to use checkpoints
+    default: true
   beautyquests.seeId:
     description: Allows player to see the quest's ID
     default: op
