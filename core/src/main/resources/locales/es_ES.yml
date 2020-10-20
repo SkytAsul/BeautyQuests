@@ -17,6 +17,9 @@ msg:
     updated: '§7Misión §e{0}§7 actualizada.'
     checkpoint: El punto de control de tarea ha sido alcanzado
     failed: Has fallado en la búsquedast {0}
+  questItem:
+    drop: '§c¡No puedes soltar un objeto de misión!'
+    craft: '§c¡No puedes usar un objeto de misión para fabricar!'
   stageMobs:
     noMobs: '§cEsta etapa no necesita ningún mob para matar.'
     listMobs: '§aDebes matar {0}.'
@@ -67,6 +70,8 @@ msg:
   playerNeverConnected: '§cNo se puede encontrar información sobre el jugador {0}.'
   playerNotOnline: '§cEl jugador {0} está desconectado.'
   command:
+    checkpoint:
+      questNotStarted: '§cNo estás haciendo esta misión.'
     setStage:
       branchDoesntExist: '§cLa rama con el id {0} no existe.'
       doesntExist: '§cLa etapa con el id {0} no existe.'
@@ -86,6 +91,7 @@ msg:
     leaveAll: '§aHas forzado el final de {0} misión(s). Errores: {1}'
     resetPlayer:
       player: '§6Todas las informaciones de tu misión(s) {0} han sido eliminadas por {1}.'
+      remover: '§6{0} información(es) de la misión de {1} ha/han sido borradas.'
     resetPlayerQuest:
       player: '§6Toda la información sobre la misión {0} fue borrada por {1}.'
       remover: '§6{0} información de {1} ha sido eliminado.'
@@ -282,6 +288,7 @@ indication:
   cancelQuest: '§7Estás seguro de que quieres cancelar la misión {0}?'
 misc:
   requirement:
+    faction: '§bFacción(es) requerida(s)'
     jobLevel: '§bNivel de trabajo requerido'
     combatLevel: '§bNivel de combate requerido'
     experienceLevel: '§bNivel de experiencia requerida'

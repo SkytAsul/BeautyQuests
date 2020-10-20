@@ -223,7 +223,7 @@ advancement:
   finished: Zakończono
   notStarted: Nie rozpoczęto
 inv:
-  validate: '§b§lSprawdź'
+  validate: '§b§lPotwierdź'
   cancel: '§c§lAnuluj'
   search: '§e§lSzukaj'
   confirm:
@@ -487,7 +487,7 @@ indication:
   removeQuest: '§7Czy na pewno chcesz usunąć zadanie {0}?'
 misc:
   format:
-    prefix: '§6<§e§lZadania§r§7> §r'
+    prefix: '§6<§e§lZadania§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
   stageType:
