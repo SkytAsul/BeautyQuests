@@ -51,7 +51,7 @@ public class RegionRequirement extends AbstractRequirement {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.CHOOSE_REGION_REQUIRED.toString();
+		Lang.CHOOSE_REGION_REQUIRED.send(p);
 		new TextEditor<String>(p, () -> {
 			if (regionName == null) gui.remove(this);
 			gui.reopen();
@@ -66,7 +66,7 @@ public class RegionRequirement extends AbstractRequirement {
 				gui.remove(this);
 			}
 			gui.reopen();
-		});
+		}).enterOrLeave(p);
 	}
 	
 	@Override

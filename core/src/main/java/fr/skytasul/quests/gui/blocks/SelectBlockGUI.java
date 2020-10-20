@@ -70,7 +70,7 @@ public class SelectBlockGUI implements CustomInventory{
 			Lang.BLOCKS_AMOUNT.send(p);
 			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), obj -> {
 				amount = obj;
-				ItemUtils.lore(current, Lang.Amount.format(amount));
+				ItemUtils.name(current, Lang.Amount.format(amount));
 				openLastInv(p);
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
 			break;
