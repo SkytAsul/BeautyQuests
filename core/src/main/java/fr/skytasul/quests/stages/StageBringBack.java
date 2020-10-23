@@ -12,13 +12,9 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -105,45 +101,47 @@ public class StageBringBack extends StageNPC{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageBringBack> {
+	public static class Creator extends StageNPC.Creator {
+		
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 
-		public void start(Player p, LineData datas) {
-			setItem(datas.getLine());
-			List<ItemStack> items = new ArrayList<>();
-			datas.put("items", items);
+		private List<ItemStack> items;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(8, stageItems, (p, item) -> {
+				new ItemsGUI(() -> {
+					reopenGUI(p, true);
+				}, items).create(p);
+			});
+		}
+		
+		@Override
+		public void start(Player p) {
+			items = new ArrayList<>();
 			new ItemsGUI(() -> {
 				new SelectGUI(() -> {
-					datas.getGUI().deleteStageLine(datas, p);
-					datas.getGUI().reopen(p, true);
+					remove();
+					reopenGUI(p, true);
 				}, npc -> {
-					datas.getGUI().reopen(p, true);
-					StageNPC.Creator.npcDone(npc.getId(), datas);
+					super.start(p);
 				}).create(p);
 			}, items).create(p);
 		}
 
-		public static void setItem(Line line) {
-			line.setItem(8, stageItems.clone(), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					Inventories.create(p, new ItemsGUI(() -> {
-						datas.getGUI().reopen(p, true);
-					}, datas.get("items")));
-				}
-			});
-		}
-
-		public StageBringBack finish(LineData datas, QuestBranch branch) {
-			StageBringBack stage = new StageBringBack(branch, datas.<List<ItemStack>>get("items").toArray(new ItemStack[0]));
-			StageNPC.Creator.setFinish(stage, datas);
+		@Override
+		public StageBringBack finishStage(QuestBranch branch) {
+			StageBringBack stage = new StageBringBack(branch, items.toArray(new ItemStack[0]));
+			setFinish(stage);
 			return stage;
 		}
 
-		public void edit(LineData datas, StageBringBack stage) {
-			StageNPC.Creator.setEdit(stage, datas);
-			datas.put("items", new ArrayList<>());
-			datas.<List<ItemStack>>get("items").addAll(Arrays.asList(stage.getItems()));
-			setItem(datas.getLine());
+		@Override
+		public void edit(StageNPC stage) {
+			super.edit(stage);
+			StageBringBack stageB = (StageBringBack) stage;
+			items = new ArrayList<>(Arrays.asList(stageB.items));
 		}
 	}
 

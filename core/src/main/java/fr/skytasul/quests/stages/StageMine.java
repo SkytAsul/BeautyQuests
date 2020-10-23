@@ -162,18 +162,18 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 
 		public static void setItems(Line line, LineData datas) {
 			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
+				public void run(Player p, ItemStack item) {
 					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
+					blocks.setBlocksFromMap(blocks.inv, line.get("blocks"));
 					blocks.run = (obj) -> {
-						datas.getGUI().reopen(p, true);
-						datas.put("blocks", obj);
+						line.getGUI().reopen(p, true);
+						line.put("blocks", obj);
 					};
 				}
 			});
 			line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), datas.get("prevent")), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					datas.put("prevent", ItemUtils.toggle(item));
+				public void run(Player p, ItemStack item) {
+					line.put("prevent", ItemUtils.toggle(item));
 				}
 			});
 		}

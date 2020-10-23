@@ -178,11 +178,11 @@ public class StageCraft extends AbstractStage {
 
 		public static void setItem(Line line) {
 			ItemStack setItem = line.data.get("item");
-			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), Lang.optionValue.format(Utils.getStringFromItemStack(setItem, "§8", true))), (p, datas, item) -> {
+			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), Lang.optionValue.format(Utils.getStringFromItemStack(setItem, "§8", true))), (p, item) -> {
 				new ItemGUI((is) -> {
-					datas.put("item", is);
-					datas.getGUI().reopen(p, true);
-				}, () -> datas.getGUI().reopen(p, true)).create(p);
+					line.put("item", is);
+					line.getGUI().reopen(p, true);
+				}, () -> line.getGUI().reopen(p, true)).create(p);
 			});
 		}
 	}

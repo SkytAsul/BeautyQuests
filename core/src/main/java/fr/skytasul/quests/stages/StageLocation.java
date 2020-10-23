@@ -127,7 +127,7 @@ public class StageLocation extends AbstractStage {
 		}
 
 		public static void setItems(Line line) {
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.<Integer>get("radius"))), (p, datas, item) -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.<Integer>get("radius"))), (p, item) -> {
 				Lang.LOCATION_RADIUS.send(p);
 				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), x -> {
 					ItemUtils.lore(item, Lang.currentRadius.format(x));
@@ -135,11 +135,11 @@ public class StageLocation extends AbstractStage {
 					datas.getGUI().reopen(p, false);
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			});
-			line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, datas, item) -> {
+			line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, item) -> {
 				Lang.LOCATION_GO.send(p);
-				new WaitClick(p, () -> datas.getGUI().reopen(p, false), NPCGUI.validMove, () -> {
-					datas.put("location", p.getLocation());
-					datas.getGUI().reopen(p, false);
+				new WaitClick(p, () -> line.getGUI().reopen(p, false), NPCGUI.validMove, () -> {
+					line.put("location", p.getLocation());
+					line.getGUI().reopen(p, false);
 				}).enterOrLeave(p);
 			});
 		}

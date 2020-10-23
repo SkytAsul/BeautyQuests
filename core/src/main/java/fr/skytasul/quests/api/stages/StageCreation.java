@@ -1,0 +1,182 @@
+package fr.skytasul.quests.api.stages;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.entity.Player;
+
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.editors.Editor;
+import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.utils.Lang;
+
+public abstract class StageCreation<T extends AbstractStage> {
+	
+	protected final Line line;
+	private final boolean ending;
+	
+	private List<AbstractReward> rewards;
+	private List<AbstractRequirement> requirements;
+	
+	private String customDescription, startMessage;
+	
+	private StagesGUI leadingBranch;
+	
+	public StageCreation(Line line, boolean ending) {
+		this.line = line;
+		this.ending = ending;
+		
+		line.setItem(1, StagesGUI.ending.clone(), (p, item) -> new QuestObjectGUI<>(Lang.INVENTORY_REWARDS.toString(), QuestObjectLocation.STAGE, QuestsAPI.rewards.values(), rewards -> {
+			setRewards(rewards);
+			reopenGUI(p, true);
+		}, rewards).create(p));
+		
+		line.setItem(2, StagesGUI.descMessage.clone(), (p, item) -> {
+			Lang.DESC_MESSAGE.send(p);
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
+				setCustomDescription(obj);
+				reopenGUI(p, false);
+			}, () -> {
+				this.setCustomDescription(null);
+				reopenGUI(p, false);
+			}));
+		});
+		
+		line.setItem(3, StagesGUI.startMessage.clone(), (p, item) -> {
+			Lang.START_TEXT.send(p);
+			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
+				setStartMessage(obj);
+				reopenGUI(p, false);
+			}, () -> {
+				setStartMessage(null);
+				reopenGUI(p, false);
+			}));
+		});
+		
+		line.setItem(4, StagesGUI.validationRequirements.clone(), (p, item) -> {
+			new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.STAGE, QuestsAPI.requirements.values(), requirements -> {
+				setRequirements(requirements);
+				reopenGUI(p, true);
+			}, requirements).create(p);
+		});
+	}
+	
+	public Line getLine() {
+		return line;
+	}
+	
+	public void reopenGUI(Player p, boolean reImplement) {
+		line.gui.reopen(p, reImplement);
+	}
+	
+	public void remove() {
+		line.gui.deleteStageLine(line);
+	}
+	
+	public boolean isEndingStage() {
+		return ending;
+	}
+	
+	public List<AbstractReward> getRewards() {
+		return rewards;
+	}
+	
+	public void setRewards(List<AbstractReward> rewards) {
+		this.rewards = rewards;
+		line.editItem(1, ItemUtils.lore(line.getItem(1), QuestOption.formatDescription(Lang.rewards.format(rewards.size()))));
+	}
+	
+	public List<AbstractRequirement> getRequirements() {
+		return requirements;
+	}
+	
+	public void setRequirements(List<AbstractRequirement> requirements) {
+		line.editItem(4, ItemUtils.lore(line.getItem(4), QuestOption.formatDescription(Lang.requirements.format(rewards.size()))));
+		this.requirements = requirements;
+	}
+	
+	public String getCustomDescription() {
+		return customDescription;
+	}
+	
+	public void setCustomDescription(String customDescription) {
+		this.customDescription = customDescription;
+		line.editItem(2, ItemUtils.lore(line.getItem(2), formatValue(customDescription)));
+	}
+	
+	public String getStartMessage() {
+		return startMessage;
+	}
+	
+	public void setStartMessage(String startMessage) {
+		this.startMessage = startMessage;
+		line.editItem(3, ItemUtils.lore(line.getItem(2), formatValue(startMessage)));
+	}
+	
+	public StagesGUI getLeadingBranch() {
+		return leadingBranch;
+	}
+	
+	public void setLeadingBranch(StagesGUI leadingBranch) {
+		this.leadingBranch = leadingBranch;
+	}
+	
+	/**
+	 * Called when stage item clicked
+	 * @param p player who click on the item
+	 */
+	public void start(Player p) {
+		setRewards(new ArrayList<>());
+		setRequirements(new ArrayList<>());
+		setCustomDescription(null);
+		setStartMessage(null);
+	}
+
+	/**
+	 * Called when quest edition started
+	 * @param stage Existing stage
+	 */
+	public void edit(T stage) {
+		setRewards(stage.getRewards());
+		setRequirements(stage.getValidationRequirements());
+		setStartMessage(stage.getStartMessage());
+		setCustomDescription(stage.getCustomText());
+	}
+
+	public final T finish(QuestBranch branch) {
+		T stage = finishStage(branch);
+		stage.setRewards(rewards);
+		stage.setValidationRequirements(requirements);
+		stage.setCustomText(customDescription);
+		stage.setStartMessage(startMessage);
+		return stage;
+	}
+	
+	/**
+	 * Called when quest creation finished
+	 * @param branch quest created
+	 * @return AsbtractStage created
+	 */
+	protected abstract T finishStage(QuestBranch branch);
+	
+	private static String formatValue(String nullable) {
+		return Lang.optionValue.format(nullable == null ? Lang.NotSet.toString() : nullable);
+	}
+	
+	@FunctionalInterface
+	public static interface StageCreationSupplier<T extends AbstractStage> {
+		
+		StageCreation<T> supply(Line line, boolean endingStage);
+		
+	}
+	
+}

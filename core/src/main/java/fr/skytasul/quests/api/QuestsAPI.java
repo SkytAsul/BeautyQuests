@@ -19,7 +19,7 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation.StageCreationSupplier;
 import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -43,13 +43,13 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in stages GUI when choosing stage type
 	 * @param runnables Instance of special runnables
 	 */
-	public static <T extends AbstractStage> void registerStage(StageType type, ItemStack item, StageCreationRunnables<T> runnables) {
+	public static <T extends AbstractStage> void registerStage(StageType type, ItemStack item, StageCreationSupplier<T> stageCreationSupplier) {
 		if (type.dependCode != null) if (!Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
 			BeautyQuests.getInstance().getLogger().warning("Plugin " + type.dependCode + " not enabled. Stage injecting interrupted.");
 			return;
 		}
 		StageType.types.add(type);
-		StageCreator.creators.add(new StageCreator<T>(type, item, runnables));
+		StageCreator.creators.add(new StageCreator<T>(type, item, stageCreationSupplier));
 		DebugUtils.logMessage("Stage registered (" + type.name + ", " + (StageCreator.creators.size()-1) + ")");
 	}
 	

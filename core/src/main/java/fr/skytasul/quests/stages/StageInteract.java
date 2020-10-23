@@ -119,9 +119,9 @@ public class StageInteract extends AbstractStage {
 		}
 
 		public static void setItems(LineData datas) {
-			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.get("left")), (p, datass, item) -> datas.put("left", ItemUtils.toggle(item)));
+			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.get("left")), (p, item) -> datas.put("left", ItemUtils.toggle(item)));
 			if (datas.containsKey("lc")) {
-				datas.getLine().setItem(6, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, datass, item) -> {
+				datas.getLine().setItem(6, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
 					Lang.CLICK_BLOCK.send(p);
 					new WaitBlockClick(p, () -> datas.getGUI().reopen(p, false), obj -> {
 						datas.put("lc", obj);
@@ -129,7 +129,7 @@ public class StageInteract extends AbstractStage {
 					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
 				});
 			}else {
-				datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString(), Lang.optionValue.format(datas.<XMaterial>get("material").toString())), (p, datass, item) -> {
+				datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString(), Lang.optionValue.format(datas.<XMaterial>get("material").toString())), (p, item) -> {
 					Lang.BLOCK_NAME.send(p);
 					new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), material -> {
 						ItemUtils.lore(item, Lang.optionValue.format(material.name()));

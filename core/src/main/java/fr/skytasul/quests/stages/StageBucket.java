@@ -148,7 +148,7 @@ public class StageBucket extends AbstractStage {
 		}
 
 		public static void setItems(Line line) {
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.<Integer>get("amount"))), (p, datas, item) -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.<Integer>get("amount"))), (p, item) -> {
 				Lang.BUCKET_AMOUNT.send(p);
 				new TextEditor<>(p, () -> datas.getGUI().reopen(p, true), obj -> {
 					ItemUtils.lore(item, Lang.Amount.format(obj));
@@ -157,10 +157,10 @@ public class StageBucket extends AbstractStage {
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			});
 			BucketType type = line.data.get("bucket");
-			line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
-				new BucketTypeGUI(() -> datas.getGUI().reopen(p, true), bucket -> {
-					datas.put("bucket", bucket);
-					datas.getGUI().reopen(p, true);
+			line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, item) -> {
+				new BucketTypeGUI(() -> line.getGUI().reopen(p, true), bucket -> {
+					line.put("bucket", bucket);
+					line.getGUI().reopen(p, true);
 					item.setType(bucket.getMaterial().parseMaterial());
 					ItemUtils.lore(item, bucket.getName());
 				}).create(p);

@@ -99,12 +99,12 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 
 		public static void setItems(Line line, LineData datas) {
 			line.setItem(6, ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
+				public void run(Player p, ItemStack item) {
 					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
+					blocks.setBlocksFromMap(blocks.inv, line.get("blocks"));
 					blocks.run = (obj) -> {
-						datas.getGUI().reopen(p, true);
-						datas.put("blocks", obj);
+						line.getGUI().reopen(p, true);
+						line.put("blocks", obj);
 					};
 				}
 			});

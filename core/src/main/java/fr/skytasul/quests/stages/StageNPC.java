@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,15 +17,12 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.DialogEditor;
-import fr.skytasul.quests.editors.Editor;
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable;
-import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -44,7 +40,7 @@ public class StageNPC extends AbstractStage{
 	
 	private NPC npc;
 	private int npcID;
-	protected Dialog di = null;
+	protected Dialog dialog = null;
 	protected boolean hide = false;
 	
 	protected StageBringBack bringBack = null;
@@ -112,22 +108,22 @@ public class StageNPC extends AbstractStage{
 	public void setDialog(Object obj){
 		if (obj == null) return;
 		if (obj instanceof Dialog){
-			this.di = (Dialog) obj;
+			this.dialog = (Dialog) obj;
 		}else {
 			setDialog(Dialog.deserialize((Map<String, Object>) obj));
 		}
 	}
 	
 	public void setDialog(Dialog dialog){
-		this.di = dialog;
+		this.dialog = dialog;
 	}
 	
 	public boolean hasDialog(){
-		return di != null;
+		return dialog != null;
 	}
 	
 	public Dialog getDialog(){
-		return di;
+		return dialog;
 	}
 
 	public boolean isHid(){
@@ -168,8 +164,8 @@ public class StageNPC extends AbstractStage{
 		e.setCancelled(true);
 
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
-		if (di != null){ // dialog exists
-			di.send(p, npc, () -> {
+		if (dialog != null) { // dialog exists
+			dialog.send(p, npc, () -> {
 				if (bringBack != null) {
 					if (!bringBack.checkItems(p, true)) return;
 					bringBack.removeItems(p);
@@ -243,7 +239,7 @@ public class StageNPC extends AbstractStage{
 	
 	public void serialize(Map<String, Object> map){
 		map.put("npcID", npcID);
-		if (di != null) map.put("msg", di.serialize());
+		if (dialog != null) map.put("msg", dialog.serialize());
 		if (hide) map.put("hid", true);
 	}
 	
@@ -253,68 +249,79 @@ public class StageNPC extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageNPC> {
-		private static final ItemStack stageText = ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString());
-		private static final ItemStack stageNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString());
-
-		public void start(Player p, LineData datas) {
-			StagesGUI sg = datas.getGUI();
-			Inventories.create(p, new SelectGUI(() -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
-			}, npc -> {
-				sg.reopen(p, true);
-				npcDone(npc.getId(), datas);
-			}));
-		}
-
-		public static void npcDone(int npcID, LineData datas) {
-			datas.put("npcID", npcID);
-			datas.getLine().setItem(7, ItemUtils.lore(stageNPC.clone(), Lang.optionValue.format(npcID)), (p, datass, item) -> {
-				new SelectGUI(() -> datas.getGUI().reopen(p, true), npc -> {
-					ItemUtils.lore(item, Lang.optionValue.format(npc.getId()));
-					datas.put("npcID", npc.getId());
-					datas.getGUI().reopen(p, true);
+	public static class Creator extends StageCreation<StageNPC> {
+		
+		private int npcID = -1;
+		private Dialog dialog = null;
+		private boolean hidden = false;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(7, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), (p, item) -> {
+				new SelectGUI(() -> reopenGUI(p, true), npc -> {
+					setNPCId(npc.getId());
+					reopenGUI(p, true);
 				}).create(p);
 			});
 			
-			datas.getLine().setItem(6, stageText.clone(), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-					Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
-						datas.getGUI().reopen(p, false);
-						datas.put("npcText", obj);
-					}, datas.containsKey("npcText") ? datas.get("npcText") : new Dialog()));
-				}
+			line.setItem(6, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString()), (p, item) -> {
+				Utils.sendMessage(p, Lang.NPC_TEXT.toString());
+				new DialogEditor(p, (obj) -> {
+					setDialog(dialog);
+					reopenGUI(p, false);
+				}, dialog == null ? dialog = new Dialog() : dialog).enterOrLeave(p);
 			}, true, true);
-
-			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.stageHide.toString(), datas.containsKey("hide") ? (boolean) datas.get("hide") : false), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					datas.put("hide", ItemUtils.toggle(item));
-				}
-			}, true, true);
+			
+			line.setItem(5, ItemUtils.itemSwitch(Lang.stageHide.toString(), false), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
+		}
+		
+		public void setNPCId(int npcID) {
+			this.npcID = npcID;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription("ID: §l" + npcID)));
+		}
+		
+		public void setDialog(Dialog dialog) {
+			this.dialog = dialog;
+		}
+		
+		public void setHidden(boolean hidden) {
+			if (this.hidden != hidden) {
+				this.hidden = hidden;
+				line.editItem(5, ItemUtils.set(line.getItem(5), hidden));
+			}
 		}
 
-		public static void setFinish(StageNPC stage, LineData datas) {
-			if (datas.containsKey("npcText")) stage.setDialog(datas.get("npcText"));
-			if (datas.containsKey("hide")) stage.setHid(datas.get("hide"));
-			if (datas.containsKey("npcID")) stage.setNPC(datas.get("npcID"));
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			new SelectGUI(() -> {
+				remove();
+				reopenGUI(p, true);
+			}, npc -> {
+				setNPCId(npcID);
+				reopenGUI(p, true);
+			}).create(p);
 		}
-
-		public static void setEdit(StageNPC stage, LineData datas) {
-			if (stage.getDialog() != null) datas.put("npcText", stage.getDialog().clone());
-			if (stage.isHid()) datas.put("hide", true);
-			npcDone(stage.npcID, datas);
+		
+		@Override
+		public void edit(StageNPC stage) {
+			super.edit(stage);
+			setNPCId(stage.npcID);
+			setDialog(stage.dialog);
+			setHidden(stage.hide);
 		}
-
-		public StageNPC finish(LineData datas, QuestBranch branch) {
-			StageNPC stage = new StageNPC(branch);
-			setFinish(stage, datas);
+		
+		@Override
+		protected StageNPC finishStage(QuestBranch branch) {
+			return setFinish(new StageNPC(branch));
+		}
+		
+		protected StageNPC setFinish(StageNPC stage) {
+			stage.setNPC(npcID);
+			stage.setDialog(dialog);
+			stage.setHid(hidden);
 			return stage;
-		}
-
-		public void edit(LineData datas, StageNPC stage) {
-			setEdit(stage, datas);
 		}
 	}
 

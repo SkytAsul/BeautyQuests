@@ -138,10 +138,10 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 
 		public static void setItem(Line line) {
 			line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
+				public void run(Player p, ItemStack item) {
 					Inventories.create(p, new ItemsGUI(() -> {
-						datas.getGUI().reopen(p, true);
-					}, datas.get("items")));
+						line.getGUI().reopen(p, true);
+					}, line.get("items")));
 				}
 			});
 		}

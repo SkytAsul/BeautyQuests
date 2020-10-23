@@ -8,19 +8,15 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable;
-import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -86,58 +82,63 @@ public class StageArea extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageArea> {
-		private static final ItemStack regionName = ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString());
+	public static class Creator extends StageCreation<StageArea> {
 
-		public void start(Player p, LineData datas) {
-			StagesGUI sg = datas.getGUI();
-			Line line = datas.getLine();
-			datas.put("exit", false);
-			setItems(line, sg);
-			launchRegionEditor(p, line, sg, datas, true);
+		private boolean exit = false;
+		private String regionName;
+		private String worldName;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			line.setItem(6, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
+			line.setItem(7, ItemUtils.itemSwitch(Lang.stageRegion.toString(), false), (p, item) -> setExit(ItemUtils.toggle(item)));
+		}
+		
+		public void setRegion(String regionName, String worldName) {
+			this.regionName = regionName;
+			this.worldName = worldName;
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(regionName + " (" + worldName + ")")));
+		}
+		
+		public void setExit(boolean exit) {
+			if (this.exit != exit) {
+				this.exit = exit;
+				line.editItem(7, ItemUtils.set(line.getItem(7), exit));
+			}
 		}
 
-		private static void launchRegionEditor(Player p, Line line, StagesGUI sg, LineData datas, boolean first) {
+		private void launchRegionEditor(Player p, boolean first) {
 			Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
 			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
-				sg.reopen(p, false);
-				if (first) line.click(0, p, line.getItem(0));
+				if (first) remove();
+				reopenGUI(p, false);
 			}, obj -> {
 				if (WorldGuard.regionExists(obj, p.getWorld())) {
-					sg.reopen(p, false);
-					ItemUtils.name(line.getItem(6), obj);
-					datas.put("region", obj);
-					datas.put("world", p.getWorld().getName());
+					setRegion(obj, p.getWorld().getName());
 				}else {
 					Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
-					if (first) sg.deleteStageLine(datas, p);
-					sg.reopen(p, false);
+					if (first) remove();
 				}
+				reopenGUI(p, false);
 			}));
 		}
-
-		public static void setItems(Line line, StagesGUI sg) {
-			line.setItem(6, regionName.clone(), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					launchRegionEditor(p, line, sg, datas, false);
-				}
-			}, true, true);
-			line.setItem(7, ItemUtils.itemSwitch(Lang.stageRegion.toString(), line.data.get("exit")), (p, datas, item) -> {
-				datas.put("exit", ItemUtils.toggle(item));
-			});
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			launchRegionEditor(p, true);
 		}
 
-		public StageArea finish(LineData datas, QuestBranch branch) {
-			StageArea stage = new StageArea(branch, datas.get("region"), datas.get("world"), datas.get("exit"));
-			return stage;
+		@Override
+		public void edit(StageArea stage) {
+			super.edit(stage);
+			setRegion(stage.getRegion().getId(), WorldGuard.getWorld(stage.getRegion().getId()).getName());
+			setExit(stage.exit);
 		}
-
-		public void edit(LineData datas, StageArea stage) {
-			datas.put("region", stage.getRegion().getId());
-			datas.put("world", WorldGuard.getWorld(stage.getRegion().getId()).getName());
-			datas.put("exit", stage.exit);
-			setItems(datas.getLine(), datas.getGUI());
-			ItemUtils.name(datas.getLine().getItem(6), stage.getRegion().getId());
+		
+		@Override
+		public StageArea finishStage(QuestBranch branch) {
+			return new StageArea(branch, regionName, worldName, exit);
 		}
 	}
 

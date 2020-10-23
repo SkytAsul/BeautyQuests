@@ -1,29 +1,32 @@
 package fr.skytasul.quests.gui.creation.stages;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.types.NumberedList;
 import fr.skytasul.quests.utils.types.Pair;
 
 public class Line {
 	
-	Inventory inv;
+	public final StagesGUI gui;
 	private int line = 0;
 	
 	private int activePage = 0;
 	private int maxPage = 1;
 	
-	NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
+	private NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
 
-	public LineData data;
+	private Map<String, Object> data = new HashMap<>();
+	public StageCreation<?> creation = null;
 	
-	Line(Inventory inv, int line, StagesGUI gui){
-		this.inv = inv;
+	Line(int line, StagesGUI gui) {
+		this.gui = gui;
 		this.line = line;
-		this.data = new LineData(this, gui);
 	}
 	
 	/**
@@ -79,7 +82,7 @@ public class Line {
 	 * @return ItemStack in the gui if showed, or ItemStack stocked
 	 */
 	public ItemStack getItem(int slot){
-		if (line >= data.getGUI().page * 5 && line < (data.getGUI().page+1)*5) return inv.getItem(line*9 - data.getGUI().page*5*9 + (slot - activePage*8));
+		if (line >= gui.page * 5 && line < (gui.page + 1) * 5) return gui.inv.getItem(line * 9 - gui.page * 5 * 9 + (slot - activePage * 8));
 		return items.get(slot).getKey();
 	}
 	
@@ -125,8 +128,8 @@ public class Line {
 			if (items.contains(id)) {
 				Pair<ItemStack, StageRunnable> pair = items.get(id);
 				int RSlot = getRSlot(slot);
-				inv.setItem(RSlot, pair.getKey());
-				pair.setKey(inv.getItem(RSlot));
+				gui.inv.setItem(RSlot, pair.getKey());
+				pair.setKey(gui.inv.getItem(RSlot));
 			}
 			slot++;
 		}
@@ -150,8 +153,7 @@ public class Line {
 	}
 	
 	public boolean isInGUIPage(){
-		int gpage = data.getGUI().page;
-		return line >= gpage*5 && line < (gpage+1)*5;
+		return line >= gui.page*5 && line < (gui.page+1)*5;
 	}
 	
 	public void click(int slot, Player p, ItemStack is){
@@ -172,7 +174,7 @@ public class Line {
 	}
 	
 	public void execute(int lineSlot, Player p, ItemStack is) {
-		items.get(lineSlot).getValue().run(p, data, is);
+		items.get(lineSlot).getValue().run(p, is);
 	}
 	
 	private void clearLine(){
@@ -183,7 +185,7 @@ public class Line {
 	}
 
 	private int getRSlot(int lineSlot) {
-		return line*9 - data.getGUI().page*5*9 + lineSlot;
+		return line * 9 - gui.page * 5 * 9 + lineSlot;
 	}
 	
 	/**
@@ -196,7 +198,7 @@ public class Line {
 	}
 	
 	private void RsetItem(int Rslot, ItemStack is){
-		inv.setItem(getRSlot(Rslot), is);
+		gui.inv.setItem(getRSlot(Rslot), is);
 	}
 	
 }

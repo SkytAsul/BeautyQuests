@@ -107,12 +107,12 @@ public class StagePlayTime extends AbstractStage {
 		}
 		
 		private void setItem(Line line, long ticks) {
-			line.setItem(5, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString(), "§6Ticks: §e§l" + ticks), (p, datas, item) -> {
+			line.setItem(5, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString(), "§6Ticks: §e§l" + ticks), (p, item) -> {
 				Lang.GAME_TICKS.send(p);
-				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), obj -> {
+				new TextEditor<>(p, () -> line.getGUI().reopen(p, false), obj -> {
 					ItemUtils.lore(item, "§6Ticks: §e§l" + obj);
-					datas.put("ticks", obj);
-					datas.getGUI().reopen(p, false);
+					line.put("ticks", obj);
+					line.getGUI().reopen(p, false);
 				}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
 			});
 		}
