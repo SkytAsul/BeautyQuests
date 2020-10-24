@@ -15,7 +15,6 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -110,7 +109,7 @@ public class StageBringBack extends StageNPC{
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(8, stageItems, (p, item) -> {
+			line.setItem(5, stageItems, (p, item) -> {
 				new ItemsGUI(() -> {
 					reopenGUI(p, true);
 				}, items).create(p);
@@ -120,14 +119,7 @@ public class StageBringBack extends StageNPC{
 		@Override
 		public void start(Player p) {
 			items = new ArrayList<>();
-			new ItemsGUI(() -> {
-				new SelectGUI(() -> {
-					remove();
-					reopenGUI(p, true);
-				}, npc -> {
-					super.start(p);
-				}).create(p);
-			}, items).create(p);
+			new ItemsGUI(() -> super.start(p), items).create(p);
 		}
 
 		@Override

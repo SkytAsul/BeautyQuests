@@ -65,7 +65,7 @@ public class BlocksGUI implements CustomInventory {
 		return true;
 	}
 	
-	public void setBlocksFromMap(Inventory inv, Map<Integer, Entry<BQBlock, Integer>> map) {
+	public void setBlocksFromMap(Map<Integer, Entry<BQBlock, Integer>> map) {
 		for (Entry<Integer, Entry<BQBlock, Integer>> entry : map.entrySet()) {
 			int id = entry.getKey();
 			Entry<BQBlock, Integer> blockEntry = entry.getValue();

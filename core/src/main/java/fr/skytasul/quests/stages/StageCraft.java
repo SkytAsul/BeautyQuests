@@ -13,10 +13,9 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -154,36 +153,44 @@ public class StageCraft extends AbstractStage {
 		return result;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageCraft> {
-		public void start(Player p, LineData datas) {
-			new ItemGUI(is -> {
-				datas.put("item", is);
-				datas.getGUI().reopen(p, true);
-				setItem(datas.getLine());
-			}, () -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
-			}).create(p);
-		}
-
-		public StageCraft finish(LineData datas, QuestBranch branch) {
-			StageCraft stage = new StageCraft(branch, datas.get("item"));
-			return stage;
-		}
-
-		public void edit(LineData datas, StageCraft stage) {
-			datas.put("item", stage.getItem());
-			setItem(datas.getLine());
-		}
-
-		public static void setItem(Line line) {
-			ItemStack setItem = line.data.get("item");
-			line.setItem(6, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString(), Lang.optionValue.format(Utils.getStringFromItemStack(setItem, "§8", true))), (p, item) -> {
+	public static class Creator extends StageCreation<StageCraft> {
+		
+		private ItemStack item;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(7, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), (p, item) -> {
 				new ItemGUI((is) -> {
-					line.put("item", is);
-					line.getGUI().reopen(p, true);
-				}, () -> line.getGUI().reopen(p, true)).create(p);
+					setItem(is);
+					reopenGUI(p, true);
+				}, () -> reopenGUI(p, true)).create(p);
 			});
+		}
+
+		public void setItem(ItemStack item) {
+			this.item = item;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
+		}
+
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			new ItemGUI(is -> {
+				setItem(is);
+				reopenGUI(p, true);
+			}, removeAndReopen(p, true)).create(p);
+		}
+
+		@Override
+		public void edit(StageCraft stage) {
+			super.edit(stage);
+			setItem(stage.getItem());
+		}
+		
+		@Override
+		public StageCraft finishStage(QuestBranch branch) {
+			return new StageCraft(branch, item);
 		}
 	}
 

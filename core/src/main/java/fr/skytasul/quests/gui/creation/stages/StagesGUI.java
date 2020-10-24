@@ -123,13 +123,11 @@ public class StagesGUI implements CustomInventory {
 	private StageCreation<?> runClick(Line line, StageCreator<?> creator, boolean branches) {
 		line.removeItems();
 		StageCreation<?> creation = creator.stageCreationSupplier.supply(line, branches);
-		//line.data.put("creation", creation);
 		line.creation = creation;
 
 		int maxStages = branches ? 20 : 15;
 		line.setItem(0, ItemUtils.lore(stageRemove.clone(), QuestOption.formatDescription(creator.type.name)), new StageRunnable() {
 			public void run(Player p, ItemStack item) {
-				//line.data.clear();
 				line.creation = null;
 				line.removeItems();
 				if (line.getLine() != maxStages-1){
@@ -162,7 +160,7 @@ public class StagesGUI implements CustomInventory {
 	}
 
 	private boolean isActiveLine(Line line) {
-		return /*line.data.containsKey("type");*/ line.creation != null;
+		return line.creation != null;
 	}
 
 	public Line getLine(int id){
@@ -178,9 +176,6 @@ public class StagesGUI implements CustomInventory {
 	}
 	
 	public void deleteStageLine(Line line) {
-		/*if (datas.containsKey("type")) { // stage line
-			datas.getLine().execute(0, p, null); // non-used item in remove runnable
-		}*/
 		if (isActiveLine(line)) line.execute(0, null, null); // item and player not used for deletion item
 	}
 
@@ -261,14 +256,6 @@ public class StagesGUI implements CustomInventory {
 		}
 		return stages;
 	}
-	
-	/*public List<LineData> getLinesDatas(){
-		List<LineData> lines = new LinkedList<>();
-		for (int i = 0; i < 20; i++){
-			if (isActiveLine(getLine(i))) lines.add(getLine(i).data);
-		}
-		return lines;
-	}*/
 
 	public void edit(Quest quest){
 		edit = quest;
@@ -322,14 +309,14 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType("NPC", StageNPC.class, Lang.Talk.name()), stageNPC, StageNPC.Creator::new);
 		QuestsAPI.registerStage(new StageType("ITEMS", StageBringBack.class, Lang.Items.name()), stageItems, StageBringBack.Creator::new);
 		QuestsAPI.registerStage(new StageType("MOBS", StageMobs.class, Lang.Mobs.name()), stageMobs, StageMobs.Creator::new);
-		QuestsAPI.registerStage(new StageType("MINE", StageMine.class, Lang.Mine.name()), stageMine, new StageMine.Creator());
-		QuestsAPI.registerStage(new StageType("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name()), stagePlace, new StagePlaceBlocks.Creator());
-		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, new StageChat.Creator());
-		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, new StageInteract.Creator());
-		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, new StageFish.Creator());
-		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, new StageCraft.Creator());
-		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, new StageBucket.Creator());
-		QuestsAPI.registerStage(new StageType("LOCATION", StageLocation.class, Lang.Location.name()), stageLocation, new StageLocation.Creator());
-		QuestsAPI.registerStage(new StageType("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name()), stagePlayTime, new StagePlayTime.Creator());
+		QuestsAPI.registerStage(new StageType("MINE", StageMine.class, Lang.Mine.name()), stageMine, StageMine.Creator::new);
+		QuestsAPI.registerStage(new StageType("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name()), stagePlace, StagePlaceBlocks.Creator::new);
+		QuestsAPI.registerStage(new StageType("CHAT", StageChat.class, Lang.Chat.name()), stageChat, StageChat.Creator::new);
+		QuestsAPI.registerStage(new StageType("INTERACT", StageInteract.class, Lang.Interact.name()), stageInteract, StageInteract.Creator::new);
+		QuestsAPI.registerStage(new StageType("FISH", StageFish.class, Lang.Fish.name()), stageFish, StageFish.Creator::new);
+		QuestsAPI.registerStage(new StageType("CRAFT", StageCraft.class, Lang.Craft.name()), stageCraft, StageCraft.Creator::new);
+		QuestsAPI.registerStage(new StageType("BUCKET", StageBucket.class, Lang.Bucket.name()), stageBucket, StageBucket.Creator::new);
+		QuestsAPI.registerStage(new StageType("LOCATION", StageLocation.class, Lang.Location.name()), stageLocation, StageLocation.Creator::new);
+		QuestsAPI.registerStage(new StageType("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name()), stagePlayTime, StagePlayTime.Creator::new);
 	}
 }

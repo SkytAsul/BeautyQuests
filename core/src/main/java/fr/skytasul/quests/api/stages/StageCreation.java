@@ -82,6 +82,13 @@ public abstract class StageCreation<T extends AbstractStage> {
 		line.gui.deleteStageLine(line);
 	}
 	
+	protected Runnable removeAndReopen(Player p, boolean reImplement) {
+		return () -> {
+			remove();
+			reopenGUI(p, reImplement);
+		};
+	}
+	
 	public boolean isEndingStage() {
 		return ending;
 	}
@@ -119,7 +126,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setStartMessage(String startMessage) {
 		this.startMessage = startMessage;
-		line.editItem(3, ItemUtils.lore(line.getItem(2), formatValue(startMessage)));
+		line.editItem(3, ItemUtils.lore(line.getItem(3), formatValue(startMessage)));
 	}
 	
 	public StagesGUI getLeadingBranch() {

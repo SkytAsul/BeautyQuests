@@ -13,19 +13,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitBlockClick;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
 
@@ -93,65 +95,86 @@ public class StageInteract extends AbstractStage {
 		}else return new StageInteract(branch, (boolean) map.get("leftClick"), XMaterial.valueOf((String) map.get("material")));
 	}
 
-	public static class Creator implements StageCreationRunnables<StageInteract> {
+	public static class Creator extends StageCreation<StageInteract> {
+		
+		private boolean leftClick = false;
+		private Location location;
+		private XMaterial material;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
 
-		public void start(Player p, LineData datas) {
-			datas.put("left", false);
-			Runnable cancel = () -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
-			};
+			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), (p, item) -> setLeftClick(ItemUtils.toggle(item)));
+		}
+		
+		public void setLeftClick(boolean leftClick) {
+			if (this.leftClick != leftClick) {
+				this.leftClick = leftClick;
+				line.editItem(6, ItemUtils.set(line.getItem(6), leftClick));
+			}
+		}
+
+		public void setLocation(Location location) {
+			if (this.location == null) {
+				line.setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
+					Lang.CLICK_BLOCK.send(p);
+					new WaitBlockClick(p, () -> reopenGUI(p, false), obj -> {
+						setLocation(location);
+						reopenGUI(p, false);
+					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
+				});
+			}
+			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription(Utils.locationToString(location))));
+			this.location = location;
+		}
+		
+		public void setMaterial(XMaterial material) {
+			if (this.material == null) {
+				line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), (p, item) -> {
+					Lang.BLOCK_NAME.send(p);
+					new TextEditor<>(p, () -> reopenGUI(p, false), newMaterial -> {
+						setMaterial(newMaterial);
+						reopenGUI(p, false);
+					}, new MaterialParser(false, true)).enterOrLeave(p);
+				});
+			}
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(material.name())));
+			this.material = material;
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			Runnable cancel = removeAndReopen(p, true);
 			new ChooseActionGUI(cancel, () -> {
 				Lang.CLICK_BLOCK.send(p);
 				new WaitBlockClick(p, cancel, obj -> {
-					datas.put("lc", obj);
-					datas.getGUI().reopen(p, true);
-					setItems(datas);
+					setLocation(obj);
+					reopenGUI(p, true);
 				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
 			}, () -> {
 				Lang.BLOCK_NAME.send(p);
 				new TextEditor<>(p, cancel, material -> {
-					datas.put("material", material);
-					datas.getGUI().reopen(p, true);
-					setItems(datas);
+					setMaterial(material);
+					reopenGUI(p, true);
 				}, new MaterialParser(false, true)).enterOrLeave(p);
 			}).create(p);
 		}
 
-		public static void setItems(LineData datas) {
-			datas.getLine().setItem(5, ItemUtils.itemSwitch(Lang.leftClick.toString(), datas.get("left")), (p, item) -> datas.put("left", ItemUtils.toggle(item)));
-			if (datas.containsKey("lc")) {
-				datas.getLine().setItem(6, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
-					Lang.CLICK_BLOCK.send(p);
-					new WaitBlockClick(p, () -> datas.getGUI().reopen(p, false), obj -> {
-						datas.put("lc", obj);
-						datas.getGUI().reopen(p, false);
-					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
-				});
-			}else {
-				datas.getLine().setItem(6, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString(), Lang.optionValue.format(datas.<XMaterial>get("material").toString())), (p, item) -> {
-					Lang.BLOCK_NAME.send(p);
-					new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), material -> {
-						ItemUtils.lore(item, Lang.optionValue.format(material.name()));
-						datas.put("material", material);
-						datas.getGUI().reopen(p, false);
-					}, new MaterialParser(false, true)).enterOrLeave(p);
-				});
-			}
-		}
-
-		public void edit(LineData datas, StageInteract stage) {
+		@Override
+		public void edit(StageInteract stage) {
+			super.edit(stage);
 			if (stage.lc != null) {
-				datas.put("lc", stage.getLocation());
-			}else datas.put("material", stage.material);
-			datas.put("left", stage.needLeftClick());
-			setItems(datas);
+				setLocation(stage.getLocation());
+			}else setMaterial(stage.material);
+			setLeftClick(stage.needLeftClick());
 		}
 
-		public StageInteract finish(LineData datas, QuestBranch branch) {
-			if (datas.containsKey("lc")) {
-				return new StageInteract(branch, datas.get("left"), datas.<Location>get("lc"));
-			}else return new StageInteract(branch, datas.get("left"), datas.<XMaterial>get("material"));
+		@Override
+		public StageInteract finishStage(QuestBranch branch) {
+			if (location != null) {
+				return new StageInteract(branch, leftClick, location);
+			}else return new StageInteract(branch, leftClick, material);
 		}
 		
 		private class ChooseActionGUI implements CustomInventory {

@@ -8,19 +8,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.npc.NPCGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 
@@ -101,48 +102,63 @@ public class StageLocation extends AbstractStage {
 		return new StageLocation(branch, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
 	}
 	
-	public static class Creator implements StageCreationRunnables<StageLocation> {
-		public void start(Player p, LineData datas) {
-			Lang.LOCATION_GO.send(p);
-			new WaitClick(p, () -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, false);
-			}, NPCGUI.validMove, () -> {
-				datas.put("location", p.getLocation());
-				datas.put("radius", 5);
-				datas.getGUI().reopen(p, false);
-				setItems(datas.getLine());
-			}).enterOrLeave(p);
-		}
-
-		public StageLocation finish(LineData datas, QuestBranch branch) {
-			StageLocation stage = new StageLocation(branch, datas.get("location"), datas.get("radius"));
-			return stage;
-		}
-
-		public void edit(LineData datas, StageLocation stage) {
-			datas.put("location", stage.getLocation());
-			datas.put("radius", stage.getRadius());
-			setItems(datas.getLine());
-		}
-
-		public static void setItems(Line line) {
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString(), Lang.currentRadius.format(line.data.<Integer>get("radius"))), (p, item) -> {
+	public static class Creator extends StageCreation<StageLocation> {
+		
+		private Location location;
+		private int radius;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(6, ItemUtils.item(XMaterial.REDSTONE, Lang.editRadius.toString()), (p, item) -> {
 				Lang.LOCATION_RADIUS.send(p);
-				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), x -> {
-					ItemUtils.lore(item, Lang.currentRadius.format(x));
-					datas.put("radius", x);
-					datas.getGUI().reopen(p, false);
+				new TextEditor<>(p, () -> reopenGUI(p, false), x -> {
+					setRadius(x);
+					reopenGUI(p, false);
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			});
-			line.setItem(6, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, item) -> {
+			line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, item) -> {
 				Lang.LOCATION_GO.send(p);
-				new WaitClick(p, () -> line.getGUI().reopen(p, false), NPCGUI.validMove, () -> {
-					line.put("location", p.getLocation());
-					line.getGUI().reopen(p, false);
+				new WaitClick(p, () -> reopenGUI(p, false), NPCGUI.validMove, () -> {
+					setLocation(p.getLocation());
+					reopenGUI(p, false);
 				}).enterOrLeave(p);
 			});
 		}
+		
+		public void setLocation(Location location) {
+			this.location = location;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription(Utils.locationToString(location))));
+		}
+		
+		public void setRadius(int radius) {
+			this.radius = radius;
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.currentRadius.format(radius)));
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			Lang.LOCATION_GO.send(p);
+			new WaitClick(p, removeAndReopen(p, false), NPCGUI.validMove, () -> {
+				setLocation(p.getLocation());
+				setRadius(5);
+				reopenGUI(p, false);
+			}).enterOrLeave(p);
+		}
+
+		@Override
+		public void edit(StageLocation stage) {
+			super.edit(stage);
+			setLocation(stage.getLocation());
+			setRadius(stage.getRadius());
+		}
+		
+		@Override
+		public StageLocation finishStage(QuestBranch branch) {
+			return new StageLocation(branch, location, radius);
+		}
+		
 	}
 	
 }

@@ -1,8 +1,5 @@
 package fr.skytasul.quests.gui.creation.stages;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +18,6 @@ public class Line {
 	
 	private NumberedList<Pair<ItemStack, StageRunnable>> items = new NumberedList<>();
 
-	private Map<String, Object> data = new HashMap<>();
 	public StageCreation<?> creation = null;
 	
 	Line(int line, StagesGUI gui) {

@@ -90,20 +90,20 @@ public class StageArea extends AbstractStage{
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
-			line.setItem(6, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
-			line.setItem(7, ItemUtils.itemSwitch(Lang.stageRegion.toString(), false), (p, item) -> setExit(ItemUtils.toggle(item)));
+			line.setItem(7, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
+			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegion.toString(), exit), (p, item) -> setExit(ItemUtils.toggle(item)));
 		}
 		
 		public void setRegion(String regionName, String worldName) {
 			this.regionName = regionName;
 			this.worldName = worldName;
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(regionName + " (" + worldName + ")")));
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(regionName + " (" + worldName + ")")));
 		}
 		
 		public void setExit(boolean exit) {
 			if (this.exit != exit) {
 				this.exit = exit;
-				line.editItem(7, ItemUtils.set(line.getItem(7), exit));
+				line.editItem(6, ItemUtils.set(line.getItem(6), exit));
 			}
 		}
 

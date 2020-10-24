@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
@@ -118,15 +117,14 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 	}
 
 	public static class Creator extends StageCreation<StageMobs> {
-		
-		private static final ItemStack editMobs = ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString());
 
 		private Map<Integer, Entry<Mob<?>, Integer>> mobs;
-		private boolean shoot;
+		private boolean shoot = false;
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
-			line.setItem(6, editMobs, (p, item) -> {
+			
+			line.setItem(7, ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString()), (p, item) -> {
 				MobsListGUI mobsGUI = Inventories.create(p, new MobsListGUI());
 				mobsGUI.setMobsFromMap(mobs);
 				mobsGUI.run = (obj) -> {
@@ -134,22 +132,24 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 					reopenGUI(p, true);
 				};
 			});
-			line.setItem(5, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), false), (p, item) -> setShoot(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), shoot), (p, item) -> setShoot(ItemUtils.toggle(item)));
 		}
 		
 		public void setMobs(Map<Integer, Entry<Mob<?>, Integer>> mobs) {
 			this.mobs = mobs;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(mobs.size() + " mob(s)")));
 		}
 		
 		public void setShoot(boolean shoot) {
 			if (this.shoot != shoot) {
 				this.shoot = shoot;
-				line.editItem(5, ItemUtils.set(line.getItem(5), shoot));
+				line.editItem(6, ItemUtils.set(line.getItem(6), shoot));
 			}
 		}
 		
 		@Override
 		public void start(Player p) {
+			super.start(p);
 			MobsListGUI mobsGUI = Inventories.create(p, new MobsListGUI());
 			mobsGUI.run = (obj) -> {
 				setMobs(obj);
@@ -166,6 +166,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 
 		@Override
 		public void edit(StageMobs stage) {
+			super.edit(stage);
 			setMobs(stage.cloneObjects());
 			setShoot(stage.shoot);
 		}

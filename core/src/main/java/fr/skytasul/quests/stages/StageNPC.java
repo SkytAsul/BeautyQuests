@@ -265,7 +265,7 @@ public class StageNPC extends AbstractStage{
 				}).create(p);
 			});
 			
-			line.setItem(6, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString()), (p, item) -> {
+			line.setItem(8, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString()), (p, item) -> {
 				Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 				new DialogEditor(p, (obj) -> {
 					setDialog(dialog);
@@ -273,7 +273,7 @@ public class StageNPC extends AbstractStage{
 				}, dialog == null ? dialog = new Dialog() : dialog).enterOrLeave(p);
 			}, true, true);
 			
-			line.setItem(5, ItemUtils.itemSwitch(Lang.stageHide.toString(), false), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
+			line.setItem(6, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
 		}
 		
 		public void setNPCId(int npcID) {
@@ -288,17 +288,14 @@ public class StageNPC extends AbstractStage{
 		public void setHidden(boolean hidden) {
 			if (this.hidden != hidden) {
 				this.hidden = hidden;
-				line.editItem(5, ItemUtils.set(line.getItem(5), hidden));
+				line.editItem(6, ItemUtils.set(line.getItem(6), hidden));
 			}
 		}
 
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new SelectGUI(() -> {
-				remove();
-				reopenGUI(p, true);
-			}, npc -> {
+			new SelectGUI(removeAndReopen(p, true), npc -> {
 				setNPCId(npcID);
 				reopenGUI(p, true);
 			}).create(p);

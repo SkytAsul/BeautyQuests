@@ -9,10 +9,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.stages.LineData;
+import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -91,43 +91,67 @@ public class StageChat extends AbstractStage{
 		return st;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageChat> {
-
-		public void start(Player p, LineData datas) {
-			datas.put("cancel", true);
-			datas.put("ignoreCase", false);
-			setItems(datas);
-			launchEditor(p, datas);
+	public static class Creator extends StageCreation<StageChat> {
+		
+		private String text;
+		private boolean cancel = true;
+		private boolean ignoreCase = false;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(6, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), ignoreCase), (p, item) -> setIgnoreCase(ItemUtils.toggle(item)));
+			line.setItem(7, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), cancel), (p, item) -> setCancel(ItemUtils.toggle(item)));
+			line.setItem(8, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString()), (p, item) -> launchEditor(p));
+		}
+		
+		public void setText(String text) {
+			this.text = text;
+			line.editItem(8, ItemUtils.lore(line.getItem(8), Lang.optionValue.format(text)));
+		}
+		
+		public void setIgnoreCase(boolean ignoreCase) {
+			if (this.ignoreCase != ignoreCase) {
+				this.ignoreCase = ignoreCase;
+				line.editItem(6, ItemUtils.set(line.getItem(6), ignoreCase));
+			}
+		}
+		
+		public void setCancel(boolean cancel) {
+			if (this.cancel != cancel) {
+				this.cancel = cancel;
+				line.editItem(7, ItemUtils.set(line.getItem(7), cancel));
+			}
 		}
 
-		public StageChat finish(LineData datas, QuestBranch branch) {
-			StageChat stage = new StageChat(branch, datas.get("text"), datas.get("cancel"), datas.get("ignoreCase"));
-			return stage;
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			launchEditor(p);
 		}
 
-		public void edit(LineData datas, StageChat stage) {
-			datas.put("text", stage.text);
-			datas.put("cancel", stage.cancel);
-			datas.put("ignoreCase", stage.ignoreCase);
-			setItems(datas);
+		@Override
+		public void edit(StageChat stage) {
+			super.edit(stage);
+			setText(stage.text);
+			setIgnoreCase(stage.ignoreCase);
+			setCancel(stage.cancel);
 		}
 
-		public static void setItems(LineData datas) {
-			datas.getLine().setItem(5, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString(), datas.containsKey("text") ? datas.get("text") : "§lx"), (p, item) -> launchEditor(p, datas));
-			datas.getLine().setItem(6, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), datas.get("ignoreCase")), (p, item) -> datas.put("ignoreCase", ItemUtils.toggle(item)));
-			datas.getLine().setItem(7, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), datas.get("cancel")), (p, item) -> datas.put("cancel", ItemUtils.toggle(item)));
+		@Override
+		public StageChat finishStage(QuestBranch branch) {
+			return new StageChat(branch, text, cancel, ignoreCase);
 		}
-
-		public static void launchEditor(Player p, LineData datas) {
+		
+		private void launchEditor(Player p) {
 			Lang.CHAT_MESSAGE.send(p);
 			new TextEditor<String>(p, () -> {
-				if (datas.containsKey("text")) datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
+				if (text == null) remove();
+				reopenGUI(p, true);
 			}, obj -> {
-				String msg = obj.replace("{SLASH}", "/");
-				datas.put("text", msg);
-				datas.getGUI().reopen(p, false);
-				ItemUtils.lore(datas.getLine().getItem(6), msg);
+				obj = obj.replace("{SLASH}", "/");
+				setText(obj);
+				reopenGUI(p, false);
 			}).enterOrLeave(p);
 		}
 	}
