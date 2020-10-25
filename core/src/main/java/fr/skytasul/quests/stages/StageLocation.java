@@ -98,7 +98,7 @@ public class StageLocation extends AbstractStage {
 		map.put("radius", radius);
 	}
 
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageLocation deserialize(Map<String, Object> map, QuestBranch branch) {
 		return new StageLocation(branch, Location.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"));
 	}
 	

@@ -85,7 +85,7 @@ public class StagePlayTime extends AbstractStage {
 		map.put("playTicks", playTicks);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) {
+	public static StagePlayTime deserialize(Map<String, Object> map, QuestBranch branch) {
 		return new StagePlayTime(branch, Utils.parseLong(map.get("playTicks")));
 	}
 	

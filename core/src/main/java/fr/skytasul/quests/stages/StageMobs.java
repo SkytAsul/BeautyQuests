@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -85,7 +84,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		if (shoot) map.put("shoot", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageMobs deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<Mob<?>, Integer>> objects = new HashMap<>();
 		if (map.containsKey("mobs")) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("mobs");

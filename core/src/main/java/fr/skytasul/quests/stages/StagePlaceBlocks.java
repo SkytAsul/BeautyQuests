@@ -12,7 +12,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -66,7 +65,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		return BQBlock.fromString((String) object);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StagePlaceBlocks deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
 
 		StagePlaceBlocks stage = new StagePlaceBlocks(branch, objects);

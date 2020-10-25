@@ -98,6 +98,10 @@ public class StageNPC extends AbstractStage{
 	public NPC getNPC(){
 		return npc;
 	}
+	
+	public int getNPCID() {
+		return npcID;
+	}
 
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
@@ -243,19 +247,19 @@ public class StageNPC extends AbstractStage{
 		if (hide) map.put("hid", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageNPC deserialize(Map<String, Object> map, QuestBranch branch) {
 		StageNPC st = new StageNPC(branch);
 		st.loadDatas(map);
 		return st;
 	}
 
-	public static class Creator extends StageCreation<StageNPC> {
+	public abstract static class AbstractCreator<T extends StageNPC> extends StageCreation<T> {
 		
 		private int npcID = -1;
 		private Dialog dialog = null;
 		private boolean hidden = false;
 		
-		public Creator(Line line, boolean ending) {
+		public AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
 			line.setItem(7, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), (p, item) -> {
@@ -302,24 +306,37 @@ public class StageNPC extends AbstractStage{
 		}
 		
 		@Override
-		public void edit(StageNPC stage) {
+		public void edit(T stage) {
 			super.edit(stage);
-			setNPCId(stage.npcID);
+			setNPCId(stage.getNPCID());
 			setDialog(stage.dialog);
 			setHidden(stage.hide);
 		}
 		
 		@Override
-		protected StageNPC finishStage(QuestBranch branch) {
-			return setFinish(new StageNPC(branch));
-		}
-		
-		protected StageNPC setFinish(StageNPC stage) {
+		protected final T finishStage(QuestBranch branch) {
+			T stage = createStage(branch);
 			stage.setNPC(npcID);
 			stage.setDialog(dialog);
 			stage.setHid(hidden);
 			return stage;
 		}
+		
+		protected abstract T createStage(QuestBranch branch);
+		
+	}
+	
+	public static class Creator extends AbstractCreator<StageNPC> {
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+		}
+		
+		@Override
+		protected StageNPC createStage(QuestBranch branch) {
+			return new StageNPC(branch);
+		}
+		
 	}
 
 }

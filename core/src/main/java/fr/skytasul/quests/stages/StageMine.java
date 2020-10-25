@@ -16,7 +16,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -103,7 +102,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageMine deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
 
 		if (map.containsKey("blocks")) {

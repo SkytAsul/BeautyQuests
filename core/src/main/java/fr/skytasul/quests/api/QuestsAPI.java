@@ -3,6 +3,7 @@ package fr.skytasul.quests.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -19,8 +20,6 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreation.StageCreationSupplier;
-import fr.skytasul.quests.api.stages.StageCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -32,8 +31,9 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsAPI {
 	
-	public static Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
-	public static Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
+	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
+	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
+	public static final LinkedList<StageType<?>> stages = new LinkedList<>();
 	
 	private static AbstractHolograms<?> hologramsManager = null;
 	
@@ -43,14 +43,9 @@ public class QuestsAPI {
 	 * @param item ItemStack shown in stages GUI when choosing stage type
 	 * @param runnables Instance of special runnables
 	 */
-	public static <T extends AbstractStage> void registerStage(StageType type, ItemStack item, StageCreationSupplier<T> stageCreationSupplier) {
-		if (type.dependCode != null) if (!Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
-			BeautyQuests.getInstance().getLogger().warning("Plugin " + type.dependCode + " not enabled. Stage injecting interrupted.");
-			return;
-		}
-		StageType.types.add(type);
-		StageCreator.creators.add(new StageCreator<T>(type, item, stageCreationSupplier));
-		DebugUtils.logMessage("Stage registered (" + type.name + ", " + (StageCreator.creators.size()-1) + ")");
+	public static <T extends AbstractStage> void registerStage(StageType<T> creator) {
+		stages.add(creator);
+		DebugUtils.logMessage("Stage registered (" + creator.name + ", " + (stages.size() - 1) + ")");
 	}
 	
 	/**

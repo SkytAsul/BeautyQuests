@@ -89,7 +89,7 @@ public class StageInteract extends AbstractStage {
 		}else map.put("location", lc.serialize());
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageInteract deserialize(Map<String, Object> map, QuestBranch branch) {
 		if (map.containsKey("location")) {
 			return new StageInteract(branch, (boolean) map.get("leftClick"), Location.deserialize((Map<String, Object>) map.get("location")));
 		}else return new StageInteract(branch, (boolean) map.get("leftClick"), XMaterial.valueOf((String) map.get("material")));

@@ -179,11 +179,4 @@ public abstract class StageCreation<T extends AbstractStage> {
 		return Lang.optionValue.format(nullable == null ? Lang.NotSet.toString() : nullable);
 	}
 	
-	@FunctionalInterface
-	public static interface StageCreationSupplier<T extends AbstractStage> {
-		
-		StageCreation<T> supply(Line line, boolean endingStage);
-		
-	}
-	
 }

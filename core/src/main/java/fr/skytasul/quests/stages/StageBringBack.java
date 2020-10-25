@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -94,13 +93,13 @@ public class StageBringBack extends StageNPC{
 		map.put("items", items);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageBringBack deserialize(Map<String, Object> map, QuestBranch branch) {
 		StageBringBack st = new StageBringBack(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
 		st.loadDatas(map);
 		return st;
 	}
 
-	public static class Creator extends StageNPC.Creator {
+	public static class Creator extends StageNPC.AbstractCreator<StageBringBack> {
 		
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 
@@ -123,17 +122,14 @@ public class StageBringBack extends StageNPC{
 		}
 
 		@Override
-		public StageBringBack finishStage(QuestBranch branch) {
-			StageBringBack stage = new StageBringBack(branch, items.toArray(new ItemStack[0]));
-			setFinish(stage);
-			return stage;
-		}
-
-		@Override
-		public void edit(StageNPC stage) {
+		public void edit(StageBringBack stage) {
 			super.edit(stage);
-			StageBringBack stageB = (StageBringBack) stage;
-			items = new ArrayList<>(Arrays.asList(stageB.items));
+			items = new ArrayList<>(Arrays.asList(stage.items));
+		}
+		
+		@Override
+		protected StageBringBack createStage(QuestBranch branch) {
+			return new StageBringBack(branch, items.toArray(new ItemStack[0]));
 		}
 	}
 

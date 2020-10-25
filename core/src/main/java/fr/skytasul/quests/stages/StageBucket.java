@@ -81,7 +81,7 @@ public class StageBucket extends AbstractStage {
 		map.put("amount", amount);
 	}
 
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) {
+	public static StageBucket deserialize(Map<String, Object> map, QuestBranch branch) {
 		StageBucket stage = new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
 
 		if (map.containsKey("players")) {

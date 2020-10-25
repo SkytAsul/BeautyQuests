@@ -86,9 +86,8 @@ public class StageChat extends AbstractStage{
 		if (ignoreCase) map.put("ignoreCase", true);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		AbstractStage st = new StageChat(branch, (String) map.get("writeText"), map.containsKey("cancel") ? (boolean) map.get("cancel") : false, map.containsKey("ignoreCase") ? (boolean) map.get("ignoreCase") : false);
-		return st;
+	public static StageChat deserialize(Map<String, Object> map, QuestBranch branch) {
+		return new StageChat(branch, (String) map.get("writeText"), map.containsKey("cancel") ? (boolean) map.get("cancel") : false, map.containsKey("ignoreCase") ? (boolean) map.get("ignoreCase") : false);
 	}
 
 	public static class Creator extends StageCreation<StageChat> {

@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
@@ -68,7 +67,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageFish deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<ItemStack, Integer>> objects = new HashMap<>();
 
 		if (map.containsKey("items")) {

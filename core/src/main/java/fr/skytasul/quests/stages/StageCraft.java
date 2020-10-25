@@ -117,7 +117,7 @@ public class StageCraft extends AbstractStage {
 		map.put("result", result.serialize());
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageCraft deserialize(Map<String, Object> map, QuestBranch branch) {
 		StageCraft stage = new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")));
 
 		if (map.containsKey("players")) {

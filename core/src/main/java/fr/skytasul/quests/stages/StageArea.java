@@ -77,9 +77,8 @@ public class StageArea extends AbstractStage{
 		map.put("exit", exit);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
-		AbstractStage st = new StageArea(branch, (String) map.get("region"), (String) map.get("world"), (boolean) map.getOrDefault("exit", Boolean.FALSE));
-		return st;
+	public static StageArea deserialize(Map<String, Object> map, QuestBranch branch) {
+		return new StageArea(branch, (String) map.get("region"), (String) map.get("world"), (boolean) map.getOrDefault("exit", Boolean.FALSE));
 	}
 
 	public static class Creator extends StageCreation<StageArea> {
