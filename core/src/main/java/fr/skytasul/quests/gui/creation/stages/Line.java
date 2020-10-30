@@ -78,7 +78,19 @@ public class Line {
 	 * @return ItemStack in the gui if showed, or ItemStack stocked
 	 */
 	public ItemStack getItem(int slot){
-		if (line >= gui.page * 5 && line < (gui.page + 1) * 5) return gui.inv.getItem(line * 9 - gui.page * 5 * 9 + (slot - activePage * 8));
+		boolean inLinePage = true;
+		if (maxPage > 1) {
+			int maxLineCapacity = activePage == 0 ? 8 : 7;
+			int firstID = activePage == 0 ? 0 : 8 + (activePage - 1) * 7;
+			if (slot < firstID || slot >= firstID + maxLineCapacity) inLinePage = false;
+		}
+		if (inLinePage) {
+			boolean inGUIPage = line >= gui.page * 5 && line < (gui.page + 1) * 5;
+			if (inGUIPage) {
+				int firstSlot = line * 9 - gui.page * 5 * 9;
+				return gui.inv.getItem(firstSlot + (slot - activePage * 7));
+			}
+		}
 		return items.get(slot).getKey();
 	}
 	
@@ -156,11 +168,9 @@ public class Line {
 		if (slot == 0 && activePage > 0){
 			activePage--;
 			setItems(activePage);
-		}else if (slot == 8){
-			if (activePage < maxPage/* - 1*/) {
-				activePage++;
-				setItems(activePage);
-			}
+		}else if (slot == 8 && activePage < maxPage - 1) {
+			activePage++;
+			setItems(activePage);
 		}else {
 			int item = (activePage == 0 ? 0 : activePage * 7) + slot;
 			if (items.get(item) == null) return;

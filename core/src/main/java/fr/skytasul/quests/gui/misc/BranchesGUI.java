@@ -14,7 +14,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class BranchesGUI implements CustomInventory {
+public class BranchesGUI implements CustomInventory { // WIP
 	
 	private Branch main = new Branch(null);
 	
