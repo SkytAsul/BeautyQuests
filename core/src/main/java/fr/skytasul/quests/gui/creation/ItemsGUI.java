@@ -52,7 +52,7 @@ public class ItemsGUI implements CustomInventory{
 		int id = 0;
 		for (int slot = 0; slot < 8; slot++){
 			if (items.size() == id) break;
-			ItemStack stack = items.get(id);
+			ItemStack stack = items.get(id).clone();
 			if (stack.getAmount() <= 64) {
 				inv.setItem(slot, stack);
 				id++;

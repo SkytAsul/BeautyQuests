@@ -27,17 +27,32 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		getValue().forEach(this::attachObject);
-	}
-	
-	protected void attachObject(T object) {
-		object.attach(getAttachedQuest());
+		attachObjects();
 	}
 	
 	@Override
 	public void detach() {
 		super.detach();
+		detachObjects();
+	}
+	
+	@Override
+	public void setValue(List<T> value) {
+		if (getValue() != null) detachObjects();
+		super.setValue(value);
+		if (getValue() != null) attachObjects();
+	}
+	
+	private void detachObjects() {
 		getValue().forEach(T::detach);
+	}
+	
+	private void attachObjects() {
+		getValue().forEach(this::attachObject);
+	}
+	
+	protected void attachObject(T object) {
+		object.attach(getAttachedQuest());
 	}
 	
 	@Override
