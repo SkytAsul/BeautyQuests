@@ -1,34 +1,52 @@
 package fr.skytasul.quests.api.stages;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
-public class StageType{
-	
-	public static final List<StageType> types = new ArrayList<>();
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+
+import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.structure.QuestBranch;
+
+public class StageType<T extends AbstractStage> {
 	
 	public final String id;
-	public final Class<? extends AbstractStage> stageClass;
+	public final Class<T> clazz;
 	public final String name;
-	public final String dependCode;
+	public final StageDeserializationSupplier<T> deserializationSupplier;
+	public final ItemStack item;
+	public final StageCreationSupplier<T> creationSupplier;
+	public final String[] dependencies;
 	
-	public StageType(String id, Class<? extends AbstractStage> clazz, String name){
-		this(id, clazz, name, null);
-	}
-	
-	public StageType(String id, Class<? extends AbstractStage> clazz, String name, String depend){
+	public StageType(String id, Class<T> clazz, String name, StageDeserializationSupplier<T> deserializationSupplier, ItemStack item, StageCreationSupplier<T> creationSupplier, String... dependencies) {
 		this.id = id;
-		this.stageClass = clazz;
+		this.clazz = clazz;
 		this.name = name;
-		this.dependCode = depend;
+		this.item = item;
+		this.deserializationSupplier = deserializationSupplier;
+		this.creationSupplier = creationSupplier;
+		this.dependencies = dependencies;
 	}
 	
-	public static StageType getStageType(String id){
-		if (id == null) return null;
-		for (StageType type : types){
-			if (type.id.equals(id)) return type;
+	public boolean isValid() {
+		for (String depend : dependencies) {
+			if (!Bukkit.getPluginManager().isPluginEnabled(depend)) return false;
 		}
-		return null;
+		return true;
+	}
+	
+	@FunctionalInterface
+	public static interface StageCreationSupplier<T extends AbstractStage> {
+		
+		StageCreation<T> supply(Line line, boolean endingStage);
+		
+	}
+	
+	@FunctionalInterface
+	public static interface StageDeserializationSupplier<T extends AbstractStage> {
+		
+		T supply(Map<String, Object> serializedDatas, QuestBranch branch);
+		
 	}
 	
 }

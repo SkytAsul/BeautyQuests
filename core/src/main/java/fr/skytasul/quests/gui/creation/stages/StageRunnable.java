@@ -8,9 +8,8 @@ public interface StageRunnable {
 	/**
 	 * Called when the item is clicked
 	 * @param p player who click on the item
-	 * @param datas datas of the line
 	 * @param item item clicked
 	 */
-	public abstract void run(Player p, LineData datas, ItemStack item);
+	public abstract void run(Player p, ItemStack item);
 	
 }

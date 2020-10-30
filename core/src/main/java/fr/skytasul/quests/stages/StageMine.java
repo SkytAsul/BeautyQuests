@@ -12,20 +12,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable;
-import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -107,7 +102,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageMine deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
 
 		if (map.containsKey("blocks")) {
@@ -136,46 +131,59 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageMine> {
-		public void start(Player p, LineData datas) {
-			StagesGUI sg = datas.getGUI();
-			BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-			blocks.run = (obj) -> {
-				sg.reopen(p, true);
-				datas.put("blocks", obj);
-				datas.put("prevent", false);
-				setItems(datas.getLine(), datas);
+	public static class Creator extends StageCreation<StageMine> {
+		
+		private Map<Integer, Entry<BQBlock, Integer>> blocks;
+		private boolean prevent = false;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(7, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), (p, item) -> {
+				BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
+				blocksGUI.setBlocksFromMap(blocks);
+				blocksGUI.run = obj -> {
+					setBlocks(obj);
+					reopenGUI(p, true);
+				};
+			});
+			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), (p, item) -> setPrevent(ItemUtils.toggle(item)));
+		}
+		
+		public void setBlocks(Map<Integer, Entry<BQBlock, Integer>> blocks) {
+			this.blocks = blocks;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(blocks.size() + " block(s)")));
+		}
+		
+		public void setPrevent(boolean prevent) {
+			if (this.prevent != prevent) {
+				this.prevent = prevent;
+				line.editItem(6, ItemUtils.set(line.getItem(6), prevent));
+			}
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
+			blocksGUI.run = obj -> {
+				setBlocks(obj);
+				reopenGUI(p, true);
 			};
 		}
 
-		public StageMine finish(LineData datas, QuestBranch branch) {
-			StageMine stage = new StageMine(branch, datas.get("blocks"));
-			stage.setPlaceCancelled(datas.get("prevent"));
+		@Override
+		public void edit(StageMine stage) {
+			super.edit(stage);
+			setBlocks(stage.cloneObjects());
+			setPrevent(stage.isPlaceCancelled());
+		}
+		
+		@Override
+		public StageMine finishStage(QuestBranch branch) {
+			StageMine stage = new StageMine(branch, blocks);
+			stage.setPlaceCancelled(prevent);
 			return stage;
-		}
-
-		public void edit(LineData datas, StageMine stage) {
-			datas.put("blocks", stage.cloneObjects());
-			datas.put("prevent", stage.isPlaceCancelled());
-			setItems(datas.getLine(), datas);
-		}
-
-		public static void setItems(Line line, LineData datas) {
-			line.setItem(6, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
-					blocks.run = (obj) -> {
-						datas.getGUI().reopen(p, true);
-						datas.put("blocks", obj);
-					};
-				}
-			});
-			line.setItem(5, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), datas.get("prevent")), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					datas.put("prevent", ItemUtils.toggle(item));
-				}
-			});
 		}
 	}
 

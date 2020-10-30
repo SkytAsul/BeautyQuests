@@ -12,15 +12,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable;
-import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -68,7 +65,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		return BQBlock.fromString((String) object);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StagePlaceBlocks deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
 
 		StagePlaceBlocks stage = new StagePlaceBlocks(branch, objects);
@@ -77,37 +74,49 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables<StagePlaceBlocks> {
-		public void start(Player p, LineData datas) {
-			StagesGUI sg = datas.getGUI();
-			BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-			blocks.run = (obj) -> {
-				sg.reopen(p, true);
-				datas.put("blocks", obj);
-				setItems(datas.getLine(), datas);
-			};
-		}
-
-		public StagePlaceBlocks finish(LineData datas, QuestBranch branch) {
-			return new StagePlaceBlocks(branch, datas.get("blocks"));
-		}
-
-		public void edit(LineData datas, StagePlaceBlocks stage) {
-			datas.put("blocks", stage.cloneObjects());
-			setItems(datas.getLine(), datas);
-		}
-
-		public static void setItems(Line line, LineData datas) {
-			line.setItem(6, ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
-					blocks.setBlocksFromMap(blocks.inv, datas.get("blocks"));
-					blocks.run = (obj) -> {
-						datas.getGUI().reopen(p, true);
-						datas.put("blocks", obj);
+	public static class Creator extends StageCreation<StagePlaceBlocks> {
+		
+		private Map<Integer, Entry<BQBlock, Integer>> blocks;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(7, ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString()), new StageRunnable() {
+				public void run(Player p, ItemStack item) {
+					BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
+					blocksGUI.setBlocksFromMap(blocks);
+					blocksGUI.run = (obj) -> {
+						setBlocks(obj);
+						reopenGUI(p, true);
 					};
 				}
 			});
+		}
+		
+		public void setBlocks(Map<Integer, Entry<BQBlock, Integer>> blocks) {
+			this.blocks = blocks;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(blocks.size() + " blocks")));
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			BlocksGUI blocks = Inventories.create(p, new BlocksGUI());
+			blocks.run = (obj) -> {
+				setBlocks(obj);
+				reopenGUI(p, true);
+			};
+		}
+
+		@Override
+		public void edit(StagePlaceBlocks stage) {
+			super.edit(stage);
+			setBlocks(stage.cloneObjects());
+		}
+
+		@Override
+		public StagePlaceBlocks finishStage(QuestBranch branch) {
+			return new StagePlaceBlocks(branch, blocks);
 		}
 	}
 

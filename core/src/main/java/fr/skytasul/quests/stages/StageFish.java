@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -16,14 +17,10 @@ import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
-import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -70,7 +67,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch){
+	public static StageFish deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<ItemStack, Integer>> objects = new HashMap<>();
 
 		if (map.containsKey("items")) {
@@ -101,49 +98,56 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return stage;
 	}
 
-	public static class Creator implements StageCreationRunnables<StageFish> {
-		public void start(Player p, LineData datas) {
-			List<ItemStack> items = new ArrayList<>();
-			datas.put("items", items);
-			Inventories.create(p, new ItemsGUI(() -> {
-				datas.getGUI().reopen(p, true);
-				setItem(datas.getLine());
-			}, items));
+	public static class Creator extends StageCreation<StageFish> {
+		
+		private List<ItemStack> items;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), (p, item) -> {
+				new ItemsGUI(() -> {
+					setItems(items);
+					reopenGUI(p, true);
+				}, items).create(p);
+			});
+		}
+		
+		public void setItems(List<ItemStack> items) {
+			this.items = items;
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(items.size() + " fish(es)")));
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			items = new ArrayList<>();
+			new ItemsGUI(() -> {
+				setItems(items);
+				reopenGUI(p, true);
+			}, items).create(p);
 		}
 
-		public StageFish finish(LineData datas, QuestBranch branch) {
-			List<ItemStack> itemsList = datas.get("items");
+		@Override
+		public void edit(StageFish stage) {
+			super.edit(stage);
+			setItems(stage.getObjects().values().stream().map(entry -> {
+				ItemStack item = entry.getKey().clone();
+				item.setAmount(entry.getValue());
+				return item;
+			}).collect(Collectors.toList()));
+		}
+		
+		@Override
+		public StageFish finishStage(QuestBranch branch) {
 			Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
-			for (int i = 0; i < itemsList.size(); i++) {
-				ItemStack item = itemsList.get(i);
+			for (int i = 0; i < items.size(); i++) {
+				ItemStack item = items.get(i);
 				int amount = item.getAmount();
 				item.setAmount(1);
 				itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
 			}
-			StageFish stage = new StageFish(branch, itemsMap);
-			return stage;
-		}
-
-		public void edit(LineData datas, StageFish stage) {
-			List<ItemStack> items = new ArrayList<>();
-			Map<Integer, Entry<ItemStack, Integer>> itemsMap = stage.getObjects();
-			for (Entry<ItemStack, Integer> itemEntry : itemsMap.values()) {
-				ItemStack item = itemEntry.getKey().clone();
-				item.setAmount(itemEntry.getValue());
-				items.add(item);
-			}
-			datas.put("items", items);
-			setItem(datas.getLine());
-		}
-
-		public static void setItem(Line line) {
-			line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), new StageRunnable() {
-				public void run(Player p, LineData datas, ItemStack item) {
-					Inventories.create(p, new ItemsGUI(() -> {
-						datas.getGUI().reopen(p, true);
-					}, datas.get("items")));
-				}
-			});
+			return new StageFish(branch, itemsMap);
 		}
 	}
 

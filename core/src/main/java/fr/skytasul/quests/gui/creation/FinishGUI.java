@@ -20,12 +20,10 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreator;
-import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionBypassLimit;
 import fr.skytasul.quests.options.OptionCancellable;
@@ -252,16 +250,11 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	}
 	
 	private void loadBranch(QuestBranch branch, StagesGUI gui){
-		for (LineData ln : gui.getLinesDatas()){
+		for (StageCreation<?> creation : gui.getStageCreations()) {
 			try{
-				StageType type = ln.get("type");
-				AbstractStage stage = StageCreator.getCreator(type).runnables.finish(ln, branch);
-				stage.setRewards(ln.get("rewards"));
-				stage.setValidationRequirements(ln.get("requirements"));
-				stage.setCustomText(ln.get("customText"));
-				stage.setStartMessage(ln.get("startMessage"));
-				if (ln.containsKey("branch")){
-					StagesGUI newGUI = ln.get("branch");
+				AbstractStage stage = creation.finish(branch);
+				if (creation.isEndingStage()) {
+					StagesGUI newGUI = creation.getLeadingBranch();
 					QuestBranch newBranch = null;
 					if (!newGUI.isEmpty()){
 						newBranch = new QuestBranch(branch.getBranchesManager());

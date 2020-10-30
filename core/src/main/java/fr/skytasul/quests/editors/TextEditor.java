@@ -2,7 +2,6 @@ package fr.skytasul.quests.editors;
 
 import java.util.function.Consumer;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.editors.checkers.AbstractParser;
@@ -50,18 +49,18 @@ public class TextEditor<T> extends Editor {
 		boolean invalid = false;
 		if (parser != null){
 			try{
-				T tmp = parser.parse(p, ChatColor.stripColor(strippedMessage));
+				T tmp = parser.parse(p, strippedMessage);
 				if (tmp == null){
 					invalid = true;
 				}else {
 					returnment = tmp;
 				}
 			}catch (Throwable ex){
-				Lang.ERROR_OCCURED.send(p, msg + " parsingText");
+				Lang.ERROR_OCCURED.send(p, strippedMessage + " parsingText");
 				invalid = true;
 				ex.printStackTrace();
 			}
-		}else returnment = (T) msg;
+		}else returnment = (T) strippedMessage;
 
 		if (!invalid){
 			leave(p);

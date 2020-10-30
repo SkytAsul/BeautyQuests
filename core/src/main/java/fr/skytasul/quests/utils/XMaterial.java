@@ -1978,7 +1978,6 @@ public enum XMaterial {
 	 * @return the material related to this XMaterial based on the server version.
 	 * @since 2.0.0
 	 */
-	@SuppressWarnings ("OptionalAssignedToNull")
 	@Nullable
 	public Material parseMaterial(boolean suggest) {
 		Optional<Material> cache = PARSED_CACHE.getIfPresent(this);

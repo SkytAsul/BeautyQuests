@@ -15,6 +15,7 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.misc.BranchesGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
@@ -486,6 +487,10 @@ public class Commands {
 		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
 	}
 	
+	@Cmd (player = true)
+	public void test(CommandContext cmd) {
+		new BranchesGUI().create(cmd.player);
+	}
 	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){
 		qu.resetPlayer(acc);

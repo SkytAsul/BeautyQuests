@@ -87,7 +87,7 @@ public abstract class Editor implements Listener{
 		return null;
 	}
 	
-	@EventHandler (priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;
 		e.setCancelled(true);

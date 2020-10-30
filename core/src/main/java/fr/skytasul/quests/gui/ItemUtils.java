@@ -227,7 +227,8 @@ public class ItemUtils {
 	public static boolean toggle(ItemStack itemSwitch){
 		String name = getName(itemSwitch);
 		boolean toggled = name.charAt(1) != 'a'; // toggling
-		return set(itemSwitch, toggled);
+		set(itemSwitch, toggled);
+		return toggled;
 	}
 	
 	/**
@@ -237,14 +238,14 @@ public class ItemUtils {
 	 * @param enable new state of the switch
 	 * @return same state
 	 */
-	public static boolean set(ItemStack itemSwitch, boolean enable){
-		if (itemSwitch == null) return enable;
+	public static ItemStack set(ItemStack itemSwitch, boolean enable) {
+		if (itemSwitch == null) return null;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));
 		if (XMaterial.isNewVersion()){
 			itemSwitch.setType(enable ? XMaterial.LIME_DYE.parseMaterial() : XMaterial.GRAY_DYE.parseMaterial());
 		}else itemSwitch.setDurability((short) (enable ? 10 : 8));
-		return enable;
+		return itemSwitch;
 	}
 	
 }

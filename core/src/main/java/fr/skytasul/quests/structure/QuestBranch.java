@@ -104,7 +104,7 @@ public class QuestBranch {
 			return stb.toString();
 		}
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
-		return regularStages.get(datas.getStage()).getDescriptionLine(acc, source);
+		return Utils.format(QuestsConfiguration.getStageDescriptionFormat(), datas.getStage() + 1, regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
 	}
 	/**
 	 * Where do the description request come from

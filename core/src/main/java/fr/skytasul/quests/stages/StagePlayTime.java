@@ -9,12 +9,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -28,8 +27,9 @@ public class StagePlayTime extends AbstractStage {
 	
 	private Map<PlayerAccount, BukkitTask> tasks = new HashMap<>();
 	
-	public StagePlayTime(QuestBranch branch) {
+	public StagePlayTime(QuestBranch branch, long ticks) {
 		super(branch);
+		this.playTicks = ticks;
 	}
 	
 	@Override
@@ -85,49 +85,50 @@ public class StagePlayTime extends AbstractStage {
 		map.put("playTicks", playTicks);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) {
-		StagePlayTime stage = new StagePlayTime(branch);
-		stage.playTicks = Utils.parseLong(map.get("playTicks"));
-		return stage;
+	public static StagePlayTime deserialize(Map<String, Object> map, QuestBranch branch) {
+		return new StagePlayTime(branch, Utils.parseLong(map.get("playTicks")));
 	}
 	
-	public static class Creator implements StageCreationRunnables<StagePlayTime> {
+	public static class Creator extends StageCreation<StagePlayTime> {
 		
-		@Override
-		public void start(Player p, LineData datas) {
-			Lang.GAME_TICKS.send(p);
-			new TextEditor<>(p, () -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, false);
-			}, obj -> {
-				setItem(datas.getLine(), obj);
-				datas.put("ticks", obj);
-				datas.getGUI().reopen(p, false);
-			}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
-		}
-		
-		private void setItem(Line line, long ticks) {
-			line.setItem(5, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString(), "§6Ticks: §e§l" + ticks), (p, datas, item) -> {
+		private long ticks;
+
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), (p, item) -> {
 				Lang.GAME_TICKS.send(p);
-				new TextEditor<>(p, () -> datas.getGUI().reopen(p, false), obj -> {
-					ItemUtils.lore(item, "§6Ticks: §e§l" + obj);
-					datas.put("ticks", obj);
-					datas.getGUI().reopen(p, false);
+				new TextEditor<>(p, () -> reopenGUI(p, false), obj -> {
+					setTicks(obj);
+					reopenGUI(p, false);
 				}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
 			});
 		}
 		
-		@Override
-		public void edit(LineData datas, StagePlayTime stage) {
-			datas.put("ticks", stage.playTicks);
-			setItem(datas.getLine(), stage.playTicks);
+		public void setTicks(long ticks) {
+			this.ticks = ticks;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(ticks + " ticks")));
 		}
 		
 		@Override
-		public StagePlayTime finish(LineData datas, QuestBranch branch) {
-			StagePlayTime stage = new StagePlayTime(branch);
-			stage.playTicks = datas.get("ticks");
-			return stage;
+		public void start(Player p) {
+			super.start(p);
+			Lang.GAME_TICKS.send(p);
+			new TextEditor<>(p, removeAndReopen(p, false), obj -> {
+				setTicks(obj);
+				reopenGUI(p, false);
+			}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
+		}
+		
+		@Override
+		public void edit(StagePlayTime stage) {
+			super.edit(stage);
+			setTicks(stage.playTicks);
+		}
+		
+		@Override
+		public StagePlayTime finishStage(QuestBranch branch) {
+			return new StagePlayTime(branch, ticks);
 		}
 		
 	}

@@ -1,11 +1,12 @@
 package fr.skytasul.quests.api.stages;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.options.OptionStarterNPC;
@@ -28,14 +30,9 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-/**
- * <h1> Do not forget to create the <i>deserialize</i> method:</h1>
- * <code>public static AbstractStage deserialize(Map&#60;String, Object&#62; map, QuestBranch branch)</code>
- * @author SkytAsul
- */
 public abstract class AbstractStage implements Listener{
 	
-	private final StageType type;
+	private final StageType<?> type;
 	protected boolean asyncEnd = false;
 	
 	protected final QuestBranch branch;
@@ -48,7 +45,7 @@ public abstract class AbstractStage implements Listener{
 	public AbstractStage(QuestBranch branch){
 		this.branch = branch;
 		
-		this.type = StageType.types.stream().filter(type -> type.stageClass == getClass()).findAny()
+		this.type = QuestsAPI.stages.stream().filter(type -> type.clazz == getClass()).findAny()
 				.orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
@@ -97,7 +94,7 @@ public abstract class AbstractStage implements Listener{
 		return startMessage == null && QuestsConfiguration.sendStageStartMessage();
 	}
 	
-	public StageType getType(){
+	public StageType<?> getType() {
 		return type;
 	}
 	
@@ -290,50 +287,48 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) throws ReflectiveOperationException{
-		StageType type = StageType.getStageType((String) map.get("stageType"));
-		if (type == null){
-			BeautyQuests.getInstance().getLogger().warning("Unknown stage type : " + map.get("stageType"));
+		String typeID = (String) map.get("stageType");
+		
+		Optional<StageType<?>> stageTypeOptional = QuestsAPI.stages.stream().filter(type -> type.id.equals(typeID)).findAny();
+		if (!stageTypeOptional.isPresent()) {
+			BeautyQuests.getInstance().getLogger().severe("Unknown stage type : " + typeID);
 			return null;
 		}
-		if (type.dependCode != null && !Bukkit.getPluginManager().isPluginEnabled((type.dependCode))){
-			BeautyQuests.getInstance().getLogger().warning("The plugin " + type.dependCode + " is not enabled but needed.");
+		
+		StageType<?> stageType = stageTypeOptional.get();
+		if (!stageType.isValid()) {
+			BeautyQuests.getInstance().getLogger().severe("The stage " + typeID + " requires not enabled dependencies: " + Arrays.toString(stageType.dependencies));
 			return null;
 		}
 
-		try{
-			Method m = type.stageClass.getMethod("deserialize", Map.class, QuestBranch.class);
-			AbstractStage st = (AbstractStage) m.invoke(null, map, branch);
-			if (map.containsKey("text")) st.startMessage = (String) map.get("text");
-			if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-			for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
-				try {
-					AbstractReward reward = AbstractReward.deserialize(rew);
-					st.rewards.add(reward);
-					reward.attach(branch.getQuest());
-					if (reward.isAsync()) st.asyncEnd = true;
-				}catch (ClassNotFoundException e) {
-					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
-					e.printStackTrace();
-					continue;
-				}
+		AbstractStage st = stageType.deserializationSupplier.supply(map, branch);
+		if (map.containsKey("text")) st.startMessage = (String) map.get("text");
+		if (map.containsKey("customText")) st.customText = (String) map.get("customText");
+		for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
+			try {
+				AbstractReward reward = AbstractReward.deserialize(rew);
+				st.rewards.add(reward);
+				reward.attach(branch.getQuest());
+				if (reward.isAsync()) st.asyncEnd = true;
+			}catch (ClassNotFoundException e) {
+				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
+				e.printStackTrace();
+				continue;
 			}
-
-			for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
-				try {
-					AbstractRequirement requirement = AbstractRequirement.deserialize(req);
-					requirement.attach(branch.getQuest());
-					st.validationRequirements.add(requirement);
-				}catch (ClassNotFoundException e) {
-					BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
-					e.printStackTrace();
-					continue;
-				}
-			}
-			
-			return st;
-		}catch (NoSuchMethodException e){
-			BeautyQuests.getInstance().getLogger().severe("No deserialize method for the class " + type.stageClass.getName() + ".");
 		}
-		return null;
+		
+		for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
+			try {
+				AbstractRequirement requirement = AbstractRequirement.deserialize(req);
+				requirement.attach(branch.getQuest());
+				st.validationRequirements.add(requirement);
+			}catch (ClassNotFoundException e) {
+				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
+				e.printStackTrace();
+				continue;
+			}
+		}
+		
+		return st;
 	}
 }

@@ -6,16 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreationRunnables;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.BucketTypeGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.creation.stages.LineData;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -81,7 +81,7 @@ public class StageBucket extends AbstractStage {
 		map.put("amount", amount);
 	}
 
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) {
+	public static StageBucket deserialize(Map<String, Object> map, QuestBranch branch) {
 		StageBucket stage = new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
 
 		if (map.containsKey("players")) {
@@ -119,52 +119,65 @@ public class StageBucket extends AbstractStage {
 		}
 	}
 
-	public static class Creator implements StageCreationRunnables<StageBucket> {
-		public void start(Player p, LineData datas) {
-			Runnable cancel = () -> {
-				datas.getGUI().deleteStageLine(datas, p);
-				datas.getGUI().reopen(p, true);
-			};
+	public static class Creator extends StageCreation<StageBucket> {
+		
+		private BucketType bucket;
+		private int amount;
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+			
+			line.setItem(6, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString()), (p, item) -> {
+				Lang.BUCKET_AMOUNT.send(p);
+				new TextEditor<>(p, () -> reopenGUI(p, true), obj -> {
+					setAmount(obj);
+					reopenGUI(p, true);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+			});
+			line.setItem(7, ItemUtils.item(XMaterial.BUCKET, Lang.editBucketType.toString()), (p, item) -> {
+				new BucketTypeGUI(() -> reopenGUI(p, true), bucket -> {
+					setBucket(bucket);
+					reopenGUI(p, true);
+				}).create(p);
+			});
+		}
+		
+		public void setBucket(BucketType bucket) {
+			this.bucket = bucket;
+			ItemStack newItem = ItemUtils.lore(line.getItem(7), Lang.optionValue.format(bucket.getName()));
+			newItem.setType(bucket.type.parseMaterial());
+			line.editItem(7, newItem);
+		}
+		
+		public void setAmount(int amount) {
+			this.amount = amount;
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.Amount.format(amount)));
+		}
+		
+		@Override
+		public void start(Player p) {
+			super.start(p);
+			Runnable cancel = removeAndReopen(p, true);
 			new BucketTypeGUI(cancel, bucket -> {
-				datas.put("bucket", bucket);
+				setBucket(bucket);
 				Lang.BUCKET_AMOUNT.send(p);
 				new TextEditor<>(p, cancel, obj -> {
-					datas.put("amount", obj);
-					datas.getGUI().reopen(p, true);
-					setItems(datas.getLine());
+					setAmount(obj);
+					reopenGUI(p, true);
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 			}).create(p);
 		}
 
-		public StageBucket finish(LineData datas, QuestBranch branch) {
-			StageBucket stage = new StageBucket(branch, datas.get("bucket"), datas.get("amount"));
-			return stage;
+		@Override
+		public void edit(StageBucket stage) {
+			super.edit(stage);
+			setBucket(stage.getBucketType());
+			setAmount(stage.getBucketAmount());
 		}
-
-		public void edit(LineData datas, StageBucket stage) {
-			datas.put("bucket", stage.getBucketType());
-			datas.put("amount", stage.getBucketAmount());
-			setItems(datas.getLine());
-		}
-
-		public static void setItems(Line line) {
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString(), Lang.Amount.format(line.data.<Integer>get("amount"))), (p, datas, item) -> {
-				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor<>(p, () -> datas.getGUI().reopen(p, true), obj -> {
-					ItemUtils.lore(item, Lang.Amount.format(obj));
-					datas.put("amount", obj);
-					datas.getGUI().reopen(p, true);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
-			});
-			BucketType type = line.data.get("bucket");
-			line.setItem(6, ItemUtils.item(type.getMaterial(), Lang.editBucketType.toString(), type.getName()), (p, datas, item) -> {
-				new BucketTypeGUI(() -> datas.getGUI().reopen(p, true), bucket -> {
-					datas.put("bucket", bucket);
-					datas.getGUI().reopen(p, true);
-					item.setType(bucket.getMaterial().parseMaterial());
-					ItemUtils.lore(item, bucket.getName());
-				}).create(p);
-			});
+		
+		@Override
+		public StageBucket finishStage(QuestBranch branch) {
+			return new StageBucket(branch, bucket, amount);
 		}
 	}
 

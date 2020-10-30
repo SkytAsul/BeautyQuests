@@ -37,8 +37,6 @@ public class QuestsConfiguration {
 	private static XMaterial pageItem = XMaterial.ARROW;
 	private static int startParticleDistance;
 	private static int requirementUpdateTime;
-	private static String itemNameColor;
-	private static String itemAmountColor;
 	private static boolean enablePrefix = true;
 	private static double hologramsHeight = 0.0;
 	private static boolean disableTextHologram = false;
@@ -63,6 +61,9 @@ public class QuestsConfiguration {
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
 	// stageDescription
+	private static String itemNameColor;
+	private static String itemAmountColor;
+	private static String stageDescriptionFormat = "§8({0}/{1}) §e{2}";
 	private static String descPrefix = "{nl}§e- §6";
 	private static String descAmountFormat = "x{0}";
 	private static boolean descXOne = true;
@@ -118,8 +119,6 @@ public class QuestsConfiguration {
 		startParticleDistance = config.getInt("startParticleDistance");
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		itemNameColor = config.getString("itemNameColor");
-		itemAmountColor = config.getString("itemAmountColor");
 		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
@@ -146,6 +145,9 @@ public class QuestsConfiguration {
 		effectEnabled = effect.getBoolean("enabled");*/
 		
 		// stageDescription
+		itemNameColor = config.getString("itemNameColor");
+		itemAmountColor = config.getString("itemAmountColor");
+		stageDescriptionFormat = config.getString("stageDescriptionFormat");
 		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
 		descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
 		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
@@ -286,6 +288,10 @@ public class QuestsConfiguration {
 	
 	public static String getItemAmountColor() {
 		return itemAmountColor;
+	}
+	
+	public static String getStageDescriptionFormat() {
+		return stageDescriptionFormat;
 	}
 	
 	public static String getItemNameColor() {
