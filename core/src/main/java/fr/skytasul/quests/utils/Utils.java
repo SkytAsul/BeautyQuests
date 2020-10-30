@@ -462,6 +462,40 @@ public class Utils{
 		return map;
 	}
 	
+	public static List<ItemStack> combineItems(List<ItemStack> items) {
+		ArrayList<ItemStack> newItems = new ArrayList<>(items.size());
+		items: for (ItemStack original : items) {
+			for (ItemStack newItem : newItems) {
+				if (newItem.isSimilar(original)) {
+					newItem.setAmount(newItem.getAmount() + original.getAmount());
+					continue items;
+				}
+			}
+			newItems.add(original.clone());
+		}
+		newItems.trimToSize();
+		return newItems;
+	}
+	
+	public static List<ItemStack> extactItems(List<ItemStack> items) {
+		List<ItemStack> newItems = new ArrayList<>(items.size());
+		for (ItemStack original : items) {
+			int amount = original.getAmount();
+			int maxStackSize = original.getMaxStackSize();
+			while (amount > maxStackSize) {
+				ItemStack item = original.clone();
+				item.setAmount(maxStackSize);
+				amount -= maxStackSize;
+			}
+			if (amount > 0) {
+				ItemStack item = original.clone();
+				item.setAmount(amount);
+				newItems.add(item);
+			}
+		}
+		return newItems;
+	}
+	
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
 	public static DateFormat getDateFormat(){
 		return cachedFormat;

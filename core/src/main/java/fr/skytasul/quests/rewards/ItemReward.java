@@ -17,15 +17,15 @@ import fr.skytasul.quests.utils.Utils;
 
 public class ItemReward extends AbstractReward {
 
-	public final List<ItemStack> items = new ArrayList<>();
+	public List<ItemStack> items;
 	
 	public ItemReward(){
-		super("itemReward");
+		this(new ArrayList<>());
 	}
 	
 	public ItemReward(List<ItemStack> items){
-		this();
-		this.items.addAll(items);
+		super("itemReward");
+		this.items = items;
 	}
 
 	public String give(Player p){
@@ -40,7 +40,7 @@ public class ItemReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new ItemReward(new ArrayList<>(items));
+		return new ItemReward(items);
 	}
 	
 	@Override
@@ -50,7 +50,8 @@ public class ItemReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new ItemsGUI(() -> {
+		new ItemsGUI(items -> {
+			this.items = items;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
 		}, items).create(p);

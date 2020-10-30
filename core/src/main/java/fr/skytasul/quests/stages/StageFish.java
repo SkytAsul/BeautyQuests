@@ -1,7 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.AbstractMap;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,7 @@ import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class StageFish extends AbstractCountableStage<ItemStack> {
@@ -106,7 +107,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			super(line, ending);
 			
 			line.setItem(6, ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString()), (p, item) -> {
-				new ItemsGUI(() -> {
+				new ItemsGUI(items -> {
 					setItems(items);
 					reopenGUI(p, true);
 				}, items).create(p);
@@ -114,18 +115,17 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		}
 		
 		public void setItems(List<ItemStack> items) {
-			this.items = items;
+			this.items = Utils.combineItems(items);
 			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(items.size() + " fish(es)")));
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			items = new ArrayList<>();
-			new ItemsGUI(() -> {
+			new ItemsGUI(items -> {
 				setItems(items);
 				reopenGUI(p, true);
-			}, items).create(p);
+			}, Collections.EMPTY_LIST).create(p);
 		}
 
 		@Override

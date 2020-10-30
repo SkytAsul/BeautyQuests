@@ -1,7 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,22 +109,30 @@ public class StageBringBack extends StageNPC{
 			super(line, ending);
 			
 			line.setItem(5, stageItems, (p, item) -> {
-				new ItemsGUI(() -> {
+				new ItemsGUI(items -> {
+					setItems(items);
 					reopenGUI(p, true);
 				}, items).create(p);
 			});
 		}
 		
+		public void setItems(List<ItemStack> items) {
+			this.items = Utils.combineItems(items);
+			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(items.size() + " item(s)")));
+		}
+		
 		@Override
 		public void start(Player p) {
-			items = new ArrayList<>();
-			new ItemsGUI(() -> super.start(p), items).create(p);
+			new ItemsGUI(items -> {
+				setItems(items);
+				super.start(p);
+			}, Collections.EMPTY_LIST).create(p);
 		}
 
 		@Override
 		public void edit(StageBringBack stage) {
 			super.edit(stage);
-			items = new ArrayList<>(Arrays.asList(stage.items));
+			items = Arrays.asList(stage.items);
 		}
 		
 		@Override

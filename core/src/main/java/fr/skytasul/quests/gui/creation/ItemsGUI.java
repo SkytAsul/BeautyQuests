@@ -1,15 +1,14 @@
 package fr.skytasul.quests.gui.creation;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -25,11 +24,11 @@ public class ItemsGUI implements CustomInventory{
 	private List<ItemStack> items;
 	
 	public Inventory inv;
-	private Runnable run;
+	private Consumer<List<ItemStack>> end;
 	
-	public ItemsGUI(Runnable run, List<ItemStack> items) {
-		this.run = run;
-		this.items = items;
+	public ItemsGUI(Consumer<List<ItemStack>> end, List<ItemStack> items) {
+		this.end = end;
+		this.items = Utils.extactItems(items);
 	}
 	
 	public CustomInventory openLastInv(Player p) {
@@ -41,28 +40,15 @@ public class ItemsGUI implements CustomInventory{
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_ITEMS.toString());
 		
 		inv.setItem(8, ItemUtils.itemDone);
-		setItemsFromRew();
-		for (int i = items.size(); i < 8; i++) inv.setItem(i, none);
-
+		
+		for (int i = 0; i < 8; i++) {
+			if (i < items.size()) {
+				inv.setItem(i, items.get(i));
+			}else inv.setItem(i, none);
+		}
+		
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
-	}
-	
-	private void setItemsFromRew(){
-		int id = 0;
-		for (int slot = 0; slot < 8; slot++){
-			if (items.size() == id) break;
-			ItemStack stack = items.get(id).clone();
-			if (stack.getAmount() <= 64) {
-				inv.setItem(slot, stack);
-				id++;
-			}else {
-				stack.setAmount(stack.getAmount() - 64);
-				stack = stack.clone();
-				stack.setAmount(64);
-				inv.setItem(slot, stack);
-			}
-		}
 	}
 
 	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
@@ -80,46 +66,22 @@ public class ItemsGUI implements CustomInventory{
 			items.clear();
 			for (int i = 0; i < 8; i++){
 				ItemStack is = inv.getItem(i);
-				if (is != null){
-					if (!is.equals(none)){
-						addItem(inv.getItem(i));
-					}
-				}
+				if (is != null && !is.equals(none)) items.add(inv.getItem(i));
 			}
 			Inventories.closeAndExit(p);
-			run.run();
+			end.accept(items);
 		}else {
 			if (current.equals(none)){
-				Inventories.create(p, new ItemCreatorGUI((obj) -> {
-					if (obj != null) inv.setItem(slot, obj);
+				Inventories.create(p, new ItemCreatorGUI(item -> {
+					if (item != null) inv.setItem(slot, item);
 					Inventories.put(p, openLastInv(p), inv);
 				}, true));
 			}else {
-				new BukkitRunnable() {
-					public void run() {
-						inv.setItem(slot, none);
-					}
-				}.runTaskLaterAsynchronously(BeautyQuests.getInstance(), 1L);
+				Utils.runSync(() -> inv.setItem(slot, none));
 				return false;
 			}
 		}
 		return true;
-	}
-	
-	private void addItem(ItemStack add){
-		for (ItemStack exist : items){
-			if (exist.isSimilar(add)){
-				int maxAdding = exist.getMaxStackSize() - exist.getAmount();
-				if (maxAdding < exist.getAmount()){
-					exist.setAmount(exist.getMaxStackSize());
-					add.setAmount(add.getAmount() - maxAdding);
-				}else {
-					exist.setAmount(exist.getAmount() + add.getAmount());
-					return;
-				}
-			}
-		}
-		items.add(add);
 	}
 
 	@Override
