@@ -26,7 +26,7 @@ public class TextListEditor extends Editor{
 	}
 
 	public boolean chat(String coloredMessage, String strippedMessage){
-		String[] args = coloredMessage.split(" ");
+		String[] args = strippedMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
 		String cmd = ChatColor.stripColor(args[0]);

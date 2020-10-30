@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -78,6 +79,11 @@ public class Inventories{
 			ex.printStackTrace();
 			e.setCancelled(true);
 		}
+	}
+	
+	public static void onDrag(InventoryDragEvent e) {
+		if (g.get(e.getWhoClicked()) == null) return;
+		e.setCancelled(true);
 	}
 
 	public static void onClose(InventoryCloseEvent e) {
