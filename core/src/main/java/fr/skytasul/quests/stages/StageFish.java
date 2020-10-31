@@ -116,7 +116,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(items.size() + " fish(es)")));
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(this.items.size() + " fish(es)")));
 		}
 		
 		@Override

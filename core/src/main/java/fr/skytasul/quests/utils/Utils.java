@@ -486,6 +486,7 @@ public class Utils{
 				ItemStack item = original.clone();
 				item.setAmount(maxStackSize);
 				amount -= maxStackSize;
+				newItems.add(item);
 			}
 			if (amount > 0) {
 				ItemStack item = original.clone();

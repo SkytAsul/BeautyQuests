@@ -118,7 +118,7 @@ public class StageBringBack extends StageNPC{
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(items.size() + " item(s)")));
+			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(this.items.size() + " item(s)")));
 		}
 		
 		@Override
@@ -132,7 +132,7 @@ public class StageBringBack extends StageNPC{
 		@Override
 		public void edit(StageBringBack stage) {
 			super.edit(stage);
-			items = Arrays.asList(stage.items);
+			setItems(Arrays.asList(stage.items));
 		}
 		
 		@Override
