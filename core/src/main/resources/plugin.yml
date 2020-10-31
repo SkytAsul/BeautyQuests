@@ -1,11 +1,11 @@
 name: BeautyQuests
 author: SkytAsul
-version: 0.18_BUILD${build.number}
-#version: 0.18_PRE2
+#version: 0.18_BUILD${build.number}
+version: 0.18
 api-version: 1.13
 description: Quests system with a simple graphical interface.
 depend: [Citizens]
-softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS, mcMMO, McCombatLevel]
+softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS, mcMMO, McCombatLevel, CMI]
 main: fr.skytasul.quests.BeautyQuests
 website: https://www.spigotmc.org/resources/beautyquests.39255/
 commands:
