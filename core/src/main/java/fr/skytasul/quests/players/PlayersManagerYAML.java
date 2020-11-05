@@ -126,9 +126,9 @@ public class PlayersManagerYAML extends PlayersManager {
 			int maxSize = 0;
 			for (int i = 0; i < list.size(); i++) {
 				PlayerAccount acc = list.get(i);
-				if (acc.datas.size() > maxSize) {
+				if (acc.questDatas.size() > maxSize) {
 					maxID = i;
-					maxSize = acc.datas.size();
+					maxSize = acc.questDatas.size();
 				}
 			}
 			for (int i = 0; i < list.size(); i++) {
@@ -191,7 +191,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		PlayerAccount acc = createPlayerAccount(identifier, index);
 		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
 			PlayerQuestDatas questDatas = PlayerQuestDatas.deserialize(acc, (Map<String, Object>) questConfig);
-			acc.datas.put(questDatas.questID, questDatas);
+			acc.questDatas.put(questDatas.questID, questDatas);
 		}
 		addAccount(acc);
 		return acc;
