@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.nms;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -43,20 +42,6 @@ public abstract class NMS{
 	public abstract Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt, Object paramData);
 	
 	public abstract double entityNameplateHeight(LivingEntity en); // can be remplaced by Entity.getHeight from 1.11
-	
-	public Object newPacket(String name, Object... params){
-		try {
-			Class<?> c = getNMSReflect().fromName(name);
-			Class<?>[] array = new Class<?>[params.length];
-			for (int i = 0; i < params.length; i++){
-				array[i] = params[i].getClass();
-			}
-			return c.getConstructor(array).newInstance(params);
-		}catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-		return params;
-	}
 	
 	public abstract Object getIChatBaseComponent(String text);
 	

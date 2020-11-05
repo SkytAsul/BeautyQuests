@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.DialogEditor;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -55,10 +54,10 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 		if (getValue() == null) setValue(new Dialog());
-		Editor.enterOrLeave(p, new DialogEditor(p, (obj) -> {
+		new DialogEditor(p, (obj) -> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, getValue()));
+		}, getValue()).enter();
 	}
 	
 }

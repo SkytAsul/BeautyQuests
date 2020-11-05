@@ -13,7 +13,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -108,7 +107,7 @@ public class StageArea extends AbstractStage{
 
 		private void launchRegionEditor(Player p, boolean first) {
 			Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
-			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+			new TextEditor<String>(p, () -> {
 				if (first) remove();
 				reopenGUI(p, false);
 			}, obj -> {
@@ -119,7 +118,7 @@ public class StageArea extends AbstractStage{
 					if (first) remove();
 				}
 				reopenGUI(p, false);
-			}));
+			}).useStrippedMessage().enter();
 		}
 		
 		@Override

@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -57,14 +56,14 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_MONEY_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+		new TextEditor<>(p, () -> {
 			if (money == 0) gui.remove(this);
 			gui.reopen();
 		}, obj -> {
 			this.money = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
-		}, new NumberParser<>(Double.class, true, true)));
+		}, new NumberParser<>(Double.class, true, true)).enter();
 	}
 
 	protected void save(Map<String, Object> datas) {

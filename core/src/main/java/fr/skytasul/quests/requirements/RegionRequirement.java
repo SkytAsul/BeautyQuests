@@ -66,7 +66,7 @@ public class RegionRequirement extends AbstractRequirement {
 				gui.remove(this);
 			}
 			gui.reopen();
-		}).enterOrLeave(p);
+		}).useStrippedMessage().enter();
 	}
 	
 	@Override

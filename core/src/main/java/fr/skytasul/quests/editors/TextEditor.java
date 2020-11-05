@@ -11,9 +11,9 @@ import fr.skytasul.quests.utils.Utils;
 public class TextEditor<T> extends Editor {
 	
 	protected Consumer<T> run;
-	public Runnable nul;
-	
-	public AbstractParser<T> parser;
+	protected Runnable nul;
+	protected AbstractParser<T> parser;
+	protected boolean useStripped = false;
 	
 	public TextEditor(Player p, Runnable cancel, Consumer<T> end) {
 		this(p, cancel, end, null, null);
@@ -32,6 +32,11 @@ public class TextEditor<T> extends Editor {
 		this.run = end;
 		this.parser = parser;
 		this.nul = nul;
+	}
+	
+	public TextEditor<T> useStrippedMessage() {
+		useStripped = true;
+		return this;
 	}
 
 	public boolean chat(String msg, String strippedMessage){
@@ -60,7 +65,7 @@ public class TextEditor<T> extends Editor {
 				invalid = true;
 				ex.printStackTrace();
 			}
-		}else returnment = (T) strippedMessage;
+		}else returnment = (T) (useStripped ? strippedMessage : msg);
 
 		if (!invalid){
 			leave(p);

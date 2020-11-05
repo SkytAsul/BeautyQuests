@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -51,7 +50,7 @@ public class XPReward extends AbstractReward {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Utils.sendMessage(p, Lang.XP_GAIN.toString(), exp);
-		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+		new TextEditor<>(p, () -> {
 			if (exp == 0) gui.remove(this);
 			gui.reopen();
 		}, obj -> {
@@ -59,7 +58,7 @@ public class XPReward extends AbstractReward {
 			exp = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}
 	
 	protected void save(Map<String, Object> datas) {

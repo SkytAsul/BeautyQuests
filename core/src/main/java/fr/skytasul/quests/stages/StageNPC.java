@@ -274,7 +274,7 @@ public class StageNPC extends AbstractStage{
 				new DialogEditor(p, (obj) -> {
 					setDialog(dialog);
 					reopenGUI(p, false);
-				}, dialog == null ? dialog = new Dialog() : dialog).enterOrLeave(p);
+				}, dialog == null ? dialog = new Dialog() : dialog).enter();
 			}, true, true);
 			
 			line.setItem(6, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);

@@ -11,7 +11,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -68,16 +67,16 @@ public class SelectBlockGUI implements CustomInventory{
 			
 		case 1:
 			Lang.BLOCKS_AMOUNT.send(p);
-			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), obj -> {
+			new TextEditor<>(p, () -> openLastInv(p), obj -> {
 				amount = obj;
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				openLastInv(p);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 			
 		case 3:
 			Lang.BLOCK_NAME.send(p);
-			Editor.enterOrLeave(p, new TextEditor<>(p, () -> openLastInv(p), type -> {
+			new TextEditor<>(p, () -> openLastInv(p), type -> {
 				this.type = type;
 				if (blockData != null) {
 					try {
@@ -90,7 +89,7 @@ public class SelectBlockGUI implements CustomInventory{
 				}
 				updateTypeItem();
 				openLastInv(p);
-			}, new MaterialParser(false, true)));
+			}, new MaterialParser(false, true)).enter();
 			break;
 		
 		case 5:
@@ -107,7 +106,7 @@ public class SelectBlockGUI implements CustomInventory{
 				}
 				ItemUtils.lore(current, blockData == null ? Lang.NotSet.toString() : blockData);
 				openLastInv(p);
-			}).enterOrLeave(p);
+			}).useStrippedMessage().enter();
 			break;
 
 		case 8:

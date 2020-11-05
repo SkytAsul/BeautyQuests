@@ -31,7 +31,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 
 	public void itemClick(Player p, Consumer<NPC> run) {
 		Lang.SELECT_KILL_NPC.send(p);
-		new SelectNPC(p, () -> run.accept(null), run).enterOrLeave(p);
+		new SelectNPC(p, () -> run.accept(null), run).enter();
 	}
 
 	public NPC fromValue(String value) {
@@ -47,7 +47,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 	}
 
 	public EntityType getEntityType(NPC data) {
-		return data.getTrait(MobType.class).getType();
+		return data.getOrAddTrait(MobType.class).getType();
 	}
 
 	public List<String> getDescriptiveLore(NPC data) {

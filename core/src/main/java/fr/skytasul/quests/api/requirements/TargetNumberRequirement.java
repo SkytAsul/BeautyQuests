@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.EnumParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -79,7 +78,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		sendHelpString(p);
-		Editor.enterOrLeave(p, new TextEditor<>(p, () -> {
+		new TextEditor<>(p, () -> {
 			if (target == 0) gui.remove(this);
 			gui.reopen();
 		}, number -> {
@@ -93,11 +92,11 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 				this.comparison = ComparisonMethod.GREATER_OR_EQUAL;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
-			}, COMPARISON_PARSER).enterOrLeave(p);
+			}, COMPARISON_PARSER).enter();
 		}, () -> {
 			gui.remove(this);
 			gui.reopen();
-		}, new NumberParser<>(numberClass(), true)));
+		}, new NumberParser<>(numberClass(), true)).enter();
 	}
 
 }

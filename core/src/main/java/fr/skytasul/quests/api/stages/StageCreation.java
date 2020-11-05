@@ -10,7 +10,6 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
@@ -42,24 +41,24 @@ public abstract class StageCreation<T extends AbstractStage> {
 		
 		line.setItem(2, StagesGUI.descMessage.clone(), (p, item) -> {
 			Lang.DESC_MESSAGE.send(p);
-			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
+			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setCustomDescription(obj);
 				reopenGUI(p, false);
 			}, () -> {
 				this.setCustomDescription(null);
 				reopenGUI(p, false);
-			}));
+			}).enter();
 		});
 		
 		line.setItem(3, StagesGUI.startMessage.clone(), (p, item) -> {
 			Lang.START_TEXT.send(p);
-			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
+			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setStartMessage(obj);
 				reopenGUI(p, false);
 			}, () -> {
 				setStartMessage(null);
 				reopenGUI(p, false);
-			}));
+			}).enter();
 		});
 		
 		line.setItem(4, StagesGUI.validationRequirements.clone(), (p, item) -> {

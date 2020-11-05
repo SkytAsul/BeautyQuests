@@ -151,7 +151,7 @@ public class StageChat extends AbstractStage{
 				obj = obj.replace("{SLASH}", "/");
 				setText(obj);
 				reopenGUI(p, false);
-			}).enterOrLeave(p);
+			}).enter();
 		}
 	}
 

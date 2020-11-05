@@ -10,7 +10,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
@@ -62,11 +61,11 @@ public class CommandGUI implements CustomInventory {
 		switch (slot){
 		case 0:
 			Lang.COMMAND.send(p);
-			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> p.openInventory(inv), cmd -> {
+			new TextEditor<String>(p, () -> p.openInventory(inv), cmd -> {
 				this.cmd = cmd;
 				inv.getItem(4).setType(Material.DIAMOND);
 				p.openInventory(inv);
-			}, () -> p.openInventory(inv), null));
+			}, () -> p.openInventory(inv), null).useStrippedMessage().enter();
 			break;
 			
 		case 1:
@@ -78,7 +77,7 @@ public class CommandGUI implements CustomInventory {
 			new TextEditor<>(p, () -> p.openInventory(inv), x -> {
 				delay = x;
 				p.openInventory(inv);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 
 		case 4:

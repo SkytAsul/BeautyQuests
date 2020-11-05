@@ -54,7 +54,7 @@ public abstract class QuestOptionString extends QuestOption<String> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}).enterOrLeave(p);
+		}).enter();
 	}
 	
 	public abstract void sendIndication(Player p);

@@ -67,7 +67,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		}, () -> {
 			gui.remove(this);
 			gui.reopen();
-		}, new ScoreboardObjectiveParser()).enterOrLeave(p);
+		}, new ScoreboardObjectiveParser()).enter();
 	}
 	
 	@Override

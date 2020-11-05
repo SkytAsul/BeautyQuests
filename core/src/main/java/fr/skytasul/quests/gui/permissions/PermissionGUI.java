@@ -58,7 +58,7 @@ public class PermissionGUI implements CustomInventory {
 				perm = null;
 				inv.getItem(4).setType(Material.COAL);
 				p.openInventory(inv);
-			}).enterOrLeave(p);
+			}).useStrippedMessage().enter();
 			break;
 		case 1:
 			Lang.CHOOSE_PERM_WORLD.send(p);
@@ -66,7 +66,7 @@ public class PermissionGUI implements CustomInventory {
 				updateWorld(p, worldS.getName(), inv);
 			}, () -> {
 				updateWorld(p, null, inv);
-			}, new WorldParser()).enterOrLeave(p);
+			}, new WorldParser()).enter();
 			break;
 		case 2:
 			take = ItemUtils.toggle(current);

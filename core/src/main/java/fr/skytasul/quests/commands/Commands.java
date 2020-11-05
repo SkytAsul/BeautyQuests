@@ -63,7 +63,7 @@ public class Commands {
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
 			}
-		}).enterOrLeave(cmd.player);
+		}).enter();
 	}
 	
 	@Cmd(permission = "remove", args = "QUESTSID")
@@ -90,7 +90,7 @@ public class Commands {
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);
 			}
-		}).enterOrLeave(cmd.player);
+		}).enter();
 	}
 
 	@Cmd(permission = "reload")

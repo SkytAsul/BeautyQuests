@@ -60,7 +60,7 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 			item.setType(getValue().parseMaterial());
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, new MaterialParser(false, false)).enterOrLeave(p);
+		}, new MaterialParser(false, false)).enter();
 	}
 	
 }

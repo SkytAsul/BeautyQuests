@@ -51,7 +51,7 @@ public class MessageReward extends AbstractReward {
 			this.text = obj;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
-		}).enterOrLeave(p);
+		}).enter();
 	}
 	
 	protected void save(Map<String, Object> datas) {

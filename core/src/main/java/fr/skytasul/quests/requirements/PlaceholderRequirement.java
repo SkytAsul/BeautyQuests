@@ -105,8 +105,8 @@ public class PlaceholderRequirement extends AbstractRequirement {
 			}, value -> {
 				this.value = value;
 				gui.reopen();
-			}).enterOrLeave(p);
-		}).enterOrLeave(p);
+			}).enter();
+		}).useStrippedMessage().enter();
 	}
 	
 	@Override

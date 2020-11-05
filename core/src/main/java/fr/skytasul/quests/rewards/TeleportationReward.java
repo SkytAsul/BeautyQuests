@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
@@ -47,14 +46,14 @@ public class TeleportationReward extends AbstractReward {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.MOVE_TELEPORT_POINT.send(p);
-		Editor.enterOrLeave(p, new WaitClick(p, () -> {
+		new WaitClick(p, () -> {
 			if (teleportation == null) gui.remove(this);
 			gui.reopen();
 		}, NPCGUI.validMove.clone(), () -> {
 			teleportation = p.getLocation();
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
-		}));
+		}).enter();
 	}
 	
 	protected void save(Map<String, Object> datas) {

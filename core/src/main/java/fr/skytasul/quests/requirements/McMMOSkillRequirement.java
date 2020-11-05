@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -56,13 +55,13 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
 		Lang.CHOOSE_SKILL_REQUIRED.send(p);
-		Editor.enterOrLeave(p, new TextEditor<String>(p, () -> {
+		new TextEditor<String>(p, () -> {
 			if (skillName == null) gui.remove(this);
 			gui.reopen();
 		}, (obj) -> {
 			this.skillName = obj;
 			super.itemClick(p, gui, clicked);
-		}));
+		}).useStrippedMessage().enter();
 	}
 	
 	protected void save(Map<String, Object> datas) {

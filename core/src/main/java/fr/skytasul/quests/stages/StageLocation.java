@@ -115,14 +115,14 @@ public class StageLocation extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, false), x -> {
 					setRadius(x);
 					reopenGUI(p, false);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			});
 			line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.editLocation.toString()), (p, item) -> {
 				Lang.LOCATION_GO.send(p);
 				new WaitClick(p, () -> reopenGUI(p, false), NPCGUI.validMove, () -> {
 					setLocation(p.getLocation());
 					reopenGUI(p, false);
-				}).enterOrLeave(p);
+				}).enter();
 			});
 		}
 		
@@ -144,7 +144,7 @@ public class StageLocation extends AbstractStage {
 				setLocation(p.getLocation());
 				setRadius(5);
 				reopenGUI(p, false);
-			}).enterOrLeave(p);
+			}).enter();
 		}
 
 		@Override

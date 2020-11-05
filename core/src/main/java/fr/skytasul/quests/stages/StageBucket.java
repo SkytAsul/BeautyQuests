@@ -132,7 +132,7 @@ public class StageBucket extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, true), obj -> {
 					setAmount(obj);
 					reopenGUI(p, true);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			});
 			line.setItem(7, ItemUtils.item(XMaterial.BUCKET, Lang.editBucketType.toString()), (p, item) -> {
 				new BucketTypeGUI(() -> reopenGUI(p, true), bucket -> {
@@ -164,7 +164,7 @@ public class StageBucket extends AbstractStage {
 				new TextEditor<>(p, cancel, obj -> {
 					setAmount(obj);
 					reopenGUI(p, true);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			}).create(p);
 		}
 

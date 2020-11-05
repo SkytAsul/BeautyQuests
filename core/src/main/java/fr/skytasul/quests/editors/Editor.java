@@ -3,6 +3,7 @@ package fr.skytasul.quests.editors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +33,7 @@ public abstract class Editor implements Listener{
 		this.cancel = cancel;
 	}
 	
-	public void begin(){
+	protected void begin() {
 		Inventories.closeWithoutExit(p);
 		if (NMS.getMCVersion() > 11){
 			p.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
@@ -42,22 +43,30 @@ public abstract class Editor implements Listener{
 		}
 	}
 
-	public void end(){}
+	protected void end() {}
 	
 	protected void cancel() {
 		leave(p);
 		cancel.run();
 	}
-	
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e){
-		if (e.getPlayer() == p){
-			leave(p);
-		}
-	}
 
-	public <T extends Editor> T enterOrLeave(Player p){
-		return (T) enterOrLeave(p, this);
+	@Deprecated
+	public <T extends Editor> T enterOrLeave(Player p) {
+		Validate.isTrue(p == this.p);
+		return enter();
+	}
+	
+	public <T extends Editor> T enter() {
+		Editor edit = players.get(p);
+		if (edit == null) {
+			begin();
+			Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+			
+			players.put(p, this);
+		}else {
+			Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
+		}
+		return (T) this;
 	}
 	
 	/**
@@ -96,24 +105,16 @@ public abstract class Editor implements Listener{
 		}else callChat(e.getMessage());
 	}
 	
-	private static void enter(Player p, Editor editor){
-		editor.begin();
-		Bukkit.getPluginManager().registerEvents(editor, BeautyQuests.getInstance());
-
-		players.put(p, editor);
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		if (e.getPlayer() == p) leave(p);
 	}
 
-	public static <T extends Editor> T enterOrLeave(Player p, T editor){
-		if (editor == null) return null;
-		Editor edit = (Editor) players.get(p);
-		if (edit == null){
-			enter(p, editor);
-		}else{
-			Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
-		}
-		return editor;
+	@Deprecated
+	public static <T extends Editor> T enterOrLeave(Player p, T editor) {
+		return editor.enterOrLeave(p);
 	}
-
+	
 	public static boolean hasEditor(Player player){
 		return players.containsKey(player);
 	}
@@ -127,9 +128,7 @@ public abstract class Editor implements Listener{
 	}
 
 	public static void leaveAll(){
-		for (Player p : players.keySet()){
-			leave(p);
-		}
+		players.keySet().forEach(Editor::leave);
 		players.clear();
 	}
 

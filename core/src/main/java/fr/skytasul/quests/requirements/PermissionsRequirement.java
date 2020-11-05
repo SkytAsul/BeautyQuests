@@ -69,7 +69,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 					Lang.CHOOSE_PERM_REQUIRED.send(p);
 					new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
 						finishItem(Permission.fromString(obj));
-					}).enterOrLeave(p);
+					}).useStrippedMessage().enter();
 				}
 			}
 			
@@ -84,7 +84,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 					message = null;
 					ItemUtils.lore(clicked, getLore());
 					gui.reopen();
-				}).enterOrLeave(p);
+				}).enter();
 			}
 			
 		}.create(p);

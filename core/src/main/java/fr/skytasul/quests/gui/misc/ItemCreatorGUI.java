@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
@@ -79,19 +78,19 @@ public class ItemCreatorGUI implements CustomInventory {
 		switch (slot){
 		case 0:
 			Lang.CHOOSE_ITEM_TYPE.send(p);
-			Editor.enterOrLeave(p, new TextEditor<>(p, () -> reopen(), obj -> {
+			new TextEditor<>(p, () -> reopen(), obj -> {
 				type = obj;
 				reopen();
-			}, new MaterialParser(true, false)));
+			}, new MaterialParser(true, false)).enter();
 			break;
 
 		case 1:
 			Lang.CHOOSE_ITEM_AMOUNT.send(p);
-			Editor.enterOrLeave(p, new TextEditor<>(p, () -> reopen(), obj -> {
+			new TextEditor<>(p, () -> reopen(), obj -> {
 				amount = obj;
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				reopen();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE));
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 		
 		case 2:
@@ -101,18 +100,18 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		case 3:
 			Lang.CHOOSE_ITEM_NAME.send(p);
-			Editor.enterOrLeave(p, new TextEditor<String>(p, () -> reopen(), obj -> {
+			new TextEditor<String>(p, () -> reopen(), obj -> {
 				name = obj;
 				reopen();
-			}));
+			}).enter();
 			break;
 
 		case 4:
 			Lang.CHOOSE_ITEM_LORE.send(p);
-			Editor.enterOrLeave(p, new TextListEditor(p, (list) -> {
+			new TextListEditor(p, list -> {
 				lore = list;
 				reopen();
-			}, lore));
+			}, lore).enter();
 			break;
 
 		case 6:

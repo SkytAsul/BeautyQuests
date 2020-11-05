@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.CustomInventory;
@@ -68,7 +67,7 @@ public class NPCGUI implements CustomInventory{
 		switch (slot){
 		
 		case 0:
-			Editor.enterOrLeave(p, new WaitClick(p, () -> openLastInv(p), validMove.clone(), () -> openLastInv(p)));
+			new WaitClick(p, () -> openLastInv(p), validMove.clone(), () -> openLastInv(p)).enter();
 			break;
 
 		case 1:
@@ -77,7 +76,7 @@ public class NPCGUI implements CustomInventory{
 				name = obj;
 				ItemUtils.name(inv.getItem(1), Lang.optionValue.format(obj));
 				openLastInv(p);
-			}).enterOrLeave(p);
+			}).enter();
 			break;
 
 		case 3:
@@ -86,7 +85,7 @@ public class NPCGUI implements CustomInventory{
 			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
 				if (obj != null) inv.setItem(slot, ItemUtils.skull(ItemUtils.getName(skin), (String) obj, ItemUtils.getLore(skin)));
 				openLastInv(p);
-			}).enterOrLeave(p);
+			}).useStrippedMessage().enter();
 			break;
 			
 		case 5:

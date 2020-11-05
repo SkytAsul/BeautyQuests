@@ -121,7 +121,7 @@ public class StageInteract extends AbstractStage {
 					new WaitBlockClick(p, () -> reopenGUI(p, false), obj -> {
 						setLocation(location);
 						reopenGUI(p, false);
-					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
+					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
 				});
 			}
 			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription(Utils.locationToString(location))));
@@ -135,7 +135,7 @@ public class StageInteract extends AbstractStage {
 					new TextEditor<>(p, () -> reopenGUI(p, false), newMaterial -> {
 						setMaterial(newMaterial);
 						reopenGUI(p, false);
-					}, new MaterialParser(false, true)).enterOrLeave(p);
+					}, new MaterialParser(false, true)).enter();
 				});
 			}
 			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(material.name())));
@@ -151,13 +151,13 @@ public class StageInteract extends AbstractStage {
 				new WaitBlockClick(p, cancel, obj -> {
 					setLocation(obj);
 					reopenGUI(p, true);
-				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enterOrLeave(p);
+				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
 			}, () -> {
 				Lang.BLOCK_NAME.send(p);
 				new TextEditor<>(p, cancel, material -> {
 					setMaterial(material);
 					reopenGUI(p, true);
-				}, new MaterialParser(false, true)).enterOrLeave(p);
+				}, new MaterialParser(false, true)).enter();
 			}).create(p);
 		}
 

@@ -133,7 +133,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 					objects.sort(comparator.setReference(obj));
 					setItems();
 					p.openInventory(inv);
-				}).enterOrLeave(p);
+				}).enter();
 				break;
 			}
 			break;

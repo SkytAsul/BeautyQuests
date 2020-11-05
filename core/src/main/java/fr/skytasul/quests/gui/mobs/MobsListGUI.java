@@ -86,7 +86,7 @@ public class MobsListGUI implements CustomInventory{
 						Mob<?> mob = new Mob(existing, obj);
 						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(amount));
 						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, amount));
-					}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
+					}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 				});
 			}
 		}.create(p);

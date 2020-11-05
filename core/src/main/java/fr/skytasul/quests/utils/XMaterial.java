@@ -2101,8 +2101,8 @@ public enum XMaterial {
 		if (type == EntityType.ARMOR_STAND) return ARMOR_STAND;
 		if (type == EntityType.PLAYER) return PLAYER_HEAD;
 		if (type == EntityType.ENDER_DRAGON) return DRAGON_HEAD;
-		if (type == EntityType.ILLUSIONER) return BLAZE_POWDER;
 		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN")) return ZOMBIFIED_PIGLIN_SPAWN_EGG;
+		if (type.name().equals("ILLUSIONER")) return BLAZE_POWDER;
 		return SPONGE;
 	}
 }

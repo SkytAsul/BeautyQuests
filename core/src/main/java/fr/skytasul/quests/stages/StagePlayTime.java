@@ -101,7 +101,7 @@ public class StagePlayTime extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, false), obj -> {
 					setTicks(obj);
 					reopenGUI(p, false);
-				}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
+				}, new NumberParser<>(Long.class, true, true)).enter();
 			});
 		}
 		
@@ -117,7 +117,7 @@ public class StagePlayTime extends AbstractStage {
 			new TextEditor<>(p, removeAndReopen(p, false), obj -> {
 				setTicks(obj);
 				reopenGUI(p, false);
-			}, new NumberParser<>(Long.class, true, true)).enterOrLeave(p);
+			}, new NumberParser<>(Long.class, true, true)).enter();
 		}
 		
 		@Override

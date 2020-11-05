@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -57,7 +56,7 @@ public class SelectGUI implements CustomInventory{
 			break;
 
 		case 3:
-			Editor.enterOrLeave(p, new SelectNPC(p, () -> openLastInv(p), run));
+			new SelectNPC(p, () -> openLastInv(p), run).enter();
 			break;
 		}
 		return true;
