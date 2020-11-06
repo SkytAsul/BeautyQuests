@@ -300,7 +300,7 @@ public class StageNPC extends AbstractStage{
 		public void start(Player p) {
 			super.start(p);
 			new SelectGUI(removeAndReopen(p, true), npc -> {
-				setNPCId(npcID);
+				setNPCId(npc.getId());
 				reopenGUI(p, true);
 			}).create(p);
 		}
