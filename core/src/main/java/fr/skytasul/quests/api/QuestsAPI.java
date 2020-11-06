@@ -162,16 +162,16 @@ public class QuestsAPI {
 	}
 
 	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean redoable) {
-		List<Quest> finished = new ArrayList<>();
+		List<Quest> unstarted = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
 			if (hide && qu.isHidden()) continue;
 			if (qu.hasStarted(acc)) continue;
 			if (qu.hasFinished(acc)) {
 				if (!redoable || !qu.isRepeatable() || !qu.testTimer(acc, false)) continue;
 			}
-			finished.add(qu);
+			unstarted.add(qu);
 		}
-		return finished;
+		return unstarted;
 	}
 
 	public static List<Quest> getQuestsAssigneds(NPC npc) {

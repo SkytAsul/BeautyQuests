@@ -84,11 +84,10 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				String[] lore = null;
 				if (qu.isRepeatable()){
-					int timeLeft = qu.getTimeLeft(acc);
-					if (timeLeft == 0){
+					if (qu.testTimer(acc, false)) {
 						lore = new String[]{Lang.canRedo.toString()};
-					}else if (timeLeft > 0) {
-						lore = new String[]{Lang.timeWait.format(timeLeft)};
+					}else {
+						lore = new String[] { Lang.timeWait.format(qu.getTimeLeft(acc)) };
 					}
 				}
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
@@ -209,7 +208,10 @@ public class PlayerListGUI implements CustomInventory {
 				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
 				if (!acc.isCurrent()) break;
 				Player target = acc.getPlayer();
-				if (qu.isLauncheable(target, true)) qu.attemptStart(target);
+				if (qu.isLauncheable(target, true)) {
+					p.closeInventory();
+					qu.attemptStart(target);
+				}
 			}
 			break;
 			
