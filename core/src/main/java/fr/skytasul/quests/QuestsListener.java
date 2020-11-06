@@ -55,7 +55,7 @@ public class QuestsListener implements Listener{
 			for (Quest qu : quests){
 				if (!qu.testRequirements(p, acc, false)){
 					requirements.add(qu);
-				}else if (!qu.testTimer(p, acc, false)){
+				}else if (!qu.testTimer(acc, false)) {
 					timer.add(qu);
 				}else launcheable.add(qu);
 			}
@@ -63,7 +63,7 @@ public class QuestsListener implements Listener{
 			e.setCancelled(true);
 			if (launcheable.isEmpty()){
 				if (requirements.isEmpty()){
-					timer.get(0).testTimer(p, acc, true);
+					timer.get(0).testTimer(acc, true);
 				}else {
 					requirements.get(0).testRequirements(p, acc, true);
 				}

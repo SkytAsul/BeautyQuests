@@ -24,7 +24,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, x -> x.getName());
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getQuestsStarteds(acc));
-			if (notStarted) super.objects.addAll(QuestsAPI.getQuestsUnstarted(acc, false));
+			if (notStarted) super.objects.addAll(QuestsAPI.getQuestsUnstarted(acc, false, false));
 			if (finished) super.objects.addAll(QuestsAPI.getQuestsFinished(acc));
 		}else super.objects.addAll(QuestsAPI.getQuests());
 		this.run = run;

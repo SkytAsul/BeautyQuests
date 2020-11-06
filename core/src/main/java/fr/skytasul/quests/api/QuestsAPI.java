@@ -161,11 +161,15 @@ public class QuestsAPI {
 		return finished;
 	}
 
-	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide){
+	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean redoable) {
 		List<Quest> finished = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
 			if (hide && qu.isHidden()) continue;
-			if (!qu.hasFinished(acc) && !qu.hasStarted(acc)) finished.add(qu);
+			if (qu.hasStarted(acc)) continue;
+			if (qu.hasFinished(acc)) {
+				if (!redoable || !qu.isRepeatable() || !qu.testTimer(acc, false)) continue;
+			}
+			finished.add(qu);
 		}
 		return finished;
 	}

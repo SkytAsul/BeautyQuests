@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -223,6 +224,7 @@ public abstract class AbstractStage implements Listener{
 	
 	public void updateObjective(PlayerAccount acc, Player p, String dataKey, Object dataValue) {
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
+		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
 		if (p != null) branch.getBranchesManager().objectiveUpdated(p);

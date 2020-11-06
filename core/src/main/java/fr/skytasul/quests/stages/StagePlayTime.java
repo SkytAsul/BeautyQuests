@@ -74,6 +74,12 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
+	public void end(PlayerAccount acc) {
+		super.end(acc);
+		tasks.remove(acc).cancel();
+	}
+	
+	@Override
 	public void unload() {
 		super.unload();
 		tasks.keySet().forEach(acc -> leaves(acc, null));

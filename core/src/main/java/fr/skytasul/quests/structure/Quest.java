@@ -221,7 +221,7 @@ public class Quest implements Comparable<Quest> {
 			return false;
 		}
 		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(acc)) return false;
-		if (!testTimer(p, acc, sendMessage)) return false;
+		if (!testTimer(acc, sendMessage)) return false;
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
 	}
@@ -241,11 +241,11 @@ public class Quest implements Comparable<Quest> {
 		return true;
 	}
 	
-	public boolean testTimer(Player p, PlayerAccount acc, boolean sendMessage){
+	public boolean testTimer(PlayerAccount acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()){
-				if (sendMessage) Lang.QUEST_WAIT.send(p, getTimeLeft(acc));
+				if (sendMessage && acc.isCurrent()) Lang.QUEST_WAIT.send(acc.getPlayer(), getTimeLeft(acc));
 				return false;
 			}
 			acc.getQuestDatas(this).setTimer(0);
