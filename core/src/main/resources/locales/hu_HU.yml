@@ -15,6 +15,11 @@ msg:
   quests:
     nopStep: '§cEz a küldetés nem tartalmaz lépéseket.'
     updated: '§7A következő küldetés §e{0}§7 frissítve.'
+    checkpoint: '§7Küldetés ellenőrző pont elérve!'
+    failed: '§cNem sikerült a küldetés{0}'
+  questItem:
+    drop: '§cKüldetés itemet nem dobhatsz el!'
+    craft: '§cNem barkácsolhatsz küldetés itemmel!'
   stageMobs:
     noMobs: '§cEz a lépés nem igényel szörny ölést.'
     listMobs: '§aEnnyit megkell ölnöd {0}.'
@@ -38,6 +43,8 @@ msg:
   writeQuestMaterial: '§aÍrd ide,hogy milyen tárgy legyen a küldetés.'
   requirements:
     quest: '§cBekell fejezned a következő küldetést §e{0}§c!'
+    level: '§cA szintednek a következőnek kell lennie{0}!'
+    combatLevel: '§aA harc szinted a következőnek kell lennie{0}!'
     money: '§cEnnyi kell lennied nállad {0}!'
     wait: '§cVárnod kell {0} percet mielött újra indítanád!'
   experience:
@@ -61,6 +68,9 @@ msg:
   playerNeverConnected: '§cNem lehet információkat találni a játékosról {0}.'
   playerNotOnline: '§cA következő játékos nem elérhető {0}.'
   command:
+    checkpoint:
+      noCheckpoint: '§cNem találtunk ellenörző pontot a küldetéshez {0}'
+      questNotStarted: '§cNem ezt a küldetést csinálod.'
     setStage:
       branchDoesntExist: '§cA következő ág nem létezik {0}.'
       doesntExist: '§cA következő szint {0} nem létezik.'
@@ -114,6 +124,9 @@ msg:
       reload: '§6/{0} reload: §eSave, majd újra konfigurációk, valamint a fájlok. (§cdeprecated§e)'
       start: '§6/{0} start <player> [id]: §eForce a kezdő a küldetést.'
   editor:
+    itemCreator:
+      itemName: '§aÍrd le az item nevét:'
+      unknownItemType: '§cIsmeretlen item típus.'
     dialog:
       help:
         player: '§6játékos <message>: §eHozzáad egy szöveget amit a játékos ír.'

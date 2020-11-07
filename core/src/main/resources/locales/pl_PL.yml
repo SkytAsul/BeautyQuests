@@ -368,7 +368,7 @@ inv:
   entityType:
     name: Wybierz typ jednostki
   chooseQuest:
-    name: Które zadanie?
+    name: Wybór zadania
   mobs:
     name: Wybierz moby
     none: '§aKliknij, aby dodać moba.'
