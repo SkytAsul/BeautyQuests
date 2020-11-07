@@ -411,7 +411,7 @@ public enum Lang{
 	inProgress("inv.listQuests.inProgress"),
 	cancelLore("inv.listQuests.loreCancel"),
 	startLore("inv.listQuests.loreStart"),
-	startImpossibleLore("inv.listQuests.loreStartImpossible"),
+	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
 	timeWait("inv.listQuests.timeToWait"),
 	canRedo("inv.listQuests.canRedo"),
 	formatNormal("inv.listQuests.format.normal"),
