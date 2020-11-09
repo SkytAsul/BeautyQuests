@@ -109,6 +109,9 @@ permissions:
   beautyquests.command.scoreboard:
     description: Gives access to "/quests scoreboard"
     default: op
+  beautyquests.command.pools:
+    description: Gives access to "/quests pools"
+    default: op
   beautyquests.command.checkpoint:
     description: Allows player to use checkpoints
     default: true

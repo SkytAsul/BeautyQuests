@@ -18,6 +18,7 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.BranchesGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
+import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
@@ -418,6 +419,11 @@ public class Commands {
 			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
 			break;
 		}
+	}
+	
+	@Cmd (player = true, permission = "pools")
+	public void pools(CommandContext cmd) {
+		PoolsManageGUI.get().create(cmd.player);
 	}
 	
 	@Cmd (player = true, args = "QUESTSID", min = 1)

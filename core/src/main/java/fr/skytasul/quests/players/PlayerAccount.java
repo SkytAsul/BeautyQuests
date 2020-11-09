@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestPool;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Utils;
 
 public class PlayerAccount {

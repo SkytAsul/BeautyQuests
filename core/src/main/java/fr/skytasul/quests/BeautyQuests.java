@@ -44,6 +44,7 @@ import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -79,6 +80,7 @@ public class BeautyQuests extends JavaPlugin{
 	private List<Quest> quests = new ArrayList<>();
 	private Map<NPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
+	private QuestPoolsManager pools;
 	public static int lastID = 0;
 	
 	/* ---------- Operations -------- */
@@ -361,6 +363,8 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}
 		
+		pools = new QuestPoolsManager(new File(getDataFolder(), "questPools.yml"));
+		
 		quests.clear();
 		lastID = data.getInt("lastID");
 
@@ -577,6 +581,10 @@ public class BeautyQuests extends JavaPlugin{
 		return scoreboards;
 	}
 	
+	public QuestPoolsManager getPoolsManager() {
+		return pools;
+	}
+
 
 	public static BeautyQuests getInstance(){
 		return instance;

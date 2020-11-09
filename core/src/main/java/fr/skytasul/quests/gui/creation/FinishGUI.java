@@ -38,6 +38,7 @@ import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.options.OptionQuestMaterial;
+import fr.skytasul.quests.options.OptionQuestPool;
 import fr.skytasul.quests.options.OptionRepeatable;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionScoreboardEnabled;
@@ -323,6 +324,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hide", 28, OptionHide.class, OptionHide::new, false, "hid"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 29, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 30, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("pool", 34, OptionQuestPool.class, OptionQuestPool::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 39, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));

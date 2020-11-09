@@ -116,7 +116,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setCustomDescription(String customDescription) {
 		this.customDescription = customDescription;
-		line.editItem(2, ItemUtils.lore(line.getItem(2), formatValue(customDescription)));
+		line.editItem(2, ItemUtils.lore(line.getItem(2), QuestOption.formatNullableValue(customDescription)));
 	}
 	
 	public String getStartMessage() {
@@ -125,7 +125,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setStartMessage(String startMessage) {
 		this.startMessage = startMessage;
-		line.editItem(3, ItemUtils.lore(line.getItem(3), formatValue(startMessage)));
+		line.editItem(3, ItemUtils.lore(line.getItem(3), QuestOption.formatNullableValue(startMessage)));
 	}
 	
 	public StagesGUI getLeadingBranch() {
@@ -173,9 +173,5 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * @return AsbtractStage created
 	 */
 	protected abstract T finishStage(QuestBranch branch);
-	
-	private static String formatValue(String nullable) {
-		return Lang.optionValue.format(nullable == null ? Lang.NotSet.toString() : nullable);
-	}
 	
 }
