@@ -25,7 +25,7 @@ public abstract class NMS{
 	private Method equalsCommon;
 
 	public NMS() {
-		if (versionValid) {
+		if (!(this instanceof NullNMS)) {
 			try {
 				Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
 				unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
