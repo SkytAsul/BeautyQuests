@@ -52,6 +52,10 @@ public class QuestPoolsManager {
 		}
 	}
 	
+	public QuestPool createPool() {
+		return new QuestPool(pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1);
+	}
+	
 	public QuestPool getPool(int id) {
 		return pools.get(id);
 	}

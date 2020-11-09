@@ -13,10 +13,23 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionQuestPool extends QuestOption<QuestPool> {
+	
+	@Override
+	public void attach(Quest quest) {
+		super.attach(quest);
+		if (getValue() != null) getValue().addQuest(quest);
+	}
+	
+	@Override
+	public void detach() {
+		if (getValue() != null) getValue().removeQuest(getAttachedQuest());
+		super.detach();
+	}
 	
 	@Override
 	public Object save() {

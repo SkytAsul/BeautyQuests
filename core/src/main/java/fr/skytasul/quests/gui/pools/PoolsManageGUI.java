@@ -28,7 +28,11 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
 	@Override
 	public void click(QuestPool existing) {
-		
+		if (existing == null) {
+			new PoolEditGUI(BeautyQuests.getInstance().getPoolsManager()::createPool, () -> get().create(p)).create(p);
+		}else {
+			new PoolEditGUI(() -> existing, () -> get().create(p), existing).create(p);
+		}
 	}
 	
 	public static PoolsManageGUI get() {

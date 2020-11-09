@@ -28,7 +28,7 @@ public class QuestPool {
 	
 	private List<Quest> quests = new ArrayList<>();
 	
-	public QuestPool(int id) {
+	QuestPool(int id) {
 		this.id = id;
 	}
 	
@@ -70,6 +70,10 @@ public class QuestPool {
 	
 	public void addQuest(Quest quest) {
 		quests.add(quest);
+	}
+	
+	public void removeQuest(Quest quest) {
+		quests.remove(quest);
 	}
 	
 	public ItemStack getItemStack() {
