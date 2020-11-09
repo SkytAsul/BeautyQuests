@@ -5,7 +5,7 @@
 
 	<groupId>fr.skytasul</groupId>
 	<artifactId>beautyquests-parent</artifactId>
-	<version>0.18.3-SNAPSHOT</version>
+	<version>0.18.3</version>
 	<packaging>pom</packaging>
 
 	<name>beautyquests</name>
@@ -38,6 +38,7 @@
 		<module>v1_15_R1</module>
 		<module>v1_16_R1</module>
 		<module>v1_16_R2</module>
+		<module>v1_16_R3</module>
 		<module>dist</module>
 	</modules>
 </project>

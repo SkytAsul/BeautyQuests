@@ -2,7 +2,6 @@ package fr.skytasul.quests.utils.nms;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class v1_12_R1 extends NMS{
 	}
 
 	public double entityNameplateHeight(LivingEntity en){
-		return ((CraftLivingEntity) en).getHandle().length;
+		return en.getHeight();
 	}
 
 	public Object getIChatBaseComponent(String text){

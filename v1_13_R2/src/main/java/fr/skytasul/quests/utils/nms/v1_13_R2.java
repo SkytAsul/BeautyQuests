@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_13_R2.CraftParticle;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,7 +43,7 @@ public class v1_13_R2 extends NMS{
 	}
 
 	public double entityNameplateHeight(LivingEntity en){
-		return ((CraftLivingEntity) en).getHandle().length + 0.5;
+		return en.getHeight();
 	}
 	
 	public Object getIChatBaseComponent(String text){
