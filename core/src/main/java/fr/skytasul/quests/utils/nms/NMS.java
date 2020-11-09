@@ -2,7 +2,6 @@ package fr.skytasul.quests.utils.nms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -84,22 +83,24 @@ public abstract class NMS{
     private static boolean versionValid = false;
 	private static NMS nms;
 	private static int MCversion;
-	private static final List<String> validVersions = Arrays.asList("1_9_R1", "1_9_R2", "1_10_R1", "1_11_R1", "1_12_R1", "1_13_R2", "1_14_R1", "1_15_R1", "1_16_R1", "1_16_R2");
 	
 	static {
 		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
-		if (validVersions.contains(version)){
-			try{
-				versionValid = true;
-				nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
-				MCversion = Integer.parseInt(version.split("_")[1]);
-			}catch (Exception ex) {
-				ex.printStackTrace();
-				versionValid = false;
-				nms = new NullNMS();
-			}
-		}else nms = new NullNMS();
-		BeautyQuests.logger.info((versionValid) ? "Loaded valid version " + nms.getClass().getSimpleName() : "Minecraft Server version is not valid for this server. Some functionnality aren't enable. Currenttly accepted versions are: " + String.join(", ", validVersions));
+		MCversion = Integer.parseInt(version.split("_")[1]);
+		try {
+			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
+			versionValid = true;
+			BeautyQuests.logger.info("Loaded valid Minecraft version " + version + ".");
+		}catch (ClassNotFoundException ex) {
+			BeautyQuests.logger.warning("The Minecraft version " + version + " is not supported by BeautyQuests.");
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			BeautyQuests.logger.warning("An error ocurred when loading Minecraft Server version " + version + " compatibilities.");
+		}
+		if (!versionValid) {
+			nms = new NullNMS();
+			BeautyQuests.logger.warning("Some functionnalities of the plugin have not been enabled.");
+		}
 	}
 	
 }

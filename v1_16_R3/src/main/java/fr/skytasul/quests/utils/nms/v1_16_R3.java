@@ -5,27 +5,27 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R1.CraftParticle;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.ParticleEffect;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.server.v1_16_R1.Block;
-import net.minecraft.server.v1_16_R1.BlockStateList;
-import net.minecraft.server.v1_16_R1.ChatComponentText;
-import net.minecraft.server.v1_16_R1.EnumChatFormat;
-import net.minecraft.server.v1_16_R1.EnumHand;
-import net.minecraft.server.v1_16_R1.IBlockData;
-import net.minecraft.server.v1_16_R1.IBlockState;
-import net.minecraft.server.v1_16_R1.IRegistry;
-import net.minecraft.server.v1_16_R1.MinecraftKey;
-import net.minecraft.server.v1_16_R1.Packet;
-import net.minecraft.server.v1_16_R1.PacketPlayOutOpenBook;
-import net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_16_R3.Block;
+import net.minecraft.server.v1_16_R3.BlockStateList;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.EnumChatFormat;
+import net.minecraft.server.v1_16_R3.EnumHand;
+import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.IBlockState;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.minecraft.server.v1_16_R3.MinecraftKey;
+import net.minecraft.server.v1_16_R3.Packet;
+import net.minecraft.server.v1_16_R3.PacketPlayOutOpenBook;
+import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
 
-public class v1_16_R1 extends NMS{
+public class v1_16_R3 extends NMS{
 	
 	public Object bookPacket(ByteBuf buf){
 		return new PacketPlayOutOpenBook(EnumHand.MAIN_HAND);
