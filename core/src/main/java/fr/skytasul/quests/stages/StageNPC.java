@@ -105,7 +105,7 @@ public class StageNPC extends AbstractStage{
 
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
-		this.npc = CitizensAPI.getNPCRegistry().getById(npcID);
+		if (npcID > 0) this.npc = CitizensAPI.getNPCRegistry().getById(npcID);
 		if (npc == null) BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
 	}
 	
