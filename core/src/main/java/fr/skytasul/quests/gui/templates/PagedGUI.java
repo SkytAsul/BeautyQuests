@@ -144,7 +144,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		default:
 			int line = (int) Math.floor(slot * 1D / 9D);
 			int objectSlot = slot - line*2 + page*35;
-			click(objects.get(objectSlot));
+			click(objects.get(objectSlot), click);
 			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 		return true;
@@ -159,7 +159,8 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object
+	 * @param click click type
 	 */
-	public abstract void click(T existing);
+	public abstract void click(T existing, ClickType click);
 
 }

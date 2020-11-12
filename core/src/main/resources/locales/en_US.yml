@@ -568,6 +568,7 @@ misc:
     milk: Milk bucket
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
+  poolHologramText: §eNew quest available!
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eEntity type: {0}'
   enabled: Enabled

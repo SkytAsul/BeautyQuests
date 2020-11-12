@@ -546,6 +546,7 @@ public enum Lang{
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
 	HologramText("misc.hologramText"),
+	PoolHologramText("misc.poolHologramText"),
 	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),
 	QuestItemLore("misc.questItemLore"),

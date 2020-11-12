@@ -22,6 +22,10 @@ public class PlayerPoolDatas {
 		return lastGive;
 	}
 	
+	public void setLastGive(long lastGive) {
+		this.lastGive = lastGive;
+	}
+	
 	public List<Integer> getCompletedQuests() {
 		return completedQuests;
 	}

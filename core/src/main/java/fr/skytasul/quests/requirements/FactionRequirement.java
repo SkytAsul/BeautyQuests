@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import com.massivecraft.factions.FactionsIndex;
@@ -82,7 +83,7 @@ public class FactionRequirement extends AbstractRequirement {
 						}
 						
 						@Override
-						public void click(Faction existing) {
+						public void click(Faction existing, ClickType click) {
 							finishItem(existing);
 						}
 					}.create(p);

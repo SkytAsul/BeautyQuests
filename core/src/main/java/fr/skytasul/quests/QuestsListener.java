@@ -45,6 +45,8 @@ public class QuestsListener implements Listener{
 		if (BeautyQuests.getInstance().getNPCs().containsKey(npc)){
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			
+			//TODO pools
+			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
 			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
 			if (quests.isEmpty()) return;

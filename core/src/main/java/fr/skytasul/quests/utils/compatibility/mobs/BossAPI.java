@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.boss.api.Boss;
 import org.mineacademy.boss.api.event.BossDeathEvent;
@@ -37,7 +38,7 @@ public class BossAPI implements MobFactory<Boss> {
 				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
 			}
 
-			public void click(Boss existing) {
+			public void click(Boss existing, ClickType click) {
 				run.accept(existing);
 			}
 		}.create(p);

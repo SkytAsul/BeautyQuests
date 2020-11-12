@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.options.OptionQuestPool;
 
 public class QuestPoolsManager {
 	
@@ -30,8 +31,7 @@ public class QuestPoolsManager {
 			for (String key : config.getKeys(false)) {
 				try {
 					int id = Integer.parseInt(key);
-					QuestPool pool = new QuestPool(id);
-					pool.load(config.getConfigurationSection(key));
+					QuestPool pool = QuestPool.deserialize(id, config.getConfigurationSection(key));
 					pools.put(id, pool);
 				}catch (Exception ex) {
 					BeautyQuests.logger.severe("An exception ocurred while loading quest pool " + key);
@@ -52,8 +52,29 @@ public class QuestPoolsManager {
 		}
 	}
 	
-	public QuestPool createPool() {
-		return new QuestPool(pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1);
+	public QuestPool createPool(QuestPool editing, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff) {
+		if (editing != null) editing.unload();
+		QuestPool pool = new QuestPool(editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getID(), npcID, hologram, maxQuests, redoAllowed, timeDiff);
+		save(pool);
+		pools.put(pool.getID(), pool);
+		if (editing != null) {
+			pool.quests = editing.quests;
+			pool.quests.forEach(quest -> quest.getOption(OptionQuestPool.class).setValue(pool));
+		}
+		return pool;
+	}
+	
+	public void removePool(int id) {
+		QuestPool pool = pools.remove(id);
+		if (pool == null) return;
+		pool.unload();
+		pool.quests.forEach(quest -> quest.removeOption(OptionQuestPool.class));
+		config.set(Integer.toString(id), null);
+		try {
+			config.save(file);
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public QuestPool getPool(int id) {

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.DyeColor;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -27,11 +28,14 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	}
 	
 	@Override
-	public void click(QuestPool existing) {
-		if (existing == null) {
-			new PoolEditGUI(BeautyQuests.getInstance().getPoolsManager()::createPool, () -> get().create(p)).create(p);
+	public void click(QuestPool existing, ClickType click) {
+		if (click == ClickType.MIDDLE) {
+			if (existing != null) {
+				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getID());
+				get().create(p);
+			}
 		}else {
-			new PoolEditGUI(() -> existing, () -> get().create(p), existing).create(p);
+			new PoolEditGUI(() -> get().create(p), existing).create(p);
 		}
 	}
 	

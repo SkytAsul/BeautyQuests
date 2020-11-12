@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -92,7 +93,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 				}
 				
 				@Override
-				public void click(QuestObjectCreator<T> existing) {
+				public void click(QuestObjectCreator<T> existing, ClickType click) {
 					T object = existing.newObjectSupplier.get();
 					if (!existing.multiple) creators.remove(existing);
 					object.itemClick(p, QuestObjectGUI.this, finishItem(object));

@@ -1,9 +1,9 @@
 package fr.skytasul.quests.gui.pools;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -14,90 +14,122 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PoolEditGUI implements CustomInventory {
 	
-	private final Supplier<QuestPool> poolSupplier;
 	private final Runnable end;
 	
-	private String name;
+	private String hologram;
 	private int maxQuests = 1;
 	private boolean redoAllowed = true;
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
+	private int npcID = -1;
 	
-	public PoolEditGUI(Supplier<QuestPool> poolSupplier, Runnable end) {
-		this.poolSupplier = poolSupplier;
+	private boolean canFinish = false;
+	private QuestPool editing;
+	
+	public PoolEditGUI(Runnable end, QuestPool editing) {
 		this.end = end;
+		this.editing = editing;
+		if (editing != null) {
+			hologram = editing.getHologram();
+			maxQuests = editing.getMaxQuests();
+			redoAllowed = editing.isRedoAllowed();
+			timeDiff = editing.getTimeDiff();
+			npcID = editing.getNPCID();
+		}
 	}
 	
-	public PoolEditGUI(Supplier<QuestPool> poolSupplier, Runnable end, QuestPool copyFrom) {
-		this(poolSupplier, end);
-		copyFrom(copyFrom);
+	private String[] getNPCLore() {
+		return new String[] { "§8> §7§oRequired parameter", "", QuestOption.formatNullableValue("ID #" + npcID) };
 	}
 	
-	public void copyFrom(QuestPool pool) {
-		name = pool.getName();
-		maxQuests = pool.getMaxQuests();
-		redoAllowed = pool.isRedoAllowed();
-		timeDiff = pool.getTimeDiff();
+	private String[] getHologramLore() {
+		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(hologram) };
 	}
 	
-	public void copyTo(QuestPool pool) {
-		pool.setName(name);
-		pool.setMaxQuests(maxQuests);
-		pool.setRedoAllowed(redoAllowed);
-		pool.setTimeDiff(timeDiff);
+	private String[] getAmountLore() {
+		return new String[] { "", Lang.optionValue.format(maxQuests) };
 	}
 	
-	private String getTimeLore() {
-		return Lang.optionValue.format(timeDiff + " milliseconds (" + TimeUnit.MILLISECONDS.toDays(timeDiff) + " days)");
+	private String[] getTimeLore() {
+		return new String[] { "", Lang.optionValue.format(timeDiff + " milliseconds (" + TimeUnit.MILLISECONDS.toDays(timeDiff) + " days)") };
+	}
+	
+	private void reopen(Player p, Inventory inv, boolean reimplement) {
+		if (reimplement) Inventories.put(p, this, inv);
+		p.openInventory(inv);
+	}
+	
+	private void handleDoneButton(Inventory inv) {
+		boolean newState = /*name != null &&*/ npcID != -1;
+		if (newState == canFinish) return;
+		inv.getItem(8).setType((newState ? XMaterial.DIAMOND : XMaterial.CHARCOAL).parseMaterial());
+		canFinish = newState;
 	}
 	
 	@Override
 	public Inventory open(Player p) {
 		Inventory inv = Bukkit.createInventory(null, 9, "Quest pool creation");
 		
-		inv.setItem(0, ItemUtils.item(XMaterial.NAME_TAG, "§e§lPool name", QuestOption.formatNullableValue(name)));
-		inv.setItem(1, ItemUtils.item(XMaterial.REDSTONE, "§aMax quests", Lang.optionValue.format(maxQuests)));
-		inv.setItem(2, ItemUtils.item(XMaterial.CLOCK, "§bSet time between quests", getTimeLore()));
-		inv.setItem(3, ItemUtils.itemSwitch("Is redo allowed", redoAllowed));
+		inv.setItem(0, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, "§e§lSelect NPC", getNPCLore()));
+		inv.setItem(1, ItemUtils.item(XMaterial.OAK_SIGN, "§ePool custom hologram", getHologramLore()));
+		inv.setItem(2, ItemUtils.item(XMaterial.REDSTONE, "§aMax quests", getAmountLore()));
+		inv.setItem(3, ItemUtils.item(XMaterial.CLOCK, "§bSet time between quests", getTimeLore()));
+		inv.setItem(4, ItemUtils.itemSwitch("Is redo allowed", redoAllowed));
 		
 		inv.setItem(7, ItemUtils.itemCancel);
-		inv.setItem(8, ItemUtils.itemDone);
+		inv.setItem(8, ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString()));
+		handleDoneButton(inv);
 		
 		return p.openInventory(inv).getTopInventory();
 	}
 	
 	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-		Runnable reopen = () -> p.openInventory(inv);
 		switch (slot) {
 		case 0:
-			new TextEditor<String>(p, reopen, msg -> {
-				name = msg;
-				ItemUtils.lore(current, QuestOption.formatNullableValue(name));
-				reopen.run();
-			}).enter();
+			new SelectGUI(() -> reopen(p, inv, true), npc -> {
+				npcID = npc.getId();
+				ItemUtils.lore(current, getNPCLore());
+				reopen(p, inv, true);
+			}).create(p);
 			break;
 		case 1:
-			new TextEditor<>(p, reopen, msg -> {
-				maxQuests = msg;
-				ItemUtils.lore(current, Lang.optionValue.format(maxQuests));
-				reopen.run();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			p.sendMessage("Write the custom hologram text of this pool.");
+			new TextEditor<String>(p, () -> reopen(p, inv, false), msg -> {
+				hologram = msg;
+				ItemUtils.lore(current, getHologramLore());
+				reopen(p, inv, false);
+			}, () -> {
+				hologram = null;
+				ItemUtils.lore(current, getHologramLore());
+				reopen(p, inv, false);
+			}).enter();
 			break;
 		case 2:
-			new TextEditor<>(p, reopen, msg -> {
-				timeDiff = TimeUnit.DAYS.toMillis(msg);
-				ItemUtils.lore(current, getTimeLore());
-				reopen.run();
-			}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+			p.sendMessage("Enter the maximum of quests in this pool.");
+			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+				maxQuests = msg;
+				ItemUtils.lore(current, getAmountLore());
+				reopen(p, inv, false);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 		case 3:
+			p.sendMessage("Enter the number of days between two quests.");
+			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+				timeDiff = TimeUnit.DAYS.toMillis(msg);
+				ItemUtils.lore(current, getTimeLore());
+				reopen(p, inv, false);
+			}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+			break;
+		case 4:
 			redoAllowed = ItemUtils.toggle(current);
 			break;
 		
@@ -105,10 +137,10 @@ public class PoolEditGUI implements CustomInventory {
 			end.run();
 			break;
 		case 8:
-			QuestPool pool = poolSupplier.get();
-			copyTo(pool);
-			BeautyQuests.getInstance().getPoolsManager().save(pool);
-			end.run();
+			if (canFinish) {
+				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, redoAllowed, timeDiff);
+				end.run();
+			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 			break;
 		}
 		return true;

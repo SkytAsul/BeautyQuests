@@ -29,6 +29,7 @@ import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.npc.NPC;
@@ -38,6 +39,7 @@ public class NPCStarter {
 
 	private NPC npc;
 	private Set<Quest> quests = new TreeSet<>();
+	private Set<QuestPool> pools = new TreeSet<>();
 	
 	private BukkitTask launcheableTask;
 	
@@ -47,13 +49,14 @@ public class NPCStarter {
 	private Hologram hologramText = new Hologram(true, QuestsAPI.hasHologramsManager() && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
 	private Hologram hologramLaunch = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems(), QuestsConfiguration.getHoloLaunchItem());
 	private Hologram hologramLaunchNo = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility(), QuestsConfiguration.getHoloLaunchNoItem());
+	private Hologram hologramPool = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility(), Lang.PoolHologramText.toString());
 	
 	public NPCStarter(NPC npc){
 		Validate.notNull(npc, "NPC cannot be null");
 		this.npc = npc;
 		
 		launcheableTask = new BukkitRunnable() {
-			private boolean holograms = hologramLaunch.enabled || hologramLaunchNo.enabled;
+			private boolean holograms = hologramLaunch.enabled || hologramLaunchNo.enabled || hologramPool.enabled;
 			private int timer = 0;
 			public void run() {
 				if (!npc.isSpawned()) return;
@@ -74,7 +77,7 @@ public class NPCStarter {
 				Location lc = en.getLocation();
 				for (Player p : en.getWorld().getPlayers()){
 					if (p instanceof NPCHolder) continue;
-					if (lc.distance(p.getLocation()) > QuestsConfiguration.getStartParticleDistance()) continue;
+					if (lc.distanceSquared(p.getLocation()) > QuestsConfiguration.getStartParticleDistanceSquared()) continue;
 					playersInRadius.add(p);
 					try{
 						for (Quest quest : quests) {
@@ -87,8 +90,8 @@ public class NPCStarter {
 				}
 				for (Quest quest : quests) quest.updateLauncheable(en);
 				
-				if (!holograms || !QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) return;
-				Map<Player, PlayerAccount> players = playersInRadius.stream().collect(Collectors.toMap(x -> x, x -> PlayersManager.getPlayerAccount(x)));
+				if (!holograms && !quests.isEmpty()/* || !QuestsAPI.getHologramsManager().supportPerPlayerVisibility()*/) return;
+				Map<Player, PlayerAccount> players = playersInRadius.stream().collect(Collectors.toMap(x -> x, PlayersManager::getPlayerAccount));
 				List<Player> launcheable = new ArrayList<>();
 				List<Player> unlauncheable = new ArrayList<>();
 				for (Quest qu : quests){
@@ -96,21 +99,27 @@ public class NPCStarter {
 						Entry<Player, PlayerAccount> player = iterator.next();
 						if (qu.hasFinished(player.getValue()) || qu.hasStarted(player.getValue())){
 							continue;
-						}else if (hologramLaunch.enabled && qu.launcheable.contains(player.getKey())) {
-							launcheable.add(player.getKey());
-						}else if (hologramLaunchNo.enabled && !qu.launcheable.contains(player.getKey())) {
-							unlauncheable.add(player.getKey());
+						}else {
+							boolean pLauncheable = qu.launcheable.contains(player.getKey());
+							if (hologramLaunch.enabled && pLauncheable) {
+								launcheable.add(player.getKey());
+							}else if (hologramLaunchNo.enabled && !pLauncheable) {
+								unlauncheable.add(player.getKey());
+							}
 						}
 						iterator.remove();
 					}
 				}
 				hologramLaunch.setVisible(launcheable);
 				hologramLaunchNo.setVisible(unlauncheable);
+				for (QuestPool pool : pools) {
+					// TODO
+				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
 		
 		
-		if (!hologramText.enabled && !hologramLaunch.enabled && !hologramLaunchNo.enabled) return; // no hologram: no need to launch the update task
+		if (!hologramText.enabled && !hologramLaunch.enabled && !hologramLaunchNo.enabled && !hologramPool.enabled) return; // no hologram: no need to launch the update task
 		hologramsTask = new BukkitRunnable() {
 			public void run(){
 				LivingEntity en = null; // check if NPC is spawned and living
@@ -128,6 +137,7 @@ public class NPCStarter {
 				if (hologramText.canAppear) hologramText.refresh(en);
 				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
+				if (hologramPool.canAppear) hologramPool.refresh(en);
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
@@ -141,8 +151,7 @@ public class NPCStarter {
 	}
 	
 	public void addQuest(Quest quest) {
-		if (quests.contains(quest)) return;
-		quests.add(quest);
+		if (!quests.add(quest)) return;
 		if (hologramText.enabled && quest.hasOption(OptionHologramText.class)) hologramText.setText(quest.getOption(OptionHologramText.class).getValue());
 		if (hologramLaunch.enabled && quest.hasOption(OptionHologramLaunch.class)) hologramLaunch.setItem(quest.getOption(OptionHologramLaunch.class).getValue());
 		if (hologramLaunchNo.enabled && quest.hasOption(OptionHologramLaunchNo.class)) hologramLaunchNo.setItem(quest.getOption(OptionHologramLaunchNo.class).getValue());
@@ -150,7 +159,18 @@ public class NPCStarter {
 	
 	public boolean removeQuest(Quest quest) {
 		boolean b = quests.remove(quest);
-		if (quests.isEmpty()) delete();
+		if (isEmpty()) delete();
+		return b;
+	}
+	
+	public void addPool(QuestPool pool) {
+		if (!pools.add(pool)) return;
+		if (hologramPool.enabled && (pool.getHologram() != null)) hologramText.setText(pool.getHologram());
+	}
+	
+	public boolean removePool(QuestPool pool) {
+		boolean b = pools.remove(pool);
+		if (isEmpty()) delete();
 		return b;
 	}
 	
@@ -158,7 +178,12 @@ public class NPCStarter {
 		hologramText.delete();
 		hologramLaunch.delete();
 		hologramLaunchNo.delete();
+		hologramPool.delete();
 		hologramsRemoved = true;
+	}
+	
+	public boolean isEmpty() {
+		return quests.isEmpty() && pools.isEmpty();
 	}
 	
 	public void delete() {

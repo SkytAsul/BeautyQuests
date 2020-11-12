@@ -74,7 +74,7 @@ public class MobsListGUI implements CustomInventory{
 			}
 
 			@SuppressWarnings ("rawtypes")
-			public void click(MobFactory<?> existing) {
+			public void click(MobFactory<?> existing, ClickType click) {
 				existing.itemClick(p, (obj) -> {
 					if (obj == null) {
 						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);

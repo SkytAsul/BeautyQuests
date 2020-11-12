@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import com.sucy.skill.api.classes.RPGClass;
@@ -84,7 +85,7 @@ public class ClassRequirement extends AbstractRequirement {
 						}
 						
 						@Override
-						public void click(RPGClass existing) {
+						public void click(RPGClass existing, ClickType click) {
 							finishItem(existing);
 						}
 					}.create(p);
