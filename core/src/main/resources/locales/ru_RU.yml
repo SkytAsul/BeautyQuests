@@ -157,7 +157,6 @@ msg:
       choosePermissionMessage: '§aВы можете выбрать сообщение об отказе игроку, если у него нет необходимого разрешения. (Чтобы пропустить этот шаг, напишите "null".)'
       choosePlaceholderRequired:
         identifier: '§aЗапишите имя необходимого плейсхолдера без процентов символов:'
-        value: '§aЗапишите необходимое значение для заполнителя §6%{0}%§a:'
       chooseSkillRequired: '§aНапишите название необходимого навыка:'
       chooseMoneyRequired: '§aНапишите количество предметов:'
       reward:
@@ -214,7 +213,7 @@ msg:
         add: '§6add <сообщение>: §eДобавить текст.'
         remove: '§6remove <id>: §eУдалить сообщение.'
         list: '§6close: §eПодтвердить все сообщения.'
-        close: '§6close: §eValidate the added texts.'
+        close: '§6close: §eПроверить добавленные тексты.'
     noSuchElement: '§cНет такого элемента. Допустимые элементы: §e{0}'
     comparisonType: '§aВыберите тип сравнения, который вы хотите среди {0}. Сравнение по умолчанию: §e§lgreater или equals§r§a. Введите §onull§r§a чтобы использовать его.'
     scoreboardObjectiveNotFound: '§cНеизвестный объект таблицы.'
@@ -296,11 +295,55 @@ inv:
     multipleTime:
       itemName: Переключить повтор.
       itemLore: Можно ли выполнить квест несколько раз?
+    cancellable: Отменяется игроком
+    cancellableLore: Позволяет игроку отменить квест через меню квестов.
+    startableFromGUI: Запускается из графического интерфейса
+    startableFromGUILore: Позволяет игроку начать квест из меню квестов.
     scoreboardItem: Включить табло
-    selectStarterNPC: '§e§lВыберите NPC, который будет начинать квест'
+    scoreboardItemLore: Если этот параметр отключен, квест не будет отслеживаться на табло.
+    hideItem: Скрыть меню и динамическую карту
+    hideItemLore: Если этот параметр включен, квест не будет отображаться ни на динамической карте, ни в меню квестов.
+    bypassLimit: Не считайте лимит квестов
+    bypassLimitLore: Если этот параметр включен, квест будет запущен, даже если игрок достиг максимального количества начатых квестов.
+    questName: '§a§lИзменить название квеста'
+    questNameLore: Для завершения создания квеста необходимо указать имя.
+    setItemsRewards: '§eРедактировать награды'
+    setXPRewards: '§eИзменить опыт вознаграждения'
+    setCheckpointReward: '§eИзменить награды контрольной точки'
+    setPermReward: '§eРедактировать разрешения'
+    setMoneyReward: '§eИзменить денежное вознаграждение'
+    selectStarterNPC: '§e§lВыберите NPC, который будет начинать квест '
+    selectStarterNPCLore: Щелчок по выбранному NPC запустит квест.
+    createQuestName: '§lСоздать квест'
+    createQuestLore: Вы должны определить название квеста.
+    editQuestName: '§lИзменить квест'
+    endMessage: '§eИзменить конечное сообщение'
+    endMessageLore: Сообщение, которое будет отправлено игроку в конце квеста.
+    startDialog: '§eРедактировать стартовый диалог'
+    startDialogLore: Диалог, который будет воспроизведен перед началом квестов, когда игроки нажмут на стартового NPC.
+    editRequirements: '§eИзменить требования'
+    editRequirementsLore: Все требования должны применяться к игроку, прежде чем он сможет начать квест.
     startRewards: '§6Начальные награды'
+    startRewardsLore: Действия, выполняемые при запуске квеста.
+    hologramText: '§eТекст голограммы'
+    hologramTextLore: Текст отображается на голограмме над головой стартового NPC.
+    timer: '§bПерезапустить таймер'
+    timerLore: Время до того, как игрок сможет снова начать квест.
     requirements: '{0} требование(я)'
     rewards: '{0} награда(ы)'
+    actions: '{0} действие(s)'
+    rewardsLore: Действия, выполняемые по окончании квеста.
+    customMaterial: '§eРедактировать материал квестового предмета '
+    customMaterialLore: Предмет этого квеста в меню квестов.
+    failOnDeath: Неудача при смерти
+    failOnDeathLore: Будет ли квест отменен после смерти игрока?
+    keepDatas: Сохранять данные игроков
+    keepDatasLore: |-
+      Заставить плагин сохранять данные игроков, даже если этапы были отредактированы.
+      §c§lПРЕДУПРЕЖДЕНИЕ§c- включение этой опции может нарушить данные ваших игроков.
+    loreReset: '§e§lДостижения всех игроков будут сброшены'
+    optionValue: '§fЗначение: §7{0}'
+    defaultValue: '§f(значение по умолчанию)'
   npcCreate:
     move:
       itemLore: '§aИзменить местоположение NPC.'
@@ -382,27 +425,94 @@ inv:
     console: '§eКонсоль: {0}'
   block:
     name: Выбрать блок
-    material: '§eMaterial: {0}'
+    material: '§eМатериал: {0}'
+    blockData: '§dБлокировать данные (дополнительно)'
   blocksList:
     name: Выбрать блок
     addBlock: '§aНажмите, чтобы добавить блок.'
   buckets:
     name: Тип ведра
+  permission:
+    name: Выберите разрешение
+    perm: '§aРазрешение'
+    world: '§aМир'
+    worldGlobal: '§b§lГлобальный'
+    remove: Удалить разрешение
+    removeLore: '§7Разрешение будет снято\n§7вместо данного.'
+  permissionList:
+    name: Список разрешений
+    removed: '§eСнятый: §6{0}'
+    world: '§eМир: §6{0}'
+  classesRequired.name: Требуются классы
+  classesList.name: Список классов
+  factionsRequired.name: Требуются фракции
+  factionsList.name: Список фракций
 scoreboard:
   stage:
+    region: '§eНайти регион §6{0}'
     npc: '§eПоговорить с NPC §6{0}'
-    items: '§eВерните предметы §6{0}§e:'
+    items: '§eВерните предметы:'
     mobs: '§eУбить §6{0}'
+    mine: '§eДобыть {0}'
     placeBlocks: '§eРазместить {0}'
     chat: '§eНаписать §6{0}'
+    interact: '§eНажмите на блок в §6{0}'
+    fish: '§eНаловить §6{0}'
+    craft: '§eСоздать §6{0}'
+    bucket: '§eЗаполнить §6{0}'
+    location: '§eИди к §6{0}§e, §6{1}§e, §6{2}§e в §6{3}'
+    playTime: '§eИгровое время в тиках §6{0}'
 indication:
   startQuest: '§7Вы хотите начать квест {0}?'
   cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'
   removeQuest: '§7Вы уверены, что хотите удалить квест {0}?'
 misc:
+  format:
+    prefix: '§6<§e§lКвесты§r§6> §r'
   stageType:
+    region: Найти регион
     npc: Найти NPC
     items: Вернуть предметы
+    mobs: Убивать мобов
     mine: Сломать блоки
+    placeBlocks: Разместите блоки
+    chat: Пиши в чат
+    interact: Взаимодействовать с блоком
+    Fish: Ловить рыбу
+    Craft: Создать предмет
+    Bucket: Наполнить ведро
+    location: Найти место
+    playTime: Время игры
+  requirement:
+    class: '§bТребуются классы'
+    faction: '§bТребуются фракции'
+    jobLevel: '§bТребуемый уровень должности'
+    combatLevel: '§bТребуется боевой уровень'
+    experienceLevel: '§bНеобходимый уровень опыта'
+    permissions: '§3Требуется разрешение(а)'
+    scoreboard: '§dТребуется оценка'
+    region: '§dТребуется регион'
+    placeholder: '§bТребуется значение placeholder'
+    quest: '§aТребуется квест'
+    mcMMOSkillLevel: '§dТребуемый уровень mcMMOSkillLevel'
+    money: '§dТребуются деньги'
+  bucket:
+    water: Ведро воды
+    lava: Ведро лавы
+    milk: Ведро молока
+  questItemLore: '§e§oКвестовый предмет'
+  hologramText: '§8§lКвестовый NPC'
+  entityType: '§eТип объекта: {0}'
+  enabled: Включено
+  disabled: Выключено
+  unknown: неизвестно
+  notSet: '§cне установлено'
+  unused: '§2§lНеиспользованный'
+  used: '§a§lИспользовать'
+  remove: '§7СКМ, чтобы удалить'
+  or: или
+  amount: '§eКоличество: {0}'
   items: Предметы
   expPoints: опыта
+  'yes': 'Да'
+  'no': 'Нет'

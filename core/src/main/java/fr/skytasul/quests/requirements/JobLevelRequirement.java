@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -66,6 +67,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 			gui.reopen();
 		}, obj -> {
 			jobName = obj;
+			ItemUtils.lore(clicked, getLore());
 			super.itemClick(p, gui, clicked);
 		}).useStrippedMessage().enter();
 	}

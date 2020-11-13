@@ -181,7 +181,7 @@ msg:
       choosePlaceholderRequired:
         identifier: '§aWrite the name of the required placeholder without the percent
           characters:'
-        value: '§aWrite the required value for the placeholder §6%{0}%§a:'
+        value: '§aWrite the required value for the placeholder §e%§e{0}§e%§a:'
       chooseSkillRequired: '§aWrite the name of the required skill:'
       chooseMoneyRequired: '§aWrite the amount of required money:'
       reward:

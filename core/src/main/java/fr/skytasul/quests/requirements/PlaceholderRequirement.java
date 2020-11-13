@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
@@ -104,6 +105,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 				gui.reopen();
 			}, value -> {
 				this.value = value;
+				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
 			}).enter();
 		}).useStrippedMessage().enter();

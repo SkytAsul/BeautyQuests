@@ -157,7 +157,7 @@ msg:
       choosePermissionMessage: '§aVous pouvez choisir un message de refus si le joueur n''a pas la permission requise. (pour passer cette étape, entrez "null" et aucun message ne sera envoyé)'
       choosePlaceholderRequired:
         identifier: '§aEntrez le nom du placeholder requis, sans les pourcentages de début et de fin :'
-        value: '§aEntrez la valeur requise pour le placeholder §6%{0}%§a :'
+        value: '§aEntrez la valeur requise pour le placeholder §e%§e{0}§e%§a :'
       chooseSkillRequired: '§aEntrez le nom de la compétence requise :'
       chooseMoneyRequired: '§aEntrez la quantité de monnaie nécessaire :'
       reward:
@@ -175,6 +175,8 @@ msg:
       itemLore: '§aModifiez la description de l''item. (Tapez "help" pour obtenir de l''aide.)'
       unknownItemType: '§cType d''item inconnu.'
       invalidItemType: '§cType d''item invalide (il doit être un item et non un bloc).'
+      unknownBlockType: '§cType de bloc inconnu.'
+      invalidBlockType: '§cType de bloc invalide.'
     dialog:
       syntax: '§cSyntaxe correcte : {0}{1} <message>'
       syntaxRemove: '§cSyntaxe correcte : remove <id>'
@@ -262,6 +264,7 @@ inv:
     toggleRegionExit: À la sortie
     stageStartMsg: '§eModifier le message de départ'
     selectBlockLocation: '§eSélectionner la position du bloc'
+    selectBlockMaterial: '§eSélectionner le type de block'
     leftClick: Clic gauche nécessaire
     editFishes: '§eModifier les poissons nécessaires'
     editItem: '§eEditer l''objet à fabriquer'
@@ -443,6 +446,10 @@ inv:
   blocksList:
     name: Sélectionner des blocs
     addBlock: '§aCliquez pour ajouter un block.'
+  blockAction:
+    name: Sélectionner l'action
+    location: '§eSélectionner un emplacement précis'
+    material: '§eSélectionner un type de bloc'
   buckets:
     name: Type de seau
   permission:
@@ -475,6 +482,7 @@ scoreboard:
     placeBlocks: '§ePose {0}'
     chat: '§eEcrivez §6{0}'
     interact: '§eCliquez sur le bloc à §6{0}'
+    interactMaterial: '§eCliquez sur un bloc §6{0}§e'
     fish: '§ePêchez §6{0}'
     craft: '§eFabriquez §6{0}'
     bucket: '§eRemplissez §6{0}'
