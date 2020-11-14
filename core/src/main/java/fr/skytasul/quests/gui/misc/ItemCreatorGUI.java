@@ -138,7 +138,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			break;
 
 		case 13: //GIVE
-			p.getOpenInventory().setCursor(build());
+			if (type != null) p.getOpenInventory().setCursor(build());
 			break;
 
 		}

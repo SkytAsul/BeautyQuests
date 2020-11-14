@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.18.4</version>
+		<version>0.18.5</version>
 	</parent>
 
 	<build>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.16.2-R0.1-SNAPSHOT</version>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -22,7 +22,7 @@ public abstract class AbstractHolograms<T> {
 		}
 		
 		public void setPlayersVisible(List<Player> players) {
-			throw new UnsupportedOperationException();
+			players.forEach(p -> setPlayerVisibility(p, true));
 		}
 		
 		public void setPlayerVisibility(Player p, boolean visible) {
