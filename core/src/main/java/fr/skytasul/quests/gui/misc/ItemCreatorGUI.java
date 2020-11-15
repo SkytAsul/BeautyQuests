@@ -70,7 +70,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	private void refresh(){
 		if (type != null){
 			inv.setItem(13, build());
-			inv.getItem(17).setType(Material.DIAMOND);
+			if (inv.getItem(17).getType() != Material.DIAMOND) inv.getItem(17).setType(Material.DIAMOND);
 		}
 	}
 

@@ -55,7 +55,7 @@ public class ItemsGUI implements CustomInventory{
 		if (slot == 8) return true;
 		if (none.equals(current)){
 			inv.setItem(slot, cursor);
-			Utils.runSync(() -> p.setItemOnCursor(null)); // AIR ?
+			Utils.runSync(() -> p.setItemOnCursor(null));
 			return true;
 		}
 		return false;

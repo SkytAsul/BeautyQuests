@@ -72,7 +72,7 @@ public class NPCStarter {
 				
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
-				for (Player p : en.getWorld().getPlayers()){
+				for (Player p : lc.getWorld().getPlayers()) {
 					if (p instanceof NPCHolder) continue;
 					if (lc.distance(p.getLocation()) > QuestsConfiguration.getStartParticleDistance()) continue;
 					playersInRadius.add(p);

@@ -74,30 +74,30 @@ public enum XPotion {
 	DAMAGE_RESISTANCE(null, "RESISTANCE", "ARMOR", "DMG_RESIST", "DMG_RESISTANCE"),
 	DOLPHINS_GRACE(null, "DOLPHIN", "GRACE"),
 	FAST_DIGGING(null, "HASTE", "SUPER_PICK", "DIGFAST", "DIG_SPEED", "QUICK_MINE", "SHARP"),
-	FIRE_RESISTANCE("fire_resistance", "FIRE_RESIST", "RESIST_FIRE", "FIRE_RESISTANCE"),
+	FIRE_RESISTANCE("fire_resistance", 3600, 9600, "FIRE_RESIST", "RESIST_FIRE", "FIRE_RESISTANCE"),
 	GLOWING(null, "GLOW", "SHINE", "SHINY"),
 	HARM("harming", "INJURE", "DAMAGE", "HARMING", "INFLICT"),
 	HEAL("healing", "HEALTH", "INSTA_HEAL", "INSTANT_HEAL", "INSTA_HEALTH", "INSTANT_HEALTH"),
 	HEALTH_BOOST(null, "BOOST_HEALTH", "BOOST", "HP"),
 	HERO_OF_THE_VILLAGE(null, "HERO", "VILLAGE_HERO"),
 	HUNGER(null, "STARVE", "HUNGRY"),
-	INCREASE_DAMAGE("strength", "STRENGTH", "BULL", "STRONG", "ATTACK"),
-	INVISIBILITY("invisibility", "INVISIBLE", "VANISH", "INVIS", "DISAPPEAR", "HIDE"),
-	JUMP("leaping", "LEAP", "JUMP_BOOST"),
+	INCREASE_DAMAGE("strength", 3600, 9600, 1800, "STRENGTH", "BULL", "STRONG", "ATTACK"),
+	INVISIBILITY("invisibility", 3600, 9600, "INVISIBLE", "VANISH", "INVIS", "DISAPPEAR", "HIDE"),
+	JUMP("leaping", 3600, 9600, 1800, "LEAP", "JUMP_BOOST"),
 	LEVITATION("levitation", "LEVITATE"),
-	LUCK("luck", "LUCKY"),
-	NIGHT_VISION("night_vision", "VISION", "VISION_NIGHT"),
-	POISON("poison", "VENOM"),
-	REGENERATION("regeneration", "REGEN"),
+	LUCK("luck", 6000, "LUCKY"),
+	NIGHT_VISION("night_vision", 3600, 9600, "VISION", "VISION_NIGHT"),
+	POISON("poison", 900, 1800, 432, "VENOM"),
+	REGENERATION("regeneration", 900, 1800, 450, "REGEN"),
 	SATURATION(null, "FOOD"),
-	SLOW("slowness", "SLOWNESS", "SLUGGISH"),
+	SLOW("slowness", 1800, 4800, 400, "SLOWNESS", "SLUGGISH"),
 	SLOW_DIGGING(null, "FATIGUE", "DULL", "DIGGING", "SLOW_DIG", "DIG_SLOW"),
-	SLOW_FALLING("slow_falling", "SLOW_FALL", "FALL_SLOW"),
-	TURTLE_MASTER("turtle_master", "TURTLE"),
-	SPEED("swiftness", "SPRINT", "RUNFAST", "SWIFT", "FAST"),
+	SLOW_FALLING("slow_falling", 1800, 4800, "SLOW_FALL", "FALL_SLOW"),
+	TURTLE_MASTER("turtle_master", 400, 800, 400, "TURTLE"),
+	SPEED("swiftness", 3600, 9600, 1800, "SPRINT", "RUNFAST", "SWIFT", "FAST"),
 	UNLUCK(null, "UNLUCKY"),
-	WATER_BREATHING("water_breathing", "WATER_BREATH", "UNDERWATER_BREATHING", "UNDERWATER_BREATH", "AIR"),
-	WEAKNESS("weakness", "WEAK", "DONALD_TRUMP"),
+	WATER_BREATHING("water_breathing", 3600, 9600, "WATER_BREATH", "UNDERWATER_BREATHING", "UNDERWATER_BREATH", "AIR"),
+	WEAKNESS("weakness", 1800, 4800, "WEAK", "DONALD_TRUMP"),
 	WITHER(null, "DECAY");
 
 	/**
@@ -111,9 +111,25 @@ public enum XPotion {
 	private final String key;
 	private final String[] aliases;
 	public String normal, splash, lingering;
+	public final String baseDuration, extendedDuration, strongDuration;
 
 	XPotion(String key, String... aliases) {
+		this(key, 0, 0, 0, aliases);
+	}
+	
+	XPotion(String key, int baseDuration, String... aliases) {
+		this(key, baseDuration, 0, 0, aliases);
+	}
+	
+	XPotion(String key, int baseDuration, int extendedDuration, String... aliases) {
+		this(key, baseDuration, extendedDuration, 0, aliases);
+	}
+	
+	XPotion(String key, int baseDuration, int extendedDuration, int strongDuration, String... aliases) {
 		this.key = key;
+		this.baseDuration = baseDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(baseDuration) + ")";
+		this.extendedDuration = extendedDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(extendedDuration) + ")";
+		this.strongDuration = strongDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(strongDuration) + ")";
 		this.aliases = aliases;
 		String name = key == null ? name() : key;
 		this.normal = "potion of " + name;
@@ -173,7 +189,7 @@ public enum XPotion {
 
 	public static XPotion matchFromTranslationKey(String key) {
 		for (XPotion potion : values()) {
-			if (potion.key.equals(key)) return potion;
+			if (key.equals(potion.key)) return potion;
 		}
 		return null;
 	}

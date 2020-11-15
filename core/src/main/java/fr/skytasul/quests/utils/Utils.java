@@ -92,6 +92,13 @@ public class Utils{
 		}
 		return msg;
 	}
+	
+	public static String ticksToElapsedTime(int ticks) {
+		int i = ticks / 20;
+		int j = i / 60;
+		i = i % 60;
+		return i < 10 ? j + ":0" + i : j + ":" + i;
+	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
 		return ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
