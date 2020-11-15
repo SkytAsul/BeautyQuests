@@ -5,21 +5,24 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.structure.pools.QuestPool;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
-	private static final ItemStack CREATE_POOL = ItemUtils.item(XMaterial.SLIME_BALL, "§aCreate a quest pool");
+	private static final ItemStack CREATE_POOL = ItemUtils.item(XMaterial.SLIME_BALL, Lang.poolCreate.toString());
 	
 	private PoolsManageGUI(Collection<QuestPool> objects) {
-		super("Quest Pools", DyeColor.CYAN, objects);
+		super(Lang.INVENTORY_POOLS_MANAGE.toString(), DyeColor.CYAN, objects);
 	}
 	
 	@Override
@@ -37,6 +40,11 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 		}else {
 			new PoolEditGUI(() -> get().create(p), existing).create(p);
 		}
+	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REMOVE;
 	}
 	
 	public static PoolsManageGUI get() {

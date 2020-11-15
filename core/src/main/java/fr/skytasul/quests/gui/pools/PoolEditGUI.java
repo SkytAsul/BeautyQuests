@@ -47,7 +47,7 @@ public class PoolEditGUI implements CustomInventory {
 	}
 	
 	private String[] getNPCLore() {
-		return new String[] { "§8> §7§oRequired parameter", "", QuestOption.formatNullableValue("ID #" + npcID) };
+		return new String[] { "§8> §7§oRequired parameter", "", QuestOption.formatNullableValue("NPC #" + npcID) };
 	}
 	
 	private String[] getHologramLore() {
@@ -98,6 +98,7 @@ public class PoolEditGUI implements CustomInventory {
 			new SelectGUI(() -> reopen(p, inv, true), npc -> {
 				npcID = npc.getId();
 				ItemUtils.lore(current, getNPCLore());
+				handleDoneButton(inv);
 				reopen(p, inv, true);
 			}).create(p);
 			break;

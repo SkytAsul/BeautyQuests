@@ -105,6 +105,7 @@ public class PlayerAccount {
 	public void serialize(ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
 		config.set("quests", Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
+		config.set("pools", Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
 	}
 	
 }

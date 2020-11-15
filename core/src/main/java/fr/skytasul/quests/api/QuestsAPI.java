@@ -180,7 +180,8 @@ public class QuestsAPI {
 	}
 	
 	public static boolean isQuestStarter(NPC npc){
-		return BeautyQuests.getInstance().getNPCs().containsKey(npc);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		return starter != null && !starter.getQuests().isEmpty();
 	}
 
 	public static boolean hasQuestStarted(Player p, NPC npc){

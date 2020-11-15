@@ -465,6 +465,11 @@ public enum Lang{
 	INVENTORY_FACTIONS_REQUIRED("inv.factionsRequired.name"),
 	INVENTORY_FACTIONS_LIST("inv.factionsList.name"),
 
+	INVENTORY_POOLS_MANAGE("inv.poolsManage.name"),
+	poolItemName("inv.poolsManage.itemName"), // 0: pool ID
+	poolItemDescription("inv.poolsManage.itemDescription"), // 0: npc ID, 1: max quests, 2: can redo, 3: time between quests, 4: hologram text
+	poolCreate("inv.poolsManage.create"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),

@@ -496,6 +496,16 @@ inv:
   classesList.name: Classes list
   factionsRequired.name: Factions required
   factionsList.name: Factions list
+  poolsManage:
+    name: Quest Pools
+    itemName: §aPool #{0}
+    itemDescription: |-
+      §8NPC: §7{0}
+      §8Max quests: §7{1}
+      §8Can redo completed quests: §7{2}
+      §8Time between quests: §7{3}ms
+      §8Hologram text: §7{4}
+    create: §aCreate a quest pool
 scoreboard:
   name: §6§lQuests
   noLaunched: §cNo quests in progress.

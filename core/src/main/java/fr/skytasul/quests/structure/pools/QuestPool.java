@@ -16,11 +16,12 @@ import fr.skytasul.quests.players.PlayerPoolDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
-public class QuestPool {
+public class QuestPool implements Comparable<QuestPool> {
 	
 	private final int id;
 	
@@ -84,8 +85,13 @@ public class QuestPool {
 		quests.remove(quest);
 	}
 	
+	@Override
+	public int compareTo(QuestPool o) {
+		return Integer.compare(id, o.id);
+	}
+	
 	public ItemStack getItemStack() {
-		return ItemUtils.item(XMaterial.CHEST, "#" + id, "NPC #" + npcID, "Max quests: " + maxQuests, "Can redo: " + redoAllowed, "Time between quests (ms): " + timeDiff, "Custom hologram: " + hologram);
+		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id), Lang.poolItemDescription.format(npcID, maxQuests, redoAllowed ? Lang.Enabled : Lang.Disabled, timeDiff, hologram == null ? Lang.defaultValue : hologram));
 	}
 	
 	public boolean canGive(Player p) {
