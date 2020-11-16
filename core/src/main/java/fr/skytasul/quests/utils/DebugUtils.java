@@ -14,7 +14,7 @@ public class DebugUtils {
 		String s = "";
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		for (;from <= to; from++) {
-			s = s + stack[from].getClassName() + "." + stack[from].getMethodName() + " ; ";
+			s = s + stack[from].getClassName() + "." + stack[from].getMethodName() + " " + stack[from].getLineNumber() + "; ";
 		}
 		return s;
 	}

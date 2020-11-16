@@ -43,18 +43,20 @@ public class CommandGUI implements CustomInventory {
 		inv.setItem(2, ItemUtils.item(XMaterial.CLOCK, Lang.commandDelay.toString()));
 
 		inv.setItem(4, ItemUtils.itemDone);
-		inv.getItem(4).setType(Material.COAL);
+		inv.getItem(4).setType(cmd == null ? Material.COAL : Material.DIAMOND);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
 	}
 
-	public void setFromExistingCommand(Command cmd){
-		if (cmd == null) return;
-		this.cmd = cmd.label;
-		this.console = cmd.console;
-		this.delay = cmd.delay;
-		inv.getItem(4).setType(Material.DIAMOND);
+	public CommandGUI setFromExistingCommand(Command cmd) {
+		if (cmd != null) {
+			this.cmd = cmd.label;
+			this.console = cmd.console;
+			this.delay = cmd.delay;
+			if (inv != null) inv.getItem(4).setType(Material.DIAMOND);
+		}
+		return this;
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {

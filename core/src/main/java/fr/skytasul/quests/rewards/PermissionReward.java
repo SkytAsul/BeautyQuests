@@ -21,7 +21,7 @@ import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionReward extends AbstractReward {
 	
-	public final List<Permission> permissions;
+	public List<Permission> permissions;
 
 	public PermissionReward(){
 		this(new ArrayList<>());
@@ -52,7 +52,8 @@ public class PermissionReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new PermissionListGUI(permissions, () -> {
+		new PermissionListGUI(permissions, permissions -> {
+			PermissionReward.this.permissions = permissions;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
 		}).create(p);

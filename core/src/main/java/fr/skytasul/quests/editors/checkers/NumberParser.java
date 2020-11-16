@@ -42,7 +42,7 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 			}
 			return number;
 		}catch (Exception ex) {}
-		Lang.NUMBER_INVALID.send(p);
+		Lang.NUMBER_INVALID.send(p, msg);
 		return null;
 	}
 

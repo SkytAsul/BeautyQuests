@@ -3,9 +3,11 @@ package fr.skytasul.quests.requirements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import com.sucy.skill.api.classes.RPGClass;
@@ -61,38 +63,32 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new ListGUI<RPGClass>(classes, 9) {
+		new ListGUI<RPGClass>(Lang.INVENTORY_CLASSES_REQUIRED.toString(), DyeColor.GREEN, classes) {
 			
 			@Override
-			public String name() {
-				return Lang.INVENTORY_CLASSES_REQUIRED.toString();
-			}
-			
-			@Override
-			public ItemStack getItemStack(RPGClass object) {
+			public ItemStack getObjectItemStack(RPGClass object) {
 				return ItemUtils.loreAdd(object.getIcon(), "", Lang.Remove.toString());
 			}
 			
 			@Override
-			public void click(RPGClass existing, ItemStack item) {
-				if (existing == null) {
-					new PagedGUI<RPGClass>(Lang.INVENTORY_CLASSES_LIST.toString(), DyeColor.PURPLE, SkillAPI.getClasses()) {
-						
-						@Override
-						public ItemStack getItemStack(RPGClass object) {
-							return object.getIcon();
-						}
-						
-						@Override
-						public void click(RPGClass existing) {
-							finishItem(existing);
-						}
-					}.create(p);
-				}
+			public void createObject(Function<RPGClass, ItemStack> callback) {
+				new PagedGUI<RPGClass>(Lang.INVENTORY_CLASSES_LIST.toString(), DyeColor.PURPLE, SkillAPI.getClasses()) {
+					
+					@Override
+					public ItemStack getItemStack(RPGClass object) {
+						return object.getIcon();
+					}
+					
+					@Override
+					public void click(RPGClass existing, ItemStack item, ClickType clickType) {
+						callback.apply(existing);
+					}
+				}.create(p);
 			}
 			
 			@Override
-			public void finish() {
+			public void finish(List<RPGClass> objects) {
+				classes = objects;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
 			}

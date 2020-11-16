@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,7 +35,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		return ItemUtils.item(qu.getQuestMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
 	}
 
-	public void click(Quest existing){
+	public void click(Quest existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}

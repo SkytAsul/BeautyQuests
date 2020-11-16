@@ -87,7 +87,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		case 1:
 			Lang.CHOOSE_ITEM_AMOUNT.send(p);
 			new TextEditor<>(p, () -> reopen(), obj -> {
-				amount = obj;
+				amount = Math.min(obj, 64);
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				reopen();
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();

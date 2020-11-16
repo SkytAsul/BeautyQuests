@@ -17,31 +17,28 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class ItemsGUI implements CustomInventory{
+public class ItemsGUI implements CustomInventory {
 	
 	public static ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
 	
+	private Consumer<List<ItemStack>> end;
 	private List<ItemStack> items;
+	private int size;
 	
 	public Inventory inv;
-	private Consumer<List<ItemStack>> end;
 	
 	public ItemsGUI(Consumer<List<ItemStack>> end, List<ItemStack> items) {
 		this.end = end;
-		this.items = Utils.extactItems(items);
-	}
-	
-	public CustomInventory openLastInv(Player p) {
-		p.openInventory(inv);
-		return this;
+		this.items = Utils.extractItems(items);
+		this.size = (int) (Math.ceil((items.size() + 1D) / 9D) * 9);
 	}
 
 	public Inventory open(Player p){
-		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_ITEMS.toString());
+		inv = Bukkit.createInventory(null, size, Lang.INVENTORY_ITEMS.toString());
 		
-		inv.setItem(8, ItemUtils.itemDone);
+		inv.setItem(size - 1, ItemUtils.itemDone);
 		
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < size - 1; i++) {
 			if (i < items.size()) {
 				inv.setItem(i, items.get(i));
 			}else inv.setItem(i, none);
@@ -50,21 +47,36 @@ public class ItemsGUI implements CustomInventory{
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
 	}
+	
+	private boolean addItem(Player p) {
+		items.clear();
+		for (int i = 0; i < size - 1; i++) {
+			ItemStack is = inv.getItem(i);
+			if (is.equals(none)) return false;
+			items.add(is);
+		}
+		size += 9;
+		Inventories.put(p, this, open(p));
+		return true;
+	}
 
 	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
-		if (slot == 8) return true;
+		if (slot == size - 1) return true;
 		if (none.equals(current)){
 			inv.setItem(slot, cursor);
-			Utils.runSync(() -> p.setItemOnCursor(null));
+			Utils.runSync(() -> {
+				p.setItemOnCursor(null);
+				addItem(p);
+			});
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
-		if (slot == 8){
+		if (slot == size - 1) {
 			items.clear();
-			for (int i = 0; i < 8; i++){
+			for (int i = 0; i < size - 1; i++) {
 				ItemStack is = inv.getItem(i);
 				if (is != null && !is.equals(none)) items.add(inv.getItem(i));
 			}
@@ -72,10 +84,13 @@ public class ItemsGUI implements CustomInventory{
 			end.accept(items);
 		}else {
 			if (current.equals(none)){
-				Inventories.create(p, new ItemCreatorGUI(item -> {
+				new ItemCreatorGUI(item -> {
 					if (item != null) inv.setItem(slot, item);
-					Inventories.put(p, openLastInv(p), inv);
-				}, true));
+					if (!addItem(p)) {
+						Inventories.put(p, this, inv);
+						p.openInventory(inv);
+					}
+				}, true).create(p);
 			}else {
 				Utils.runSync(() -> inv.setItem(slot, none));
 				return false;

@@ -484,11 +484,11 @@ public class Utils{
 		return newItems;
 	}
 	
-	public static List<ItemStack> extactItems(List<ItemStack> items) {
+	public static List<ItemStack> extractItems(List<ItemStack> items) {
 		List<ItemStack> newItems = new ArrayList<>(items.size());
 		for (ItemStack original : items) {
 			int amount = original.getAmount();
-			int maxStackSize = original.getMaxStackSize();
+			int maxStackSize = /*original.getMaxStackSize()*/ 64;
 			while (amount > maxStackSize) {
 				ItemStack item = original.clone();
 				item.setAmount(maxStackSize);

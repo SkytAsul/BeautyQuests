@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.Inventories;
@@ -39,7 +40,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 		return entities.get(object);
 	}
 
-	public void click(EntityType existing){
+	public void click(EntityType existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}

@@ -8,6 +8,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -47,7 +48,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 				return ItemUtils.item(mobItem, object.getInternalName());
 			}
 
-			public void click(MythicMob existing) {
+			public void click(MythicMob existing, ItemStack item, ClickType clickType) {
 				run.accept(existing);
 			}
 		}.create(p);

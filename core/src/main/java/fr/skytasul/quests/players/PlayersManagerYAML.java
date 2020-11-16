@@ -226,12 +226,8 @@ public class PlayersManagerYAML extends PlayersManager {
 				try {
 					String path = "players." + key;
 					int index = Integer.parseInt(key);
-					if (config.isConfigurationSection(path)) { // TODO remove on release (beta thing)
-						loadFromConfig(index, config.getConfigurationSection(path));
-					}else {
-						identifiersIndex.put(index, config.getString(path));
-						if (index >= lastAccountID) lastAccountID = index;
-					}
+					identifiersIndex.put(index, config.getString(path));
+					if (index >= lastAccountID) lastAccountID = index;
 				}catch (Exception ex) {
 					ex.printStackTrace();
 					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key));

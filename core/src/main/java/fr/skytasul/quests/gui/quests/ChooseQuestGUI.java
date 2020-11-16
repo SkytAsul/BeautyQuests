@@ -7,6 +7,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,10 +36,10 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	
 	public Inventory open(Player p){
 		if (objects.size() == 0) {
-			click(null);
+			click(null, null, null);
 			return null;
 		}else if (objects.size() == 1) {
-			click(objects.get(0));
+			click(objects.get(0), null, null);
 			return null;
 		}
 
@@ -55,7 +56,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	}
 
 	@Override
-	public void click(Quest existing) {
+	public void click(Quest existing, ItemStack item, ClickType clickType) {
 		if (inv != null) Inventories.closeAndExit(p);
 		run.accept(existing);
 	}
