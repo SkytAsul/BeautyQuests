@@ -342,8 +342,9 @@ public class Utils{
 		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
 		StringBuilder word = new StringBuilder();
 		StringBuilder line = new StringBuilder();
+		String lastColors = "";
 		String colors = "";
-		boolean colorsSkip = true;
+		//boolean colorsSkip = true;
 		List<String> lines = new LinkedList<String>();
 		
 		for (int i = 0; i < rawChars.length; i++) {
@@ -355,7 +356,7 @@ public class Utils{
 				word.append(color);
 				colors = ChatColor.getLastColors(colors + color);
 				i++; // Eat the next character as we have already processed it
-				colorsSkip = true;
+				//colorsSkip = true;
 				continue;
 			}
 			
@@ -378,28 +379,29 @@ public class Utils{
 					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
 						lines.add(line.toString());
-						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord);
+						System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
 						line = new StringBuilder(partialWord);
-						if (colorsSkip) {
+						/*if (colorsSkip) {
 							colorsSkip = false;
-						}else {
-							line.insert(0, colors);
-						}
+						}else {*/
+							line.insert(0, lastColors);
+						//}
 					}
 				}else {
 					if (line.length() > 0) {
 						line.append(' ');
 					}
 					line.append(word);
+					lastColors = colors;
 				}
 				word = new StringBuilder();
 				
 				if (c == '\n') { // Newline forces the line to flush
 					lines.add(line.toString());
 					line = new StringBuilder();
-					line.append(colors);
+					line.append(lastColors);
 				}
-				colorsSkip = false;
+				//colorsSkip = false;
 			}else {
 				word.append(c);
 			}
