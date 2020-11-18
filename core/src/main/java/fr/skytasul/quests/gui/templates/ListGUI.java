@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 /**
@@ -22,7 +23,7 @@ import fr.skytasul.quests.utils.XMaterial;
  */
 public abstract class ListGUI<T> extends PagedGUI<T> {
 	
-	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, "§aAdd an object");
+	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, Lang.addObject.toString());
 	
 	public ListGUI(String name, DyeColor color, List<T> objects) {
 		super(name, color, objects);

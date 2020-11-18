@@ -254,6 +254,7 @@ inv:
   validate: §b§lValidate
   cancel: §c§lCancel
   search: §e§lSearch
+  addObject: §aAdd an object
   confirm:
     name: Are you sure?
     'yes': §aConfirm

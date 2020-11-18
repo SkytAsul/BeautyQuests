@@ -379,7 +379,7 @@ public class Utils{
 					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
 						lines.add(line.toString());
-						System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
+						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
 						line = new StringBuilder(partialWord);
 						/*if (colorsSkip) {
 							colorsSkip = false;
