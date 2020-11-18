@@ -1,9 +1,9 @@
 package fr.skytasul.quests.gui.creation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
@@ -52,7 +52,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	private Consumer<List<T>> end;
 
 	public QuestObjectGUI(String name, QuestObjectLocation objectLocation, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
-		super((List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toCollection(ArrayList::new)), 18);
+		super(name, DyeColor.CYAN, (List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toList()));
 		this.name = name;
 		this.creators = creators.stream().filter(creator -> creator.isAllowed(objectLocation) && (creator.multiple || !objects.stream().anyMatch(object -> object.getCreator() == creator))).collect(Collectors.toList());
 		this.end = end;
@@ -62,17 +62,13 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	public void reopen(Player p) {
 		super.reopen();
 	}
-
-	@Override
-	public String name() {
-		return name;
-	}
 	
 	@Override
-	public ItemStack getItemStack(QuestObject object) {
+	public ItemStack getObjectItemStack(QuestObject object) {
 		return object.getItemStack();
 	}
 	
+	@Override
 	public boolean remove(QuestObject object) {
 		return super.remove((T) object);
 	}
@@ -83,34 +79,37 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	}
 	
 	@Override
-	public void click(QuestObject existing, ItemStack item) {
-		if (existing == null) {
-			new PagedGUI<QuestObjectCreator<T>>(name, DyeColor.CYAN, creators) {
-				
-				@Override
-				public ItemStack getItemStack(QuestObjectCreator<T> object) {
-					return object.item;
-				}
-				
-				@Override
-				public void click(QuestObjectCreator<T> existing, ClickType click) {
-					T object = existing.newObjectSupplier.get();
-					if (!existing.multiple) creators.remove(existing);
-					object.itemClick(p, QuestObjectGUI.this, finishItem(object));
-				}
-				
-				@Override
-				public CloseBehavior onClose(Player p, Inventory inv) {
-					Utils.runSync(QuestObjectGUI.super::reopen);
-					return CloseBehavior.NOTHING;
-				}
-				
-			}.create(p);
-		}else existing.itemClick(p, this, item);
+	public void createObject(Function<T, ItemStack> callback) {
+		new PagedGUI<QuestObjectCreator<T>>(name, DyeColor.CYAN, creators) {
+			
+			@Override
+			public ItemStack getItemStack(QuestObjectCreator<T> object) {
+				return object.item;
+			}
+			
+			@Override
+			public void click(QuestObjectCreator<T> existing, ItemStack item, ClickType clickType) {
+				T object = existing.newObjectSupplier.get();
+				if (!existing.multiple) creators.remove(existing);
+				object.itemClick(p, QuestObjectGUI.this, callback.apply(object));
+			}
+			
+			@Override
+			public CloseBehavior onClose(Player p, Inventory inv) {
+				Utils.runSync(QuestObjectGUI.super::reopen);
+				return CloseBehavior.NOTHING;
+			}
+			
+		}.create(p);
 	}
 	
 	@Override
-	public void finish() {
+	public void clickObject(QuestObject existing, ItemStack item, ClickType clickType) {
+		existing.itemClick(p, this, item);
+	}
+	
+	@Override
+	public void finish(List<T> objects) {
 		end.accept(objects);
 	}
 

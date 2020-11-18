@@ -3,6 +3,7 @@ package fr.skytasul.quests.requirements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -60,38 +61,32 @@ public class FactionRequirement extends AbstractRequirement {
 
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new ListGUI<Faction>(factions, 9) {
+		new ListGUI<Faction>(Lang.INVENTORY_FACTIONS_REQUIRED.toString(), DyeColor.LIGHT_BLUE, factions) {
 			
 			@Override
-			public String name() {
-				return Lang.INVENTORY_FACTIONS_REQUIRED.toString();
-			}
-			
-			@Override
-			public ItemStack getItemStack(Faction object) {
+			public ItemStack getObjectItemStack(Faction object) {
 				return ItemUtils.item(XMaterial.IRON_SWORD, object.getName(), "", Lang.Remove.toString());
 			}
 			
 			@Override
-			public void click(Faction existing, ItemStack item) {
-				if (existing == null) {
-					new PagedGUI<Faction>(Lang.INVENTORY_FACTIONS_LIST.toString(), DyeColor.PURPLE, Factions.getFactions()) {
-						
-						@Override
-						public ItemStack getItemStack(Faction object) {
-							return ItemUtils.item(XMaterial.IRON_SWORD, object.getName());
-						}
-						
-						@Override
-						public void click(Faction existing, ClickType click) {
-							finishItem(existing);
-						}
-					}.create(p);
-				}
+			public void createObject(Function<Faction, ItemStack> callback) {
+				new PagedGUI<Faction>(Lang.INVENTORY_FACTIONS_LIST.toString(), DyeColor.PURPLE, Factions.getFactions()) {
+					
+					@Override
+					public ItemStack getItemStack(Faction object) {
+						return ItemUtils.item(XMaterial.IRON_SWORD, object.getName());
+					}
+					
+					@Override
+					public void click(Faction existing, ItemStack item, ClickType clickType) {
+						callback.apply(existing);
+					}
+				}.create(p);
 			}
 			
 			@Override
-			public void finish() {
+			public void finish(List<Faction> objects) {
+				factions = objects;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
 			}

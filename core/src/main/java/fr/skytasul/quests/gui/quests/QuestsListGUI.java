@@ -35,7 +35,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		return ItemUtils.item(qu.getQuestMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
 	}
 
-	public void click(Quest existing, ClickType click){
+	public void click(Quest existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}

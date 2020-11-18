@@ -3,8 +3,11 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
@@ -21,7 +24,7 @@ import fr.skytasul.quests.utils.types.Command;
 
 public class CommandReward extends AbstractReward {
 
-	public final List<Command> commands = new ArrayList<>();
+	public List<Command> commands = new ArrayList<>();
 	
 	public CommandReward(){
 		super("commandReward");
@@ -52,23 +55,33 @@ public class CommandReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Inventories.create(p, new ListGUI<Command>(commands, 9) {
-			public void click(Command existing, ItemStack item) {
-				Inventories.create(p, new CommandGUI(this::finishItem, this::reopen)).setFromExistingCommand(existing);
+		Inventories.create(p, new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
+			
+			@Override
+			public void createObject(Function<Command, ItemStack> callback) {
+				new CommandGUI(command -> callback.apply(command), this::reopen).create(p);
+			}
+			
+			@Override
+			public void clickObject(Command object, ItemStack item, ClickType clickType) {
+				new CommandGUI(command -> {
+					updateObject(object, command);
+					reopen();
+				}, this::reopen).setFromExistingCommand(object).create(p);
 			}
 
-			public String name() {
-				return Lang.INVENTORY_COMMANDS_LIST.toString();
+			@Override
+			public ItemStack getObjectItemStack(Command cmd) {
+				return ItemUtils.item(XMaterial.CHAIN_COMMAND_BLOCK, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
 			}
-
-			public void finish() {
+			
+			@Override
+			public void finish(List<Command> objects) {
+				commands = objects;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
 			}
-
-			public ItemStack getItemStack(Command cmd) {
-				return ItemUtils.item(XMaterial.LIME_STAINED_GLASS_PANE, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
-			}
+			
 		});
 	}
 	
@@ -77,11 +90,7 @@ public class CommandReward extends AbstractReward {
 	}
 
 	protected void load(Map<String, Object> savedDatas){
-		if (savedDatas.containsKey("command")){ // TODO: remove (edited since 0.14)
-			commands.add(new Command((String) savedDatas.get("command"), (boolean) savedDatas.get("console"), 0));
-		}else {
-			commands.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("commands"), Command::deserialize));
-		}
+		commands.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("commands"), Command::deserialize));
 	}
 
 }

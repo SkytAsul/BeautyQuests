@@ -49,7 +49,7 @@ public abstract interface CustomInventory {
 	 * @param p Player
 	 * @see Inventories#create(Player, CustomInventory)
 	 */
-	public default void create(Player p){
+	public default void create(Player p) {
 		Inventories.create(p, this);
 	}
 	

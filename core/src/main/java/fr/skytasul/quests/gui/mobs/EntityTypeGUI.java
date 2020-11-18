@@ -40,7 +40,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 		return entities.get(object);
 	}
 
-	public void click(EntityType existing, ClickType click){
+	public void click(EntityType existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}

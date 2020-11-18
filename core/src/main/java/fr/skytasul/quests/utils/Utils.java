@@ -92,6 +92,13 @@ public class Utils{
 		}
 		return msg;
 	}
+	
+	public static String ticksToElapsedTime(int ticks) {
+		int i = ticks / 20;
+		int j = i / 60;
+		i = i % 60;
+		return i < 10 ? j + ":0" + i : j + ":" + i;
+	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
 		return ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
@@ -335,8 +342,9 @@ public class Utils{
 		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
 		StringBuilder word = new StringBuilder();
 		StringBuilder line = new StringBuilder();
+		String lastColors = "";
 		String colors = "";
-		boolean colorsSkip = true;
+		//boolean colorsSkip = true;
 		List<String> lines = new LinkedList<String>();
 		
 		for (int i = 0; i < rawChars.length; i++) {
@@ -348,7 +356,7 @@ public class Utils{
 				word.append(color);
 				colors = ChatColor.getLastColors(colors + color);
 				i++; // Eat the next character as we have already processed it
-				colorsSkip = true;
+				//colorsSkip = true;
 				continue;
 			}
 			
@@ -371,28 +379,29 @@ public class Utils{
 					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
 						lines.add(line.toString());
-						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord);
+						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
 						line = new StringBuilder(partialWord);
-						if (colorsSkip) {
+						/*if (colorsSkip) {
 							colorsSkip = false;
-						}else {
-							line.insert(0, colors);
-						}
+						}else {*/
+							line.insert(0, lastColors);
+						//}
 					}
 				}else {
 					if (line.length() > 0) {
 						line.append(' ');
 					}
 					line.append(word);
+					lastColors = colors;
 				}
 				word = new StringBuilder();
 				
 				if (c == '\n') { // Newline forces the line to flush
 					lines.add(line.toString());
 					line = new StringBuilder();
-					line.append(colors);
+					line.append(lastColors);
 				}
-				colorsSkip = false;
+				//colorsSkip = false;
 			}else {
 				word.append(c);
 			}
@@ -477,11 +486,11 @@ public class Utils{
 		return newItems;
 	}
 	
-	public static List<ItemStack> extactItems(List<ItemStack> items) {
+	public static List<ItemStack> extractItems(List<ItemStack> items) {
 		List<ItemStack> newItems = new ArrayList<>(items.size());
 		for (ItemStack original : items) {
 			int amount = original.getAmount();
-			int maxStackSize = original.getMaxStackSize();
+			int maxStackSize = /*original.getMaxStackSize()*/ 64;
 			while (amount > maxStackSize) {
 				ItemStack item = original.clone();
 				item.setAmount(maxStackSize);

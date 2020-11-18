@@ -1,49 +1,50 @@
 package fr.skytasul.quests.gui.permissions;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.DyeColor;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionListGUI extends ListGUI<Permission> {
 
-	private Runnable end;
+	private Consumer<List<Permission>> end;
 
-	public PermissionListGUI(List<Permission> list, Runnable end) {
-		super(list, 9);
+	public PermissionListGUI(List<Permission> list, Consumer<List<Permission>> end) {
+		super(Lang.INVENTORY_PERMISSION_LIST.toString(), DyeColor.PURPLE, list);
 		this.end = end;
 	}
 
-	public String name() {
-		return Lang.INVENTORY_PERMISSION_LIST.toString();
-	}
-
-	public ItemStack getItemStack(Permission object) {
+	public ItemStack getObjectItemStack(Permission object) {
 		return ItemUtils.item(XMaterial.PAPER, "§e" + object.permission, Lang.permRemoved.format(object.take ? Lang.Yes : Lang.No), Lang.permWorld.format(object.world == null ? Lang.worldGlobal.toString() : object.world));
 	}
 
-	public void click(Permission existing, ItemStack item) {
-		new PermissionGUI((perm) -> {
-			super.finishItem(perm);
-		}, existing).create(p);
-	}
-
-	public void finish() {
-		end.run();
+	@Override
+	public void createObject(Function<Permission, ItemStack> callback) {
+		new PermissionGUI(perm -> {
+			callback.apply(perm);
+		}, null).create(p);
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(end);
-		return CloseBehavior.NOTHING;
+	public void clickObject(Permission object, ItemStack item, ClickType clickType) {
+		new PermissionGUI(perm -> {
+			updateObject(object, perm);
+			reopen();
+		}, object).create(p);
+	}
+
+	@Override
+	public void finish(List<Permission> objects) {
+		end.accept(objects);
 	}
 	
 }

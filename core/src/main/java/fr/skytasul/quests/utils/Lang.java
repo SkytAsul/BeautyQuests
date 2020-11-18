@@ -245,6 +245,7 @@ public enum Lang{
 	done("inv.validate"),
 	cancel("inv.cancel"),
 	search("inv.search"),
+	addObject("inv.addObject"),
 	
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),

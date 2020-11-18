@@ -31,7 +31,7 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	}
 	
 	@Override
-	public void click(QuestPool existing, ClickType click) {
+	public void click(QuestPool existing, ItemStack clicked, ClickType click) {
 		if (click == ClickType.MIDDLE) {
 			if (existing != null) {
 				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getID());

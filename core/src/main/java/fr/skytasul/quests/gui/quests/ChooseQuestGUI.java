@@ -56,7 +56,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	}
 
 	@Override
-	public void click(Quest existing, ClickType click) {
+	public void click(Quest existing, ItemStack item, ClickType clickType) {
 		if (inv != null) Inventories.closeAndExit(p);
 		run.accept(existing);
 	}

@@ -38,7 +38,7 @@ public class BossAPI implements MobFactory<Boss> {
 				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
 			}
 
-			public void click(Boss existing, ClickType click) {
+			public void click(Boss existing, ItemStack item, ClickType clickType) {
 				run.accept(existing);
 			}
 		}.create(p);

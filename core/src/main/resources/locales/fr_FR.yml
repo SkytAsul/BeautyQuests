@@ -228,6 +228,7 @@ inv:
   validate: '§b§lValider'
   cancel: '§c§lAnnuler'
   search: '§e§lRechercher'
+  addObject: '§aAjouter un objet'
   confirm:
     name: Êtes-vous sûr ?
     'yes': '§aConfirmer'

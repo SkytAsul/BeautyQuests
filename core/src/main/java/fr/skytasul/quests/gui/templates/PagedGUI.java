@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.LevenshteinComparator;
@@ -32,8 +33,8 @@ public abstract class PagedGUI<T> implements CustomInventory {
 
 	protected Player p;
 	protected Inventory inv;
-	private int page = 0;
-	private int maxPage;
+	protected int page = 0;
+	protected int maxPage;
 	
 	private String name;
 	private DyeColor color;
@@ -55,7 +56,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	
 	public Inventory open(Player p) {
 		this.p = p;
-		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
+		calcMaxPages();
 		
 		inv = Bukkit.createInventory(null, 45, name);
 
@@ -72,7 +73,11 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		return inv;
 	}
 	
-	private void setItems(){
+	protected void calcMaxPages() {
+		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
+	}
+	
+	protected void setItems() {
 		for (int i = 0; i < 35; i++) setMainItem(i, null);
 		for (int i = page * 35; i < objects.size(); i++){
 			if (i == (page + 1) * 35) break;
@@ -144,10 +149,15 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		default:
 			int line = (int) Math.floor(slot * 1D / 9D);
 			int objectSlot = slot - line*2 + page*35;
-			click(objects.get(objectSlot), click);
-			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
+			click(objects.get(objectSlot), current, click);
+			//inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 		return true;
+	}
+	
+	public void reopen() {
+		Inventories.put(p, this, inv);
+		inv = p.openInventory(inv).getTopInventory();
 	}
 	
 	/**
@@ -159,8 +169,9 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object
-	 * @param click click type
+	 * @param item item clicked
+	 * @param clickType click type
 	 */
-	public abstract void click(T existing, ClickType click);
+	public abstract void click(T existing, ItemStack item, ClickType clickType);
 
 }

@@ -65,7 +65,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 			}
 			
 			@Override
-			public void click(QuestPool existing, ClickType click) {
+			public void click(QuestPool existing, ItemStack item, ClickType click) {
 				setValue(existing);
 				ItemUtils.lore(item, getLore());
 				gui.reopen(p);

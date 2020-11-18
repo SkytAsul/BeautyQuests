@@ -70,7 +70,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	private void refresh(){
 		if (type != null){
 			inv.setItem(13, build());
-			inv.getItem(17).setType(Material.DIAMOND);
+			if (inv.getItem(17).getType() != Material.DIAMOND) inv.getItem(17).setType(Material.DIAMOND);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		case 1:
 			Lang.CHOOSE_ITEM_AMOUNT.send(p);
 			new TextEditor<>(p, () -> reopen(), obj -> {
-				amount = obj;
+				amount = Math.min(obj, 64);
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				reopen();
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.core.util.FileUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
 
 import com.google.gson.GsonBuilder;
 
@@ -45,15 +46,15 @@ public class MinecraftNames {
 					cachedMaterials.put(XMaterial.matchXMaterial(key.substring(16)).orElse(null), (String) en.getValue());
 				}else if (key.startsWith("item.minecraft.")) {
 					String item = key.substring(15);
-					if (item.startsWith(".potion.effect.")) {
-						XPotion potion = XPotion.matchFromTranslationKey(item.substring(15));
-						potion.normal = (String) en.getValue();
-					}else if (item.startsWith(".splash_potion.effect.")) {
-						XPotion potion = XPotion.matchFromTranslationKey(item.substring(22));
-						potion.splash = (String) en.getValue();
-					}else if (item.startsWith(".lingering_potion.effect.")) {
-						XPotion potion = XPotion.matchFromTranslationKey(item.substring(25));
-						potion.lingering = (String) en.getValue();
+					if (item.startsWith("potion.effect.")) {
+						XPotion potion = XPotion.matchFromTranslationKey(item.substring(14));
+						if (potion != null) potion.normal = (String) en.getValue();
+					}else if (item.startsWith("splash_potion.effect.")) {
+						XPotion potion = XPotion.matchFromTranslationKey(item.substring(21));
+						if (potion != null) potion.splash = (String) en.getValue();
+					}else if (item.startsWith("lingering_potion.effect.")) {
+						XPotion potion = XPotion.matchFromTranslationKey(item.substring(24));
+						if (potion != null) potion.lingering = (String) en.getValue();
 					}else cachedMaterials.put(XMaterial.matchXMaterial(item).orElse(null), (String) en.getValue());
 				}
 			}
@@ -82,7 +83,12 @@ public class MinecraftNames {
 		if (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			try {
-				return defaultFormat(XPotion.matchXPotion(meta.getBasePotionData().getType().getEffectType()).getTranslated(type));
+				PotionData basePotion = meta.getBasePotionData();
+				XPotion potion = XPotion.matchXPotion(basePotion.getType().getEffectType());
+				String string = potion.getTranslated(type);
+				if (basePotion.isUpgraded()) string += " II";
+				if (potion.baseDuration != null) string += basePotion.isExtended() ? potion.extendedDuration : potion.baseDuration;
+				return string;
 			}catch (NullPointerException ex) {} // happens with potions with no effect
 		}
 		return getMaterialName(type);

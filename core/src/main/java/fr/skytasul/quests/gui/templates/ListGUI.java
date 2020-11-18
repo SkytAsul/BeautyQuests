@@ -1,17 +1,18 @@
-	package fr.skytasul.quests.gui.templates;
+package fr.skytasul.quests.gui.templates;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
 /**
@@ -20,42 +21,33 @@ import fr.skytasul.quests.utils.XMaterial;
  *
  * @param <T> type of objects stocked in the list
  */
-public abstract class ListGUI<T> implements CustomInventory {
+public abstract class ListGUI<T> extends PagedGUI<T> {
 	
-	private ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c");
-
-	protected List<T> objects;
-	protected int size;
+	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, Lang.addObject.toString());
 	
-	protected Inventory inv;
-	protected Player p;
-	
-	public ListGUI(List<T> list, int size){
-		this.objects = list;
-		Validate.isTrue(size % 9 == 0, "Size must be a multiple of 9");
-		this.size = size;
+	public ListGUI(String name, DyeColor color, List<T> objects) {
+		super(name, color, objects);
+		super.objects.add(null);
+		super.validate = list -> {
+			list.remove(null);
+			finish(list);
+		};
 	}
 	
-	public Inventory open(Player p){
-		inv = Bukkit.createInventory(null, size, name());
-		this.p = p;
-		
-		inv.setItem(size - 1, ItemUtils.itemDone);
-		for (int i = 0; i < size - 1; i++) {
-			if (objects.size() <= i){
-				inv.setItem(i, none);
-			}else {
-				inv.setItem(i, getItemStack(objects.get(i)));
-			}
+	@Override
+	public final ItemStack getItemStack(T object) {
+		return object == null ? create : getObjectItemStack(object);
+	}
+	
+	@Override
+	public final void click(T existing, ItemStack item, ClickType clickType) {
+		if (clickType == ClickType.MIDDLE) {
+			remove(existing);
+		}else {
+			if (existing == null) {
+				createObject(this::finishItem);
+			}else clickObject(existing, item, clickType);
 		}
-
-		inv = p.openInventory(inv).getTopInventory();
-		return inv;
-	}
-	
-	public void reopen() {
-		Inventories.put(p, this, inv);
-		inv = p.openInventory(inv).getTopInventory();
 	}
 	
 	public boolean remove(T object) {
@@ -68,27 +60,18 @@ public abstract class ListGUI<T> implements CustomInventory {
 	public void remove(int slot){
 		T removed = objects.remove(slot);
 		if (removed == null) return;
-		for (int i = slot; i <= objects.size(); i++){
-			inv.setItem(i, i == objects.size() ? none : inv.getItem(i+1));
-		}
+		Inventories.create(p, this);
 		removed(removed);
 	}
 	
 	protected void removed(T object) {}
-
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
-		if (slot == size - 1){
-			finish();
-		}else {
-			if (current.equals(none)){
-				click(null, null);
-			}else if (click == ClickType.MIDDLE){
-				remove(slot);
-			}else {
-				click(objects.get(slot), current);
-			}
-		}
-		return true;
+	
+	public void updateObject(T object, T newObject) {
+		int index = objects.indexOf(object);
+		if (index == -1) return;
+		objects.set(index, newObject);
+		int slot = getObjectSlot(newObject);
+		if (slot != -1) inv.setItem(slot, getItemStack(newObject));
 	}
 	
 	@Override
@@ -101,35 +84,25 @@ public abstract class ListGUI<T> implements CustomInventory {
 	 * @param object Object to put
 	 * @return ItemStack created with {@link #getItemStack(Object)}
 	 */
-	public ItemStack finishItem(T object){
+	private ItemStack finishItem(T object) {
+		Validate.notNull(object);
+		objects.add(objects.size() - 1, object);
+		calcMaxPages();
+		page = maxPage - 1;
+		setItems();
 		reopen();
-		objects.add(object);
-		int slot = objects.size() - 1;
-		inv.setItem(slot, getItemStack(object));
-		return inv.getItem(slot);
+		return inv.getItem(getObjectSlot(object));
 	}
-	
-	/**
-	 * @return Inventory's name
-	 */
-	public abstract String name();
-	
-	/**
-	 * @param object existing object to represent
-	 * @return ItemStack who represents the object
-	 */
-	public abstract ItemStack getItemStack(T object);
-	
-	/**
-	 * Called when an object is clicked
-	 * @param existing clicked object (may be null if there was no previous object)
-	 * @param item clicked item
-	 */
-	public abstract void click(T existing, ItemStack item);
 	
 	/**
 	 * Called when the player hit the finish button
 	 */
-	public abstract void finish();
+	public abstract void finish(List<T> objects);
+	
+	public abstract ItemStack getObjectItemStack(T object);
+	
+	public abstract void createObject(Function<T, ItemStack> callback);
+	
+	public void clickObject(T object, ItemStack item, ClickType clickType) {}
 	
 }

@@ -48,7 +48,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 				return ItemUtils.item(mobItem, object.getInternalName());
 			}
 
-			public void click(MythicMob existing, ClickType click) {
+			public void click(MythicMob existing, ItemStack item, ClickType clickType) {
 				run.accept(existing);
 			}
 		}.create(p);

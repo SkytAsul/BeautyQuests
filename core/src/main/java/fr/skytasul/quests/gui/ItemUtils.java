@@ -197,7 +197,7 @@ public class ItemUtils {
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
 	 */
-	public static ImmutableItemStack itemDone = new ImmutableItemStack(item(XMaterial.DIAMOND, Lang.done.toString()));
+	public static ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted

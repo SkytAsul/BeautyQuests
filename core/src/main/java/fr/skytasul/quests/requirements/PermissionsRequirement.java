@@ -3,8 +3,10 @@ package fr.skytasul.quests.requirements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,30 +53,24 @@ public class PermissionsRequirement extends AbstractRequirement {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new ListGUI<Permission>(permissions, 9) {
+		new ListGUI<Permission>(Lang.INVENTORY_PERMISSION_LIST.toString(), DyeColor.PURPLE, permissions) {
 			
 			@Override
-			public String name() {
-				return Lang.INVENTORY_PERMISSION_LIST.toString();
-			}
-			
-			@Override
-			public ItemStack getItemStack(Permission object) {
+			public ItemStack getObjectItemStack(Permission object) {
 				return ItemUtils.item(XMaterial.PAPER, object.toString(), "", Lang.Remove.toString());
 			}
 			
 			@Override
-			public void click(Permission existing, ItemStack item) {
-				if (existing == null) {
-					Lang.CHOOSE_PERM_REQUIRED.send(p);
-					new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
-						finishItem(Permission.fromString(obj));
-					}).useStrippedMessage().enter();
-				}
+			public void createObject(Function<Permission, ItemStack> callback) {
+				Lang.CHOOSE_PERM_REQUIRED.send(p);
+				new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
+					callback.apply(Permission.fromString(obj));
+				}).useStrippedMessage().enter();
 			}
 			
 			@Override
-			public void finish() {
+			public void finish(List<Permission> objects) {
+				permissions = objects;
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
 				new TextEditor<String>(p, gui::reopen, obj -> {
 					message = obj;
