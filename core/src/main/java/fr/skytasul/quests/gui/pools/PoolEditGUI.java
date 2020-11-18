@@ -47,7 +47,7 @@ public class PoolEditGUI implements CustomInventory {
 	}
 	
 	private String[] getNPCLore() {
-		return new String[] { "§8> §7§oRequired parameter", "", QuestOption.formatNullableValue("NPC #" + npcID) };
+		return new String[] { "§8> " + Lang.requiredParameter.toString(), "", QuestOption.formatNullableValue("NPC #" + npcID) };
 	}
 	
 	private String[] getHologramLore() {
@@ -76,13 +76,13 @@ public class PoolEditGUI implements CustomInventory {
 	
 	@Override
 	public Inventory open(Player p) {
-		Inventory inv = Bukkit.createInventory(null, 9, "Quest pool creation");
+		Inventory inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_POOL_CREATE.toString());
 		
-		inv.setItem(0, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, "§e§lSelect NPC", getNPCLore()));
-		inv.setItem(1, ItemUtils.item(XMaterial.OAK_SIGN, "§ePool custom hologram", getHologramLore()));
-		inv.setItem(2, ItemUtils.item(XMaterial.REDSTONE, "§aMax quests", getAmountLore()));
-		inv.setItem(3, ItemUtils.item(XMaterial.CLOCK, "§bSet time between quests", getTimeLore()));
-		inv.setItem(4, ItemUtils.itemSwitch("Is redo allowed", redoAllowed));
+		inv.setItem(0, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
+		inv.setItem(1, ItemUtils.item(XMaterial.OAK_SIGN, Lang.poolEditHologramText.toString(), getHologramLore()));
+		inv.setItem(2, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getAmountLore()));
+		inv.setItem(3, ItemUtils.item(XMaterial.CLOCK, Lang.poolTime.toString(), getTimeLore()));
+		inv.setItem(4, ItemUtils.itemSwitch(Lang.poolRedo.toString(), redoAllowed));
 		
 		inv.setItem(7, ItemUtils.itemCancel);
 		inv.setItem(8, ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString()));
@@ -103,7 +103,7 @@ public class PoolEditGUI implements CustomInventory {
 			}).create(p);
 			break;
 		case 1:
-			p.sendMessage("Write the custom hologram text of this pool.");
+			Lang.POOL_HOLOGRAM_TEXT.send(p);
 			new TextEditor<String>(p, () -> reopen(p, inv, false), msg -> {
 				hologram = msg;
 				ItemUtils.lore(current, getHologramLore());
@@ -115,7 +115,7 @@ public class PoolEditGUI implements CustomInventory {
 			}).enter();
 			break;
 		case 2:
-			p.sendMessage("Enter the maximum of quests in this pool.");
+			Lang.POOL_HOLOGRAM_MAXQUESTS.send(p);
 			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
 				maxQuests = msg;
 				ItemUtils.lore(current, getAmountLore());
@@ -123,7 +123,7 @@ public class PoolEditGUI implements CustomInventory {
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 		case 3:
-			p.sendMessage("Enter the number of days between two quests.");
+			Lang.POOL_HOLOGRAM_TIME.send(p);
 			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
 				timeDiff = TimeUnit.DAYS.toMillis(msg);
 				ItemUtils.lore(current, getTimeLore());

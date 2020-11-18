@@ -113,19 +113,19 @@ public class QuestPool implements Comparable<QuestPool> {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 		
-		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return "no time";
+		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return Lang.POOL_NO_TIME.toString();
 		
 		List<Quest> notDoneQuests = quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList());
 		if (notDoneQuests.isEmpty()) { // all quests completed
-			if (!redoAllowed) return "all quests completed";
+			if (!redoAllowed) return Lang.POOL_ALL_COMPLETED.toString();
 			notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
-			if (notDoneQuests.isEmpty()) return "all quests completed";
+			if (notDoneQuests.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
 			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toList()));
-		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return "max quest limit";
+		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_NO_AVAILABLE.toString();
 		
 		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, false)).collect(Collectors.toList());
 		if (available.isEmpty()) {
-			return "no quest available";
+			return Lang.POOL_NO_AVAILABLE.toString();
 		}else {
 			Quest quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
 			quest.start(p);

@@ -27,6 +27,10 @@ public enum Lang{
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
+	POOL_NO_TIME("msg.pools.noTime"),
+	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
+	POOL_NO_AVAILABLE("msg.pools.noAvailable"),
+	
 	QUEST_ITEM_DROP("msg.questItem.drop"),
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),
 	
@@ -170,6 +174,10 @@ public enum Lang{
 	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
 	
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
+	
+	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
+	POOL_HOLOGRAM_MAXQUESTS("msg.editor.pool.maxQuests"),
+	POOL_HOLOGRAM_TIME("msg.editor.pool.time"),
 
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
@@ -358,11 +366,14 @@ public enum Lang{
 	customMaterialLore("inv.details.customMaterialLore"),
 	failOnDeath("inv.details.failOnDeath"),
 	failOnDeathLore("inv.details.failOnDeathLore"),
+	questPool("inv.details.questPool"),
+	questPoolLore("inv.details.questPoolLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
 	optionValue("inv.details.optionValue"), // 0: value
 	defaultValue("inv.details.defaultValue"),
+	requiredParameter("inv.details.requiredParameter"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
@@ -470,6 +481,14 @@ public enum Lang{
 	poolItemName("inv.poolsManage.itemName"), // 0: pool ID
 	poolItemDescription("inv.poolsManage.itemDescription"), // 0: npc ID, 1: max quests, 2: can redo, 3: time between quests, 4: hologram text
 	poolCreate("inv.poolsManage.create"),
+	
+	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
+	poolEditHologramText("inv.poolCreation.hologramText"),
+	poolMaxQuests("inv.poolCreation.maxQuests"),
+	poolTime("inv.poolCreation.time"),
+	poolRedo("inv.poolCreation.redoAllowed"),
+	
+	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
