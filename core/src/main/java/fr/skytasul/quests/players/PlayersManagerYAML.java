@@ -3,6 +3,7 @@ package fr.skytasul.quests.players;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,20 +31,20 @@ public class PlayersManagerYAML extends PlayersManager {
 	private int lastAccountID = 0;
 
 	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
-
-	public synchronized PlayerAccount retrievePlayerAccount(Player p) {
-		String identifier = super.getIdentifier(p);
+	
+	@Override
+	protected Entry<PlayerAccount, Boolean> load(Player player) {
+		String identifier = super.getIdentifier(player);
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
-			return getByIndex(id);
+			return new AbstractMap.SimpleEntry<>(getByIndex(id), false);
 		}
 
-		AbstractAccount absacc = super.createAbstractAccount(p);
+		AbstractAccount absacc = super.createAbstractAccount(player);
 		PlayerAccount acc = new PlayerAccount(absacc, lastAccountID + 1);
 		addAccount(acc);
 
-		DebugUtils.logMessage("New account registered for " + p.getName() + " (" + acc.abstractAcc.getIdentifier() + "), index " + acc.index + " via " + DebugUtils.stackTraces(2, 4));
-		return acc;
+		return new AbstractMap.SimpleEntry<>(acc, true);
 	}
 
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {

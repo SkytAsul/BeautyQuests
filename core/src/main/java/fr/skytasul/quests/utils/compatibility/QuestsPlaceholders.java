@@ -66,6 +66,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount")) return "" + QuestsAPI.getQuestsStarteds(acc).size();
 		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc).size();
 		

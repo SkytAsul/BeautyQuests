@@ -214,8 +214,7 @@ public class Quest implements Comparable<Quest> {
 		return c;
 	}
 	
-	public boolean isLauncheable(Player p, boolean sendMessage){
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+	public boolean isLauncheable(Player p, PlayerAccount acc, boolean sendMessage) {
 		if (hasStarted(acc)){
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;

@@ -235,6 +235,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		if (keepPlayerDatas) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				PlayerAccount account = PlayersManager.getPlayerAccount(p);
+				if (account == null) continue;
 				if (account.hasQuestDatas(qu)) {
 					PlayerQuestDatas datas = account.getQuestDatas(qu);
 					if (datas.getBranch() == -1) continue;

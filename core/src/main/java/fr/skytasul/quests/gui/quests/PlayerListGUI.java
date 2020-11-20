@@ -119,7 +119,7 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				String[] lore;
 				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
-					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
+					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
 				}else lore = new String[] { qu.getDescription() };
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
@@ -208,7 +208,7 @@ public class PlayerListGUI implements CustomInventory {
 				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
 				if (!acc.isCurrent()) break;
 				Player target = acc.getPlayer();
-				if (qu.isLauncheable(target, true)) {
+				if (qu.isLauncheable(target, acc, true)) {
 					p.closeInventory();
 					qu.attemptStart(target);
 				}

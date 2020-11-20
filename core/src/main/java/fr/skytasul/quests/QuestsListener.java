@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,6 +43,7 @@ public class QuestsListener implements Listener{
 		NPC npc = e.getNPC();
 		if (BeautyQuests.getInstance().getNPCs().containsKey(npc)){
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+			if (acc == null) return;
 			
 			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
 			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
@@ -102,10 +102,19 @@ public class QuestsListener implements Listener{
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 		if (!QuestsConfiguration.hookAccounts()) {
-			boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
+			PlayersManager.loadPlayer(player);
+			/*Entry<PlayerAccount, Boolean> acc = PlayersManager.manager.load(player);
+			//boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
 			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, PlayersManager.getPlayerAccount(player), firstJoin));
-			}, 2L);
+				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, acc.getKey(), acc.getValue()));
+			}, 2L);*/
+		}
+	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		if (!QuestsConfiguration.hookAccounts()) {
+			PlayersManager.unloadPlayer(e.getPlayer());
 		}
 	}
 
@@ -118,12 +127,8 @@ public class QuestsListener implements Listener{
 	}
 	
 	@EventHandler
-	public void onQuit(PlayerQuitEvent e) {
-		Player player = e.getPlayer();
-		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(player);
-		if (!QuestsConfiguration.hookAccounts()) {
-			Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(player, PlayersManager.getPlayerAccount(player)));
-		}
+	public void onAccountLeave(PlayerAccountLeaveEvent e) {
+		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)
