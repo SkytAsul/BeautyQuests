@@ -264,7 +264,7 @@ public class Commands {
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				Quest qu = (Quest) obj;
-				if (!CommandsManager.hasPermission(cmd.player, "start.other") && !qu.isLauncheable(target, true)) return;
+				if (!CommandsManager.hasPermission(cmd.player, "start.other") && !qu.isLauncheable(target, acc, true)) return;
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 			}, acc, false, true, false);

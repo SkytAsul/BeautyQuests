@@ -45,39 +45,6 @@ public class PlayersManagerDB extends PlayersManager {
 		this.db = db;
 	}
 
-	public synchronized PlayerAccount retrievePlayerAccount(Player p) {
-		try {
-			String uuid = p.getUniqueId().toString();
-			PreparedStatement statement = getAccounts.getStatement();
-			statement.setString(1, uuid);
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
-				if (abs.isCurrent()) {
-					PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
-					result.close();
-					retrievePlayerDatas(account);
-					return account;
-				}
-			}
-			result.close();
-
-			AbstractAccount absacc = super.createAbstractAccount(p);
-			statement = insertAccount.getStatement();
-			statement.setString(1, absacc.getIdentifier());
-			statement.setString(2, uuid);
-			statement.executeUpdate();
-			result = statement.getGeneratedKeys();
-			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
-			int index = result.getInt(1);
-			result.close();
-			return new PlayerAccount(absacc, index);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
 		try {
 			PreparedStatement statement = getQuestsData.getStatement();
@@ -91,6 +58,40 @@ public class PlayersManagerDB extends PlayersManager {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	protected Entry<PlayerAccount, Boolean> load(Player player) {
+		try {
+			String uuid = player.getUniqueId().toString();
+			PreparedStatement statement = getAccounts.getStatement();
+			statement.setString(1, uuid);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
+				if (abs.isCurrent()) {
+					PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
+					result.close();
+					retrievePlayerDatas(account);
+					return new AbstractMap.SimpleEntry<>(account, false);
+				}
+			}
+			result.close();
+
+			AbstractAccount absacc = super.createAbstractAccount(player);
+			statement = insertAccount.getStatement();
+			statement.setString(1, absacc.getIdentifier());
+			statement.setString(2, uuid);
+			statement.executeUpdate();
+			result = statement.getGeneratedKeys();
+			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
+			int index = result.getInt(1);
+			result.close();
+			return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private Map<String, Object> getStageDatas(ResultSet result, int index) throws SQLException {

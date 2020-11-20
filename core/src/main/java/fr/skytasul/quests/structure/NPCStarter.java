@@ -33,7 +33,6 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.npc.ai.NPCHolder;
 
 public class NPCStarter {
 
@@ -80,12 +79,13 @@ public class NPCStarter {
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
 				for (Player p : lc.getWorld().getPlayers()) {
-					if (p instanceof NPCHolder) continue;
+					PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+					if (acc == null) continue;
 					if (lc.distanceSquared(p.getLocation()) > QuestsConfiguration.getStartParticleDistanceSquared()) continue;
 					playersInRadius.add(p);
 					try{
 						for (Quest quest : quests) {
-							if (quest.isLauncheable(p, false)) {
+							if (quest.isLauncheable(p, acc, false)) {
 								quest.launcheable.add(p);
 								break;
 							}

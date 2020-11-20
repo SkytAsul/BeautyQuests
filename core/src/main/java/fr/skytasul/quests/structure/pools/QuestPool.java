@@ -103,10 +103,10 @@ public class QuestPool implements Comparable<QuestPool> {
 		List<Quest> notDoneQuests = quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList());
 		if (notDoneQuests.isEmpty()) { // all quests completed
 			if (!redoAllowed) return false;
-			return quests.stream().anyMatch(quest -> quest.isRepeatable() && quest.isLauncheable(p, false));
+			return quests.stream().anyMatch(quest -> quest.isRepeatable() && quest.isLauncheable(p, acc, false));
 		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return false;
 		
-		return notDoneQuests.stream().anyMatch(quest -> quest.isLauncheable(p, false));
+		return notDoneQuests.stream().anyMatch(quest -> quest.isLauncheable(p, acc, false));
 	}
 	
 	public String give(Player p) {
@@ -123,7 +123,7 @@ public class QuestPool implements Comparable<QuestPool> {
 			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toList()));
 		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_NO_AVAILABLE.toString();
 		
-		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, false)).collect(Collectors.toList());
+		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
 		if (available.isEmpty()) {
 			return Lang.POOL_NO_AVAILABLE.toString();
 		}else {

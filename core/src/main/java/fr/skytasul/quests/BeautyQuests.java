@@ -40,7 +40,6 @@ import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
@@ -394,7 +393,8 @@ public class BeautyQuests extends JavaPlugin{
 
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
+				PlayersManager.loadPlayer(p);
+				//getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
 			}
 		}, 5L);
 		
