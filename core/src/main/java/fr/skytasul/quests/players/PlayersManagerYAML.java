@@ -21,6 +21,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Utils;
 
@@ -53,6 +54,11 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {}
 
+	@Override
+	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {
+		return new PlayerPoolDatas(acc, pool.getID());
+	}
+	
 	public int removeQuestDatas(Quest quest) {
 		loadAllAccounts();
 		int amount = 0;
@@ -195,7 +201,7 @@ public class PlayersManagerYAML extends PlayersManager {
 			acc.questDatas.put(questDatas.questID, questDatas);
 		}
 		for (Map<?, ?> poolConfig : datas.getMapList("pools")) {
-			PlayerPoolDatas questDatas = PlayerPoolDatas.deserialize((Map<String, Object>) poolConfig);
+			PlayerPoolDatas questDatas = PlayerPoolDatas.deserialize(acc, (Map<String, Object>) poolConfig);
 			acc.poolDatas.put(questDatas.getPoolID(), questDatas);
 		}
 		addAccount(acc);

@@ -87,6 +87,7 @@ public class BeautyQuests extends JavaPlugin{
 	private static boolean disable = false;
 	public static boolean loadingFailure = false;
 	public static boolean savingFailure = false;
+	public static boolean loaded = false;
 	
 	/* ---------------------------------------------- */
 
@@ -390,13 +391,15 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}
 		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
-
+		
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				PlayersManager.loadPlayer(p);
 				//getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
 			}
-		}, 5L);
+			loaded = true;
+		}, 1L);
+		
 		
 		return quests.size();
 	}
@@ -444,6 +447,7 @@ public class BeautyQuests extends JavaPlugin{
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
 		if (DependenciesManager.dyn) Dynmap.unload();
+		loaded = false;
 	}
 	
 	/* ---------- Backups ---------- */

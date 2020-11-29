@@ -15,6 +15,7 @@ import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -32,6 +33,8 @@ public abstract class PlayersManager {
 
 	public abstract void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas);
 
+	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
+	
 	public abstract int removeQuestDatas(Quest quest);
 	
 	//public abstract boolean hasAccounts(Player p);
@@ -77,6 +80,7 @@ public abstract class PlayersManager {
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public synchronized static void loadPlayer(Player p) {
+		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
 			Entry<PlayerAccount, Boolean> entry = manager.load(p);

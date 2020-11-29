@@ -63,7 +63,7 @@ public class QuestsListener implements Listener{
 				}else launcheable.add(qu);
 			}
 			
-			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> pool.canGive(p)).collect(Collectors.toSet());
+			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> pool.canGive(p, acc)).collect(Collectors.toSet());
 			
 			e.setCancelled(true);
 			if (!launcheable.isEmpty()){
@@ -110,7 +110,7 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
-		if (!QuestsConfiguration.hookAccounts()) {
+		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			PlayersManager.loadPlayer(player);
 			/*Entry<PlayerAccount, Boolean> acc = PlayersManager.manager.load(player);
 			//boolean firstJoin = !PlayersManager.manager.hasAccounts(player);

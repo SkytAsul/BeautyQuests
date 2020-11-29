@@ -64,6 +64,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return ItemStack.deserialize((Map<String, Object>) object);
 	}
 	
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}

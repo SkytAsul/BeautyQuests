@@ -37,6 +37,7 @@ import fr.skytasul.quests.options.OptionEndRewards;
 import fr.skytasul.quests.options.OptionHide;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.options.OptionQuestMaterial;
+import fr.skytasul.quests.options.OptionQuestPool;
 import fr.skytasul.quests.options.OptionRepeatable;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionScoreboardEnabled;
@@ -312,6 +313,7 @@ public class Quest implements Comparable<Quest> {
 				manager.remove(acc);
 				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
 				questDatas.setFinished(true);
+				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, getOptionValueOrDef(OptionTimer.class));

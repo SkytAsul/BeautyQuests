@@ -91,11 +91,17 @@ public class QuestPool implements Comparable<QuestPool> {
 	}
 	
 	public ItemStack getItemStack() {
-		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id), Lang.poolItemDescription.format(npcID, maxQuests, redoAllowed ? Lang.Enabled : Lang.Disabled, timeDiff, hologram == null ? Lang.defaultValue : hologram));
+		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id), Lang.poolItemDescription.format(npcID, maxQuests, redoAllowed ? Lang.Enabled : Lang.Disabled, timeDiff, hologram == null ? Lang.PoolHologramText.toString() + " " + Lang.defaultValue : hologram), "§7(" + quests.size()
+				+ " quests)");
 	}
 	
-	public boolean canGive(Player p) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+	public void questCompleted(PlayerAccount acc, Quest quest) {
+		PlayerPoolDatas poolDatas = acc.getPoolDatas(this);
+		poolDatas.getCompletedQuests().add(quest.getID());
+		poolDatas.updatedCompletedQuests();
+	}
+	
+	public boolean canGive(Player p, PlayerAccount acc) {
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 		
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
@@ -120,7 +126,7 @@ public class QuestPool implements Comparable<QuestPool> {
 			if (!redoAllowed) return Lang.POOL_ALL_COMPLETED.toString();
 			notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
 			if (notDoneQuests.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
-			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toList()));
+			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toSet()));
 		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_NO_AVAILABLE.toString();
 		
 		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());

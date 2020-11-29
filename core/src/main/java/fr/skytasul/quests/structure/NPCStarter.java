@@ -116,15 +116,15 @@ public class NPCStarter {
 				}
 				hologramLaunch.setVisible(launcheable);
 				hologramLaunchNo.setVisible(unlauncheable);
-				for (Player p : players.keySet()) {
+				for (Entry<Player, PlayerAccount> p : players.entrySet()) {
 					boolean visible = false;
 					for (QuestPool pool : pools) {
-						if (pool.canGive(p)) {
+						if (pool.canGive(p.getKey(), p.getValue())) {
 							visible = true;
 							break;
 						}
 					}
-					hologramPool.setVisible(p, visible);
+					hologramPool.setVisible(p.getKey(), visible);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);

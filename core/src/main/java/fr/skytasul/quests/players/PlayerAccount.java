@@ -76,7 +76,7 @@ public class PlayerAccount {
 	public PlayerPoolDatas getPoolDatas(QuestPool pool) {
 		PlayerPoolDatas datas = poolDatas.get(pool.getID());
 		if (datas == null) {
-			datas = new PlayerPoolDatas(pool.getID());
+			datas = PlayersManager.manager.createPlayerPoolDatas(this, pool);
 			poolDatas.put(pool.getID(), datas);
 		}
 		return datas;
