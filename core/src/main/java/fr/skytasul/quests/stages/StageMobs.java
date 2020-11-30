@@ -46,6 +46,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 	public void onMobKilled(CompatMobDeathEvent e){
 		if (shoot && e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE) return;
 		Player p = e.getKiller();
+		if (p == e.getBukkitEntity()) return; // player suicidal
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			event(acc, p, e.getPluginMob(), 1);

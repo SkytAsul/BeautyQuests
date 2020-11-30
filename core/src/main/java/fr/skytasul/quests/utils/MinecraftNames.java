@@ -86,8 +86,9 @@ public class MinecraftNames {
 				PotionData basePotion = meta.getBasePotionData();
 				XPotion potion = XPotion.matchXPotion(basePotion.getType().getEffectType());
 				String string = potion.getTranslated(type);
-				if (basePotion.isUpgraded()) string += " II";
-				if (potion.baseDuration != null) string += basePotion.isExtended() ? potion.extendedDuration : potion.baseDuration;
+				if (basePotion.isUpgraded()) {
+					string += " II" + potion.strongDuration;
+				}else if (potion.baseDuration != null) string += basePotion.isExtended() ? potion.extendedDuration : potion.baseDuration;
 				return string;
 			}catch (NullPointerException ex) {} // happens with potions with no effect
 		}
