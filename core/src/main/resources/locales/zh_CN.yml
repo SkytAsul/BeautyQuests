@@ -157,7 +157,7 @@ msg:
       choosePermissionMessage: '§e如果玩家没有所需权限则显示的拒绝消息. (输入 "null" 跳过这步)'
       choosePlaceholderRequired:
         identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
-        value: '§a输入所需的 §6%{0}% 占位符的数值§a:'
+        value: '§a请输入所需的§e%§e{0}§e%§a占位符值：'
       chooseSkillRequired: '§a输入技能名:'
       chooseMoneyRequired: '§e输入所需金额:'
       reward:
@@ -175,6 +175,8 @@ msg:
       itemLore: '§e修改物品描述. 输入 "help" 查看帮助.'
       unknownItemType: '§c未知的物品类型.'
       invalidItemType: '§c无效的物品类型 (必须是物品而不能是方块).'
+      unknownBlockType: '§c未知方块类型。'
+      invalidBlockType: '§c无效的方块类型。'
     dialog:
       syntax: '§c正确用法 : {0}{1} <消息>'
       syntaxRemove: '§c正确用法: remove <id>'
@@ -226,6 +228,7 @@ inv:
   validate: '§b§l确认'
   cancel: '§c§l取消'
   search: '§e§l搜索'
+  addObject: '§a添加一个目标'
   confirm:
     name: '§8你确认?'
     'yes': '§a确认'
@@ -247,6 +250,7 @@ inv:
     location: 前往指定位置
     playTime: '§e游戏时间'
     NPCText: '§e编辑NPC的文本对话'
+    NPCSelect: '§e选择或创建NPC'
     hideClues: 隐藏任务指示 (粒子效果和全息文字)
     editMobsKill: '§e编辑要击杀的怪物'
     mobsKillFromAFar: 需要远程击杀怪物
@@ -261,6 +265,7 @@ inv:
     toggleRegionExit: 退出时
     stageStartMsg: '§e编辑阶段开始的消息'
     selectBlockLocation: '§6选择方块位置'
+    selectBlockMaterial: '§e选择方块材料'
     leftClick: 必须左击
     editFishes: '§e编辑所需的鱼'
     editItem: '§e编辑要合成的物品'
@@ -440,6 +445,10 @@ inv:
   blocksList:
     name: 选择方块
     addBlock: '§a点击添加一个方块.'
+  blockAction:
+    name: 选择方块行动
+    location: '§e选择精确位置'
+    material: '§e选择方块材料'
   buckets:
     name: 桶的类型
   permission:
@@ -472,6 +481,7 @@ scoreboard:
     placeBlocks: '§e放置{0}'
     chat: '§e输入 §6{0}'
     interact: '§e点击在§6{0}的方块'
+    interactMaterial: '§e点击§6{0}§e方块'
     fish: '§e钓鱼 §6{0}'
     craft: '§e合成 §6{0}'
     bucket: '§e装满 §6{0}'

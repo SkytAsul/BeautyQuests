@@ -17,6 +17,10 @@ msg:
     updated: '§7Quête §e{0}§7 actualisée.'
     checkpoint: '§7Checkpoint de quête atteint !'
     failed: '§cVous avez échoué à la quête {0}...'
+  pools:
+    noTime: '§cVous devez attendre avant de faire une autre quête.'
+    allCompleted: '§7Vous avez terminé toutes les quêtes !'
+    noAvailable: '§7Il n''y a plus de quête disponible...'
   questItem:
     drop: '§cVous ne pouvez pas jeter un objet de quête !'
     craft: '§cVous ne pouvez pas utiliser un objet de quête pour crafter !'
@@ -220,6 +224,10 @@ msg:
     noSuchElement: '§cIl n''y a pas d’élément correspondant. Les éléments permis sont : §e{0}'
     comparisonType: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§lgreater or equals§r§a. Tapez §onull§r§a pour l''utiliser.'
     scoreboardObjectiveNotFound: '§cObjectif de scoreboard inconnu.'
+    pool:
+      hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
+      maxQuests: 'Écrivez le nombre maximum de quêtes lancées dans ce groupe.'
+      time: 'Écrivez le nombre de jours avant que les joueurs puissent prendre une nouvelle quête.'
   writeCommandDelay: '§aIndiquez le délai de commande désiré, en ticks.'
 advancement:
   finished: Terminée
@@ -342,6 +350,8 @@ inv:
     customMaterialLore: Item représentant cette quête dans le menu de Quêtes.
     failOnDeath: Échec lors de la mort
     failOnDeathLore: La quête sera-t-elle annulée à la mort du joueur ?
+    questPool: '§eGroupe de quêtes'
+    questPoolLore: Attacher cette quête à un groupe de quêtes
     keepDatas: Conserver les données des joueurs
     keepDatasLore: |-
       Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées.
@@ -349,6 +359,7 @@ inv:
     loreReset: '§e§lL''avancement de tous les joueurs sera réinitialisé'
     optionValue: '§8Valeur : §7{0}'
     defaultValue: '§8(valeur par défaut)'
+    requiredParameter: '§7Paramètre requis'
   itemsSelect:
     name: Modifier les items
     none: |-
@@ -468,6 +479,23 @@ inv:
   classesList.name: Liste des classes
   factionsRequired.name: Factions requises
   factionsList.name: Liste des factions
+  poolsManage:
+    name: Groupe de quêtes
+    itemName: '§aGroupe #{0}'
+    itemDescription: |-
+      §8NPC : §7{0}
+      §8Quantité max de quêtes : §7{1}
+      §8Peut refaire les quêtes : §7{2}
+      §8Temps entre les quêtes : §7{3}ms
+      §8Texte de l'hologramme : §7{4}
+    create: '§aCréer un groupe de quêtes'
+  poolCreation:
+    name: Création du groupe de quêtes
+    hologramText: '§eHologramme personnalisé du groupe'
+    maxQuests: '§aNombre maximum de quêtes'
+    time: '§bDéfinir le temps entre les quêtes'
+    redoAllowed: Est-il recommençable ?
+  poolsList.name: Groupe de quêtes
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -539,6 +567,7 @@ misc:
     milk: Seau de lait
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'
+  poolHologramText: '§eNouvelle quête disponible !'
   mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: '§eType d''entité : {0}'
   enabled: Activé
