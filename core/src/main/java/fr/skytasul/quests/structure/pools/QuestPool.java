@@ -17,6 +17,7 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -119,7 +120,8 @@ public class QuestPool implements Comparable<QuestPool> {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 		
-		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return Lang.POOL_NO_TIME.toString();
+		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
+		if (time > 0) return Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time));
 		
 		List<Quest> notDoneQuests = quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList());
 		if (notDoneQuests.isEmpty()) { // all quests completed

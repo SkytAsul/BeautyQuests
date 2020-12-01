@@ -19,7 +19,7 @@ msg:
     checkpoint: §7Quest checkpoint reached!
     failed: §cYou have failed the quest {0}...
   pools:
-    noTime: §cYou must wait before doing another quest.
+    noTime: §cYou must wait {0} before doing another quest.
     allCompleted: §7You have completed all the quests!
     noAvailable: §7There is no more quest available...
   questItem:
@@ -558,6 +558,10 @@ misc:
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     offText: §r§e {0}
+  time:
+    days: '{0} days'
+    hours: '{0} hours'
+    minutes: '{0} minutes'
   stageType:
     region: Find region
     npc: Find NPC

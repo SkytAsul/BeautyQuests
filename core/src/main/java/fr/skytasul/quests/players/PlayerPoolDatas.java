@@ -2,11 +2,8 @@ package fr.skytasul.quests.players;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.skytasul.quests.utils.Utils;
 
@@ -69,7 +66,7 @@ public class PlayerPoolDatas {
 	public static PlayerPoolDatas deserialize(PlayerAccount acc, Map<String, Object> map) {
 		PlayerPoolDatas datas = new PlayerPoolDatas(acc, (int) map.get("poolID"));
 		datas.lastGive = Utils.parseLong(map.get("lastGive"));
-		datas.completedQuests = Sets.newHashSet((List<Integer>) map.get("completedQuests"));
+		datas.completedQuests = (Set<Integer>) map.get("completedQuests");
 		return datas;
 	}
 	

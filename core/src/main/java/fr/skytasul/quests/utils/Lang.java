@@ -27,7 +27,7 @@ public enum Lang{
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
-	POOL_NO_TIME("msg.pools.noTime"),
+	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
 	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
 	POOL_NO_AVAILABLE("msg.pools.noAvailable"),
 	
@@ -534,6 +534,10 @@ public enum Lang{
 	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
 	OffText("misc.format.offText"), // 1: msg
 	
+	TimeDays("misc.time.days"),
+	TimeHours("misc.time.hours"),
+	TimeMinutes("misc.time.minutes"),
+	
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),
 	Items("misc.stageType.items"),
@@ -567,6 +571,7 @@ public enum Lang{
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
+	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
