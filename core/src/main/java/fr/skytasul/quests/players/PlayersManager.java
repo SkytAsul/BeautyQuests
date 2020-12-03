@@ -83,12 +83,24 @@ public abstract class PlayersManager {
 		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
-			Entry<PlayerAccount, Boolean> entry = manager.load(p);
-			PlayerAccount account = entry.getKey();
-			boolean created = entry.getValue();
-			if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
-			cachedAccounts.put(p, account);
-			Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created)));
+			int i = 2;
+			while (i > 0) {
+				i--;
+				try {
+					Entry<PlayerAccount, Boolean> entry = manager.load(p);
+					PlayerAccount account = entry.getKey();
+					boolean created = entry.getValue();
+					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
+					if (!p.isOnline()) return;
+					cachedAccounts.put(p, account);
+					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created)));
+					return;
+				}catch (Exception ex) {
+					ex.printStackTrace();
+					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ". Doing " + i + " more attempt.");
+				}
+			}
+			BeautyQuests.logger.severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
 		});
 	}
 	
@@ -108,11 +120,6 @@ public abstract class PlayersManager {
 			cachedAccounts.put(p, account);
 		}*/
 		return account;
-	}
-	
-	public static PlayersManagerYAML getMigrationYAML() { // TODO remove on 0.19
-		if (!(manager instanceof PlayersManagerYAML)) throw new IllegalStateException("Old player datas cannot be migrated if the current storage type is not YAML.");
-		return (PlayersManagerYAML) manager;
 	}
 	
 }

@@ -113,6 +113,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@SuppressWarnings ("deprecation")
+	@Deprecated
 	protected void migrateDatas(PlayerAccount acc, Map<T, Integer> oldObjects) {
 		Map<Integer, Integer> amounts = new HashMap<>();
 		for (int i = 0; i < objects.size(); i++) {

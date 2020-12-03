@@ -316,6 +316,8 @@ inv:
     scoreboardItemLore: Si désactivée, la quête ne sera pas affichée dans le scoreboard.
     hideItem: Cacher la quête du menu et de la dynmap
     hideItemLore: Si activé, la quête ne sera pas affichée sur la dynmap ni dans le menu de Quêtes.
+    hideNoRequirementsItem: Masquer lorsque les conditions ne sont pas remplies
+    hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
     bypassLimitLore: Si activé, la quête sera démarrée même si le joueur a atteint son nombre maximum de quêtes en cours.
     questName: '§a§lModifier le nom de la quête'
@@ -527,6 +529,10 @@ misc:
     prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
+  time:
+    days: '{0} jours'
+    hours: '{0} heures'
+    minutes: '{0} minutes'
   stageType:
     region: Trouver une region
     npc: Trouver un NPC

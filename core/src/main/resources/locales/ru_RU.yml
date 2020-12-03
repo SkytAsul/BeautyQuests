@@ -17,6 +17,9 @@ msg:
     updated: '§7Квест §e{0}§7 был обновлён.'
     checkpoint: '§7Квест достиг контрольной точки!'
     failed: '§cВы провалили задание {0}...'
+  pools:
+    allCompleted: '§7Вы завершили все квесты!'
+    noAvailable: '§7Больше квестов не осталось...'
   questItem:
     drop: '§cВы не можете выбросить предмет из задания!'
     craft: '§cВы не можете использовать предмет задания для крафта!'
@@ -174,6 +177,8 @@ msg:
       itemLore: '§aИзмените описание предмета: (Напишите "help" для помощи)'
       unknownItemType: '§cНеизвестный тип предмета.'
       invalidItemType: '§cНедопустимый тип предмета. (Предмет не может быть блоком.)'
+      unknownBlockType: '§cНеизвестный тип блока.'
+      invalidBlockType: '§cНедопустимый тип блока.'
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <сообщение>'
       syntaxRemove: '§cCorrect syntax: удалить <id>'
@@ -217,6 +222,8 @@ msg:
     noSuchElement: '§cНет такого элемента. Допустимые элементы: §e{0}'
     comparisonType: '§aВыберите тип сравнения, который вы хотите среди {0}. Сравнение по умолчанию: §e§lgreater или equals§r§a. Введите §onull§r§a чтобы использовать его.'
     scoreboardObjectiveNotFound: '§cНеизвестный объект таблицы.'
+    pool:
+      hologramText: 'Напишите пользовательский текст голограммы для этого бассейна (или напишите "null", если вы хотите использовать текст по умолчанию).'
   writeCommandDelay: '§aНапишите нужную задержку команд в галочках.'
 advancement:
   finished: Завершено
@@ -225,6 +232,7 @@ inv:
   validate: '§b§lПодтвердить'
   cancel: '§c§lОтменить'
   search: '§e§lПоиск'
+  addObject: '§aДобавить объект'
   confirm:
     name: Вы уверены?
     'yes': '§aПодтвердить'
@@ -261,6 +269,7 @@ inv:
     toggleRegionExit: При выходе
     stageStartMsg: '§eОтредактировать стартовое сообщение'
     selectBlockLocation: '§eВыберите местоположение блока'
+    selectBlockMaterial: '§eВыбрать материал блока'
     leftClick: Щелчок должен быть левой кнопкой
     editFishes: '§eРедактируйте рыбы, чтобы поймать'
     editItem: '§eРедактировать предмет для создания'
@@ -337,6 +346,8 @@ inv:
     customMaterialLore: Предмет этого квеста в меню квестов.
     failOnDeath: Неудача при смерти
     failOnDeathLore: Будет ли квест отменен после смерти игрока?
+    questPool: '§eБассейн квестов'
+    questPoolLore: Прикрепить этот квест к бассейну квестов
     keepDatas: Сохранять данные игроков
     keepDatasLore: |-
       Заставить плагин сохранять данные игроков, даже если этапы были отредактированы.
@@ -344,8 +355,21 @@ inv:
     loreReset: '§e§lДостижения всех игроков будут сброшены'
     optionValue: '§fЗначение: §7{0}'
     defaultValue: '§f(значение по умолчанию)'
+    requiredParameter: '§7Необходимый параметр'
+  itemsSelect:
+    name: Редактировать предметы
+    none: |-
+      §aПереместите предмет здесь или
+      кликните, чтобы открыть редактор предметов
+  itemSelect:
+    name: Выбрать предмет
   npcCreate:
+    name: Создать NPC
+    setName: '§eРедактировать имя NPC'
+    setSkin: '§eРедактировать скин NPC'
+    setType: '§eРедактировать тип NPC'
     move:
+      itemName: '§eПередвинуть'
       itemLore: '§aИзменить местоположение NPC.'
     moveItem: '§a§lПроверить место'
   npcSelect:
@@ -447,7 +471,29 @@ inv:
   classesList.name: Список классов
   factionsRequired.name: Требуются фракции
   factionsList.name: Список фракций
+  poolsManage:
+    name: Бассейны квестов
+    itemName: '§aБассейн #{0}'
+    itemDescription: |-
+      §8NPC §7{0}
+      §8Максимально квестов: §7{1}
+      §8Можно выполнять выполненные квесты: §7{2}
+      §8Время между квестами: §7{3}мс
+      §8Текст голограммы: §7{4}
+    create: '§aСоздать бассейн квестов'
+  poolCreation:
+    name: Создание бассейна квестов
+    hologramText: '§eПользовательский бассейн голограмм'
+    maxQuests: '§aМаксимум квестов'
+    time: '§bУстановить время между квестами'
+    redoAllowed: Повтор разрешён
+  poolsList.name: Бассейны квестов
 scoreboard:
+  name: '§6§lКвесты'
+  noLaunched: '§cНет квестов в процессе выполнения.'
+  noLaunchedName: '§c§lЗагрузка'
+  noLaunchedDescription: '§c§oЗагрузка'
+  textBetwteenBranch: '§e или'
   stage:
     region: '§eНайти регион §6{0}'
     npc: '§eПоговорить с NPC §6{0}'
@@ -457,6 +503,7 @@ scoreboard:
     placeBlocks: '§eРазместить {0}'
     chat: '§eНаписать §6{0}'
     interact: '§eНажмите на блок в §6{0}'
+    interactMaterial: '§eКликните на §6{0}§e блок'
     fish: '§eНаловить §6{0}'
     craft: '§eСоздать §6{0}'
     bucket: '§eЗаполнить §6{0}'
@@ -464,11 +511,14 @@ scoreboard:
     playTime: '§eИгровое время в тиках §6{0}'
 indication:
   startQuest: '§7Вы хотите начать квест {0}?'
+  closeInventory: '§7Вы уверены, что хотите закрыть этот интерфейс?'
   cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'
   removeQuest: '§7Вы уверены, что хотите удалить квест {0}?'
 misc:
   format:
     prefix: '§6<§e§lКвесты§r§6> §r'
+    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
   stageType:
     region: Найти регион
     npc: Найти NPC
@@ -483,6 +533,13 @@ misc:
     Bucket: Наполнить ведро
     location: Найти место
     playTime: Время игры
+  comparison:
+    equals: равно {0}
+    different: отличается от {0}
+    less: строго меньше {0}
+    lessOrEquals: меньше чем {0}
+    greater: строго больше {0}
+    greaterOrEquals: больше чем {0}
   requirement:
     class: '§bТребуются классы'
     faction: '§bТребуются фракции'
@@ -502,6 +559,8 @@ misc:
     milk: Ведро молока
   questItemLore: '§e§oКвестовый предмет'
   hologramText: '§8§lКвестовый NPC'
+  poolHologramText: '§eДоступен новый квест!'
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eТип объекта: {0}'
   enabled: Включено
   disabled: Выключено
@@ -516,3 +575,4 @@ misc:
   expPoints: опыта
   'yes': 'Да'
   'no': 'Нет'
+  and: и

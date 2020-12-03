@@ -15,6 +15,15 @@ msg:
   quests:
     nopStep: '§cDiese Quest hat keinen Schritt.'
     updated: '§7Quest §e{0}§7 aktualisiert.'
+    checkpoint: '§7Quest-Kontrollpunkt erreicht!'
+    failed: '§cDu hast die Quest {0} fehlgeschlagen...'
+  pools:
+    noTime: '§cDu musst warten, bevor du eine andere Quest absolvieren kannst.'
+    allCompleted: '§7Du hast alle Quests abgeschlossen!'
+    noAvailable: '§7Es ist keine Quest mehr verfügbar...'
+  questItem:
+    drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
+    craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
   stageMobs:
     noMobs: '§cDer Schritt beinhaltet nicht das Töten von Mobs.'
     listMobs: '§aDu musst {0} töten.'
@@ -60,11 +69,15 @@ msg:
   errorOccurred: '§cEin Fehler ist aufgetreten; kontaktiere einen Administrator! §4§lFehlercode: {0}'
   commandsDisabled: '§cDu kannst zurzeit keine Befehle ausführen!'
   indexOutOfBounds: '§cDie Zahl {0} ist außerhalb der Grenze! Sie muss zwischen {1} und {2} liegen.'
+  invalidBlockData: '§cDie Blockdaten {0} sind ungültig oder inkompatibel mit dem Block {1}.'
   bringBackObjects: Bring mir {0} zurück.
   inventoryFull: '§cDein Inventar ist voll, das Item wurde auf den Boden gelegt.'
   playerNeverConnected: '§cKann keine Informationen über den Spieler {0} finden.'
   playerNotOnline: '§cDer Spieler {0} ist offline.'
   command:
+    checkpoint:
+      noCheckpoint: '§cKein Kontrollpunkt für die Quest {0} gefunden.'
+      questNotStarted: '§cDu machst diese Quest nicht.'
     setStage:
       branchDoesntExist: '§cDer Zweig mit der ID {0} existiert nicht.'
       doesntExist: '§cDer Schritt mit der ID {0} existiert nicht.'
@@ -124,9 +137,13 @@ msg:
       list: '§6/{0} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
   typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
   editor:
+    blockAmount: '§aSchreibe die Anzahl der Blöcke:'
+    blockName: '§aSchreibe den Namen des Blocks:'
+    blockData: '§aSchreibe die Blockdaten (verfügbare Blockdaten: {0}):'
     typeBucketAmount: '§aSchreibe die Anzahl an zu füllenden Eimern:'
     goToLocation: '§aGehe zur gewünschten Position für den Schritt.'
     typeLocationRadius: '§aSchreibe die benötigte Distanz von der Position:'
+    typeGameTicks: '§aSchreibe die benötigten Spiel-Ticks:'
     already: '§cDu befindest dich bereits im Editor.'
     enter:
       title: '§6~ Editor‐Modus ~'
@@ -144,7 +161,7 @@ msg:
       choosePermissionMessage: '§aDu kannst eine Verweigerungs‐Nachricht für Spieler ohne ausreichende Berechtigungen festlegen. (Um diesen Schritt zu überspringen, schreibe „null”.)'
       choosePlaceholderRequired:
         identifier: '§aSchreibe den Namen des benötigten Platzhalters ohne die Prozentzeichen:'
-        value: '§aSchreibe den benötigten Wert für den Platzhalter §6%{0}%§a:'
+        value: '§aSchreibe den erforderlichen Wert für den Platzhalter §e%§e{0}§e%§a:'
       chooseSkillRequired: '§aSchreibe den Namen der benötigten Fähigkeit:'
       chooseMoneyRequired: '§aSchreibe die Menge an benötigtem Geld:'
       reward:
@@ -153,13 +170,17 @@ msg:
         money: '§aSchreibe die zu bekommende Menge an Geld:'
       chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
       chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
+      chooseRegionRequired: '§aSchreibe den Namen der benötigten Region (du musst in der gleichen Welt sein).'
     selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
     itemCreator:
       itemType: '§aSchreibe den Namen des gewünschten Items:'
+      itemAmount: '§aSchreibe die Menge des/der Item(s):'
       itemName: '§aSchreibe den Item‐Namen:'
       itemLore: '§aÄndere die Item‐Beschreibung: (Schreibe „help“ für Hilfe.)'
       unknownItemType: '§cUnbekanntes Item.'
       invalidItemType: '§cUngültiges Item. (Das Item darf kein Block sein.)'
+      unknownBlockType: '§cUnbekannter Blocktyp.'
+      invalidBlockType: '§cUngültiger Blocktyp.'
     dialog:
       syntax: '§cKorrekte Syntax: {0}{1} <Nachricht>'
       syntaxRemove: '§cKorrekte Syntax: remove <ID>'
@@ -203,6 +224,10 @@ msg:
     noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{0}'
     comparisonType: '§aWähle eine folgender Vergleichsarten aus: {0}. Der Standard ist: §e§lgreater or equals§r§a. Benutze §onull§r§a um dies zu nutzen.'
     scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
+    pool:
+      hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diesen Pool (oder "null", wenn du den Standardtext möchtest).'
+      maxQuests: 'Lege die maximale Anzahl an Quests fest, die aus diesem Pool gestartet werden können.'
+      time: 'Lege die Anzahl der Tage fest, bevor Spieler eine neue Quest annehmen können.'
   writeCommandDelay: '§aGebe die gewünschte Kommando Verzögerung in ticks an.'
 advancement:
   finished: Abgeschlossen
@@ -211,6 +236,7 @@ inv:
   validate: '§b§lBestätigen'
   cancel: '§c§lAbbrechen'
   search: '§e§lSuche'
+  addObject: '§aFüge ein Objekt hinzu'
   confirm:
     name: Bist du sicher?
     'yes': '§aBestätigen'
@@ -223,25 +249,31 @@ inv:
     findRegion: '§aRegion finden'
     killMobs: '§aMobs töten'
     mineBlocks: '§aBlöcke zerstören'
+    placeBlocks: '§aPlatziere Blöcke'
     talkChat: '§aIm Chat schreiben'
     interact: '§aMit Block interagieren'
     fish: '§aFische fangen'
     craft: '§aItem herstellen'
     bucket: '§aEimer befüllen'
     location: '§aZu Position gehen'
+    playTime: '§eSpielzeit'
     NPCText: '§eDialog bearbeiten'
+    NPCSelect: '§eNPC auswählen oder erstellen'
     hideClues: Partikel und Hologramme verstecken
     editMobsKill: '§eDie zu tötenden Mobs bearbeiten'
     mobsKillFromAFar: Muss mit Projektil getötet werden
     editBlocksMine: '§eDie zu zerstörenden Blöcke bearbeiten'
     preventBlockPlace: Spieler daran hindern, ihre eigenen Blöcke zu zerstören
+    editBlocksPlace: '§eDie zu plazierenden Blöcke bearbeiten'
     editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
     cancelMessage: Senden abbrechen
     ignoreCase: Fall der Nachricht ignorieren
     selectItems: '§eBenötigte Items auswählen'
     selectRegion: '§7Region auswählen'
+    toggleRegionExit: Beim Verlassen
     stageStartMsg: '§eStartnachricht bearbeiten'
     selectBlockLocation: '§eBlockposition auswählen'
+    selectBlockMaterial: '§eWähle Blockmaterial'
     leftClick: Muss Linksklick sein
     editFishes: '§eDie zu fangenden Fische bearbeiten'
     editItem: '§eHerzustellendes Item bearbeiten'
@@ -250,6 +282,7 @@ inv:
     editLocation: '§ePosition bearbeiten'
     editRadius: '§eEntfernung von Position bearbeiten'
     currentRadius: '§eAktuelle Entfernung: §6{0}'
+    changeTicksRequired: '§eÄndere die erforderlichen gespielten Ticks'
   stages:
     name: Schritte erstellen
     nextPage: '§eNächste Seite'
@@ -260,32 +293,73 @@ inv:
     branchesPage: '§dZweig‐Schritte'
     previousBranch: '§eZurück zum vorherigen Zweig'
     newBranch: '§eZum neuen Zweig gehen'
+    validationRequirements: '§eValidierungsanforderungen'
+    validationRequirementsLore: Alle Anforderungen müssen dem Spieler entsprechen, der versucht, den Schritt zu beenden. Ist dies nicht der Fall, kann der Schritt nicht beendet werden.
   details:
     hologramLaunch: '§e„Starten“‐Hologramm‐Item bearbeiten'
+    hologramLaunchLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest starten kann.
     hologramLaunchNo: '§e„Starten nicht verfügbar“‐Hologramm‐Item bearbeiten'
+    hologramLaunchNoLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest NICHT starten kann.
     customConfirmMessage: '§eQuestbestätigungsnachricht bearbeiten'
+    customConfirmMessageLore: Meldung, die in der Bestätigungs-GUI angezeigt wird, wenn ein Spieler die Quest startet.
     customDescription: '§eBearbeite Quest Beschreibung'
+    customDescriptionLore: Beschreibung unter dem Namen der Quest in GUIs steht.
     name: Letzte Questdetails
     multipleTime:
+      itemName: Wiederholbar umschalten
       itemLore: "Kann die Quest mehrmals\nabgeschlossen werden?"
     cancellable: Vom Spieler abbrechbar
+    cancellableLore: Ermöglicht dem Spieler, die Quest durch das Quest-Menü abzubrechen.
+    startableFromGUI: Über GUI startbar
+    startableFromGUILore: Ermöglicht dem Spieler, die Quest aus dem Quest-Menü zu starten.
     scoreboardItem: Scoreboard aktivieren
+    scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
     hideItem: Menü und Dynmap verstecken
+    hideItemLore: Wenn aktiviert, wird die Quest weder auf der Dynmap, noch im Quest-Menü angezeigt.
     bypassLimit: Questlimit nicht zählen
+    bypassLimitLore: Wenn aktiviert, ist die Quest startbar, auch wenn der Spieler seine maximale Anzahl an begonnenen Quests erreicht hat.
     questName: '§a§lQuestname bearbeiten'
+    questNameLore: Ein Name muss gesetzt werden, um die Questerstellung abzuschließen.
     setItemsRewards: '§eBelohnungs‐Items bearbeiten'
     setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
+    setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
     setPermReward: '§eBerechtigungen bearbeiten'
     setMoneyReward: '§eGeldbelohnung bearbeiten'
     selectStarterNPC: '§e§lNPC‐Starter auswählen'
+    selectStarterNPCLore: Ein Klick auf den ausgewählten NPC startet die Quest
+    createQuestName: '§lQuest erstellen'
+    createQuestLore: Du musst einen Questnamen definieren.
+    editQuestName: '§lQuest bearbeiten'
     endMessage: '§eAbschlussnachricht bearbeiten'
+    endMessageLore: Nachricht, die am Ende der Quest an den Spieler gesendet wird.
     startDialog: '§eStart‐Dialog bearbeiten'
+    startDialogLore: Dialog, der vor dem Start der Quests angezeigt wird, wenn Spieler auf den Starter NPC klicken.
     editRequirements: '§eAnforderungen bearbeiten'
+    editRequirementsLore: Alle Anforderungen müssen auf den Spieler zutreffen, bevor er mit der Quest beginnen kann.
     startRewards: '§6Startbelohnungen'
+    startRewardsLore: Aktionen die durchgeführt werden wenn die Quest startet.
     hologramText: '§eHologrammtext'
+    hologramTextLore: Text, der auf dem Hologramm über dem Kopf des Starter NPCs angezeigt wird.
+    timer: '§bNeustart Timer'
+    timerLore: Zeit, bis der Spieler die Quest wieder starten kann.
     requirements: '{0} Anforderung(en)'
     rewards: '{0} Belohnung(en)'
+    actions: '{0} Aktion(en)'
+    rewardsLore: Aktionen die durchgeführt werden wenn die Quest endet.
     customMaterial: '§eBearbeite das Material des Questgegenstandes'
+    customMaterialLore: Angezeigtes Item dieser Quest im Questmenü.
+    failOnDeath: Im Todesfall fehlschlagen
+    failOnDeathLore: Wird die Quest abgebrochen, wenn der Spieler stirbt?
+    questPool: '§eQuestgruppe'
+    questPoolLore: Füge diese Quest einer Questgruppe hinzu
+    keepDatas: Spielerdaten beibehalten
+    keepDatasLore: |-
+      Erzwinge das Plugin die Daten der Spieler zu speichern, obwohl Stufen bearbeitet wurden.
+      §c§lWARNUNG §c- Aktivieren dieser Option kann die Daten deiner Spieler zerstören.
+    loreReset: '§e§lDer Fortschritt aller Spieler wird zurückgesetzt'
+    optionValue: '§8Wert: §7{0}'
+    defaultValue: '§8(Standardwert)'
+    requiredParameter: '§7Benötigter Parameter'
   itemsSelect:
     name: Items bearbeiten
     none: |-
@@ -336,6 +410,8 @@ inv:
       Y: {1}
       Z: {2}
       Welt: {3}
+  checkpointActions:
+    name: Kontrollpunkt-Aktionen
   listAllQuests:
     name: Quests
   listPlayerQuests:
@@ -345,6 +421,8 @@ inv:
     finished: Abgeschlossene Quests
     inProgress: Laufende Quests
     loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
+    loreStart: '§a§oKlicke, um die Quest zu starten.'
+    loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
     timeToWait: '§3§o{0} Minute(n), bevor du die Quest erneut starten kannst.'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
   itemCreator:
@@ -376,9 +454,14 @@ inv:
   block:
     name: Block auswählen
     material: '§eMaterial: {0}'
+    blockData: '§dBlockdaten (fortgeschritten)'
   blocksList:
     name: Blöcke auswählen
     addBlock: '§aKlicke, um einen Block hinzuzufügen.'
+  blockAction:
+    name: Blockaktion auswählen
+    location: '§eWähle einen genauen Ort aus'
+    material: '§eWähle ein Blockmaterial'
   buckets:
     name: Eimertyp
   permission:
@@ -392,6 +475,27 @@ inv:
     name: Berechtigungsliste
     removed: '§eGenommen: §6{0}'
     world: '§eWelt: §6{0}'
+  classesRequired.name: Klassen erforderlich
+  classesList.name: Klassenliste
+  factionsRequired.name: Fraktionen benötigt
+  factionsList.name: Fraktionsliste
+  poolsManage:
+    name: Questgruppen
+    itemName: '§aGruppe #{0}'
+    itemDescription: |-
+      §8NPC: §7{0}
+      §8Max. Quests: §7{1}
+      §8Kann abgeschlossene Quests wiederholen: §7{2}
+      §8Zeit zwischen Quests: §7{3}ms
+      §8Hologramm Text: §7{4}
+    create: '§aErstelle eine Questgruppe'
+  poolCreation:
+    name: Questgruppen Erstellung
+    hologramText: '§eBenutzerdefiniertes Hologramm der Gruppe'
+    maxQuests: '§aMax. Quests'
+    time: '§bLege die Zeit zwischen Quests fest'
+    redoAllowed: Ist Wiederholen erlaubt
+  poolsList.name: Questgruppen
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'
@@ -404,12 +508,15 @@ scoreboard:
     items: '§eBringe Items zu §6{0}§e:'
     mobs: '§eTöte §6{0}'
     mine: '§eBaue {0} ab'
+    placeBlocks: '§ePlatziere {0}'
     chat: '§eSchreibe §6{0}'
     interact: '§eKlicke auf den Block bei §6{0}'
+    interactMaterial: '§eKlicke auf einen §6{0}§e Block'
     fish: '§eAngle §6{0}'
     craft: '§eStelle §6{0} §eher'
     bucket: '§eBefülle §6{0}'
     location: '§eGehe zu: §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
+    playTime: '§eSpiele §6{0} Spielsticks'
 indication:
   startQuest: '§7Möchtest du die Quest {0} starten?'
   closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
@@ -426,15 +533,20 @@ misc:
     items: Items zurückbringen
     mobs: Mobs töten
     mine: Blöcke zerstören
+    placeBlocks: Blöcke platzieren
     chat: Im Chat schreiben
     interact: Mit Block interagieren
     Fish: Fische fangen
     Craft: Item herstellen
     Bucket: Eimer befüllen
     location: Position finden
+    playTime: Spielzeit
   comparison:
+    equals: gleich wie {0}
     different: anders als {0}
+    less: strikt weniger als {0}
     lessOrEquals: weniger als {0}
+    greater: strikt größer als {0}
     greaterOrEquals: größer als {0}
   requirement:
     class: '§bBenötigte Klasse(n)'
@@ -444,6 +556,7 @@ misc:
     experienceLevel: '§bErfahrungslevel benötigt'
     permissions: '§3Benötigte Berechtigung(en)'
     scoreboard: '§dPunktestand erforderlich'
+    region: '§dRegion erforderlich'
     placeholder: '§bPlatzhalter‐Wert benötigt'
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
@@ -454,6 +567,7 @@ misc:
     milk: Milcheimer
   questItemLore: '§e§oQuest‐Item'
   hologramText: '§8§lQuest‐NPC'
+  poolHologramText: '§eNeue Quest verfügbar!'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eObjekttyp: {0}'
   enabled: Aktiviert

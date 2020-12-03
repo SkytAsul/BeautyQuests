@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -77,7 +78,9 @@ public class PlayersManagerDB extends PlayersManager {
 			result = statement.executeQuery();
 			while (result.next()) {
 				int poolID = result.getInt("pool_id");
-				acc.poolDatas.put(poolID, new PlayerPoolDatasDB(acc, poolID, result.getLong("last_give"), Arrays.stream(result.getString("completed_quests").split(";")).map(Integer::parseInt).collect(Collectors.toSet())));
+				String completedQuests = result.getString("completed_quests");
+				if (completedQuests.isEmpty()) completedQuests = null;
+				acc.poolDatas.put(poolID, new PlayerPoolDatasDB(acc, poolID, result.getLong("last_give"), completedQuests == null ? new HashSet<>() : Arrays.stream(completedQuests.split(";")).map(Integer::parseInt).collect(Collectors.toSet())));
 			}
 			result.close();
 		}catch (SQLException e) {
@@ -381,7 +384,7 @@ public class PlayersManagerDB extends PlayersManager {
 		
 		@Override
 		public void updatedCompletedQuests() {
-			updateData(updatePoolCompletedQuests, getCompletedQuests().stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";")));
+			updateData(updatePoolCompletedQuests, getCompletedQuests().isEmpty() ? null : getCompletedQuests().stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";")));
 		}
 		
 		private void updateData(BQStatement dataStatement, Object data) {

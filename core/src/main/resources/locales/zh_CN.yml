@@ -17,6 +17,10 @@ msg:
     updated: '§7已更新任务 {0} !'
     checkpoint: '§7已到达任务记录点！'
     failed: '§6任务{0}失败……'
+  pools:
+    noTime: '§c你必须先等待一会儿才能执行其它任务。'
+    allCompleted: '§7你已完成所有任务！'
+    noAvailable: '§7没有更多可用的任务……'
   questItem:
     drop: '§c你不能丢弃任务物品！'
     craft: '§c你不能用任务物品来合成物品！'
@@ -220,6 +224,10 @@ msg:
     noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
     comparisonType: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§lger或equals§r§a。输入 §onull §r§a 来使用。'
     scoreboardObjectiveNotFound: '§c未知的计分板目标。'
+    pool:
+      hologramText: '请输入该池的自定义全息显示文本（输入“null”使用默认值）。'
+      maxQuests: '输入在该池中可运行的最大任务数。'
+      time: '请输入玩家可接取新任务的等候天数。'
   writeCommandDelay: '§a请输入指令延迟，单位为刻。'
 advancement:
   finished: Finished
@@ -342,6 +350,8 @@ inv:
     customMaterialLore: 在任务菜单中代表该任务的物品图标。
     failOnDeath: 玩家死亡时任务失败
     failOnDeathLore: 当玩家死亡时是否取消任务？
+    questPool: '§e任务池'
+    questPoolLore: 将该任务加到任务池中
     keepDatas: 保留玩家数据
     keepDatasLore: |-
       强制插件保存玩家数据，即使是已编辑阶段也会保存。
@@ -349,6 +359,7 @@ inv:
     loreReset: '§e§l所有玩家的进度将被重置'
     optionValue: '§8数值：§7{0}'
     defaultValue: '§8(默认值)'
+    requiredParameter: '§7所需参数'
   itemsSelect:
     name: 编辑物品
     none: |-
@@ -466,6 +477,23 @@ inv:
   classesList.name: 职业列表
   factionsRequired.name: 所需派系
   factionsList.name: 派系列表
+  poolsManage:
+    name: 任务池
+    itemName: '§a池#{0}'
+    itemDescription: |-
+      §8NPC：§7{0}
+      §8最大任务数：§7{1}
+      §8可以重复完成任务数：§7{2}
+      §8任务间隔： §7{3}ms
+      §8全息文本：§7{4}
+    create: '§a创建一个任务池'
+  poolCreation:
+    name: 创建任务池
+    hologramText: '§e自定义任务池全息显示'
+    maxQuests: '§a最大任务数'
+    time: '§b设置任务之间的间隔'
+    redoAllowed: 是否可重复完成
+  poolsList.name: 任务池
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -537,6 +565,7 @@ misc:
     milk: 牛奶桶
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
+  poolHologramText: '§e有可接受的新任务！'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§e生物类型: {0}'
   enabled: 已启用

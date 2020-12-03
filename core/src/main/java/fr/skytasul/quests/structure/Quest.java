@@ -1,7 +1,6 @@
 package fr.skytasul.quests.structure;
 
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -35,6 +34,7 @@ import fr.skytasul.quests.options.OptionDescription;
 import fr.skytasul.quests.options.OptionEndMessage;
 import fr.skytasul.quests.options.OptionEndRewards;
 import fr.skytasul.quests.options.OptionHide;
+import fr.skytasul.quests.options.OptionHideNoRequirements;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.options.OptionQuestMaterial;
 import fr.skytasul.quests.options.OptionQuestPool;
@@ -49,7 +49,6 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -173,6 +172,10 @@ public class Quest implements Comparable<Quest> {
 	
 	public boolean isHidden() {
 		return getOptionValueOrDef(OptionHide.class);
+	}
+	
+	public boolean isHiddenWhenRequirementsNotMet() {
+		return getOptionValueOrDef(OptionHideNoRequirements.class);
 	}
 	
 	public boolean canBypassLimit() {
@@ -417,25 +420,6 @@ public class Quest implements Comparable<Quest> {
 					break;
 				}
 			}
-		}
-		
-		// migration from old player datas - TODO delete on 0.19
-		if (map.contains("finished")) {
-			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-			for (String id : (List<String>) map.get("finished")) {
-				managerYAML.getByIndex(id).getQuestDatas(qu).setFinished(true);
-			}
-		}
-		if (map.contains("inTimer")) {
-			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-			map.getConfigurationSection("inTimer").getValues(false).forEach((account, time) -> {
-				try {
-					PlayerAccount acc = managerYAML.getByIndex(account);
-					acc.getQuestDatas(qu).setTimer(Utils.getDateFormat().parse((String) time).getTime());
-				}catch (ParseException e) {
-					BeautyQuests.loadingFailure = true;
-				}
-			});
 		}
 
 		return qu;

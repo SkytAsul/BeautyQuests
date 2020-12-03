@@ -342,6 +342,8 @@ inv:
     scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap
     hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
+    hideNoRequirementsItem: Hide when requirements not met
+    hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
     bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: §a§lEdit quest name

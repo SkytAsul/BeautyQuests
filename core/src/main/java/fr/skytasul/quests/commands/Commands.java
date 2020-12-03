@@ -482,17 +482,6 @@ public class Commands {
 		}
 	}
 	
-	@Cmd (permission = "reload")
-	public void removeDuplicate(CommandContext cmd){
-		if (cmd.isPlayer()) {
-			cmd.player.sendMessage("§cThis command can't be performed by a player, as it will kick everybody on the server.");
-			return;
-		}
-		if ("confirm".equals(cmd.get(0))) {
-			PlayersManager.getMigrationYAML().debugDuplicate();
-		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
-	}
-	
 	@Cmd (player = true)
 	public void test(CommandContext cmd) {
 		new BranchesGUI().create(cmd.player);

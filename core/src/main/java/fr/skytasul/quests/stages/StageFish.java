@@ -23,7 +23,6 @@ import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -83,19 +82,6 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 
 		StageFish stage = new StageFish(branch, objects);
 		stage.deserialize(map);
-
-		if (map.containsKey("remaining")) {
-			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, List<ItemStack>>) map.get("remaining")).forEach((acc, items) -> {
-				Map<ItemStack, Integer> itemsMap = new HashMap<>();
-				for (ItemStack item : items) {
-					ItemStack itemOne = item.clone();
-					itemOne.setAmount(1);
-					itemsMap.put(itemOne, item.getAmount());
-				}
-				stage.migrateDatas(migration.getByIndex(acc), itemsMap);
-			});
-		}
 
 		return stage;
 	}

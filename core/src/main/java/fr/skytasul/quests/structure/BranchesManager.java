@@ -10,12 +10,9 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 
 public class BranchesManager{
@@ -150,34 +147,6 @@ public class BranchesManager{
 				return null;
 			}
 		}
-		
-		if (!config.contains("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
-		new BukkitRunnable() {
-			public void run(){
-				PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-				config.getConfigurationSection("playersAdvancement").getValues(false).forEach((accId, advancement) -> {
-					try{
-						PlayerAccount acc = managerYAML.getByIndex(accId);
-						if (acc == null) return;
-						
-						String adv = advancement.toString();
-						int separator = adv.indexOf('|');
-						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
-						if (branch == null){
-							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID() + ": branch is null");
-							BeautyQuests.loadingFailure = true;
-							return;
-						}
-						acc.getQuestDatas(qu).setBranch(branch.getID());
-						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)));
-					}catch (Exception ex){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID());
-						ex.printStackTrace();
-						BeautyQuests.loadingFailure = true;
-					}
-				});
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
 		
 		return bm;
 	}

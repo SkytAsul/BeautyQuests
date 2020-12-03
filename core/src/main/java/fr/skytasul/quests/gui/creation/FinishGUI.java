@@ -33,6 +33,7 @@ import fr.skytasul.quests.options.OptionEndMessage;
 import fr.skytasul.quests.options.OptionEndRewards;
 import fr.skytasul.quests.options.OptionFailOnDeath;
 import fr.skytasul.quests.options.OptionHide;
+import fr.skytasul.quests.options.OptionHideNoRequirements;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -318,6 +319,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 19, OptionCancellable.class, OptionCancellable::new, true));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 20, OptionStartable.class, OptionStartable::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 21, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 22, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 24, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class, OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class, OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));

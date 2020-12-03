@@ -18,7 +18,6 @@ import fr.skytasul.quests.gui.creation.BucketTypeGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -82,14 +81,7 @@ public class StageBucket extends AbstractStage {
 	}
 
 	public static StageBucket deserialize(Map<String, Object> map, QuestBranch branch) {
-		StageBucket stage = new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
-
-		if (map.containsKey("players")) {
-			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, Object>) map.get("players")).forEach((acc, amount) -> stage.setData(migration.getByIndex(acc), "amount", (int) amount));
-		}
-
-		return stage;
+		return new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
 	}
 
 	public static enum BucketType {

@@ -324,6 +324,8 @@ public enum Lang{
 	scoreboardLore("inv.details.scoreboardItemLore"),
 	hide("inv.details.hideItem"),
 	hideLore("inv.details.hideItemLore"),
+	hideNoRequirements("inv.details.hideNoRequirementsItem"),
+	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
 	bypassLore("inv.details.bypassLimitLore"),
 	questName("inv.details.questName"),
