@@ -129,7 +129,7 @@ public enum XPotion {
 		this.key = key;
 		this.baseDuration = baseDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(baseDuration) + ")";
 		this.extendedDuration = extendedDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(extendedDuration) + ")";
-		this.strongDuration = strongDuration == 0 ? null : " (" + Utils.ticksToElapsedTime(strongDuration) + ")";
+		this.strongDuration = strongDuration == 0 ? "" : " (" + Utils.ticksToElapsedTime(strongDuration) + ")";
 		this.aliases = aliases;
 		String name = key == null ? name() : key;
 		this.normal = "potion of " + name;

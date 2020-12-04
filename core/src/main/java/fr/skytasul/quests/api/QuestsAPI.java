@@ -21,6 +21,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
@@ -161,13 +162,13 @@ public class QuestsAPI {
 		return finished;
 	}
 
-	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean redoable) {
+	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean clickableAndRedoable) {
 		List<Quest> unstarted = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
 			if (hide && qu.isHidden()) continue;
 			if (qu.hasStarted(acc)) continue;
 			if (qu.hasFinished(acc)) {
-				if (!redoable || !qu.isRepeatable() || !qu.testTimer(acc, false)) continue;
+				if (!clickableAndRedoable || !qu.isRepeatable() || !qu.getOptionValueOrDef(OptionStartable.class) || !qu.testTimer(acc, false)) continue;
 			}
 			unstarted.add(qu);
 		}
