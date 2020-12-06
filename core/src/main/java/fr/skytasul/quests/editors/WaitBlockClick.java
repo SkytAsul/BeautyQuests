@@ -31,7 +31,7 @@ public class WaitBlockClick extends InventoryClear{
 		}
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (e.getClickedBlock() == null) return;
-		if (!e.getItem().equals(item)) return;
+		if (!item.equals(e.getItem())) return;
 		e.setCancelled(true);
 		leave(e.getPlayer());
 		run.accept(e.getClickedBlock().getLocation());
