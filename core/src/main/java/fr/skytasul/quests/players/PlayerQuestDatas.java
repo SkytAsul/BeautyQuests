@@ -3,6 +3,7 @@ package fr.skytasul.quests.players;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Utils;
@@ -34,6 +35,7 @@ public class PlayerQuestDatas {
 		this.stageDatas[2] = stage2datas;
 		this.stageDatas[3] = stage3datas;
 		this.stageDatas[4] = stage4datas;
+		if (branch != -1 && stage == -1) BeautyQuests.logger.warning("Incorrect quest " + questID + " datas for " + acc.debugName());
 	}
 	
 	public Quest getQuest() {

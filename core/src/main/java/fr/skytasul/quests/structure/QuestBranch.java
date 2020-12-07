@@ -103,6 +103,7 @@ public class QuestBranch {
 			}
 			return stb.toString();
 		}
+		if (datas.getStage() < 0) return "§cerror: no stage set for branch " + getID();
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
 		return Utils.format(QuestsConfiguration.getStageDescriptionFormat(), datas.getStage() + 1, regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
 	}
