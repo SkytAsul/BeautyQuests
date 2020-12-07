@@ -519,6 +519,10 @@ misc:
     prefix: '§6<§e§lКвесты§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+  time:
+    days: '{0} дней'
+    hours: '{0} часов'
+    minutes: '{0} минут'
   stageType:
     region: Найти регион
     npc: Найти NPC

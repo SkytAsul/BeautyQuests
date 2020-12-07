@@ -18,7 +18,7 @@ msg:
     checkpoint: '§7Checkpoint de quête atteint !'
     failed: '§cVous avez échoué à la quête {0}...'
   pools:
-    noTime: '§cVous devez attendre avant de faire une autre quête.'
+    noTime: '§cVous devez attendre {0} avant de faire une autre quête.'
     allCompleted: '§7Vous avez terminé toutes les quêtes !'
     noAvailable: '§7Il n''y a plus de quête disponible...'
   questItem:

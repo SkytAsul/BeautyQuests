@@ -316,6 +316,8 @@ inv:
     scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
     hideItem: Menü und Dynmap verstecken
     hideItemLore: Wenn aktiviert, wird die Quest weder auf der Dynmap, noch im Quest-Menü angezeigt.
+    hideNoRequirementsItem: Verstecken, wenn die Anforderungen nicht erfüllt sind
+    hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
     bypassLimit: Questlimit nicht zählen
     bypassLimitLore: Wenn aktiviert, ist die Quest startbar, auch wenn der Spieler seine maximale Anzahl an begonnenen Quests erreicht hat.
     questName: '§a§lQuestname bearbeiten'
@@ -527,6 +529,10 @@ misc:
     prefix: '§6<§e§lQuests§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+  time:
+    days: '{0} Tage'
+    hours: '{0} Stunden'
+    minutes: '{0} Minuten'
   stageType:
     region: Region finden
     npc: NPC finden
