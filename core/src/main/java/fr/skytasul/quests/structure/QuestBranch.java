@@ -115,6 +115,7 @@ public class QuestBranch {
 	}
 	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
+		if (acc == null) return false;
 		if (!acc.hasQuestDatas(getQuest())) return false;
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		if (datas.getBranch() != getID()) return false;

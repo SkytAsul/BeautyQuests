@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -79,7 +80,7 @@ public class PlayersManagerDB extends PlayersManager {
 			while (result.next()) {
 				int poolID = result.getInt("pool_id");
 				String completedQuests = result.getString("completed_quests");
-				if (completedQuests.isEmpty()) completedQuests = null;
+				if (StringUtils.isEmpty(completedQuests)) completedQuests = null;
 				acc.poolDatas.put(poolID, new PlayerPoolDatasDB(acc, poolID, result.getLong("last_give"), completedQuests == null ? new HashSet<>() : Arrays.stream(completedQuests.split(";")).map(Integer::parseInt).collect(Collectors.toSet())));
 			}
 			result.close();

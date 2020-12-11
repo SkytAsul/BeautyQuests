@@ -3,7 +3,6 @@ package fr.skytasul.quests.editors;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -27,19 +26,18 @@ public class DialogEditor extends Editor{
 		String[] args = strippedMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
-		String cmd = ChatColor.stripColor(args[0]);
+		Command cmd;
 		try{
-			Command.valueOf(cmd.toUpperCase());
+			cmd = Command.valueOf(args[0].toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(args, 1, " ");
+			msg = Utils.buildFromArray(coloredMessage.split(" "), 1, " ");
 			hasMsg = true;
 		}
-		Command comd = Command.valueOf(cmd.toUpperCase());
-		switch (comd){
+		switch (cmd) {
 		
 		case NOSENDER:
 		case NPC:
@@ -48,8 +46,8 @@ public class DialogEditor extends Editor{
 				Lang.DIALOG_SYNTAX.send(p, cmd, "");
 				break;
 			}
-			d.add(msg, Sender.valueOf(comd.name()));
-			Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + comd.name()).toString(), msg, comd.name().toLowerCase());
+			d.add(msg, Sender.valueOf(cmd.name()));
+			Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + cmd.name()).toString(), msg, cmd.name().toLowerCase());
 			break;
 
 		case REMOVE:
@@ -82,7 +80,7 @@ public class DialogEditor extends Editor{
 			}
 			try{
 				msg = Utils.buildFromArray(args, 2, " ");
-				Sender sender = Sender.valueOf(comd.name().replace("INSERT", ""));
+				Sender sender = Sender.valueOf(cmd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + sender.name()).toString(), msg, sender.name().toLowerCase());
 			}catch (NumberFormatException ex){
