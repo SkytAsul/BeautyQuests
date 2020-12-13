@@ -68,7 +68,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount")) return "" + QuestsAPI.getQuestsStarteds(acc).size();
-		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc).size();
+		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc, false).size();
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);

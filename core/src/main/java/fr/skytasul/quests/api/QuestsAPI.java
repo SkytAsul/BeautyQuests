@@ -154,9 +154,10 @@ public class QuestsAPI {
 		return i;
 	}
 
-	public static List<Quest> getQuestsFinished(PlayerAccount acc){
+	public static List<Quest> getQuestsFinished(PlayerAccount acc, boolean hide) {
 		List<Quest> finished = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
+			if (hide && qu.isHidden()) continue;
 			if (qu.hasFinished(acc)) finished.add(qu);
 		}
 		return finished;

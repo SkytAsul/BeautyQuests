@@ -129,7 +129,7 @@ public class QuestBranch {
 		if (end) {
 			if (datas.isInEndingStages()) {
 				endStages.keySet().forEach((x) -> x.end(acc));
-			}else getRegularStage(datas.getStage()).end(acc);
+			}else if (datas.getStage() < regularStages.size()) getRegularStage(datas.getStage()).end(acc);
 		}
 		datas.setBranch(-1);
 		datas.setStage(-1);
@@ -207,8 +207,9 @@ public class QuestBranch {
 			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
 			remove(acc, true);
 		}else {
-			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
-			acc.getQuestDatas(getQuest()).setStage(id);
+			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
+			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && questDatas.getStage() != -1) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+			questDatas.setStage(id);
 			if (p != null) {
 				Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
 				if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
