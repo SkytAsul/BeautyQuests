@@ -22,6 +22,7 @@ msg:
     noTime: §cYou must wait {0} before doing another quest.
     allCompleted: §7You have completed all the quests!
     noAvailable: §7There is no more quest available...
+    maxQuests: §cYou cannot have more than {0} quest(s) at the same time...
   questItem:
     drop: §cYou can't drop a quest item!
     craft: §cYou can't use a quest item to craft!

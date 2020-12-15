@@ -21,6 +21,7 @@ msg:
     noTime: '§cVous devez attendre {0} avant de faire une autre quête.'
     allCompleted: '§7Vous avez terminé toutes les quêtes !'
     noAvailable: '§7Il n''y a plus de quête disponible...'
+    maxQuests: '§cVous ne pouvez pas avoir plus de {0} quête(s) simultanément...'
   questItem:
     drop: '§cVous ne pouvez pas jeter un objet de quête !'
     craft: '§cVous ne pouvez pas utiliser un objet de quête pour crafter !'

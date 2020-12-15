@@ -129,7 +129,7 @@ public class QuestPool implements Comparable<QuestPool> {
 			notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
 			if (notDoneQuests.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
 			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toSet()));
-		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_NO_AVAILABLE.toString();
+		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_MAX_QUESTS.format(maxQuests);
 		
 		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
 		if (available.isEmpty()) {

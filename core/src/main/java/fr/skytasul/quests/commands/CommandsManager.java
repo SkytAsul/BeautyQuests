@@ -1,6 +1,5 @@
 	package fr.skytasul.quests.commands;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,7 +133,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		try {
 			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: /" + label + " " + Utils.buildFromArray(args, 0, " "));
 			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
-		}catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		}catch (Exception e) {
 			String errorType = e.getCause() == null ? e.getClass().getSimpleName() : e.getCause().getClass().getSimpleName();
 			DebugUtils.logMessage("An exception occured during command execution: " + errorType);
 			Lang.ERROR_OCCURED.send(sender, errorType);

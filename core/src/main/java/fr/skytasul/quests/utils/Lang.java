@@ -30,6 +30,7 @@ public enum Lang{
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
 	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
 	POOL_NO_AVAILABLE("msg.pools.noAvailable"),
+	POOL_MAX_QUESTS("msg.pools.maxQuests"), // 0: max quests
 	
 	QUEST_ITEM_DROP("msg.questItem.drop"),
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),

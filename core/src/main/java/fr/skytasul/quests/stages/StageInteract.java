@@ -119,7 +119,7 @@ public class StageInteract extends AbstractStage {
 				line.setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
 					Lang.CLICK_BLOCK.send(p);
 					new WaitBlockClick(p, () -> reopenGUI(p, false), obj -> {
-						setLocation(location);
+						setLocation(obj);
 						reopenGUI(p, false);
 					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
 				});
