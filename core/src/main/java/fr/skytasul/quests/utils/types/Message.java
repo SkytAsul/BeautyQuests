@@ -29,21 +29,21 @@ public class Message implements Cloneable {
 	}
 
 	public void sendMessage(Player p, NPC npc, int id, int size) {
-		String text = null;
+		String sent = null;
 		switch (sender) {
 		case PLAYER:
-			text = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), text, id + 1, size), true);
+			sent = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), text, id + 1, size), true);
 			break;
 		case NPC:
-			text = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), text, id + 1, size), true);
+			sent = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), text, id + 1, size), true);
 			break;
 		case NOSENDER:
-			text = Utils.finalFormat(p, text, true);
+			sent = Utils.finalFormat(p, text, true);
 			break;
 		}
 		if (QuestsConfiguration.sendDialogsInActionBar()) {
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text.replace("{nl}", " ")));
-		}else p.sendMessage(StringUtils.splitByWholeSeparator(text, "{nl}"));
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
+		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
 		
 		if (sound != null) p.playSound(p.getLocation(), sound, 1, 1);
 	}
