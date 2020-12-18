@@ -1,11 +1,13 @@
 package fr.skytasul.quests.structure;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.skytasul.quests.api.events.*;
+import fr.skytasul.quests.utils.types.Dialog;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,11 +18,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
-import fr.skytasul.quests.api.events.QuestFinishEvent;
-import fr.skytasul.quests.api.events.QuestLaunchEvent;
-import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
-import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -262,7 +259,13 @@ public class Quest implements Comparable<Quest> {
 	
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getValue().send(p, getOptionValueOrDef(OptionStarterNPC.class), () -> attemptStart(p));
+			Dialog dialog = getOption(OptionStartDialog.class).getValue();
+			NPC npc = getOptionValueOrDef(OptionStarterNPC.class);
+			Runnable runnable = () -> attemptStart(p);
+			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
+			Bukkit.getPluginManager().callEvent(event);
+			if (event.isCancelled()) return;
+			dialog.send(p, npc, runnable);
 		}else attemptStart(p);
 	}
 
