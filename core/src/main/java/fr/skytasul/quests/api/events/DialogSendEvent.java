@@ -15,11 +15,13 @@ public class DialogSendEvent extends Event implements Cancellable {
     private Dialog dialog;
     private NPC npc;
     private Player player;
+    private Runnable runnable;
 
-    public DialogSendEvent(Dialog dialog, NPC npc, Player player) {
+    public DialogSendEvent(Dialog dialog, NPC npc, Player player, Runnable runnable) {
         this.dialog = dialog;
         this.npc = npc;
         this.player = player;
+        this.runnable = runnable;
     }
 
     @Override
@@ -41,6 +43,10 @@ public class DialogSendEvent extends Event implements Cancellable {
 
     public Player getPlayer(){
         return player;
+    }
+
+    public Runnable getRunnable(){
+        return runnable;
     }
 
     @Override
