@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.events;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -15,11 +16,13 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 	private Dialog dialog;
 	private Message msg;
 	private NPC npc;
+	private Player player;
 	
-	public DialogSendMessageEvent(Dialog dialog, Message msg, NPC npc) {
+	public DialogSendMessageEvent(Dialog dialog, Message msg, NPC npc, Player player) {
 		this.dialog = dialog;
 		this.msg = msg;
 		this.npc = npc;
+		this.player = player;
 	}
 	
 	@Override
@@ -41,6 +44,10 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 	
 	public NPC getNPC() {
 		return npc;
+	}
+	
+	public Player getPlayer(){
+		return player;
 	}
 	
 	@Override

@@ -61,7 +61,7 @@ public class Dialog implements Cloneable {
 			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(1, 2));
 			return;
 		}
-		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc);
+		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc, p);
 		Bukkit.getPluginManager().callEvent(event);
 		if (!event.isCancelled()) msg.sendMessage(p, npc, id, messages.valuesSize());
 		if (msg.getWaitTime() != 0) {
