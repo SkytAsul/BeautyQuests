@@ -73,7 +73,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
 			Entry<T, Integer> object = objects.get(obj.getKey());
-			elements[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
+			elements[i] = object == null ? "no object " + obj.getKey() : QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
 			i++;
 		}
 		return elements;

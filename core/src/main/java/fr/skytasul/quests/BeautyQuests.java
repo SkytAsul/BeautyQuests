@@ -250,7 +250,11 @@ public class BeautyQuests extends JavaPlugin{
 		try{
 			config = getConfig();
 			
-			QuestsConfiguration.initConfiguration(config);
+			try {
+				QuestsConfiguration.initConfiguration(config);
+			}catch (Exception ex) {
+				throw new LoadingException("An error occured while loading config parameters.", ex);
+			}
 			ConfigurationSection dbConfig = config.getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = new Database(dbConfig);
