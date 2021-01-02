@@ -43,6 +43,7 @@ public enum Lang{
 	REGION_NAME("msg.writeRegionName"),
 	XP_GAIN("msg.writeXPGain"),
 	MOB_AMOUNT("msg.writeMobAmount"),
+	MOB_NAME("msg.writeMobName"),
 	CHAT_MESSAGE("msg.writeChatMessage"),
 	END_MESSAGE("msg.writeEndMessage"),
 	DESC_MESSAGE("msg.writeDescriptionText"),
@@ -400,7 +401,7 @@ public enum Lang{
 	
 	INVENTORY_MOBS("inv.mobs.name"),
 	mobsNone("inv.mobs.none"),
-	click("inv.mobs.click"),
+	click("inv.mobs.clickLore"),
 
 	INVENTORY_MOBSELECT("inv.mobSelect.name"),
 	bukkitMob("inv.mobSelect.bukkitEntityType"),

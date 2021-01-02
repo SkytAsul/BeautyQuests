@@ -79,6 +79,11 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 	}
 	
 	@Override
+	protected BQBlock cloneObject(BQBlock object) {
+		return object;
+	}
+	
+	@Override
 	protected boolean objectApplies(BQBlock object, Object other) {
 		if (other instanceof Block) return object.applies((Block) other);
 		return super.objectApplies(object, other);

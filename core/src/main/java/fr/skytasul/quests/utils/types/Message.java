@@ -38,7 +38,7 @@ public class Message implements Cloneable {
 			sent = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), text, id + 1, size), true);
 			break;
 		case NOSENDER:
-			sent = Utils.finalFormat(p, text, true);
+			sent = Utils.finalFormat(p, Utils.format(text, id + 1, size), true);
 			break;
 		}
 		if (QuestsConfiguration.sendDialogsInActionBar()) {

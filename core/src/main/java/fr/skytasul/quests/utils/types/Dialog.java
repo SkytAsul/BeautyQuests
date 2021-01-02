@@ -76,8 +76,15 @@ public class Dialog implements Cloneable {
 		return players.containsKey(p);
 	}
 
+	public int getPlayerMessage(Player p) {
+		return players.get(p).lastId;
+	}
+	
 	public boolean remove(Player player) {
-		return players.remove(player) != null;
+		PlayerStatus status = players.remove(player);
+		if (status == null) return false;
+		if (status.task != null) status.task.cancel();
+		return true;
 	}
 	
 	public void add(String msg, Sender sender){

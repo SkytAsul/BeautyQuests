@@ -46,6 +46,11 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			event(acc, p, fish, fish.getAmount());
 		}
 	}
+	
+	@Override
+	protected ItemStack cloneObject(ItemStack object) {
+		return object.clone();
+	}
 
 	protected boolean objectApplies(ItemStack object, Object other) {
 		return object.isSimilar((ItemStack) other);

@@ -93,7 +93,11 @@ public abstract class PlayersManager {
 					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
 					if (!p.isOnline()) return;
 					cachedAccounts.put(p, account);
-					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created)));
+					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+						if (p.isOnline()) {
+							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
+						}else BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+					});
 					return;
 				}catch (Exception ex) {
 					ex.printStackTrace();

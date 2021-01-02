@@ -35,6 +35,7 @@ msg:
   writeXPGain: '§aWrite the amount of experience points the player will obtain: (Last
     value: {0})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
+  writeMobName: '§aWrite the custom name of the mob to kill:'
   writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if
     you want a command.)'
   writeEndMessage: '§aWrite the message that will be sent at the end of the quest
@@ -416,9 +417,10 @@ inv:
   mobs:
     name: Select mobs
     none: §aClick to add a mob.
-    click: |-
-      §7Left-click to edit.
-      Right-click to delete.
+    clickLore: |-
+      §7§lLeft-click§7 to edit amount.
+      §7§lShift + left-click§7 to edit mob name.
+      §7§lRight-click§7 to delete.
   mobSelect:
     name: Select mob type
     bukkitEntityType: §eSelect entity type
@@ -560,7 +562,7 @@ misc:
     prefix: §6<§e§lQuests§r§6> §r
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
-    offText: §r§e {0}
+    offText: §r§e{0}
   time:
     days: '{0} days'
     hours: '{0} hours'

@@ -19,11 +19,21 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
+import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBarImplementation;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public abstract class Editor implements Listener{
 
 	private static Map<Player, Editor> players = new HashMap<>();
+	private static BQBossBar bar = null;
+
+	static {
+		if (BQBossBar.BARS_ENABLED) {
+			bar = new BQBossBarImplementation("§6Quests Editor", "YELLOW", "SOLID");
+			bar.setProgress(0);
+		}
+	}
 	
 	protected final Player p;
 	protected final Runnable cancel;
@@ -41,11 +51,14 @@ public abstract class Editor implements Listener{
 			Lang.ENTER_EDITOR_TITLE.send(p);
 			Lang.ENTER_EDITOR_SUB.send(p);
 		}
+		if (bar != null) bar.addPlayer(p);
 	}
 
-	protected void end() {}
+	protected void end() {
+		if (bar != null) bar.removePlayer(p);
+	}
 	
-	protected void cancel() {
+	protected final void cancel() {
 		leave(p);
 		cancel.run();
 	}
@@ -61,12 +74,11 @@ public abstract class Editor implements Listener{
 		if (edit == null) {
 			begin();
 			Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
-			
 			players.put(p, this);
-		}else {
-			Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
+			return (T) this;
 		}
-		return (T) this;
+		Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
+		return null;
 	}
 	
 	/**

@@ -364,6 +364,7 @@ public class Utils{
 		StringBuilder line = new StringBuilder();
 		String lastColors = "";
 		String colors = "";
+		boolean first = false;
 		//boolean colorsSkip = true;
 		List<String> lines = new LinkedList<String>();
 		
@@ -397,6 +398,7 @@ public class Utils{
 					lines.add(line.toString());
 					line = new StringBuilder();
 					line.append(colors);
+					first = true;
 				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
 					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
@@ -411,7 +413,9 @@ public class Utils{
 					}
 				}else {
 					if (line.length() > 0) {
-						line.append(' ');
+						if (first) {
+							first = false;
+						}else line.append(' ');
 					}
 					line.append(word);
 					lastColors = colors;
@@ -422,6 +426,7 @@ public class Utils{
 					lines.add(line.toString());
 					line = new StringBuilder();
 					line.append(lastColors);
+					first = true;
 				}
 				//colorsSkip = false;
 			}else {

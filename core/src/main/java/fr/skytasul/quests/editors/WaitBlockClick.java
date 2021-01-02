@@ -40,11 +40,8 @@ public class WaitBlockClick extends InventoryClear{
 	public void begin(){
 		super.begin();
 		p.getInventory().setItem(4, item);
+		p.getInventory().setHeldItemSlot(4);
 		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
-	}
-	
-	public void end(){
-		super.end();
 	}
 	
 }

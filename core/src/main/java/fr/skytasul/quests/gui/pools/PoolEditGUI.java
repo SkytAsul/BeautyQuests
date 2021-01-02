@@ -108,11 +108,7 @@ public class PoolEditGUI implements CustomInventory {
 				hologram = msg;
 				ItemUtils.lore(current, getHologramLore());
 				reopen(p, inv, false);
-			}, () -> {
-				hologram = null;
-				ItemUtils.lore(current, getHologramLore());
-				reopen(p, inv, false);
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 			break;
 		case 2:
 			Lang.POOL_HOLOGRAM_MAXQUESTS.send(p);

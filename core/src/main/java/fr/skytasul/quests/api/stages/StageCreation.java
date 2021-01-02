@@ -44,10 +44,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setCustomDescription(obj);
 				reopenGUI(p, false);
-			}, () -> {
-				this.setCustomDescription(null);
-				reopenGUI(p, false);
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		});
 		
 		line.setItem(3, StagesGUI.startMessage.clone(), (p, item) -> {
@@ -55,10 +52,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setStartMessage(obj);
 				reopenGUI(p, false);
-			}, () -> {
-				setStartMessage(null);
-				reopenGUI(p, false);
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		});
 		
 		line.setItem(4, StagesGUI.validationRequirements.clone(), (p, item) -> {

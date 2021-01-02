@@ -67,6 +67,11 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		}
 	}
 
+	@Override
+	protected Mob<?> cloneObject(Mob<?> object) {
+		return object.clone();
+	}
+	
 	protected String getName(Mob<?> object) {
 		return object.getName();
 	}

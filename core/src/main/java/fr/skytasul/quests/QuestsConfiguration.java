@@ -20,6 +20,7 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -120,7 +121,7 @@ public class QuestsConfiguration {
 		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
+		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
