@@ -32,6 +32,7 @@ msg:
   writeRegionName: '§aEcrivez le nom de la région voulue pour l''étape :'
   writeXPGain: '§aÉcrivez le nombre de points d’expérience que le joueur va remporter. (Ancien gain : {0})'
   writeMobAmount: '§aEcrivez le nombre de mobs à tuer :'
+  writeMobName: '§aÉcrivez le nom personnalisé du mob à tuer :'
   writeChatMessage: '§aÉcrivez le message requis (rajoutez "{SLASH}" au début pour en faire une commande.)'
   writeEndMessage: '§aÉcrivez le message qui sera envoyé à la fin de la quête ou de l''étape :'
   writeDescriptionText: '§aEcrivez le texte qui décrira le but de l''étape :'
@@ -390,9 +391,10 @@ inv:
   mobs:
     name: Choisir les mobs
     none: '§aCliquer pour ajouter un mob.'
-    click: |-
-      §7Clic gauche pour modifier
-      Clic droit pour supprimer
+    clickLore: |-
+      §a§lClic gauche§a pour modifier la quantité.
+      §a§l§nShift§a§l + clic gauche§a pour modifier le nom du mob.
+      §c§lclic-droit§c pour supprimer.
   mobSelect:
     name: Choisir le type de monstre
     bukkitEntityType: '§eSélectionner un type de mob'
@@ -530,6 +532,7 @@ misc:
     prefix: '§6<§e§lQuêtes§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
+    offText: '§r§e{0}'
   time:
     days: '{0} jours'
     hours: '{0} heures'

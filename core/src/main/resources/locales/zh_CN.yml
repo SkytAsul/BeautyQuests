@@ -21,6 +21,7 @@ msg:
     noTime: '§c你必须先等待一会儿才能执行其它任务。'
     allCompleted: '§7你已完成所有任务！'
     noAvailable: '§7没有更多可用的任务……'
+    maxQuests: '§c你不能同时进行多于 {0}个任务……'
   questItem:
     drop: '§c你不能丢弃任务物品！'
     craft: '§c你不能用任务物品来合成物品！'
@@ -316,6 +317,8 @@ inv:
     scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
     hideItem: 隐藏任务 (菜单和卫星地图)
     hideItemLore: 如果启用，任务将不会在dynmap或任务菜单中显示。
+    hideNoRequirementsItem: 未满足需求时隐藏
+    hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
     bypassLimit: 忽略任务上限
     bypassLimitLore: 如果启用，即使玩家已经达到任务上限也能接受任务。
     questName: '§a§l编辑任务名'
@@ -386,8 +389,6 @@ inv:
   mobs:
     name: 选择怪物
     none: '§a点击添加怪物'
-    click: |-
-      §7左键编辑,右键删除.
   mobSelect:
     name: 选择怪物类型
     bukkitEntityType: '§e选择一个生物类型'
@@ -525,6 +526,10 @@ misc:
     prefix: '§6<§e§l任务§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+  time:
+    days: '{0}天'
+    hours: '{0}小时'
+    minutes: '{0}分钟'
   stageType:
     region: 寻找区域
     npc: 寻找 NPC

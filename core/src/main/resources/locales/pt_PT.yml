@@ -131,7 +131,6 @@ msg:
       choosePermissionMessage: '§aPodes escolher uma mensagem de rejeição caso o jogador não tiver a permissão necessária. (Para ignorar esta etapa, escreve "null".)'
       choosePlaceholderRequired:
         identifier: '§aEscreve o nome do espaço reservado obrigatório sem os caracteres percentuais:'
-        value: '§aEscreve o valor necessário para o nome reservado §6%{0}%§a:'
       chooseSkillRequired: '§aEscreve o nome da habilidade necessária:'
       reward:
         permissionName: '§aEscreva o nome da permissão.'
@@ -186,6 +185,8 @@ advancement:
 inv:
   validate: '§b§lValidar'
   cancel: '§c§lCancelar'
+  search: '§e§lProcurar'
+  addObject: '§aAdicionar um objeto'
   confirm:
     name: Tens a certeza?
     'yes': '§aConfirmar'
@@ -198,6 +199,7 @@ inv:
     findRegion: '§aEncontrar região'
     killMobs: '§aMatar mobs'
     mineBlocks: '§aQuebrar blocos'
+    placeBlocks: '§aColocar blocos'
     talkChat: '§aEscrever no chat'
     interact: '§aInteragir com bloco'
     fish: '§aApanhar peixe'
@@ -209,17 +211,25 @@ inv:
     mobsKillFromAFar: Precisa de ser morto com projétil
     editBlocksMine: '§eEditar blocos para quebrar'
     preventBlockPlace: Impede que os jogadores quebrem os seus próprios blocos
+    editBlocksPlace: '§eEditar blocos a colocar'
     editMessageType: '§eEditar mensagem para escrever'
     cancelMessage: Cancelar envio
+    ignoreCase: Ignorar uso de maiúsculas na mensagem
     selectItems: '§eEditar itens requeridos'
     selectRegion: '§7Escolher região'
+    toggleRegionExit: Na saída
     stageStartMsg: '§eEditar mensagem inicial'
     selectBlockLocation: '§eSelecionar localização do bloco'
+    selectBlockMaterial: '§eSelecionar o material do bloco'
     leftClick: O clique deve ser com o botão esquerdo
     editFishes: '§eEditar peixes para pescar'
     editItem: '§eEditar item para criar'
     editBucketType: '§eEdite o tipo de balde para preencher'
     editBucketAmount: '§eEdite a quantidade de baldes para preencher'
+    editLocation: '§eEditar a localização'
+    editRadius: '§eEditar a distância a partir da localização'
+    currentRadius: '§eDistância atual: §6{0}'
+    changeTicksRequired: '§eAlterar a quantidade de tiques jogados necessários'
   stages:
     name: Criar etapas
     nextPage: '§ePróxima página'
@@ -230,14 +240,27 @@ inv:
     branchesPage: '§dRamo de etapas'
     previousBranch: '§eVoltar ao ramo anterior'
     newBranch: '§eIr para o novo ramo'
+    validationRequirements: '§eRequisitos de Validação'
+    validationRequirementsLore: Todos os requisitos devem corresponder ao jogador que tente terminar a etapa. Se não, a etapa não pode ser completada.
   details:
     hologramLaunch: '§eEditar item holograma de "lançamento"'
+    hologramLaunchLore: Holograma mostrada acima da cabeça do NPC Inicial quando o jogador puder começar a missão.
     hologramLaunchNo: '§eEditar item holograma de "launch unavailable"'
+    hologramLaunchNoLore: Holograma mostrada acima da cabeça do NPC Inicial quando o jogador NÃO puder começar a missão.
+    customConfirmMessage: '§eEditar mensagem de confirmação da missão'
+    customConfirmMessageLore: Mensagem mostrada na Interface de Confirmação quando um jogador está prestes a começar a missão.
+    customDescription: '§eEditar descrição da missão'
+    customDescriptionLore: Descrição mostrada abaixo do nome da missão nas interfaces.
     name: Detalhes da última missão
     multipleTime:
+      itemName: Ligar/desligar repetição
       itemLore: "A missão pode ser feita\nvárias vezes?"
     cancellable: Pode ser cancelado pelo jogador
+    cancellableLore: Permite que o jogador cancele a missão através do seu Menu de Missões.
+    startableFromGUI: Iniciável a partir da Interface
+    startableFromGUILore: Permite que o jogador comece a missão através do Menu de Missões
     scoreboardItem: Ativar painel de classificação
+    scoreboardItemLore: Se desativado, a missão não será rastreada através do scoreboard.
     hideItem: Ocultar menu e mapa dinâmico
     bypassLimit: Não contar limite de missão
     questName: '§a§lEditar nome da missão'
@@ -280,9 +303,6 @@ inv:
   mobs:
     name: Selecionar mobs
     none: '§aClica para adicionar um mob.'
-    click: |-
-      §7Botão esquerdo para editar.
-      Botão direito para apagar.
   mobSelect:
     name: Escolha o tipo de mob
     bukkitEntityType: '§eSelecionar tipo de entidade'
@@ -353,6 +373,27 @@ inv:
   permissionList:
     name: Lista de permissões
     world: '§eMundo: §6{0}'
+  classesRequired.name: '§bClasses necessárias'
+  classesList.name: Lista de Classes
+  factionsRequired.name: Fações necessárias
+  factionsList.name: Lista de Fações
+  poolsManage:
+    name: Grupo de Missões
+    itemName: '§aGrupo #{0}'
+    itemDescription: |-
+      §8NPC: §7{0}
+      §8Máximo de missões: §7{1}
+      §8Pode refazer missões concluídas: §7{2}
+      §8Tempo entre missões: §7{3}ms
+      §8Texto do holograma: §7{4}
+    create: '§aCriar um grupo de missões'
+  poolCreation:
+    name: Criação de um grupo de missões
+    hologramText: '§eHolograma personalizado do grupo'
+    maxQuests: '§aMáximo de missões'
+    time: '§bDefinir tempo entre missões'
+    redoAllowed: É permitido refazer?
+  poolsList.name: Grupo de Missões
 scoreboard:
   name: '§6§lMissões'
   noLaunched: '§cNenhuma missão em andamento.'
@@ -365,11 +406,15 @@ scoreboard:
     items: '§eLevar itens para §6{0}§e:'
     mobs: '§eMatar §6{0}'
     mine: '§eMinerar {0}'
+    placeBlocks: '§eColocar {0}'
     chat: '§eEscrever §6{0}'
     interact: '§eClica no bloco em §6{0}'
+    interactMaterial: '§eClica em um bloco §6{0}§e'
     fish: '§ePescar §6{0}'
     craft: '§eCriar §6{0}'
     bucket: '§ePreencher §6{0}'
+    location: '§eVai a §6{0}§e, §6{1}§e, §6{2}§e em §6{3}'
+    playTime: '§eJoga §6{0} tiques do jogo'
 indication:
   startQuest: '§7Desejas iniciar a missão {0}?'
   closeInventory: '§7Tens a certeza que desejas fechar o GUI?'
@@ -380,19 +425,31 @@ misc:
     prefix: '§6<§e§lMissões§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e {0}'
+  time:
+    days: '{0} dias'
+    hours: '{0} horas'
+    minutes: '{0} minutos'
   stageType:
     region: Encontrar região
     npc: Encontrar NPC
     items: Trazer itens de volta
     mobs: Matar mobs
     mine: Quebrar blocos
+    placeBlocks: Colocar blocos
     chat: Escrever no chat
     interact: Interagir com bloco
     Fish: Apanhar peixe
     Craft: Criar item
     Bucket: Preencher balde
     location: Encontrar localização
+    playTime: Tempo de Jogo
+  comparison:
+    equals: igual a {0}
+    different: diferente de {0}
+    less: estritamente menor que {0}
+    lessOrEquals: menos do que {0}
+    greater: estritamente maior que {0}
+    greaterOrEquals: maior que {0}
   requirement:
     class: '§bClasse(es) necessária(s)'
     faction: '§bFação(ões) necessária(s)'
@@ -400,15 +457,19 @@ misc:
     combatLevel: '§bNível de combate necessário'
     experienceLevel: '§bNíveis de experiência necessários'
     permissions: '§3Permissão(ões) necessária(s)'
+    scoreboard: '§dPontuação necessária'
+    region: '§dRegião necessária'
     placeholder: '§bValor de espaço reservado necessário'
     quest: '§aMissão necessária'
     mcMMOSkillLevel: '§dNível de habilidade necessário'
+    money: '§dDinheiro necessário'
   bucket:
     water: Balde de Água
     lava: Balde de lava
     milk: Balde de leite
   questItemLore: '§e§oItem de Missão'
   hologramText: '§8§Missão de NPC'
+  poolHologramText: '§eNova missão disponível!'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eTipo de entidade: {0}'
   enabled: Ativado

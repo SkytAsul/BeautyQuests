@@ -169,7 +169,9 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		return object.equals(other);
 	}
 	
-	protected abstract T cloneObject(T object);
+	protected T cloneObject(T object) {
+		return object;
+	}
 
 	protected abstract String getName(T object);
 

@@ -418,9 +418,9 @@ inv:
     name: Select mobs
     none: §aClick to add a mob.
     clickLore: |-
-      §7§lLeft-click§7 to edit amount.
-      §7§lShift + left-click§7 to edit mob name.
-      §7§lRight-click§7 to delete.
+      §a§lLeft-click§a to edit amount.
+      §a§l§nShift§a§l + left-click§a to edit mob name.
+      §c§lRight-click§c to delete.
   mobSelect:
     name: Select mob type
     bukkitEntityType: §eSelect entity type
