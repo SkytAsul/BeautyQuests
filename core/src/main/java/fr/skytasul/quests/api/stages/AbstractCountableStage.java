@@ -104,7 +104,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
 				}else {
-					if (barsEnabled) bars.get(p).update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					if (barsEnabled) {
+						BossBar bar = bars.get(p);
+						if (bar == null) {
+							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + debugName() + ". This is a bug!");
+						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					}
 					updateObjective(acc, p, "remaining", playerAmounts);
 				}
 				return;
