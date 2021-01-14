@@ -1,7 +1,10 @@
 package fr.skytasul.quests.gui.creation;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,14 +25,14 @@ public class ItemsGUI implements CustomInventory {
 	public static ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
 	
 	private Consumer<List<ItemStack>> end;
-	private List<ItemStack> items;
+	private Map<Integer, ItemStack> items = new HashMap<>();
 	private int size;
 	
 	public Inventory inv;
 	
-	public ItemsGUI(Consumer<List<ItemStack>> end, List<ItemStack> items) {
+	public ItemsGUI(Consumer<List<ItemStack>> end, List<ItemStack> itemsList) {
 		this.end = end;
-		this.items = Utils.extractItems(items);
+		Utils.extractItems(itemsList).forEach(item -> items.put(items.size(), item));
 		this.size = (int) (Math.ceil((items.size() + 1D) / 9D) * 9);
 	}
 
@@ -48,14 +51,14 @@ public class ItemsGUI implements CustomInventory {
 		return inv;
 	}
 	
-	private boolean addItem(Player p) {
-		items.clear();
+	private boolean addItem(Player p, ItemStack item, int slot) {
+		items.put(slot, item);
 		for (int i = 0; i < size - 1; i++) {
 			ItemStack is = inv.getItem(i);
 			if (is.equals(none)) return false;
-			items.add(is);
 		}
 		size += 9;
+		Inventories.closeWithoutExit(p);
 		Inventories.put(p, this, open(p));
 		return true;
 	}
@@ -66,33 +69,33 @@ public class ItemsGUI implements CustomInventory {
 			inv.setItem(slot, cursor);
 			Utils.runSync(() -> {
 				p.setItemOnCursor(null);
-				addItem(p);
+				addItem(p, cursor, slot);
 			});
 			return true;
-		}
+		}else Utils.runSync(() -> items.put(slot, inv.getItem(slot)));
 		return false;
 	}
 	
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == size - 1) {
-			items.clear();
-			for (int i = 0; i < size - 1; i++) {
-				ItemStack is = inv.getItem(i);
-				if (is != null && !is.equals(none)) items.add(inv.getItem(i));
-			}
 			Inventories.closeAndExit(p);
-			end.accept(items);
+			end.accept(items.values().stream().filter(x -> x != null).collect(Collectors.toList()));
 		}else {
 			if (current.equals(none)){
 				new ItemCreatorGUI(item -> {
 					if (item != null) inv.setItem(slot, item);
-					if (!addItem(p)) {
+					if (!addItem(p, item, slot)) {
 						Inventories.put(p, this, inv);
 						p.openInventory(inv);
 					}
 				}, true).create(p);
 			}else {
-				Utils.runSync(() -> inv.setItem(slot, none));
+				if (click.isLeftClick() || (click.isRightClick() && current.getAmount() == 1)) {
+					Utils.runSync(() -> {
+						inv.setItem(slot, none);
+						items.remove(slot);
+					});
+				}else Utils.runSync(() -> items.put(slot, inv.getItem(slot)));
 				return false;
 			}
 		}

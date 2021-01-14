@@ -64,6 +64,8 @@ startParticleDistance: 20
 requirementUpdateTime: 1
 # When there is several quests on the same NPC, will the server send the reason to the player if it does not match a requirement
 requirementReasonOnMultipleQuests: true
+# Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
+menuOpenNotStartedTabWhenEmpty: true
 
 # - Integrations -
 # Enable GPS integration

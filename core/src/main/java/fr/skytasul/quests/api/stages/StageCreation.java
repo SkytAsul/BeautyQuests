@@ -100,7 +100,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	}
 	
 	public void setRequirements(List<AbstractRequirement> requirements) {
-		line.editItem(4, ItemUtils.lore(line.getItem(4), QuestOption.formatDescription(Lang.requirements.format(rewards.size()))));
+		line.editItem(4, ItemUtils.lore(line.getItem(4), QuestOption.formatDescription(Lang.requirements.format(requirements.size()))));
 		this.requirements = requirements;
 	}
 	

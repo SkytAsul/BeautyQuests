@@ -52,6 +52,7 @@ public class PlayerListGUI implements CustomInventory {
 		setBarItem(3, ItemUtils.item(XMaterial.WRITABLE_BOOK, "§7" + Lang.notStarteds.toString()));
 		
 		setCategory(Category.IN_PROGRESS);
+		if (quests.isEmpty() && QuestsConfiguration.doesMenuOpenNotStartedTabWhenEmpty()) setCategory(Category.NOT_STARTED);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;

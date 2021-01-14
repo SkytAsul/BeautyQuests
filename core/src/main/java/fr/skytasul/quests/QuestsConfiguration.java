@@ -71,6 +71,7 @@ public class QuestsConfiguration {
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
+	private static boolean menuOpenNotStartedTabWhenEmpty = true;
 	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
@@ -121,6 +122,7 @@ public class QuestsConfiguration {
 		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
+		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
 		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
@@ -278,6 +280,10 @@ public class QuestsConfiguration {
 	
 	public static boolean isRequirementReasonSentOnMultipleQuests() {
 		return requirementReasonOnMultipleQuests;
+	}
+	
+	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
+		return menuOpenNotStartedTabWhenEmpty;
 	}
 
 	public static int getStartParticleDistance() {
