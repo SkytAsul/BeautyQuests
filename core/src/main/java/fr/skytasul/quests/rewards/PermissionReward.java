@@ -33,7 +33,7 @@ public class PermissionReward extends AbstractReward {
 		this.permissions = permissions;
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		for (Permission perm : permissions) {
 			perm.give(p);
 		}

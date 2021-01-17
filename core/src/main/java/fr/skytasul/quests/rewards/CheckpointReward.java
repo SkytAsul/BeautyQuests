@@ -32,7 +32,7 @@ public class CheckpointReward extends AbstractReward {
 	}
 	
 	@Override
-	public String give(Player p) {
+	public List<String> give(Player p) {
 		Lang.QUEST_CHECKPOINT.send(p);
 		return null;
 	}

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -24,12 +25,15 @@ import fr.skytasul.quests.utils.XMaterial;
 public class StageBringBack extends StageNPC{
 	
 	private final ItemStack[] items;
+	private final String customMessage;
+	
 	private Map<ItemStack, Integer> amountsMap = new HashMap<>();
 	private String splitted;
 	private String line;
 	
-	public StageBringBack(QuestBranch branch, ItemStack[] items) {
+	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage) {
 		super(branch);
+		this.customMessage = customMessage;
 		this.bringBack = this;
 		this.items = items;
 		for (ItemStack item : items) {
@@ -59,7 +63,7 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Lang.NpcText.sendWP(p, npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+		if (msg) Lang.NpcText.sendWP(p, npcName(), Utils.format(getMessage(), line), 1, 1);
 		return false;
 	}
 	
@@ -72,6 +76,10 @@ public class StageBringBack extends StageNPC{
 	
 	public ItemStack[] getItems(){
 		return items;
+	}
+	
+	private String getMessage() {
+		return customMessage == null ? Lang.NEED_OBJECTS.toString() : customMessage;
 	}
 
 	public String descriptionLine(PlayerAccount acc, Source source){
@@ -91,10 +99,11 @@ public class StageBringBack extends StageNPC{
 	public void serialize(Map<String, Object> map) {
 		super.serialize(map);
 		map.put("items", items);
+		if (customMessage != null) map.put("customMessage", customMessage);
 	}
 	
 	public static StageBringBack deserialize(Map<String, Object> map, QuestBranch branch) {
-		StageBringBack st = new StageBringBack(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]));
+		StageBringBack st = new StageBringBack(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]), (String) map.getOrDefault("customMessage", null));
 		st.loadDatas(map);
 		return st;
 	}
@@ -102,8 +111,10 @@ public class StageBringBack extends StageNPC{
 	public static class Creator extends StageNPC.AbstractCreator<StageBringBack> {
 		
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
+		private static final ItemStack stageMessage = ItemUtils.item(XMaterial.PAPER, Lang.stageItemsMessage.toString());
 
 		private List<ItemStack> items;
+		private String message = null;
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
@@ -114,11 +125,22 @@ public class StageBringBack extends StageNPC{
 					reopenGUI(p, true);
 				}, items).create(p);
 			});
+			line.setItem(9, stageMessage, (p, item) -> {
+				new TextEditor<String>(p, () -> reopenGUI(p, false), x -> {
+					setMessage(x);
+					reopenGUI(p, false);
+				}).passNullIntoEndConsumer().enter();
+			});
 		}
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
 			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(this.items.size() + " item(s)")));
+		}
+		
+		public void setMessage(String message) {
+			this.message = message;
+			line.editItem(9, ItemUtils.lore(line.getItem(9), message == null ? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(message)));
 		}
 		
 		@Override
@@ -133,11 +155,12 @@ public class StageBringBack extends StageNPC{
 		public void edit(StageBringBack stage) {
 			super.edit(stage);
 			setItems(Arrays.asList(stage.items));
+			setMessage(stage.customMessage);
 		}
 		
 		@Override
 		protected StageBringBack createStage(QuestBranch branch) {
-			return new StageBringBack(branch, items.toArray(new ItemStack[0]));
+			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message);
 		}
 	}
 

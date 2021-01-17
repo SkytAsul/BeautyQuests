@@ -1,5 +1,6 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class MessageReward extends AbstractReward {
 		this.text = text;
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		Utils.sendOffMessage(p, text);
 		return null;
 	}

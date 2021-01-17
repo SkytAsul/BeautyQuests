@@ -288,6 +288,7 @@ public enum Lang{
 	cancelEvent("inv.create.cancelMessage"),
 	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
+	stageItemsMessage("inv.create.selectItemsMessage"),
 	stageRegion("inv.create.selectRegion"),
 	stageRegionExit("inv.create.toggleRegionExit"),
 	startMsg("inv.create.stageStartMsg"),
@@ -335,6 +336,7 @@ public enum Lang{
 	rewardItems("inv.details.setItemsRewards"),
 	rewardXP("inv.details.setXPRewards"),
 	rewardCheckpoint("inv.details.setCheckpointReward"),
+	rewardWithRequirements("inv.details.setRewardsWithRequirements"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
@@ -420,6 +422,8 @@ public enum Lang{
 	
 	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
 
+	INVENTORY_REWARDS_WITH_REQUIREMENTS("inv.rewardsWithRequirements.name"),
+	
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),
 	notStarteds("inv.listQuests.notStarted"),

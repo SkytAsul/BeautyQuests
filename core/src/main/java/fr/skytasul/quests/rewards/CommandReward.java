@@ -35,7 +35,7 @@ public class CommandReward extends AbstractReward {
 		if (list != null) this.commands.addAll(list);
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		if (commands.isEmpty()) return null;
 		for (Command cmd : commands){
 			cmd.execute(p);

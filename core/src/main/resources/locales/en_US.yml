@@ -353,6 +353,7 @@ inv:
     setItemsRewards: §eEdit reward items
     setXPRewards: §eEdit reward experience
     setCheckpointReward: §eEdit checkpoint rewards
+    setRewardsWithRequirements: §eRewards with requirements
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     selectStarterNPC: §e§lSelect NPC starter
@@ -443,6 +444,8 @@ inv:
        World: {3}
   checkpointActions:
     name: Checkpoint actions
+  rewardsWithRequirements:
+    name: Rewards with requirements
   listAllQuests:
     name: Quests
   listPlayerQuests:

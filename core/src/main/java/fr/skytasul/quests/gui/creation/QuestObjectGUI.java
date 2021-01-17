@@ -37,6 +37,7 @@ import fr.skytasul.quests.rewards.ItemReward;
 import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.rewards.MoneyReward;
 import fr.skytasul.quests.rewards.PermissionReward;
+import fr.skytasul.quests.rewards.RequirementDependentReward;
 import fr.skytasul.quests.rewards.TeleportationReward;
 import fr.skytasul.quests.rewards.XPReward;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -124,6 +125,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<CheckpointReward>(CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE));
+		QuestsAPI.registerReward(new QuestObjectCreator<RequirementDependentReward>(RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, false));
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -30,11 +32,11 @@ public class MoneyReward extends AbstractReward {
 		this.money = money;
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		if (money > 0){
 			Vault.depositPlayer(p, money);
 		}else Vault.withdrawPlayer(p, Math.abs(money));
-		return Vault.format(money);
+		return Arrays.asList(Vault.format(money));
 	}
 
 	@Override

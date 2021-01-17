@@ -82,8 +82,8 @@ public class Utils{
 		List<String> msg = new ArrayList<>();
 		for (AbstractReward rew : rewards) {
 			try {
-				String tmp = rew.give(p);
-				if (tmp != null) msg.add(tmp);
+				List<String> messages = rew.give(p);
+				if (messages != null) msg.addAll(messages);
 			}catch (Throwable e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
 				e.printStackTrace();

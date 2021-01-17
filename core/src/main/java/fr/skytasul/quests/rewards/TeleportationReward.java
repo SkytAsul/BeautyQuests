@@ -1,5 +1,6 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -28,7 +29,7 @@ public class TeleportationReward extends AbstractReward {
 		this.teleportation = teleportation;
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		p.teleport(teleportation);
 		return null;
 	}

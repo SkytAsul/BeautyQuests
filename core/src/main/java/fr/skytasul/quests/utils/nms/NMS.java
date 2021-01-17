@@ -57,7 +57,8 @@ public abstract class NMS{
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
 		((Map<?, ?>) unhandledTags.get(meta1)).clear();
 		((Map<?, ?>) unhandledTags.get(meta2)).clear();
-		repairCost.set(meta2, repairCost.get(meta1)); //set same repair cost
+		repairCost.set(meta1, 0);
+		repairCost.set(meta2, 0);
 		return (boolean) equalsCommon.invoke(meta1, meta2);
 	}
 	
