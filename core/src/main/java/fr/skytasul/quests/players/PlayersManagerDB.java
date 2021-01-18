@@ -215,6 +215,8 @@ public class PlayersManagerDB extends PlayersManager {
 		return db.new BQStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
 	}
 
+	public void save() {}
+	
 	private static void createTables(Database db) throws SQLException {
 		Statement statement = db.getConnection().createStatement();
 		statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
@@ -265,34 +267,54 @@ public class PlayersManagerDB extends PlayersManager {
 		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
 		PreparedStatement insertQuestData =
 				db.prepareStatement("INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		int amount = 0;
+		PreparedStatement insertPoolData =
+				db.prepareStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
+		
+		int amount = 0, failed = 0;
 		yaml.loadAllAccounts();
 		for (PlayerAccount acc : yaml.loadedAccounts.values()) {
-			insertAccount.setInt(1, acc.index);
-			insertAccount.setString(2, acc.abstractAcc.getIdentifier());
-			insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
-			insertAccount.executeUpdate();
-
-			for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
-				insertQuestData.setInt(1, acc.index);
-				insertQuestData.setInt(2, entry.getKey());
-				insertQuestData.setBoolean(3, entry.getValue().isFinished());
-				insertQuestData.setLong(4, entry.getValue().getTimer());
-				insertQuestData.setInt(5, entry.getValue().getBranch());
-				insertQuestData.setInt(6, entry.getValue().getStage());
-				for (int i = 0; i < 5; i++) {
-					Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
-					insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+			try {
+				insertAccount.setInt(1, acc.index);
+				insertAccount.setString(2, acc.abstractAcc.getIdentifier());
+				insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
+				insertAccount.executeUpdate();
+				
+				for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
+					insertQuestData.setInt(1, acc.index);
+					insertQuestData.setInt(2, entry.getKey());
+					insertQuestData.setBoolean(3, entry.getValue().isFinished());
+					insertQuestData.setLong(4, entry.getValue().getTimer());
+					insertQuestData.setInt(5, entry.getValue().getBranch());
+					insertQuestData.setInt(6, entry.getValue().getStage());
+					for (int i = 0; i < 5; i++) {
+						Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
+						insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+					}
+					insertQuestData.executeUpdate();
 				}
-				insertQuestData.executeUpdate();
+				
+				for (Entry<Integer, PlayerPoolDatas> entry : acc.poolDatas.entrySet()) {
+					insertPoolData.setInt(1, acc.index);
+					insertPoolData.setInt(2, entry.getKey());
+					insertPoolData.setLong(3, entry.getValue().getLastGive());
+					insertPoolData.setString(4, getCompletedQuestsString(entry.getValue().getCompletedQuests()));
+					insertPoolData.executeUpdate();
+				}
+				
+				amount++;
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName());
+				ex.printStackTrace();
+				failed++;
 			}
-			amount++;
 		}
 
-		return "§aMigration succeed! " + amount + " accounts migrated.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
+		return "§aMigration succeed! " + amount + " accounts migrated, " + failed + " accounts failed to migrate.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 	}
-
-	public void save() {}
+	
+	protected static String getCompletedQuestsString(Set<Integer> completedQuests) {
+		return completedQuests.isEmpty() ? null : completedQuests.stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";"));
+	}
 
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
@@ -385,7 +407,7 @@ public class PlayersManagerDB extends PlayersManager {
 		
 		@Override
 		public void updatedCompletedQuests() {
-			updateData(updatePoolCompletedQuests, getCompletedQuests().isEmpty() ? null : getCompletedQuests().stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";")));
+			updateData(updatePoolCompletedQuests, getCompletedQuestsString(getCompletedQuests()));
 		}
 		
 		private void updateData(BQStatement dataStatement, Object data) {

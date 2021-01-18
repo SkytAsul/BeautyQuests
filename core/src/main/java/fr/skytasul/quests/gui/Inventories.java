@@ -62,7 +62,7 @@ public class Inventories{
 		}
 		
 		ClickType click = e.getClick();
-		if (click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK || click == ClickType.DROP || click == ClickType.CONTROL_DROP || click == ClickType.SWAP_OFFHAND) {
+		if (click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK || click == ClickType.DROP || click == ClickType.CONTROL_DROP || click.name().equals("SWAP_OFFHAND")) { // SWAP_OFFHAND introduced in 1.16
 			e.setCancelled(true);
 			return;
 		}
