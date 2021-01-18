@@ -21,6 +21,7 @@ msg:
     noTime: '§cDu musst warten, bevor du eine andere Quest absolvieren kannst.'
     allCompleted: '§7Du hast alle Quests abgeschlossen!'
     noAvailable: '§7Es ist keine Quest mehr verfügbar...'
+    maxQuests: '§cDu kannst nicht mehr als {0} Quest(s) gleichzeitig haben...'
   questItem:
     drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
     craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
@@ -31,6 +32,7 @@ msg:
   writeRegionName: '§aSchreibe den für den Schritt benötigten Namen der Region:'
   writeXPGain: '§aSchreibe die Menge an Erfahrungspunkten, die der Spieler erhalten wird: (Letzter Wert: {0})'
   writeMobAmount: '§aSchreibe die zu tötende Mob‐Menge:'
+  writeMobName: '§aSchreibe den benutzerdefinierten Namen der zu tötenden Kreatur:'
   writeChatMessage: '§aSchreibe die benötigte Nachricht: (Füge „{SLASH}” zum Anfang hinzu, wenn du einen Befehl ausdrücken möchtest.)'
   writeEndMessage: '§aSchreibe die am Ende der Quest oder des Schrittes gesendete Nachricht:'
   writeDescriptionText: '§aSchreibe einen Text, der das Ziel des Schrittes beschreibt:'
@@ -389,9 +391,10 @@ inv:
   mobs:
     name: Mobs auswählen
     none: '§aKlicke, um ein Mob hinzuzufügen.'
-    click: |-
-      §7Linksklicke zum Bearbeiten.
-      Rechtsklicke zum Löschen.
+    clickLore: |-
+      §a§lLinksklick§a, um Anzahl zu bearbeiten.
+      §a§l§nShift§a§l + Linksklick§a, um Mob-Namen zu bearbeiten.
+      §c§lRechtsklick§c zum Löschen.
   mobSelect:
     name: Wähle den Mobtyp
     bukkitEntityType: '§eObjekttyp auswählen'
@@ -529,6 +532,7 @@ misc:
     prefix: '§6<§e§lQuests§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
   time:
     days: '{0} Tage'
     hours: '{0} Stunden'

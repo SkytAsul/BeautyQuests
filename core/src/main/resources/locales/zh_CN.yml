@@ -32,13 +32,14 @@ msg:
   writeRegionName: '输入任务阶段所需前往的区域名.'
   writeXPGain: '输入玩家获得的经验点. 最终获得: §a{0}'
   writeMobAmount: '输入要击杀的怪物数.'
+  writeMobName: '§a请输入要击杀的自定义怪物名称：'
   writeChatMessage: '要玩家输入的消息 (在开头加上 {SLASH} 来让玩家输入指令).'
   writeEndMessage: '输入在任务或任务阶段结束后发送给玩家的消息'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
   moveToTeleportPoint: 前往指定的传送点.
-  writeNpcName: '输入NPC名称.'
-  writeNpcSkinName: '输入NPC皮肤名.'
+  writeNpcName: '§a请输入NPC名称：'
+  writeNpcSkinName: '§a请输入NPC皮肤名：'
   writeQuestName: '§a输入任务名：'
   writeCommand: '§a输入指令. (开头无需加上斜杠/) 你可以用 {PLAYER}来代表玩家名.'
   writeHologramText: "§a输入全息文字. (输入 \"none\" 则不显示, 输入 \"null\" 显示默认文本)\n"
@@ -389,6 +390,10 @@ inv:
   mobs:
     name: 选择怪物
     none: '§a点击添加怪物'
+    clickLore: |-
+      §a§l左击§a以编辑数量。
+      §l§l§nShift§a§l+左击§a以编辑生物名称。
+      §c§l右击§c以删除。
   mobSelect:
     name: 选择怪物类型
     bukkitEntityType: '§e选择一个生物类型'
@@ -526,6 +531,7 @@ misc:
     prefix: '§6<§e§l任务§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
   time:
     days: '{0}天'
     hours: '{0}小时'

@@ -32,6 +32,7 @@ msg:
   writeRegionName: '§aเขียนชื่อ region ที่ต้องการ เพื่อ step ขั้นต่อไป:'
   writeXPGain: '§aกำหนดจำนวน EXP ที่ผู้เล่นจะได้รับ: (Last value: {0})'
   writeMobAmount: '§aกำหนดจำนวน mobs ที่ต้องฆ่า:'
+  writeMobName: '§aเขียนชื่อที่กำหนดเองของ mob ที่จะฆ่า:'
   writeChatMessage: '§aเขียนข้อความ: (Add "{SLASH}" หากคุณต้องการให้ใช้ command ในการเริ่มต้น.)'
   writeEndMessage: "§aเขียนข้อความที่ต้องการส่ง เมื่อจบภารกิจ หรือจบสเตจ:\n"
   writeDescriptionText: '§aเขียนข้อความ เพื่ออธิบายเป้าหมายของสเตจ:'
@@ -390,6 +391,10 @@ inv:
   mobs:
     name: เลือก mobs
     none: '§aคลิกเพื่อเพิ่ม mob'
+    clickLore: |-
+      §a§left-click§aเพื่อแก้ไขจำนวนเงิน
+      §a§l§nShift§a§l + คลิกซ้าย a เพื่อแก้ไขชื่อม็อบ
+      §c§คลิกขวา c เพื่อลบ
   mobSelect:
     name: เลือก mob type
     bukkitEntityType: '§eเลือก entity type'
@@ -527,6 +532,7 @@ misc:
     prefix: '§6<§e§lภารกิจ§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
   time:
     days: '{0} วัน'
     hours: '{0} ชั่วโมง'

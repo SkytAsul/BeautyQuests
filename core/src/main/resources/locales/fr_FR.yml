@@ -327,6 +327,7 @@ inv:
     setItemsRewards: '§eModifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
     setCheckpointReward: '§eModifier les récompenses du checkpoints'
+    setRewardsWithRequirements: '§eRécompenses avec requirements'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
@@ -417,6 +418,8 @@ inv:
        World : {3}
   checkpointActions:
     name: Actions du checkpoint
+  rewardsWithRequirements:
+    name: Récompenses avec requirements
   listAllQuests:
     name: Quêtes
   listPlayerQuests:

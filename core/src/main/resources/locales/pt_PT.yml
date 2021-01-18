@@ -15,6 +15,9 @@ msg:
   quests:
     nopStep: '§cEsta missão não tem nenhum passo.'
     updated: '§7Missão §e{0}§7 atualizada.'
+    failed: '§cVocê falhou na missão {0}...'
+  pools:
+    noAvailable: '§7TNão existe missões disponíveis...'
   stageMobs:
     noMobs: '§cNesta etapa não é preciso matar nenhum mob.'
     listMobs: '§aDeves matar {0}.'
@@ -132,12 +135,15 @@ msg:
       choosePlaceholderRequired:
         identifier: '§aEscreve o nome do espaço reservado obrigatório sem os caracteres percentuais:'
       chooseSkillRequired: '§aEscreve o nome da habilidade necessária:'
+      chooseMoneyRequired: '§aEscreva a quantidade de dinheiro necessário:'
       reward:
         permissionName: '§aEscreva o nome da permissão.'
         money: '§aEscreve a quantidade do dinheiro recebido:'
+      chooseObjectiveRequired: '§aEscreva o nome do objetivo.'
     selectWantedBlock: '§aClica com o pau no bloco desejado para a etapa.'
     itemCreator:
       itemType: '§aEscreve o nome do tipo de item desejado:'
+      itemAmount: '§aEscreva a quantidade de item(ns):'
       itemName: '§aEscreve o nome do item:'
       itemLore: '§aModifica o conhecimento do item: (Escreve "help" para obter ajuda.)'
       unknownItemType: '§cTipo de item desconhecido.'
@@ -205,6 +211,8 @@ inv:
     fish: '§aApanhar peixe'
     craft: '§aCriar item'
     bucket: '§aEncher baldes'
+    location: Ir para Localização
+    playTime: '§eTempo de jogo'
     NPCText: '§eEditar diálogo'
     hideClues: Ocultar partículas e hologramas
     editMobsKill: '§eEditar mobs para matar'
@@ -269,7 +277,11 @@ inv:
     setPermReward: '§eEditar permissões'
     setMoneyReward: '§eEditar recompensa monetária'
     selectStarterNPC: '§e§lSelecionar iniciador de NPC'
+    createQuestName: '§lCriar missão'
+    createQuestLore: Você deve definir um nome para a missão.
+    editQuestName: '§lEditar missão'
     endMessage: '§eEditar mensagem final'
+    endMessageLore: A mensagem será enviada para o jogador ao final da missão.
     startDialog: '§eEditar diálogo inicial'
     editRequirements: '§eEditar requisitos'
     startRewards: '§6Recompensas de início'
