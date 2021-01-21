@@ -161,6 +161,18 @@ public class NPCStarter {
 		return quests;
 	}
 	
+	public Hologram getHologramText(){
+		return hologramText;
+	}
+	
+	public Hologram getHologramLaunch(){
+		return hologramLaunch;
+	}
+	
+	public Hologram getHologramLaunchNo(){
+		return hologramLaunchNo;
+	}
+	
 	public void addQuest(Quest quest) {
 		if (!quests.add(quest)) return;
 		if (hologramText.enabled && quest.hasOption(OptionHologramText.class)) hologramText.setText(quest.getOption(OptionHologramText.class).getValue());
