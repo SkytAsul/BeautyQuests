@@ -74,8 +74,6 @@ gps: false
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
-# (PlaceholderAPI) Max amount of lines for the splitted placeholder %beautyquests_started_ordered_X%
-splittedAdvancementPlaceholderMax: 3
 # (HolographicDisplays) Disable the hologram above NPC's head
 disableTextHologram: false
 # (HolographicDisplays) Value added to the hologram height (decimal value)
@@ -86,6 +84,12 @@ holoLaunchItemName: BOOK
 holoTalkItemName: COAL
 # (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
+# (PlaceholdersAPI) Configuration for %beautyquests_started_ordered% placeholder
+startedQuestsPlaceholder:
+  # Max length of a line if using splitted placeholder
+  lineLength: 30
+  # Time (in seconds) before the shown quest change in placeholder
+  changeTime: 10
 # dynmap integration options
 dynmap:
   markerSetName: "Quests"

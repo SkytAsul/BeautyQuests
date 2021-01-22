@@ -138,8 +138,9 @@ public class QuestsAPI {
 
 	public static void updateQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
 		for (Quest qu : BeautyQuests.getInstance().getQuests()) {
+			if (withoutScoreboard && !qu.isScoreboardEnabled()) continue;
 			boolean contains = list.contains(qu);
-			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) {
+			if (qu.hasStarted(acc)) {
 				if (!list.contains(qu)) list.add(qu);
 			}else if (contains) list.remove(qu);
 		}

@@ -47,7 +47,6 @@ public class QuestsConfiguration {
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
-	private static int splittedAdvancementPlaceholderMax = 3;
 	private static ParticleEffect.Particle particleStart;
 	private static ParticleEffect.Particle particleTalk;
 	private static ParticleEffect.Particle particleNext;
@@ -129,7 +128,6 @@ public class QuestsConfiguration {
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
 		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
@@ -371,10 +369,6 @@ public class QuestsConfiguration {
 	
 	public static int dynmapMinimumZoom(){
 		return dMinZoom;
-	}
-	
-	public static int getMaxSplittedAdvancementPlaceholder(){
-		return splittedAdvancementPlaceholderMax;
 	}
 	
 	public static boolean isMinecraftTranslationsEnabled() {

@@ -140,7 +140,7 @@ public abstract class Editor implements Listener{
 	}
 
 	public static void leaveAll(){
-		players.keySet().forEach(Editor::leave);
+		players.keySet().iterator().forEachRemaining(Editor::leave);
 		players.clear();
 	}
 
