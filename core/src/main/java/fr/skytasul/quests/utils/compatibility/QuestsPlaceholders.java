@@ -88,6 +88,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc, false).size();
 		
 		if (identifier.startsWith("started_ordered")) {
+			String after = identifier.substring(15);
 			if (task == null) launchTask();
 			
 			playersLock.lock();
@@ -103,16 +104,19 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 					data.left = QuestsAPI.getQuestsStarteds(data.acc, true);
 				}else QuestsAPI.updateQuestsStarteds(acc, true, data.left);
 				
-				if (data.left.isEmpty()) return Lang.SCOREBOARD_NONE.toString();
-				
-				String after = identifier.substring(15);
-				Quest quest = data.left.get(0);
-				String desc = quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
-				if (after.isEmpty()) return desc;
-				
 				try {
-					int i = Integer.parseInt(after.substring(1)) - 1;
-					if (i < 0) return "§cindex must be positive";
+					int i = -1;
+					if (!after.isEmpty()) {
+						i = Integer.parseInt(after.substring(1)) - 1;
+						if (i < 0) return "§cindex must be positive";
+					}
+					
+					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
+					
+					Quest quest = data.left.get(0);
+					String desc = quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+					if (after.isEmpty()) return desc;
+				
 					try {
 						List<String> lines = Utils.wordWrap(desc, lineLength);
 						if (i >= lines.size()) return "";

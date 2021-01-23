@@ -237,7 +237,7 @@ public class NPCStarter {
 		removeHolograms();
 	}
 	
-	class Hologram{
+	public class Hologram {
 		boolean visible;
 		boolean enabled;
 		boolean canAppear;
