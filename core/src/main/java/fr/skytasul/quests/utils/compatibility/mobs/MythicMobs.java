@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -49,6 +50,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 			}
 
 			public void click(MythicMob existing, ItemStack item, ClickType clickType) {
+				Inventories.closeAndExit(p);
 				run.accept(existing);
 			}
 		}.create(p);

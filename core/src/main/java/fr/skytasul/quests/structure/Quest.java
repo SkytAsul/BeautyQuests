@@ -1,12 +1,13 @@
 package fr.skytasul.quests.structure;
-
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.skytasul.quests.api.events.*;
+import fr.skytasul.quests.utils.types.Dialog;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,11 +18,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
-import fr.skytasul.quests.api.events.QuestFinishEvent;
-import fr.skytasul.quests.api.events.QuestLaunchEvent;
-import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
-import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -35,8 +31,10 @@ import fr.skytasul.quests.options.OptionDescription;
 import fr.skytasul.quests.options.OptionEndMessage;
 import fr.skytasul.quests.options.OptionEndRewards;
 import fr.skytasul.quests.options.OptionHide;
+import fr.skytasul.quests.options.OptionHideNoRequirements;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.options.OptionQuestMaterial;
+import fr.skytasul.quests.options.OptionQuestPool;
 import fr.skytasul.quests.options.OptionRepeatable;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionScoreboardEnabled;
@@ -48,7 +46,6 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -174,6 +171,10 @@ public class Quest implements Comparable<Quest> {
 		return getOptionValueOrDef(OptionHide.class);
 	}
 	
+	public boolean isHiddenWhenRequirementsNotMet() {
+		return getOptionValueOrDef(OptionHideNoRequirements.class);
+	}
+	
 	public boolean canBypassLimit() {
 		return getOptionValueOrDef(OptionBypassLimit.class);
 	}
@@ -258,7 +259,13 @@ public class Quest implements Comparable<Quest> {
 	
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getValue().send(p, getOptionValueOrDef(OptionStarterNPC.class), () -> attemptStart(p));
+			Dialog dialog = getOption(OptionStartDialog.class).getValue();
+			NPC npc = getOptionValueOrDef(OptionStarterNPC.class);
+			Runnable runnable = () -> attemptStart(p);
+			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
+			Bukkit.getPluginManager().callEvent(event);
+			if (event.isCancelled()) return;
+			dialog.send(p, npc, runnable);
 		}else attemptStart(p);
 	}
 
@@ -312,6 +319,7 @@ public class Quest implements Comparable<Quest> {
 				manager.remove(acc);
 				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
 				questDatas.setFinished(true);
+				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, getOptionValueOrDef(OptionTimer.class));
@@ -415,25 +423,6 @@ public class Quest implements Comparable<Quest> {
 					break;
 				}
 			}
-		}
-		
-		// migration from old player datas - TODO delete on 0.19
-		if (map.contains("finished")) {
-			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-			for (String id : (List<String>) map.get("finished")) {
-				managerYAML.getByIndex(id).getQuestDatas(qu).setFinished(true);
-			}
-		}
-		if (map.contains("inTimer")) {
-			PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-			map.getConfigurationSection("inTimer").getValues(false).forEach((account, time) -> {
-				try {
-					PlayerAccount acc = managerYAML.getByIndex(account);
-					acc.getQuestDatas(qu).setTimer(Utils.getDateFormat().parse((String) time).getTime());
-				}catch (ParseException e) {
-					BeautyQuests.loadingFailure = true;
-				}
-			});
 		}
 
 		return qu;

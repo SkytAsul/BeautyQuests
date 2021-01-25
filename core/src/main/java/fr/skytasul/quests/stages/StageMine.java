@@ -23,7 +23,6 @@ import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -115,17 +114,6 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 
 		StageMine stage = new StageMine(branch, objects);
 		stage.deserialize(map);
-
-		if (map.containsKey("remaining")) {
-			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, List<Map<String, Object>>>) map.get("remaining")).forEach((acc, blocks) -> {
-				Map<BQBlock, Integer> blocksMap = new HashMap<>();
-				for (Map<String, Object> block : blocks) {
-					blocksMap.put(new BQBlock(XMaterial.valueOf((String) block.get("type"))), (int) block.get("amount"));
-				}
-				stage.migrateDatas(migration.getByIndex(acc), blocksMap);
-			});
-		}
 
 		if (map.containsKey("placeCancelled")) stage.placeCancelled = (boolean) map.get("placeCancelled");
 		return stage;

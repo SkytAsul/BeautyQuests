@@ -48,9 +48,5 @@ public class SelectNPC extends InventoryClear{
 		Utils.sendMessage(p, Lang.NPC_EDITOR_ENTER.toString());
 		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
-	
-	public void end(){
-		super.end();
-	}
 
 }

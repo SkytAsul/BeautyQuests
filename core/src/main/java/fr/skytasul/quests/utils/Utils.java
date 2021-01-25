@@ -82,8 +82,8 @@ public class Utils{
 		List<String> msg = new ArrayList<>();
 		for (AbstractReward rew : rewards) {
 			try {
-				String tmp = rew.give(p);
-				if (tmp != null) msg.add(tmp);
+				List<String> messages = rew.give(p);
+				if (messages != null) msg.addAll(messages);
 			}catch (Throwable e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
 				e.printStackTrace();
@@ -98,6 +98,26 @@ public class Utils{
 		int j = i / 60;
 		i = i % 60;
 		return i < 10 ? j + ":0" + i : j + ":" + i;
+	}
+	
+	public static String millisToHumanString(long time) {
+		StringBuilder sb = new StringBuilder();
+		
+		long days = time / 86_400_000;
+		if (days != 0) sb.append(Lang.TimeDays.format(days));
+		time -= days * 86_400_000;
+		
+		long hours = time / 3_600_000;
+		if (sb.length() != 0) sb.append(' ');
+		if (hours != 0) sb.append(Lang.TimeHours.format(hours));
+		time -= hours * 3_600_000;
+		
+		long minutes = time / 60_000;
+		if (sb.length() != 0) sb.append(' ');
+		if (minutes != 0) sb.append(Lang.TimeMinutes.format(minutes));
+		time -= minutes * 60_000;
+		
+		return sb.toString();
 	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
@@ -344,6 +364,7 @@ public class Utils{
 		StringBuilder line = new StringBuilder();
 		String lastColors = "";
 		String colors = "";
+		boolean first = false;
 		//boolean colorsSkip = true;
 		List<String> lines = new LinkedList<String>();
 		
@@ -352,12 +373,14 @@ public class Utils{
 			
 			// skip chat color modifiers
 			if (c == ChatColor.COLOR_CHAR) {
-				String color = ChatColor.getByChar(rawChars[i + 1]).toString();
-				word.append(color);
-				colors = ChatColor.getLastColors(colors + color);
-				i++; // Eat the next character as we have already processed it
-				//colorsSkip = true;
-				continue;
+				ChatColor color = ChatColor.getByChar(rawChars[i + 1]);
+				if (color != null) {
+					word.append(color.toString());
+					colors = ChatColor.getLastColors(colors + color.toString());
+					i++; // Eat the next character as we have already processed it
+					//colorsSkip = true;
+					continue;
+				}
 			}
 			
 			if (c == ' ' || c == '\n') {
@@ -375,6 +398,7 @@ public class Utils{
 					lines.add(line.toString());
 					line = new StringBuilder();
 					line.append(colors);
+					first = true;
 				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
 					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
@@ -389,7 +413,9 @@ public class Utils{
 					}
 				}else {
 					if (line.length() > 0) {
-						line.append(' ');
+						if (first) {
+							first = false;
+						}else line.append(' ');
 					}
 					line.append(word);
 					lastColors = colors;
@@ -400,6 +426,7 @@ public class Utils{
 					lines.add(line.toString());
 					line = new StringBuilder();
 					line.append(lastColors);
+					first = true;
 				}
 				//colorsSkip = false;
 			}else {

@@ -17,6 +17,11 @@ msg:
     updated: '§7已更新任务 {0} !'
     checkpoint: '§7已到达任务记录点！'
     failed: '§6任务{0}失败……'
+  pools:
+    noTime: '§c你必须先等待一会儿才能执行其它任务。'
+    allCompleted: '§7你已完成所有任务！'
+    noAvailable: '§7没有更多可用的任务……'
+    maxQuests: '§c你不能同时进行多于 {0}个任务……'
   questItem:
     drop: '§c你不能丢弃任务物品！'
     craft: '§c你不能用任务物品来合成物品！'
@@ -27,13 +32,14 @@ msg:
   writeRegionName: '输入任务阶段所需前往的区域名.'
   writeXPGain: '输入玩家获得的经验点. 最终获得: §a{0}'
   writeMobAmount: '输入要击杀的怪物数.'
+  writeMobName: '§a请输入要击杀的自定义怪物名称：'
   writeChatMessage: '要玩家输入的消息 (在开头加上 {SLASH} 来让玩家输入指令).'
   writeEndMessage: '输入在任务或任务阶段结束后发送给玩家的消息'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
   moveToTeleportPoint: 前往指定的传送点.
-  writeNpcName: '输入NPC名称.'
-  writeNpcSkinName: '输入NPC皮肤名.'
+  writeNpcName: '§a请输入NPC名称：'
+  writeNpcSkinName: '§a请输入NPC皮肤名：'
   writeQuestName: '§a输入任务名：'
   writeCommand: '§a输入指令. (开头无需加上斜杠/) 你可以用 {PLAYER}来代表玩家名.'
   writeHologramText: "§a输入全息文字. (输入 \"none\" 则不显示, 输入 \"null\" 显示默认文本)\n"
@@ -157,7 +163,7 @@ msg:
       choosePermissionMessage: '§e如果玩家没有所需权限则显示的拒绝消息. (输入 "null" 跳过这步)'
       choosePlaceholderRequired:
         identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
-        value: '§a输入所需的 §6%{0}% 占位符的数值§a:'
+        value: '§a请输入所需的§e%§e{0}§e%§a占位符值：'
       chooseSkillRequired: '§a输入技能名:'
       chooseMoneyRequired: '§e输入所需金额:'
       reward:
@@ -175,6 +181,8 @@ msg:
       itemLore: '§e修改物品描述. 输入 "help" 查看帮助.'
       unknownItemType: '§c未知的物品类型.'
       invalidItemType: '§c无效的物品类型 (必须是物品而不能是方块).'
+      unknownBlockType: '§c未知方块类型。'
+      invalidBlockType: '§c无效的方块类型。'
     dialog:
       syntax: '§c正确用法 : {0}{1} <消息>'
       syntaxRemove: '§c正确用法: remove <id>'
@@ -218,6 +226,10 @@ msg:
     noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
     comparisonType: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§lger或equals§r§a。输入 §onull §r§a 来使用。'
     scoreboardObjectiveNotFound: '§c未知的计分板目标。'
+    pool:
+      hologramText: '请输入该池的自定义全息显示文本（输入“null”使用默认值）。'
+      maxQuests: '输入在该池中可运行的最大任务数。'
+      time: '请输入玩家可接取新任务的等候天数。'
   writeCommandDelay: '§a请输入指令延迟，单位为刻。'
 advancement:
   finished: Finished
@@ -226,6 +238,7 @@ inv:
   validate: '§b§l确认'
   cancel: '§c§l取消'
   search: '§e§l搜索'
+  addObject: '§a添加一个目标'
   confirm:
     name: '§8你确认?'
     'yes': '§a确认'
@@ -247,6 +260,7 @@ inv:
     location: 前往指定位置
     playTime: '§e游戏时间'
     NPCText: '§e编辑NPC的文本对话'
+    NPCSelect: '§e选择或创建NPC'
     hideClues: 隐藏任务指示 (粒子效果和全息文字)
     editMobsKill: '§e编辑要击杀的怪物'
     mobsKillFromAFar: 需要远程击杀怪物
@@ -261,6 +275,7 @@ inv:
     toggleRegionExit: 退出时
     stageStartMsg: '§e编辑阶段开始的消息'
     selectBlockLocation: '§6选择方块位置'
+    selectBlockMaterial: '§e选择方块材料'
     leftClick: 必须左击
     editFishes: '§e编辑所需的鱼'
     editItem: '§e编辑要合成的物品'
@@ -303,6 +318,8 @@ inv:
     scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
     hideItem: 隐藏任务 (菜单和卫星地图)
     hideItemLore: 如果启用，任务将不会在dynmap或任务菜单中显示。
+    hideNoRequirementsItem: 未满足需求时隐藏
+    hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
     bypassLimit: 忽略任务上限
     bypassLimitLore: 如果启用，即使玩家已经达到任务上限也能接受任务。
     questName: '§a§l编辑任务名'
@@ -337,6 +354,8 @@ inv:
     customMaterialLore: 在任务菜单中代表该任务的物品图标。
     failOnDeath: 玩家死亡时任务失败
     failOnDeathLore: 当玩家死亡时是否取消任务？
+    questPool: '§e任务池'
+    questPoolLore: 将该任务加到任务池中
     keepDatas: 保留玩家数据
     keepDatasLore: |-
       强制插件保存玩家数据，即使是已编辑阶段也会保存。
@@ -344,6 +363,7 @@ inv:
     loreReset: '§e§l所有玩家的进度将被重置'
     optionValue: '§8数值：§7{0}'
     defaultValue: '§8(默认值)'
+    requiredParameter: '§7所需参数'
   itemsSelect:
     name: 编辑物品
     none: |-
@@ -370,8 +390,10 @@ inv:
   mobs:
     name: 选择怪物
     none: '§a点击添加怪物'
-    click: |-
-      §7左键编辑,右键删除.
+    clickLore: |-
+      §a§l左击§a以编辑数量。
+      §l§l§nShift§a§l+左击§a以编辑生物名称。
+      §c§l右击§c以删除。
   mobSelect:
     name: 选择怪物类型
     bukkitEntityType: '§e选择一个生物类型'
@@ -440,6 +462,10 @@ inv:
   blocksList:
     name: 选择方块
     addBlock: '§a点击添加一个方块.'
+  blockAction:
+    name: 选择方块行动
+    location: '§e选择精确位置'
+    material: '§e选择方块材料'
   buckets:
     name: 桶的类型
   permission:
@@ -457,6 +483,23 @@ inv:
   classesList.name: 职业列表
   factionsRequired.name: 所需派系
   factionsList.name: 派系列表
+  poolsManage:
+    name: 任务池
+    itemName: '§a池#{0}'
+    itemDescription: |-
+      §8NPC：§7{0}
+      §8最大任务数：§7{1}
+      §8可以重复完成任务数：§7{2}
+      §8任务间隔： §7{3}ms
+      §8全息文本：§7{4}
+    create: '§a创建一个任务池'
+  poolCreation:
+    name: 创建任务池
+    hologramText: '§e自定义任务池全息显示'
+    maxQuests: '§a最大任务数'
+    time: '§b设置任务之间的间隔'
+    redoAllowed: 是否可重复完成
+  poolsList.name: 任务池
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -472,6 +515,7 @@ scoreboard:
     placeBlocks: '§e放置{0}'
     chat: '§e输入 §6{0}'
     interact: '§e点击在§6{0}的方块'
+    interactMaterial: '§e点击§6{0}§e方块'
     fish: '§e钓鱼 §6{0}'
     craft: '§e合成 §6{0}'
     bucket: '§e装满 §6{0}'
@@ -487,6 +531,11 @@ misc:
     prefix: '§6<§e§l任务§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
+  time:
+    days: '{0}天'
+    hours: '{0}小时'
+    minutes: '{0}分钟'
   stageType:
     region: 寻找区域
     npc: 寻找 NPC
@@ -527,6 +576,7 @@ misc:
     milk: 牛奶桶
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
+  poolHologramText: '§e有可接受的新任务！'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§e生物类型: {0}'
   enabled: 已启用

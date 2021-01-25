@@ -36,10 +36,10 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	
 	public Inventory open(Player p){
 		if (objects.size() == 0) {
-			click(null, null, null);
+			run.accept(null);
 			return null;
 		}else if (objects.size() == 1) {
-			click(objects.get(0), null, null);
+			run.accept(objects.get(0));
 			return null;
 		}
 

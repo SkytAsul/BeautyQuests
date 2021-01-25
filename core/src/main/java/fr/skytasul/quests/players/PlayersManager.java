@@ -15,6 +15,7 @@ import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -32,6 +33,8 @@ public abstract class PlayersManager {
 
 	public abstract void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas);
 
+	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
+	
 	public abstract int removeQuestDatas(Quest quest);
 	
 	//public abstract boolean hasAccounts(Player p);
@@ -77,14 +80,31 @@ public abstract class PlayersManager {
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public synchronized static void loadPlayer(Player p) {
+		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
-			Entry<PlayerAccount, Boolean> entry = manager.load(p);
-			PlayerAccount account = entry.getKey();
-			boolean created = entry.getValue();
-			if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
-			cachedAccounts.put(p, account);
-			Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created)));
+			int i = 2;
+			while (i > 0) {
+				i--;
+				try {
+					Entry<PlayerAccount, Boolean> entry = manager.load(p);
+					PlayerAccount account = entry.getKey();
+					boolean created = entry.getValue();
+					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
+					if (!p.isOnline()) return;
+					cachedAccounts.put(p, account);
+					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+						if (p.isOnline()) {
+							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
+						}else BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+					});
+					return;
+				}catch (Exception ex) {
+					ex.printStackTrace();
+					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ". Doing " + i + " more attempt.");
+				}
+			}
+			BeautyQuests.logger.severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
 		});
 	}
 	
@@ -104,11 +124,6 @@ public abstract class PlayersManager {
 			cachedAccounts.put(p, account);
 		}*/
 		return account;
-	}
-	
-	public static PlayersManagerYAML getMigrationYAML() { // TODO remove on 0.19
-		if (!(manager instanceof PlayersManagerYAML)) throw new IllegalStateException("Old player datas cannot be migrated if the current storage type is not YAML.");
-		return (PlayersManagerYAML) manager;
 	}
 	
 }

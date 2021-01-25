@@ -21,6 +21,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
@@ -137,8 +138,9 @@ public class QuestsAPI {
 
 	public static void updateQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
 		for (Quest qu : BeautyQuests.getInstance().getQuests()) {
+			if (withoutScoreboard && !qu.isScoreboardEnabled()) continue;
 			boolean contains = list.contains(qu);
-			if (qu.hasStarted(acc) && (withoutScoreboard ? qu.isScoreboardEnabled() : true)) {
+			if (qu.hasStarted(acc)) {
 				if (!list.contains(qu)) list.add(qu);
 			}else if (contains) list.remove(qu);
 		}
@@ -153,21 +155,22 @@ public class QuestsAPI {
 		return i;
 	}
 
-	public static List<Quest> getQuestsFinished(PlayerAccount acc){
+	public static List<Quest> getQuestsFinished(PlayerAccount acc, boolean hide) {
 		List<Quest> finished = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
+			if (hide && qu.isHidden()) continue;
 			if (qu.hasFinished(acc)) finished.add(qu);
 		}
 		return finished;
 	}
 
-	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean redoable) {
+	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean clickableAndRedoable) {
 		List<Quest> unstarted = new ArrayList<>();
 		for (Quest qu : BeautyQuests.getInstance().getQuests()){
 			if (hide && qu.isHidden()) continue;
 			if (qu.hasStarted(acc)) continue;
 			if (qu.hasFinished(acc)) {
-				if (!redoable || !qu.isRepeatable() || !qu.testTimer(acc, false)) continue;
+				if (!clickableAndRedoable || !qu.isRepeatable() || !qu.getOptionValueOrDef(OptionStartable.class) || !qu.testTimer(acc, false)) continue;
 			}
 			unstarted.add(qu);
 		}
@@ -180,7 +183,8 @@ public class QuestsAPI {
 	}
 	
 	public static boolean isQuestStarter(NPC npc){
-		return BeautyQuests.getInstance().getNPCs().containsKey(npc);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		return starter != null && !starter.getQuests().isEmpty();
 	}
 
 	public static boolean hasQuestStarted(Player p, NPC npc){

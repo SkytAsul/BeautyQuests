@@ -1,14 +1,21 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -21,17 +28,22 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class QuestsPlaceholders extends PlaceholderExpansion {
 	
-	Map<Player, List<Quest>> ordered = new HashMap<>();
-	Map<Player, List<String>> split = new HashMap<>();
+	private final int lineLength, changeTime;
+	private BukkitTask task;
+	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
+	private ReentrantLock playersLock = new ReentrantLock();
 	
-	private QuestsPlaceholders() {}
+	private QuestsPlaceholders(ConfigurationSection placeholderConfig) {
+		lineLength = placeholderConfig.getInt("lineLength");
+		changeTime = placeholderConfig.getInt("changeTime");
+	}
 	
 	public static String setPlaceholders(OfflinePlayer p, String text) {
 		return PlaceholderAPI.setPlaceholders(p, text);
 	}
 	
-	static void registerPlaceholders(){
-		new QuestsPlaceholders().register();
+	static void registerPlaceholders(ConfigurationSection placeholderConfig) {
+		new QuestsPlaceholders(placeholderConfig).register();
 		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
 	}
 	
@@ -61,6 +73,11 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	@Override
+	public List<String> getPlaceholders() {
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "started_ordered");
+	}
+	
+	@Override
 	public String onRequest(OfflinePlayer off, String identifier) {
 		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
 		if (!off.isOnline()) return "§cerror: offline";
@@ -68,48 +85,51 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount")) return "" + QuestsAPI.getQuestsStarteds(acc).size();
-		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc).size();
+		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc, false).size();
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);
+			if (task == null) launchTask();
+			
+			playersLock.lock();
 			try {
-				Quest qu = null;
-				String desc = null;
-				if (after.isEmpty() || after.equals("_1")) {
-					if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc, true));
-					List<Quest> left = ordered.get(p);
-					QuestsAPI.updateQuestsStarteds(acc, true, left);
-					if (left.isEmpty()) {
-						split.remove(p);
-						return Lang.SCOREBOARD_NONE.toString();
-					}
-					while (!(qu = left.get(0)).hasStarted(acc)) {
-						left.remove(0);
-					}
-					left.remove(0);
-					if (left.isEmpty()) ordered.remove(p);
-					desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+				PlayerPlaceholderData data = players.get(p);
+				
+				if (data == null) {
+					data = new PlayerPlaceholderData(acc);
+					players.put(p, data);
 				}
 				
-				if (after.isEmpty()) {
-					return "§6" + qu.getName() + " §e: §o" + desc;
-				}
-				int i = Integer.parseInt(after.substring(1));
-				if (i > 1) {
-					if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
-					List<String> ls = split.get(p);
-					if (ls != null && ls.size() > i - 2) return ls.get(i - 2);
-					return "";
-				}
-				split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
-				return "§6" + qu.getName();
+				if (data.left.isEmpty()) {
+					data.left = QuestsAPI.getQuestsStarteds(data.acc, true);
+				}else QuestsAPI.updateQuestsStarteds(acc, true, data.left);
 				
-				/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
-				return "§6" + qu.getName() + " §e: §o" + (stage == null ? "finishing" : stage.getDescriptionLine(acc));*/
-			}catch (Exception ex) {
-				ordered.remove(p);
-				split.remove(p);
-				return ex.getMessage();
+				try {
+					int i = -1;
+					if (!after.isEmpty()) {
+						i = Integer.parseInt(after.substring(1)) - 1;
+						if (i < 0) return "§cindex must be positive";
+					}
+					
+					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
+					
+					Quest quest = data.left.get(0);
+					String desc = quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+					if (after.isEmpty()) return desc;
+				
+					try {
+						List<String> lines = Utils.wordWrap(desc, lineLength);
+						if (i >= lines.size()) return "";
+						return lines.get(i);
+					}catch (Exception ex) {
+						players.remove(p);
+						return "§c" + ex.getMessage();
+					}
+				}catch (Exception ex) {
+					return "§cinvalid placeholder";
+				}
+			}finally {
+				playersLock.unlock();
 			}
 		}
 		
@@ -120,9 +140,6 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (qu.hasStarted(acc)) {
 					return qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
-					
-					/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
-					return stage == null ? "§ofinishing" : stage.getDescriptionLine(acc);*/
 				}
 				if (qu.hasFinished(acc)) return Lang.Finished.toString();
 				return Lang.Not_Started.toString();
@@ -131,6 +148,34 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 			}
 		}
 		return null;
+	}
+	
+	private void launchTask() {
+		task = Bukkit.getScheduler().runTaskTimerAsynchronously(BeautyQuests.getInstance(), () -> {
+			playersLock.lock();
+			try {
+				for (Iterator<Entry<Player, PlayerPlaceholderData>> iterator = players.entrySet().iterator(); iterator.hasNext();) {
+					Entry<Player, PlayerPlaceholderData> entry = iterator.next();
+					if (!entry.getKey().isOnline()) {
+						iterator.remove();
+						continue;
+					}
+					PlayerPlaceholderData data = entry.getValue();
+					if (!data.left.isEmpty()) data.left.remove(0);
+				}
+			}finally {
+				playersLock.unlock();
+			}
+		}, 0, changeTime * 20);
+	}
+	
+	class PlayerPlaceholderData {
+		private List<Quest> left = Collections.EMPTY_LIST;
+		private PlayerAccount acc;
+		
+		public PlayerPlaceholderData(PlayerAccount acc) {
+			this.acc = acc;
+		}
 	}
 	
 }

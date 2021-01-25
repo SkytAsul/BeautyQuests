@@ -103,6 +103,7 @@ public class QuestBranch {
 			}
 			return stb.toString();
 		}
+		if (datas.getStage() < 0) return "§cerror: no stage set for branch " + getID();
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
 		return Utils.format(QuestsConfiguration.getStageDescriptionFormat(), datas.getStage() + 1, regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
 	}
@@ -114,6 +115,7 @@ public class QuestBranch {
 	}
 	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
+		if (acc == null) return false;
 		if (!acc.hasQuestDatas(getQuest())) return false;
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		if (datas.getBranch() != getID()) return false;
@@ -127,7 +129,7 @@ public class QuestBranch {
 		if (end) {
 			if (datas.isInEndingStages()) {
 				endStages.keySet().forEach((x) -> x.end(acc));
-			}else getRegularStage(datas.getStage()).end(acc);
+			}else if (datas.getStage() < regularStages.size()) getRegularStage(datas.getStage()).end(acc);
 		}
 		datas.setBranch(-1);
 		datas.setStage(-1);
@@ -205,8 +207,9 @@ public class QuestBranch {
 			BeautyQuests.getInstance().getLogger().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
 			remove(acc, true);
 		}else {
-			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
-			acc.getQuestDatas(getQuest()).setStage(id);
+			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
+			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && questDatas.getStage() != -1) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
+			questDatas.setStage(id);
 			if (p != null) {
 				Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
 				if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));

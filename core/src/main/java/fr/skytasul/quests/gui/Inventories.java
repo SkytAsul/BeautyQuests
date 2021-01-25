@@ -61,7 +61,8 @@ public class Inventories{
 			return;
 		}
 		
-		if (e.getClick() == ClickType.NUMBER_KEY || e.getClick() == ClickType.DOUBLE_CLICK) {
+		ClickType click = e.getClick();
+		if (click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK || click == ClickType.DROP || click == ClickType.CONTROL_DROP || click.name().equals("SWAP_OFFHAND")) { // SWAP_OFFHAND introduced in 1.16
 			e.setCancelled(true);
 			return;
 		}
@@ -71,7 +72,7 @@ public class Inventories{
 		try {
 			if (e.getCursor().getType() == Material.AIR) {
 				if (current == null || current.getType() == Material.AIR) return;
-				if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
+				if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), click)) e.setCancelled(true);
 			}else {
 				if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
 			}

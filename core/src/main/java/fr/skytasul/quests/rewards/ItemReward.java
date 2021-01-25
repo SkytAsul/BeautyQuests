@@ -1,6 +1,7 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +30,14 @@ public class ItemReward extends AbstractReward {
 		this.items = items;
 	}
 
-	public String give(Player p){
+	public List<String> give(Player p) {
 		int amount = 0;
 		for (ItemStack is : items){
 			Utils.giveItem(p, is);
 			amount += is.getAmount();
 		}
 		if (amount == 0) return null;
-		return amount + " " + Lang.Item.toString();
+		return Arrays.asList(amount + " " + Lang.Item.toString());
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.rewards;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -57,9 +58,9 @@ public abstract class AbstractReward implements QuestObject {
 	/**
 	 * Called when the reward should be given to the player
 	 * @param p Player to give the reward
-	 * @return title of the reward (for instance : "4 gold")
+	 * @return title of all the subsequent reward (for instance : "4 gold")
 	 */
-	public abstract String give(Player p);
+	public abstract List<String> give(Player p);
 	
 	@Override
 	public abstract AbstractReward clone();

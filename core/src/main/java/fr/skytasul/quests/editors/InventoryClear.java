@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class InventoryClear extends Editor{
 	
 	private ItemStack[] contents = new ItemStack[0];
+	private int heldItemSlot;
 
 	public InventoryClear(Player p, Runnable cancel) {
 		super(p, cancel);
@@ -14,11 +15,14 @@ public abstract class InventoryClear extends Editor{
 	public void begin(){
 		super.begin();
 		contents = p.getInventory().getContents();
+		heldItemSlot = p.getInventory().getHeldItemSlot();
 		p.getInventory().setContents(new ItemStack[0]);
 	}
 
 	public void end(){
+		super.end();
 		p.getInventory().setContents(contents);
+		p.getInventory().setHeldItemSlot(heldItemSlot);
 	}
 	
 }

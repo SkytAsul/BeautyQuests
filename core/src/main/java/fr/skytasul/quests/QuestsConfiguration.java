@@ -20,6 +20,7 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -36,7 +37,7 @@ public class QuestsConfiguration {
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
 	private static XMaterial item = XMaterial.BOOK;
 	private static XMaterial pageItem = XMaterial.ARROW;
-	private static int startParticleDistance;
+	private static int startParticleDistance, startParticleDistanceSquared;
 	private static int requirementUpdateTime;
 	private static boolean enablePrefix = true;
 	private static double hologramsHeight = 0.0;
@@ -47,7 +48,6 @@ public class QuestsConfiguration {
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
-	private static int splittedAdvancementPlaceholderMax = 3;
 	private static ParticleEffect.Particle particleStart;
 	private static ParticleEffect.Particle particleTalk;
 	private static ParticleEffect.Particle particleNext;
@@ -71,6 +71,7 @@ public class QuestsConfiguration {
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
+	private static boolean menuOpenNotStartedTabWhenEmpty = true;
 	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
@@ -114,20 +115,21 @@ public class QuestsConfiguration {
 		gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
-		pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
+		if (config.contains("item")) item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
+		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
 		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
+		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
+		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
+		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
 		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
@@ -281,11 +283,19 @@ public class QuestsConfiguration {
 	public static boolean isRequirementReasonSentOnMultipleQuests() {
 		return requirementReasonOnMultipleQuests;
 	}
+	
+	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
+		return menuOpenNotStartedTabWhenEmpty;
+	}
 
 	public static int getStartParticleDistance() {
 		return startParticleDistance;
 	}
 
+	public static int getStartParticleDistanceSquared() {
+		return startParticleDistanceSquared;
+	}
+	
 	public static boolean isTextHologramDisabled(){
 		return disableTextHologram;
 	}
@@ -363,10 +373,6 @@ public class QuestsConfiguration {
 	
 	public static int dynmapMinimumZoom(){
 		return dMinZoom;
-	}
-	
-	public static int getMaxSplittedAdvancementPlaceholder(){
-		return splittedAdvancementPlaceholderMax;
 	}
 	
 	public static boolean isMinecraftTranslationsEnabled() {

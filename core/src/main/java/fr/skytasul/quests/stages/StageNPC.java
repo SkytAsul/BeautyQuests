@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import fr.skytasul.quests.api.events.DialogSendEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -173,13 +175,17 @@ public class StageNPC extends AbstractStage{
 
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
 		if (dialog != null) { // dialog exists
-			dialog.send(p, npc, () -> {
+			Runnable runnable = () -> {
 				if (bringBack != null) {
 					if (!bringBack.checkItems(p, true)) return;
 					bringBack.removeItems(p);
 				}
 				finishStage(p);
-			});
+			};
+			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
+			Bukkit.getPluginManager().callEvent(event);
+			if (event.isCancelled()) return;
+			dialog.send(p, npc, runnable);
 			return;
 		}else if (bringBack != null){ // no dialog but bringback
 			bringBack.removeItems(p);

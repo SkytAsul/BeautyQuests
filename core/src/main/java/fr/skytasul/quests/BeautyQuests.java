@@ -43,6 +43,7 @@ import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -78,6 +79,7 @@ public class BeautyQuests extends JavaPlugin{
 	private List<Quest> quests = new ArrayList<>();
 	private Map<NPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
+	private QuestPoolsManager pools;
 	public static int lastID = 0;
 	
 	/* ---------- Operations -------- */
@@ -85,6 +87,7 @@ public class BeautyQuests extends JavaPlugin{
 	private static boolean disable = false;
 	public static boolean loadingFailure = false;
 	public static boolean savingFailure = false;
+	public static boolean loaded = false;
 	
 	/* ---------------------------------------------- */
 
@@ -247,7 +250,11 @@ public class BeautyQuests extends JavaPlugin{
 		try{
 			config = getConfig();
 			
-			QuestsConfiguration.initConfiguration(config);
+			try {
+				QuestsConfiguration.initConfiguration(config);
+			}catch (Exception ex) {
+				throw new LoadingException("An error occured while loading config parameters.", ex);
+			}
 			ConfigurationSection dbConfig = config.getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = new Database(dbConfig);
@@ -279,7 +286,7 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL" }) {
+			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}
@@ -360,6 +367,8 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}
 		
+		pools = new QuestPoolsManager(new File(getDataFolder(), "questPools.yml"));
+		
 		quests.clear();
 		lastID = data.getInt("lastID");
 
@@ -386,13 +395,15 @@ public class BeautyQuests extends JavaPlugin{
 			}
 		}
 		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
-
+		
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				PlayersManager.loadPlayer(p);
 				//getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
 			}
-		}, 5L);
+			loaded = true;
+		}, 1L);
+		
 		
 		return quests.size();
 	}
@@ -440,6 +451,7 @@ public class BeautyQuests extends JavaPlugin{
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
 		if (DependenciesManager.dyn) Dynmap.unload();
+		loaded = false;
 	}
 	
 	/* ---------- Backups ---------- */
@@ -577,6 +589,10 @@ public class BeautyQuests extends JavaPlugin{
 		return scoreboards;
 	}
 	
+	public QuestPoolsManager getPoolsManager() {
+		return pools;
+	}
+
 
 	public static BeautyQuests getInstance(){
 		return instance;

@@ -76,11 +76,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 					message = obj;
 					ItemUtils.lore(clicked, getLore());
 					gui.reopen();
-				}, () -> {
-					message = null;
-					ItemUtils.lore(clicked, getLore());
-					gui.reopen();
-				}).enter();
+				}).passNullIntoEndConsumer().enter();
 			}
 			
 		}.create(p);

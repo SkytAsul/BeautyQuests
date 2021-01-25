@@ -1,5 +1,7 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -30,11 +32,11 @@ public class XPReward extends AbstractReward {
 		this.exp = exp;
 	}
 
-	public String give(Player p) {
+	public List<String> give(Player p) {
 		if (DependenciesManager.skapi && QuestsConfiguration.xpOverridedSkillAPI()) {
 			SkillAPI.giveExp(p, exp);
 		}else p.giveExp(exp);
-		return exp + " " + Lang.Exp.toString();
+		return Arrays.asList(exp + " " + Lang.Exp.toString());
 	}
 
 	@Override

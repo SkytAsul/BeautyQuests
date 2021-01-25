@@ -21,6 +21,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Utils;
 
@@ -53,6 +54,11 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {}
 
+	@Override
+	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {
+		return new PlayerPoolDatas(acc, pool.getID());
+	}
+	
 	public int removeQuestDatas(Quest quest) {
 		loadAllAccounts();
 		int amount = 0;
@@ -127,9 +133,9 @@ public class PlayersManagerYAML extends PlayersManager {
 			int maxSize = 0;
 			for (int i = 0; i < list.size(); i++) {
 				PlayerAccount acc = list.get(i);
-				if (acc.datas.size() > maxSize) {
+				if (acc.questDatas.size() > maxSize) {
 					maxID = i;
-					maxSize = acc.datas.size();
+					maxSize = acc.questDatas.size();
 				}
 			}
 			for (int i = 0; i < list.size(); i++) {
@@ -192,7 +198,11 @@ public class PlayersManagerYAML extends PlayersManager {
 		PlayerAccount acc = createPlayerAccount(identifier, index);
 		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
 			PlayerQuestDatas questDatas = PlayerQuestDatas.deserialize(acc, (Map<String, Object>) questConfig);
-			acc.datas.put(questDatas.questID, questDatas);
+			acc.questDatas.put(questDatas.questID, questDatas);
+		}
+		for (Map<?, ?> poolConfig : datas.getMapList("pools")) {
+			PlayerPoolDatas questDatas = PlayerPoolDatas.deserialize(acc, (Map<String, Object>) poolConfig);
+			acc.poolDatas.put(questDatas.getPoolID(), questDatas);
 		}
 		addAccount(acc);
 		return acc;

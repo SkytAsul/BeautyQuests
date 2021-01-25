@@ -18,6 +18,11 @@ msg:
     updated: §7Quest §e{0}§7 updated.
     checkpoint: §7Quest checkpoint reached!
     failed: §cYou have failed the quest {0}...
+  pools:
+    noTime: §cYou must wait {0} before doing another quest.
+    allCompleted: §7You have completed all the quests!
+    noAvailable: §7There is no more quest available...
+    maxQuests: §cYou cannot have more than {0} quest(s) at the same time...
   questItem:
     drop: §cYou can't drop a quest item!
     craft: §cYou can't use a quest item to craft!
@@ -30,6 +35,7 @@ msg:
   writeXPGain: '§aWrite the amount of experience points the player will obtain: (Last
     value: {0})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
+  writeMobName: '§aWrite the custom name of the mob to kill:'
   writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if
     you want a command.)'
   writeEndMessage: '§aWrite the message that will be sent at the end of the quest
@@ -246,6 +252,10 @@ msg:
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
     comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
+    pool:
+      hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
+      maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
+      time: 'Write the number of days before players can take a new quest.'
   writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
   finished: Finished
@@ -334,6 +344,8 @@ inv:
     scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
     hideItem: Hide menu and dynmap
     hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
+    hideNoRequirementsItem: Hide when requirements not met
+    hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
     bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
     questName: §a§lEdit quest name
@@ -341,6 +353,7 @@ inv:
     setItemsRewards: §eEdit reward items
     setXPRewards: §eEdit reward experience
     setCheckpointReward: §eEdit checkpoint rewards
+    setRewardsWithRequirements: §eRewards with requirements
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     selectStarterNPC: §e§lSelect NPC starter
@@ -368,6 +381,8 @@ inv:
     customMaterialLore: Item representative of this quest in the Quests Menu.
     failOnDeath: Fail on death
     failOnDeathLore: Will the quest be cancelled when the player dies?
+    questPool: §eQuest Pool
+    questPoolLore: Attach this quest to a quest pool
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.
@@ -375,6 +390,7 @@ inv:
     loreReset: '§e§lAll players'' advancement will be reset'
     optionValue: '§8Value: §7{0}'
     defaultValue: '§8(default value)'
+    requiredParameter: '§7Required parameter'
   itemsSelect:
     name: Edit items
     none: |-
@@ -402,9 +418,10 @@ inv:
   mobs:
     name: Select mobs
     none: §aClick to add a mob.
-    click: |-
-      §7Left-click to edit.
-      Right-click to delete.
+    clickLore: |-
+      §a§lLeft-click§a to edit amount.
+      §a§l§nShift§a§l + left-click§a to edit mob name.
+      §c§lRight-click§c to delete.
   mobSelect:
     name: Select mob type
     bukkitEntityType: §eSelect entity type
@@ -427,6 +444,8 @@ inv:
        World: {3}
   checkpointActions:
     name: Checkpoint actions
+  rewardsWithRequirements:
+    name: Rewards with requirements
   listAllQuests:
     name: Quests
   listPlayerQuests:
@@ -497,6 +516,24 @@ inv:
   classesList.name: Classes list
   factionsRequired.name: Factions required
   factionsList.name: Factions list
+  poolsManage:
+    name: Quest Pools
+    itemName: '§aPool #{0}'
+    itemDescription: |-
+      §8NPC: §7{0}
+      §8Max quests: §7{1}
+      §8Can redo completed quests: §7{2}
+      §8Time between quests: §7{3}ms
+      §8Hologram text: §7{4}
+    create: §aCreate a quest pool
+  poolCreation:
+    name: Quest pool creation
+    hologramText: §ePool custom hologram
+    maxQuests: §aMax quests
+    time: §bSet time between quests
+    redoAllowed: Is redo allowed
+  poolsList.name: Quest pools
+    
 scoreboard:
   name: §6§lQuests
   noLaunched: §cNo quests in progress.
@@ -528,7 +565,11 @@ misc:
     prefix: §6<§e§lQuests§r§6> §r
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
-    offText: §r§e {0}
+    offText: §r§e{0}
+  time:
+    days: '{0} days'
+    hours: '{0} hours'
+    minutes: '{0} minutes'
   stageType:
     region: Find region
     npc: Find NPC
@@ -569,6 +610,7 @@ misc:
     milk: Milk bucket
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
+  poolHologramText: §eNew quest available!
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eEntity type: {0}'
   enabled: Enabled

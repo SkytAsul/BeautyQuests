@@ -17,6 +17,11 @@ msg:
     updated: '§7Misión §e{0}§7 actualizada.'
     checkpoint: El punto de control de tarea ha sido alcanzado
     failed: Has fallado en la búsquedast {0}
+  pools:
+    noTime: '§cDebes esperar {0} antes de hacer otra misión.'
+    allCompleted: '§7¡Has completado todas las misiones!'
+    noAvailable: '§7No hay más misiones disponibles...'
+    maxQuests: '§cNo puedes tener más de {0} mision(es) al mismo tiempo...'
   questItem:
     drop: '§c¡No puedes soltar un objeto de misión!'
     craft: '§c¡No puedes usar un objeto de misión para fabricar!'
@@ -27,6 +32,7 @@ msg:
   writeRegionName: '§aEscribe el nombre de la región requerida para este paso:'
   writeXPGain: '§aEscribe la cantidad de puntos de experiencia que el jugador obtendrá: (Último valor: {0})'
   writeMobAmount: '§aEscribe la cantidad de mobs a matar:'
+  writeMobName: '§aEscribe el nombre personalizado del mob para matar:'
   writeChatMessage: '§aEscribir mensaje requerido: (Añadir "{SLASH}" al principio si quieres un comando)'
   writeEndMessage: '§aEscribe el mensaje que será enviado al final de la misión o la etapa:'
   writeDescriptionText: '§aEscribe el texto que describe el objetivo de la etapa:'
@@ -65,12 +71,14 @@ msg:
   errorOccurred: '§cHa ocurrido un error, ¡contacta con un administrador! §4§lError: {0}'
   commandsDisabled: '§cActualmente no tienes permisos para ejecutar comandos!'
   indexOutOfBounds: '§cEl número {0} está fuera de límites! Debe estar entre {1} y {2}.'
+  invalidBlockData: '§cLos datos del bloque {0} no son válidos o son incompatibles con el bloque {1}.'
   bringBackObjects: Tráeme de nuevo {0}.
   inventoryFull: '§cTu inventario está lleno, el objeto ha sido abandonado en el suelo.'
   playerNeverConnected: '§cNo se puede encontrar información sobre el jugador {0}.'
   playerNotOnline: '§cEl jugador {0} está desconectado.'
   command:
     checkpoint:
+      noCheckpoint: '§cNo se ha encontrado ningún punto de control para la misión {0}.'
       questNotStarted: '§cNo estás haciendo esta misión.'
     setStage:
       branchDoesntExist: '§cLa rama con el id {0} no existe.'
@@ -100,11 +108,27 @@ msg:
     cancelQuest: '§6Cancelaste la misión {0}.'
     cancelQuestUnavailable: '&cLa misión {0} no puede ser cancelada.'
     backupCreated: '&6Creaste correctamente copias de seguridad de misiones e información.'
+    backupPlayersFailed: '§cLa creación de la copia de seguridad para toda la información de los jugadores ha fallado.'
+    backupQuestsFailed: '§cLa creación de la copia de seguridad para todas las misiones ha fallado.'
     adminModeEntered: '&aEntraste en el modo Admin.'
     adminModeLeft: '&aSaliste del modo Admin.'
+    scoreboard:
+      lineSet: '§6Has editado con éxito la línea {0}.'
+      lineReset: '§6Has restablecido con éxito la línea {0}.'
+      lineRemoved: '§6Has eliminado con éxito la línea {0}.'
+      lineInexistant: '§cLa línea {0} no existe.'
+      resetAll: '§6Has restablecido el marcador del jugador {0} con éxito.'
+      hidden: '§6El marcador del jugador {0} ha sido ocultado.'
+      shown: '§6El marcador del jugador {0} ha sido mostrado.'
     help:
+      header: '§6§lBeautyQuests — Ayuda'
+      create: '§6/{0} create: §eCrea una misión.'
+      edit: '§6/{0} edit: §eEditar una misión.'
+      remove: '§6/{0} remove <id>: §eElimina una misión con un id especificado o haz clic en el NPC cuando no se haya definido.'
       finishAll: '§6/{0} finishAll <player>: §eFinish all quests of a player.'
       setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the current stage/start the branch/set a stage for a branch.'
+      resetPlayer: '§6/{0} restablecido jugador <player>: §eElimina toda la información sobre un jugador.'
+      resetPlayerQuest: '§6/{0} restablecida la Misión de Jugador <player> [id]: §eElimina información de una misión para un jugador.'
       setItem: '§6/{0} setItem <talk|launch>: §eGuarda el elemento del holograma.'
       adminMode: '§6/{0} adminMode: §eActiva el Modo de administración. (Útil para mostrar mensajes de poco registro.)'
       version: '§6/{0} version: §eVer la versión actual del plugin.'
@@ -132,7 +156,6 @@ msg:
       choosePermissionMessage: '§aPuedes elegir un mensaje de rechazo si el jugador no tiene el permiso requerido. (Para saltar este paso, escribe "null".)'
       choosePlaceholderRequired:
         identifier: '§aEscribe el nombre de la variable sin el símbolo de porcentaje:'
-        value: '§aEscribe el valor requerido para la variable §6%{0}%§a:'
       chooseSkillRequired: '§aEscribe el nombre de la habilidad requerida:'
       reward:
         money: '§aEscribe la cantidad del dinero recibido:'

@@ -59,8 +59,4 @@ public class WaitClick extends InventoryClear{
 		if (cancel != null) p.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
 	
-	public void end(){
-		super.end();
-	}
-	
 }

@@ -26,7 +26,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getQuestsStarteds(acc));
 			if (notStarted) super.objects.addAll(QuestsAPI.getQuestsUnstarted(acc, false, false));
-			if (finished) super.objects.addAll(QuestsAPI.getQuestsFinished(acc));
+			if (finished) super.objects.addAll(QuestsAPI.getQuestsFinished(acc, false));
 		}else super.objects.addAll(QuestsAPI.getQuests());
 		this.run = run;
 	}

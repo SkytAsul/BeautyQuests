@@ -44,10 +44,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setCustomDescription(obj);
 				reopenGUI(p, false);
-			}, () -> {
-				this.setCustomDescription(null);
-				reopenGUI(p, false);
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		});
 		
 		line.setItem(3, StagesGUI.startMessage.clone(), (p, item) -> {
@@ -55,10 +52,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			new TextEditor<String>(p, () -> reopenGUI(p, false), obj -> {
 				setStartMessage(obj);
 				reopenGUI(p, false);
-			}, () -> {
-				setStartMessage(null);
-				reopenGUI(p, false);
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		});
 		
 		line.setItem(4, StagesGUI.validationRequirements.clone(), (p, item) -> {
@@ -106,7 +100,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	}
 	
 	public void setRequirements(List<AbstractRequirement> requirements) {
-		line.editItem(4, ItemUtils.lore(line.getItem(4), QuestOption.formatDescription(Lang.requirements.format(rewards.size()))));
+		line.editItem(4, ItemUtils.lore(line.getItem(4), QuestOption.formatDescription(Lang.requirements.format(requirements.size()))));
 		this.requirements = requirements;
 	}
 	
@@ -116,7 +110,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setCustomDescription(String customDescription) {
 		this.customDescription = customDescription;
-		line.editItem(2, ItemUtils.lore(line.getItem(2), formatValue(customDescription)));
+		line.editItem(2, ItemUtils.lore(line.getItem(2), QuestOption.formatNullableValue(customDescription)));
 	}
 	
 	public String getStartMessage() {
@@ -125,7 +119,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setStartMessage(String startMessage) {
 		this.startMessage = startMessage;
-		line.editItem(3, ItemUtils.lore(line.getItem(3), formatValue(startMessage)));
+		line.editItem(3, ItemUtils.lore(line.getItem(3), QuestOption.formatNullableValue(startMessage)));
 	}
 	
 	public StagesGUI getLeadingBranch() {
@@ -173,9 +167,5 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * @return AsbtractStage created
 	 */
 	protected abstract T finishStage(QuestBranch branch);
-	
-	private static String formatValue(String nullable) {
-		return Lang.optionValue.format(nullable == null ? Lang.NotSet.toString() : nullable);
-	}
 	
 }

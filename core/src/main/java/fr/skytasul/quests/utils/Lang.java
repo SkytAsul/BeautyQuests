@@ -27,6 +27,11 @@ public enum Lang{
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
+	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
+	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
+	POOL_NO_AVAILABLE("msg.pools.noAvailable"),
+	POOL_MAX_QUESTS("msg.pools.maxQuests"), // 0: max quests
+	
 	QUEST_ITEM_DROP("msg.questItem.drop"),
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),
 	
@@ -38,6 +43,7 @@ public enum Lang{
 	REGION_NAME("msg.writeRegionName"),
 	XP_GAIN("msg.writeXPGain"),
 	MOB_AMOUNT("msg.writeMobAmount"),
+	MOB_NAME("msg.writeMobName"),
 	CHAT_MESSAGE("msg.writeChatMessage"),
 	END_MESSAGE("msg.writeEndMessage"),
 	DESC_MESSAGE("msg.writeDescriptionText"),
@@ -170,6 +176,10 @@ public enum Lang{
 	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
 	
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
+	
+	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
+	POOL_HOLOGRAM_MAXQUESTS("msg.editor.pool.maxQuests"),
+	POOL_HOLOGRAM_TIME("msg.editor.pool.time"),
 
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
@@ -278,6 +288,7 @@ public enum Lang{
 	cancelEvent("inv.create.cancelMessage"),
 	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
+	stageItemsMessage("inv.create.selectItemsMessage"),
 	stageRegion("inv.create.selectRegion"),
 	stageRegionExit("inv.create.toggleRegionExit"),
 	startMsg("inv.create.stageStartMsg"),
@@ -316,6 +327,8 @@ public enum Lang{
 	scoreboardLore("inv.details.scoreboardItemLore"),
 	hide("inv.details.hideItem"),
 	hideLore("inv.details.hideItemLore"),
+	hideNoRequirements("inv.details.hideNoRequirementsItem"),
+	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
 	bypassLore("inv.details.bypassLimitLore"),
 	questName("inv.details.questName"),
@@ -323,6 +336,7 @@ public enum Lang{
 	rewardItems("inv.details.setItemsRewards"),
 	rewardXP("inv.details.setXPRewards"),
 	rewardCheckpoint("inv.details.setCheckpointReward"),
+	rewardWithRequirements("inv.details.setRewardsWithRequirements"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
@@ -358,11 +372,14 @@ public enum Lang{
 	customMaterialLore("inv.details.customMaterialLore"),
 	failOnDeath("inv.details.failOnDeath"),
 	failOnDeathLore("inv.details.failOnDeathLore"),
+	questPool("inv.details.questPool"),
+	questPoolLore("inv.details.questPoolLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
 	optionValue("inv.details.optionValue"), // 0: value
 	defaultValue("inv.details.defaultValue"),
+	requiredParameter("inv.details.requiredParameter"),
 	
 	INVENTORY_ITEMS("inv.itemsSelect.name"),
 	itemsNone("inv.itemsSelect.none"),
@@ -386,7 +403,7 @@ public enum Lang{
 	
 	INVENTORY_MOBS("inv.mobs.name"),
 	mobsNone("inv.mobs.none"),
-	click("inv.mobs.click"),
+	click("inv.mobs.clickLore"),
 
 	INVENTORY_MOBSELECT("inv.mobSelect.name"),
 	bukkitMob("inv.mobSelect.bukkitEntityType"),
@@ -405,6 +422,8 @@ public enum Lang{
 	
 	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
 
+	INVENTORY_REWARDS_WITH_REQUIREMENTS("inv.rewardsWithRequirements.name"),
+	
 	INVENTORY_QUESTS_LIST("inv.listAllQuests.name"),
 	INVENTORY_PLAYER_LIST("inv.listPlayerQuests.name"),
 	notStarteds("inv.listQuests.notStarted"),
@@ -466,6 +485,19 @@ public enum Lang{
 	INVENTORY_FACTIONS_REQUIRED("inv.factionsRequired.name"),
 	INVENTORY_FACTIONS_LIST("inv.factionsList.name"),
 
+	INVENTORY_POOLS_MANAGE("inv.poolsManage.name"),
+	poolItemName("inv.poolsManage.itemName"), // 0: pool ID
+	poolItemDescription("inv.poolsManage.itemDescription"), // 0: npc ID, 1: max quests, 2: can redo, 3: time between quests, 4: hologram text
+	poolCreate("inv.poolsManage.create"),
+	
+	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
+	poolEditHologramText("inv.poolCreation.hologramText"),
+	poolMaxQuests("inv.poolCreation.maxQuests"),
+	poolTime("inv.poolCreation.time"),
+	poolRedo("inv.poolCreation.redoAllowed"),
+	
+	INVENTORY_POOLS_LIST("inv.poolsList.name"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -510,6 +542,10 @@ public enum Lang{
 	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
 	OffText("misc.format.offText"), // 1: msg
 	
+	TimeDays("misc.time.days"),
+	TimeHours("misc.time.hours"),
+	TimeMinutes("misc.time.minutes"),
+	
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),
 	Items("misc.stageType.items"),
@@ -543,10 +579,12 @@ public enum Lang{
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
+	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
 	HologramText("misc.hologramText"),
+	PoolHologramText("misc.poolHologramText"),
 	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),
 	QuestItemLore("misc.questItemLore"),

@@ -19,7 +19,6 @@ import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -68,6 +67,11 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		}
 	}
 
+	@Override
+	protected Mob<?> cloneObject(Mob<?> object) {
+		return object.clone();
+	}
+	
 	protected String getName(Mob<?> object) {
 		return object.getName();
 	}
@@ -97,20 +101,6 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		}
 		StageMobs stage = new StageMobs(branch, objects);
 		stage.deserialize(map);
-		
-		if (map.containsKey("remaining")) {
-			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			Map<String, List<Map<String, Object>>> re = (Map<String, List<Map<String, Object>>>) map.get("remaining");
-			for (Entry<String, List<Map<String, Object>>> en : re.entrySet()){
-				PlayerAccount acc = migration.getByIndex(en.getKey());
-				if (acc == null) continue;
-				Map<Mob<?>, Integer> oldMobs = new HashMap<>();
-				for (Map<String, Object> serializedMob : en.getValue()) {
-					oldMobs.put(Mob.deserialize(serializedMob), (int) serializedMob.get("amount"));
-				}
-				stage.migrateDatas(acc, oldMobs);
-			}
-		}
 
 		if (map.containsKey("shoot")) stage.shoot = (boolean) map.get("shoot");
 		return stage;

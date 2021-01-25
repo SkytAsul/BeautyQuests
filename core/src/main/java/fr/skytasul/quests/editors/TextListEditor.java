@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -29,19 +28,18 @@ public class TextListEditor extends Editor{
 		String[] args = strippedMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
-		String cmd = ChatColor.stripColor(args[0]);
+		Command cmd;
 		try{
-			Command.valueOf(cmd.toUpperCase());
+			cmd = Command.valueOf(args[0].toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(args, 1, " ");
+			msg = Utils.buildFromArray(coloredMessage.split(" "), 1, " ");
 			hasMsg = true;
 		}
-		Command comd = Command.valueOf(cmd.toUpperCase());
-		switch (comd){
+		switch (cmd) {
 		
 		case ADD:
 			if (!hasMsg){

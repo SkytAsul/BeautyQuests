@@ -6,20 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Message.Sender;
 import net.citizensnpcs.api.npc.NPC;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class Dialog implements Cloneable {
 
@@ -65,29 +61,14 @@ public class Dialog implements Cloneable {
 			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(1, 2));
 			return;
 		}
-		String text = null;
-		switch(msg.sender){
-		case PLAYER:
-			text = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), msg.text, id+1, messages.valuesSize()), true);
-			break;
-		case NPC:
-			text = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), msg.text, id + 1, messages.valuesSize()), true);
-			break;
-		case NOSENDER:
-			text = Utils.finalFormat(p, msg.text, true);
-			break;
-		}
-		if (QuestsConfiguration.sendDialogsInActionBar()){
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text.replace("{nl}", " ")));
-		}else p.sendMessage(StringUtils.splitByWholeSeparator(text, "{nl}"));
-		if (msg.sound != null) p.playSound(p.getLocation(), msg.sound, 1, 1);
+		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc, p);
+		Bukkit.getPluginManager().callEvent(event);
+		if (!event.isCancelled()) msg.sendMessage(p, npc, id, messages.valuesSize());
 		if (msg.getWaitTime() != 0) {
-			status.task = new BukkitRunnable() {
-				public void run() {
-					status.task = null;
-					send(p, npc, end);
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), msg.getWaitTime());
+			status.task = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+				status.task = null;
+				send(p, npc, end);
+			}, msg.getWaitTime());
 		}
 	}
 	
@@ -95,8 +76,15 @@ public class Dialog implements Cloneable {
 		return players.containsKey(p);
 	}
 
+	public int getPlayerMessage(Player p) {
+		return players.get(p).lastId;
+	}
+	
 	public boolean remove(Player player) {
-		return players.remove(player) != null;
+		PlayerStatus status = players.remove(player);
+		if (status == null) return false;
+		if (status.task != null) status.task.cancel();
+		return true;
 	}
 	
 	public void add(String msg, Sender sender){

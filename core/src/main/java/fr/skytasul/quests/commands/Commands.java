@@ -18,6 +18,7 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.BranchesGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
+import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
@@ -179,6 +180,10 @@ public class Commands {
 			if (cmd.args.length > 3){
 				stageID = Utils.parseInt(cmd.sender, (String) cmd.args[3]);
 				if (stageID == null) return;
+				if (stageID < 0) {
+					Lang.NUMBER_NEGATIVE.send(cmd.sender);
+					return;
+				}
 				if (currentBranch.getRegularStages().size() <= stageID) {
 					Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.send(cmd.sender, stageID);
 					return;
@@ -420,6 +425,11 @@ public class Commands {
 		}
 	}
 	
+	@Cmd (player = true, permission = "pools")
+	public void pools(CommandContext cmd) {
+		PoolsManageGUI.get().create(cmd.player);
+	}
+	
 	@Cmd (player = true, args = "QUESTSID", min = 1)
 	public void checkpoint(CommandContext cmd) {
 		Quest quest = cmd.get(0);
@@ -474,17 +484,6 @@ public class Commands {
 				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.sendWP(cmd.sender, cmd.label);
 			}
 		}
-	}
-	
-	@Cmd (permission = "reload")
-	public void removeDuplicate(CommandContext cmd){
-		if (cmd.isPlayer()) {
-			cmd.player.sendMessage("§cThis command can't be performed by a player, as it will kick everybody on the server.");
-			return;
-		}
-		if ("confirm".equals(cmd.get(0))) {
-			PlayersManager.getMigrationYAML().debugDuplicate();
-		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
 	}
 	
 	@Cmd (player = true)

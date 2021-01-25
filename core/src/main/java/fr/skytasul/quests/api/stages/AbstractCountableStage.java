@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -15,7 +15,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Post1_9;
+import fr.skytasul.quests.utils.compatibility.bossbar.MobBossBar;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
@@ -38,7 +38,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	public Map<Integer, Entry<T, Integer>> cloneObjects() {
 		Map<Integer, Entry<T, Integer>> map = new HashMap<>();
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
-			map.put(entry.getKey(), new AbstractMap.SimpleEntry<>(entry.getValue().getKey(), entry.getValue().getValue()));
+			map.put(entry.getKey(), new AbstractMap.SimpleEntry<>(cloneObject(entry.getValue().getKey()), entry.getValue().getValue()));
 		}
 		return map;
 	}
@@ -73,7 +73,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
 			Entry<T, Integer> object = objects.get(obj.getKey());
-			elements[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
+			elements[i] = object == null ? "no object " + obj.getKey() : QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
 			i++;
 		}
 		return elements;
@@ -104,7 +104,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
 				}else {
-					if (barsEnabled) bars.get(p).update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					if (barsEnabled) {
+						BossBar bar = bars.get(p);
+						if (bar == null) {
+							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + debugName() + ". This is a bug!");
+						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					}
 					updateObjective(acc, p, "remaining", playerAmounts);
 				}
 				return;
@@ -113,6 +118,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@SuppressWarnings ("deprecation")
+	@Deprecated
 	protected void migrateDatas(PlayerAccount acc, Map<T, Integer> oldObjects) {
 		Map<Integer, Integer> amounts = new HashMap<>();
 		for (int i = 0; i < objects.size(); i++) {
@@ -167,6 +173,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected boolean objectApplies(T object, Object other) {
 		return object.equals(other);
 	}
+	
+	protected T cloneObject(T object) {
+		return object;
+	}
 
 	protected abstract String getName(T object);
 
@@ -198,35 +208,33 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	class BossBar {
 		private Player p;
-		private Object bar;
+		private MobBossBar bar;
 		private BukkitTask timer;
 
 		public BossBar(Player p, int amount) {
 			this.p = p;
-			bar = Post1_9.createMobsBar(branch.getQuest().getName(), cachedSize);
+			bar = new MobBossBar(branch.getQuest().getName(), cachedSize);
 			update(amount);
 		}
 
 		public void remove() {
-			Post1_9.removeBar(bar);
+			bar.removeAll();
 			if (timer != null) timer.cancel();
 		}
 
 		public void update(int amount) {
-			Post1_9.setBarProgress(branch.getQuest().getName(), bar, amount, cachedSize);
-			Post1_9.showBar(bar, p);
+			bar.setProgress(amount);
+			bar.addPlayer(p);
 			timer();
 		}
 
 		private void timer() {
 			if (QuestsConfiguration.getProgressBarTimeout() <= 0) return;
 			if (timer != null) timer.cancel();
-			timer = new BukkitRunnable() {
-				public void run() {
-					Post1_9.hideBar(bar, p);
-					timer = null;
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), QuestsConfiguration.getProgressBarTimeout() * 20L);
+			timer = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+				bar.removePlayer(p);
+				timer = null;
+			}, QuestsConfiguration.getProgressBarTimeout() * 20L);
 		}
 	}
 

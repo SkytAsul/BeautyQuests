@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -51,6 +52,7 @@ public class PlayerListGUI implements CustomInventory {
 		setBarItem(3, ItemUtils.item(XMaterial.WRITABLE_BOOK, "§7" + Lang.notStarteds.toString()));
 		
 		setCategory(Category.IN_PROGRESS);
+		if (quests.isEmpty() && QuestsConfiguration.doesMenuOpenNotStartedTabWhenEmpty()) setCategory(Category.NOT_STARTED);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -78,7 +80,7 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			setQuests(QuestsAPI.getQuestsFinished(acc));
+			setQuests(QuestsAPI.getQuestsFinished(acc, true));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
@@ -113,7 +115,7 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		case NOT_STARTED:
-			setQuests(QuestsAPI.getQuestsUnstarted(acc, true, true));
+			setQuests(QuestsAPI.getQuestsUnstarted(acc, true, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);

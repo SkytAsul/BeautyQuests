@@ -2,6 +2,7 @@ package fr.skytasul.quests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -17,14 +18,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
+import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
@@ -45,13 +47,14 @@ public class QuestsListener implements Listener{
 		if (Inventories.isInSystem(p)) return;
 		
 		NPC npc = e.getNPC();
-		if (BeautyQuests.getInstance().getNPCs().containsKey(npc)){
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		if (starter != null) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			if (acc == null) return;
 			
-			List<Quest> quests = QuestsAPI.getQuestsAssigneds(npc);
-			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toList());
-			if (quests.isEmpty()) return;
+			Set<Quest> quests = starter.getQuests();
+			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toSet());
+			if (quests.isEmpty() && starter.getPools().isEmpty()) return;
 			
 			List<Quest> launcheable = new ArrayList<>();
 			List<Quest> requirements = new ArrayList<>();
@@ -64,15 +67,10 @@ public class QuestsListener implements Listener{
 				}else launcheable.add(qu);
 			}
 			
+			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> pool.canGive(p, acc)).collect(Collectors.toSet());
+			
 			e.setCancelled(true);
-			if (launcheable.isEmpty()){
-				if (requirements.isEmpty()){
-					timer.get(0).testTimer(acc, true);
-				}else {
-					requirements.get(0).testRequirements(p, acc, true);
-				}
-				e.setCancelled(false);
-			}else {
+			if (!launcheable.isEmpty()){
 				for (Quest quest : launcheable){
 					if (quest.isInDialog(p)){
 						quest.clickNPC(p);
@@ -83,6 +81,17 @@ public class QuestsListener implements Listener{
 					if (quest == null) return;
 					quest.clickNPC(p);
 				}).create(p);
+			}else if (!startablePools.isEmpty()) {
+				startablePools.iterator().next().give(p);
+			}else {
+				if (!timer.isEmpty()) {
+					timer.get(0).testTimer(acc, true);
+				}else if (!requirements.isEmpty()) {
+					requirements.get(0).testRequirements(p, acc, true);
+				}else {
+					Utils.sendMessage(p, starter.getPools().iterator().next().give(p));
+				}
+				e.setCancelled(false);
 			}
 		}
 	}
@@ -158,7 +167,7 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
-		if (!QuestsConfiguration.hookAccounts()) {
+		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			PlayersManager.loadPlayer(player);
 			/*Entry<PlayerAccount, Boolean> acc = PlayersManager.manager.load(player);
 			//boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
