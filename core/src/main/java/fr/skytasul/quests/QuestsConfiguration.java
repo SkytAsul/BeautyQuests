@@ -31,6 +31,7 @@ public class QuestsConfiguration {
 	private static boolean fireworks = true;
 	private static boolean gps = false;
 	private static boolean skillAPIoverride = true;
+	private static boolean use_left_click = true;
 	private static boolean scoreboard = true;
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
 	private static XMaterial item = XMaterial.BOOK;
@@ -109,6 +110,7 @@ public class QuestsConfiguration {
 		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
+		use_left_click = config.getBoolean("use_left_click");
 		//gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
@@ -260,6 +262,10 @@ public class QuestsConfiguration {
 
 	public static boolean showScoreboards(){
 		return scoreboard;
+	}
+
+	public static boolean left_click_enabled(){
+		return use_left_click;
 	}
 
 	public static XMaterial getItemMaterial(){
