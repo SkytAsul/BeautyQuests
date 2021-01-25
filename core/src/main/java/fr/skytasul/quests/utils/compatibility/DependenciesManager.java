@@ -21,11 +21,11 @@ public class DependenciesManager {
 	public static boolean dyn = false; //	dynmap
 	public static boolean par = false; //		Parties
 	public static boolean eboss = false; //	EpicBosses
-	//public static boolean gps = false; //		GPS
+	public static boolean gps = false; //		GPS
 	public static boolean mmo = false; //	mcMMO
 	public static boolean mclvl = false; //	McCombatLevel
 	public static boolean boss = false; //	Boss
-	//public static boolean cmi = false; //	CMI
+	public static boolean cmi = false; //	CMI
 	
 	public static void testCompatibilities() {
 		wg = testCompatibility("WorldGuard");
@@ -43,21 +43,21 @@ public class DependenciesManager {
 			eboss = true;
 			Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance());
 		}*/
-		//gps = testCompatibility("GPS");
+		gps = testCompatibility("GPS");
 		mmo = testCompatibility("mcMMO");
 		mclvl = testCompatibility("McCombatLevel");
 		boss = testCompatibility("Boss");
-		//cmi = testCompatibility("CMI");
+		cmi = testCompatibility("CMI");
 	}
 
 	public static void initializeCompatibilities() {
 		if (mm) QuestsAPI.registerMobFactory(new MythicMobs());
 		if (papi) QuestsPlaceholders.registerPlaceholders();
 		// eboss
-		//if (gps) GPS.init();
+		if (gps) GPS.init();
 		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
 		if (holod) QuestsAPI.setHologramsManager(new BQHolographicDisplays());
-		//if (cmi && BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
+		if (cmi && BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
 	}
 	
 	private static boolean testCompatibility(String pluginName) {
