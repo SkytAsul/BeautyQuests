@@ -28,13 +28,13 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsListener implements Listener{
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCClick(NPCRightClickEvent e){
+	public void onNPCClick(NPCLeftClickEvent e){
 		if (e.isCancelled()) return;
 		Player p = e.getClicker();
 		

@@ -109,7 +109,7 @@ public class QuestsConfiguration {
 		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
-		gps = DependenciesManager.gps && config.getBoolean("gps");
+		//gps = DependenciesManager.gps && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
 		item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
@@ -250,9 +250,9 @@ public class QuestsConfiguration {
 		return progressBarTimeoutSeconds;
 	}
 	
-	public static boolean handleGPS(){
-		return gps;
-	}
+	// public static boolean handleGPS(){
+	// 	return gps;
+	// }
 	
 	public static boolean xpOverridedSkillAPI(){
 		return skillAPIoverride;

@@ -166,12 +166,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.live.bemmamin</groupId>
-			<artifactId>gps</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.gamingmesh</groupId>
 			<artifactId>jobs</artifactId>
 			<version>1.0</version>
@@ -198,12 +192,6 @@
 		<dependency>
 			<groupId>com.suxy</groupId>
 			<artifactId>boss</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.zrips</groupId>
-			<artifactId>cmi-api</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
