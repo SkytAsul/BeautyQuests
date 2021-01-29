@@ -3,10 +3,14 @@ package fr.skytasul.quests.gui.mobs;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.Inventories;
@@ -31,8 +35,8 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	
 	private Consumer<EntityType> run;
 	
-	public EntityTypeGUI(Consumer<EntityType> run){
-		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet(), null, EntityType::getName);
+	public EntityTypeGUI(Consumer<EntityType> run, Predicate<EntityType> typeFilter) {
+		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).collect(Collectors.toSet()), null, EntityTypeGUI::getName);
 		this.run = run;
 	}
 
@@ -44,9 +48,14 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}
+	
+	@Override
+	public CloseBehavior onClose(Player p, Inventory inv) {
+		return CloseBehavior.REOPEN;
+	}
 
-	public String getName(EntityType object) {
-		return object.getName();
+	private static String getName(EntityType object) {
+		return object == null ? "any" : object.getName();
 	}
 
 }

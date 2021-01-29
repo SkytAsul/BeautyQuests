@@ -30,7 +30,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType> {
 	}
 
 	public void itemClick(Player p, Consumer<EntityType> run) {
-		new EntityTypeGUI(run).create(p);
+		new EntityTypeGUI(run, x -> x != null).create(p);
 	}
 
 	public EntityType fromValue(String value) {

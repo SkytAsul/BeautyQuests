@@ -285,6 +285,8 @@ inv:
     bucket: §aFill buckets
     location: §aGo to location
     playTime: §ePlay time
+    breedAnimals: §aBreed animals
+    tameAnimals: §aTame animals
     NPCText: §eEdit dialog
     NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
@@ -311,6 +313,7 @@ inv:
     editRadius: §eEdit distance from location
     currentRadius: '§eCurrent distance: §6{0}'
     changeTicksRequired: '§eChange played ticks required'
+    changeEntityType: '§eChange entity type'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -555,6 +558,8 @@ scoreboard:
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
     playTime: §ePlay §6{0} game ticks
+    breedAnimals: §eBreed §6{0}
+    tameAnimals: §eTame §6{0}
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -584,6 +589,8 @@ misc:
     Bucket: Fill bucket
     location: Find location
     playTime: Play time
+    breedAnimals: Breed animals
+    tameAnimals: Tame animals
   comparison:
     equals: equal to {0}
     different: different to {0}
@@ -613,6 +620,7 @@ misc:
   poolHologramText: §eNew quest available!
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eEntity type: {0}'
+  entityTypeAny: §eAny entity
   enabled: Enabled
   disabled: Disabled
   unknown: unknown

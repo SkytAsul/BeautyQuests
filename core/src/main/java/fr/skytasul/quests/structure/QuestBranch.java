@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
+import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -181,16 +182,18 @@ public class QuestBranch {
 	
 	public void endStage(PlayerAccount acc, AbstractStage stage, Runnable runAfter) {
 		if (acc.isCurrent()){
+			Player p = acc.getPlayer();
 			stage.end(acc);
+			stage.getValidationRequirements().stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (stage.hasAsyncEnd()){
 				Utils.runAsync(() -> {
 					asyncReward.add(acc);
-					Utils.giveRewards(acc.getPlayer(), stage.getRewards());
+					Utils.giveRewards(p, stage.getRewards());
 					asyncReward.remove(acc);
 					Utils.runSync(runAfter);
 				});
 			}else{
-				Utils.giveRewards(acc.getPlayer(), stage.getRewards());
+				Utils.giveRewards(p, stage.getRewards());
 				runAfter.run();
 			}
 		}else {

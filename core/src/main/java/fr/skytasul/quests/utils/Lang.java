@@ -276,6 +276,8 @@ public enum Lang{
 	stageBucket("inv.create.bucket"),
 	stageLocation("inv.create.location"),
 	stagePlayTime("inv.create.playTime"),
+	stageBreedAnimals("inv.create.breedAnimals"),
+	stageTameAnimals("inv.create.tameAnimals"),
 	stageText("inv.create.NPCText"),
 	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
@@ -303,6 +305,7 @@ public enum Lang{
 	editRadius("inv.create.editRadius"),
 	currentRadius("inv.create.currentRadius"), // 0: radius
 	changeTicksRequired("inv.create.changeTicksRequired"),
+	changeEntityType("inv.create.changeEntityType"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -525,6 +528,8 @@ public enum Lang{
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
+	SCOREBOARD_BREED("scoreboard.stage.breed"), // 0: animals to breed
+	SCOREBOARD_TAME("scoreboard.stage.tame"), // 0: animals to breed
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
 	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTime"), // 0: ticks
 	
@@ -559,6 +564,8 @@ public enum Lang{
 	Bucket("misc.stageType.Bucket"),
 	Location("misc.stageType.location"),
 	PlayTime("misc.stageType.playTime"),
+	Breed("misc.stageType.breedAnimals"),
+	Tame("misc.stageType.tameAnimals"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),
@@ -587,6 +594,7 @@ public enum Lang{
 	PoolHologramText("misc.poolHologramText"),
 	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),
+	EntityTypeAny("misc.entityTypeAny"),
 	QuestItemLore("misc.questItemLore"),
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),

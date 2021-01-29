@@ -21,6 +21,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.stages.StageArea;
+import fr.skytasul.quests.stages.StageBreed;
 import fr.skytasul.quests.stages.StageBringBack;
 import fr.skytasul.quests.stages.StageBucket;
 import fr.skytasul.quests.stages.StageChat;
@@ -33,6 +34,7 @@ import fr.skytasul.quests.stages.StageMobs;
 import fr.skytasul.quests.stages.StageNPC;
 import fr.skytasul.quests.stages.StagePlaceBlocks;
 import fr.skytasul.quests.stages.StagePlayTime;
+import fr.skytasul.quests.stages.StageTame;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -302,6 +304,8 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
 	private static final ItemStack stagePlayTime = ItemUtils.item(XMaterial.CLOCK, Lang.stagePlayTime.toString());
+	private static final ItemStack stageBreed = ItemUtils.item(XMaterial.WHEAT, Lang.stageBreedAnimals.toString());
+	private static final ItemStack stageTame = ItemUtils.item(XMaterial.CARROT, Lang.stageTameAnimals.toString());
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
@@ -319,5 +323,7 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name(), StagePlayTime::deserialize, stagePlayTime, StagePlayTime.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("BREED", StageBreed.class, Lang.Breed.name(), StageBreed::deserialize, stageBreed, StageBreed.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("TAME", StageTame.class, Lang.Tame.name(), StageTame::deserialize, stageTame, StageTame.Creator::new));
 	}
 }
