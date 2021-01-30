@@ -80,14 +80,14 @@ public abstract class AbstractEntityStage extends AbstractStage {
 		public AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(7, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), (p, item) -> {
+			line.setItem(6, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), (p, item) -> {
 				new EntityTypeGUI(x -> {
 					setEntity(x);
 					reopenGUI(p, true);
-				}, this::canUseEntity).create(p);
+				}, x -> x == null ? canBeAnyEntity() : canUseEntity(x)).create(p);
 			});
 			
-			line.setItem(8, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)), (p, item) -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)), (p, item) -> {
 				new TextEditor<>(p, () -> {
 					reopenGUI(p, false);
 				}, x -> {
@@ -99,12 +99,12 @@ public abstract class AbstractEntityStage extends AbstractStage {
 		
 		public void setEntity(EntityType entity) {
 			this.entity = entity;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
+			line.editItem(6, ItemUtils.lore(line.getItem(6), entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
 		}
 		
 		public void setAmount(int amount) {
 			this.amount = amount;
-			line.editItem(8, ItemUtils.name(line.getItem(8), Lang.Amount.format(amount)));
+			line.editItem(7, ItemUtils.name(line.getItem(7), Lang.Amount.format(amount)));
 		}
 		
 		@Override
@@ -118,6 +118,10 @@ public abstract class AbstractEntityStage extends AbstractStage {
 			super.edit(stage);
 			setEntity(stage.entity);
 			setAmount(stage.amount);
+		}
+		
+		protected boolean canBeAnyEntity() {
+			return true;
 		}
 		
 		protected abstract boolean canUseEntity(EntityType type);

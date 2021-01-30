@@ -556,7 +556,7 @@ public enum Lang{
 	Items("misc.stageType.items"),
 	Mobs("misc.stageType.mobs"),
 	Mine("misc.stageType.mine"),
-	Place("misc.stageType.placeBlock"),
+	Place("misc.stageType.placeBlocks"),
 	Chat("misc.stageType.chat"),
 	Interact("misc.stageType.interact"),
 	Fish("misc.stageType.Fish"),

@@ -31,12 +31,17 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 			entities.put(en, ItemUtils.item(mat, en.getName()));
 		}
 		entities.put(EntityType.PLAYER, ItemUtils.skull("player", "Knight"));
+		entities.put(null, ItemUtils.item(XMaterial.ENDER_EYE, Lang.EntityTypeAny.toString()));
 	}
 	
 	private Consumer<EntityType> run;
 	
 	public EntityTypeGUI(Consumer<EntityType> run, Predicate<EntityType> typeFilter) {
-		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).collect(Collectors.toSet()), null, EntityTypeGUI::getName);
+		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).sorted((o1, o2) -> {
+			if (o1 == null) return 1;
+			if (o2 == null) return -1;
+			return o1.getName().compareTo(o2.getName());
+		}).collect(Collectors.toList()), null, EntityTypeGUI::getName);
 		this.run = run;
 	}
 

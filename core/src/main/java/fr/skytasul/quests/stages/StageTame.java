@@ -46,7 +46,7 @@ public class StageTame extends AbstractEntityStage {
 		
 		@Override
 		protected boolean canUseEntity(EntityType type) {
-			return type.getEntityClass().isAssignableFrom(Tameable.class);
+			return Tameable.class.isAssignableFrom(type.getEntityClass());
 		}
 		
 		@Override

@@ -46,7 +46,7 @@ public class StageBreed extends AbstractEntityStage {
 		
 		@Override
 		protected boolean canUseEntity(EntityType type) {
-			return type.getEntityClass().isAssignableFrom(Breedable.class);
+			return Breedable.class.isAssignableFrom(type.getEntityClass());
 		}
 		
 		@Override

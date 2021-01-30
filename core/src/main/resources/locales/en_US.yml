@@ -299,6 +299,7 @@ inv:
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
     selectItems: §eEdit required items
+    selectItemsMessage: §eEdit asking message
     selectRegion: §7Choose region
     toggleRegionExit: On exit
     stageStartMsg: §eEdit starting message
@@ -558,8 +559,8 @@ scoreboard:
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
     playTime: §ePlay §6{0} game ticks
-    breedAnimals: §eBreed §6{0}
-    tameAnimals: §eTame §6{0}
+    breed: §eBreed §6{0}
+    tame: §eTame §6{0}
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
