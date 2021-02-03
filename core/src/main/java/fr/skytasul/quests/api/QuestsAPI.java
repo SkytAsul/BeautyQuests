@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -35,6 +36,7 @@ public class QuestsAPI {
 	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
 	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
 	public static final LinkedList<StageType<?>> stages = new LinkedList<>();
+	public static final Map<String, ItemComparison> itemComparisons = new HashMap<>();
 	
 	private static AbstractHolograms<?> hologramsManager = null;
 	
@@ -106,6 +108,11 @@ public class QuestsAPI {
 		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass), "This quest option was already registered");
 		QuestOptionCreator.creators.put(creator.optionClass, creator);
 		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
+	}
+	
+	public static void registerItemComparison(ItemComparison comparison) {
+		itemComparisons.put(comparison.getID(), comparison);
+		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 	
 	public static boolean hasHologramsManager() {

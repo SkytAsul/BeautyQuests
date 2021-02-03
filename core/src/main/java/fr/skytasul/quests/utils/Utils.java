@@ -199,7 +199,7 @@ public class Utils{
 		}
 	}
 
-	public static boolean containsItems(Inventory inv, ItemStack i, int amount){
+	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
 		for(ItemStack item : inv.getContents()) {
 			if (item == null) continue;
 			if (isSimilar(item, i)){

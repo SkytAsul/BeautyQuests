@@ -11,10 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
@@ -26,14 +28,17 @@ public class StageBringBack extends StageNPC{
 	
 	private final ItemStack[] items;
 	private final String customMessage;
+	private final ItemComparisonMap comparisons;
 	
 	private Map<ItemStack, Integer> amountsMap = new HashMap<>();
 	private String splitted;
 	private String line;
 	
-	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage) {
+	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
 		super(branch);
 		this.customMessage = customMessage;
+		this.comparisons = comparisons;
+		
 		this.bringBack = this;
 		this.items = items;
 		for (ItemStack item : items) {
@@ -57,7 +62,7 @@ public class StageBringBack extends StageNPC{
 	public boolean checkItems(Player p, boolean msg){
 		boolean done = true;
 		for (Entry<ItemStack, Integer> en : amountsMap.entrySet()) {
-			if (!Utils.containsItems(p.getInventory(), en.getKey(), en.getValue())) {
+			if (!comparisons.containsItems(p.getInventory(), en.getKey(), en.getValue())) {
 				done = false;
 				break;
 			}
@@ -69,7 +74,7 @@ public class StageBringBack extends StageNPC{
 	
 	public void removeItems(Player p){
 		for(ItemStack is : items){
-			Utils.removeItems(p.getInventory(), is.clone());
+			comparisons.removeItems(p.getInventory(), is.clone());
 		}
 		p.updateInventory();
 	}
@@ -100,10 +105,17 @@ public class StageBringBack extends StageNPC{
 		super.serialize(map);
 		map.put("items", items);
 		if (customMessage != null) map.put("customMessage", customMessage);
+		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
 	}
 	
 	public static StageBringBack deserialize(Map<String, Object> map, QuestBranch branch) {
-		StageBringBack st = new StageBringBack(branch, ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]), (String) map.getOrDefault("customMessage", null));
+		ItemStack[] items = ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]);
+		String customMessage = (String) map.getOrDefault("customMessage", null);
+		ItemComparisonMap comparisons;
+		if (map.containsKey("temComparisons")) {
+			comparisons = new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons"));
+		}else comparisons = new ItemComparisonMap();
+		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
 		st.loadDatas(map);
 		return st;
 	}
@@ -112,9 +124,11 @@ public class StageBringBack extends StageNPC{
 		
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 		private static final ItemStack stageMessage = ItemUtils.item(XMaterial.PAPER, Lang.stageItemsMessage.toString());
+		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
 
 		private List<ItemStack> items;
 		private String message = null;
+		private ItemComparisonMap comparisons = new ItemComparisonMap();
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
@@ -131,6 +145,12 @@ public class StageBringBack extends StageNPC{
 					reopenGUI(p, false);
 				}).passNullIntoEndConsumer().enter();
 			});
+			line.setItem(10, stageComparison, (p, item) -> {
+				new ItemComparisonGUI(comparisons, () -> {
+					setComparisons(comparisons);
+					reopenGUI(p, true);
+				}).create(p);
+			});
 		}
 		
 		public void setItems(List<ItemStack> items) {
@@ -141,6 +161,11 @@ public class StageBringBack extends StageNPC{
 		public void setMessage(String message) {
 			this.message = message;
 			line.editItem(9, ItemUtils.lore(line.getItem(9), message == null ? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(message)));
+		}
+		
+		public void setComparisons(ItemComparisonMap comparisons) {
+			this.comparisons = comparisons;
+			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(this.comparisons.getNotDefault().size() + " custom comparison(s)")));
 		}
 		
 		@Override
@@ -156,11 +181,12 @@ public class StageBringBack extends StageNPC{
 			super.edit(stage);
 			setItems(Arrays.asList(stage.items));
 			setMessage(stage.customMessage);
+			setComparisons(stage.comparisons.clone());
 		}
 		
 		@Override
 		protected StageBringBack createStage(QuestBranch branch) {
-			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message);
+			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message, comparisons);
 		}
 	}
 

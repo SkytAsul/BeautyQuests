@@ -35,6 +35,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayersManager;
@@ -273,6 +274,7 @@ public class BeautyQuests extends JavaPlugin{
 				StagesGUI.initialize(); // 			initializing default stage types
 				QuestObjectGUI.initialize(); //			initializing default rewards and requirements
 				FinishGUI.initialize(); //				initializing default quest options
+				ItemComparisonGUI.initialize();
 				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
 				QuestsAPI.registerMobFactory(new CitizensFactory());
 			}

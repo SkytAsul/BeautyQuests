@@ -112,7 +112,7 @@ public class QuestBranch {
 	 * Where do the description request come from
 	 */
 	public static enum Source{
-		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE, YO;
+		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE;
 	}
 	
 	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){

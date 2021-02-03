@@ -291,6 +291,7 @@ public enum Lang{
 	ignoreCase("inv.create.ignoreCase"),
 	stageItems("inv.create.selectItems"),
 	stageItemsMessage("inv.create.selectItemsMessage"),
+	stageItemsComparison("inv.create.selectItemsComparison"),
 	stageRegion("inv.create.selectRegion"),
 	stageRegionExit("inv.create.toggleRegionExit"),
 	startMsg("inv.create.stageStartMsg"),

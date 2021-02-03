@@ -1,4 +1,4 @@
-package fr.skytasul.quests.stages;
+package fr.skytasul.quests.api.stages;
 
 import java.util.Map;
 
@@ -6,8 +6,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;

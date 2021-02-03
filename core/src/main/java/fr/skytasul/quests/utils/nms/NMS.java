@@ -21,7 +21,7 @@ public abstract class NMS{
 	private ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
 	private ReflectUtils craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
 
-	private Field unhandledTags, repairCost;
+	private Field unhandledTags;
 	private Method equalsCommon;
 
 	public NMS() {
@@ -29,10 +29,8 @@ public abstract class NMS{
 			try {
 				Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
 				unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
-				repairCost = itemMetaClass.getDeclaredField("repairCost");
 				equalsCommon = itemMetaClass.getDeclaredMethod("equalsCommon", itemMetaClass);
 				unhandledTags.setAccessible(true);
-				repairCost.setAccessible(true);
 				equalsCommon.setAccessible(true);
 			}catch (ReflectiveOperationException e) {
 				e.printStackTrace();
@@ -57,8 +55,6 @@ public abstract class NMS{
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
 		((Map<?, ?>) unhandledTags.get(meta1)).clear();
 		((Map<?, ?>) unhandledTags.get(meta2)).clear();
-		repairCost.set(meta1, 0);
-		repairCost.set(meta2, 0);
 		return (boolean) equalsCommon.invoke(meta1, meta2);
 	}
 	
