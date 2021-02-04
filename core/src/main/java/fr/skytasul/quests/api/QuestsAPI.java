@@ -36,7 +36,7 @@ public class QuestsAPI {
 	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
 	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
 	public static final LinkedList<StageType<?>> stages = new LinkedList<>();
-	public static final Map<String, ItemComparison> itemComparisons = new HashMap<>();
+	public static final LinkedList<ItemComparison> itemComparisons = new LinkedList<>();
 	
 	private static AbstractHolograms<?> hologramsManager = null;
 	
@@ -111,7 +111,7 @@ public class QuestsAPI {
 	}
 	
 	public static void registerItemComparison(ItemComparison comparison) {
-		itemComparisons.put(comparison.getID(), comparison);
+		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 	

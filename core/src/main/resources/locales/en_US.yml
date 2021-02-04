@@ -300,6 +300,7 @@ inv:
     ignoreCase: Ignore the case of the message
     selectItems: §eEdit required items
     selectItemsMessage: §eEdit asking message
+    selectItemsComparisons: §eSelect items comparisons (ADVANCED)
     selectRegion: §7Choose region
     toggleRegionExit: On exit
     stageStartMsg: §eEdit starting message
@@ -537,6 +538,22 @@ inv:
     time: §bSet time between quests
     redoAllowed: Is redo allowed
   poolsList.name: Quest pools
+  itemComparisons:
+    name: Item Comparisons
+    bukkit: Bukkit native comparison
+    bukkitLore: 'Uses Bukkit default item comparison system.\nCompares material, durability, nbt tags...'
+    customBukkit: Bukkit native comparison - NO NBT
+    customBukkitLore: 'Uses Bukkit default item comparison system, but wipes out NBT tags.\nCompares material, durability...'
+    material: Item material
+    materialLore: 'Compares item material (i. e. stone, iron sword...)'
+    itemName: Item name
+    itemNameLore: Compares items names
+    itemLore: Item lore
+    itemLoreLore: Compares items lores
+    enchants: Items enchants
+    enchantsLore: Compares items enchants
+    repairCost: Repair cost
+    repairCostLore: Compares repair cost for armors and swords
     
 scoreboard:
   name: §6§lQuests
