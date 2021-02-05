@@ -149,8 +149,6 @@ msg:
     already: '§cDu befindest dich bereits im Editor.'
     enter:
       title: '§6~ Editor‐Modus ~'
-      subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
-    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests exitEditor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
     npc:
       enter: '§aKlicke auf einen NPC oder schreibe „cancel”.'
       choseStarter: '§aWähle den NPC, der die Quest startet.'
@@ -259,6 +257,8 @@ inv:
     bucket: '§aEimer befüllen'
     location: '§aZu Position gehen'
     playTime: '§eSpielzeit'
+    breedAnimals: '§aZüchte Tiere'
+    tameAnimals: '§aZähme Tiere'
     NPCText: '§eDialog bearbeiten'
     NPCSelect: '§eNPC auswählen oder erstellen'
     hideClues: Partikel und Hologramme verstecken
@@ -271,6 +271,7 @@ inv:
     cancelMessage: Senden abbrechen
     ignoreCase: Fall der Nachricht ignorieren
     selectItems: '§eBenötigte Items auswählen'
+    selectItemsMessage: '§eFragenachricht bearbeiten'
     selectRegion: '§7Region auswählen'
     toggleRegionExit: Beim Verlassen
     stageStartMsg: '§eStartnachricht bearbeiten'
@@ -285,6 +286,7 @@ inv:
     editRadius: '§eEntfernung von Position bearbeiten'
     currentRadius: '§eAktuelle Entfernung: §6{0}'
     changeTicksRequired: '§eÄndere die erforderlichen gespielten Ticks'
+    changeEntityType: '§eObjekttyp ändern'
   stages:
     name: Schritte erstellen
     nextPage: '§eNächste Seite'
@@ -327,6 +329,7 @@ inv:
     setItemsRewards: '§eBelohnungs‐Items bearbeiten'
     setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
     setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
+    setRewardsWithRequirements: '§eBelohnungen mit Vorrausetzungen'
     setPermReward: '§eBerechtigungen bearbeiten'
     setMoneyReward: '§eGeldbelohnung bearbeiten'
     selectStarterNPC: '§e§lNPC‐Starter auswählen'
@@ -417,6 +420,8 @@ inv:
       Welt: {3}
   checkpointActions:
     name: Kontrollpunkt-Aktionen
+  rewardsWithRequirements:
+    name: Belohnungen mit Vorrausetzungen
   listAllQuests:
     name: Quests
   listPlayerQuests:
@@ -522,6 +527,8 @@ scoreboard:
     bucket: '§eBefülle §6{0}'
     location: '§eGehe zu: §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
     playTime: '§eSpiele §6{0} Spielsticks'
+    breed: '§eZüchte §6{0}'
+    tame: '§eZähme §6{0}'
 indication:
   startQuest: '§7Möchtest du die Quest {0} starten?'
   closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
@@ -551,6 +558,8 @@ misc:
     Bucket: Eimer befüllen
     location: Position finden
     playTime: Spielzeit
+    breedAnimals: Züchte Tiere
+    tameAnimals: Zähme Tiere
   comparison:
     equals: gleich wie {0}
     different: anders als {0}
@@ -580,6 +589,7 @@ misc:
   poolHologramText: '§eNeue Quest verfügbar!'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eObjekttyp: {0}'
+  entityTypeAny: '§eJedes Objekt'
   enabled: Aktiviert
   disabled: Deaktiviert
   unknown: unbekannt

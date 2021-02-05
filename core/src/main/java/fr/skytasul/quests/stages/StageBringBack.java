@@ -165,7 +165,7 @@ public class StageBringBack extends StageNPC{
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(this.comparisons.getNotDefault().size() + " custom comparison(s)")));
+			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
 		}
 		
 		@Override

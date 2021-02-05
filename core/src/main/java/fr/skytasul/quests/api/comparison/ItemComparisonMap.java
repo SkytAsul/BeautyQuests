@@ -72,7 +72,10 @@ public class ItemComparisonMap implements Cloneable {
 		boolean meta1 = item1.hasItemMeta();
 		boolean meta2 = item2.hasItemMeta();
 		return effective.stream().allMatch(x -> {
-			if (x.isMetaNeeded() && (!meta1 || !meta2)) return false;
+			if (x.isMetaNeeded()) {
+				if (meta1 != meta2) return false;
+				if (!meta1) return true;
+			}
 			return x.isSimilar(item1, item2);
 		});
 	}

@@ -120,8 +120,6 @@ msg:
     already: '§cJá estás no editor.'
     enter:
       title: '§6~ Modo Editor ~'
-      subtitle: '§6Escreve "/quests exitEditor" para forçar a saída.'
-    chat: '§6Estás, atualmente, no Modo Editor. Escreve "/quests exitEditor" para forçar a saída do editor. (Altamente não recomendado, considera usar comandos como "close" ou "cancel" para voltar ao inventário anterior.)'
     npc:
       enter: '§aClica num NPC, ou escreve "cancel".'
       choseStarter: '§aEscolhe o NPC que inicia a missão.'
@@ -328,6 +326,8 @@ inv:
   rewards:
     name: Recompensas
     commands: 'Comandos: {0}'
+  rewardsWithRequirements:
+    name: Recompensas com requisitos
   listAllQuests:
     name: Missões
   listPlayerQuests:
@@ -406,6 +406,8 @@ inv:
     time: '§bDefinir tempo entre missões'
     redoAllowed: É permitido refazer?
   poolsList.name: Grupo de Missões
+  itemComparisons:
+    name: Comparações de Itens
 scoreboard:
   name: '§6§lMissões'
   noLaunched: '§cNenhuma missão em andamento.'

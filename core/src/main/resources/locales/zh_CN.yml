@@ -149,8 +149,6 @@ msg:
     already: '§c你已在编辑器中.'
     enter:
       title: '§6~ 进入编辑器模式 ~'
-      subtitle: '§e输入 "/quests exitEditor" 强制离开任务编辑器.'
-    chat: '§6你已进入编辑器模式. 输入"/quests exitEditor" 强制退出编辑器(不推荐使用, 最好使用 "close" 或 "cancel" 回到上一个菜单).'
     npc:
       enter: '§a点击一个NPC，或输入"cancel"取消.'
       choseStarter: '§a选择接受任务的NPC.'
@@ -327,6 +325,7 @@ inv:
     setItemsRewards: '§7编辑获得的物品'
     setXPRewards: '§e编辑获得的经验'
     setCheckpointReward: '§e编辑记录点奖励'
+    setRewardsWithRequirements: '§e需满足需求的奖励'
     setPermReward: '§e编辑权限'
     setMoneyReward: '§e编辑获得的金钱'
     selectStarterNPC: '§6§l选择接受任务的NPC'
@@ -416,6 +415,8 @@ inv:
       世界: {3}
   checkpointActions:
     name: 记录点行动
+  rewardsWithRequirements:
+    name: 需满足需求的奖励
   listAllQuests:
     name: '§8任务'
   listPlayerQuests:

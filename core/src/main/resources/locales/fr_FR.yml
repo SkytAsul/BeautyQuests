@@ -259,6 +259,8 @@ inv:
     bucket: '§aRemplir des seaux'
     location: '§aAller à un endroit'
     playTime: '§eTemps de jeu'
+    breedAnimals: '§aFaire reproduire des animaux'
+    tameAnimals: '§aApprivoiser des animaux'
     NPCText: '§eModifier le dialogue'
     NPCSelect: '§eChoisir ou créer un NPC'
     hideClues: Cacher les particules et les hologrammes
@@ -271,6 +273,8 @@ inv:
     cancelMessage: Annuler l'envoi
     ignoreCase: Ignorer la casse du message
     selectItems: '§eChoisir les items nécessaires'
+    selectItemsMessage: '§eModifier le message de demande'
+    selectItemsComparisons: '§eSélectionnez les comparaisons d''items (AVANCÉ)'
     selectRegion: '§7Choisir la région'
     toggleRegionExit: À la sortie
     stageStartMsg: '§eModifier le message de départ'
@@ -285,6 +289,7 @@ inv:
     editRadius: '§eModifier la distance à partir de l''endroit'
     currentRadius: '§eDistance actuelle : §6{0}'
     changeTicksRequired: '§eChanger la quantité de ticks requis'
+    changeEntityType: '§eSélectionner un type d''entité'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -504,6 +509,22 @@ inv:
     time: '§bDéfinir le temps entre les quêtes'
     redoAllowed: Est-il recommençable ?
   poolsList.name: Groupe de quêtes
+  itemComparisons:
+    name: Comparaisons d'item
+    bukkit: Comparaison native de Bukkit
+    bukkitLore: "Utilise le système de comparaison d'items par défaut de Bukkit.\nCompare le type d'item, la durabilité, les tags nbt..."
+    customBukkit: Comparaison native de Bukkit - SANS NBT
+    customBukkitLore: "Utilise le système de comparaison d'items par défaut de Bukkit, mais efface les balises NBT.\nCompare le type d'item, la durabilité..."
+    material: Type d'item
+    materialLore: 'Compare le type d''item (ex. pierre, épée de fer...)'
+    itemName: Nom de l’objet
+    itemNameLore: Compare les noms des items
+    itemLore: Description de l'item
+    itemLoreLore: Compare les descriptions des items
+    enchants: Enchantements des items
+    enchantsLore: Compare les enchantements des items
+    repairCost: Coût de réparation
+    repairCostLore: Compare les coûts de réparation des armures et des épées
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -525,6 +546,8 @@ scoreboard:
     bucket: '§eRemplissez §6{0}'
     location: '§eAllez à §6{0}§e, §6{1}§e, §6{2}§e dans §6{3}'
     playTime: '§eJouez §6{0} ticks de jeu'
+    breed: '§eFaites se reproduire §6{0}'
+    tame: '§eApprivoisez §6{0}'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -554,6 +577,8 @@ misc:
     Bucket: Remplir un seau
     location: Trouver un endroit
     playTime: Temps de jeu
+    breedAnimals: Faire reproduire des animaux
+    tameAnimals: Apprivoiser des animaux
   comparison:
     equals: égal à {0}
     different: différent de {0}
@@ -583,6 +608,7 @@ misc:
   poolHologramText: '§eNouvelle quête disponible !'
   mobsProgression: '§6§l{0} : §r§e{1}/{2}'
   entityType: '§eType d''entité : {0}'
+  entityTypeAny: '§eN''importe quelle entité'
   enabled: Activé
   disabled: Désactivé
   unknown: inconnu
