@@ -54,7 +54,6 @@ msg:
     skill: '§cDein Level für die Fertigkeit §e{1}§c muss {0} sein!'
     combatLevel: '§cDein Kampflevel muss {0} sein!'
     money: '§cDu benötigst {0}!'
-    wait: '§cDu musst {0} Minute(n) warten, bevor du die Quest erneut starten kannst!'
   experience:
     edited: '§aDu hast die Erfahrungsgewinnung von {0} auf {1} Punkt(e) gesetzt.'
   selectNPCToKill: '§aWähle den zu tötenden NPC.'
@@ -149,6 +148,8 @@ msg:
     already: '§cDu befindest dich bereits im Editor.'
     enter:
       title: '§6~ Editor‐Modus ~'
+      subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
+    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests exitEditor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
     npc:
       enter: '§aKlicke auf einen NPC oder schreibe „cancel”.'
       choseStarter: '§aWähle den NPC, der die Quest startet.'
@@ -272,6 +273,7 @@ inv:
     ignoreCase: Fall der Nachricht ignorieren
     selectItems: '§eBenötigte Items auswählen'
     selectItemsMessage: '§eFragenachricht bearbeiten'
+    selectItemsComparisons: '§eWähle Gegenstandsvergleiche (ERWEITERT)'
     selectRegion: '§7Region auswählen'
     toggleRegionExit: Beim Verlassen
     stageStartMsg: '§eStartnachricht bearbeiten'
@@ -433,7 +435,6 @@ inv:
     loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
     loreStart: '§a§oKlicke, um die Quest zu starten.'
     loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
-    timeToWait: '§3§o{0} Minute(n), bevor du die Quest erneut starten kannst.'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
   itemCreator:
     name: Item‐Ersteller
@@ -506,6 +507,22 @@ inv:
     time: '§bLege die Zeit zwischen Quests fest'
     redoAllowed: Ist Wiederholen erlaubt
   poolsList.name: Questgruppen
+  itemComparisons:
+    name: Gegenstandsvergleiche
+    bukkit: Bukkit nativer Vergleich
+    bukkitLore: "Nutzt das Standard Bukkit Gegenstandsvergleichsystem.\nVergleicht Material, Haltbarkeit, NBT Tags..."
+    customBukkit: Bukkit nativer Vergleich - KEIN NBT
+    customBukkitLore: "Nutzt das Standard Bukkit Gegenstandsvergleichsystem, aber löscht NBT Tags.\nVergleicht Material, Haltbarkeit..."
+    material: Gegenstandsmaterial
+    materialLore: 'Vergleicht Gegenstandsmaterial (z.B Stein, Eisenschwert...)'
+    itemName: Gegenstandsname
+    itemNameLore: Vergleicht Gegenstandsnamen
+    itemLore: Gegenstands-Beschreibung
+    itemLoreLore: Vergleicht Gegenstands-Beschreibungen
+    enchants: Gegenstände verzaubert
+    enchantsLore: Vergleicht Gegenstandsverzauberungen
+    repairCost: Reparaturkosten
+    repairCostLore: Vergleicht Reparaturkosten für Rüstungen und Schwerter
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'

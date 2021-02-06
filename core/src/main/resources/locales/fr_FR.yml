@@ -54,7 +54,7 @@ msg:
     skill: '§cVotre niveau pour la compétence §e{1}§c doit être {0}!'
     combatLevel: '§cVotre niveau de combat doit être {0}!'
     money: '§cVous devez avoir {0} !'
-    wait: '§cVous devez encore attendre {0} minutes avant de pouvoir recommencer cette quête !'
+    waitTime: '§cVous devez encore attendre {0} avant de pouvoir recommencer cette quête !'
   experience:
     edited: '§aVous avez changé le gain d''expérience de {0} à {1} points.'
   selectNPCToKill: '§aSélectionnez le NPC à tuer.'
@@ -436,7 +436,7 @@ inv:
     loreCancel: '§c§oCliquez pour annuler la quête.'
     loreStart: '§a§oCliquez pour commencer la quête.'
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
-    timeToWait: '§3§o{0} minute(s) avant de pouvoir refaire cette quête.'
+    timeToWaitRedo: '§3§o{0} avant de pouvoir refaire cette quête.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
   itemCreator:
     name: Créateur d'item
