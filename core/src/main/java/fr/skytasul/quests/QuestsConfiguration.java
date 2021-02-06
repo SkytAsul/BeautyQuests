@@ -56,6 +56,7 @@ public class QuestsConfiguration {
 	private static boolean questConfirmGUI = false;
 	private static boolean dialogsInActionBar = false;
 	private static int dialogsDefaultTime = 100;
+	private static ClickType npcClick = ClickType.RIGHT;
 	private static boolean disableDialogClick = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
@@ -124,6 +125,11 @@ public class QuestsConfiguration {
 		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
 		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
+		try {
+			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
+		}catch (IllegalArgumentException ex) {
+			BeautyQuests.logger.warning("Unknown click type " + config.getString("npcClick") + " for config entry \"npcClick\"");
+		}
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
@@ -250,6 +256,10 @@ public class QuestsConfiguration {
 	
 	public static int getProgressBarTimeout(){
 		return progressBarTimeoutSeconds;
+	}
+	
+	public static ClickType getNPCClick() {
+		return npcClick;
 	}
 	
 	public static boolean handleGPS(){
@@ -408,4 +418,13 @@ public class QuestsConfiguration {
 	/*public static ConfigurationSection getEffectConfig(){
 		return effect;
 	}*/
+	
+	public enum ClickType {
+		RIGHT, LEFT, ANY;
+		
+		public boolean applies(ClickType type) {
+			return (this == type) || (this == ANY) || (type == ANY);
+		}
+	}
+	
 }

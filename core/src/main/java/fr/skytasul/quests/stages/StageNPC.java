@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import fr.skytasul.quests.api.events.DialogSendEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -17,8 +16,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
@@ -35,6 +36,8 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCClickEvent;
+import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -149,7 +152,16 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onClick(NPCRightClickEvent e){
+	public void onRightClick(NPCRightClickEvent e) {
+		if (QuestsConfiguration.getNPCClick().applies(ClickType.RIGHT)) onClick(e);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onLeftClick(NPCLeftClickEvent e) {
+		if (QuestsConfiguration.getNPCClick().applies(ClickType.LEFT)) onClick(e);
+	}
+	
+	private void onClick(NPCClickEvent e) {
 		Player p = e.getClicker();
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;

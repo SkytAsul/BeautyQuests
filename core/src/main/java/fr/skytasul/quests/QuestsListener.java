@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -29,6 +30,8 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import net.citizensnpcs.api.event.NPCClickEvent;
+import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -36,7 +39,16 @@ import net.citizensnpcs.api.npc.NPC;
 public class QuestsListener implements Listener{
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCClick(NPCRightClickEvent e){
+	public void onNPCRightClick(NPCRightClickEvent e) {
+		if (QuestsConfiguration.getNPCClick().applies(ClickType.RIGHT)) onNPCClick(e);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onNPCLeftClick(NPCLeftClickEvent e) {
+		if (QuestsConfiguration.getNPCClick().applies(ClickType.LEFT)) onNPCClick(e);
+	}
+	
+	private void onNPCClick(NPCClickEvent e) {
 		if (e.isCancelled()) return;
 		Player p = e.getClicker();
 		

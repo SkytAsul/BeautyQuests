@@ -54,6 +54,8 @@ fireworks: true
 mobsProgressBar: false
 # Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
 progressBarTimeoutSeconds: 15
+# Which click the player has to do on the NPC to start a quest, follow a dialog... (can be: RIGHT, LEFT, ANY)
+npcClick: RIGHT
 # Item which represents a quest in the Choose Quest GUI
 item: BOOK
 # Page item material
