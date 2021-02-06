@@ -66,7 +66,7 @@ public enum Lang{
 	REQUIREMENT_SKILL("msg.requirements.skill"),
 	REQUIREMENT_COMBAT_LEVEL("msg.requirements.combatLevel"),
 	REQUIREMENT_MONEY("msg.requirements.money"), // 0: money
-	QUEST_WAIT("msg.requirements.wait"),
+	QUEST_WAIT("msg.requirements.waitTime"), //0: time
 	
 	XP_EDITED("msg.experience.edited"),
 	SELECT_KILL_NPC("msg.selectNPCToKill"),
@@ -436,7 +436,7 @@ public enum Lang{
 	cancelLore("inv.listQuests.loreCancel"),
 	startLore("inv.listQuests.loreStart"),
 	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
-	timeWait("inv.listQuests.timeToWait"),
+	timeWait("inv.listQuests.timeToWaitRedo"),
 	canRedo("inv.listQuests.canRedo"),
 	formatNormal("inv.listQuests.format.normal"),
 	formatId("inv.listQuests.format.withId"),

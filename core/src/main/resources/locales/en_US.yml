@@ -65,7 +65,7 @@ msg:
     skill: §cYour level for the skill §e{1}§c must be {0}!
     combatLevel: §cYour combat level must be {0}!
     money: §cYou must have {0}!
-    wait: §cYou must wait {0} minute(s) before you can restart this quest!
+    waitTime: §cYou must wait {0} before you can restart this quest!
   experience:
     edited: §aYou have changed the experience gain from {0} to {1} points.
   selectNPCToKill: §aSelect the NPC to kill.
@@ -462,7 +462,7 @@ inv:
     loreCancel: §c§oClick to cancel the quest.
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
-    timeToWait: §3§o{0} minute(s) before you can restart this quest.
+    timeToWaitRedo: §3§o{0} before you can restart this quest.
     canRedo: §3§oYou can restart this quest!
     format:
       normal: §6§l§o{0}

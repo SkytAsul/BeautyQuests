@@ -5,9 +5,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.skytasul.quests.api.events.*;
-import fr.skytasul.quests.utils.types.Dialog;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,6 +15,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.DialogSendEvent;
+import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
+import fr.skytasul.quests.api.events.QuestFinishEvent;
+import fr.skytasul.quests.api.events.QuestLaunchEvent;
+import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
+import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -51,6 +54,8 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
+import fr.skytasul.quests.utils.types.Dialog;
+import net.citizensnpcs.api.npc.NPC;
 
 public class Quest implements Comparable<Quest> {
 	
@@ -183,8 +188,8 @@ public class Quest implements Comparable<Quest> {
 		return manager;
 	}
 	
-	public int getTimeLeft(PlayerAccount acc){
-		return Math.max((int) Math.ceil((acc.getQuestDatas(this).getTimer() - System.currentTimeMillis()) / 60000D), 0);
+	public String getTimeLeft(PlayerAccount acc) {
+		return Utils.millisToHumanString(acc.getQuestDatas(this).getTimer() - System.currentTimeMillis());
 	}
 
 	public boolean hasStarted(PlayerAccount acc){
