@@ -89,7 +89,26 @@ public class DialogEditor extends Editor{
 				Lang.NUMBER_INVALID.send(p, args[1]);
 			}
 			break;
-			
+		case EDIT:
+			if (args.length < 3){
+				Lang.DIALOG_SYNTAX.send(p, cmd, " <id>");
+				break;
+			}
+			try{
+				Message removed = d.messages.remove(Integer.parseInt(args[1]), true);
+				if (removed == null) Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.valuesSize())
+			}catch (IllegalArgumentException ex){
+				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}
+			try{
+				msg = Utils.buildFromArray(args, 2, " ");
+				Sender sender = d.messages.get(Integer.parseInt(args[1]).sender;
+				d.insert(msg, sender, Integer.parseInt(args[1]));
+				Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_EDITED", msg, sender.name().toLowerCase());
+			}catch (NumberFormatException ex){
+				Lang.NUMBER_INVALID.send(p, args[1]);
+			}
+			break;
 		case ADDSOUND:
 			if (args.length < 3){
 				Utils.sendMessage(p, Lang.TEXTLIST_SYNTAX.toString() + "addSound <id> <sound>");
@@ -151,7 +170,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, ADDSOUND, SETTIME, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, CLEAR;
 	}
 	
 }
