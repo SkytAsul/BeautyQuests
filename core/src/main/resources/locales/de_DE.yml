@@ -54,6 +54,7 @@ msg:
     skill: '§cDein Level für die Fertigkeit §e{1}§c muss {0} sein!'
     combatLevel: '§cDein Kampflevel muss {0} sein!'
     money: '§cDu benötigst {0}!'
+    waitTime: '§cDu musst {0} warten, bevor du die Quest erneut starten kannst!'
   experience:
     edited: '§aDu hast die Erfahrungsgewinnung von {0} auf {1} Punkt(e) gesetzt.'
   selectNPCToKill: '§aWähle den zu tötenden NPC.'

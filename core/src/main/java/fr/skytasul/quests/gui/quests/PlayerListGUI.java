@@ -86,11 +86,14 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				String[] lore = null;
 				if (qu.isRepeatable()){
+					lore = new String[3];
 					if (qu.testTimer(acc, false)) {
-						lore = new String[]{Lang.canRedo.toString()};
+						lore[0] = Lang.canRedo.toString();
 					}else {
-						lore = new String[] { Lang.timeWait.format(qu.getTimeLeft(acc)) };
+						lore[0] = Lang.timeWait.format(qu.getTimeLeft(acc));
 					}
+					lore[2] = "";
+					lore[2] = Lang.timesFinished.format(acc.getQuestDatas(qu).getTimesFinished());
 				}
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}

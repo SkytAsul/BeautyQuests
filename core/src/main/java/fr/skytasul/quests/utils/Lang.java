@@ -438,6 +438,7 @@ public enum Lang{
 	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
 	timeWait("inv.listQuests.timeToWaitRedo"),
 	canRedo("inv.listQuests.canRedo"),
+	timesFinished("inv.listQuests.timesFinished"), // 0: times finished
 	formatNormal("inv.listQuests.format.normal"),
 	formatId("inv.listQuests.format.withId"),
 	

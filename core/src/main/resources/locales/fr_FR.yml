@@ -436,8 +436,9 @@ inv:
     loreCancel: '§c§oCliquez pour annuler la quête.'
     loreStart: '§a§oCliquez pour commencer la quête.'
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
-    timeToWaitRedo: '§3§o{0} avant de pouvoir refaire cette quête.'
+    timeToWaitRedo: '§3§oVous pouvez refaire cette quête dans {0}.'
     canRedo: '§3§oVous pouvez refaire cette quête !'
+    timesFinished: '§3Quête accomplie {0} fois.'
   itemCreator:
     name: Créateur d'item
     itemType: '§bType d''item'

@@ -54,7 +54,6 @@ msg:
     skill: '§c你的技能等级§e{1}§c必须是{0}！'
     combatLevel: '§c你的战力等级必须是{0}！'
     money: '§c你必须拥有{0}!'
-    wait: '§c你必须等待 {0} 分钟才能再次接受任务!'
   experience:
     edited: '已编辑获得的经验: {0}pts. 改为 {1}pts.'
   selectNPCToKill: 选择要击杀的NPC.
@@ -257,6 +256,8 @@ inv:
     bucket: '§a装满桶'
     location: 前往指定位置
     playTime: '§e游戏时间'
+    breedAnimals: '§a饲养动物'
+    tameAnimals: '§a驯服动物'
     NPCText: '§e编辑NPC的文本对话'
     NPCSelect: '§e选择或创建NPC'
     hideClues: 隐藏任务指示 (粒子效果和全息文字)
@@ -269,6 +270,8 @@ inv:
     cancelMessage: 取消发送
     ignoreCase: 忽略消息大小写
     selectItems: '§b选择所需的物品'
+    selectItemsMessage: '§e编辑询问消息'
+    selectItemsComparisons: '§e选择物品比较式（高级）'
     selectRegion: '§7选择一片区域'
     toggleRegionExit: 退出时
     stageStartMsg: '§e编辑阶段开始的消息'
@@ -283,6 +286,7 @@ inv:
     editRadius: '§e编辑离目的地的距离'
     currentRadius: '§e当前距离: §6{0}'
     changeTicksRequired: '§e需要更改游玩刻'
+    changeEntityType: '§e更改实体类型'
   stages:
     name: '§8创建任务阶段'
     nextPage: '§e下一页'
@@ -428,7 +432,6 @@ inv:
     loreCancel: '§c§o点击取消任务'
     loreStart: '§a§o点击开始任务。'
     loreStartUnavailable: '§c§o你不满足任务需求，无法开始任务。'
-    timeToWait: '§3§o你需要等待{0} 分钟才能再次接受任务'
     canRedo: '§3§o你可以再次接受这个任务!'
   itemCreator:
     name: '§8物品编辑器'
@@ -501,6 +504,21 @@ inv:
     time: '§b设置任务之间的间隔'
     redoAllowed: 是否可重复完成
   poolsList.name: 任务池
+  itemComparisons:
+    name: 物品比较式
+    bukkit: Bukkit原生比较
+    bukkitLore: "使用Bukkit默认项目的比较系统。\n比较材料、耐久度、NBT标签……"
+    customBukkit: Bukkit原生比较 - 无NBT
+    material: 物品材料
+    materialLore: '比较物品材料（比如石头|stone、铁剑|iron sword）'
+    itemName: 物品名称
+    itemNameLore: 比较物品名称
+    itemLore: 物品描述
+    itemLoreLore: 比较物品描述
+    enchants: 物品附魔
+    enchantsLore: 比较物品附魔
+    repairCost: 修复花费
+    repairCostLore: 比较盔甲和武器的修复花费
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -522,6 +540,8 @@ scoreboard:
     bucket: '§e装满 §6{0}'
     location: '§e前往位于 §6{3}的坐标§6{0}§e, §6{1}§e, §6{2}§e '
     playTime: '§e游玩游戏§6{0}刻'
+    breed: '§e饲养§6{0}'
+    tame: '§e驯服§6{0}'
 indication:
   startQuest: '§7您是否想要接受任务 {0}?'
   closeInventory: '§7你确定要关闭该页面吗？'
@@ -551,6 +571,8 @@ misc:
     Bucket: 装满桶
     location: 寻找地点
     playTime: 游戏时间
+    breedAnimals: 饲养动物
+    tameAnimals: 驯服动物
   comparison:
     equals: 等于{0}
     different: 不同于{0}
@@ -580,6 +602,7 @@ misc:
   poolHologramText: '§e有可接受的新任务！'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§e生物类型: {0}'
+  entityTypeAny: '§e任何实体'
   enabled: 已启用
   disabled: 已关闭
   unknown: 未知

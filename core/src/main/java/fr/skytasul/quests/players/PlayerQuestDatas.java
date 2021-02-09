@@ -13,7 +13,7 @@ public class PlayerQuestDatas {
 	public final PlayerAccount acc;
 	public final int questID;
 
-	private boolean finished = false;
+	private int finished = 0;
 	private long timer = 0;
 	private int branch = -1, stage = -1;
 	private Map<String, Object>[] stageDatas = new Map[5];
@@ -23,7 +23,7 @@ public class PlayerQuestDatas {
 		this.questID = questID;
 	}
 
-	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, boolean finished, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
+	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = finished;
@@ -43,11 +43,15 @@ public class PlayerQuestDatas {
 	}
 
 	public boolean isFinished() {
-		return finished;
+		return finished > 0;
 	}
 
-	public void setFinished(boolean finished) {
-		this.finished = finished;
+	public void incrementFinished() {
+		finished++;
+	}
+	
+	public int getTimesFinished() {
+		return finished;
 	}
 
 	public long getTimer() {
@@ -98,7 +102,7 @@ public class PlayerQuestDatas {
 		Map<String, Object> map = new HashMap<>();
 
 		map.put("questID", questID);
-		if (finished) map.put("finished", finished);
+		if (finished != 0) map.put("timesFinished", finished);
 		if (timer != 0) map.put("timer", timer);
 		if (branch != -1) map.put("currentBranch", branch);
 		if (stage != -1) map.put("currentStage", stage);
@@ -111,7 +115,8 @@ public class PlayerQuestDatas {
 
 	public static PlayerQuestDatas deserialize(PlayerAccount acc, Map<String, Object> map) {
 		PlayerQuestDatas datas = new PlayerQuestDatas(acc, (int) map.get("questID"));
-		if (map.containsKey("finished")) datas.finished = (boolean) map.get("finished");
+		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO remove, outdated since 0.19
+		if (map.containsKey("timesFinished")) datas.finished = (int) map.get("timesFinished");
 		if (map.containsKey("timer")) datas.timer = Utils.parseLong(map.get("timer"));
 		if (map.containsKey("currentBranch")) datas.branch = (int) map.get("currentBranch");
 		if (map.containsKey("currentStage")) datas.stage = (int) map.get("currentStage");

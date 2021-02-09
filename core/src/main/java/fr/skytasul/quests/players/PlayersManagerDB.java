@@ -71,7 +71,7 @@ public class PlayersManagerDB extends PlayersManager {
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				int questID = result.getInt("quest_id");
-				acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result.getBoolean("finished"), result.getLong("timer"), result.getInt("current_branch"), result.getInt("current_stage"), getStageDatas(result, 0), getStageDatas(result, 1), getStageDatas(result, 2), getStageDatas(result, 3), getStageDatas(result, 4)));
+				acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result.getInt("finished"), result.getLong("timer"), result.getInt("current_branch"), result.getInt("current_stage"), getStageDatas(result, 0), getStageDatas(result, 1), getStageDatas(result, 2), getStageDatas(result, 3), getStageDatas(result, 4)));
 			}
 			result.close();
 			statement = getPoolData.getStatement();
@@ -240,6 +240,7 @@ public class PlayersManagerDB extends PlayersManager {
 				" `stage_4_datas` longtext DEFAULT NULL," +
 				" PRIMARY KEY (`id`)" +
 				")");
+		statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
 		statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
 				+ "`id` int NOT NULL AUTO_INCREMENT, "
 				+ "`account_id` int(11) NOT NULL, "
@@ -282,7 +283,7 @@ public class PlayersManagerDB extends PlayersManager {
 				for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
 					insertQuestData.setInt(1, acc.index);
 					insertQuestData.setInt(2, entry.getKey());
-					insertQuestData.setBoolean(3, entry.getValue().isFinished());
+					insertQuestData.setInt(3, entry.getValue().getTimesFinished());
 					insertQuestData.setLong(4, entry.getValue().getTimer());
 					insertQuestData.setInt(5, entry.getValue().getBranch());
 					insertQuestData.setInt(6, entry.getValue().getStage());
@@ -324,13 +325,14 @@ public class PlayersManagerDB extends PlayersManager {
 			super(acc, questID);
 		}
 
-		public PlayerQuestDatasDB(PlayerAccount acc, int questID, boolean finished, long timer, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
+		public PlayerQuestDatasDB(PlayerAccount acc, int questID, int finished, long timer, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
 			super(acc, questID, timer, finished, branch, stage, stage0datas, stage1datas, stage2datas, stage3datas, stage4datas);
 		}
 		
-		public void setFinished(boolean finished) {
-			super.setFinished(finished);
-			setDataStatement(updateFinished, finished);
+		@Override
+		public void incrementFinished() {
+			super.incrementFinished();
+			setDataStatement(updateFinished, getTimesFinished());
 		}
 		
 		public void setTimer(long timer) {

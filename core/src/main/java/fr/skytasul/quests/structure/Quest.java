@@ -323,7 +323,7 @@ public class Quest implements Comparable<Quest> {
 				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
 				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
-				questDatas.setFinished(true);
+				questDatas.incrementFinished();
 				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();

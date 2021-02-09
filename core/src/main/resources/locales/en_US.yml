@@ -462,8 +462,9 @@ inv:
     loreCancel: §c§oClick to cancel the quest.
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
-    timeToWaitRedo: §3§o{0} before you can restart this quest.
+    timeToWaitRedo: §3§oYou can restart this quest in {0}.
     canRedo: §3§oYou can restart this quest!
+    timesFinished: §3Quest done {0} times.
     format:
       normal: §6§l§o{0}
       withId: §6§l§o{0}§r      §e#{1}
