@@ -112,7 +112,7 @@ public class StageBringBack extends StageNPC{
 		ItemStack[] items = ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]);
 		String customMessage = (String) map.getOrDefault("customMessage", null);
 		ItemComparisonMap comparisons;
-		if (map.containsKey("temComparisons")) {
+		if (map.containsKey("itemComparisons")) {
 			comparisons = new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons"));
 		}else comparisons = new ItemComparisonMap();
 		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
