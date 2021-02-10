@@ -190,6 +190,7 @@ msg:
       npc: '§aMessage {0} ajouté pour le NPC.'
       noSender: '§aMessage {0} ajouté pour aucune entité parlante.'
       messageRemoved: '§aMessage "{0}" supprimé.'
+      edited: '§aMessage "{0}" modifié.'
       soundAdded: '§aSon "{0}" ajouté pour le message "{1}".'
       cleared: '§a{0} messages supprimés.'
       help:
@@ -202,6 +203,7 @@ msg:
         npcInsert: '§6npcInsert <id> <message> : §eInsérer un message dit par le NPC.'
         playerInsert: '§6playerInsert <id> <message> : §eInsérer un message dit par le joueur.'
         nothingInsert: '§6nothingInsert <id> <message> : §eInsérer un message sans préfixe.'
+        edit: '§6edit <id> <message>: §eModifier un message.'
         addSound: '§6addSound <id> <son> : §eAjouter un son sur un message.'
         clear: '§6clear: §eSupprimer tous les messages.'
         close: '§6close: §eValider les messages.'

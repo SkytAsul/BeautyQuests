@@ -436,7 +436,9 @@ inv:
     loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
     loreStart: '§a§oKlicke, um die Quest zu starten.'
     loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
+    timeToWaitRedo: '§3§oDu kannst diese Quest in {0} erneut starten.'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
+    timesFinished: '§3Quest {0} mal(e) erledigt.'
   itemCreator:
     name: Item‐Ersteller
     itemType: '§bItem‐Typ'
