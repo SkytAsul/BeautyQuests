@@ -215,6 +215,7 @@ msg:
       npc: §aMessage "{0}" added for the NPC.
       noSender: §aMessage "{0}" added without a sender.
       messageRemoved: §aMessage "{0}" removed.
+      edited: §aMessage "{0}" edited.
       soundAdded: §aSound "{0}" added for the message "{1}".
       cleared: §a{0} removed message(s).
       help:
@@ -228,6 +229,7 @@ msg:
         playerInsert: '§6playerInsert <id> <message>: §eInsert a message said by player.'
         nothingInsert: '§6nothingInsert <id> <message>: §eInsert a message without
           any prefix.'
+        edit: '§6edit <id> <message>: §eEdit a message.'
         addSound: '§6addSound <id> <sound>: §eAdd a sound to a message.'
         clear: '§6clear: §eRemove all messages.'
         close: '§6close: §eValidate all messages.'

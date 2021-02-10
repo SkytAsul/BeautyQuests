@@ -88,6 +88,25 @@ public class DialogEditor extends Editor{
 			}
 			break;
 			
+		case EDIT:
+			if (args.length < 3){
+				Lang.DIALOG_SYNTAX.send(p, cmd, " <id>");
+				break;
+			}
+			try{
+				Message message = d.messages.get(Integer.parseInt(args[1]));
+				if (message == null) {
+					Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.valuesSize());
+				}else {
+					msg = Utils.buildFromArray(args, 2, " ");
+					message.text = msg;
+					Lang.DIALOG_MSG_EDITED.send(p, msg);
+				}
+			}catch (IllegalArgumentException ex){
+				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}
+			break;
+			
 		case ADDSOUND:
 			if (args.length < 3){
 				Utils.sendMessage(p, Lang.TEXTLIST_SYNTAX.toString() + "addSound <id> <sound>");
@@ -149,7 +168,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, ADDSOUND, SETTIME, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, CLEAR;
 	}
 	
 }
