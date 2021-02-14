@@ -6,6 +6,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
+import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager {
 
@@ -51,13 +52,14 @@ public class DependenciesManager {
 	}
 
 	public static void initializeCompatibilities() {
+		if (wg) BQWorldGuard.init();
 		if (mm) QuestsAPI.registerMobFactory(new MythicMobs());
 		if (papi) QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder"));
 		// eboss
 		if (gps) GPS.init();
 		if (boss) QuestsAPI.registerMobFactory(new BossAPI());
-		if (holod) QuestsAPI.setHologramsManager(new BQHolographicDisplays());
 		if (cmi && BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
+		if (holod) QuestsAPI.setHologramsManager(new BQHolographicDisplays());
 	}
 	
 	private static boolean testCompatibility(String pluginName) {

@@ -22,7 +22,8 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.WorldGuard;
+import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
+import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
 
 public class StageArea extends AbstractStage{
 	
@@ -37,7 +38,7 @@ public class StageArea extends AbstractStage{
 		Validate.notNull(w, "No world with specified name (\"" + worldName + "\")");
 		this.world = w;
 		
-		ProtectedRegion region = WorldGuard.getRegion(regionName, w);
+		ProtectedRegion region = BQWorldGuard.getRegion(regionName, w);
 		Validate.notNull(w, "No region with specified name (\"" + regionName + "\")");
 		this.region = region;
 		
@@ -46,11 +47,19 @@ public class StageArea extends AbstractStage{
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
+		if (BQWorldGuard.handleEntry) return; // on WG 7.0 or higher
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
-			if (WorldGuard.isInRegion(region, e.getTo()) == !exit) {
+			if (BQWorldGuard.isInRegion(region, e.getTo()) == !exit) {
 				finishStage(e.getPlayer());
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onRegionEntry(WorldGuardEntryEvent e) {
+		if (e.getRegionsEntered().contains(region)) {
+			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) finishStage(e.getPlayer());
 		}
 	}
 
@@ -89,7 +98,7 @@ public class StageArea extends AbstractStage{
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			line.setItem(7, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
-			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegion.toString(), exit), (p, item) -> setExit(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegionExit.toString(), exit), (p, item) -> setExit(ItemUtils.toggle(item)));
 		}
 		
 		public void setRegion(String regionName, String worldName) {
@@ -111,7 +120,7 @@ public class StageArea extends AbstractStage{
 				if (first) remove();
 				reopenGUI(p, false);
 			}, obj -> {
-				if (WorldGuard.regionExists(obj, p.getWorld())) {
+				if (BQWorldGuard.regionExists(obj, p.getWorld())) {
 					setRegion(obj, p.getWorld().getName());
 				}else {
 					Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
@@ -130,7 +139,7 @@ public class StageArea extends AbstractStage{
 		@Override
 		public void edit(StageArea stage) {
 			super.edit(stage);
-			setRegion(stage.getRegion().getId(), WorldGuard.getWorld(stage.getRegion().getId()).getName());
+			setRegion(stage.getRegion().getId(), BQWorldGuard.getWorld(stage.getRegion().getId()).getName());
 			setExit(stage.exit);
 		}
 		

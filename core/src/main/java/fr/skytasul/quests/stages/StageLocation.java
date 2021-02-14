@@ -92,6 +92,11 @@ public class StageLocation extends AbstractStage {
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return descMessage;
 	}
+	
+	@Override
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Object[] { lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName() };
+	}
 
 	protected void serialize(Map<String, Object> map){
 		map.put("location", lc.serialize());

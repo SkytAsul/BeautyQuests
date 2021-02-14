@@ -198,7 +198,14 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			edited.remove(false);
 			qu = new Quest(edited.getID());
 		}else {
-			qu = new Quest(++BeautyQuests.lastID);
+			int id = BeautyQuests.lastID + 1;
+			if (QuestsAPI.getQuests().stream().anyMatch(x -> x.getID() == id)) {
+				BeautyQuests.lastID++;
+				BeautyQuests.logger.warning("Quest id " + id + " already taken, this should not happen.");
+				finish();
+				return;
+			}
+			qu = new Quest(id);
 		}
 		
 		if (stagesEdited) {

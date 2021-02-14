@@ -556,6 +556,7 @@ public class BeautyQuests extends JavaPlugin{
 	}
 
 	public void addQuest(Quest quest){
+		lastID = Math.max(lastID, quest.getID());
 		quests.add(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
 			NPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);

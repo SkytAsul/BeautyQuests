@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.compatibility;
+package fr.skytasul.quests.utils.compatibility.worldguard;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,8 +10,13 @@ import org.bukkit.World;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.session.Session;
+import com.sk89q.worldguard.session.handler.Handler.Factory;
 
-public class WorldGuard {
+import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
+
+public class BQWorldGuard {
 
 	private static WorldGuardPlugin plugin = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
 	private static Method region;
@@ -20,7 +25,9 @@ public class WorldGuard {
 	private static Method adapt;
 	private static Object container;
 	
-	static {
+	public static boolean handleEntry = false;
+	
+	public static void init() {
 		if (plugin == null) throw new MissingDependencyException("WorldGuard");
 		try {
 			Class<?> wg = Class.forName("com.sk89q.worldguard.WorldGuard");
@@ -31,10 +38,19 @@ public class WorldGuard {
 						wg.getDeclaredMethod("getInstance").invoke(null)));
 				get = Class.forName("com.sk89q.worldguard.protection.regions.RegionContainer").getDeclaredMethod("get", com.sk89q.worldedit.world.World.class);
 				adapt = Class.forName("com.sk89q.worldedit.bukkit.BukkitAdapter").getDeclaredMethod("adapt", World.class);
-			}catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+				if (com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(new Factory<WorldGuardEntryHandler>() {
+					@Override
+					public WorldGuardEntryHandler create(Session session) {
+						return new WorldGuardEntryHandler(session);
+					}
+				}, null)) {
+					handleEntry = true;
+					DebugUtils.logMessage("Now using WorldGuard entry API.");
+				}
+			}catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		}catch (ClassNotFoundException e1) {
+		}catch (ClassNotFoundException e1) { // WorldGuard 6 and below
 			try {
 				region = plugin.getClass().getDeclaredMethod("getRegionManager", World.class);
 			}catch (NoSuchMethodException | SecurityException e) {

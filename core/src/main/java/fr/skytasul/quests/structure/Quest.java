@@ -75,7 +75,6 @@ public class Quest implements Comparable<Quest> {
 	public Quest(int id) {
 		this.manager = new BranchesManager(this);
 		this.id = id;
-		if (id >= BeautyQuests.lastID) BeautyQuests.lastID = id;
 		this.file = new File(BeautyQuests.saveFolder, id + ".yml");
 	}
 	
