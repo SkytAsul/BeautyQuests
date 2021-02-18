@@ -35,6 +35,7 @@ public class StageCraft extends AbstractStage {
 	public StageCraft(QuestBranch branch, ItemStack result){
 		super(branch);
 		this.result = result;
+		if (result.getAmount() == 0) result.setAmount(1);
 	}
 	
 	public ItemStack getItem(){
@@ -101,7 +102,8 @@ public class StageCraft extends AbstractStage {
 	}
 
 	private int getPlayerAmount(PlayerAccount acc) {
-		return getData(acc, "amount");
+		Integer amount = getData(acc, "amount");
+		return amount == null ? 0 : amount.intValue();
 	}
 
 	protected String descriptionLine(PlayerAccount acc, Source source){

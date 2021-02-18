@@ -192,7 +192,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				if (line.tryRefresh(time) && !update) update = true;
 				linesStrings.addAll(line.lines);
 			}catch (Exception ex) {
-				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i);
+				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i + " for " + p.getName());
 				ex.printStackTrace();
 				linesStrings.add("§c§lline error");
 			}

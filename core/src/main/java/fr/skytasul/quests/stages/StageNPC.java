@@ -166,10 +166,10 @@ public class StageNPC extends AbstractStage{
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
 		if (!hasStarted(p)) return;
-		if (!canUpdate(p)) return;
+		boolean canUpdate = canUpdate(p, true);
 		
 		if (!branch.isRegularStage(this)) { // is ending stage
-			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items
+			if (bringBack == null || !canUpdate || !bringBack.checkItems(p, false)) { // if just text or don't have items
 				for (AbstractStage stage : branch.getEndingStages().keySet()) {
 					if (stage instanceof StageBringBack) { // if other ending stage is bring back
 						StageBringBack other = (StageBringBack) stage;
@@ -180,8 +180,10 @@ public class StageNPC extends AbstractStage{
 		}
 
 		e.setCancelled(true);
-
+		
 		if (bringBack != null && !bringBack.checkItems(p, true)) return;
+		if (!canUpdate) return;
+		
 		if (dialog != null) { // dialog exists
 			Runnable runnable = () -> {
 				if (bringBack != null) {

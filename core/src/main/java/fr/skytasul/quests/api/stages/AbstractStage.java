@@ -124,10 +124,17 @@ public abstract class AbstractStage implements Listener{
 		}
 		return index;
 	}
-
+	
 	protected boolean canUpdate(Player p) {
+		return canUpdate(p, false);
+	}
+
+	protected boolean canUpdate(Player p, boolean msg) {
 		for (AbstractRequirement requirement : validationRequirements) {
-			if (!requirement.test(p)) return false;
+			if (!requirement.test(p)) {
+				if (msg) requirement.sendReason(p);
+				return false;
+			}
 		}
 		return true;
 	}
