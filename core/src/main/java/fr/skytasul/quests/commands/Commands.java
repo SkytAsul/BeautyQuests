@@ -250,9 +250,10 @@ public class Commands {
 		Lang.QUEST_PLAYERS_REMOVED.send(cmd.sender, amount);
 	}
 	
-	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
+	@Cmd (min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
+		boolean testRequirements = !(CommandsManager.hasPermission(cmd.player, "start.other") && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
 		if (cmd.isPlayer()){
 			if (target == cmd.player){
 				if (!CommandsManager.hasPermission(cmd.player, "start")){
@@ -268,15 +269,16 @@ public class Commands {
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				Quest qu = (Quest) obj;
-				if (!CommandsManager.hasPermission(cmd.player, "start.other") && !qu.isLauncheable(target, acc, true)) return;
+				if (testRequirements && !qu.isLauncheable(target, acc, true)) return;
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 			}, acc, false, true, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
-				Quest qu = (Quest) cmd.args[1];
-				qu.start(target);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			Quest qu = (Quest) cmd.args[1];
+			if (testRequirements && !qu.isLauncheable(target, acc, true)) return;
+			qu.start(target);
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 		}else {
 			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 		}

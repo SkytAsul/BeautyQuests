@@ -155,6 +155,7 @@ public class QuestBranch {
 			}
 		}
 		endStage(acc, stage, () -> {
+			if (!manager.getQuest().hasStarted(acc)) return;
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
 				int newId = acc.getQuestDatas(getQuest()).getStage() + 1;
 				if (newId == regularStages.size()){

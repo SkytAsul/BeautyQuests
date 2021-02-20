@@ -204,7 +204,6 @@ public class Quest implements Comparable<Quest> {
 	
 	public void cancelPlayer(PlayerAccount acc){
 		manager.remove(acc);
-		acc.removeQuestDatas(this);
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 	}
 	
@@ -213,6 +212,7 @@ public class Quest implements Comparable<Quest> {
 		boolean c = false;
 		if (acc.hasQuestDatas(this)) {
 			cancelPlayer(acc);
+			acc.removeQuestDatas(this);
 			c = true;
 		}
 		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getValue().remove(acc.getPlayer())) c = true;
@@ -233,7 +233,10 @@ public class Quest implements Comparable<Quest> {
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !getOptionValueOrDef(OptionBypassLimit.class)) {
-			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) return false;
+			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
+				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
+				return false;
+			}
 		}
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(getOption(OptionStarterNPC.class).getValue()).size() == 1));
 		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {

@@ -22,6 +22,7 @@ public enum Lang{
 	QUEST_INVALID("msg.quest.invalidID"),
 	ALREADY_STARTED("msg.quest.alreadyStarted"),
 	
+	QUESTS_MAX_LAUNCHED("msg.quests.maxLaunched"), // 0: max quests
 	QUEST_NOSTEPS("msg.quests.nopStep"),
 	QUEST_UPDATED("msg.quests.updated"),
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
@@ -342,6 +343,7 @@ public enum Lang{
 	rewardItems("inv.details.setItemsRewards"),
 	rewardXP("inv.details.setXPRewards"),
 	rewardCheckpoint("inv.details.setCheckpointReward"),
+	rewardStopQuest("inv.details.setRewardStopQuest"),
 	rewardWithRequirements("inv.details.setRewardsWithRequirements"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),

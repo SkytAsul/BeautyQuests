@@ -167,6 +167,9 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 				return null;
 			}else if (key.equals("NPCSID")){
 				for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) find.add(npc.getId() + "");
+			}else if (key.equals("BOOLEAN")) {
+				find.add("false");
+				find.add("true");
 			}else {
 				find.addAll(Arrays.asList(key.split("\\|")));
 			}
