@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import fr.skytasul.quests.utils.Utils;
 public class PlayersManagerYAML extends PlayersManager {
 
 	Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
-	private Map<Integer, String> identifiersIndex = new HashMap<>();
+	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
 	private int lastAccountID = 0;
 
 	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
@@ -176,7 +177,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		return acc;
 	}
 
-	private void addAccount(PlayerAccount acc) {
+	private synchronized void addAccount(PlayerAccount acc) {
 		loadedAccounts.put(acc.index, acc);
 		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;

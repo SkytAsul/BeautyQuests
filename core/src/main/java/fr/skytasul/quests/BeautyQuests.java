@@ -38,6 +38,7 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -210,7 +211,13 @@ public class BeautyQuests extends JavaPlugin{
 			Player p = (Player) sender;
 			if (!p.hasPermission("beautyquests.command.listPlayer")){
 				Lang.INCORRECT_SYNTAX.send(p);
-			}else Inventories.create(p, new PlayerListGUI(PlayersManager.getPlayerAccount(p)));
+			}else {
+				PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+				if (acc == null) {
+					Lang.ERROR_OCCURED.send(p, "no account data");
+					logger.severe("Player " + p.getName() + " has got no account. This is a CRITICAL issue.");
+				}else Inventories.create(p, new PlayerListGUI(acc));
+			}
 		});
 		PluginCommand cmd = getCommand("beautyquests");
 		cmd.setPermission("beautyquests.command");

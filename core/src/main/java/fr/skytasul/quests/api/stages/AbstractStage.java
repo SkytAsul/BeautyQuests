@@ -234,7 +234,7 @@ public abstract class AbstractStage implements Listener{
 		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		if (p != null) branch.getBranchesManager().objectiveUpdated(p);
+		if (p != null) branch.getBranchesManager().objectiveUpdated(p, acc);
 	}
 
 	protected <T> T getData(PlayerAccount acc, String dataKey) {

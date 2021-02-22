@@ -71,8 +71,8 @@ public class BranchesManager{
 	 * Called internally when the quest is updated for the player
 	 * @param p Player
 	 */
-	public final void objectiveUpdated(Player p) {
-		if (quest.isScoreboardEnabled()) {
+	public final void objectiveUpdated(Player p, PlayerAccount acc) {
+		if (quest.isScoreboardEnabled() && quest.hasStarted(acc)) {
 			Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
 			if (sb != null) sb.setShownQuest(quest, true);
 		}

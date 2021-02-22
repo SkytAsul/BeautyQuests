@@ -177,7 +177,7 @@ public class QuestBranch {
 				}
 				branch.start(acc);
 			}
-			manager.objectiveUpdated(p);
+			manager.objectiveUpdated(p, acc);
 		});
 	}
 	
