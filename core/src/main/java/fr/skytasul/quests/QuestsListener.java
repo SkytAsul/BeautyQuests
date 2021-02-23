@@ -19,8 +19,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
+import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -141,8 +143,8 @@ public class QuestsListener implements Listener{
 
 	@EventHandler
 	public void onAccountJoin(PlayerAccountJoinEvent e) {
-		if (QuestsConfiguration.firstQuest != null && e.isFirstJoin()) {
-			QuestsConfiguration.firstQuest.start(e.getPlayer());
+		if (e.isFirstJoin()) {
+			QuestsAPI.getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
 		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}

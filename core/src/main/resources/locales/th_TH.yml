@@ -13,6 +13,7 @@ msg:
     invalidID: '§cภารกิจ id {0} ไม่มีอยู่จริง.'
     alreadyStarted: '§cคุณเริ่มภารกิจเรียบร้อยแล้ว!'
   quests:
+    maxLaunched: '§cไม่สามารถรับได้มากกว่า {0} quest(s) ในเวลาเดียวกัน...'
     nopStep: '§cภารกิจนี้ไม่มีขั้นตอนอื่น.'
     updated: '§7ภารกิจ §e{0}§7 อัพเดต.'
     checkpoint: '§7ถึงจุดตรวจภารกิจแล้ว!'
@@ -54,7 +55,7 @@ msg:
     skill: '§cเลเวลสกิล §e{1}§c ต้อง {0}!'
     combatLevel: '§cเลเวล combat ต้อง {0}!'
     money: "§cคุณต้องมี {0}!\n"
-    wait: '§cคุณต้องรอ {0} นาที จึงจะสามารถเริ่มภารกิจนี้ใหม่ได้!'
+    waitTime: '§cคุณต้องรอ {0} นาที จึงจะสามารถเริ่มภารกิจนี้ใหม่ได้!'
   experience:
     edited: '§คุณเปลี่ยนค่า EXP ที่ได้รับจาก {0} เป็น {1} คะแนน.'
   selectNPCToKill: '§aเลือก NPC ที่จะฆ่า.'
@@ -149,8 +150,7 @@ msg:
     already: '§cคุณอยู่ในเครื่องมือแก้ไขแล้ว'
     enter:
       title: '§6 ~ โหมดแก้ไข ~'
-      subtitle: '§6เขียน "/quests editor" เพื่อบังคับให้ออก'
-    chat: '§6คุณกำลังอยู่ในโหมดแก้ไข เขียน "/quests editor" เพื่อบังคับให้ออกจากโปรแกรมแก้ไข (ไม่แนะนำเป็นอย่างยิ่งให้ลองใช้คำสั่งเช่น "close" หรือ "cancel" เพื่อกลับไปที่พื้นที่ inventory ก่อนหน้านี้.)'
+      subtitle: พิม /quests exitEditor เพื่อออกจากโหมดแก้ไข
     npc:
       enter: '§aคลิกที่ NPC หรือเขียน "cancel".'
       choseStarter: '§aเลือก NPC ที่เริ่มภารกิจ'
@@ -190,6 +190,7 @@ msg:
       npc: เพิ่ม §aMessage "{0}" สำหรับ NPC แล้ว
       noSender: '§aMessage "{0}" ถูกเพิ่มโดยไม่มีผู้ส่ง'
       messageRemoved: '§aMessage "{0}" ถูกลบออก'
+      edited: ข้อความ "{0}" ได้ถูกแก้ไขแล้ว
       soundAdded: เพิ่ม§aSound "{0}" สำหรับ message "{1}"
       cleared: '§a {0} ข้อความที่ถูกลบ'
       help:
@@ -202,6 +203,7 @@ msg:
         npcInsert: '§6npcInsert <id> <message>: §eใส่ข้อความที่ NPC พูด'
         playerInsert: '§6playerInsert <id> <message>: §eใส่ข้อความที่ผู้เล่นพูด'
         nothingInsert: '§6nothingInsert <id> <message>: §eใส่ข้อความโดยไม่มีคำนำหน้าใดๆ'
+        edit: 'แก้ไข <id> <message>:§eข้อความที่แก้ไข'
         addSound: '§6addSound <id> <sound>: §เพิ่มเสียงให้กับข้อความ'
         clear: '§6clear: §ลบข้อความทั้งหมด'
         close: '§6close: §eตรวจสอบข้อความทั้งหมด'
@@ -259,6 +261,8 @@ inv:
     bucket: '§aเติม buckets'
     location: '§aไปยัง location'
     playTime: '§eเวลาเล่น'
+    breedAnimals: ผสมพันธ์สัตว์
+    tameAnimals: '§สัตว์เลี้ยง'
     NPCText: '§eแก้ไข dialog'
     NPCSelect: '§eเลือก หรือสร้าง NPC'
     hideClues: ซ่อน particles และ holograms
@@ -271,6 +275,7 @@ inv:
     cancelMessage: ยกเลิกการส่ง
     ignoreCase: ไม่สนใจ case ของข้อความ
     selectItems: '§eแก้ไข ไอเท่ม ที่ต้องการ'
+    selectItemsMessage: แก้ไขข้อความคำถาม
     selectRegion: '§7เลือก region'
     toggleRegionExit: เมื่อออก
     stageStartMsg: '§eแก้ไขข้อความเริ่มต้น'
@@ -428,7 +433,6 @@ inv:
     loreCancel: '§c§oคลิกเพื่อยกเลิกภารกิจ'
     loreStart: คลิกเพื่อเริ่มภารกิจ
     loreStartUnavailable: notc§oคุณมีคุณสมบัติไม่ตรงตามข้อกำหนดในการเริ่มภารกิจ
-    timeToWait: '§3§§ {0} นาที(s) ก่อน คุณจะสามารถเริ่มภารกิจนี้ใหม่ได้'
     canRedo: '§3§คุณสามารถเริ่มภารกิจนี้ใหม่ได้!'
   itemCreator:
     name: สร้างไอเท่ม
@@ -501,6 +505,15 @@ inv:
     time: '§bตั้งเวลาระหว่างเควส'
     redoAllowed: อนุญาตให้ทำซ้ำ
   poolsList.name: Quest pools
+  itemComparisons:
+    itemName: ชื่อไอเทม
+    itemNameLore: เปรียบเทียบชื่อไอเทม
+    itemLore: คำอธิบายไอเทม
+    itemLoreLore: เปรียบเทียบคำอธิบายไอเทม
+    enchants: ตีบวกอาวุธ
+    enchantsLore: เปรียบเทียบไอเทมตีบวก
+    repairCost: ค่าซ่อมแซม
+    repairCostLore: เปรียบเทียบค่าซ่อมกับชุดเกราะและดาบ
 scoreboard:
   name: '§6§lQเควส'
   noLaunched: '§cไม่มีภารกิจอยู่ในระหว่างดำเนินการ'
@@ -522,6 +535,8 @@ scoreboard:
     bucket: '§eเติม §6{0}'
     location: '§eไปที่ §6{0}§e, §6{1}§e, §6{2}§e ใน §6{3}'
     playTime: '§eเล่น §6{0} game ticks'
+    breed: ผสมพันธ์ §6{0}
+    tame: ทำให้เชื่อง §6{0}
 indication:
   startQuest: '§7คุณต้องการเริ่มภารกิจ {0} หรือไม่?'
   closeInventory: '§7คุณแน่ใจหรือไม่ว่าต้องการปิด GUI?'
@@ -551,6 +566,8 @@ misc:
     Bucket: เติม bucket
     location: ค้นหา location
     playTime: เวลาเล่น
+    breedAnimals: ผสมพันธ์สัตว์
+    tameAnimals: สัตว์เลี้ยง
   comparison:
     equals: เท่ากับ {0}
     different: แตกต่างจาก {0}
@@ -580,6 +597,7 @@ misc:
   poolHologramText: '§eภารกิจใหม่มาแล้ว!'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eประเภท Entity : {0}'
+  entityTypeAny: สิ่งมีชีวิตตัวไหนก็ได้
   enabled: เปิดการใช้งาน
   disabled: ปิดการใช้งาน
   unknown: ไม่ทราบ

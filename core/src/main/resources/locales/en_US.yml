@@ -356,6 +356,8 @@ inv:
     hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
     bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
+    auto: Start automatically on first join
+    autoLore: If enabled, the quest will be started automatically when the player joins the server for the first time.
     questName: §a§lEdit quest name
     questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items

@@ -338,6 +338,8 @@ public enum Lang{
 	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
 	bypassLore("inv.details.bypassLimitLore"),
+	auto("inv.details.auto"),
+	autoLore("inv.details.autoLore"),
 	questName("inv.details.questName"),
 	questNameLore("inv.details.questNameLore"),
 	rewardItems("inv.details.setItemsRewards"),

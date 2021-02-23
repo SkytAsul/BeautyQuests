@@ -9,7 +9,6 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
@@ -77,12 +76,9 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
 
-	public static Quest firstQuest;
-
 	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
-	static int firstQuestID = -1;
-
+	static int firstQuestID = -1; // changed in 0.19, TODO
 	
 	static void initConfiguration(FileConfiguration config) {
 		timer = config.getInt("redoMinuts");
@@ -100,7 +96,7 @@ public class QuestsConfiguration {
 		}
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
-		firstQuestID = config.getInt("firstQuest");
+		firstQuestID = config.getInt("firstQuest", -1);
 		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");

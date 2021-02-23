@@ -37,6 +37,7 @@ import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
+import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -403,7 +404,25 @@ public class BeautyQuests extends JavaPlugin{
 				continue;
 			}
 		}
-		QuestsConfiguration.firstQuest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
+		
+		if (QuestsConfiguration.firstQuestID != -1) {
+			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
+			Quest quest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
+			if (quest != null) {
+				if (quest.hasOption(OptionAutoQuest.class)) {
+					OptionAutoQuest option = quest.getOption(OptionAutoQuest.class);
+					if (!option.getValue()) {
+						option.setValue(true);
+						quest.saveToFile();
+					}
+				}else {
+					OptionAutoQuest option = new OptionAutoQuest();
+					option.setValue(true);
+					quest.addOption(option);
+					quest.saveToFile();
+				}
+			}
+		}
 		
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {

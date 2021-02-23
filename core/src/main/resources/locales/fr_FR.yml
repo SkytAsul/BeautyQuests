@@ -13,6 +13,7 @@ msg:
     invalidID: '§cLa quête avec l''id {0} n''existe pas.'
     alreadyStarted: '§cVous avez déjà commencé cette quête !'
   quests:
+    maxLaunched: '§cVous ne pouvez pas avoir plus de {0} quête(s) simultanément...'
     nopStep: '§cCette quête ne comporte aucune étape.'
     updated: '§7Quête §e{0}§7 actualisée.'
     checkpoint: '§7Checkpoint de quête atteint !'
@@ -329,11 +330,14 @@ inv:
     hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
     bypassLimitLore: Si activé, la quête sera démarrée même si le joueur a atteint son nombre maximum de quêtes en cours.
+    auto: Démarrer automatiquement à la première connexion
+    autoLore: Si activé, la quête sera lancée automatiquement lorsque le joueur rejoindra le serveur pour la première fois.
     questName: '§a§lModifier le nom de la quête'
     questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
     setXPRewards: '§eModifier les gains d''expérience'
     setCheckpointReward: '§eModifier les récompenses du checkpoints'
+    setRewardStopQuest: '§cArrêter la quête'
     setRewardsWithRequirements: '§eRécompenses avec requirements'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'

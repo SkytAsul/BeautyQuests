@@ -49,6 +49,7 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -374,6 +375,7 @@ public class Quest implements Comparable<Quest> {
 		
 		BeautyQuests.savingFailure = false;
 		save(fc);
+		DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
 		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
 		fc.save(file);
 	}

@@ -13,6 +13,7 @@ msg:
     invalidID: '§cDie Quest mit der ID {0} existiert nicht.'
     alreadyStarted: '§cDu hast die Quest bereits gestartet!'
   quests:
+    maxLaunched: '§cDu kannst nicht mehr als {0} Quest(s) gleichzeitig haben...'
     nopStep: '§cDiese Quest hat keinen Schritt.'
     updated: '§7Quest §e{0}§7 aktualisiert.'
     checkpoint: '§7Quest-Kontrollpunkt erreicht!'
@@ -190,6 +191,7 @@ msg:
       npc: '§aNachricht „{0}“ für den NPC hinzugefügt.'
       noSender: '§aNachricht „{0}“ ohne einen Absender hinzugefügt.'
       messageRemoved: '§aNachricht „{0}“ entfernt.'
+      edited: '§aNachricht "{0}" bearbeitet.'
       soundAdded: '§aGeräusch „{0}“ für die Nachricht „{1}“ hinzugefügt.'
       cleared: '§a{0} entfernte Nachricht(en).'
       help:
@@ -202,6 +204,7 @@ msg:
         npcInsert: '§6npcInsert <ID> <Nachricht>: §eFüge eine vom NPC gesagte Nachricht ein.'
         playerInsert: '§6playerInsert <ID> <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht ein.'
         nothingInsert: '§6nothingInsert <ID> <Nachricht>: §eFüge eine Nachricht ohne Präfix ein.'
+        edit: '§6bearbeiten <id> <message>: §eBearbeite eine Nachricht.'
         addSound: '§6addSound <ID> <Geräusch>: §eFüge ein Geräusch einer Nachricht hinzu.'
         clear: '§6clear: §eEntferne alle Nachrichten.'
         close: '§6close: §eBestätige alle Nachrichten.'
@@ -332,6 +335,7 @@ inv:
     setItemsRewards: '§eBelohnungs‐Items bearbeiten'
     setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
     setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
+    setRewardStopQuest: '§cQuest stoppen'
     setRewardsWithRequirements: '§eBelohnungen mit Vorrausetzungen'
     setPermReward: '§eBerechtigungen bearbeiten'
     setMoneyReward: '§eGeldbelohnung bearbeiten'
