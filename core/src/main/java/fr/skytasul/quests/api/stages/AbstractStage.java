@@ -171,7 +171,7 @@ public abstract class AbstractStage implements Listener{
 			if (startMessage != null){
 				if (startMessage.length() > 0){
 					if (branch.getID(this) == 0 && branch.getQuest().hasOption(OptionStarterNPC.class)) {
-						Utils.IsendMessage(p, Lang.NpcText.format(p, branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1), true);
+						Utils.IsendMessage(p, Lang.NpcText.format(branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1), true);
 					}else {
 						Utils.sendOffMessage(p, startMessage);
 					}

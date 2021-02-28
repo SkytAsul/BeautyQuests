@@ -204,7 +204,7 @@ msg:
         npcInsert: '§6npcInsert <ID> <Nachricht>: §eFüge eine vom NPC gesagte Nachricht ein.'
         playerInsert: '§6playerInsert <ID> <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht ein.'
         nothingInsert: '§6nothingInsert <ID> <Nachricht>: §eFüge eine Nachricht ohne Präfix ein.'
-        edit: '§6bearbeiten <id> <message>: §eBearbeite eine Nachricht.'
+        edit: '§6edit <id> <message>: §eBearbeite eine Nachricht.'
         addSound: '§6addSound <ID> <Geräusch>: §eFüge ein Geräusch einer Nachricht hinzu.'
         clear: '§6clear: §eEntferne alle Nachrichten.'
         close: '§6close: §eBestätige alle Nachrichten.'
@@ -330,6 +330,8 @@ inv:
     hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
     bypassLimit: Questlimit nicht zählen
     bypassLimitLore: Wenn aktiviert, ist die Quest startbar, auch wenn der Spieler seine maximale Anzahl an begonnenen Quests erreicht hat.
+    auto: Beim ersten Beitritt automatisch starten
+    autoLore: Wenn aktiviert, wird die Quest automatisch gestartet, wenn der Spieler zum ersten Mal dem Server beitritt.
     questName: '§a§lQuestname bearbeiten'
     questNameLore: Ein Name muss gesetzt werden, um die Questerstellung abzuschließen.
     setItemsRewards: '§eBelohnungs‐Items bearbeiten'
