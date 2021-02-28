@@ -46,7 +46,7 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 			setValue(npc);
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}).create(p);
+		}).setNullable().create(p);
 	}
 	
 }

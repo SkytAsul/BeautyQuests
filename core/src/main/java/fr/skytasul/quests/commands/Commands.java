@@ -488,11 +488,6 @@ public class Commands {
 		}
 	}
 	
-	@Cmd (player = true)
-	public void test(CommandContext cmd) {
-		new BranchesGUI().create(cmd.player);
-	}
-	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){
 		qu.resetPlayer(acc);
 		if (acc.isCurrent()) Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());

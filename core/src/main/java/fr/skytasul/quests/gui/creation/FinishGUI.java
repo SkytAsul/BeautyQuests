@@ -86,7 +86,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		stages = gui;
 		this.edited = edited;
 		this.stagesEdited = stagesEdited;
-		this.keepPlayerDatas = !stagesEdited;
+		this.keepPlayerDatas = true;
 		editing = true;
 	}
 

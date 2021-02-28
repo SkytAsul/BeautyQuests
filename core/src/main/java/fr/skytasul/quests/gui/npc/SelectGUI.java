@@ -25,12 +25,18 @@ public class SelectGUI implements CustomInventory{
 	
 	private Runnable cancel;
 	private Consumer<NPC> run;
+	private boolean nullable;
 	
 	public Inventory inv;
 	
 	public SelectGUI(Runnable cancel, Consumer<NPC> run) {
 		this.cancel = cancel;
 		this.run = run;
+	}
+	
+	public SelectGUI setNullable() {
+		this.nullable = true;
+		return this;
 	}
 	
 	public CustomInventory openLastInv(Player p) {
@@ -43,6 +49,7 @@ public class SelectGUI implements CustomInventory{
 		
 		inv.setItem(1, createNPC.clone());
 		inv.setItem(3, selectNPC.clone());
+		if (nullable) inv.setItem(2, ItemUtils.item(XMaterial.BARRIER, "§cNone"));
 		
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -53,6 +60,11 @@ public class SelectGUI implements CustomInventory{
 
 		case 1:
 			new NPCGUI(run, () -> Inventories.put(p, openLastInv(p), inv)).create(p);
+			break;
+		
+		case 2:
+			Inventories.closeAndExit(p);
+			run.accept(null);
 			break;
 
 		case 3:

@@ -57,40 +57,40 @@ permissions:
     default: true
   beautyquests.command.create:
     decription: Gives access to "/quests create"
-    defauilt: op
+    default: op
   beautyquests.command.edit:
     decription: Gives access to "/quests edit"
-    defauilt: op
+    default: op
   beautyquests.command.list:
     decription: Gives access to "/quests list"
-    defauilt: op
+    default: op
   beautyquests.command.help:
     decription: Gives access to "/quests help"
-    defauilt: true
+    default: true
   beautyquests.command.remove:
     decription: Gives access to "/quests remove"
-    defauilt: op
+    default: op
   beautyquests.command.reload:
     decription: Gives access to "/quests reload"
-    defauilt: op
+    default: op
   beautyquests.command.finish:
     decription: Gives access to "/quests finish" and "finishAll"
-    defauilt: op
+    default: op
   beautyquests.command.setStage:
     decription: Gives access to "/quests setStage"
-    defauilt: op
+    default: op
   beautyquests.command.setName:
     decription: Gives access to "/quests setName"
-    defauilt: op
+    default: op
   beautyquests.command.resetPlayer:
     decription: Gives access to "/quests resetPlayer" and "resetPlayerQuest"
-    defauilt: op
+    default: op
   beautyquests.command.seePlayer:
     decription: Gives access to "/quests seePlayer"
-    defauilt: op
+    default: op
   beautyquests.command.setItem:
     decription: Gives access to "/quests setItem"
-    defauilt: op
+    default: op
   beautyquests.command.adminMode:
     description: Gives access to "/quests adminMode"
     default: op
