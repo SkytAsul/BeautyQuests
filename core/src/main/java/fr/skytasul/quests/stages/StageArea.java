@@ -58,7 +58,7 @@ public class StageArea extends AbstractStage{
 	
 	@EventHandler
 	public void onRegionEntry(WorldGuardEntryEvent e) {
-		if (e.getRegionsEntered().contains(region)) {
+		if (e.getRegionsEntered().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) finishStage(e.getPlayer());
 		}
 	}

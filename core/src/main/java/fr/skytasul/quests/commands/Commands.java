@@ -15,7 +15,6 @@ import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.gui.misc.BranchesGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
@@ -253,7 +252,7 @@ public class Commands {
 	@Cmd (min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		boolean testRequirements = !(CommandsManager.hasPermission(cmd.player, "start.other") && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
+		boolean testRequirements = !(CommandsManager.hasPermission(cmd.sender, "start.other") && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
 		if (cmd.isPlayer()){
 			if (target == cmd.player){
 				if (!CommandsManager.hasPermission(cmd.player, "start")){

@@ -16,11 +16,13 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -31,8 +33,11 @@ import fr.skytasul.quests.utils.XMaterial;
 
 public class StageFish extends AbstractCountableStage<ItemStack> {
 	
-	public StageFish(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> fishes) {
+	private final ItemComparisonMap comparisons;
+	
+	public StageFish(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> fishes, ItemComparisonMap comparisons) {
 		super(branch, fishes);
+		this.comparisons = comparisons;
 	}
 
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -52,8 +57,9 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return object.clone();
 	}
 
+	@Override
 	protected boolean objectApplies(ItemStack object, Object other) {
-		return object.isSimilar((ItemStack) other);
+		return comparisons.isSimilar(object, (ItemStack) other);
 	}
 
 	protected String getName(ItemStack object) {
@@ -73,6 +79,12 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}
 	
+	@Override
+	protected void serialize(Map<String, Object> map) {
+		super.serialize(map);
+		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
+	}
+	
 	public static StageFish deserialize(Map<String, Object> map, QuestBranch branch) {
 		Map<Integer, Entry<ItemStack, Integer>> objects = new HashMap<>();
 
@@ -84,8 +96,13 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 				objects.put(i, new AbstractMap.SimpleEntry<>(is, is.getAmount()));
 			}
 		}
+		
+		ItemComparisonMap comparisons;
+		if (map.containsKey("itemComparisons")) {
+			comparisons = new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons"));
+		}else comparisons = new ItemComparisonMap();
 
-		StageFish stage = new StageFish(branch, objects);
+		StageFish stage = new StageFish(branch, objects, comparisons);
 		stage.deserialize(map);
 
 		return stage;
@@ -93,7 +110,10 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 
 	public static class Creator extends StageCreation<StageFish> {
 		
+		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
+		
 		private List<ItemStack> items;
+		private ItemComparisonMap comparisons = new ItemComparisonMap();
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
@@ -104,11 +124,22 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 					reopenGUI(p, true);
 				}, items).create(p);
 			});
+			line.setItem(7, stageComparison, (p, item) -> {
+				new ItemComparisonGUI(comparisons, () -> {
+					setComparisons(comparisons);
+					reopenGUI(p, true);
+				}).create(p);
+			});
 		}
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
 			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(this.items.size() + " fish(es)")));
+		}
+		
+		public void setComparisons(ItemComparisonMap comparisons) {
+			this.comparisons = comparisons;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
 		}
 		
 		@Override
@@ -117,7 +148,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 			new ItemsGUI(items -> {
 				setItems(items);
 				reopenGUI(p, true);
-			}, Collections.EMPTY_LIST).create(p);
+			}, Collections.emptyList()).create(p);
 		}
 
 		@Override
@@ -128,6 +159,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 				item.setAmount(entry.getValue());
 				return item;
 			}).collect(Collectors.toList()));
+			setComparisons(stage.comparisons.clone());
 		}
 		
 		@Override
@@ -139,7 +171,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 				item.setAmount(1);
 				itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
 			}
-			return new StageFish(branch, itemsMap);
+			return new StageFish(branch, itemsMap, comparisons);
 		}
 	}
 
