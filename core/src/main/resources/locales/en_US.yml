@@ -114,7 +114,7 @@ msg:
     leaveAll: '§aYou have forced the end of {0} quest(s). Errors: {1}'
     resetPlayer:
       player: §6All informations of your {0} quest(s) has/have been deleted by {1}.
-      remover: §6{0} quest information(s) of {1} has/have been deleted.
+      remover: §6{0} quest information(s) (and {2} pools) of {1} has/have been deleted.
     resetPlayerQuest:
       player: §6All informations about the quest {0} have been deleted by {1}.
       remover: §6{0} quest information(s) of {1} has/have been deleted.
@@ -531,12 +531,13 @@ inv:
   poolsManage:
     name: Quest Pools
     itemName: '§aPool #{0}'
-    itemDescription: |-
-      §8NPC: §7{0}
-      §8Max quests: §7{1}
-      §8Can redo completed quests: §7{2}
-      §8Time between quests: §7{3}ms
-      §8Hologram text: §7{4}
+    poolNPC: '§8NPC: §7{0}'
+    poolMaxQuests: '§8Max quests: §7{0}'
+    poolRedo: '§8Can redo completed quests: §7{0}'
+    poolTime: '§8Time between quests: §7{0}'
+    poolHologram: '§8Hologram text: §7{0}'
+    poolAvoidDuplicates: '§8Avoid duplicates: §7{0}'
+    poolQuestsList: '§7{0} §8quest(s): §7{1}'
     create: §aCreate a quest pool
   poolCreation:
     name: Quest pool creation
@@ -544,6 +545,8 @@ inv:
     maxQuests: §aMax quests
     time: §bSet time between quests
     redoAllowed: Is redo allowed
+    avoidDuplicates: Avoid duplicates
+    avoidDuplicatesLore: §8> §7Try to avoid doing\n  the same quest over and over
   poolsList.name: Quest pools
   itemComparisons:
     name: Item Comparisons
@@ -600,6 +603,7 @@ misc:
     days: '{0} days'
     hours: '{0} hours'
     minutes: '{0} minutes'
+    lessThanAMinute: 'less than a minute'
   stageType:
     region: Find region
     npc: Find NPC

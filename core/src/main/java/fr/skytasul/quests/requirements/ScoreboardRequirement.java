@@ -13,6 +13,7 @@ import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.ScoreboardObjectiveParser;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 
 public class ScoreboardRequirement extends TargetNumberRequirement {
@@ -21,11 +22,11 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	private String objectiveName;
 
 	public ScoreboardRequirement() {
-		this(null, 0);
+		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public ScoreboardRequirement(String objectiveName, double target) {
-		super("scoreboardRequired", target);
+	public ScoreboardRequirement(String objectiveName, double target, ComparisonMethod comparison) {
+		super("scoreboardRequired", target, comparison);
 		if (objectiveName != null) this.objectiveName = objectiveName;
 	}
 
@@ -84,7 +85,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new ScoreboardRequirement(objectiveName, target);
+		return new ScoreboardRequirement(objectiveName, target, comparison);
 	}
 
 }

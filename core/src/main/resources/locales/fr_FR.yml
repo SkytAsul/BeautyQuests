@@ -100,7 +100,7 @@ msg:
     leaveAll: '§aVous avez forcé la fin de {0} quête(s). §c{1} erreur(s).'
     resetPlayer:
       player: '§6Les données de vos {0} quêtes ont été supprimées par {1}.'
-      remover: '§6Les données de {0} quêtes pour le joueur {1} ont bien été supprimées.'
+      remover: '§6Les données de {0} quête(s) (et {2} pools) pour le joueur {1} ont bien été supprimées.'
     resetPlayerQuest:
       player: '§6Les données de la quête {0} ont été supprimées par {1}.'
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
@@ -502,12 +502,13 @@ inv:
   poolsManage:
     name: Groupe de quêtes
     itemName: '§aGroupe #{0}'
-    itemDescription: |-
-      §8NPC : §7{0}
-      §8Quantité max de quêtes : §7{1}
-      §8Peut refaire les quêtes : §7{2}
-      §8Temps entre les quêtes : §7{3}ms
-      §8Texte de l'hologramme : §7{4}
+    poolNPC: '§8NPC : §7{0}'
+    poolMaxQuests: '§8Nombre maximum de quêtes : §7{0}'
+    poolRedo: '§8Peut refaire les quêtes : §7{0}'
+    poolTime: '§8Temps entre les quêtes : §7{0}'
+    poolHologram: '§8Hologramme : §7{0}'
+    poolAvoidDuplicates: '§8Éviter les doublons : §7{0}'
+    poolQuestsList: '§7{0} §8quête(s) : §7{1}'
     create: '§aCréer un groupe de quêtes'
   poolCreation:
     name: Création du groupe de quêtes
@@ -515,6 +516,8 @@ inv:
     maxQuests: '§aNombre maximum de quêtes'
     time: '§bDéfinir le temps entre les quêtes'
     redoAllowed: Est-il recommençable ?
+    avoidDuplicates: Éviter les doublons
+    avoidDuplicatesLore: '§8> §7Essaye d''éviter de faire\n  la même quête encore et encore'
   poolsList.name: Groupe de quêtes
   itemComparisons:
     name: Comparaisons d'item
@@ -570,6 +573,7 @@ misc:
     days: '{0} jours'
     hours: '{0} heures'
     minutes: '{0} minutes'
+    lessThanAMinute: 'moins d''une minute'
   stageType:
     region: Trouver une region
     npc: Trouver un NPC

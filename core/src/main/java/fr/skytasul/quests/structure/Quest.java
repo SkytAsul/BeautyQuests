@@ -330,7 +330,7 @@ public class Quest implements Comparable<Quest> {
 				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.MINUTE, getOptionValueOrDef(OptionTimer.class));
+					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation());

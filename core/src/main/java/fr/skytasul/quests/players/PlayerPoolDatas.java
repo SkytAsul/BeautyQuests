@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Utils;
 
 public class PlayerPoolDatas {
@@ -32,6 +34,10 @@ public class PlayerPoolDatas {
 	
 	public int getPoolID() {
 		return poolID;
+	}
+	
+	public QuestPool getPool() {
+		return BeautyQuests.getInstance().getPoolsManager().getPool(poolID);
 	}
 	
 	public long getLastGive() {

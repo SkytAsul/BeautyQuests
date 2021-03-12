@@ -35,6 +35,8 @@ public abstract class PlayersManager {
 
 	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
 	
+	public abstract void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas);
+	
 	public abstract int removeQuestDatas(Quest quest);
 	
 	//public abstract boolean hasAccounts(Player p);

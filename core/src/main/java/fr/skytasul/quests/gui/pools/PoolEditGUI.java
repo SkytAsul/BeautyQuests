@@ -19,6 +19,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PoolEditGUI implements CustomInventory {
@@ -30,6 +31,7 @@ public class PoolEditGUI implements CustomInventory {
 	private boolean redoAllowed = true;
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
 	private int npcID = -1;
+	private boolean avoidDuplicates = true;
 	
 	private boolean canFinish = false;
 	private QuestPool editing;
@@ -43,6 +45,7 @@ public class PoolEditGUI implements CustomInventory {
 			redoAllowed = editing.isRedoAllowed();
 			timeDiff = editing.getTimeDiff();
 			npcID = editing.getNPCID();
+			avoidDuplicates = editing.doAvoidDuplicates();
 		}
 	}
 	
@@ -59,7 +62,7 @@ public class PoolEditGUI implements CustomInventory {
 	}
 	
 	private String[] getTimeLore() {
-		return new String[] { "", Lang.optionValue.format(timeDiff + " milliseconds (" + TimeUnit.MILLISECONDS.toDays(timeDiff) + " days)") };
+		return new String[] { "", Lang.optionValue.format(Utils.millisToHumanString(timeDiff)) };
 	}
 	
 	private void reopen(Player p, Inventory inv, boolean reimplement) {
@@ -83,6 +86,7 @@ public class PoolEditGUI implements CustomInventory {
 		inv.setItem(2, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getAmountLore()));
 		inv.setItem(3, ItemUtils.item(XMaterial.CLOCK, Lang.poolTime.toString(), getTimeLore()));
 		inv.setItem(4, ItemUtils.itemSwitch(Lang.poolRedo.toString(), redoAllowed));
+		inv.setItem(5, ItemUtils.itemSwitch(Lang.poolAvoidDuplicates.toString(), avoidDuplicates, Lang.poolAvoidDuplicatesLore.toString()));
 		
 		inv.setItem(7, ItemUtils.itemCancel);
 		inv.setItem(8, ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString()));
@@ -129,13 +133,16 @@ public class PoolEditGUI implements CustomInventory {
 		case 4:
 			redoAllowed = ItemUtils.toggle(current);
 			break;
+		case 5:
+			avoidDuplicates = ItemUtils.toggle(current);
+			break;
 		
 		case 7:
 			end.run();
 			break;
 		case 8:
 			if (canFinish) {
-				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, redoAllowed, timeDiff);
+				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, redoAllowed, timeDiff, avoidDuplicates);
 				end.run();
 			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 			break;

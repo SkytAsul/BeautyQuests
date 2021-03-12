@@ -1,5 +1,6 @@
 package fr.skytasul.quests.commands;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
@@ -23,6 +24,7 @@ import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerPoolDatas;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
@@ -209,12 +211,17 @@ public class Commands {
 	public void resetPlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
-		int i = 0;
-		for (Quest q : BeautyQuests.getInstance().getQuests()){
-			if (q.resetPlayer(acc)) i++;
+		int quests = 0, pools = 0;
+		for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
+			questDatas.getQuest().resetPlayer(acc);
+			quests++;
 		}
-		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), i, cmd.sender.getName());
-		Lang.DATA_REMOVED_INFO.send(cmd.sender, i, target.getName());
+		for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
+			poolDatas.getPool().resetPlayer(acc);
+			pools++;
+		}
+		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), quests, cmd.sender.getName(), pools);
+		Lang.DATA_REMOVED_INFO.send(cmd.sender, quests, target.getName(), pools);
 	}
 	
 	@Cmd(permission = "resetPlayer", min = 1, args = {"PLAYERS", "QUESTSID"})

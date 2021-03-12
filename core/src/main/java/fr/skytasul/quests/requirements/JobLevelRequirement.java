@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Jobs;
@@ -21,11 +22,11 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	public String jobName;
 	
 	public JobLevelRequirement() {
-		this(null, 0);
+		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public JobLevelRequirement(String jobName, double target) {
-		super("jobLevelRequired", target);
+	public JobLevelRequirement(String jobName, double target, ComparisonMethod comparison) {
+		super("jobLevelRequired", target, comparison);
 		if (!DependenciesManager.jobs) throw new MissingDependencyException("Jobs");
 		this.jobName = jobName;
 	}
@@ -51,7 +52,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new JobLevelRequirement(jobName, target);
+		return new JobLevelRequirement(jobName, target, comparison);
 	}
 	
 	@Override

@@ -83,7 +83,9 @@ public class PlayerAccount {
 	}
 	
 	public PlayerPoolDatas removePoolDatas(QuestPool pool) {
-		return poolDatas.remove(pool.getID());
+		PlayerPoolDatas removed = poolDatas.remove(pool.getID());
+		if (removed != null) PlayersManager.manager.playerPoolDataRemoved(this, pool, removed);
+		return removed;
 	}
 	
 	public Collection<PlayerPoolDatas> getPoolDatas() {

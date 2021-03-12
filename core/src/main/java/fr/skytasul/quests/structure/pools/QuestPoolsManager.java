@@ -52,9 +52,9 @@ public class QuestPoolsManager {
 		}
 	}
 	
-	public QuestPool createPool(QuestPool editing, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff) {
+	public QuestPool createPool(QuestPool editing, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates) {
 		if (editing != null) editing.unload();
-		QuestPool pool = new QuestPool(editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getID(), npcID, hologram, maxQuests, redoAllowed, timeDiff);
+		QuestPool pool = new QuestPool(editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getID(), npcID, hologram, maxQuests, redoAllowed, timeDiff, avoidDuplicates);
 		save(pool);
 		pools.put(pool.getID(), pool);
 		if (editing != null) {

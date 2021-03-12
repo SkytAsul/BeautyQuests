@@ -6,16 +6,17 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 
 public class LevelRequirement extends TargetNumberRequirement {
 	
 	public LevelRequirement() {
-		this(0);
+		this(0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public LevelRequirement(double target) {
-		super("levelRequired", target);
+	public LevelRequirement(double target, ComparisonMethod comparison) {
+		super("levelRequired", target, comparison);
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new LevelRequirement(target);
+		return new LevelRequirement(target, comparison);
 	}
 	
 	protected void save(Map<String, Object> datas) {

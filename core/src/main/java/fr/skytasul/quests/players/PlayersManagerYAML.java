@@ -53,8 +53,12 @@ public class PlayersManagerYAML extends PlayersManager {
 		return new PlayerQuestDatas(acc, quest.getID());
 	}
 
+	@Override
 	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {}
 
+	@Override
+	public void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas) {}
+	
 	@Override
 	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {
 		return new PlayerPoolDatas(acc, pool.getID());
@@ -98,7 +102,6 @@ public class PlayersManagerYAML extends PlayersManager {
 			}catch (Exception ex) {
 				BeautyQuests.getInstance().getLogger().severe("An error occured when loading player account " + entry.getKey());
 				ex.printStackTrace();
-				continue;
 			}
 		}
 		BeautyQuests.getInstance().getLogger().info("Total loaded accounts: " + loadedAccounts.size());
@@ -243,7 +246,6 @@ public class PlayersManagerYAML extends PlayersManager {
 				}catch (Exception ex) {
 					ex.printStackTrace();
 					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key));
-					continue;
 				}
 			}
 		}

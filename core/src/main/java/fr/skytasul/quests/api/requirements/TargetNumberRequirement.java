@@ -22,12 +22,13 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	
 	private static NumberFormat numberFormat = NumberFormat.getInstance();
 
-	protected ComparisonMethod comparison = ComparisonMethod.GREATER_OR_EQUAL;
+	protected ComparisonMethod comparison;
 	protected double target;
 	
-	public TargetNumberRequirement(String name, double target) {
+	protected TargetNumberRequirement(String name, double target, ComparisonMethod comparison) {
 		super(name);
 		this.target = target;
+		this.comparison = comparison;
 	}
 	
 	public double getTarget(){

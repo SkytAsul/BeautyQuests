@@ -13,6 +13,7 @@ msg:
     invalidID: '§cZadanie o id {0} nie istnieje'
     alreadyStarted: '§cJuż rozpocząłeś te zadanie!'
   quests:
+    maxLaunched: '§cNie możesz mieć aktywnych więcej niż {0} zadań jednocześnie...'
     nopStep: '§cTe zadanie nie ma żadnych etapów.'
     updated: '§7Zadanie §e{0}§7 zostało zaktualizowane.'
     checkpoint: '§7Osiągnięto punkt kontrolny misji!'
@@ -99,7 +100,6 @@ msg:
     leaveAll: '§aWymusiłeś/aś koniec {0} zadań. Błędy: {1}'
     resetPlayer:
       player: '§6Wszystkie informacje o twoich zadaniach {0} zostały usunięte przez {1}.'
-      remover: '§6{0} informacja(e) o zadaniu {1} zostały usunięte.'
     resetPlayerQuest:
       player: '§6Wszystkie informacje o zadaniu {0} zostały usunięte przez {1}.'
       remover: '§6{0} informacja(e/i) o zadaniu {1} została(y) usunięta(e).'
@@ -190,6 +190,7 @@ msg:
       npc: '§aWiadomość "{0}" została dodana dla NPC.'
       noSender: '§aWiadomość "{0}" dodana bez nadawcy.'
       messageRemoved: '§aWiadomość "{0}" usunięta.'
+      edited: '§aWiadomość "{0}" edytowana.'
       soundAdded: '§aDźwięk "{0}" dodany dla wiadomości "{1}".'
       cleared: '§aUsunięto {0} wiadomość(ci).'
       help:
@@ -202,6 +203,7 @@ msg:
         npcInsert: '§6npcInsert <id> <wiadomość>: §eWstaw wiadomość wysłaną przez NPC.'
         playerInsert: '§6playerInsert <id> <wiadomość>: §eWstaw wiadomość wysłaną przez gracza.'
         nothingInsert: '§6nothingInsert <id> <wiadomość>: §eWstaw wiadomość bez żadnego prefiksu.'
+        edit: '§7edytuj <id> <message>: §eEdytuj wiadomość.'
         addSound: '§6addSound <id> <dźwięk>: §eDodaj dźwięk do wiadomości.'
         clear: '§6clear: §eUsuń wszystkie wiadomości.'
         close: '§6close: §ePotwierdź wszystkie wiadomości.'
@@ -226,6 +228,10 @@ msg:
     noSuchElement: '§cNie ma takiego elementu. Dozwolone elementy to: §e{0}'
     comparisonType: '§aWybierz typ porównania, który chcesz użyć wśród {0}. Domyślne porównanie to: §e§lwięcej lub równe§r§a. Wpisz §onull§r§a, aby go użyć.'
     scoreboardObjectiveNotFound: '§cNieznany cel tablicy wyników.'
+    pool:
+      hologramText: 'Napisz niestandardowy tekst hologramu dla tej puli (lub "null" jeśli chcesz domyślnie).'
+      maxQuests: 'Wpisz maksymalną ilość zadań uruchamianych z tej puli.'
+      time: 'Napisz liczbę dni zanim gracze będą mogli wykonać nowe zadanie.'
   writeCommandDelay: '§aNapisz żądane opóźnienie komendy, w tickach.'
 advancement:
   finished: Zakończono
@@ -269,6 +275,8 @@ inv:
     cancelMessage: Anuluj wysyłanie
     ignoreCase: Ignoruj wielkość liter w wiadomości
     selectItems: '§eEdytuj wymagane przedmioty'
+    selectItemsMessage: '§eEdytuj wiadomość z pytaniem'
+    selectItemsComparisons: '§eWybierz porównania przedmiotów (ZAAWANSOWANE)'
     selectRegion: '§7Wybierz region'
     toggleRegionExit: Przy wyjściu
     stageStartMsg: '§eEdytuj wiadomość początkową'
@@ -317,13 +325,18 @@ inv:
     scoreboardItemLore: Jeśli wyłączone, zadanie nie będzie śledzone przez tablicę wyników.
     hideItem: Ukryj menu i dynmapę
     hideItemLore: Jeśli opcja jest włączona, zadanie nie będzie wyświetlane w dynmapie ani w menu zadań.
+    hideNoRequirementsItem: Ukryj gdy wymagania nie są spełnione
+    hideNoRequirementsItemLore: Jeśli włączone, zadanie nie będzie wyświetlane w Menu Zadań, gdy wymagania nie zostaną spełnione.
     bypassLimit: Nie licz limitu zadań
     bypassLimitLore: Jeśli włączone, zadanie będzie uruchamialne, nawet jeśli gracz osiągnie maksymalną liczbę rozpoczętych zadań.
+    auto: Uruchom automatycznie po zalogowaniu
+    autoLore: Jeśli włączone, zadanie zostanie uruchomione automatycznie, gdy gracz dołączy do serwera po raz pierwszy.
     questName: '§a§lEdytuj nazwę zadania'
     questNameLore: Nazwa musi być ustawiona, aby ukończyć tworzenie zadania.
     setItemsRewards: '§eEdytuj nagrody przedmiotowe'
     setXPRewards: '§eEdytuj nagrody doświadczenia'
     setCheckpointReward: '§eEdytuj nagrody punktu kontrolnego'
+    setRewardStopQuest: '§cZatrzymaj zadanie'
     setRewardsWithRequirements: '§eNagrody z wymaganiami'
     setPermReward: '§eEdytuj uprawnienia'
     setMoneyReward: '§eEdytuj nagrodę pieniężną'
@@ -353,6 +366,7 @@ inv:
     failOnDeath: Niepowodzenie podczas śmierci
     failOnDeathLore: Czy zadanie zostanie anulowane po śmierci gracza?
     questPool: '§ePula Zadań'
+    questPoolLore: Dołącz to zadanie do puli zadań
     keepDatas: Zachowaj dane graczy
     keepDatasLore: |-
       Wymuś, aby plugin zachował dane graczy, nawet jeśli etapy zostały edytowane.
@@ -388,6 +402,10 @@ inv:
   mobs:
     name: Wybierz moby
     none: '§aKliknij, aby dodać moba.'
+    clickLore: |-
+      §a§lKliknij lewym przyciskiem myszy§a aby edytować kwotę.
+      §a§l§nShift§a§l + lewym kliknięciem§a aby edytować nazwę potwora.
+      §c§lKliknij prawym przyciskiem myszy§c aby usunąć.
   mobSelect:
     name: Wybierz typ moba
     bukkitEntityType: '§eWybierz typ jednostki'
@@ -423,7 +441,9 @@ inv:
     loreCancel: '§c§oKliknij aby anulować zadanie'
     loreStart: '§a§oKliknij aby rozpocząć zadanie'
     loreStartUnavailable: '§c§oNie spełniasz wymagań do rozpoczęcia zadania'
+    timeToWaitRedo: '§3§oMożesz ponownie uruchomić to zadanie za {0}.'
     canRedo: '§3§oMożesz ponownie uruchomić to zadanie!'
+    timesFinished: '§3Zadanie wykonano {0} razy.'
   itemCreator:
     name: Kreator przedmiotów
     itemType: '§bTyp przedmiotu'
@@ -457,6 +477,10 @@ inv:
   blocksList:
     name: Wybierz bloki
     addBlock: '§aKliknij, aby dodać blok.'
+  blockAction:
+    name: Wybierz akcję bloku
+    location: '§eWybierz dokładną lokalizację'
+    material: '§eWybierz materiał bloku'
   buckets:
     name: Typ wiadra
   permission:
@@ -475,16 +499,22 @@ inv:
   factionsRequired.name: Wymagane frakcje
   factionsList.name: Lista frakcji
   poolsManage:
-    itemDescription: |-
-      §8NPC: §7{0}
-      §8Maks. zadań: §7{1}
-      §8Można ponownie wykonać zadania: §7{2}
-      §8Czas pomiędzy zadaniami: §7{3}ms
-      §8Tekst Hologramu: §7{4}
+    name: Pula Zadań
+    itemName: '§aPula #{0}'
+    create: '§aUtwórz pulę zadań'
   poolCreation:
+    name: Tworzenie puli zadań
+    hologramText: '§ePool niestandardowy hologram'
     maxQuests: '§aMaks. zadań'
+    time: '§bUstaw czas pomiędzy zadaniami'
     redoAllowed: Jest dozwolone ponawianie
+  poolsList.name: Pule zadań
   itemComparisons:
+    name: Porównania pozycji
+    bukkit: Porównanie natywne Bukkit
+    bukkitLore: "Używa domyślnego systemu porównywania przedmiotów Bukkit.\nPorównuje materiał, trwałość, tagi nbt..."
+    customBukkit: Porównanie natywne Bukkit - NO NBT
+    customBukkitLore: "Używa domyślnego systemu porównywania przedmiotów Bukkit, ale usuwa znaczniki NBT.\nPorównuje materiał, trwałość..."
     material: Materiał przedmiotu
     materialLore: 'Porównuje materiał przedmiotu (tj. kamień, żelazny miecz...)'
     itemName: Nazwa przedmiotu

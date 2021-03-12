@@ -13,6 +13,7 @@ msg:
     invalidID: '§cID为 {0} 的任务不存在.'
     alreadyStarted: '§c你已经接受了这个任务!'
   quests:
+    maxLaunched: '§c你不能同时进行多于{0}个任务……'
     nopStep: '§c这个任务没有任何阶段...  :-)'
     updated: '§7已更新任务 {0} !'
     checkpoint: '§7已到达任务记录点！'
@@ -54,6 +55,7 @@ msg:
     skill: '§c你的技能等级§e{1}§c必须是{0}！'
     combatLevel: '§c你的战力等级必须是{0}！'
     money: '§c你必须拥有{0}!'
+    waitTime: '§c你必须等待{0}才能重启该任务！'
   experience:
     edited: '已编辑获得的经验: {0}pts. 改为 {1}pts.'
   selectNPCToKill: 选择要击杀的NPC.
@@ -98,7 +100,6 @@ msg:
     leaveAll: '§e你强制结束了{0}个任务. §c出现{1}个错误.'
     resetPlayer:
       player: '§6你的所有任务数据 ({0}) 被 {1} 删除了.'
-      remover: '§6已删除 {1} 的 {0} 条任务数据.'
     resetPlayerQuest:
       player: '§6任务数据 {0} 已被 {1} 删除.'
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
@@ -148,6 +149,8 @@ msg:
     already: '§c你已在编辑器中.'
     enter:
       title: '§6~ 进入编辑器模式 ~'
+      subtitle: '§e输入 "/quests exitEditor" 强制退出任务编辑器。'
+    chat: '§6你已进入编辑器模式。输入"/quests exitEditor" 强制退出编辑器。（不推荐使用，最好使用 "close" 或 "cancel" 回到上一个菜单）'
     npc:
       enter: '§a点击一个NPC，或输入"cancel"取消.'
       choseStarter: '§a选择接受任务的NPC.'
@@ -187,6 +190,7 @@ msg:
       npc: '§a已为NPC添加消息“{0}”。'
       noSender: '§a已添加没有发送者的消息“{0}”。'
       messageRemoved: '§a已删除消息 {0}.'
+      edited: '§a已编辑消息"{0}" 。'
       soundAdded: '§a已为消息 {1} 添加音效 {0}.'
       cleared: '§a已删除{0}条消息.'
       help:
@@ -199,6 +203,7 @@ msg:
         npcInsert: '§enpcinsert <id> <消息>: §b插入一条由NPC说出的话.'
         playerInsert: '§eplayerinsert <id> <消息>: §b插入一条由玩家说出的话.'
         nothingInsert: '§enothinginsert <id> <消息>: §b插入一条没有任何前缀的消息.'
+        edit: '§6edit <id> <message>：§e编辑消息。'
         addSound: '§eaddsound <id> <音效名>: §b给一条消息添加音效.'
         clear: '§eclear: §b删除所有消息.'
         close: '§eclose: §b退出并保存所有消息.'
@@ -324,11 +329,14 @@ inv:
     hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
     bypassLimit: 忽略任务上限
     bypassLimitLore: 如果启用，即使玩家已经达到任务上限也能接受任务。
+    auto: 登录时自动开始任务
+    autoLore: 如果启用，则玩家首次加入服务器时将自动开始该任务。
     questName: '§a§l编辑任务名'
     questNameLore: 必须设置一个名称来创建任务。
     setItemsRewards: '§7编辑获得的物品'
     setXPRewards: '§e编辑获得的经验'
     setCheckpointReward: '§e编辑记录点奖励'
+    setRewardStopQuest: '§c停止任务'
     setRewardsWithRequirements: '§e需满足需求的奖励'
     setPermReward: '§e编辑权限'
     setMoneyReward: '§e编辑获得的金钱'
@@ -432,7 +440,9 @@ inv:
     loreCancel: '§c§o点击取消任务'
     loreStart: '§a§o点击开始任务。'
     loreStartUnavailable: '§c§o你不满足任务需求，无法开始任务。'
+    timeToWaitRedo: '§3§o你可以在{0}后重启该任务。'
     canRedo: '§3§o你可以再次接受这个任务!'
+    timesFinished: '§3该任务完成了{0}次。'
   itemCreator:
     name: '§8物品编辑器'
     itemType: '§b物品类型'
@@ -490,12 +500,6 @@ inv:
   poolsManage:
     name: 任务池
     itemName: '§a池#{0}'
-    itemDescription: |-
-      §8NPC：§7{0}
-      §8最大任务数：§7{1}
-      §8可以重复完成任务数：§7{2}
-      §8任务间隔： §7{3}ms
-      §8全息文本：§7{4}
     create: '§a创建一个任务池'
   poolCreation:
     name: 创建任务池
@@ -509,6 +513,7 @@ inv:
     bukkit: Bukkit原生比较
     bukkitLore: "使用Bukkit默认项目的比较系统。\n比较材料、耐久度、NBT标签……"
     customBukkit: Bukkit原生比较 - 无NBT
+    customBukkitLore: "使用Bukkit默认物品比较系统，但除去NBT标签。\n兼容材料名、耐久度等"
     material: 物品材料
     materialLore: '比较物品材料（比如石头|stone、铁剑|iron sword）'
     itemName: 物品名称

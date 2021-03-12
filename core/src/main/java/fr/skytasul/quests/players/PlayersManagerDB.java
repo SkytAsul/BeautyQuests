@@ -54,6 +54,7 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	/* Pool datas statements */
 	private BQStatement insertPoolData;
+	private BQStatement removePoolData;
 	private BQStatement getPoolData;
 	private BQStatement getPoolAccountData;
 	
@@ -146,10 +147,22 @@ public class PlayersManagerDB extends PlayersManager {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {
 		return new PlayerPoolDatasDB(acc, pool.getID());
+	}
+	
+	@Override
+	public void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas) {
+		try {
+			PreparedStatement statement = removePoolData.getStatement();
+			statement.setInt(1, acc.index);
+			statement.setInt(2, pool.getID());
+			statement.executeUpdate();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public synchronized int removeQuestDatas(Quest quest) {
@@ -201,6 +214,7 @@ public class PlayersManagerDB extends PlayersManager {
 			}
 			
 			insertPoolData = db.new BQStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)");
+			removePoolData = db.new BQStatement("DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
 			getPoolData = db.new BQStatement("SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?");
 			getPoolAccountData = db.new BQStatement("SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
 			

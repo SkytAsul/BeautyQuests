@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.McMMO;
@@ -20,11 +21,11 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	public String skillName;
 
 	public McMMOSkillRequirement(){
-		this(0);
+		this(0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public McMMOSkillRequirement(double target) {
-		super("mcmmoSklillLevelRequired", target);
+	public McMMOSkillRequirement(double target, ComparisonMethod comparison) {
+		super("mcmmoSklillLevelRequired", target, comparison);
 		if (!DependenciesManager.mmo) throw new MissingDependencyException("mcMMO");
 	}
 
@@ -77,7 +78,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new McMMOSkillRequirement(target);
+		return new McMMOSkillRequirement(target, comparison);
 	}
 	
 }

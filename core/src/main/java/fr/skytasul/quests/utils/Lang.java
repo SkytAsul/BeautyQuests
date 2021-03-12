@@ -102,8 +102,8 @@ public enum Lang{
 	ITEM_REMOVED("msg.command.itemRemoved"),
 	SUCCESFULLY_REMOVED("msg.command.removed"),
 	LEAVE_ALL_RESULT("msg.command.leaveAll"),
-	DATA_REMOVED("msg.command.resetPlayer.player"),
-	DATA_REMOVED_INFO("msg.command.resetPlayer.remover"),
+	DATA_REMOVED("msg.command.resetPlayer.player"), // 0: quest amount, 1: player name, 2: pools amount
+	DATA_REMOVED_INFO("msg.command.resetPlayer.remover"), // 0: quest amount, 1: player name, 2: pools amount
 	DATA_QUEST_REMOVED("msg.command.resetPlayerQuest.player"),
 	DATA_QUEST_REMOVED_INFO("msg.command.resetPlayerQuest.remover"),
 	QUEST_PLAYERS_REMOVED("msg.command.resetQuest"), // 0: amount of players
@@ -498,7 +498,13 @@ public enum Lang{
 
 	INVENTORY_POOLS_MANAGE("inv.poolsManage.name"),
 	poolItemName("inv.poolsManage.itemName"), // 0: pool ID
-	poolItemDescription("inv.poolsManage.itemDescription"), // 0: npc ID, 1: max quests, 2: can redo, 3: time between quests, 4: hologram text
+	poolItemNPC("inv.poolsManage.poolNPC"),
+	poolItemMaxQuests("inv.poolsManage.poolMaxQuests"),
+	poolItemRedo("inv.poolsManage.poolRedo"),
+	poolItemTime("inv.poolsManage.poolTime"),
+	poolItemHologram("inv.poolsManage.poolHologram"),
+	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
+	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
 	poolCreate("inv.poolsManage.create"),
 	
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
@@ -506,6 +512,8 @@ public enum Lang{
 	poolMaxQuests("inv.poolCreation.maxQuests"),
 	poolTime("inv.poolCreation.time"),
 	poolRedo("inv.poolCreation.redoAllowed"),
+	poolAvoidDuplicates("inv.poolCreation.avoidDuplicates"),
+	poolAvoidDuplicatesLore("inv.poolCreation.avoidDuplicatesLore"),
 	
 	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 	
@@ -574,6 +582,7 @@ public enum Lang{
 	TimeDays("misc.time.days"),
 	TimeHours("misc.time.hours"),
 	TimeMinutes("misc.time.minutes"),
+	TimeLessMinute("misc.time.lessThanAMinute"),
 	
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),

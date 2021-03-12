@@ -117,6 +117,8 @@ public class Utils{
 		if (minutes != 0) sb.append(Lang.TimeMinutes.format(minutes));
 		time -= minutes * 60_000;
 		
+		if (sb.length() == 0) sb.append(Lang.TimeLessMinute.toString());
+		
 		return sb.toString();
 	}
 

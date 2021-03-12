@@ -60,7 +60,7 @@ public class OptionTimer extends QuestOption<Integer> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+		}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
 	}
 	
 }
