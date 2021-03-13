@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.mrmicky.fastboard.FastBoard;
@@ -54,6 +55,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 		launched = QuestsAPI.getQuestsStarteds(acc, true);
 
+		hid = !manager.isWorldAllowed(p.getWorld().getName());
+		
 		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
 
@@ -86,6 +89,16 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (board == null) return;
 
 		updateBoard(false, true);
+	}
+	
+	@EventHandler
+	public void onChangeWorld(PlayerChangedWorldEvent e) {
+		boolean toAllowed = manager.isWorldAllowed(e.getPlayer().getWorld().getName());
+		if (hid) {
+			if (toAllowed) show();
+		}else {
+			if (!toAllowed) hide();
+		}
 	}
 	
 	@EventHandler

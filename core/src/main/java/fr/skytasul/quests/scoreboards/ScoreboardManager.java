@@ -20,6 +20,9 @@ public class ScoreboardManager{
 	private boolean hide;
 	private boolean refreshLines;
 	
+	private List<String> worldsFilter;
+	private boolean isWorldAllowList;
+	
 	private Map<Player, Scoreboard> scoreboards = new HashMap<>();
 	
 	public ScoreboardManager(YamlConfiguration config){
@@ -28,6 +31,9 @@ public class ScoreboardManager{
 		changeTime = config.getInt("quests.changeTime", 11);
 		hide = config.getBoolean("quests.hideIfEmpty", true);
 		refreshLines = config.getBoolean("quests.refreshLines", true);
+		
+		worldsFilter = config.getStringList("worlds.filterList");
+		isWorldAllowList = config.getBoolean("worlds.isAllowList");
 		
 		for (Map<?, ?> map : config.getMapList("lines")){
 			if (lines.size() == 15){
@@ -38,7 +44,6 @@ public class ScoreboardManager{
 				lines.add(ScoreboardLine.deserialize((Map<String, Object>) map));
 			}catch (Exception ex){
 				ex.printStackTrace();
-				continue;
 			}
 		}
 		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
@@ -58,6 +63,18 @@ public class ScoreboardManager{
 	
 	public boolean refreshLines(){
 		return refreshLines;
+	}
+	
+	public List<String> getWorldsFilter() {
+		return worldsFilter;
+	}
+	
+	public boolean isWorldAllowList() {
+		return isWorldAllowList;
+	}
+	
+	public boolean isWorldAllowed(String worldName) {
+		return isWorldAllowList() ? getWorldsFilter().contains(worldName) : !getWorldsFilter().contains(worldName);
 	}
 	
 	public Scoreboard getPlayerScoreboard(Player p){
