@@ -100,7 +100,7 @@ msg:
     leaveAll: '§aDu hast das Ende von {0} Quest(s) erzwungen. Fehler: {1}'
     resetPlayer:
       player: '§6Alle Informationen deiner {0} Quest(s) wurde/wurden von {1} gelöscht.'
-      remover: '§6{0} Questinformation(en) von {1} wurde/n gelöscht.'
+      remover: '§6{0} Questinformation(en) (und {2} Pools) von {1} wurde(n) gelöscht.'
     resetPlayerQuest:
       player: '§6Alle Informationen über die Quest {0} wurden von {1} gelöscht.'
       remover: '§6{0} Questinformation(en) von {1} wurde(n) gelöscht.'
@@ -502,12 +502,13 @@ inv:
   poolsManage:
     name: Questgruppen
     itemName: '§aGruppe #{0}'
-    itemDescription: |-
-      §8NPC: §7{0}
-      §8Max. Quests: §7{1}
-      §8Kann abgeschlossene Quests wiederholen: §7{2}
-      §8Zeit zwischen Quests: §7{3}ms
-      §8Hologramm Text: §7{4}
+    poolNPC: '§8NPC: §7{0}'
+    poolMaxQuests: '§8Max. Quests: §7{0}'
+    poolRedo: '§8Kann abgeschlossene Quests wiederholen: §7{0}'
+    poolTime: '§8Zeit zwischen Quests: §7{0}'
+    poolHologram: '§8Hologram-Text: §7{0}'
+    poolAvoidDuplicates: '§8Duplikate vermeiden: §7{0}'
+    poolQuestsList: '§7{0} §8Quest(s): §7{1}'
     create: '§aErstelle eine Questgruppe'
   poolCreation:
     name: Questgruppen Erstellung
@@ -515,6 +516,8 @@ inv:
     maxQuests: '§aMax. Quests'
     time: '§bLege die Zeit zwischen Quests fest'
     redoAllowed: Ist Wiederholen erlaubt
+    avoidDuplicates: Duplikate vermeiden
+    avoidDuplicatesLore: '§8> §7Versuche es zu vermeiden,\n  immer wieder die gleiche Quest zu absolvieren'
   poolsList.name: Questgruppen
   itemComparisons:
     name: Gegenstandsvergleiche
@@ -570,6 +573,7 @@ misc:
     days: '{0} Tage'
     hours: '{0} Stunden'
     minutes: '{0} Minuten'
+    lessThanAMinute: 'weniger als eine Minute'
   stageType:
     region: Region finden
     npc: NPC finden

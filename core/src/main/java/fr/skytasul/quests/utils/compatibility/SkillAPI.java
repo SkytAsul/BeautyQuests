@@ -13,6 +13,10 @@ public class SkillAPI {
 		com.sucy.skill.SkillAPI.getPlayerData(p).giveExp(xp, ExpSource.QUEST);
 	}
 
+	public static int getLevel(Player p) {
+		return com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass().getLevel();
+	}
+	
 	public static boolean classExists(String name){
 		return getClass(name) != null;
 	}

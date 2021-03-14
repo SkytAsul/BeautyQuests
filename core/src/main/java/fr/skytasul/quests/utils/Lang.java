@@ -608,6 +608,7 @@ public enum Lang{
 	ComparisonGreaterOrEquals("misc.comparison.greaterOrEquals"),
 
 	RClass("misc.requirement.class"),
+	RSkillAPILevel("misc.requirement.skillAPILevel"),
 	RFaction("misc.requirement.faction"),
 	RJobLvl("misc.requirement.jobLevel"),
 	RCombatLvl("misc.requirement.combatLevel"),

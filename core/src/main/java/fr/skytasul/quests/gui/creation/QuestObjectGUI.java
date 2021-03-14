@@ -31,6 +31,7 @@ import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
 import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.requirements.ScoreboardRequirement;
+import fr.skytasul.quests.requirements.SkillAPILevelRequirement;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import fr.skytasul.quests.rewards.CommandReward;
 import fr.skytasul.quests.rewards.ItemReward;
@@ -139,6 +140,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		if (DependenciesManager.jobs) QuestsAPI.registerRequirement(new QuestObjectCreator<>(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new));
 		if (DependenciesManager.fac) QuestsAPI.registerRequirement(new QuestObjectCreator<>(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new));
 		if (DependenciesManager.skapi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
+		if (DependenciesManager.skapi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
 		if (DependenciesManager.papi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
 		if (DependenciesManager.mmo) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new));
 		if (DependenciesManager.mclvl) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new));
