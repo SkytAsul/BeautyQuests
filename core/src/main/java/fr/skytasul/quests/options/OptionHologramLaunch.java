@@ -29,7 +29,7 @@ public class OptionHologramLaunch extends QuestOptionItem {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return DependenciesManager.holod && options.getOption(OptionStarterNPC.class).getValue() != null;
+		return DependenciesManager.holod.isEnabled() && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

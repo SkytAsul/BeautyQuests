@@ -80,7 +80,7 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public void create() {
-		if (DependenciesManager.dyn) Dynmap.addMarker(this);
+		if (DependenciesManager.dyn.isEnabled()) Dynmap.addMarker(this);
 	}
 	
 	void updateLauncheable(LivingEntity en) {
@@ -356,7 +356,7 @@ public class Quest implements Comparable<Quest> {
 	
 	public void unloadAll(){
 		manager.remove();
-		if (DependenciesManager.dyn) Dynmap.removeMarker(this);
+		if (DependenciesManager.dyn.isEnabled()) Dynmap.removeMarker(this);
 		options.forEach(QuestOption::detach);
 	}
 

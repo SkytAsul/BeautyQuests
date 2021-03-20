@@ -141,7 +141,7 @@ public class Utils{
 	}
 	
 	public static String finalFormat(CommandSender sender, String text, boolean playerName){
-		if (DependenciesManager.papi && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);	
+		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
 		if (playerName) text = text.replace("{PLAYER}", sender.getName());
 		return text;
 	}

@@ -22,6 +22,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -58,7 +59,7 @@ import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.citizensnpcs.api.npc.NPC;
 
-public class BeautyQuests extends JavaPlugin{
+public class BeautyQuests extends JavaPlugin implements Listener {
 
 	public static QuestsLogger logger;
 	private static BeautyQuests instance;
@@ -91,7 +92,8 @@ public class BeautyQuests extends JavaPlugin{
 	public static boolean loadingFailure = false;
 	public static boolean savingFailure = false;
 	public static boolean loaded = false;
-	public static boolean startedQuestLoading = false;
+	
+	public DependenciesManager dependencies = new DependenciesManager();
 	
 	/* ---------------------------------------------- */
 
@@ -116,13 +118,13 @@ public class BeautyQuests extends JavaPlugin{
 			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
 				throw new LoadingException("Citizens plugin is not installed.");
 			}
-			DependenciesManager.testCompatibilities();
-
+			dependencies.testCompatibilities();
+			Bukkit.getPluginManager().registerEvents(this, this);
+			
 			new BukkitRunnable() {
 				public void run() {
 					try {
 						long lastMillis = System.currentTimeMillis();
-						startedQuestLoading = true;
 						getLogger().info(loadAllDatas() + " quests loaded ("
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
@@ -151,7 +153,7 @@ public class BeautyQuests extends JavaPlugin{
 			loadConfigParameters(true);
 
 			try {
-				DependenciesManager.initializeCompatibilities();
+				dependencies.initializeCompatibilities();
 			}catch (Throwable ex) {
 				logger.severe("Error when initializing compatibilities. Consider restarting.");
 				ex.printStackTrace();
@@ -374,11 +376,12 @@ public class BeautyQuests extends JavaPlugin{
 	
 	private int loadAllDatas() throws Throwable{
 		if (disable) return 666;
+		dependencies.lockDependencies();
 		
 		File scFile = new File(getDataFolder(), "scoreboard.yml");
 		if (!scFile.exists()) saveResource("scoreboard.yml", true);
 		scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
-		if (DependenciesManager.dyn){
+		if (DependenciesManager.dyn.isEnabled()) {
 			try{
 				Dynmap.intitialize();
 			}catch (Throwable ex){
@@ -489,9 +492,8 @@ public class BeautyQuests extends JavaPlugin{
 		npcs.clear();
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
-		if (DependenciesManager.dyn) Dynmap.unload();
+		if (DependenciesManager.dyn.isEnabled()) Dynmap.unload();
 		loaded = false;
-		startedQuestLoading = false;
 	}
 	
 	/* ---------- Backups ---------- */

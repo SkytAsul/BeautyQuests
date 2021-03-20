@@ -38,7 +38,7 @@ public class FactionRequirement extends AbstractRequirement {
 	
 	public FactionRequirement(List<Faction> factions) {
 		super("factionRequired");
-		if (!DependenciesManager.fac) throw new MissingDependencyException("Factions");
+		if (!DependenciesManager.fac.isEnabled()) throw new MissingDependencyException("Factions");
 		this.factions = factions;
 	}
 	

@@ -20,7 +20,7 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	
 	public McCombatLevelRequirement(double target, ComparisonMethod comparison) {
 		super("mcmmoCombatLevelRequirement", target, comparison);
-		if (!DependenciesManager.mmo) throw new MissingDependencyException("McCombatLevel");
+		if (!DependenciesManager.mmo.isEnabled()) throw new MissingDependencyException("McCombatLevel");
 	}
 
 	@Override

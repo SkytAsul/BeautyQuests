@@ -107,7 +107,7 @@ public class QuestsConfiguration {
 		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
-		gps = DependenciesManager.gps && config.getBoolean("gps");
+		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
 		if (config.contains("item")) item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
@@ -130,13 +130,13 @@ public class QuestsConfiguration {
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
+		hookAcounts = DependenciesManager.acc.isEnabled() && config.getBoolean("accountsHook");
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
 		dSetName = config.getString("dynmap.markerSetName");
-		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn = false;
+		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
 		finishSound = config.getString("finishSound");
@@ -347,17 +347,17 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!DependenciesManager.holod) return null;
+		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!DependenciesManager.holod) return null;
+		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!DependenciesManager.holod) return null;
+		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoTalkItem;
 	}
 	

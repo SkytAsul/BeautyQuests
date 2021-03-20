@@ -33,7 +33,7 @@ public class XPReward extends AbstractReward {
 	}
 
 	public List<String> give(Player p) {
-		if (DependenciesManager.skapi && QuestsConfiguration.xpOverridedSkillAPI()) {
+		if (DependenciesManager.skapi.isEnabled() && QuestsConfiguration.xpOverridedSkillAPI()) {
 			SkillAPI.giveExp(p, exp);
 		}else p.giveExp(exp);
 		return Arrays.asList(exp + " " + Lang.Exp.toString());

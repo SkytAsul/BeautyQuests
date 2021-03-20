@@ -28,7 +28,7 @@ public class PermissionReward extends AbstractReward {
 
 	public PermissionReward(List<Permission> permissions) {
 		super("permReward");
-		if (!DependenciesManager.vault) throw new MissingDependencyException("Vault");
+		if (!DependenciesManager.vault.isEnabled()) throw new MissingDependencyException("Vault");
 		this.permissions = permissions;
 	}
 

@@ -96,13 +96,13 @@ permissions:
     default: op
   beautyquests.command.start:
     description: Gives access to "/quests start" only for myself
-    default: true
+    default: op
   beautyquests.command.start.other:
     description: Gives access to "/quests start" for all players
     default: op
   beautyquests.command.cancel:
     description: Gives access to "/quests cancel" only for my own started quests
-    default: true
+    default: op
   beautyquests.command.cancel.other:
     description: Gives access to "/quests cancel" for all players quests
     default: op

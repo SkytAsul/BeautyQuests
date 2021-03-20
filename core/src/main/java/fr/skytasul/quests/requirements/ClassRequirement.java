@@ -34,7 +34,7 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	public ClassRequirement(List<RPGClass> classes) {
 		super("classRequired");
-		if (!DependenciesManager.skapi) throw new MissingDependencyException("SkillAPI");
+		if (!DependenciesManager.skapi.isEnabled()) throw new MissingDependencyException("SkillAPI");
 		this.classes = classes;
 	}
 

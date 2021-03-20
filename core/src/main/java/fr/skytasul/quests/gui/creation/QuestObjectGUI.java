@@ -122,8 +122,8 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(CommandReward.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.command.toString()), CommandReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), ItemReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new));
-		if (DependenciesManager.vault) QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
-		if (DependenciesManager.vault) QuestsAPI.registerReward(new QuestObjectCreator<>(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
+		if (DependenciesManager.vault.isEnabled()) QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
+		if (DependenciesManager.vault.isEnabled()) QuestsAPI.registerReward(new QuestObjectCreator<>(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<CheckpointReward>(CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE));
@@ -136,15 +136,15 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
-		if (DependenciesManager.wg) QuestsAPI.registerRequirement(new QuestObjectCreator<>(RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
-		if (DependenciesManager.jobs) QuestsAPI.registerRequirement(new QuestObjectCreator<>(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new));
-		if (DependenciesManager.fac) QuestsAPI.registerRequirement(new QuestObjectCreator<>(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new));
-		if (DependenciesManager.skapi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
-		if (DependenciesManager.skapi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
-		if (DependenciesManager.papi) QuestsAPI.registerRequirement(new QuestObjectCreator<>(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
-		if (DependenciesManager.mmo) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new));
-		if (DependenciesManager.mclvl) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new));
-		if (DependenciesManager.vault) QuestsAPI.registerRequirement(new QuestObjectCreator<>(MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
+		if (DependenciesManager.wg.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
+		if (DependenciesManager.jobs.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new));
+		if (DependenciesManager.fac.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new));
+		if (DependenciesManager.skapi.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
+		if (DependenciesManager.skapi.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
+		if (DependenciesManager.papi.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
+		if (DependenciesManager.mmo.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new));
+		if (DependenciesManager.mclvl.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new));
+		if (DependenciesManager.vault.isEnabled()) QuestsAPI.registerRequirement(new QuestObjectCreator<>(MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
 	}
 
 }
