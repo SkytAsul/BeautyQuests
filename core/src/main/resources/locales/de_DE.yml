@@ -598,6 +598,7 @@ misc:
     greater: strikt größer als {0}
     greaterOrEquals: größer als {0}
   requirement:
+    skillAPILevel: '§bAPI-Level benötigt'
     class: '§bBenötigte Klasse(n)'
     faction: '§bBenötigte Fraktion(en)'
     jobLevel: '§bJob‐Level benötigt'

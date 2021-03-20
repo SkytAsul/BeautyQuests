@@ -91,6 +91,7 @@ public class BeautyQuests extends JavaPlugin{
 	public static boolean loadingFailure = false;
 	public static boolean savingFailure = false;
 	public static boolean loaded = false;
+	public static boolean startedQuestLoading = false;
 	
 	/* ---------------------------------------------- */
 
@@ -121,6 +122,7 @@ public class BeautyQuests extends JavaPlugin{
 				public void run() {
 					try {
 						long lastMillis = System.currentTimeMillis();
+						startedQuestLoading = true;
 						getLogger().info(loadAllDatas() + " quests loaded ("
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
@@ -180,6 +182,15 @@ public class BeautyQuests extends JavaPlugin{
 			metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
 			metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
 			metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
+			metrics.addCustomChart(new Metrics.SimplePie("quests_amount_slice", () -> {
+				int size = quests.size();
+				if (size > 200) return "> 200";
+				if (size > 100) return "100 - 200";
+				if (size > 50) return "50 - 100";
+				if (size > 10) return "10 - 50";
+				if (size > 5) return "5 - 10";
+				return "0 - 5";
+			}));
 			DebugUtils.logMessage("Started bStats metrics");
 		}catch (LoadingException ex) {
 			if (ex.getCause() != null) ex.getCause().printStackTrace();
@@ -480,6 +491,7 @@ public class BeautyQuests extends JavaPlugin{
 		//HandlerList.unregisterAll(this);
 		if (DependenciesManager.dyn) Dynmap.unload();
 		loaded = false;
+		startedQuestLoading = false;
 	}
 	
 	/* ---------- Backups ---------- */

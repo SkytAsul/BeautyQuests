@@ -100,6 +100,7 @@ msg:
     leaveAll: '§e你强制结束了{0}个任务. §c出现{1}个错误.'
     resetPlayer:
       player: '§6你的所有任务数据 ({0}) 被 {1} 删除了.'
+      remover: '§6已删除{1}的{0}任务信息（和{2}任务池）。'
     resetPlayerQuest:
       player: '§6任务数据 {0} 已被 {1} 删除.'
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
@@ -500,6 +501,13 @@ inv:
   poolsManage:
     name: 任务池
     itemName: '§a池#{0}'
+    poolNPC: '§8NPC：§7{0}'
+    poolMaxQuests: '§8最大任务数：§7{0}'
+    poolRedo: '§8可以重新接受已完成的任务：§7{0}'
+    poolTime: '§8任务之间的间隔：§7{0}'
+    poolHologram: '§8全息文本：§7{0}'
+    poolAvoidDuplicates: '§8避免重复：§7{0}'
+    poolQuestsList: '§7{0} §8任务：§7{1}'
     create: '§a创建一个任务池'
   poolCreation:
     name: 创建任务池
@@ -507,6 +515,8 @@ inv:
     maxQuests: '§a最大任务数'
     time: '§b设置任务之间的间隔'
     redoAllowed: 是否可重复完成
+    avoidDuplicates: 避免重复
+    avoidDuplicatesLore: '§8> §7尝试避免重复\n 同一任务'
   poolsList.name: 任务池
   itemComparisons:
     name: 物品比较式
@@ -562,6 +572,7 @@ misc:
     days: '{0}天'
     hours: '{0}小时'
     minutes: '{0}分钟'
+    lessThanAMinute: '少于一分钟'
   stageType:
     region: 寻找区域
     npc: 寻找 NPC
@@ -586,6 +597,7 @@ misc:
     greater: 精确大于{0}
     greaterOrEquals: 大于{0}
   requirement:
+    skillAPILevel: '§d所需SkillAPI等级'
     class: '§b所需职业'
     faction: '§b所需派系'
     jobLevel: '§b所需工作等级'

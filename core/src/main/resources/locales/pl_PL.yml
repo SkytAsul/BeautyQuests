@@ -501,6 +501,13 @@ inv:
   poolsManage:
     name: Pula Zadań
     itemName: '§aPula #{0}'
+    poolNPC: '§8NPC: §7{0}'
+    poolMaxQuests: '§8Maks. zadań: §7{0}'
+    poolRedo: '§8Można wykonywać ponownie ukończone zadania: §7{0}'
+    poolTime: '§8Czas pomiędzy zadaniami: §7{0}'
+    poolHologram: '§8Tekst hologramu: §7{0}'
+    poolAvoidDuplicates: '§8Unikaj duplikatów: §7{0}'
+    poolQuestsList: '§7{0} §8zadań(ia): §7{1}'
     create: '§aUtwórz pulę zadań'
   poolCreation:
     name: Tworzenie puli zadań
@@ -508,6 +515,8 @@ inv:
     maxQuests: '§aMaks. zadań'
     time: '§bUstaw czas pomiędzy zadaniami'
     redoAllowed: Jest dozwolone ponawianie
+    avoidDuplicates: Unikaj duplikatów
+    avoidDuplicatesLore: '§8> §7Spróbuj unikać wykonywania\n tego samego zadania'
   poolsList.name: Pule zadań
   itemComparisons:
     name: Porównania pozycji
@@ -563,6 +572,7 @@ misc:
     days: '{0} dni'
     hours: '{0} godzin'
     minutes: '{0} minut'
+    lessThanAMinute: 'mniej niż minutę'
   stageType:
     region: Znajdź region
     npc: Znajdź NPC

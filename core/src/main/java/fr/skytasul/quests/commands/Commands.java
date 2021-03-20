@@ -256,7 +256,7 @@ public class Commands {
 		Lang.QUEST_PLAYERS_REMOVED.send(cmd.sender, amount);
 	}
 	
-	@Cmd (min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
+	@Cmd (permission = "start", min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		boolean testRequirements = !(CommandsManager.hasPermission(cmd.sender, "start.other") && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
