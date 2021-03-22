@@ -15,6 +15,7 @@ import org.mineacademy.boss.api.Boss;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -39,6 +40,7 @@ public class BossAPI implements MobFactory<Boss> {
 			}
 
 			public void click(Boss existing, ItemStack item, ClickType clickType) {
+				Inventories.closeAndExit(p);
 				run.accept(existing);
 			}
 		}.create(p);

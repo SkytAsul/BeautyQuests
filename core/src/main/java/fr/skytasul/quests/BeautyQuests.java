@@ -22,7 +22,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -59,7 +58,7 @@ import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.citizensnpcs.api.npc.NPC;
 
-public class BeautyQuests extends JavaPlugin implements Listener {
+public class BeautyQuests extends JavaPlugin {
 
 	public static QuestsLogger logger;
 	private static BeautyQuests instance;
@@ -119,7 +118,7 @@ public class BeautyQuests extends JavaPlugin implements Listener {
 				throw new LoadingException("Citizens plugin is not installed.");
 			}
 			dependencies.testCompatibilities();
-			Bukkit.getPluginManager().registerEvents(this, this);
+			Bukkit.getPluginManager().registerEvents(dependencies, this);
 			
 			new BukkitRunnable() {
 				public void run() {
