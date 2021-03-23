@@ -124,7 +124,7 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 					reopenGUI(p, true);
 				}, items).create(p);
 			});
-			line.setItem(7, stageComparison, (p, item) -> {
+			line.setItem(7, stageComparison.clone(), (p, item) -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
 					reopenGUI(p, true);

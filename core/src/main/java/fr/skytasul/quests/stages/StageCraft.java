@@ -12,10 +12,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -31,10 +33,12 @@ import fr.skytasul.quests.utils.XMaterial;
 public class StageCraft extends AbstractStage {
 
 	private ItemStack result;
+	private final ItemComparisonMap comparisons;
 	
-	public StageCraft(QuestBranch branch, ItemStack result){
+	public StageCraft(QuestBranch branch, ItemStack result, ItemComparisonMap comparisons) {
 		super(branch);
 		this.result = result;
+		this.comparisons = comparisons;
 		if (result.getAmount() == 0) result.setAmount(1);
 	}
 	
@@ -49,7 +53,7 @@ public class StageCraft extends AbstractStage {
 		ItemStack item = e.getRecipe().getResult();
 		
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
-			if (e.getRecipe().getResult().isSimilar(result)){
+			if (comparisons.isSimilar(result, e.getRecipe().getResult())) {
 				
 				int recipeAmount = item.getAmount();
 
@@ -116,10 +120,12 @@ public class StageCraft extends AbstractStage {
 	
 	protected void serialize(Map<String, Object> map){
 		map.put("result", result.serialize());
+		
+		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
 	}
 	
 	public static StageCraft deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")));
+		return new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")), map.containsKey("itemComparisons") ? new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons")) : new ItemComparisonMap());
 	}
 	
 	public static int getMaxCraftAmount(CraftingInventory inv) {
@@ -149,22 +155,36 @@ public class StageCraft extends AbstractStage {
 
 	public static class Creator extends StageCreation<StageCraft> {
 		
+		private static final int ITEM_SLOT = 6, COMPARISONS_SLOT = 7;
+		
 		private ItemStack item;
+		private ItemComparisonMap comparisons = new ItemComparisonMap();
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(7, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), (p, item) -> {
+			line.setItem(ITEM_SLOT, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), (p, item) -> {
 				new ItemGUI((is) -> {
 					setItem(is);
 					reopenGUI(p, true);
 				}, () -> reopenGUI(p, true)).create(p);
 			});
+			line.setItem(COMPARISONS_SLOT, ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString()), (p, item) -> {
+				new ItemComparisonGUI(comparisons, () -> {
+					setComparisons(comparisons);
+					reopenGUI(p, true);
+				}).create(p);
+			});
 		}
 
 		public void setItem(ItemStack item) {
 			this.item = item;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
+			line.editItem(ITEM_SLOT, ItemUtils.lore(line.getItem(ITEM_SLOT), Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
+		}
+		
+		public void setComparisons(ItemComparisonMap comparisons) {
+			this.comparisons = comparisons;
+			line.editItem(COMPARISONS_SLOT, ItemUtils.lore(line.getItem(COMPARISONS_SLOT), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
 		}
 
 		@Override
@@ -180,11 +200,12 @@ public class StageCraft extends AbstractStage {
 		public void edit(StageCraft stage) {
 			super.edit(stage);
 			setItem(stage.getItem());
+			setComparisons(stage.comparisons.clone());
 		}
 		
 		@Override
 		public StageCraft finishStage(QuestBranch branch) {
-			return new StageCraft(branch, item);
+			return new StageCraft(branch, item, comparisons);
 		}
 	}
 
