@@ -1,8 +1,10 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,24 +37,39 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency cmi = new BQDependency("CMI", () -> {
 		if (BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
 	});
+	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	
 	private List<BQDependency> dependencies;
+	private boolean dependenciesTested = false, dependenciesInitialized = false;
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = Arrays.asList(wg, mm, vault, papi, skapi, holod, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi);
+		dependencies = new ArrayList<>(Arrays.asList(wg, mm, vault, papi, skapi, holod, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, tokenEnchant));
 	}
 	
 	public List<BQDependency> getDependencies() {
 		return dependencies;
 	}
 	
+	public void addDependency(BQDependency dependency) {
+		if (lockDependencies) {
+			BeautyQuests.logger.severe("Trying to add a BQ dependency for plugin " + dependency.pluginName + " after final locking.");
+			return;
+		}
+		dependencies.add(dependency);
+		if (dependenciesTested) {
+			if (dependency.testCompatibility(true) && !dependenciesInitialized) dependency.initialize();
+		}
+	}
+	
 	public void testCompatibilities() {
 		dependencies.forEach(x -> x.testCompatibility(false));
+		dependenciesTested = true;
 	}
 
 	public void initializeCompatibilities() {
 		dependencies.stream().filter(BQDependency::isEnabled).forEach(BQDependency::initialize);
+		dependenciesInitialized = true;
 	}
 	
 	public void lockDependencies() {
@@ -62,8 +79,9 @@ public class DependenciesManager implements Listener {
 	@EventHandler
 	public void onPluginEnable(PluginEnableEvent e) {
 		if (lockDependencies) return;
+		if (dependenciesTested) return;
 		dependencies.stream().filter(x -> !x.enabled && x.pluginName.equals(e.getPlugin().getName())).findAny().ifPresent(dependency -> {
-			if (dependency.testCompatibility(true)) dependency.initialize();
+			if (dependency.testCompatibility(true) && !dependenciesInitialized) dependency.initialize();
 		});
 	}
 	
@@ -78,6 +96,7 @@ public class DependenciesManager implements Listener {
 		}
 		
 		public BQDependency(String pluginName, Runnable initialize) {
+			Validate.notNull(pluginName);
 			this.pluginName = pluginName;
 			this.initialize = initialize;
 		}

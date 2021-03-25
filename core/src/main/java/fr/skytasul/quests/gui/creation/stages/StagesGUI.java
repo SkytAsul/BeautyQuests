@@ -141,7 +141,6 @@ public class StagesGUI implements CustomInventory {
 				for (int i = 0; i < maxStages; i++){
 					Line l = getLine(i);
 					if (!isActiveLine(l)){
-						if (!isActiveLine(l)) break;
 						setStageCreate(l, i > maxStages-1);
 						break;
 					}

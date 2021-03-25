@@ -1,14 +1,17 @@
 package fr.skytasul.quests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
@@ -176,6 +180,13 @@ public class QuestsListener implements Listener{
 				break;
 			}
 		}
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onBreak(BlockBreakEvent e) {
+		if (e.isCancelled()) return;
+		if (e.getPlayer() == null) return;
+		Bukkit.getPluginManager().callEvent(new BQBlockBreakEvent(e.getPlayer(), Arrays.asList(e.getBlock())));
 	}
 	
 }

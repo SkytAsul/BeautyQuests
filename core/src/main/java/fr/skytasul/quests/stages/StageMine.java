@@ -10,11 +10,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
@@ -51,15 +51,16 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onMine(BlockBreakEvent e){
-		if (e.isCancelled() || e.getPlayer() == null) return;
+	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
-			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
-				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+			for (Block block : e.getBlocks()) {
+				if (placeCancelled && block.hasMetadata("playerInStage")) {
+					if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+				}
+				event(acc, p, block, 1);
 			}
-			event(acc, p, e.getBlock(), 1);
 		}
 	}
 	

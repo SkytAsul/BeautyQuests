@@ -81,6 +81,10 @@
 			<id>lumine</id>
 			<url>http://mvn.lumine.io/repository/maven-releases</url>
 		</repository>
+		<repository>
+			<id>teamvk-repo</id>
+			<url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -144,6 +148,12 @@
 			<artifactId>FastBoard</artifactId>
 			<version>1.1.0</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vk2gpz.tokenenchant</groupId>
+			<artifactId>TokenEnchantAPI</artifactId>
+			<version>18.15.2</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Local JARs -->
