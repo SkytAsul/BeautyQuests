@@ -37,6 +37,11 @@ public class BQBlock {
 		return BLOCKDATA_HEADER + Post1_13.blockDataAsString(blockData);
 	}
 	
+	@Override
+	public String toString() {
+		return "BQBlock{" + getAsString() + "}";
+	}
+	
 	public static BQBlock fromString(String string) {
 		if (string.startsWith(BLOCKDATA_HEADER)) return new BQBlock(Post1_13.createBlockData(string.substring(BLOCKDATA_HEADER.length())));
 		return new BQBlock(XMaterial.valueOf(string));

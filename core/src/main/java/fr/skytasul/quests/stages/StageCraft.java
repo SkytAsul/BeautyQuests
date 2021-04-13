@@ -53,7 +53,7 @@ public class StageCraft extends AbstractStage {
 		ItemStack item = e.getRecipe().getResult();
 		
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
-			if (comparisons.isSimilar(result, e.getRecipe().getResult())) {
+			if (comparisons.isSimilar(result, item)) {
 				
 				int recipeAmount = item.getAmount();
 

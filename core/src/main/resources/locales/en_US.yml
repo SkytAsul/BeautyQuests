@@ -301,6 +301,7 @@ inv:
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
+    replacePlaceholders: Replace {PLAYER} and placeholders from PAPI
     selectItems: §eEdit required items
     selectItemsMessage: §eEdit asking message
     selectItemsComparisons: §eSelect items comparisons (ADVANCED)

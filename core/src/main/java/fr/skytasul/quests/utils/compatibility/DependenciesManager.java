@@ -23,7 +23,6 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency vault = new BQDependency("Vault");
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder")));
 	public static final BQDependency skapi = new BQDependency("SkillAPI");
-	public static final BQDependency holod = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays()));
 	public static final BQDependency jobs = new BQDependency("Jobs");
 	public static final BQDependency fac = new BQDependency("Factions");
 	public static final BQDependency acc = new BQDependency("AccountsHook");
@@ -37,6 +36,7 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency cmi = new BQDependency("CMI", () -> {
 		if (BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
 	});
+	public static final BQDependency holod = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays()));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	
 	private List<BQDependency> dependencies;
@@ -44,7 +44,7 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(wg, mm, vault, papi, skapi, holod, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, tokenEnchant));
+		dependencies = new ArrayList<>(Arrays.asList(wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod, tokenEnchant));
 	}
 	
 	public List<BQDependency> getDependencies() {

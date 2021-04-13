@@ -292,6 +292,7 @@ public enum Lang{
 	editMessage("inv.create.editMessageType"),
 	cancelEvent("inv.create.cancelMessage"),
 	ignoreCase("inv.create.ignoreCase"),
+	placeholders("inv.create.replacePlaceholders"),
 	stageItems("inv.create.selectItems"),
 	stageItemsMessage("inv.create.selectItemsMessage"),
 	stageItemsComparison("inv.create.selectItemsComparisons"),

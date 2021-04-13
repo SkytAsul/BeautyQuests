@@ -58,7 +58,9 @@ public class Dialog implements Cloneable {
 
 		Message msg = messages.get(id);
 		if (msg == null){
-			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(1, 2));
+			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(2, 3));
+			players.remove(p);
+			end.run();
 			return;
 		}
 		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc, p);
