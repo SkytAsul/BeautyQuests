@@ -105,7 +105,10 @@ public abstract class AbstractStage implements Listener{
 	
 	private void checkAsync(){
 		for(AbstractReward rew : rewards){
-			if (rew.isAsync()) asyncEnd = true;
+			if (rew.isAsync()) {
+				asyncEnd = true;
+				break;
+			}
 		}
 	}
 	

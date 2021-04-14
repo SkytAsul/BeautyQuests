@@ -181,7 +181,7 @@ public enum Lang{
 	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
 	POOL_HOLOGRAM_MAXQUESTS("msg.editor.pool.maxQuests"),
 	POOL_HOLOGRAM_TIME("msg.editor.pool.time"),
-
+	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
@@ -199,6 +199,7 @@ public enum Lang{
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
 	CHOOSE_PERM_WORLD("msg.editor.text.reward.permissionWorld"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
+	REWARD_EDITOR_WAIT("msg.editor.text.reward.wait"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
 	CHOOSE_ITEM_AMOUNT("msg.editor.itemCreator.itemAmount"),
@@ -350,6 +351,7 @@ public enum Lang{
 	rewardWithRequirements("inv.details.setRewardsWithRequirements"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
+	rewardWait("inv.details.setWaitReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
 	questStarterSelectLore("inv.details.selectStarterNPCLore"),
 	create("inv.details.createQuestName"),
@@ -625,12 +627,14 @@ public enum Lang{
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
+	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
 	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),
 	EntityTypeAny("misc.entityTypeAny"),
 	QuestItemLore("misc.questItemLore"),
+	Ticks("misc.ticks"),
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),

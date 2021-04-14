@@ -196,6 +196,7 @@ msg:
         permissionWorld: §aWrite the world in which the permission will be edited,
           or "null" if you want to be global.
         money: '§aWrite the amount of the received money:'
+        wait: '§aWrite the amount of game ticks to wait: (1 second = 20 game ticks)'
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
       chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
@@ -368,6 +369,7 @@ inv:
     setRewardsWithRequirements: §eRewards with requirements
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
+    setWaitReward: '§eEdit "wait" reward'
     selectStarterNPC: §e§lSelect NPC starter
     selectStarterNPCLore: Clicking on the selected NPC will start the quest.
     createQuestName: §lCreate quest
@@ -646,6 +648,7 @@ misc:
     water: Water bucket
     lava: Lava bucket
     milk: Milk bucket
+  ticks: {0} ticks
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
   poolHologramText: §eNew quest available!

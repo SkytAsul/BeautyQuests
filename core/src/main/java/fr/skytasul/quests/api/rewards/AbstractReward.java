@@ -15,7 +15,6 @@ public abstract class AbstractReward implements QuestObject {
 
 	private final QuestObjectCreator<? extends AbstractReward> creator;
 	
-	protected boolean async = false;
 	protected final String name;
 	private Quest quest;
 	
@@ -37,7 +36,7 @@ public abstract class AbstractReward implements QuestObject {
 	}
 
 	public boolean isAsync(){
-		return async;
+		return false;
 	}
 	
 	@Override
