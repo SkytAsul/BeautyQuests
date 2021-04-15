@@ -317,11 +317,11 @@ public class Quest implements Comparable<Quest> {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		AdminMode.broadcast(p.getName() + " completed the quest " + id);
 		
-		BukkitRunnable run = new BukkitRunnable() {
-			public void run(){
-				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
-				Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
-				
+		Runnable run = () -> {
+			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
+			Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
+			
+			Utils.runOrSync(() -> {
 				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
 				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
@@ -337,11 +337,15 @@ public class Quest implements Comparable<Quest> {
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
 				
 				QuestFinishEvent event = new QuestFinishEvent(p, Quest.this);
-				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(event));
-			}
+				Bukkit.getPluginManager().callEvent(event);
+			});
 		};
-		if (asyncEnd){
-			run.runTaskAsynchronously(BeautyQuests.getInstance());
+		
+		if (asyncEnd) {
+			new Thread(() -> {
+				DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
+				run.run();
+			}).start();
 		}else run.run();
 	}
 

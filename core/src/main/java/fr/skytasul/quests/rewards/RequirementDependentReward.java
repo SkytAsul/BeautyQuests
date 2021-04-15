@@ -48,6 +48,11 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
+	public boolean isAsync() {
+		return rewards.stream().anyMatch(AbstractReward::isAsync);
+	}
+	
+	@Override
 	public AbstractReward clone() {
 		return new RequirementDependentReward(new ArrayList<>(requirements), new ArrayList<>(rewards));
 	}

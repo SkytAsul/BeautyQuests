@@ -171,6 +171,7 @@ msg:
         permissionName: '§aIndiquez le nom de la permission.'
         permissionWorld: '§aIndiquez le monde dans lequel la permission sera mise à jour, ou "null" si vous voulez que ça le soit partout.'
         money: '§aEntrez la quantité de monnaie gagnée :'
+        wait: '§aÉcrivez le nombre de ticks à attendre : (1 seconde = 20 ticks)'
       chooseObjectiveRequired: '§aÉcrivez le nom de l''objectif.'
       chooseObjectiveTargetScore: '§aIndiquez le score visé pour cet objectif.'
       chooseRegionRequired: '§aÉcrivez le nom de la région requise (vous devez être dans le même monde).'
@@ -275,6 +276,7 @@ inv:
     editMessageType: '§eModifier le message à écrire'
     cancelMessage: Annuler l'envoi
     ignoreCase: Ignorer la casse du message
+    replacePlaceholders: Remplacer {PLAYER} et les placeholders de PAPI
     selectItems: '§eChoisir les items nécessaires'
     selectItemsMessage: '§eModifier le message de demande'
     selectItemsComparisons: '§eSélectionnez les comparaisons d''items (AVANCÉ)'
@@ -341,6 +343,7 @@ inv:
     setRewardsWithRequirements: '§eRécompenses avec requirements'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
+    setWaitReward: '§eModifier l''attente'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
     selectStarterNPCLore: Cliquer sur le PNJ sélectionné commencera la quête.
     createQuestName: '§lCréer la quête'
@@ -615,6 +618,7 @@ misc:
     water: Seau d'eau
     lava: Seau de lave
     milk: Seau de lait
+  ticks: '{0} ticks'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'
   poolHologramText: '§eNouvelle quête disponible !'

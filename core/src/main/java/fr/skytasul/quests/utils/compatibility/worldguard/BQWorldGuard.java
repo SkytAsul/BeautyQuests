@@ -6,11 +6,14 @@ import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
+import com.sk89q.worldguard.bukkit.BukkitPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.Session;
+import com.sk89q.worldguard.session.SessionManager;
 import com.sk89q.worldguard.session.handler.Handler.Factory;
 
 import fr.skytasul.quests.utils.DebugUtils;
@@ -26,6 +29,7 @@ public class BQWorldGuard {
 	private static Object container;
 	
 	public static boolean handleEntry = false;
+	private static Factory<WorldGuardEntryHandler> factory;
 	
 	public static void init() {
 		if (plugin == null) throw new MissingDependencyException("WorldGuard");
@@ -38,14 +42,24 @@ public class BQWorldGuard {
 						wg.getDeclaredMethod("getInstance").invoke(null)));
 				get = Class.forName("com.sk89q.worldguard.protection.regions.RegionContainer").getDeclaredMethod("get", com.sk89q.worldedit.world.World.class);
 				adapt = Class.forName("com.sk89q.worldedit.bukkit.BukkitAdapter").getDeclaredMethod("adapt", World.class);
-				if (com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(new Factory<WorldGuardEntryHandler>() {
+				factory = new Factory<WorldGuardEntryHandler>() {
 					@Override
 					public WorldGuardEntryHandler create(Session session) {
 						return new WorldGuardEntryHandler(session);
 					}
-				}, null)) {
+				};
+				SessionManager sessionManager = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager();
+				if (sessionManager.registerHandler(factory, null)) {
 					handleEntry = true;
 					DebugUtils.logMessage("Now using WorldGuard entry API.");
+					for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+						BukkitPlayer bukkitPlayer = new BukkitPlayer(WorldGuardPlugin.inst(), player);
+						Session session = sessionManager.getIfPresent(bukkitPlayer);
+						if (session != null) {
+							session.register(factory.create(session));
+							session.resetState(bukkitPlayer);
+						}
+					}
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -56,6 +70,14 @@ public class BQWorldGuard {
 			}catch (NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public static void disable() {
+		if (handleEntry) {
+			handleEntry = false;
+			com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager().unregisterHandler(factory);
+			DebugUtils.logMessage("Unregistered from WorldGuard entry API.");
 		}
 	}
 	

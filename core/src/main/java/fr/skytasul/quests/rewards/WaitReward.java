@@ -52,6 +52,11 @@ public class WaitReward extends AbstractReward {
 	
 	@Override
 	public List<String> give(Player p) {
+		try {
+			Thread.sleep(delay * 50L);
+		}catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	

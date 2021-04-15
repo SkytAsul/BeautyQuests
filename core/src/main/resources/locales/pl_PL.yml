@@ -100,6 +100,7 @@ msg:
     leaveAll: '§aWymusiłeś/aś koniec {0} zadań. Błędy: {1}'
     resetPlayer:
       player: '§6Wszystkie informacje o twoich zadaniach {0} zostały usunięte przez {1}.'
+      remover: '§6{0} informacja(e) o zadaniu (oraz {2}puli) {1} zostało usunięte.'
     resetPlayerQuest:
       player: '§6Wszystkie informacje o zadaniu {0} zostały usunięte przez {1}.'
       remover: '§6{0} informacja(e/i) o zadaniu {1} została(y) usunięta(e).'
@@ -597,6 +598,7 @@ misc:
     greater: ściśle więcej niż {0}
     greaterOrEquals: więcej niż {0}
   requirement:
+    skillAPILevel: '§bWymagany poziom SkillAPI'
     class: '§bKlasa(y) wymagane'
     faction: '§bFrakcja(e) wymagana(e)'
     jobLevel: '§bWymagany poziom pracy'

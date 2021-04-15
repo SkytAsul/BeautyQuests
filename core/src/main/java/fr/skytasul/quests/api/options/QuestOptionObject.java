@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -26,6 +27,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	@Override
 	public void attach(Quest quest) {
+		Validate.notNull(quest, "Attached quest cannot be null");
 		super.attach(quest);
 		attachObjects();
 	}
@@ -38,9 +40,9 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	@Override
 	public void setValue(List<T> value) {
-		if (getValue() != null) detachObjects();
+		if (getValue() != null && getAttachedQuest() != null) detachObjects();
 		super.setValue(value);
-		if (getValue() != null) attachObjects();
+		if (getValue() != null && getAttachedQuest() != null) attachObjects();
 	}
 	
 	private void detachObjects() {

@@ -13,6 +13,7 @@ msg:
     invalidID: '§cLa misión con la id {0} no existe.'
     alreadyStarted: '§cYa has comenzado la misión!'
   quests:
+    maxLaunched: '§cNo puedes tener mas de {0} Misiones al mismo tiempo...'
     nopStep: '§cEsta misión no tiene ningún paso.'
     updated: '§7Misión §e{0}§7 actualizada.'
     checkpoint: El punto de control de tarea ha sido alcanzado
@@ -54,6 +55,7 @@ msg:
     skill: '§c¡Tu nivel para la habilidad §e{1}§c debe ser {0}!'
     combatLevel: '§c¡Tu nivel de combate debe ser {0}!'
     money: '§aDebes tener {0}!'
+    waitTime: '§cDebes esperar {0} antes de poder reiniciar esta misión!'
   experience:
     edited: '§aHas cambiado la ganancia de la experiencia de {0} a {1} puntos.'
   selectNPCToKill: '§aSelecciona el NPC para matar.'

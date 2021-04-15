@@ -648,7 +648,7 @@ misc:
     water: Water bucket
     lava: Lava bucket
     milk: Milk bucket
-  ticks: {0} ticks
+  ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
   poolHologramText: §eNew quest available!

@@ -187,12 +187,13 @@ public class QuestBranch {
 			stage.end(acc);
 			stage.getValidationRequirements().stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (stage.hasAsyncEnd()){
-				Utils.runAsync(() -> {
+				new Thread(() -> {
+					DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 					asyncReward.add(acc);
 					Utils.giveRewards(p, stage.getRewards());
 					asyncReward.remove(acc);
 					Utils.runSync(runAfter);
-				});
+				}).start();
 			}else{
 				Utils.giveRewards(p, stage.getRewards());
 				runAfter.run();

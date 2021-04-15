@@ -210,8 +210,17 @@ public class BeautyQuests extends JavaPlugin {
 		
 		try {
 			if (!disable) saveAllConfig(true);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			dependencies.disableCompatibilities();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			if (logger != null) logger.close();
-		} catch (Throwable e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -308,7 +317,7 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH" }) {
+			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}

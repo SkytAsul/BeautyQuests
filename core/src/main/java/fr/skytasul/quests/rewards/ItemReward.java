@@ -13,7 +13,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -38,11 +37,6 @@ public class ItemReward extends AbstractReward {
 		}
 		if (amount == 0) return null;
 		return Arrays.asList(amount + " " + Lang.Item.toString());
-	}
-	
-	@Override
-	public void attach(Quest quest) {
-		super.attach(quest);
 	}
 
 	@Override

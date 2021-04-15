@@ -18,7 +18,7 @@ import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
-	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init);
+	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, BQWorldGuard::disable);
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> QuestsAPI.registerMobFactory(new MythicMobs()));
 	public static final BQDependency vault = new BQDependency("Vault");
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder")));
@@ -38,6 +38,7 @@ public class DependenciesManager implements Listener {
 	});
 	public static final BQDependency holod = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays()));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
+	//public static final BQDependency interactions = new BQDependency("Interactions", () -> InteractionsAPI.); TODO
 	
 	private List<BQDependency> dependencies;
 	private boolean dependenciesTested = false, dependenciesInitialized = false;
@@ -72,6 +73,10 @@ public class DependenciesManager implements Listener {
 		dependenciesInitialized = true;
 	}
 	
+	public void disableCompatibilities() {
+		dependencies.forEach(BQDependency::disable);
+	}
+	
 	public void lockDependencies() {
 		lockDependencies = true;
 	}
@@ -90,15 +95,21 @@ public class DependenciesManager implements Listener {
 		private final Runnable initialize;
 		private boolean enabled = false;
 		private boolean forceDisable = false;
+		private Runnable disable;
 		
 		public BQDependency(String pluginName) {
 			this(pluginName, null);
 		}
 		
 		public BQDependency(String pluginName, Runnable initialize) {
+			this(pluginName, initialize, null);
+		}
+		
+		public BQDependency(String pluginName, Runnable initialize, Runnable disable) {
 			Validate.notNull(pluginName);
 			this.pluginName = pluginName;
 			this.initialize = initialize;
+			this.disable = disable;
 		}
 		
 		boolean testCompatibility(boolean after) {
@@ -116,6 +127,7 @@ public class DependenciesManager implements Listener {
 		public void disable() {
 			forceDisable = true;
 			enabled = false;
+			if (disable != null) disable.run();
 		}
 		
 		public boolean isEnabled() {
