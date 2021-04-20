@@ -40,12 +40,13 @@ public class Database {
 	public boolean openConnection() {
 		if (!isClosed()) return false;
 
-		try {
+		// it seems no longer useful to load the Driver manually
+		/*try {
 			Class.forName("com.mysql.jdbc.Driver");
 		}catch (ClassNotFoundException e) {
 			BeautyQuests.logger.severe("Database driver not found.");
 			return false;
-		}
+		}*/
 
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), properties);

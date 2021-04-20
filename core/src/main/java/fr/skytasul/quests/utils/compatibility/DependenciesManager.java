@@ -59,7 +59,7 @@ public class DependenciesManager implements Listener {
 		}
 		dependencies.add(dependency);
 		if (dependenciesTested) {
-			if (dependency.testCompatibility(true) && !dependenciesInitialized) dependency.initialize();
+			if (dependency.testCompatibility(true) && dependenciesInitialized) dependency.initialize();
 		}
 	}
 	
@@ -84,9 +84,9 @@ public class DependenciesManager implements Listener {
 	@EventHandler
 	public void onPluginEnable(PluginEnableEvent e) {
 		if (lockDependencies) return;
-		if (dependenciesTested) return;
+		//if (dependenciesTested) return;
 		dependencies.stream().filter(x -> !x.enabled && x.pluginName.equals(e.getPlugin().getName())).findAny().ifPresent(dependency -> {
-			if (dependency.testCompatibility(true) && !dependenciesInitialized) dependency.initialize();
+			if (dependency.testCompatibility(true) && dependenciesInitialized) dependency.initialize();
 		});
 	}
 	
@@ -126,8 +126,10 @@ public class DependenciesManager implements Listener {
 		
 		public void disable() {
 			forceDisable = true;
-			enabled = false;
-			if (disable != null) disable.run();
+			if (enabled) {
+				enabled = false;
+				if (disable != null) disable.run();
+			}
 		}
 		
 		public boolean isEnabled() {

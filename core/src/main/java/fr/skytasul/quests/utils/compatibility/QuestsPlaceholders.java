@@ -75,7 +75,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	
 	@Override
 	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "started_ordered");
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "player_quest_finished_ID");
 	}
 	
 	@Override
@@ -145,6 +145,17 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				}
 				if (qu.hasFinished(acc)) return Lang.Finished.toString();
 				return Lang.Not_Started.toString();
+			}catch (NumberFormatException ex) {
+				return "§c§lError: §o" + sid;
+			}
+		}
+		if (identifier.startsWith("player_quest_finished_")) {
+			String sid = identifier.substring(22);
+			try {
+				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				if (qu == null) return "§c§lError: unknown quest §o" + sid;
+				if (!acc.hasQuestDatas(qu)) return "0";
+				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
 			}
