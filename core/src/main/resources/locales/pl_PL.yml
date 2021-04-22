@@ -171,6 +171,7 @@ msg:
         permissionName: '§aNapisz nazwę uprawnień.'
         permissionWorld: '§aNapisz świat, w którym uprawnienia będą edytowane, lub "null" jeśli chcesz żeby były globalnie.'
         money: '§aNapisz ilość otrzymanych pieniędzy:'
+        wait: '§aNapisz ilość ticków do poczekania: (1 sekunda = 20 ticków w grze)'
       chooseObjectiveRequired: '§aNapisz nazwę celu.'
       chooseObjectiveTargetScore: '§aNapisz docelowy wynik dla celu.'
       chooseRegionRequired: '§aNapisz nazwę wymaganego regionu (musisz być w tym samym świecie).'
@@ -275,6 +276,7 @@ inv:
     editMessageType: '§eEdytuj wiadomość do napisania'
     cancelMessage: Anuluj wysyłanie
     ignoreCase: Ignoruj wielkość liter w wiadomości
+    replacePlaceholders: Zastąp {PLAYER} i placeholdery z PAPI
     selectItems: '§eEdytuj wymagane przedmioty'
     selectItemsMessage: '§eEdytuj wiadomość z pytaniem'
     selectItemsComparisons: '§eWybierz porównania przedmiotów (ZAAWANSOWANE)'
@@ -341,6 +343,7 @@ inv:
     setRewardsWithRequirements: '§eNagrody z wymaganiami'
     setPermReward: '§eEdytuj uprawnienia'
     setMoneyReward: '§eEdytuj nagrodę pieniężną'
+    setWaitReward: '§eEdytuj nagrodę "czekania"'
     selectStarterNPC: '§e§lWybierz NPC startowego'
     selectStarterNPCLore: Kliknięcie na wybranego NPC rozpocznie zadanie.
     createQuestName: '§lUtwórz zadanie'
@@ -615,6 +618,7 @@ misc:
     water: Wiadro wody
     lava: Wiadro lawy
     milk: Wiadro mleka
+  ticks: '{0} ticków'
   questItemLore: '§e§oPrzedmiot zadań'
   hologramText: '§8§lNPC zadań'
   poolHologramText: '§eNowe zadanie jest dostępne!'

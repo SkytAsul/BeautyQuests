@@ -513,6 +513,7 @@ inv:
     poolAvoidDuplicates: '§8Éviter les doublons : §7{0}'
     poolQuestsList: '§7{0} §8quête(s) : §7{1}'
     create: '§aCréer un groupe de quêtes'
+    edit: '§e> §6§oModifier le groupe de quêtes... §e<'
   poolCreation:
     name: Création du groupe de quêtes
     hologramText: '§eHologramme personnalisé du groupe'
@@ -521,6 +522,7 @@ inv:
     redoAllowed: Est-il recommençable ?
     avoidDuplicates: Éviter les doublons
     avoidDuplicatesLore: '§8> §7Essaye d''éviter de faire\n  la même quête encore et encore'
+    requirements: '§bExigences pour démarrer une quête'
   poolsList.name: Groupe de quêtes
   itemComparisons:
     name: Comparaisons d'item

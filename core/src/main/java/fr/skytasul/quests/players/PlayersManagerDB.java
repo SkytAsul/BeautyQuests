@@ -91,7 +91,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	protected Entry<PlayerAccount, Boolean> load(Player player) {
+	protected synchronized Entry<PlayerAccount, Boolean> load(Player player) {
 		try {
 			String uuid = player.getUniqueId().toString();
 			PreparedStatement statement = getAccounts.getStatement();
@@ -134,14 +134,15 @@ public class PlayersManagerDB extends PlayersManager {
 		return new PlayerQuestDatasDB(acc, quest.getID());
 	}
 
-	public synchronized void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {
+	@Override
+	public synchronized void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {
 		try {
 			for (Entry<BukkitTask, Object> entry : ((PlayerQuestDatasDB) datas).cachedDatas.values()) {
 				entry.getKey().cancel();
 			}
 			PreparedStatement statement = removeQuestData.getStatement();
 			statement.setInt(1, acc.index);
-			statement.setInt(2, quest.getID());
+			statement.setInt(2, id);
 			statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -154,11 +155,11 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	public void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas) {
+	public synchronized void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {
 		try {
 			PreparedStatement statement = removePoolData.getStatement();
 			statement.setInt(1, acc.index);
-			statement.setInt(2, pool.getID());
+			statement.setInt(2, id);
 			statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();

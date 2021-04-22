@@ -41,7 +41,8 @@ public class DependenciesManager implements Listener {
 	//public static final BQDependency interactions = new BQDependency("Interactions", () -> InteractionsAPI.); TODO
 	
 	private List<BQDependency> dependencies;
-	private boolean dependenciesTested = false, dependenciesInitialized = false;
+	private boolean dependenciesTested = false;
+	private boolean dependenciesInitialized = false;
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
@@ -64,11 +65,13 @@ public class DependenciesManager implements Listener {
 	}
 	
 	public void testCompatibilities() {
+		if (dependenciesTested) return;
 		dependencies.forEach(x -> x.testCompatibility(false));
 		dependenciesTested = true;
 	}
 
 	public void initializeCompatibilities() {
+		if (dependenciesInitialized) return;
 		dependencies.stream().filter(BQDependency::isEnabled).forEach(BQDependency::initialize);
 		dependenciesInitialized = true;
 	}

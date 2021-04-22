@@ -171,6 +171,7 @@ msg:
         permissionName: '§a请输入权限名称。'
         permissionWorld: '§a请输入可编辑权限的世界名，输入"null"则所有世界可编辑。'
         money: '§e输入获得的钱数:'
+        wait: '§a输入所需等待游戏刻数（1秒=20刻）'
       chooseObjectiveRequired: '§a请输入目标名。'
       chooseObjectiveTargetScore: '§a请输入完成任务目标所需目标数。'
       chooseRegionRequired: '§a请输入所需区域名 (你必须与该区域在同一个世界中)。'
@@ -275,6 +276,7 @@ inv:
     editMessageType: '§e编辑要输入的消息'
     cancelMessage: 取消发送
     ignoreCase: 忽略消息大小写
+    replacePlaceholders: 使用PAPI替换{PLAYER}和占位符
     selectItems: '§b选择所需的物品'
     selectItemsMessage: '§e编辑询问消息'
     selectItemsComparisons: '§e选择物品比较式（高级）'
@@ -341,6 +343,7 @@ inv:
     setRewardsWithRequirements: '§e需满足需求的奖励'
     setPermReward: '§e编辑权限'
     setMoneyReward: '§e编辑获得的金钱'
+    setWaitReward: '§e编辑“等待”奖励'
     selectStarterNPC: '§6§l选择接受任务的NPC'
     selectStarterNPCLore: 点击选中的NPC将开始任务。
     createQuestName: '§l创建任务'
@@ -614,6 +617,7 @@ misc:
     water: 水桶
     lava: 岩浆桶
     milk: 牛奶桶
+  ticks: '{0}刻'
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
   poolHologramText: '§e有可接受的新任务！'

@@ -34,6 +34,7 @@ import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -213,11 +214,17 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		int quests = 0, pools = 0;
 		for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
-			questDatas.getQuest().resetPlayer(acc);
+			Quest quest = questDatas.getQuest();
+			if (quest != null) {
+				quest.resetPlayer(acc);
+			}else acc.removeQuestDatas(questDatas.getQuestID());
 			quests++;
 		}
 		for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
-			poolDatas.getPool().resetPlayer(acc);
+			QuestPool pool = poolDatas.getPool();
+			if (pool != null) {
+				pool.resetPlayer(acc);
+			}else acc.removePoolDatas(poolDatas.getPoolID());
 			pools++;
 		}
 		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), quests, cmd.sender.getName(), pools);

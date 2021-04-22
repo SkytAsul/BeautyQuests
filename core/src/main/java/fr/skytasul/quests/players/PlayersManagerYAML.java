@@ -52,12 +52,6 @@ public class PlayersManagerYAML extends PlayersManager {
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatas(acc, quest.getID());
 	}
-
-	@Override
-	public void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas) {}
-
-	@Override
-	public void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas) {}
 	
 	@Override
 	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {

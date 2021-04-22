@@ -179,8 +179,8 @@ public enum Lang{
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 	
 	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
-	POOL_HOLOGRAM_MAXQUESTS("msg.editor.pool.maxQuests"),
-	POOL_HOLOGRAM_TIME("msg.editor.pool.time"),
+	POOL_MAXQUESTS("msg.editor.pool.maxQuests"),
+	POOL_TIME("msg.editor.pool.time"),
 	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
@@ -508,6 +508,7 @@ public enum Lang{
 	poolItemHologram("inv.poolsManage.poolHologram"),
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
+	poolEdit("inv.poolsManage.edit"),
 	poolCreate("inv.poolsManage.create"),
 	
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
@@ -517,6 +518,7 @@ public enum Lang{
 	poolRedo("inv.poolCreation.redoAllowed"),
 	poolAvoidDuplicates("inv.poolCreation.avoidDuplicates"),
 	poolAvoidDuplicatesLore("inv.poolCreation.avoidDuplicatesLore"),
+	poolRequirements("inv.poolCreation.requirements"),
 	
 	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 	

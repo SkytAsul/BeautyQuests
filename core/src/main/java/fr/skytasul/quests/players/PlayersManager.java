@@ -25,21 +25,17 @@ public abstract class PlayersManager {
 
 	public static PlayersManager manager;
 
-	//protected abstract PlayerAccount retrievePlayerAccount(Player p);
-
 	protected abstract Entry<PlayerAccount, Boolean> load(Player player);
 	
 	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
 
-	public abstract void playerQuestDataRemoved(PlayerAccount acc, Quest quest, PlayerQuestDatas datas);
+	public void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {}
 
 	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
 	
-	public abstract void playerPoolDataRemoved(PlayerAccount acc, QuestPool pool, PlayerPoolDatas datas);
+	public void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {}
 	
 	public abstract int removeQuestDatas(Quest quest);
-	
-	//public abstract boolean hasAccounts(Player p);
 
 	public abstract void load();
 
@@ -81,7 +77,7 @@ public abstract class PlayersManager {
 
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
-	public synchronized static void loadPlayer(Player p) {
+	public static synchronized void loadPlayer(Player p) {
 		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
@@ -110,7 +106,7 @@ public abstract class PlayersManager {
 		});
 	}
 	
-	public synchronized static void unloadPlayer(Player p) {
+	public static synchronized void unloadPlayer(Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
@@ -120,12 +116,7 @@ public abstract class PlayersManager {
 	public static PlayerAccount getPlayerAccount(Player p) {
 		if (p instanceof NPCHolder) return null;
 		
-		PlayerAccount account = cachedAccounts.get(p);
-		/*if (account == null || !account.isCurrent()) {
-			account = manager.retrievePlayerAccount(p);
-			cachedAccounts.put(p, account);
-		}*/
-		return account;
+		return cachedAccounts.get(p);
 	}
 	
 }

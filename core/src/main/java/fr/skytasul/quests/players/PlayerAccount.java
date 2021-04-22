@@ -60,8 +60,12 @@ public class PlayerAccount {
 	}
 
 	public PlayerQuestDatas removeQuestDatas(Quest quest) {
-		PlayerQuestDatas removed = questDatas.remove(quest.getID());
-		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, quest, removed);
+		return removeQuestDatas(quest.getID());
+	}
+	
+	public PlayerQuestDatas removeQuestDatas(int id) {
+		PlayerQuestDatas removed = questDatas.remove(id);
+		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, id, removed);
 		return removed;
 	}
 	
@@ -83,8 +87,12 @@ public class PlayerAccount {
 	}
 	
 	public PlayerPoolDatas removePoolDatas(QuestPool pool) {
-		PlayerPoolDatas removed = poolDatas.remove(pool.getID());
-		if (removed != null) PlayersManager.manager.playerPoolDataRemoved(this, pool, removed);
+		return removePoolDatas(pool.getID());
+	}
+	
+	public PlayerPoolDatas removePoolDatas(int id) {
+		PlayerPoolDatas removed = poolDatas.remove(id);
+		if (removed != null) PlayersManager.manager.playerPoolDataRemoved(this, id, removed);
 		return removed;
 	}
 	

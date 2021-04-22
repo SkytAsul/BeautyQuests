@@ -10,8 +10,8 @@ import fr.skytasul.quests.utils.Utils;
 
 public class PlayerQuestDatas {
 
-	public final PlayerAccount acc;
-	public final int questID;
+	protected final PlayerAccount acc;
+	protected final int questID;
 
 	private int finished = 0;
 	private long timer = 0;
@@ -40,6 +40,10 @@ public class PlayerQuestDatas {
 	
 	public Quest getQuest() {
 		return QuestsAPI.getQuestFromID(questID);
+	}
+	
+	public int getQuestID() {
+		return questID;
 	}
 
 	public boolean isFinished() {

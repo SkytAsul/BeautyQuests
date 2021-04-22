@@ -2,6 +2,7 @@ package fr.skytasul.quests.structure.pools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerPoolDatas;
@@ -32,11 +34,12 @@ public class QuestPool implements Comparable<QuestPool> {
 	private final boolean redoAllowed;
 	private final long timeDiff;
 	private final boolean avoidDuplicates;
+	private final List<AbstractRequirement> requirements;
 	
 	NPCStarter starter;
 	List<Quest> quests = new ArrayList<>();
 	
-	QuestPool(int id, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates) {
+	QuestPool(int id, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
 		this.id = id;
 		this.npcID = npcID;
 		this.hologram = hologram;
@@ -44,6 +47,8 @@ public class QuestPool implements Comparable<QuestPool> {
 		this.redoAllowed = redoAllowed;
 		this.timeDiff = timeDiff;
 		this.avoidDuplicates = avoidDuplicates;
+		this.requirements = requirements;
+		
 		if (npcID >= 0) {
 			NPC npc = CitizensAPI.getNPCRegistry().getById(npcID);
 			if (npc == null) return;
@@ -84,6 +89,10 @@ public class QuestPool implements Comparable<QuestPool> {
 		return avoidDuplicates;
 	}
 	
+	public List<AbstractRequirement> getRequirements() {
+		return requirements;
+	}
+	
 	public void addQuest(Quest quest) {
 		quests.add(quest);
 	}
@@ -103,9 +112,11 @@ public class QuestPool implements Comparable<QuestPool> {
 				Lang.poolItemMaxQuests.format(maxQuests),
 				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),
 				Lang.poolItemTime.format(Utils.millisToHumanString(timeDiff)),
-				Lang.poolItemHologram.format(hologram == null ? Lang.PoolHologramText.toString() + " " + Lang.defaultValue : hologram),
+				Lang.poolItemHologram.format(hologram == null ? Lang.PoolHologramText.toString() + "\n§7    > " + Lang.defaultValue : hologram),
 				Lang.poolItemAvoidDuplicates.format(avoidDuplicates ? Lang.Enabled : Lang.Disabled),
-				Lang.poolItemQuestsList.format(quests.size(), quests.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "))));
+				"§7" + Lang.requirements.format(requirements.size()),
+				Lang.poolItemQuestsList.format(quests.size(), quests.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "))),
+				"", Lang.poolEdit.toString());
 	}
 	
 	public void resetPlayer(PlayerAccount acc) {
@@ -124,6 +135,8 @@ public class QuestPool implements Comparable<QuestPool> {
 		
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
 		
+		if (!requirements.stream().allMatch(x -> x.test(p))) return false;
+		
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
 		if (notDoneQuests.isEmpty()) { // all quests completed
 			if (!redoAllowed) return false;
@@ -139,6 +152,13 @@ public class QuestPool implements Comparable<QuestPool> {
 		
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0) return Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time));
+		
+		for (AbstractRequirement requirement : requirements) {
+			if (!requirement.test(p)) {
+				requirement.sendReason(p);
+				return null;
+			}
+		}
 		
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
 		if (notDoneQuests.isEmpty()) { // all quests completed
@@ -170,10 +190,19 @@ public class QuestPool implements Comparable<QuestPool> {
 		config.set("timeDiff", timeDiff);
 		config.set("npcID", npcID);
 		config.set("avoidDuplicates", avoidDuplicates);
+		if (!requirements.isEmpty()) config.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
 	}
 	
 	public static QuestPool deserialize(int id, ConfigurationSection config) {
-		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true));
+		List<AbstractRequirement> requirements = new ArrayList<>();
+		for (Map<?, ?> serializedRequirement : config.getMapList("requirements")) {
+			try {
+				requirements.add(AbstractRequirement.deserialize((Map<String, Object>) serializedRequirement));
+			}catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
 	}
 	
 }

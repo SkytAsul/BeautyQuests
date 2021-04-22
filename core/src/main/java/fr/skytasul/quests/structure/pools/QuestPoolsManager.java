@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.options.OptionQuestPool;
 
 public class QuestPoolsManager {
@@ -52,9 +54,9 @@ public class QuestPoolsManager {
 		}
 	}
 	
-	public QuestPool createPool(QuestPool editing, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates) {
+	public QuestPool createPool(QuestPool editing, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
 		if (editing != null) editing.unload();
-		QuestPool pool = new QuestPool(editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getID(), npcID, hologram, maxQuests, redoAllowed, timeDiff, avoidDuplicates);
+		QuestPool pool = new QuestPool(editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getID(), npcID, hologram, maxQuests, redoAllowed, timeDiff, avoidDuplicates, requirements);
 		save(pool);
 		pools.put(pool.getID(), pool);
 		if (editing != null) {

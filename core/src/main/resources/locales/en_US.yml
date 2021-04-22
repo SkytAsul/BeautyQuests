@@ -542,6 +542,7 @@ inv:
     poolAvoidDuplicates: '§8Avoid duplicates: §7{0}'
     poolQuestsList: '§7{0} §8quest(s): §7{1}'
     create: §aCreate a quest pool
+    edit: §e> §6§oEdit the pool... §e<
   poolCreation:
     name: Quest pool creation
     hologramText: §ePool custom hologram
@@ -550,6 +551,7 @@ inv:
     redoAllowed: Is redo allowed
     avoidDuplicates: Avoid duplicates
     avoidDuplicatesLore: §8> §7Try to avoid doing\n  the same quest over and over
+    requirements: §bRequirements to start a quest
   poolsList.name: Quest pools
   itemComparisons:
     name: Item Comparisons
