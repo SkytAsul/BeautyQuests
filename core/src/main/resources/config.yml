@@ -26,7 +26,9 @@ database:
   username: "unknown"
   password: "unknown"
   ssl: false
-
+#If this is set to true you will interact with quest npc's by left clicking instead opf right clicking
+use_left_click:
+  false
 # - Quests behaviors -
 # Enable or disable the scoreboards - more options in scoreboard.yml
 scoreboards: true

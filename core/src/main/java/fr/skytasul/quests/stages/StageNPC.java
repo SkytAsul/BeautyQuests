@@ -33,6 +33,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -147,7 +148,10 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onClick(NPCRightClickEvent e){
+	public void onClick(NPCLeftClickEvent e){
+
+		if (!QuestsConfiguration.left_click_enabled()) return;
+
 		Player p = e.getClicker();
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
@@ -182,49 +186,89 @@ public class StageNPC extends AbstractStage{
 		}
 		finishStage(p);
 	}
+
+	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onClick(NPCRightClickEvent e){
+
+		if (QuestsConfiguration.left_click_enabled()) return;
+
+		Player p = e.getClicker();
+		if (e.isCancelled()) return;
+		if (e.getNPC() != npc) return;
+		if (!hasStarted(p)) return;
+		if (!canUpdate(p)) return;
+
+		if (!branch.isRegularStage(this)) { // is ending stage
+			if (bringBack == null || !bringBack.checkItems(p, false)) { // if just text or don't have items
+				for (AbstractStage stage : branch.getEndingStages().keySet()) {
+					if (stage instanceof StageBringBack) { // if other ending stage is bring back
+						StageBringBack other = (StageBringBack) stage;
+						if (other.getNPC() == npc && other.checkItems(p, false)) return; // if same NPC and can start: don't cancel event and stop there
+					}
+				}
+			}
+		}
+
+		e.setCancelled(true);
+
+		if (bringBack != null && !bringBack.checkItems(p, true)) return;
+		if (dialog != null) { // dialog exists
+			dialog.send(p, npc, () -> {
+				if (bringBack != null) {
+					if (!bringBack.checkItems(p, true)) return;
+					bringBack.removeItems(p);
+				}
+				finishStage(p);
+			});
+			return;
+		}else if (bringBack != null){ // no dialog but bringback
+			bringBack.removeItems(p);
+		}
+		finishStage(p);
+	}
 	
 	protected String npcName(){
 		return (npc != null) ? npc.getName() : "§c§lunknown NPC " + npcID;
 	}
 	
-	@Override
-	public void joins(PlayerAccount acc, Player p) {
-		super.joins(acc, p);
-		cached.add(p);
-		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
-	}
+	 @Override
+	 public void joins(PlayerAccount acc, Player p) {
+	 	super.joins(acc, p);
+	 	cached.add(p);
+	 	if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
+	 }
 	
-	@Override
-	public void leaves(PlayerAccount acc, Player p) {
-		super.leaves(acc, p);
-		cached.remove(p);
-		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
-	}
+	 @Override
+	 public void leaves(PlayerAccount acc, Player p) {
+	 	super.leaves(acc, p);
+	 	cached.remove(p);
+	 	if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+	 }
 	
-	public void start(PlayerAccount acc) {
-		super.start(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			cached.add(p);
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
-		}
-	}
+	 public void start(PlayerAccount acc) {
+	 	super.start(acc);
+	 	if (acc.isCurrent()) {
+	 		Player p = acc.getPlayer();
+	 		cached.add(p);
+	 		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
+	 	}
+	 }
 	
-	public void end(PlayerAccount acc) {
-		super.end(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			cached.remove(p);
-			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
-		}
-	}
+	 public void end(PlayerAccount acc) {
+	 	super.end(acc);
+	 	if (acc.isCurrent()) {
+	 		Player p = acc.getPlayer();
+	 		cached.remove(p);
+	 		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+	 	}
+	 }
 	
-	public void unload() {
-		super.unload();
-		if (task != null) task.cancel();
-		if (hologram != null) removeHoloLaunch();
-		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
-	}
+	 public void unload() {
+	 	super.unload();
+	 	if (task != null) task.cancel();
+	 	if (hologram != null) removeHoloLaunch();
+	 	if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
+	 }
 	
 	public void load(){
 		super.load();
