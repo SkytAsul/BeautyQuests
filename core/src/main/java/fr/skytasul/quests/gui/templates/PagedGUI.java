@@ -156,6 +156,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	}
 	
 	public void reopen() {
+		Inventories.closeWithoutExit(p);
 		Inventories.put(p, this, inv);
 		inv = p.openInventory(inv).getTopInventory();
 	}

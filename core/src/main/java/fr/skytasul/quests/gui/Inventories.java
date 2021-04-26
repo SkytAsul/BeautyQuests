@@ -51,7 +51,8 @@ public class Inventories{
 		Inventory inv = e.getClickedInventory();
 		ItemStack current = e.getCurrentItem();
 
-		if (g.get(p) == null) return;
+		Pair<CustomInventory, Inventory> pair = g.get(p);
+		if (pair == null) return;
 		if (inv == null) return;
 		
 		e.setCancelled(false);
@@ -67,14 +68,14 @@ public class Inventories{
 			return;
 		}
 
-		if (!inv.equals(g.get(p).getValue())) return;
+		if (!inv.equals(pair.getValue())) return;
 		
 		try {
 			if (e.getCursor().getType() == Material.AIR) {
 				if (current == null || current.getType() == Material.AIR) return;
-				if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), click)) e.setCancelled(true);
+				if (pair.getKey().onClick(p, inv, current, e.getSlot(), click)) e.setCancelled(true);
 			}else {
-				if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
+				if (pair.getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -94,8 +95,9 @@ public class Inventories{
 			return;
 		}
 		if (g.containsKey(p)) {
-			if (!e.getInventory().equals(g.get(p).getValue())) return;
-			switch (g.get(p).getKey().onClose(p, e.getInventory())) {
+			Pair<CustomInventory, Inventory> pair = g.get(p);
+			if (!e.getInventory().equals(pair.getValue())) return;
+			switch (pair.getKey().onClose(p, e.getInventory())) {
 			case REMOVE:
 				remove(p);
 				break;
@@ -107,7 +109,6 @@ public class Inventories{
 				}.runTaskLater(BeautyQuests.getInstance(), 1L);
 				break;
 			case CONFIRM:
-				Pair<CustomInventory, Inventory> pair = g.get(p);
 				new BukkitRunnable() {
 					public void run(){
 						create(p, new ConfirmGUI(() -> {

@@ -8,71 +8,60 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.gui.misc.TitleGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.types.Title;
 
-public class WaitReward extends AbstractReward {
+public class TitleReward extends AbstractReward {
 	
-	private int delay;
+	private Title title;
 	
-	public WaitReward() {
-		this(0);
+	public TitleReward() {
+		this(null);
 	}
 	
-	public WaitReward(int delay) {
-		super("wait");
-		this.delay = delay;
-	}
-	
-	@Override
-	public boolean isAsync() {
-		return delay != 0;
+	public TitleReward(Title title) {
+		super("titleReward");
+		this.title = title;
 	}
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(Lang.Ticks.format(delay)), "", Lang.Remove.toString() };
+		return new String[] { title == null ? Lang.NotSet.toString() : Lang.optionValue.format(title.toString()), "", Lang.Remove.toString() };
 	}
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.REWARD_EDITOR_WAIT.send(p);
-		new TextEditor<>(p, () -> {
-			if (delay == 0) gui.remove(this);
-			gui.reopen();
-		}, obj -> {
-			delay = obj;
+		new TitleGUI(newTitle -> {
+			if (newTitle == null) {
+				if (title == null) gui.remove(this);
+			}else title = newTitle;
 			ItemUtils.lore(clicked, getLore());
 			gui.reopen();
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+		}).edit(title).create(p);
 	}
 	
 	@Override
 	public List<String> give(Player p) {
-		try {
-			Thread.sleep(delay * 50L);
-		}catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		if (title != null) title.send(p);
 		return null;
 	}
 	
 	@Override
 	public AbstractReward clone() {
-		return new WaitReward(delay);
+		return new TitleReward(title);
 	}
 	
 	@Override
 	protected void save(Map<String, Object> datas) {
-		datas.put("delay", delay);
+		if (title != null) datas.put("title", title.serialize());
 	}
 	
 	@Override
 	protected void load(Map<String, Object> savedDatas) {
-		delay = (int) savedDatas.get("delay");
+		title = savedDatas.containsKey("title") ? Title.deserialize((Map<String, Object>) savedDatas.get("title")) : null;
 	}
 	
 }

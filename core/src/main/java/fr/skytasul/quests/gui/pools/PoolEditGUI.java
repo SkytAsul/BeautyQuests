@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.pools;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +48,7 @@ public class PoolEditGUI implements CustomInventory {
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
 	private int npcID = -1;
 	private boolean avoidDuplicates = true;
-	private List<AbstractRequirement> requirements;
+	private List<AbstractRequirement> requirements = new ArrayList<>();
 	
 	private boolean canFinish = false;
 	private QuestPool editing;

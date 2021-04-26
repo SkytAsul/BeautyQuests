@@ -97,9 +97,7 @@ public abstract class QuestOption<T> implements Cloneable {
 	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click);
 	
 	public String formatValue(String valueString) {
-		valueString = formatNullableValue(valueString);
-		if (!hasCustomValue()) valueString += " " + Lang.defaultValue.toString();
-		return valueString;
+		return formatNullableValue(valueString, !hasCustomValue());
 	}
 	
 	public static String formatDescription(String description) {
@@ -107,7 +105,13 @@ public abstract class QuestOption<T> implements Cloneable {
 	}
 	
 	public static String formatNullableValue(String valueString) {
-		return Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString);
+		return formatNullableValue(valueString, false);
+	}
+	
+	public static String formatNullableValue(String valueString, boolean defaultValue) {
+		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString);
+		if (defaultValue) valueString += " " + Lang.defaultValue.toString();
+		return valueString;
 	}
 	
 }

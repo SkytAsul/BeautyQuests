@@ -182,6 +182,12 @@ public enum Lang{
 	POOL_MAXQUESTS("msg.editor.pool.maxQuests"),
 	POOL_TIME("msg.editor.pool.time"),
 	
+	TITLE_TITLE("msg.editor.title.title"),
+	TITLE_SUBTITLE("msg.editor.title.subtitle"),
+	TITLE_FADEIN("msg.editor.title.fadeIn"),
+	TITLE_STAY("msg.editor.title.stay"),
+	TITLE_FADEOUT("msg.editor.title.fadeOut"),
+	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
 	CHOOSE_JOB_REQUIRED("msg.editor.text.chooseJobRequired"),
@@ -352,6 +358,7 @@ public enum Lang{
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
 	rewardWait("inv.details.setWaitReward"),
+	rewardTitle("inv.details.setTitleReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
 	questStarterSelectLore("inv.details.selectStarterNPCLore"),
 	create("inv.details.createQuestName"),
@@ -537,6 +544,13 @@ public enum Lang{
 	comparisonEnchantsLore("inv.itemComparisons.enchantsLore"),
 	comparisonRepairCost("inv.itemComparisons.repairCost"),
 	comparisonRepairCostLore("inv.itemComparisons.repairCostLore"),
+	
+	INVENTORY_EDIT_TITLE("inv.editTitle.name"),
+	title_title("inv.editTitle.title"),
+	title_subtitle("inv.editTitle.subtitle"),
+	title_fadeIn("inv.editTitle.fadeIn"),
+	title_stay("inv.editTitle.stay"),
+	title_fadeOut("inv.editTitle.fadeOut"),
 	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),

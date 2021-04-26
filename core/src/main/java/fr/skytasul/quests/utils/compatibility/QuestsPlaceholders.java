@@ -29,7 +29,11 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class QuestsPlaceholders extends PlaceholderExpansion {
 	
-	private final int lineLength, changeTime;
+	private final int lineLength;
+	private final int changeTime;
+	private final String splitFormat;
+	private final String inlineFormat;
+	
 	private BukkitTask task;
 	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
 	private ReentrantLock playersLock = new ReentrantLock();
@@ -37,6 +41,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	private QuestsPlaceholders(ConfigurationSection placeholderConfig) {
 		lineLength = placeholderConfig.getInt("lineLength");
 		changeTime = placeholderConfig.getInt("changeTime");
+		splitFormat = placeholderConfig.getString("splitPlaceholderFormat");
+		inlineFormat = placeholderConfig.getString("inlinePlaceholderFormat");
 	}
 	
 	public static String setPlaceholders(OfflinePlayer p, String text) {
@@ -108,7 +114,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				
 				try {
 					int i = -1;
-					if (!after.isEmpty()) {
+					boolean noSplit = after.isEmpty();
+					if (!noSplit) {
 						i = Integer.parseInt(after.substring(1)) - 1;
 						if (i < 0) return "§cindex must be positive";
 					}
@@ -117,10 +124,13 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 					
 					Quest quest = data.left.get(0);
 					String desc = quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
-					if (after.isEmpty()) return desc;
+					String format = noSplit ? inlineFormat : splitFormat;
+					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
+					
+					if (noSplit) return format;
 				
 					try {
-						List<String> lines = Utils.wordWrap(desc, lineLength);
+						List<String> lines = Utils.wordWrap(format, lineLength);
 						if (i >= lines.size()) return "";
 						return lines.get(i);
 					}catch (Exception ex) {

@@ -10,7 +10,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -57,10 +56,12 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		return true;
 	}
 	
-	public void remove(int slot){
+	public void remove(int slot) {
 		T removed = objects.remove(slot);
 		if (removed == null) return;
-		Inventories.create(p, this);
+		calcMaxPages();
+		page = maxPage - 1;
+		setItems();
 		removed(removed);
 	}
 	

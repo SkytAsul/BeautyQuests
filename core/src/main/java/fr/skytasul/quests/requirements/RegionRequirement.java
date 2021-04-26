@@ -61,11 +61,11 @@ public class RegionRequirement extends AbstractRequirement {
 				this.worldName = p.getWorld().getName();
 				this.regionName = region.getId();
 				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
 			}else {
 				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
 				gui.remove(this);
 			}
+			gui.reopen();
 		}).useStrippedMessage().enter();
 	}
 	

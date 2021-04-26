@@ -41,6 +41,7 @@ import fr.skytasul.quests.rewards.PermissionReward;
 import fr.skytasul.quests.rewards.QuestStopReward;
 import fr.skytasul.quests.rewards.RequirementDependentReward;
 import fr.skytasul.quests.rewards.TeleportationReward;
+import fr.skytasul.quests.rewards.TitleReward;
 import fr.skytasul.quests.rewards.WaitReward;
 import fr.skytasul.quests.rewards.XPReward;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -131,6 +132,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.registerReward(new QuestObjectCreator<QuestStopReward>(QuestStopReward.class, ItemUtils.item(XMaterial.BARRIER, Lang.rewardStopQuest.toString()), QuestStopReward::new, false, QuestObjectLocation.STAGE));
 		QuestsAPI.registerReward(new QuestObjectCreator<RequirementDependentReward>(RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, true));
 		QuestsAPI.registerReward(new QuestObjectCreator<WaitReward>(WaitReward.class, ItemUtils.item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true));
+		QuestsAPI.registerReward(new QuestObjectCreator<TitleReward>(TitleReward.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		

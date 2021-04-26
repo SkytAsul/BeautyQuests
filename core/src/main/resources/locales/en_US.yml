@@ -260,6 +260,12 @@ msg:
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
       time: 'Write the number of days before players can take a new quest.'
+    title:
+      title: 'Write the title text (or "null" if you want none).'
+      subtitle: 'Write the subtitle text (or "null" if you want none).'
+      fadeIn: 'Write the "fade-in" duration, in ticks (20 ticks = 1 second).'
+      stay: 'Write the "stay" duration, in ticks (20 ticks = 1 second).'
+      fadeOut: 'Write the "fade-out" duration, in ticks (20 ticks = 1 second).'
   writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
   finished: Finished
@@ -370,6 +376,7 @@ inv:
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     setWaitReward: '§eEdit "wait" reward'
+    setTitleReward: '§eEdit title reward'
     selectStarterNPC: §e§lSelect NPC starter
     selectStarterNPCLore: Clicking on the selected NPC will start the quest.
     createQuestName: §lCreate quest
@@ -569,6 +576,13 @@ inv:
     enchantsLore: Compares items enchants
     repairCost: Repair cost
     repairCostLore: Compares repair cost for armors and swords
+  editTitle:
+    name: Edit Title
+    title: §6Title
+    subtitle: §eSubtitle
+    fadeIn: §aFade-in duration
+    stay: §bStay duration
+    fadeOut: §aFade-out duration
     
 scoreboard:
   name: §6§lQuests

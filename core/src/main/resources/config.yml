@@ -84,12 +84,16 @@ holoLaunchItemName: BOOK
 holoTalkItemName: COAL
 # (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
-# (PlaceholdersAPI) Configuration for %beautyquests_started_ordered% placeholder
+# (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
   # Max length of a line if using splitted placeholder
   lineLength: 30
   # Time (in seconds) before the shown quest change in placeholder
   changeTime: 10
+  # Format of the placeholder %beautyquests_started_ordered_X%. Available placeholders: {questName} and {questDescription}, use \n to skip a line
+  splitPlaceholderFormat: "§6{questName}\n{questDescription}"
+  # Format of the empty placeholder %beautyquests_started_ordered%. Available placeholders: {questName} and {questDescription}
+  inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
 # dynmap integration options
 dynmap:
   markerSetName: "Quests"
