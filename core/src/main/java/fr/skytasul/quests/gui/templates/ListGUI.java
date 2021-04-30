@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.templates;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -24,7 +25,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 	
 	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, Lang.addObject.toString());
 	
-	public ListGUI(String name, DyeColor color, List<T> objects) {
+	public ListGUI(String name, DyeColor color, Collection<T> objects) {
 		super(name, color, objects);
 		super.objects.add(null);
 		super.validate = list -> {

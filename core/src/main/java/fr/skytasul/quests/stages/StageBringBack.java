@@ -26,13 +26,13 @@ import fr.skytasul.quests.utils.XMaterial;
 
 public class StageBringBack extends StageNPC{
 	
-	private final ItemStack[] items;
-	private final String customMessage;
-	private final ItemComparisonMap comparisons;
+	protected final ItemStack[] items;
+	protected final String customMessage;
+	protected final ItemComparisonMap comparisons;
 	
-	private Map<ItemStack, Integer> amountsMap = new HashMap<>();
-	private String splitted;
-	private String line;
+	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
+	protected final String splitted;
+	protected final String line;
 	
 	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
 		super(branch);
@@ -83,7 +83,7 @@ public class StageBringBack extends StageNPC{
 		return items;
 	}
 	
-	private String getMessage() {
+	protected String getMessage() {
 		return customMessage == null ? Lang.NEED_OBJECTS.toString() : customMessage;
 	}
 
@@ -120,17 +120,17 @@ public class StageBringBack extends StageNPC{
 		return st;
 	}
 
-	public static class Creator extends StageNPC.AbstractCreator<StageBringBack> {
+	public abstract static class AbstractCreator<T extends StageBringBack> extends StageNPC.AbstractCreator<T> {
 		
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 		private static final ItemStack stageMessage = ItemUtils.item(XMaterial.PAPER, Lang.stageItemsMessage.toString());
 		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
 
-		private List<ItemStack> items;
-		private String message = null;
-		private ItemComparisonMap comparisons = new ItemComparisonMap();
+		protected List<ItemStack> items;
+		protected String message = null;
+		protected ItemComparisonMap comparisons = new ItemComparisonMap();
 		
-		public Creator(Line line, boolean ending) {
+		public AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
 			line.setItem(5, stageItems, (p, item) -> {
@@ -177,17 +177,26 @@ public class StageBringBack extends StageNPC{
 		}
 
 		@Override
-		public void edit(StageBringBack stage) {
+		public void edit(T stage) {
 			super.edit(stage);
 			setItems(Arrays.asList(stage.items));
 			setMessage(stage.customMessage);
 			setComparisons(stage.comparisons.clone());
 		}
 		
+	}
+	
+	public static class Creator extends AbstractCreator<StageBringBack> {
+		
+		public Creator(Line line, boolean ending) {
+			super(line, ending);
+		}
+		
 		@Override
 		protected StageBringBack createStage(QuestBranch branch) {
 			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message, comparisons);
 		}
+		
 	}
 
 }

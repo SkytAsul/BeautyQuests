@@ -183,7 +183,7 @@ public class PlayersManagerDB extends PlayersManager {
 			PreparedStatement statement = getAccounts.getStatement();
 			statement.setString(1, p.getUniqueId().toString());
 			ResultSet result = statement.executeQuery();
-			boolean has = result.last();
+			boolean has = result.next();
 			result.close();
 			return has;
 		}catch (SQLException e) {

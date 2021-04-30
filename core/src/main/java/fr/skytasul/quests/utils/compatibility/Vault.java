@@ -49,14 +49,14 @@ public class Vault {
 		boolean has = vperm.playerHas(world, p, perm);
 		if (remove) {
 			if (has) vperm.playerRemove(world, p, perm);
-		}else if (!has) vperm.playerAdd(world, p, perm);
+		}else /*if (!has)*/ vperm.playerAdd(world, p, perm);
 	}
 
 	public static void changeGroup(Player p, String group, boolean remove, String world) {
 		boolean has = vperm.playerInGroup(world, p, group);
 		if (remove) {
 			if (has) vperm.playerRemoveGroup(world, p, group);
-		}else if (!has) vperm.playerAddGroup(world, p, group);
+		}else /*if (!has)*/ vperm.playerAddGroup(world, p, group);
 	}
 	
 }

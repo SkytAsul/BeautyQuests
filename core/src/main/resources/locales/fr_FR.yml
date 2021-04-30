@@ -234,6 +234,12 @@ msg:
       hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
       maxQuests: 'Écrivez le nombre maximum de quêtes lancées dans ce groupe.'
       time: 'Écrivez le nombre de jours avant que les joueurs puissent prendre une nouvelle quête.'
+    title:
+      title: 'Écrivez le titre (ou "null" si vous n''en voulez pas).'
+      subtitle: 'Écrivez le sous-titre (ou "null" si vous n''en voulez pas).'
+      fadeIn: 'Écrivez la durée du fondu d''entrée, en ticks (20 ticks = 1 seconde).'
+      stay: 'Écrivez la durée où le titre reste affiché, en ticks (20 ticks = 1 seconde).'
+      fadeOut: 'Écrivez la durée du fondu de sortie, en ticks (20 ticks = 1 seconde).'
   writeCommandDelay: '§aIndiquez le délai de commande désiré, en ticks.'
 advancement:
   finished: Terminée
@@ -344,6 +350,7 @@ inv:
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
     setWaitReward: '§eModifier l''attente'
+    setTitleReward: '§eModifier la récompense /title'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
     selectStarterNPCLore: Cliquer sur le PNJ sélectionné commencera la quête.
     createQuestName: '§lCréer la quête'
@@ -540,6 +547,13 @@ inv:
     enchantsLore: Compare les enchantements des items
     repairCost: Coût de réparation
     repairCostLore: Compare les coûts de réparation des armures et des épées
+  editTitle:
+    name: Modifier le titre
+    title: '§6Titre'
+    subtitle: '§eSous-titre'
+    fadeIn: '§aDurée du fondu d''entrée'
+    stay: '§bDurée statique'
+    fadeOut: '§aDurée du fondu de sortie'
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'

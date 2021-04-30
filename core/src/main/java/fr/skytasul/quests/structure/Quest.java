@@ -278,8 +278,9 @@ public class Quest implements Comparable<Quest> {
 	}
 
 	public void attemptStart(Player p) {
-		if (QuestsConfiguration.questConfirmGUI()) {
-			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), getOptionValueOrDef(OptionConfirmMessage.class)).create(p);
+		String confirm;
+		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
+			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
 		}else start(p);
 	}
 	
