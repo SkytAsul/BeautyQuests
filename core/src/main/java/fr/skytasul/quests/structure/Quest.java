@@ -200,7 +200,7 @@ public class Quest implements Comparable<Quest> {
 	}
 
 	public boolean hasFinished(PlayerAccount acc){
-		return acc.hasQuestDatas(this) ? acc.getQuestDatas(this).isFinished() : false;
+		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
 	}
 	
 	public void cancelPlayer(PlayerAccount acc){

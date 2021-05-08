@@ -31,13 +31,19 @@ public class PlayerListGUI implements CustomInventory {
 	private Inventory inv;
 	private Player open;
 	private PlayerAccount acc;
+	private boolean hide;
 	
 	private int page = 0;
 	private Category cat = Category.NONE;
 	private List<Quest> quests;
 	
-	public PlayerListGUI(PlayerAccount acc){
+	public PlayerListGUI(PlayerAccount acc) {
+		this(acc, true);
+	}
+	
+	public PlayerListGUI(PlayerAccount acc, boolean hide) {
 		this.acc = acc;
+		this.hide = hide;
 	}
 	
 	public Inventory open(Player p) {
@@ -80,7 +86,7 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			setQuests(QuestsAPI.getQuestsFinished(acc, true));
+			setQuests(QuestsAPI.getQuestsFinished(acc, hide));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
@@ -92,7 +98,7 @@ public class PlayerListGUI implements CustomInventory {
 					}else {
 						lore[0] = Lang.timeWait.format(qu.getTimeLeft(acc));
 					}
-					lore[2] = "";
+					lore[1] = "";
 					lore[2] = Lang.timesFinished.format(acc.getQuestDatas(qu).getTimesFinished());
 				}
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
@@ -118,7 +124,7 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		case NOT_STARTED:
-			setQuests(QuestsAPI.getQuestsUnstarted(acc, true, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
+			setQuests(QuestsAPI.getQuestsUnstarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);

@@ -249,7 +249,7 @@ public class Commands {
 	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		new PlayerListGUI(PlayersManager.getPlayerAccount(target)).create(cmd.player);
+		new PlayerListGUI(PlayersManager.getPlayerAccount(target), false).create(cmd.player);
 	}
 	
 	@Cmd(permission = "resetQuest", min = 1, args = {"QUESTSID"})

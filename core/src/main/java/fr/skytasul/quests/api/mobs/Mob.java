@@ -93,7 +93,7 @@ public class Mob<Data> implements Cloneable {
 		String value = (String) map.get("value");
 		
 		MobFactory<?> factory = MobFactory.getMobFactory(factoryName);
-		if (factory == null) throw new IllegalArgumentException("The " + factoryName + " is not installed in BeautyQuests.");
+		if (factory == null) throw new IllegalArgumentException("The factory " + factoryName + " is not installed in BeautyQuests.");
 		Mob<?> mob = new Mob(factory, factory.fromValue(value));
 		if (map.containsKey("name")) mob.setCustomName((String) map.get("name"));
 		return mob;

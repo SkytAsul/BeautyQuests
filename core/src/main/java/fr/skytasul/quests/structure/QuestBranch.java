@@ -130,7 +130,7 @@ public class QuestBranch {
 		if (end) {
 			if (datas.isInEndingStages()) {
 				endStages.keySet().forEach((x) -> x.end(acc));
-			}else if (0 >= datas.getStage() && datas.getStage() < regularStages.size()) getRegularStage(datas.getStage()).end(acc);
+			}else if (datas.getStage() >= 0 && datas.getStage() < regularStages.size()) getRegularStage(datas.getStage()).end(acc);
 		}
 		datas.setBranch(-1);
 		datas.setStage(-1);

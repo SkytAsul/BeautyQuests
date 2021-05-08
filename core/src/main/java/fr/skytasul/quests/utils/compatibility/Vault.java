@@ -46,16 +46,16 @@ public class Vault {
 	}
 
 	public static void changePermission(Player p, String perm, boolean remove, String world) {
-		boolean has = vperm.playerHas(world, p, perm);
+		//boolean has = vperm.playerHas(world, p, perm);
 		if (remove) {
-			if (has) vperm.playerRemove(world, p, perm);
+			/*if (has) */vperm.playerRemove(world, p, perm);
 		}else /*if (!has)*/ vperm.playerAdd(world, p, perm);
 	}
 
 	public static void changeGroup(Player p, String group, boolean remove, String world) {
-		boolean has = vperm.playerInGroup(world, p, group);
+		//boolean has = vperm.playerInGroup(world, p, group);
 		if (remove) {
-			if (has) vperm.playerRemoveGroup(world, p, group);
+			/*if (has) */vperm.playerRemoveGroup(world, p, group);
 		}else /*if (!has)*/ vperm.playerAddGroup(world, p, group);
 	}
 	
