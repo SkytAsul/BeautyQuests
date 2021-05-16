@@ -112,7 +112,7 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					String desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU);
+					String desc = qu.getBranchesManager().getDescriptionLine(acc, Source.MENU);
 					item = createQuestItem(qu, QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable() ? new String[] { desc, null, Lang.cancelLore.toString() } : new String[] { desc });
 				}catch (Exception ex) {
 					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());

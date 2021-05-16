@@ -13,7 +13,10 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.scoreboards.Scoreboard;
+import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.Lang;
 
 public class BranchesManager{
 
@@ -65,6 +68,13 @@ public class BranchesManager{
 	public boolean hasBranchStarted(PlayerAccount acc, QuestBranch branch){
 		if (!acc.hasQuestDatas(quest)) return false;
 		return acc.getQuestDatas(quest).getBranch() == branch.getID();
+	}
+	
+	public String getDescriptionLine(PlayerAccount acc, Source source) {
+		if (!acc.hasQuestDatas(quest)) throw new IllegalArgumentException("Account do not have quest datas");
+		PlayerQuestDatas datas = acc.getQuestDatas(quest);
+		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
+		return branches.get(datas.getBranch()).getDescriptionLine(acc, source);
 	}
 	
 	/**

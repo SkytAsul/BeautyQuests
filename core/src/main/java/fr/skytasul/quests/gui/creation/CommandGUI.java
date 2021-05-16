@@ -54,6 +54,7 @@ public class CommandGUI implements CustomInventory {
 			this.cmd = cmd.label;
 			this.console = cmd.console;
 			this.delay = cmd.delay;
+			if (console) ItemUtils.set(inv.getItem(1), true);
 			if (inv != null) inv.getItem(4).setType(Material.DIAMOND);
 		}
 		return this;

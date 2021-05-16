@@ -316,7 +316,8 @@ public class Quest implements Comparable<Quest> {
 	
 	public void finish(Player p){
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		AdminMode.broadcast(p.getName() + " completed the quest " + id);
+		AdminMode.broadcast(p.getName() + " is completing the quest " + id);
+		PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
 		
 		Runnable run = () -> {
 			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
@@ -326,7 +327,7 @@ public class Quest implements Comparable<Quest> {
 				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
 				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
-				PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
+				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
 				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
@@ -343,6 +344,7 @@ public class Quest implements Comparable<Quest> {
 		};
 		
 		if (asyncEnd) {
+			questDatas.setInQuestEnd();
 			new Thread(() -> {
 				DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 				run.run();

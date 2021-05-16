@@ -123,7 +123,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
 					
 					Quest quest = data.left.get(0);
-					String desc = quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+					String desc = quest.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
 					String format = noSplit ? inlineFormat : splitFormat;
 					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
 					
@@ -151,7 +151,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (qu.hasStarted(acc)) {
-					return qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+					return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
 				}
 				if (qu.hasFinished(acc)) return Lang.Finished.toString();
 				return Lang.Not_Started.toString();

@@ -89,7 +89,7 @@ public class QuestBranch {
 	public String getDescriptionLine(PlayerAccount acc, Source source) {
 		PlayerQuestDatas datas;
 		if (!acc.hasQuestDatas(getQuest()) || (datas = acc.getQuestDatas(getQuest())).getBranch() != getID()) throw new IllegalArgumentException("Account does not have this branch launched");
-		if (asyncReward.contains(acc)) return "§efinishing";
+		if (asyncReward.contains(acc)) return Lang.SCOREBOARD_ASYNC_END.toString();
 		if (datas.isInEndingStages()) {
 			StringBuilder stb = new StringBuilder();
 			int i = 0;

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -604,6 +606,22 @@ public class Utils{
 			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
 		}
 		return false;
+	}
+	
+	private static final char COLOR_CHAR = '\u00A7';
+	
+	public static String translateHexColorCodes(String startTag, String endTag, String message) {
+		final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})" + endTag);
+		Matcher matcher = hexPattern.matcher(message);
+		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+		while (matcher.find()) {
+			String group = matcher.group(2);
+			matcher.appendReplacement(buffer, COLOR_CHAR + "x"
+					+ COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
+					+ COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
+					+ COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5));
+		}
+		return matcher.appendTail(buffer).toString();
 	}
 	
 }

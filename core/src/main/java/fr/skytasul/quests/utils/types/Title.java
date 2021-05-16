@@ -40,7 +40,7 @@ public class Title {
 	}
 	
 	public void send(Player p) {
-		p.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+		p.sendTitle(title == null ? "" : title, subtitle, fadeIn, stay, fadeOut);
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class Title {
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
 		
-		map.put("title", title);
+		if (title != null) map.put("title", title);
 		if (subtitle != null) map.put("subtitle", subtitle);
 		if (fadeIn != FADE_IN) map.put("fadeIn", fadeIn);
 		if (stay != STAY) map.put("stay", stay);
@@ -61,7 +61,7 @@ public class Title {
 	}
 	
 	public static Title deserialize(Map<String, Object> map) {
-		String title = (String) map.get("title");
+		String title = (String) map.getOrDefault("title", null);
 		String subtitle = (String) map.getOrDefault("subtitle", null);
 		int fadeIn = map.containsKey("fadeIn") ? (int) map.get("fadeIn") : FADE_IN;
 		int stay = map.containsKey("stay") ? (int) map.get("stay") : STAY;

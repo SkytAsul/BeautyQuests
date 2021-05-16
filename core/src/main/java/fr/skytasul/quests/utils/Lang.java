@@ -567,6 +567,7 @@ public enum Lang{
 	SCOREBOARD_NONE_NAME("scoreboard.noLaunchedName"),
 	SCOREBOARD_NONE_DESC("scoreboard.noLaunchedDescription"),
 	SCOREBOARD_BETWEEN_BRANCHES("scoreboard.textBetwteenBranch"),
+	SCOREBOARD_ASYNC_END("scoreboard.asyncEnd"),
 	SCOREBOARD_REG("scoreboard.stage.region"),
 	SCOREBOARD_NPC("scoreboard.stage.npc"),
 	SCOREBOARD_ITEMS("scoreboard.stage.items"),
@@ -704,7 +705,7 @@ public enum Lang{
 			String value = config.getString(l.path, null);
 			if (value == null) value = defaultConfig.getString(l.path, null);
 			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-			l.setValue(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value));
+			l.setValue(Utils.translateHexColorCodes("(&|§)#", "", ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
 		}
 	}
 	

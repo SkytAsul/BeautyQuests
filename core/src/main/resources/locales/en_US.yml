@@ -590,6 +590,7 @@ scoreboard:
   noLaunchedName: §c§lLoading
   noLaunchedDescription: §c§oLoading
   textBetwteenBranch: §e or
+  asyncEnd: §ex
   stage:
     region: §eFind region §6{0}
     npc: §eTalk with NPC §6{0}

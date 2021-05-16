@@ -59,7 +59,7 @@ public class CommandReward extends AbstractReward {
 			
 			@Override
 			public void createObject(Function<Command, ItemStack> callback) {
-				new CommandGUI(command -> callback.apply(command), this::reopen).create(p);
+				new CommandGUI(callback::apply, this::reopen).create(p);
 			}
 			
 			@Override

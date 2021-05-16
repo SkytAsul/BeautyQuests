@@ -85,13 +85,21 @@ public class PlayerQuestDatas {
 	public boolean hasStarted() {
 		return branch != -1;
 	}
+	
+	public boolean isInQuestEnd() {
+		return branch == -2;
+	}
+	
+	public void setInQuestEnd() {
+		setBranch(-2);
+	}
 
 	public boolean isInEndingStages() {
 		return stage == -2;
 	}
 
 	public void setInEndingStages() {
-		this.stage = -2;
+		setStage(-2);
 	}
 
 	public Map<String, Object> getStageDatas(int stage) {
