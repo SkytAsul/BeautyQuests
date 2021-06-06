@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Charsets;
 
+import de.jeff_media.updatechecker.UpdateChecker;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
@@ -50,7 +51,6 @@ import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.SpigotUpdater;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
@@ -96,6 +96,7 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* ---------------------------------------------- */
 
+	@Override
 	public void onLoad(){
 		instance = this;
 		try{
@@ -112,6 +113,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 	
+	@Override
 	public void onEnable(){
 		try {
 			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
@@ -159,12 +161,21 @@ public class BeautyQuests extends JavaPlugin {
 			}
 
 			logger.launchFlushTimer();
-			try {
-				new SpigotUpdater(this, 39255);
-				DebugUtils.logMessage("Started Spigot updater");
-			}catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			
+			DebugUtils.logMessage("Starting Spigot updater");
+			UpdateChecker.init(this, 39255)
+				.setDownloadLink(39255)
+				.setNotifyOpsOnJoin(false)
+				.setNotifyRequesters(false)
+				.onSuccess((senders, version) -> {
+					if (getDescription().getVersion().contains("_")) {
+						String usingVersion = getDescription().getVersion().substring(0, getDescription().getVersion().indexOf('_'));
+						String newVersion = version.contains("_") ? version.substring(0, version.indexOf('_')) : version;
+							UpdateChecker.isOtherVersionNewer(usingVersion, newVersion);
+					}
+					
+				})
+				.checkNow();
 
 			Metrics metrics = new Metrics(this, 7460);
 			metrics.addCustomChart(new Metrics.DrilldownPie("customPluginVersion", () -> {
@@ -202,6 +213,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 
+	@Override
 	public void onDisable(){
 		Editor.leaveAll();
 		Inventories.closeAll();

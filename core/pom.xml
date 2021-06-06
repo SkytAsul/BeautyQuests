@@ -38,6 +38,10 @@
 							<pattern>fr.mrmicky.fastboard</pattern>
 							<shadedPattern>fr.skytasul.quests.scoreboards</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>de.jeff_media.updatechecker</pattern>
+							<shadedPattern>fr.skytasul.utils.updatechecker</shadedPattern>
+						</relocation>
 					</relocations>
 				</configuration>
 				<executions>
@@ -80,6 +84,10 @@
 		<repository>
 			<id>lumine</id>
 			<url>http://mvn.lumine.io/repository/maven-releases</url>
+		</repository>
+		<repository>
+			<id>jeff-media-gbr</id>
+			<url>https://repo.jeff-media.de/maven2/</url>
 		</repository>
 		<repository>
 			<id>teamvk-repo</id>
@@ -138,6 +146,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.vk2gpz.tokenenchant</groupId>
+			<artifactId>TokenEnchantAPI</artifactId>
+			<version>18.18.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
 			<version>1.7</version>
@@ -150,11 +164,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.vk2gpz.tokenenchant</groupId>
-			<artifactId>TokenEnchantAPI</artifactId>
-			<version>18.15.2</version>
-			<scope>provided</scope>
+			<groupId>de.jeff_media</groupId>
+			<artifactId>SpigotUpdateChecker</artifactId>
+			<version>1.2.4</version>
+			<scope>compile</scope>
 		</dependency>
+
 
 		<!-- Local JARs -->
 		<dependency>
@@ -214,6 +229,12 @@
 		<dependency>
 			<groupId>com.zrips</groupId>
 			<artifactId>cmi-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.ajneb97</groupId>
+			<artifactId>interactions</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
