@@ -74,14 +74,27 @@ public class QuestsListener implements Listener{
 			List<Quest> requirements = new ArrayList<>();
 			List<Quest> timer = new ArrayList<>();
 			for (Quest qu : quests){
-				if (!qu.testRequirements(p, acc, false)){
-					requirements.add(qu);
-				}else if (!qu.testTimer(acc, false)) {
-					timer.add(qu);
-				}else launcheable.add(qu);
+				try {
+					if (!qu.testRequirements(p, acc, false)) {
+						requirements.add(qu);
+					}else if (!qu.testTimer(acc, false)) {
+						timer.add(qu);
+					}else launcheable.add(qu);
+				}catch (Exception ex) {
+					BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName());
+					ex.printStackTrace();
+				}
 			}
 			
-			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> pool.canGive(p, acc)).collect(Collectors.toSet());
+			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> {
+				try {
+					return pool.canGive(p, acc);
+				}catch (Exception ex) {
+					BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName());
+					ex.printStackTrace();
+					return false;
+				}
+			}).collect(Collectors.toSet());
 			
 			e.setCancelled(true);
 			if (!launcheable.isEmpty()){

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -25,9 +30,12 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-public class QuestsPlaceholders extends PlaceholderExpansion {
+public class QuestsPlaceholders extends PlaceholderExpansion implements Listener {
+	
+	private static QuestsPlaceholders placeholders;
 	
 	private final int lineLength;
 	private final int changeTime;
@@ -37,6 +45,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	private BukkitTask task;
 	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
 	private ReentrantLock playersLock = new ReentrantLock();
+	
+	private List<Entry<String, Consumer<PlaceholderExpansion>>> waitingExpansions = new ArrayList<>();
 	
 	private QuestsPlaceholders(ConfigurationSection placeholderConfig) {
 		lineLength = placeholderConfig.getInt("lineLength");
@@ -50,8 +60,14 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	static void registerPlaceholders(ConfigurationSection placeholderConfig) {
-		new QuestsPlaceholders(placeholderConfig).register();
+		placeholders = new QuestsPlaceholders(placeholderConfig);
+		placeholders.register();
+		Bukkit.getPluginManager().registerEvents(placeholders, BeautyQuests.getInstance());
 		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
+	}
+	
+	public static void waitForExpansion(String identifier, Consumer<PlaceholderExpansion> callback) {
+		placeholders.waitingExpansions.add(new AbstractMap.SimpleEntry<>(identifier, callback));
 	}
 	
 	@Override
@@ -192,8 +208,19 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 		}, 0, changeTime * 20);
 	}
 	
+	@EventHandler
+	public void onExpansionRegister(ExpansionRegisterEvent e) {
+		for (Iterator<Entry<String, Consumer<PlaceholderExpansion>>> iterator = waitingExpansions.iterator(); iterator.hasNext();) {
+			Entry<String, Consumer<PlaceholderExpansion>> entry = iterator.next();
+			if (entry.getKey().equalsIgnoreCase(e.getExpansion().getIdentifier())) {
+				entry.getValue().accept(e.getExpansion());
+				iterator.remove();
+			}
+		}
+	}
+	
 	class PlayerPlaceholderData {
-		private List<Quest> left = Collections.EMPTY_LIST;
+		private List<Quest> left = Collections.emptyList();
 		private PlayerAccount acc;
 		
 		public PlayerPlaceholderData(PlayerAccount acc) {

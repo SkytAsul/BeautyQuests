@@ -12,9 +12,11 @@ import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
+import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -41,6 +43,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 
 	public boolean test(Player p){
+		if (hook == null) return false;
 		String request = hook.onRequest(p, params);
 		if (comparison.isNumberOperation()) {
 			BigDecimal dec1 = new BigDecimal(value);
@@ -55,11 +58,24 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		return value.equals(request);
 	}
 	
+	@Override
+	public void sendReason(Player p) {
+		if (hook == null) p.sendMessage("§cError: unknown placeholder " + rawPlaceholder);
+	}
+	
 	public void setPlaceholder(String placeholder){
 		this.rawPlaceholder = placeholder;
 		int index = placeholder.indexOf("_");
-		hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(placeholder.substring(0, index).toLowerCase());
+		String identifier = placeholder.substring(0, index);
+		hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(identifier);
 		params = placeholder.substring(index + 1);
+		if (hook == null) {
+			DebugUtils.logMessage("Cannot find PlaceholderAPI expansion for " + rawPlaceholder);
+			QuestsPlaceholders.waitForExpansion(identifier, expansion -> {
+				hook = expansion;
+				DebugUtils.logMessage("Found " + rawPlaceholder + " from callback");
+			});
+		}
 	}
 	
 	public void setValue(String value){

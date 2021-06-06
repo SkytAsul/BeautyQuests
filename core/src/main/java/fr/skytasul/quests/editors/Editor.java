@@ -95,7 +95,7 @@ public abstract class Editor implements Listener{
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
 		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawText);
+		String coloredMessage = Utils.translateHexColorCodes("&#", "", ChatColor.translateAlternateColorCodes('&', rawText));
 		String strippedMessage = ChatColor.stripColor(rawText);
 		if (cancel != null && strippedMessage.equalsIgnoreCase("cancel")) {
 			cancel();
