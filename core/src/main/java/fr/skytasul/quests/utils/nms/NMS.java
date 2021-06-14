@@ -44,10 +44,6 @@ public abstract class NMS{
 	
 	public abstract double entityNameplateHeight(LivingEntity en); // can be remplaced by Entity.getHeight from 1.11
 	
-	public abstract Object getIChatBaseComponent(String text);
-	
-	public abstract Object getEnumChatFormat(int value);
-	
 	public List<String> getAvailableBlockProperties(Material material){
 		throw new UnsupportedOperationException();
 	}
