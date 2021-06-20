@@ -38,9 +38,9 @@ public class StageArea extends AbstractStage{
 		Validate.notNull(w, "No world with specified name (\"" + worldName + "\")");
 		this.world = w;
 		
-		ProtectedRegion region = BQWorldGuard.getRegion(regionName, w);
-		Validate.notNull(w, "No region with specified name (\"" + regionName + "\")");
-		this.region = region;
+		ProtectedRegion reg = BQWorldGuard.getRegion(regionName, w);
+		Validate.notNull(reg, "No region with specified name (\"" + regionName + "\")");
+		this.region = reg;
 		
 		this.exit = exit;
 	}
