@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.DrilldownPie;
+import org.bstats.charts.SimplePie;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -96,6 +99,7 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* ---------------------------------------------- */
 
+	@Override
 	public void onLoad(){
 		instance = this;
 		try{
@@ -112,6 +116,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 	
+	@Override
 	public void onEnable(){
 		try {
 			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
@@ -121,6 +126,7 @@ public class BeautyQuests extends JavaPlugin {
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
 			
 			new BukkitRunnable() {
+				@Override
 				public void run() {
 					try {
 						long lastMillis = System.currentTimeMillis();
@@ -167,7 +173,7 @@ public class BeautyQuests extends JavaPlugin {
 			}
 
 			Metrics metrics = new Metrics(this, 7460);
-			metrics.addCustomChart(new Metrics.DrilldownPie("customPluginVersion", () -> {
+			metrics.addCustomChart(new DrilldownPie("customPluginVersion", () -> {
 				Map<String, Map<String, Integer>> map = new HashMap<>();
 				String version = getDescription().getVersion();
 				Map<String, Integer> entry = new HashMap<>();
@@ -180,10 +186,10 @@ public class BeautyQuests extends JavaPlugin {
 				map.put(split[0], entry);
 				return map;
 			}));
-			metrics.addCustomChart(new Metrics.SimplePie("lang", () -> loadedLanguage));
-			metrics.addCustomChart(new Metrics.SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
-			metrics.addCustomChart(new Metrics.SingleLineChart("quests", () -> quests.size()));
-			metrics.addCustomChart(new Metrics.SimplePie("quests_amount_slice", () -> {
+			metrics.addCustomChart(new SimplePie("lang", () -> loadedLanguage));
+			metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+			metrics.addCustomChart(new SingleLineChart("quests", () -> quests.size()));
+			metrics.addCustomChart(new SimplePie("quests_amount_slice", () -> {
 				int size = quests.size();
 				if (size > 200) return "> 200";
 				if (size > 100) return "100 - 200";
@@ -202,6 +208,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 
+	@Override
 	public void onDisable(){
 		Editor.leaveAll();
 		Inventories.closeAll();
@@ -252,6 +259,7 @@ public class BeautyQuests extends JavaPlugin {
 		if (QuestsConfiguration.saveCycle > 0 && saveTask == null) {
 			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
 			saveTask = new BukkitRunnable() {
+				@Override
 				public void run() {
 					try {
 						saveAllConfig(false);
@@ -579,6 +587,7 @@ public class BeautyQuests extends JavaPlugin {
 		
 		sender.sendMessage("§7...Waiting for loading quests...");
 		new BukkitRunnable() {
+			@Override
 			public void run() {
 				try {
 					data = YamlConfiguration.loadConfiguration(dataFile);
