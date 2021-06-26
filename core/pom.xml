@@ -89,10 +89,10 @@
 			<id>citizens</id>
 			<url>http://repo.citizensnpcs.co/</url> <!-- really slow repo -->
 			<releases>
-				<updatePolicy>weekly</updatePolicy>
+				<updatePolicy>interval:10080</updatePolicy>
 			</releases>
 			<snapshots>
-				<updatePolicy>weekly</updatePolicy>
+				<updatePolicy>interval:10080</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>

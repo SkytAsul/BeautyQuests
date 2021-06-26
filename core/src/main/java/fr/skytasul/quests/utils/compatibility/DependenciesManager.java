@@ -18,7 +18,7 @@ import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
-	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, BQWorldGuard::disable);
+	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable());
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> QuestsAPI.registerMobFactory(new MythicMobs()));
 	public static final BQDependency vault = new BQDependency("Vault");
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder")));

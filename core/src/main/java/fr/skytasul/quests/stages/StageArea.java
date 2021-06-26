@@ -38,7 +38,7 @@ public class StageArea extends AbstractStage{
 		Validate.notNull(w, "No world with specified name (\"" + worldName + "\")");
 		this.world = w;
 		
-		ProtectedRegion reg = BQWorldGuard.getRegion(regionName, w);
+		ProtectedRegion reg = BQWorldGuard.getInstance().getRegion(regionName, w);
 		Validate.notNull(reg, "No region with specified name (\"" + regionName + "\")");
 		this.region = reg;
 		
@@ -47,10 +47,10 @@ public class StageArea extends AbstractStage{
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
-		if (BQWorldGuard.handleEntry) return; // on WG 7.0 or higher
+		if (BQWorldGuard.getInstance().doHandleEntry()) return; // on WG 7.0 or higher
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
-			if (BQWorldGuard.isInRegion(region, e.getTo()) == !exit) {
+			if (BQWorldGuard.getInstance().isInRegion(region, e.getTo()) == !exit) {
 				finishStage(e.getPlayer());
 			}
 		}
@@ -63,10 +63,12 @@ public class StageArea extends AbstractStage{
 		}
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
 	}
 	
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{region.getId()};
 	}
@@ -79,6 +81,7 @@ public class StageArea extends AbstractStage{
 		return world;
 	}
 	
+	@Override
 	public void serialize(Map<String, Object> map){
 		map.put("region", region.getId());
 		map.put("world", world.getName());
@@ -120,7 +123,7 @@ public class StageArea extends AbstractStage{
 				if (first) remove();
 				reopenGUI(p, false);
 			}, obj -> {
-				if (BQWorldGuard.regionExists(obj, p.getWorld())) {
+				if (BQWorldGuard.getInstance().regionExists(obj, p.getWorld())) {
 					setRegion(obj, p.getWorld().getName());
 				}else {
 					Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
@@ -139,7 +142,7 @@ public class StageArea extends AbstractStage{
 		@Override
 		public void edit(StageArea stage) {
 			super.edit(stage);
-			setRegion(stage.getRegion().getId(), BQWorldGuard.getWorld(stage.getRegion().getId()).getName());
+			setRegion(stage.getRegion().getId(), BQWorldGuard.getInstance().getWorld(stage.getRegion().getId()).getName());
 			setExit(stage.exit);
 		}
 		
