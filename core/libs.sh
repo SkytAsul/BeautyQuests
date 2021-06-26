@@ -23,5 +23,7 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/BossAPI.jar -DgroupId=com.suxy -DartifactId=boss -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMIAPI.jar -DgroupId=com.zrips -DartifactId=cmi-api -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/UltimateTimber.jar -DgroupId=com.songoda -DartifactId=ultimatetimber -Dversion=2.2.5 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/MythicMobs.jar -DgroupId=io.lumine.xikage -DartifactId=mythicmobs -Dversion=4.11.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/TokenEnchantAPI.jar -DgroupId=com.vk2gpz -DartifactId=TokenEnchantAPI -Dversion=18.15.2 -Dpackaging=jar
 
 echo -e "\e[92mOperation complete."

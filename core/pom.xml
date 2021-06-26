@@ -142,12 +142,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.lumine.xikage</groupId>
-			<artifactId>MythicMobs</artifactId>
-			<version>4.11.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
 			<version>2.2.1</version>
@@ -159,14 +153,20 @@
 			<version>1.2.0</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- Local JARs -->
+		<dependency>
+			<groupId>io.lumine.xikage</groupId>
+			<artifactId>MythicMobs</artifactId>
+			<version>4.11.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.vk2gpz.tokenenchant</groupId>
 			<artifactId>TokenEnchantAPI</artifactId>
 			<version>18.15.2</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Local JARs -->
 		<dependency>
 			<groupId>com.songoda</groupId>
 			<artifactId>ultimatetimber</artifactId>
