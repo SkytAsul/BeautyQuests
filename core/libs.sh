@@ -22,5 +22,6 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/SkillAPI.jar -DgroupId=com.suxy -DartifactId=skillapi -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/BossAPI.jar -DgroupId=com.suxy -DartifactId=boss -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMIAPI.jar -DgroupId=com.zrips -DartifactId=cmi-api -Dversion=1.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/UltimateTimber.jar -DgroupId=com.songoda -DartifactId=ultimatetimber -Dversion=2.2.5 -Dpackaging=jar
 
 echo -e "\e[92mOperation complete."

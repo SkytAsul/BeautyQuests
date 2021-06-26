@@ -55,10 +55,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		barsEnabled = QuestsConfiguration.showMobsProgressBar() && cachedSize > 0;
 	}
 
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.descriptionLines(source, buildRemainingArray(acc, source));
 	}
 
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
 		return new String[] { Utils.itemsToFormattedString(buildRemainingArray(acc, source), QuestsConfiguration.getItemAmountColor()) };
 	}
@@ -79,6 +81,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		return elements;
 	}
 
+	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		Map<Integer, Integer> amounts = new HashMap<>();
@@ -88,14 +91,25 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		datas.put("remaining", amounts);
 	}
 
-	public void event(PlayerAccount acc, Player p, Object object, int amount) {
+	/**
+	 * When called, this will test the player datas for the passed object.
+	 * If found, the remaining amount will be lowered.
+	 * If no remaining items are found, the stage will complete.
+	 * @param acc player account
+	 * @param p player
+	 * @param object object of the event
+	 * @param amount amount completed
+	 * @return <code>false</code> if there is no need to call this method again in the same game tick.
+	 */
+	public boolean event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
-		if (!canUpdate(p)) return;
+		if (!canUpdate(p)) return true;
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-				if (!playerAmounts.containsKey(id)) return;
+				if (playerAmounts == null) return true;
+				if (!playerAmounts.containsKey(id)) return false;
 				int playerAmount = playerAmounts.get(id);
 				if (playerAmount <= amount) {
 					playerAmounts.remove(id);
@@ -103,6 +117,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
+					return true;
 				}else {
 					if (barsEnabled) {
 						BossBar bar = bars.get(p);
@@ -111,10 +126,11 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
 					}
 					updateObjective(acc, p, "remaining", playerAmounts);
+					return false;
 				}
-				return;
 			}
 		}
+		return true;
 	}
 
 	@SuppressWarnings ("deprecation")
@@ -130,16 +146,19 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		setData(acc, "remaining", amounts);
 	}
 
+	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
 	}
 
+	@Override
 	public void end(PlayerAccount acc) {
 		super.end(acc);
 		if (acc.isCurrent()) removeBar(acc.getPlayer());
 	}
 
+	@Override
 	public void unload() {
 		super.unload();
 		bars.values().forEach(BossBar::remove);
@@ -184,6 +203,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	protected abstract T deserialize(Object object);
 
+	@Override
 	protected void serialize(Map<String, Object> map) {
 		Map<Integer, Map<String, Object>> serializedObjects = new HashMap<>(objects.size());
 		for (Entry<Integer, Entry<T, Integer>> obj : objects.entrySet()) {

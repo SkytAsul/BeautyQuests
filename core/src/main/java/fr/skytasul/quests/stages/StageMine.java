@@ -46,6 +46,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		this.placeCancelled = cancelPlaced;
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_MINE.format(super.descriptionLine(acc, source));
 	}
@@ -59,7 +60,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 				if (placeCancelled && block.hasMetadata("playerInStage")) {
 					if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
 				}
-				event(acc, p, block, 1);
+				if (event(acc, p, block, 1)) return;
 			}
 		}
 	}
@@ -85,18 +86,22 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		return super.objectApplies(object, other);
 	}
 	
+	@Override
 	protected String getName(BQBlock object) {
 		return MinecraftNames.getMaterialName(object.getMaterial());
 	}
 
+	@Override
 	protected Object serialize(BQBlock object) {
 		return object.getAsString();
 	}
 
+	@Override
 	protected BQBlock deserialize(Object object) {
 		return BQBlock.fromString((String) object);
 	}
 
+	@Override
 	protected void serialize(Map<String, Object> map){
 		super.serialize(map);
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);

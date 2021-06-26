@@ -73,22 +73,26 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<!-- <repository>
+			<id>songoda</id>
+			<url>https://repo.songoda.com/repository/public/</url>
+		</repository>
 		<repository>
 			<id>lumine</id>
-			<url>http://mvn.lumine.io/repository/maven-releases</url>
+			<url>http://mvn.lumine.io/repository/maven-releases/</url>
 		</repository>
 		<repository>
 			<id>teamvk-repo</id>
 			<url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url>
-		</repository>
+		</repository> -->
 		<repository>
 			<id>citizens</id>
 			<url>http://repo.citizensnpcs.co/</url> <!-- really slow repo -->
 			<releases>
-				<updatePolicy>monthly</updatePolicy>
+				<updatePolicy>weekly</updatePolicy>
 			</releases>
 			<snapshots>
-				<updatePolicy>daily</updatePolicy>
+				<updatePolicy>weekly</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>
@@ -163,6 +167,12 @@
 		</dependency>
 
 		<!-- Local JARs -->
+		<dependency>
+			<groupId>com.songoda</groupId>
+			<artifactId>ultimatetimber</artifactId>
+			<version>2.2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap</artifactId>
