@@ -172,9 +172,12 @@ public class QuestPool implements Comparable<QuestPool> {
 		if (available.isEmpty()) {
 			return Lang.POOL_NO_AVAILABLE.toString();
 		}else {
-			Quest quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
-			quest.start(p);
-			datas.setLastGive(System.currentTimeMillis());
+			Quest quest = datas.getTempStartQuest();
+			if (quest == null || !quest.isLauncheable(p, acc, false)) {
+				quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
+				datas.setTempStartQuest(quest);
+			}
+			quest.attemptStart(p, () -> datas.setLastGive(System.currentTimeMillis()));
 			return "started quest #" + quest.getID();
 		}
 	}

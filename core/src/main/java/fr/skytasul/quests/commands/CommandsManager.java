@@ -57,7 +57,11 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		}
 	}
 	
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+		String commandString = "/" + label + " " + Utils.buildFromArray(args, 0, " ");
+		DebugUtils.logMessage(sender.getName() + " issued server command: " + commandString);
+		
 		if (args.length == 0){
 			if (noArgs != null){
 				noArgs.accept(sender);
@@ -131,7 +135,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		}
 		
 		try {
-			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: /" + label + " " + Utils.buildFromArray(args, 0, " "));
+			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: " + commandString);
 			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
 		}catch (Exception e) {
 			String errorType = e.getCause() == null ? e.getClass().getSimpleName() : e.getCause().getClass().getSimpleName();
@@ -143,6 +147,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		return false;
 	}
 
+	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args){
 		List<String> tmp = new ArrayList<>();
 		List<String> find = new ArrayList<>();

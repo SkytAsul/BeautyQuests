@@ -269,19 +269,25 @@ public class Quest implements Comparable<Quest> {
 		if (hasOption(OptionStartDialog.class)) {
 			Dialog dialog = getOption(OptionStartDialog.class).getValue();
 			NPC npc = getOptionValueOrDef(OptionStarterNPC.class);
-			Runnable runnable = () -> attemptStart(p);
+			Runnable runnable = () -> attemptStart(p, null);
 			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
 			Bukkit.getPluginManager().callEvent(event);
 			if (event.isCancelled()) return;
 			dialog.send(p, npc, runnable);
-		}else attemptStart(p);
+		}else attemptStart(p, null);
 	}
 
-	public void attemptStart(Player p) {
+	public void attemptStart(Player p, Runnable atStart) {
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
-			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
-		}else start(p);
+			new ConfirmGUI(() -> {
+				start(p);
+				if (atStart != null) atStart.run();
+			}, () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
+		}else {
+			start(p);
+			if (atStart != null) atStart.run();
+		}
 	}
 	
 	public void start(Player p){
@@ -299,6 +305,7 @@ public class Quest implements Comparable<Quest> {
 		Lang.STARTED_QUEST.send(p, getName());
 		
 		BukkitRunnable run = new BukkitRunnable() {
+			@Override
 			public void run(){
 				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
 				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
@@ -372,6 +379,7 @@ public class Quest implements Comparable<Quest> {
 		return Integer.compare(id, o.id);
 	}
 	
+	@Override
 	public String toString(){
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}

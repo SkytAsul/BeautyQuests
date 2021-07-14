@@ -1,5 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -30,10 +32,13 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	public ChooseQuestGUI(List<Quest> quests, Consumer<Quest> run){
 		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);
 		Validate.notNull(run, "Runnable cannot be null");
+		Collections.sort(objects);
+		super.objects.sort(Comparator.naturalOrder());
 		
 		this.run = run;
 	}
 	
+	@Override
 	public Inventory open(Player p){
 		if (objects.size() == 0) {
 			run.accept(null);
@@ -46,6 +51,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 		return super.open(p);
 	}
 	
+	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
 		return CloseBehavior.REMOVE;
 	}

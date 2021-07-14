@@ -46,6 +46,7 @@ public class PlayerListGUI implements CustomInventory {
 		this.hide = hide;
 	}
 	
+	@Override
 	public Inventory open(Player p) {
 		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
@@ -174,6 +175,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		PlayerListGUI thiz = this;
 		switch (slot % 9){
@@ -221,7 +223,7 @@ public class PlayerListGUI implements CustomInventory {
 				Player target = acc.getPlayer();
 				if (qu.isLauncheable(target, acc, true)) {
 					p.closeInventory();
-					qu.attemptStart(target);
+					qu.attemptStart(target, null);
 				}
 			}
 			break;
@@ -230,6 +232,7 @@ public class PlayerListGUI implements CustomInventory {
 		return true;
 	}
 	
+	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
 		return CloseBehavior.REMOVE;
 	}

@@ -72,7 +72,7 @@ public class Message implements Cloneable {
 		return msg;
 	}
 
-	public static enum Sender{
+	public enum Sender {
 		PLAYER, NPC, NOSENDER;
 		
 		public static Sender fromString(String string){
