@@ -95,11 +95,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-				if (!playerAmounts.containsKey(id)) return;
-				int playerAmount = playerAmounts.get(id);
-				if (playerAmount <= amount) {
-					playerAmounts.remove(id);
-				}else playerAmounts.put(id, playerAmount -= amount);
+				if (playerAmounts.containsKey(id)) {
+					int playerAmount = playerAmounts.get(id);
+					if (playerAmount <= amount) {
+						playerAmounts.remove(id);
+					} else playerAmounts.put(id, playerAmount -= amount);
+				}
 
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
