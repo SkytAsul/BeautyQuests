@@ -36,6 +36,8 @@ public abstract class PlayersManager {
 	public void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {}
 	
 	public abstract int removeQuestDatas(Quest quest);
+	
+	public abstract void unloadAccount(PlayerAccount acc);
 
 	public abstract void load();
 
@@ -110,6 +112,7 @@ public abstract class PlayersManager {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
+		manager.unloadAccount(acc);
 		cachedAccounts.remove(p);
 	}
 	

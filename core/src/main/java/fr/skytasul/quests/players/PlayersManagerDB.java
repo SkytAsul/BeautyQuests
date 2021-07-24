@@ -130,6 +130,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return CustomizedObjectTypeAdapter.GSON.fromJson(json, Map.class);
 	}
 
+	@Override
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatasDB(acc, quest.getID());
 	}
@@ -166,6 +167,7 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 	}
 	
+	@Override
 	public synchronized int removeQuestDatas(Quest quest) {
 		int amount = 0;
 		try {
@@ -192,6 +194,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return false;
 	}
 
+	@Override
 	public void load() {
 		try {
 			createTables(db);
@@ -230,6 +233,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return db.new BQStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
 	}
 
+	@Override
 	public void save() {}
 	
 	private static void createTables(Database db) throws SQLException {
@@ -328,6 +332,11 @@ public class PlayersManagerDB extends PlayersManager {
 		return "§aMigration succeed! " + amount + " accounts migrated, " + failed + " accounts failed to migrate.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 	}
 	
+	@Override
+	public void unloadAccount(PlayerAccount acc) {
+		// all datas are updated in real-time
+	}
+	
 	protected static String getCompletedQuestsString(Set<Integer> completedQuests) {
 		return completedQuests.isEmpty() ? null : completedQuests.stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";"));
 	}
@@ -350,21 +359,25 @@ public class PlayersManagerDB extends PlayersManager {
 			setDataStatement(updateFinished, getTimesFinished());
 		}
 		
+		@Override
 		public void setTimer(long timer) {
 			super.setTimer(timer);
 			setDataStatement(updateTimer, timer);
 		}
 
+		@Override
 		public void setBranch(int branch) {
 			super.setBranch(branch);
 			setDataStatement(updateBranch, branch);
 		}
 
+		@Override
 		public void setStage(int stage) {
 			super.setStage(stage);
 			setDataStatement(updateStage, stage);
 		}
 
+		@Override
 		public void setStageDatas(int stage, Map<String, Object> stageDatas) {
 			super.setStageDatas(stage, stageDatas);
 			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));

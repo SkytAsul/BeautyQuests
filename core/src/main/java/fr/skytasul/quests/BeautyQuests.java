@@ -484,14 +484,21 @@ public class BeautyQuests extends JavaPlugin {
 			}
 		}*/
 		if (unload) {
-			quests.forEach(Quest::unloadAll);
+			for (Quest quest : quests) {
+				try {
+					quest.unloadAll();
+				}catch (Exception ex) {
+					logger.severe("An error ocurred when unloading quest " + quest.getID());
+					ex.printStackTrace();
+				}
+			}
 		}
 		data.set("lastID", lastID);
 		data.set("version", getDescription().getVersion());
 		
 		try{
 			PlayersManager.manager.save();
-		}catch (Throwable ex){
+		}catch (Exception ex) {
 			createDataBackup("Error when saving player datas.");
 			ex.printStackTrace();
 		}

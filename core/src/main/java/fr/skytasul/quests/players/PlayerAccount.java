@@ -100,12 +100,18 @@ public class PlayerAccount {
 		return poolDatas.values();
 	}
 
+	@Override
 	public boolean equals(Object arg0) {
 		if (arg0 == this) return true;
 		if (arg0.getClass() != this.getClass()) return false;
 		PlayerAccount otherAccount = (PlayerAccount) arg0;
 		if (!abstractAcc.equals(otherAccount.abstractAcc)) return false;
 		return true;
+	}
+	
+	public String getName() {
+		Player p = getPlayer();
+		return p == null ? debugName() : p.getName();
 	}
 	
 	public String debugName() {

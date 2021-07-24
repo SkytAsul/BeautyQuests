@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,11 +52,16 @@ public class StagePlayTime extends AbstractStage {
 	@Override
 	public void leaves(PlayerAccount acc, Player p) {
 		super.leaves(acc, p);
-		tasks.remove(acc).cancel();
-		long remaining = Utils.parseLong(getData(acc, "remainingTime"));
-		long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
-		long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
-		updateObjective(acc, null, "remainingTime", remaining - playedTicks);
+		BukkitTask task = tasks.remove(acc);
+		if (task != null) {
+			task.cancel();
+			long remaining = Utils.parseLong(getData(acc, "remainingTime"));
+			long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
+			long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
+			updateObjective(acc, null, "remainingTime", remaining - playedTicks);
+		}else {
+			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + debugName() + " for player " + acc.getName());
+		}
 	}
 	
 	@Override
@@ -82,7 +88,7 @@ public class StagePlayTime extends AbstractStage {
 	@Override
 	public void unload() {
 		super.unload();
-		tasks.keySet().forEach(acc -> leaves(acc, null));
+		new ArrayList<>(tasks.keySet()).forEach(acc -> leaves(acc, null)); // prevents ConcurrentModificationException at server shutdown
 		tasks.clear();
 	}
 

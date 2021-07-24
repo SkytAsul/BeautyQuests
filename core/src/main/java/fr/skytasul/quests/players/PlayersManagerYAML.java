@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -17,6 +18,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -32,6 +36,8 @@ public class PlayersManagerYAML extends PlayersManager {
 	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
 	private int lastAccountID = 0;
 
+	private Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+	
 	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 	
 	@Override
@@ -49,6 +55,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		return new AbstractMap.SimpleEntry<>(acc, true);
 	}
 
+	@Override
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatas(acc, quest.getID());
 	}
@@ -58,6 +65,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		return new PlayerPoolDatas(acc, pool.getID());
 	}
 	
+	@Override
 	public int removeQuestDatas(Quest quest) {
 		loadAllAccounts();
 		int amount = 0;
@@ -167,6 +175,8 @@ public class PlayersManagerYAML extends PlayersManager {
 		int id = index instanceof Integer ? (int) index : Utils.parseInt(index);
 		PlayerAccount acc = loadedAccounts.get(id);
 		if (acc != null) return acc;
+		acc = unloadedAccounts.asMap().remove(id);
+		if (acc != null) return acc;
 		acc = loadFromFile(id);
 		if (acc != null) return acc;
 		acc = createPlayerAccount(identifiersIndex.get(id), id);
@@ -226,6 +236,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		}else DebugUtils.logMessage("Can't remove " + file.getName() + ": file does not exist");
 	}
 
+	@Override
 	public void load() {
 		if (!directory.exists()) directory.mkdirs();
 
@@ -246,6 +257,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		DebugUtils.logMessage(loadedAccounts.size() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
 	}
 
+	@Override
 	public void save() {
 		DebugUtils.logMessage("Saving " + loadedAccounts.size() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
@@ -259,6 +271,20 @@ public class PlayersManagerYAML extends PlayersManager {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	public void unloadAccount(PlayerAccount acc) {
+		loadedAccounts.remove(acc.index);
+		unloadedAccounts.put(acc.index, acc);
+		Utils.runAsync(() -> {
+			try {
+				savePlayerFile(acc);
+			}catch (IOException e) {
+				BeautyQuests.logger.warning("An error ocurred while saving player file " + acc.debugName());
+				e.printStackTrace();
+			}
+		});
 	}
 
 }
