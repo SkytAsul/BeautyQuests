@@ -57,11 +57,11 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
-			NPC npc = (NPC) obj;
+			NPC npc = obj;
 			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
 						if (quObj == null) return;
-						Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) quObj);
+						Inventories.create(cmd.player, new StagesGUI(null)).edit(quObj);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
@@ -85,10 +85,10 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
 		new SelectNPC(cmd.player, () -> {}, (obj) -> {
 			if (obj == null) return;
-			NPC npc = (NPC) obj;
+			NPC npc = obj;
 			if (QuestsAPI.isQuestStarter(npc)){
 				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						remove(cmd.sender, (Quest) quObj);
+						remove(cmd.sender, quObj);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);
@@ -155,13 +155,15 @@ public class Commands {
 		Quest qu = (Quest) cmd.args[1];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		if (cmd.args.length < 3 && !acc.hasQuestDatas(qu)) { // start quest
+		
+		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
+		if (cmd.args.length < 3 && (datas == null || datas.isFinished())) { // start quest
 			qu.start(target);
 			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 			return;
 		}
-
-		PlayerQuestDatas datas = acc.getQuestDatas(qu);
+		if (datas == null) datas = acc.getQuestDatas(qu); // creates quest datas
+		
 		QuestBranch currentBranch = manager.getBranch(datas.getBranch());
 
 		if (cmd.args.length < 3) { // next
@@ -240,7 +242,7 @@ public class Commands {
 			reset(cmd.sender, target, acc, qu);
 		}else if (cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				reset(cmd.sender, target, acc, (Quest) obj);
+				reset(cmd.sender, target, acc, obj);
 			}, acc, true, false, true);
 			Inventories.create(cmd.player, gui);
 		}else Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
@@ -281,7 +283,7 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				Quest qu = (Quest) obj;
+				Quest qu = obj;
 				if (testRequirements && !qu.isLauncheable(target, acc, true)) return;
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
@@ -314,7 +316,7 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				cancelQuest(cmd.sender, acc, (Quest) obj);
+				cancelQuest(cmd.sender, acc, obj);
 			}, acc, true, false, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){

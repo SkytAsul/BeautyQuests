@@ -49,6 +49,10 @@ public class PlayerAccount {
 	public boolean hasQuestDatas(Quest quest) {
 		return questDatas.containsKey(quest.getID());
 	}
+	
+	public PlayerQuestDatas getQuestDatasIfPresent(Quest quest) {
+		return questDatas.get(quest.getID());
+	}
 
 	public PlayerQuestDatas getQuestDatas(Quest quest) {
 		PlayerQuestDatas datas = questDatas.get(quest.getID());
