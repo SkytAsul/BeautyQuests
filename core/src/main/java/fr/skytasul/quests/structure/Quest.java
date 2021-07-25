@@ -291,7 +291,7 @@ public class Quest implements Comparable<Quest> {
 		acc.getQuestDatas(this).setTimer(0);
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
-			if (!"none".equals(startMsg)) Utils.sendMessage(p, startMsg, getName());
+			if (!"none".equals(startMsg)) Utils.sendMessageWP(p, startMsg, getName());
 		}
 		
 		BukkitRunnable run = new BukkitRunnable() {

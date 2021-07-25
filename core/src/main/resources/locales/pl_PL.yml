@@ -513,6 +513,7 @@ inv:
     poolAvoidDuplicates: '§8Unikaj duplikatów: §7{0}'
     poolQuestsList: '§7{0} §8zadań(ia): §7{1}'
     create: '§aUtwórz pulę zadań'
+    edit: '§e> §6§oEdytuj pulę... §e<'
   poolCreation:
     name: Tworzenie puli zadań
     hologramText: '§ePool niestandardowy hologram'
@@ -521,6 +522,7 @@ inv:
     redoAllowed: Jest dozwolone ponawianie
     avoidDuplicates: Unikaj duplikatów
     avoidDuplicatesLore: '§8> §7Spróbuj unikać wykonywania\n tego samego zadania'
+    requirements: '§bWymagania do rozpoczęcia zadania'
   poolsList.name: Pule zadań
   itemComparisons:
     name: Porównania pozycji
@@ -538,6 +540,8 @@ inv:
     enchantsLore: Porównuje zaklęcia przedmiotów
     repairCost: Koszt naprawy
     repairCostLore: Porównuje koszty naprawy pancerza i mieczy
+  editTitle:
+    name: Edytuj tytuł
 scoreboard:
   name: '§7§lZadania'
   noLaunched: '§cBrak zadań w toku.'

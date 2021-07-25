@@ -36,6 +36,7 @@ msg:
   writeMobName: '§aÉcrivez le nom personnalisé du mob à tuer :'
   writeChatMessage: '§aÉcrivez le message requis (rajoutez "{SLASH}" au début pour en faire une commande.)'
   writeEndMessage: '§aÉcrivez le message qui sera envoyé à la fin de la quête ou de l''étape :'
+  writeStartMessage: '§aÉcrivez le message qui sera envoyé au début de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas :'
   writeDescriptionText: '§aEcrivez le texte qui décrira le but de l''étape :'
   writeStageText: '§aEcrivez le texte qui sera transmis au joueur au début de l''étape :'
   moveToTeleportPoint: '§aAllez au lieu de téléportation désiré.'
@@ -358,6 +359,8 @@ inv:
     editQuestName: '§lModifier la quête'
     endMessage: '§eModifier le message de fin'
     endMessageLore: Message qui sera envoyé au joueur à la fin de la quête.
+    startMessage: '§eModifier le message de départ'
+    startMessageLore: Message qui sera envoyé au joueur au début de la quête.
     startDialog: '§eModifier le dialogue de début'
     startDialogLore: Dialogue qui sera joué avant le début de la quête lorsque les joueurs cliquent sur le NPC de démarrage.
     editRequirements: '§eModifier les nécessités'
@@ -560,6 +563,7 @@ scoreboard:
   noLaunchedName: '§c§lChargement'
   noLaunchedDescription: '§c§oChargement'
   textBetwteenBranch: '§e ou'
+  asyncEnd: '§ex'
   stage:
     region: '§eTrouve la région §6{0}'
     npc: '§eParle au NPC §6{0}'
@@ -617,6 +621,7 @@ misc:
     greater: strictement supérieur à {0}
     greaterOrEquals: supérieur à {0}
   requirement:
+    logicalOr: '§dOU logique (requirements)'
     skillAPILevel: '§bNiveau SkillAPI requis'
     class: '§bClasse(s) requise(s)'
     faction: '§bFaction(s) requise(s)'
