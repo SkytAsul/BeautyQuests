@@ -47,6 +47,7 @@ public enum Lang{
 	MOB_NAME("msg.writeMobName"),
 	CHAT_MESSAGE("msg.writeChatMessage"),
 	END_MESSAGE("msg.writeEndMessage"),
+	WRITE_START_MESSAGE("msg.writeStartMessage"),
 	DESC_MESSAGE("msg.writeDescriptionText"),
 	START_TEXT("msg.writeStageText"),
 	MOVE_TELEPORT_POINT("msg.moveToTeleportPoint"),
@@ -366,6 +367,8 @@ public enum Lang{
 	edit("inv.details.editQuestName"),
 	endMessage("inv.details.endMessage"),
 	endMessageLore("inv.details.endMessageLore"),
+	startMessage("inv.details.startMessage"),
+	startMessageLore("inv.details.startMessageLore"),
 	startDialog("inv.details.startDialog"),
 	startDialogLore("inv.details.startDialogLore"),
 	editRequirements("inv.details.editRequirements"),
@@ -627,6 +630,7 @@ public enum Lang{
 	ComparisonGreater("misc.comparison.greater"),
 	ComparisonGreaterOrEquals("misc.comparison.greaterOrEquals"),
 
+	RLOR("misc.requirement.logicalOr"),
 	RClass("misc.requirement.class"),
 	RSkillAPILevel("misc.requirement.skillAPILevel"),
 	RFaction("misc.requirement.faction"),
@@ -683,6 +687,7 @@ public enum Lang{
 		this.value = value;
 	}
 	
+	@Override
 	public String toString(){
 		return value;
 	}

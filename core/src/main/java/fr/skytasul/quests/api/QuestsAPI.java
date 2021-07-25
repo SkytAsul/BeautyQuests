@@ -2,7 +2,7 @@ package fr.skytasul.quests.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +33,10 @@ import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsAPI {
 	
-	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new HashMap<>();
-	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new HashMap<>();
-	public static final LinkedList<StageType<?>> stages = new LinkedList<>();
-	public static final LinkedList<ItemComparison> itemComparisons = new LinkedList<>();
+	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new LinkedHashMap<>();
+	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new LinkedHashMap<>();
+	public static final List<StageType<?>> stages = new LinkedList<>();
+	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
 	private static AbstractHolograms<?> hologramsManager = null;
 	

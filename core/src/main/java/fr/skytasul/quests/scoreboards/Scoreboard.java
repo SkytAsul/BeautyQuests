@@ -60,6 +60,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
 
+	@Override
 	public void run() {
 		if (!p.isOnline()) return;
 		if (hid) return;
@@ -177,11 +178,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	public void setShownQuest(Quest quest, boolean errorWhenUnknown) {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
-			if (errorWhenUnknown) throw new IllegalArgumentException("Quest is not running for player.");
-		}else {
-			shown = quest;
-			refreshQuestsLines(true);
+			if (errorWhenUnknown) {
+				launched = QuestsAPI.getQuestsStarteds(acc, true);
+				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
+			}else return;
 		}
+		shown = quest;
+		refreshQuestsLines(true);
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {
@@ -246,6 +249,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return true;
 	}
 	
+	@Override
 	public synchronized void cancel() throws IllegalStateException {
 		super.cancel();
 		HandlerList.unregisterAll(this);

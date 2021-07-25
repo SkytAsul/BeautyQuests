@@ -27,24 +27,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
-import fr.skytasul.quests.options.OptionBypassLimit;
-import fr.skytasul.quests.options.OptionCancellable;
-import fr.skytasul.quests.options.OptionConfirmMessage;
-import fr.skytasul.quests.options.OptionDescription;
-import fr.skytasul.quests.options.OptionEndMessage;
-import fr.skytasul.quests.options.OptionEndRewards;
-import fr.skytasul.quests.options.OptionHide;
-import fr.skytasul.quests.options.OptionHideNoRequirements;
-import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.options.OptionQuestMaterial;
-import fr.skytasul.quests.options.OptionQuestPool;
-import fr.skytasul.quests.options.OptionRepeatable;
-import fr.skytasul.quests.options.OptionRequirements;
-import fr.skytasul.quests.options.OptionScoreboardEnabled;
-import fr.skytasul.quests.options.OptionStartDialog;
-import fr.skytasul.quests.options.OptionStartRewards;
-import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -291,9 +274,13 @@ public class Quest implements Comparable<Quest> {
 	}
 	
 	public void start(Player p){
+		start(p, false);
+	}
+	
+	public void start(Player p, boolean silently) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
-			Lang.ALREADY_STARTED.send(p);
+			if (!silently) Lang.ALREADY_STARTED.send(p);
 			return;
 		}
 		QuestPreLaunchEvent event = new QuestPreLaunchEvent(p, this);
@@ -302,14 +289,17 @@ public class Quest implements Comparable<Quest> {
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
 		acc.getQuestDatas(this).setTimer(0);
-		Lang.STARTED_QUEST.send(p, getName());
+		if (!silently) {
+			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
+			if (!"none".equals(startMsg)) Utils.sendMessage(p, startMsg, getName());
+		}
 		
 		BukkitRunnable run = new BukkitRunnable() {
 			@Override
 			public void run(){
 				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
 				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
-				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
+				if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 				manager.startPlayer(acc);
 
 				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));

@@ -25,30 +25,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.options.OptionBypassLimit;
-import fr.skytasul.quests.options.OptionCancellable;
-import fr.skytasul.quests.options.OptionConfirmMessage;
-import fr.skytasul.quests.options.OptionDescription;
-import fr.skytasul.quests.options.OptionEndMessage;
-import fr.skytasul.quests.options.OptionEndRewards;
-import fr.skytasul.quests.options.OptionFailOnDeath;
-import fr.skytasul.quests.options.OptionHide;
-import fr.skytasul.quests.options.OptionHideNoRequirements;
-import fr.skytasul.quests.options.OptionHologramLaunch;
-import fr.skytasul.quests.options.OptionHologramLaunchNo;
-import fr.skytasul.quests.options.OptionHologramText;
-import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.options.OptionQuestMaterial;
-import fr.skytasul.quests.options.OptionQuestPool;
-import fr.skytasul.quests.options.OptionRepeatable;
-import fr.skytasul.quests.options.OptionRequirements;
-import fr.skytasul.quests.options.OptionScoreboardEnabled;
-import fr.skytasul.quests.options.OptionStartDialog;
-import fr.skytasul.quests.options.OptionStartRewards;
-import fr.skytasul.quests.options.OptionStartable;
-import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
@@ -90,6 +67,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		editing = true;
 	}
 
+	@Override
 	public Inventory open(Player p){
 		this.p = p;
 		if (inv == null){
@@ -183,6 +161,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		return this;
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		try {
 			clicks.get(slot).click(p, current, click);
@@ -339,8 +318,9 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("pool", 34, OptionQuestPool.class, OptionQuestPool::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 39, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 40, OptionStartDialog.class, OptionStartDialog::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startMessage", 39, OptionStartMessage.class, OptionStartMessage::new, QuestsConfiguration.getPrefix() + Lang.STARTED_QUEST.toString()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 42, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMessage", 43, OptionEndMessage.class, OptionEndMessage::new, null));
 	}

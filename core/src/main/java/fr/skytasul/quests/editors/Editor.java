@@ -44,6 +44,7 @@ public abstract class Editor implements Listener{
 	}
 	
 	protected void begin() {
+		DebugUtils.logMessage(p.getName() + " has entered editor " + getClass().getName() + ".");
 		Inventories.closeWithoutExit(p);
 		if (NMS.getMCVersion() > 11){
 			p.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
@@ -55,6 +56,7 @@ public abstract class Editor implements Listener{
 	}
 
 	protected void end() {
+		DebugUtils.logMessage(p.getName() + " has left the editor.");
 		if (bar != null) bar.removePlayer(p);
 	}
 	
@@ -134,7 +136,7 @@ public abstract class Editor implements Listener{
 	public static void leave(Player player){
 		if (!hasEditor(player))
 			return;
-		Editor editor = (Editor) players.remove(player);
+		Editor editor = players.remove(player);
 		HandlerList.unregisterAll(editor);
 		editor.end();
 	}
