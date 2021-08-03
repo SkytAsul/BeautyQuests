@@ -229,8 +229,14 @@
 		</dependency>
 		<dependency>
 			<groupId>com.zrips</groupId>
-			<artifactId>cmi-api</artifactId>
-			<version>1.0</version>
+			<artifactId>cmi</artifactId>
+			<version>9.0.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zrips</groupId>
+			<artifactId>cmilib</artifactId>
+			<version>1.0.3.1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

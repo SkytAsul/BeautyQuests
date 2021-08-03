@@ -402,7 +402,8 @@ public class Quest implements Comparable<Quest> {
 
 	public static Quest loadFromFile(File file){
 		try {
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			YamlConfiguration config = new YamlConfiguration();
+			config.load(file);
 			return deserialize(config);
 		}catch (Exception e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");

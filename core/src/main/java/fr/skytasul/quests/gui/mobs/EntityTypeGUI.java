@@ -38,17 +38,19 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	
 	public EntityTypeGUI(Consumer<EntityType> run, Predicate<EntityType> typeFilter) {
 		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).sorted((o1, o2) -> {
-			if (o1 == null) return 1;
-			if (o2 == null) return -1;
+			if (o1 == null || o1.getName() == null) return 1;
+			if (o2 == null || o2.getName() == null) return -1;
 			return o1.getName().compareTo(o2.getName());
 		}).collect(Collectors.toList()), null, EntityTypeGUI::getName);
 		this.run = run;
 	}
 
+	@Override
 	public ItemStack getItemStack(EntityType object){
 		return entities.get(object);
 	}
 
+	@Override
 	public void click(EntityType existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);

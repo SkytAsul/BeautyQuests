@@ -117,7 +117,7 @@ stageDescriptionItemsSplit:
   # When there is only one object, do not put it on a new line
   inlineAlone: true
   # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
-  sources: [SCOREBOARD, MENU]
+  sources: [SCOREBOARD, MENU, PLACEHOLDER]
 
 
 # - Particles configuration -

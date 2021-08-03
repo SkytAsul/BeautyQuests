@@ -21,7 +21,8 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/mcMMO.jar -DgroupId=com.gmail.nossr50 -DartifactId=mcmmo -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/SkillAPI.jar -DgroupId=com.suxy -DartifactId=skillapi -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/BossAPI.jar -DgroupId=com.suxy -DartifactId=boss -Dversion=1.0 -Dpackaging=jar
-"$mavenPath" install:install-file -Dfile=$jarsPath/CMIAPI.jar -DgroupId=com.zrips -DartifactId=cmi-api -Dversion=1.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/CMI.jar -DgroupId=com.zrips -DartifactId=cmi -Dversion=9.0.2.1 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/CMILib.jar -DgroupId=com.zrips -DartifactId=cmilib -Dversion=1.0.3.1 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/UltimateTimber.jar -DgroupId=com.songoda -DartifactId=ultimatetimber -Dversion=2.2.5 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/MythicMobs.jar -DgroupId=io.lumine.xikage -DartifactId=MythicMobs -Dversion=4.11.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/TokenEnchantAPI.jar -DgroupId=com.vk2gpz.tokenenchant -DartifactId=TokenEnchantAPI -Dversion=18.15.2 -Dpackaging=jar

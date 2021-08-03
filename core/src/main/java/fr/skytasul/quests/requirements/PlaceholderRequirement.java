@@ -14,6 +14,7 @@ import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
@@ -29,6 +30,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	
 	private String value;
 	private ComparisonMethod comparison;
+	private boolean parseValue = false;
 
 	public PlaceholderRequirement(){
 		this(null, null, ComparisonMethod.EQUALS);
@@ -42,6 +44,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		this.comparison = comparison;
 	}
 
+	@Override
 	public boolean test(Player p){
 		if (hook == null) return false;
 		String request = hook.onRequest(p, params);
@@ -55,6 +58,8 @@ public class PlaceholderRequirement extends AbstractRequirement {
 			return false;
 		}
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);
+		String value = this.value;
+		if (parseValue) value = Utils.finalFormat(p, value, true);
 		return value.equals(request);
 	}
 	
@@ -90,16 +95,20 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		return value;
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas){
 		datas.put("placeholder", rawPlaceholder);
 		datas.put("value", value);
 		datas.put("comparison", comparison.name());
+		datas.put("parseValue", parseValue);
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas){
 		setPlaceholder((String) savedDatas.get("placeholder"));
 		this.value = (String) savedDatas.get("value");
 		if (savedDatas.containsKey("comparison")) this.comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
+		if (savedDatas.containsKey("parseValue")) this.parseValue = (boolean) savedDatas.get("parseValue");
 	}
 
 	@Override

@@ -57,6 +57,7 @@ public class Mob<Data> implements Cloneable {
 		return factory.mobApplies(this.data, data);
 	}
 	
+	@Override
 	public int hashCode() {
 		int hash = 1;
 		hash = hash * 27 + factory.hashCode();
@@ -64,6 +65,7 @@ public class Mob<Data> implements Cloneable {
 		return hash;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
 		if (obj instanceof Mob) {
@@ -73,8 +75,14 @@ public class Mob<Data> implements Cloneable {
 		return false;
 	}
 
+	@Override
 	public Mob<Data> clone(){
-		return new Mob<Data>(factory, data);
+		try {
+			return (Mob<Data>) super.clone();
+		}catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public Map<String, Object> serialize(){
