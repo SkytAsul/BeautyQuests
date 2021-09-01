@@ -94,6 +94,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	
 	@EventHandler
 	public void onChangeWorld(PlayerChangedWorldEvent e) {
+		if (e.getPlayer() != p) return;
 		boolean toAllowed = manager.isWorldAllowed(e.getPlayer().getWorld().getName());
 		if (hid) {
 			if (toAllowed) show();

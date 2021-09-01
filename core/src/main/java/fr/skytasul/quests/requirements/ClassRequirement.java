@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.player.PlayerClass;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObject;
@@ -48,10 +49,12 @@ public class ClassRequirement extends AbstractRequirement {
 		classes.add((RPGClass) classe);
 	}
 	
+	@Override
 	public boolean test(Player p) {
 		if (classes.isEmpty()) return true;
 		for (RPGClass classe : classes){
-			if (com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass().getData() == classe) return true;
+			PlayerClass mainClass = com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass();
+			if (mainClass != null && mainClass.getData() == classe) return true;
 		}
 		return false;
 	}
@@ -101,6 +104,7 @@ public class ClassRequirement extends AbstractRequirement {
 		return new ClassRequirement(new ArrayList<>(classes));
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		if (classes.isEmpty()) return;
 		List<String> ls = new ArrayList<>();
@@ -110,6 +114,7 @@ public class ClassRequirement extends AbstractRequirement {
 		datas.put("classes", ls);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		if (!savedDatas.containsKey("classes")) return;
 		for (String s : (List<String>) savedDatas.get("classes")) {

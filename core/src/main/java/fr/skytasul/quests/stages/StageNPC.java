@@ -63,6 +63,7 @@ public class StageNPC extends AbstractStage{
 		if (npc == null) return;
 		task = new BukkitRunnable() {
 			List<Player> tmp = new ArrayList<>();
+			@Override
 			public void run() {
 				Entity en = npc.getEntity();
 				if (en == null) return;
@@ -143,10 +144,12 @@ public class StageNPC extends AbstractStage{
 		this.hide = hide;
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_NPC.toString(), npcName());
 	}
 	
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{npcName()};
 	}
@@ -221,6 +224,7 @@ public class StageNPC extends AbstractStage{
 		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 	}
 	
+	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent()) {
@@ -230,15 +234,18 @@ public class StageNPC extends AbstractStage{
 		}
 	}
 	
+	@Override
 	public void end(PlayerAccount acc) {
 		super.end(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
+			if (dialog != null) dialog.remove(p);
 			cached.remove(p);
 			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
 		}
 	}
 	
+	@Override
 	public void unload() {
 		super.unload();
 		if (task != null) task.cancel();
@@ -246,6 +253,7 @@ public class StageNPC extends AbstractStage{
 		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
 	}
 	
+	@Override
 	public void load(){
 		super.load();
 		if (QuestsConfiguration.showTalkParticles() || QuestsConfiguration.getHoloTalkItem() != null){
@@ -261,6 +269,7 @@ public class StageNPC extends AbstractStage{
 		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
 	}
 	
+	@Override
 	public void serialize(Map<String, Object> map){
 		map.put("npcID", npcID);
 		if (dialog != null) map.put("msg", dialog.serialize());
