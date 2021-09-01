@@ -23,6 +23,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -155,7 +156,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		if (args.length == 1){
 			for (Entry<String, InternalCommand> en : commands.entrySet()){ // PERMISSIONS
-				if (hasPermission(sender, en.getValue().cmd.permission())) find.add(en.getKey());
+				if (!en.getValue().cmd.hide() && hasPermission(sender, en.getValue().cmd.permission())) find.add(en.getKey());
 			}
 		}else if (args.length >= 2){
 			int index = args.length-2;

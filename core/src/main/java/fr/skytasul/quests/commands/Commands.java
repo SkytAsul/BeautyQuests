@@ -39,6 +39,7 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
+
 import net.citizensnpcs.api.npc.NPC;
 
 public class Commands {
@@ -299,16 +300,11 @@ public class Commands {
 		}
 	}
 	
-	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
+	@Cmd (permission = "cancel", min = 1, args = { "PLAYERS", "QUESTSID" })
 	public void cancel(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		if (cmd.isPlayer()){
-			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "cancel")){
-					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel");
-					return;
-				}
-			}else if (!CommandsManager.hasPermission(cmd.player, "cancel.other")){
+			if (target != cmd.player && !CommandsManager.hasPermission(cmd.player, "cancel.other")) {
 				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel.other");
 				return;
 			}
@@ -369,13 +365,13 @@ public class Commands {
 		AdminMode.toggle(cmd.sender);
 	}
 	
-	@Cmd(player = true)
+	@Cmd (player = true, hide = true)
 	public void exitEditor(CommandContext cmd){
 		Editor.leave(cmd.player);
 		Inventories.closeAndExit(cmd.player);
 	}
 	
-	@Cmd(player = true)
+	@Cmd (player = true, hide = true)
 	public void reopenInventory(CommandContext cmd){
 		if (Inventories.isInSystem(cmd.player)){
 			Inventories.openInventory(cmd.player);
@@ -438,6 +434,9 @@ public class Commands {
 		case "show":
 			board.show();
 			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
+			break;
+		default:
+			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 			break;
 		}
 	}

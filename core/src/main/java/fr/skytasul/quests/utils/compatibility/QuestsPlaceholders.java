@@ -112,7 +112,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		if (identifier.equals("player_inprogress_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
 		if (identifier.equals("player_finished_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
 		if (identifier.equals("player_finished_total_amount")) return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
-		if (identifier.equals("started_id_list")) return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
+		if (identifier.equals("started_id_list")) return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);
