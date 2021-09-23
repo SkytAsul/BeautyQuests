@@ -292,6 +292,7 @@ public enum Lang{
 	stageText("inv.create.NPCText"),
 	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
+	stageGPS("inv.create.gps"),
 	editMobs("inv.create.editMobsKill"),
 	mobsKillType("inv.create.mobsKillFromAFar"),
 	editBlocksMine("inv.create.editBlocksMine"),

@@ -302,6 +302,7 @@ inv:
     NPCText: §eEdit dialog
     NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
+    gps: Displays a compass towards the objective
     editMobsKill: §eEdit mobs to kill
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break

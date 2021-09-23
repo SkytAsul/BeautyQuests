@@ -428,11 +428,11 @@ public class Commands {
 			Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
 			break;
 		case "hide":
-			board.hide();
+			board.hide(true);
 			Lang.COMMAND_SCOREBOARD_HIDDEN.send(cmd.sender, p.getName());
 			break;
 		case "show":
-			board.show();
+			board.show(true);
 			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
 			break;
 		default:

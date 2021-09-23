@@ -35,6 +35,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
+
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
@@ -214,14 +215,14 @@ public class StageNPC extends AbstractStage{
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
 		cached.add(p);
-		if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
+		if (QuestsConfiguration.handleGPS() && !hide) GPS.launchCompass(p, npc.getStoredLocation());
 	}
 	
 	@Override
 	public void leaves(PlayerAccount acc, Player p) {
 		super.leaves(acc, p);
 		cached.remove(p);
-		if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+		if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
 	}
 	
 	@Override
@@ -241,7 +242,7 @@ public class StageNPC extends AbstractStage{
 			Player p = acc.getPlayer();
 			if (dialog != null) dialog.remove(p);
 			cached.remove(p);
-			if (QuestsConfiguration.handleGPS()) GPS.stopCompass(p);
+			if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
 		}
 	}
 	
@@ -250,7 +251,7 @@ public class StageNPC extends AbstractStage{
 		super.unload();
 		if (task != null) task.cancel();
 		if (hologram != null) removeHoloLaunch();
-		if (QuestsConfiguration.handleGPS()) cached.forEach(GPS::stopCompass);
+		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.quests;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,11 +130,13 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				String[] lore;
+				List<String> lore = new ArrayList<>(5);
+				if (qu.getDescription() != null) lore.add(qu.getDescription());
 				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
-					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
-				}else lore = new String[] { qu.getDescription() };
-				setMainItem(i - page * 35, createQuestItem(qu, lore));
+					lore.add("");
+					lore.add(qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString());
+				}
+				setMainItem(i - page * 35, createQuestItem(qu, lore.toArray(new String[0])));
 			}
 			break;
 

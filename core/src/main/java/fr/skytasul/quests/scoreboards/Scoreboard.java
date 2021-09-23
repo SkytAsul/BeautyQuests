@@ -41,6 +41,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private Quest shown = null;
 	private List<Quest> launched;
 	private boolean hid = false;
+	private boolean hidForce = false;
 	private int changeTime = 1;
 
 	Scoreboard(Player player, ScoreboardManager manager) {
@@ -97,9 +98,9 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (e.getPlayer() != p) return;
 		boolean toAllowed = manager.isWorldAllowed(e.getPlayer().getWorld().getName());
 		if (hid) {
-			if (toAllowed) show();
+			if (toAllowed) show(false);
 		}else {
-			if (!toAllowed) hide();
+			if (!toAllowed) hide(false);
 		}
 	}
 	
@@ -155,15 +156,18 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return shown;
 	}
 	
-	public void hide(){
+	public void hide(boolean force) {
 		hid = true;
+		if (force) hidForce = true;
 		if (board != null) {
 			deleteBoard();
 		}
 	}
 	
-	public void show(){
+	public void show(boolean force) {
+		if (hidForce && !force) return;
 		hid = false;
+		hidForce = false;
 		if (board == null) {
 			initScoreboard();
 			updateBoard(true, false);
