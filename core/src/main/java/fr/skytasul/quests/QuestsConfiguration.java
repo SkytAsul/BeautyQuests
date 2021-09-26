@@ -9,6 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
@@ -19,7 +20,6 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -119,7 +119,7 @@ public class QuestsConfiguration {
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
-		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
+		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		try {
 			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
@@ -247,7 +247,7 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean showMobsProgressBar() {
-		return mobsProgressBar;
+		return mobsProgressBar && QuestsAPI.hasBossBarManager();
 	}
 	
 	public static int getProgressBarTimeout(){

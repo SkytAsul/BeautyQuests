@@ -6,16 +6,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.bossbar.MobBossBar;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
@@ -228,12 +232,23 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	class BossBar {
 		private Player p;
-		private MobBossBar bar;
+		private BQBossBar bar;
 		private BukkitTask timer;
 
 		public BossBar(Player p, int amount) {
 			this.p = p;
-			bar = new MobBossBar(branch.getQuest().getName(), cachedSize);
+			
+			BarStyle style = null;
+			if (cachedSize % 20 == 0) {
+				style = BarStyle.SEGMENTED_20;
+			}else if (cachedSize % 10 == 0) {
+				style = BarStyle.SEGMENTED_10;
+			}else if (cachedSize % 12 == 0) {
+				style = BarStyle.SEGMENTED_12;
+			}else if (cachedSize % 6 == 0) {
+				style = BarStyle.SEGMENTED_6;
+			}else style = BarStyle.SOLID;
+			bar = QuestsAPI.getBossBarManager().buildBossBar(Lang.MobsProgression.format(branch.getQuest().getName(), 100, 100), BarColor.YELLOW, style);
 			update(amount);
 		}
 
@@ -243,7 +258,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		}
 
 		public void update(int amount) {
-			bar.setProgress(amount);
+			if (amount >= 0 && amount <= cachedSize) {
+				bar.setProgress((double) (cachedSize - amount) / (double) cachedSize);
+			}else BeautyQuests.logger.warning("Amount of objects superior to max objects in " + debugName() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
+			bar.setTitle(Lang.MobsProgression.format(branch.getQuest().getName(), cachedSize - amount, cachedSize));
 			bar.addPlayer(p);
 			timer();
 		}

@@ -54,6 +54,13 @@ public class PlayersManagerYAML extends PlayersManager {
 
 		return new AbstractMap.SimpleEntry<>(acc, true);
 	}
+	
+	@Override
+	protected void removeAccount(PlayerAccount acc) {
+		loadedAccounts.remove(acc.index);
+		identifiersIndex.remove(acc.index);
+		removePlayerFile(acc.index);
+	}
 
 	@Override
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
@@ -267,7 +274,8 @@ public class PlayersManagerYAML extends PlayersManager {
 		for (PlayerAccount acc : loadedAccounts.values()) {
 			try {
 				savePlayerFile(acc);
-			}catch (IOException e) {
+			}catch (Exception e) {
+				BeautyQuests.logger.severe("An error ocurred while trying to save " + acc.debugName() + " account file");
 				e.printStackTrace();
 			}
 		}

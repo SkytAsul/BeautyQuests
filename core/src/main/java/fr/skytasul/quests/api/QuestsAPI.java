@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
@@ -29,6 +30,7 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
+
 import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsAPI {
@@ -39,6 +41,7 @@ public class QuestsAPI {
 	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
 	private static AbstractHolograms<?> hologramsManager = null;
+	private static BQBossBarManager bossBarManager = null;
 	
 	/**
 	 * Register new stage type into the plugin
@@ -127,6 +130,20 @@ public class QuestsAPI {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
+	}
+	
+	public static boolean hasBossBarManager() {
+		return bossBarManager != null;
+	}
+	
+	public static BQBossBarManager getBossBarManager() {
+		return bossBarManager;
+	}
+	
+	public static void setBossBarManager(BQBossBarManager newBossBarManager) {
+		Validate.notNull(newBossBarManager);
+		if (bossBarManager != null) BeautyQuests.logger.warning(newBossBarManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
+		bossBarManager = newBossBarManager;
 	}
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){

@@ -37,6 +37,7 @@ public class PlayersManagerDB extends PlayersManager {
 	/* Accounts statements */
 	private BQStatement getAccounts;
 	private BQStatement insertAccount;
+	private BQStatement deleteAccount;
 
 	/* Quest datas statements */
 	private BQStatement insertQuestData;
@@ -115,13 +116,24 @@ public class PlayersManagerDB extends PlayersManager {
 			statement.executeUpdate();
 			result = statement.getGeneratedKeys();
 			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
-			int index = result.getInt(1);
+			int index = result.getInt("id");
 			result.close();
 			return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Override
+	protected synchronized void removeAccount(PlayerAccount acc) {
+		try {
+			PreparedStatement statement = deleteAccount.getStatement();
+			statement.setInt(1, acc.index);
+			statement.executeUpdate();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	private Map<String, Object> getStageDatas(ResultSet result, int index) throws SQLException {
@@ -201,6 +213,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 			getAccounts = db.new BQStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
 			insertAccount = db.new BQStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)", true);
+			deleteAccount = db.new BQStatement("DELETE FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?");
 
 			insertQuestData = db.new BQStatement("INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
 			removeQuestData = db.new BQStatement("DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");

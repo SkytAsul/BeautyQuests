@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Charsets;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
@@ -59,6 +60,7 @@ import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.nms.NMS;
+
 import net.citizensnpcs.api.npc.NPC;
 
 public class BeautyQuests extends JavaPlugin {
@@ -314,6 +316,7 @@ public class BeautyQuests extends JavaPlugin {
 				ItemComparisonGUI.initialize();
 				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
 				QuestsAPI.registerMobFactory(new CitizensFactory());
+				if (NMS.getMCVersion() >= 9) QuestsAPI.setBossBarManager(new BQBossBarImplementation());
 			}
 		}catch (LoadingException ex) {
 			throw ex;

@@ -19,6 +19,7 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
+
 import net.citizensnpcs.npc.ai.NPCHolder;
 
 public abstract class PlayersManager {
@@ -26,6 +27,8 @@ public abstract class PlayersManager {
 	public static PlayersManager manager;
 
 	protected abstract Entry<PlayerAccount, Boolean> load(Player player);
+	
+	protected abstract void removeAccount(PlayerAccount acc);
 	
 	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
 
@@ -90,13 +93,24 @@ public abstract class PlayersManager {
 					Entry<PlayerAccount, Boolean> entry = manager.load(p);
 					PlayerAccount account = entry.getKey();
 					boolean created = entry.getValue();
+					if (!p.isOnline()) {
+						if (created) {
+							DebugUtils.logMessage("New account registered for " + p.getName() + "... but deleted as player left before loading.");
+							manager.removeAccount(account);
+						}
+						return;
+					}
 					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
-					if (!p.isOnline()) return;
 					cachedAccounts.put(p, account);
 					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
 						if (p.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
-						}else BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+						}else {
+							BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+							if (created) {
+								manager.removeAccount(account);
+							}
+						}
 					});
 					return;
 				}catch (Exception ex) {
@@ -111,6 +125,7 @@ public abstract class PlayersManager {
 	public static synchronized void unloadPlayer(Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
+		DebugUtils.logMessage("Unloading player " + p.getName() + "...");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
 		manager.unloadAccount(acc);
 		cachedAccounts.remove(p);

@@ -113,6 +113,16 @@ public class PlayerAccount {
 		return true;
 	}
 	
+	@Override
+	public int hashCode() {
+		int hash = 1;
+		
+		hash = hash * 31 + index;
+		hash = hash * 31 + abstractAcc.hashCode();
+		
+		return hash;
+	}
+	
 	public String getName() {
 		Player p = getPlayer();
 		return p == null ? debugName() : p.getName();
@@ -124,8 +134,8 @@ public class PlayerAccount {
 
 	public void serialize(ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
-		config.set("quests", Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
-		config.set("pools", Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
+		config.set("quests", questDatas.isEmpty() ? null : Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
+		config.set("pools", poolDatas.isEmpty() ? null : Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
 	}
 	
 }

@@ -15,12 +15,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBarImplementation;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public abstract class Editor implements Listener{
@@ -29,8 +29,8 @@ public abstract class Editor implements Listener{
 	private static BQBossBar bar = null;
 
 	static {
-		if (BQBossBar.BARS_ENABLED) {
-			bar = new BQBossBarImplementation("§6Quests Editor", "YELLOW", "SOLID");
+		if (QuestsAPI.hasBossBarManager()) {
+			bar = QuestsAPI.getBossBarManager().buildBossBar("§6Quests Editor", "YELLOW", "SOLID");
 			bar.setProgress(0);
 		}
 	}

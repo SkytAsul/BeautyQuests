@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -24,15 +26,18 @@ public class QuestsLogger extends PluginLogger {
 	private BukkitRunnable run;
 	private boolean something = false;
 	
-	public QuestsLogger(Plugin plugin) throws Throwable {
+	public QuestsLogger(Plugin plugin) throws Exception {
 		super(plugin);
 		file = new File(plugin.getDataFolder(), "latest.log");
-		if (!file.exists()) file.createNewFile();
+		if (file.exists()) {
+			Files.move(file.toPath(), new File(plugin.getDataFolder(), "latest.log_old").toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+		file.createNewFile();
 		stream = new PrintWriter(new FileWriter(file));
 		write("---- BEAUTYQUESTS LOGGER - OPENED " + new Date(System.currentTimeMillis()).toString() + " ----");
 	}
 	
-	
+	@Override
 	public void log(LogRecord logRecord) {
 		if (logRecord != null) write("[" + (logRecord.getLevel() == null ? "NONE" : logRecord.getLevel().getName()) + "]: " + logRecord.getMessage());
 		super.log(logRecord);
@@ -55,6 +60,7 @@ public class QuestsLogger extends PluginLogger {
 	void launchFlushTimer(){
 		if (stream == null) return;
 		run = new BukkitRunnable() {
+			@Override
 			public void run() {
 				if (!something) return;
 				stream.flush();
