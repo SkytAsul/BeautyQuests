@@ -116,7 +116,7 @@ public class PlayersManagerDB extends PlayersManager {
 			statement.executeUpdate();
 			result = statement.getGeneratedKeys();
 			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
-			int index = result.getInt("id");
+			int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
 			result.close();
 			return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
 		}catch (SQLException e) {

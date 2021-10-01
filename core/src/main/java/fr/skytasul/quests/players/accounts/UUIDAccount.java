@@ -31,7 +31,8 @@ public class UUIDAccount extends AbstractAccount{
 
 	@Override
 	public boolean isCurrent() {
-		return getOfflinePlayer().isOnline();
+		Player p = getPlayer();
+		return p != null && p.isOnline();
 	}
 
 	@Override

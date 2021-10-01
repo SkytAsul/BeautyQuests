@@ -143,7 +143,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	public String debugName() {
-		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID();
+		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID() + "(" + type.id + ")";
 	}
 
 	/**

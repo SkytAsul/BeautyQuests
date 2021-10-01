@@ -112,13 +112,17 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-				if (playerAmounts == null) return true;
-				if (!playerAmounts.containsKey(id)) return false;
-				int playerAmount = playerAmounts.get(id);
-				if (playerAmount <= amount) {
-					playerAmounts.remove(id);
-				}else playerAmounts.put(id, playerAmount -= amount);
-
+				if (playerAmounts == null) {
+					BeautyQuests.logger.warning(p.getName() + " oesdoes not have object datas for stage " + debugName() + ". This is a bug!");
+					return true;
+				}
+				if (playerAmounts.containsKey(id)) {
+					int playerAmount = playerAmounts.get(id);
+					if (playerAmount <= amount) {
+						playerAmounts.remove(id);
+					}else playerAmounts.put(id, playerAmount -= amount);
+				}
+				
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
 					return true;
