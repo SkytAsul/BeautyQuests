@@ -33,10 +33,11 @@ public class PoolEditGUI implements CustomInventory {
 	private static final int SLOT_NPC = 1;
 	private static final int SLOT_HOLOGRAM = 2;
 	private static final int SLOT_MAX_QUESTS = 3;
-	private static final int SLOT_TIME = 4;
-	private static final int SLOT_REDO = 5;
-	private static final int SLOT_DUPLICATE = 6;
-	private static final int SLOT_REQUIREMENTS = 7;
+	private static final int SLOT_QUESTS_PER_LAUNCH = 4;
+	private static final int SLOT_TIME = 5;
+	private static final int SLOT_REDO = 6;
+	private static final int SLOT_DUPLICATE = 7;
+	private static final int SLOT_REQUIREMENTS = 8;
 	private static final int SLOT_CANCEL = 12;
 	private static final int SLOT_CREATE = 14;
 	
@@ -44,6 +45,7 @@ public class PoolEditGUI implements CustomInventory {
 	
 	private String hologram;
 	private int maxQuests = 1;
+	private int questsPerLaunch = 1;
 	private boolean redoAllowed = true;
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
 	private int npcID = -1;
@@ -59,6 +61,7 @@ public class PoolEditGUI implements CustomInventory {
 		if (editing != null) {
 			hologram = editing.getHologram();
 			maxQuests = editing.getMaxQuests();
+			questsPerLaunch = editing.getQuestsPerLaunch();
 			redoAllowed = editing.isRedoAllowed();
 			timeDiff = editing.getTimeDiff();
 			npcID = editing.getNPCID();
@@ -75,8 +78,12 @@ public class PoolEditGUI implements CustomInventory {
 		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(hologram) };
 	}
 	
-	private String[] getAmountLore() {
+	private String[] getMaxQuestsLore() {
 		return new String[] { "", Lang.optionValue.format(maxQuests) };
+	}
+	
+	private String[] getQuestsPerLaunchLore() {
+		return new String[] { "", QuestOption.formatNullableValue(Integer.toString(questsPerLaunch), questsPerLaunch == 1) };
 	}
 	
 	private String[] getTimeLore() {
@@ -105,7 +112,8 @@ public class PoolEditGUI implements CustomInventory {
 		
 		inv.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
 		inv.setItem(SLOT_HOLOGRAM, ItemUtils.item(XMaterial.OAK_SIGN, Lang.poolEditHologramText.toString(), getHologramLore()));
-		inv.setItem(SLOT_MAX_QUESTS, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getAmountLore()));
+		inv.setItem(SLOT_MAX_QUESTS, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getMaxQuestsLore()));
+		inv.setItem(SLOT_QUESTS_PER_LAUNCH, ItemUtils.item(XMaterial.GUNPOWDER, Lang.poolQuestsPerLaunch.toString(), getQuestsPerLaunchLore()));
 		inv.setItem(SLOT_TIME, ItemUtils.item(XMaterial.CLOCK, Lang.poolTime.toString(), getTimeLore()));
 		inv.setItem(SLOT_REDO, ItemUtils.itemSwitch(Lang.poolRedo.toString(), redoAllowed));
 		inv.setItem(SLOT_DUPLICATE, ItemUtils.itemSwitch(Lang.poolAvoidDuplicates.toString(), avoidDuplicates, Lang.poolAvoidDuplicatesLore.toString()));
@@ -141,7 +149,15 @@ public class PoolEditGUI implements CustomInventory {
 			Lang.POOL_MAXQUESTS.send(p);
 			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
 				maxQuests = msg;
-				ItemUtils.lore(current, getAmountLore());
+				ItemUtils.lore(current, getMaxQuestsLore());
+				reopen(p, inv, false);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			break;
+		case SLOT_QUESTS_PER_LAUNCH:
+			Lang.POOL_QUESTS_PER_LAUNCH.send(p);
+			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+				questsPerLaunch = msg;
+				ItemUtils.lore(current, getQuestsPerLaunchLore());
 				reopen(p, inv, false);
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
@@ -172,7 +188,7 @@ public class PoolEditGUI implements CustomInventory {
 			break;
 		case SLOT_CREATE:
 			if (canFinish) {
-				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, redoAllowed, timeDiff, avoidDuplicates, requirements);
+				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff, avoidDuplicates, requirements);
 				end.run();
 			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 			break;

@@ -261,6 +261,7 @@ msg:
     pool:
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
+      questsPerLaunch: 'Write the amount of quests given when players click on the NPC.'
       time: 'Write the number of days before players can take a new quest.'
     title:
       title: 'Write the title text (or "null" if you want none).'
@@ -548,6 +549,7 @@ inv:
     itemName: '§aPool #{0}'
     poolNPC: '§8NPC: §7{0}'
     poolMaxQuests: '§8Max quests: §7{0}'
+    poolQuestsPerLaunch: '§8Quests given per launch: §7{0}'
     poolRedo: '§8Can redo completed quests: §7{0}'
     poolTime: '§8Time between quests: §7{0}'
     poolHologram: '§8Hologram text: §7{0}'
@@ -559,6 +561,7 @@ inv:
     name: Quest pool creation
     hologramText: §ePool custom hologram
     maxQuests: §aMax quests
+    questsPerLaunch: §aQuests started per launch
     time: §bSet time between quests
     redoAllowed: Is redo allowed
     avoidDuplicates: Avoid duplicates

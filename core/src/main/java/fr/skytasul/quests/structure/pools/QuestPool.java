@@ -21,6 +21,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -31,6 +32,7 @@ public class QuestPool implements Comparable<QuestPool> {
 	private final int npcID;
 	private final String hologram;
 	private final int maxQuests;
+	private final int questsPerLaunch;
 	private final boolean redoAllowed;
 	private final long timeDiff;
 	private final boolean avoidDuplicates;
@@ -39,11 +41,12 @@ public class QuestPool implements Comparable<QuestPool> {
 	NPCStarter starter;
 	List<Quest> quests = new ArrayList<>();
 	
-	QuestPool(int id, int npcID, String hologram, int maxQuests, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
+	QuestPool(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
 		this.id = id;
 		this.npcID = npcID;
 		this.hologram = hologram;
 		this.maxQuests = maxQuests;
+		this.questsPerLaunch = questsPerLaunch;
 		this.redoAllowed = redoAllowed;
 		this.timeDiff = timeDiff;
 		this.avoidDuplicates = avoidDuplicates;
@@ -75,6 +78,10 @@ public class QuestPool implements Comparable<QuestPool> {
 	
 	public int getMaxQuests() {
 		return maxQuests;
+	}
+	
+	public int getQuestsPerLaunch() {
+		return questsPerLaunch;
 	}
 	
 	public boolean isRedoAllowed() {
@@ -110,6 +117,7 @@ public class QuestPool implements Comparable<QuestPool> {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
 				Lang.poolItemNPC.format(npcID),
 				Lang.poolItemMaxQuests.format(maxQuests),
+				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
 				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),
 				Lang.poolItemTime.format(Utils.millisToHumanString(timeDiff)),
 				Lang.poolItemHologram.format(hologram == null ? Lang.PoolHologramText.toString() + "\n§7    > " + Lang.defaultValue : hologram),
@@ -153,33 +161,46 @@ public class QuestPool implements Comparable<QuestPool> {
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0) return Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time));
 		
-		for (AbstractRequirement requirement : requirements) {
-			if (!requirement.test(p)) {
-				requirement.sendReason(p);
-				return null;
+		List<Quest> started = new ArrayList<>(questsPerLaunch);
+		for (int i = 0; i < questsPerLaunch; i++) {
+			for (AbstractRequirement requirement : requirements) {
+				if (!requirement.test(p)) {
+					requirement.sendReason(p);
+					return null;
+				}
+			}
+			
+			List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
+			if (notDoneQuests.isEmpty()) { // all quests completed
+				if (!redoAllowed) {
+					if (started.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
+					break;
+				}
+				notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
+				if (notDoneQuests.isEmpty()) {
+					if (started.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
+					break;
+				}
+				datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toSet()));
+			}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) {
+				if (started.isEmpty()) return Lang.POOL_MAX_QUESTS.format(maxQuests);
+				break;
+			}
+			
+			List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
+			if (available.isEmpty()) {
+				if (started.isEmpty()) return Lang.POOL_NO_AVAILABLE.toString();
+				break;
+			}else {
+				Quest quest = datas.getTempStartQuest();
+				if (quest == null || !quest.isLauncheable(p, acc, false)) {
+					quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
+					datas.setTempStartQuest(quest);
+				}
+				quest.attemptStart(p, () -> datas.setLastGive(System.currentTimeMillis()));
 			}
 		}
-		
-		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
-		if (notDoneQuests.isEmpty()) { // all quests completed
-			if (!redoAllowed) return Lang.POOL_ALL_COMPLETED.toString();
-			notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
-			if (notDoneQuests.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
-			datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toSet()));
-		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return Lang.POOL_MAX_QUESTS.format(maxQuests);
-		
-		List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
-		if (available.isEmpty()) {
-			return Lang.POOL_NO_AVAILABLE.toString();
-		}else {
-			Quest quest = datas.getTempStartQuest();
-			if (quest == null || !quest.isLauncheable(p, acc, false)) {
-				quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
-				datas.setTempStartQuest(quest);
-			}
-			quest.attemptStart(p, () -> datas.setLastGive(System.currentTimeMillis()));
-			return "started quest #" + quest.getID();
-		}
+		return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
 	}
 	
 	void unload() {
@@ -189,6 +210,7 @@ public class QuestPool implements Comparable<QuestPool> {
 	public void save(ConfigurationSection config) {
 		config.set("hologram", hologram);
 		config.set("maxQuests", maxQuests);
+		if (questsPerLaunch != 1) config.set("questsPerLaunch", questsPerLaunch);
 		config.set("redoAllowed", redoAllowed);
 		config.set("timeDiff", timeDiff);
 		config.set("npcID", npcID);
@@ -205,7 +227,7 @@ public class QuestPool implements Comparable<QuestPool> {
 				e.printStackTrace();
 			}
 		}
-		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
+		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
 	}
 	
 }

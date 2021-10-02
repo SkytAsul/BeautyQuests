@@ -181,6 +181,7 @@ public enum Lang{
 	
 	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
 	POOL_MAXQUESTS("msg.editor.pool.maxQuests"),
+	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch"),
 	POOL_TIME("msg.editor.pool.time"),
 	
 	TITLE_TITLE("msg.editor.title.title"),
@@ -514,6 +515,7 @@ public enum Lang{
 	poolItemName("inv.poolsManage.itemName"), // 0: pool ID
 	poolItemNPC("inv.poolsManage.poolNPC"),
 	poolItemMaxQuests("inv.poolsManage.poolMaxQuests"),
+	poolItemQuestsPerLaunch("inv.poolsManage.poolQuestsPerLaunch"),
 	poolItemRedo("inv.poolsManage.poolRedo"),
 	poolItemTime("inv.poolsManage.poolTime"),
 	poolItemHologram("inv.poolsManage.poolHologram"),
@@ -525,6 +527,7 @@ public enum Lang{
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
 	poolEditHologramText("inv.poolCreation.hologramText"),
 	poolMaxQuests("inv.poolCreation.maxQuests"),
+	poolQuestsPerLaunch("inv.poolCreation.questsPerLaunch"),
 	poolTime("inv.poolCreation.time"),
 	poolRedo("inv.poolCreation.redoAllowed"),
 	poolAvoidDuplicates("inv.poolCreation.avoidDuplicates"),
