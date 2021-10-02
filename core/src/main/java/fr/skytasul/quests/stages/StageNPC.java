@@ -223,6 +223,7 @@ public class StageNPC extends AbstractStage{
 		super.leaves(acc, p);
 		cached.remove(p);
 		if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
+		if (dialog != null) dialog.remove(p);
 	}
 	
 	@Override
@@ -252,6 +253,7 @@ public class StageNPC extends AbstractStage{
 		if (task != null) task.cancel();
 		if (hologram != null) removeHoloLaunch();
 		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
+		if (dialog != null) dialog.unload();
 	}
 	
 	@Override

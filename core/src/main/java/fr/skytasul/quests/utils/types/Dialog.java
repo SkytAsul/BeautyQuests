@@ -15,6 +15,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.types.Message.Sender;
+
 import net.citizensnpcs.api.npc.NPC;
 
 public class Dialog implements Cloneable {
@@ -85,8 +86,13 @@ public class Dialog implements Cloneable {
 	public boolean remove(Player player) {
 		PlayerStatus status = players.remove(player);
 		if (status == null) return false;
-		if (status.task != null) status.task.cancel();
+		status.cancel();
 		return true;
+	}
+	
+	public void unload() {
+		players.values().forEach(PlayerStatus::cancel);
+		players.clear();
 	}
 	
 	public void add(String msg, Sender sender){
@@ -107,11 +113,11 @@ public class Dialog implements Cloneable {
 	}
 	
 	public Map<String, Object> serialize(){
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (Entry<Integer, Message> en : messages.getOriginalMap().entrySet()){
-			Map<String, Object> msgm = new HashMap<String, Object>();
+			Map<String, Object> msgm = new HashMap<>();
 			msgm.put("id", en.getKey());
 			msgm.put("message", en.getValue().serialize());
 			ls.add(msgm);
@@ -136,6 +142,13 @@ public class Dialog implements Cloneable {
 	class PlayerStatus {
 		int lastId = -1;
 		BukkitTask task = null;
+		
+		void cancel() {
+			if (task != null) {
+				task.cancel();
+				task = null;
+			}
+		}
 	}
 
 }
