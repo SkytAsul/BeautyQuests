@@ -46,7 +46,7 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.startDialog.toString(), getLore());
 	}
 

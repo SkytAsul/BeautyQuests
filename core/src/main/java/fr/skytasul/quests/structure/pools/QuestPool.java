@@ -113,18 +113,18 @@ public class QuestPool implements Comparable<QuestPool> {
 		return Integer.compare(id, o.id);
 	}
 	
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(String action) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
 				Lang.poolItemNPC.format(npcID),
 				Lang.poolItemMaxQuests.format(maxQuests),
 				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
 				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),
 				Lang.poolItemTime.format(Utils.millisToHumanString(timeDiff)),
-				Lang.poolItemHologram.format(hologram == null ? Lang.PoolHologramText.toString() + "\n§7    > " + Lang.defaultValue : hologram),
+				Lang.poolItemHologram.format(hologram == null ? "\n§7 > " + Lang.PoolHologramText.toString() + "\n§7 > " + Lang.defaultValue : hologram),
 				Lang.poolItemAvoidDuplicates.format(avoidDuplicates ? Lang.Enabled : Lang.Disabled),
 				"§7" + Lang.requirements.format(requirements.size()),
 				Lang.poolItemQuestsList.format(quests.size(), quests.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "))),
-				"", Lang.poolEdit.toString());
+				"", action);
 	}
 	
 	public void resetPlayer(PlayerAccount acc) {

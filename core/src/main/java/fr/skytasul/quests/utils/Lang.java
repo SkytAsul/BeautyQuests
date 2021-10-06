@@ -364,6 +364,7 @@ public enum Lang{
 	rewardTitle("inv.details.setTitleReward"),
 	questStarterSelect("inv.details.selectStarterNPC"),
 	questStarterSelectLore("inv.details.selectStarterNPCLore"),
+	questStarterSelectPool("inv.details.selectStarterNPCPool"),
 	create("inv.details.createQuestName"),
 	createLore("inv.details.createQuestLore"),
 	edit("inv.details.editQuestName"),
@@ -522,6 +523,8 @@ public enum Lang{
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
 	poolEdit("inv.poolsManage.edit"),
+	poolChoose(
+			"inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 	
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),

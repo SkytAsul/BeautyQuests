@@ -32,6 +32,7 @@ public class XPReward extends AbstractReward {
 		this.exp = exp;
 	}
 
+	@Override
 	public List<String> give(Player p) {
 		if (DependenciesManager.skapi.isEnabled() && QuestsConfiguration.xpOverridedSkillAPI()) {
 			SkillAPI.giveExp(p, exp);
@@ -63,10 +64,12 @@ public class XPReward extends AbstractReward {
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("xp", exp);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		exp = (int) savedDatas.get("xp");
 	}

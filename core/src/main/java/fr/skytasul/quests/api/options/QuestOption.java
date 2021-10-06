@@ -92,7 +92,9 @@ public abstract class QuestOption<T> implements Cloneable {
 		return true;
 	}
 	
-	public abstract ItemStack getItemStack();
+	public void updatedDependencies(OptionSet options, ItemStack item) {}
+	
+	public abstract ItemStack getItemStack(OptionSet options);
 	
 	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click);
 	

@@ -41,7 +41,7 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.CLOCK, Lang.timer.toString(), getLore());
 	}
 	

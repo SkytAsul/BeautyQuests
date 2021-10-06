@@ -383,6 +383,7 @@ inv:
     setTitleReward: '§eEdit title reward'
     selectStarterNPC: §e§lSelect NPC starter
     selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    selectStarterNPCPool: §c⚠ A quest pool is selected
     createQuestName: §lCreate quest
     createQuestLore: You must define a quest name.
     editQuestName: §lEdit quest
@@ -557,6 +558,7 @@ inv:
     poolQuestsList: '§7{0} §8quest(s): §7{1}'
     create: §aCreate a quest pool
     edit: §e> §6§oEdit the pool... §e<
+    choose: §e> §6§oChoose this pool §e<
   poolCreation:
     name: Quest pool creation
     hologramText: §ePool custom hologram

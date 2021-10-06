@@ -21,6 +21,7 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -39,9 +40,10 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
+
 import net.citizensnpcs.api.npc.NPC;
 
-public class Quest implements Comparable<Quest> {
+public class Quest implements Comparable<Quest>, OptionSet {
 	
 	private final int id;
 	private final File file;
@@ -75,6 +77,11 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
+	@Override
+	public Iterator<QuestOption> iterator() {
+		return (Iterator<QuestOption>) options;
+	}
+	
 	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (D) option.getValue();
@@ -82,6 +89,7 @@ public class Quest implements Comparable<Quest> {
 		return (D) QuestOptionCreator.creators.get(clazz).defaultValue;
 	}
 	
+	@Override
 	public <T extends QuestOption<?>> T getOption(Class<T> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
@@ -89,6 +97,7 @@ public class Quest implements Comparable<Quest> {
 		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
 	}
 	
+	@Override
 	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return true;

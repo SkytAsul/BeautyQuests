@@ -1,12 +1,10 @@
 package fr.skytasul.quests.api.options;
 
-import java.util.Iterator;
+@SuppressWarnings ("rawtypes")
+public interface OptionSet extends Iterable<QuestOption> {
 
-public interface OptionSet {
-	
-	@SuppressWarnings ("rawtypes")
-	Iterator<QuestOption> iterator();
-	
 	<T extends QuestOption<?>> T getOption(Class<T> optionClass);
+	
+	boolean hasOption(Class<? extends QuestOption<?>> clazz);
 	
 }

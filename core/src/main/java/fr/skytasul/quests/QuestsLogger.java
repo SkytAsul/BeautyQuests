@@ -2,7 +2,6 @@ package fr.skytasul.quests;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -26,15 +25,23 @@ public class QuestsLogger extends PluginLogger {
 	private BukkitRunnable run;
 	private boolean something = false;
 	
-	public QuestsLogger(Plugin plugin) throws Exception {
+	public QuestsLogger(Plugin plugin) {
 		super(plugin);
-		file = new File(plugin.getDataFolder(), "latest.log");
-		if (file.exists()) {
-			Files.move(file.toPath(), new File(plugin.getDataFolder(), "latest.log_old").toPath(), StandardCopyOption.REPLACE_EXISTING);
+		try {
+			file = new File(plugin.getDataFolder(), "latest.log");
+			if (file.exists()) {
+				Files.move(file.toPath(), new File(plugin.getDataFolder(), "latest.log_old").toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+			file.createNewFile();
+			stream = new PrintWriter(new FileWriter(file));
+			write("---- BEAUTYQUESTS LOGGER - OPENED " + new Date(System.currentTimeMillis()).toString() + " ----");
+		}catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		file.createNewFile();
-		stream = new PrintWriter(new FileWriter(file));
-		write("---- BEAUTYQUESTS LOGGER - OPENED " + new Date(System.currentTimeMillis()).toString() + " ----");
+	}
+	
+	public boolean isEnabled() {
+		return stream != null;
 	}
 	
 	@Override
@@ -44,13 +51,15 @@ public class QuestsLogger extends PluginLogger {
 	}
 	
 	public void write(String msg){
+		if (!isEnabled()) return;
 		date.setTime(System.currentTimeMillis());
 		stream.println(format.format(date) + msg);
 		something = true;
 	}
 	
-	public void close() throws IOException{
+	public void close() {
 		write("---- BEAUTYQUESTS LOGGER - CLOSED " + new Date(System.currentTimeMillis()).toString() + " ----");
+		if (!isEnabled()) return;
 		if (run != null) run.cancel();
 		stream.close();
 		stream = null;
@@ -58,7 +67,7 @@ public class QuestsLogger extends PluginLogger {
 	}
 	
 	void launchFlushTimer(){
-		if (stream == null) return;
+		if (!isEnabled()) return;
 		run = new BukkitRunnable() {
 			@Override
 			public void run() {

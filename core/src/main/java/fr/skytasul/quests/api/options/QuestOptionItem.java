@@ -65,7 +65,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		if (getValue() == null) return ItemUtils.item(getDefaultMaterial(), getItemName(), getLore());
 		ItemStack item = getValue().clone();
 		ItemUtils.name(item, getItemName());
@@ -77,11 +77,11 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		if (click == ClickType.MIDDLE) {
 			setValue(null);
-			gui.inv.setItem(slot, getItemStack());
+			gui.inv.setItem(slot, getItemStack(null));
 		}else {
 			new ItemGUI(is -> {
 				setValue(is);
-				gui.inv.setItem(slot, getItemStack());
+				gui.inv.setItem(slot, getItemStack(null));
 				gui.reopen(p);
 			}, () -> gui.reopen(p)).create(p);
 		}

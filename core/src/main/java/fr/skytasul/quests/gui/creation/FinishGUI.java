@@ -95,8 +95,9 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					@Override
 					public void update() {
 						if (option.shouldDisplay(FinishGUI.this)) {
-							inv.setItem(slot, option.getItemStack());
+							inv.setItem(slot, option.getItemStack(FinishGUI.this));
 						}else inv.setItem(slot, null);
+						option.updatedDependencies(FinishGUI.this, inv.getItem(slot));
 					}
 				};
 				addOption(option, item);
@@ -105,7 +106,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			super.calculateDependencies();
 			
 			for (QuestOption<?> option : this) {
-				if (option.shouldDisplay(this)) inv.setItem(option.getOptionCreator().slot, option.getItemStack());
+				if (option.shouldDisplay(this)) inv.setItem(option.getOptionCreator().slot, option.getItemStack(this));
 			}
 			
 			int pageSlot = QuestOptionCreator.calculateSlot(3);

@@ -112,10 +112,9 @@ public class BeautyQuests extends JavaPlugin {
 			f.set(this, logger);
 			System.out.println("New logger inserted: " + getLogger().getClass().getName());
 		}catch (Throwable ex){
-			System.out.println("Failed to insert new logger to BeautyQuests. Actual: " + getLogger().getClass().getName());
-			logger = null;
 			ex.printStackTrace();
 		}
+		if (logger == null || !logger.isEnabled()) System.out.println("Failed to insert new logger to BeautyQuests. Current logger: " + getLogger().getClass().getName());
 	}
 	
 	@Override
@@ -328,7 +327,7 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT" }) {
+			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT", "vi_VN" }) {
 				File file = new File(getDataFolder(), "locales/" + language + ".yml");
 				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
 			}
@@ -432,9 +431,8 @@ public class BeautyQuests extends JavaPlugin {
 					addQuest(quest);
 				}else logger.severe("Quest from file " + file.getName() + " not activated");
 				if (loadingFailure) createQuestBackup(file, file.getName().substring(0, file.getName().lastIndexOf(".")), "Error when loading quest.");
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				ex.printStackTrace();
-				continue;
 			}
 		}
 		

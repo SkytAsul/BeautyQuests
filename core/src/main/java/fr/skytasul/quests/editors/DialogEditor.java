@@ -22,8 +22,10 @@ public class DialogEditor extends Editor{
 		this.d = dialog;
 	}
 
+	@Override
 	public boolean chat(String coloredMessage, String strippedMessage){
 		String[] args = strippedMessage.split(" ");
+		String[] argsColored = coloredMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
 		Command cmd;
@@ -34,7 +36,7 @@ public class DialogEditor extends Editor{
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(coloredMessage.split(" "), 1, " ");
+			msg = Utils.buildFromArray(argsColored, 1, " ");
 			hasMsg = true;
 		}
 		switch (cmd) {
@@ -79,7 +81,7 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			try{
-				msg = Utils.buildFromArray(args, 2, " ");
+				msg = Utils.buildFromArray(argsColored, 2, " ");
 				Sender sender = Sender.valueOf(cmd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Utils.sendMessage(p, Lang.valueOf("DIALOG_MSG_ADDED_" + sender.name()).toString(), msg, sender.name().toLowerCase());
@@ -98,7 +100,7 @@ public class DialogEditor extends Editor{
 				if (message == null) {
 					Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.valuesSize());
 				}else {
-					msg = Utils.buildFromArray(args, 2, " ");
+					msg = Utils.buildFromArray(argsColored, 2, " ");
 					message.text = msg;
 					Lang.DIALOG_MSG_EDITED.send(p, msg);
 				}

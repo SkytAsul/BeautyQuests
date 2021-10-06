@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -212,6 +213,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			try {
 				if (line.tryRefresh(time) && !update) update = true;
 				linesStrings.addAll(line.lines);
+				if (linesStrings.size() >= ChatColor.values().length - 1) {
+					while (linesStrings.size() >= ChatColor.values().length - 1) {
+						linesStrings.remove(linesStrings.size() - 1);
+					}
+					break;
+				}
 			}catch (Exception ex) {
 				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i + " for " + p.getName());
 				ex.printStackTrace();

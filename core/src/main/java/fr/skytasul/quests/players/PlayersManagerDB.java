@@ -261,7 +261,7 @@ public class PlayersManagerDB extends PlayersManager {
 				" `id` int NOT NULL AUTO_INCREMENT ," +
 				" `account_id` int(11) NOT NULL," +
 				" `quest_id` int(11) NOT NULL," +
-				" `finished` tinyint(1) DEFAULT NULL," +
+				" `finished` INT(11) DEFAULT NULL," +
 				" `timer` bigint(20) DEFAULT NULL," +
 				" `current_branch` tinyint(4) DEFAULT NULL," +
 				" `current_stage` tinyint(4) DEFAULT NULL," +

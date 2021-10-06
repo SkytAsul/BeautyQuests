@@ -22,6 +22,10 @@ public interface QuestObject extends Cloneable {
 	
 	QuestObject clone();
 	
+	default String getDescription() { // will maybe eventually be abstract (and therefore needs to be implemented)
+		return null;
+	}
+	
 	default String[] getLore() {
 		return new String[] { Lang.Remove.toString() };
 	}

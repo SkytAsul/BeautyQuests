@@ -234,6 +234,7 @@ msg:
     pool:
       hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
       maxQuests: 'Écrivez le nombre maximum de quêtes lancées dans ce groupe.'
+      questsPerLaunch: 'Écrivez le nombre de quêtes données lorsque les joueurs cliquent sur le NPC.'
       time: 'Écrivez le nombre de jours avant que les joueurs puissent prendre une nouvelle quête.'
     title:
       title: 'Écrivez le titre (ou "null" si vous n''en voulez pas).'
@@ -275,6 +276,7 @@ inv:
     NPCText: '§eModifier le dialogue'
     NPCSelect: '§eChoisir ou créer un NPC'
     hideClues: Cacher les particules et les hologrammes
+    gps: Affiche une boussole vers l'objectif
     editMobsKill: '§eModifier les mobs à tuer'
     mobsKillFromAFar: Doit être tué de loin
     editBlocksMine: '§eModifier les blocs à casser'
@@ -354,6 +356,7 @@ inv:
     setTitleReward: '§eModifier la récompense /title'
     selectStarterNPC: '§e§lSélectionner le NPC de départ'
     selectStarterNPCLore: Cliquer sur le PNJ sélectionné commencera la quête.
+    selectStarterNPCPool: '§c⚠ Un groupe de quêtes est sélectionné'
     createQuestName: '§lCréer la quête'
     createQuestLore: Vous devez définir le nom de la quête.
     editQuestName: '§lModifier la quête'
@@ -517,6 +520,7 @@ inv:
     itemName: '§aGroupe #{0}'
     poolNPC: '§8NPC : §7{0}'
     poolMaxQuests: '§8Nombre maximum de quêtes : §7{0}'
+    poolQuestsPerLaunch: '§8Quêtes données par lancement : §7{0}'
     poolRedo: '§8Peut refaire les quêtes : §7{0}'
     poolTime: '§8Temps entre les quêtes : §7{0}'
     poolHologram: '§8Hologramme : §7{0}'
@@ -524,10 +528,12 @@ inv:
     poolQuestsList: '§7{0} §8quête(s) : §7{1}'
     create: '§aCréer un groupe de quêtes'
     edit: '§e> §6§oModifier le groupe de quêtes... §e<'
+    choose: '§e> §6§oChoisir ce groupe §e<'
   poolCreation:
     name: Création du groupe de quêtes
     hologramText: '§eHologramme personnalisé du groupe'
     maxQuests: '§aNombre maximum de quêtes'
+    questsPerLaunch: '§aQuêtes commencées par lancement'
     time: '§bDéfinir le temps entre les quêtes'
     redoAllowed: Est-il recommençable ?
     avoidDuplicates: Éviter les doublons

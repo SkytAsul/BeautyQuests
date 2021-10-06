@@ -99,7 +99,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(getItemMaterial(), getItemName(), getLore());
 	}
 	

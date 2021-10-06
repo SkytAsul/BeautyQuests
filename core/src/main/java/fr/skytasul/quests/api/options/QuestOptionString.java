@@ -39,7 +39,7 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(getItemMaterial(), getItemName(), getLore());
 	}
 	
