@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +57,7 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
@@ -422,18 +425,25 @@ public class BeautyQuests extends JavaPlugin {
 			ex.printStackTrace();
 		}
 
+		Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)
+			.filter(Files::isRegularFile)
+			.filter(path -> !path.getFileName().toString().contains("backup"))
+			.filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
+					loadingFailure = false;
+					try {
+						File file = path.toFile();
+						Quest quest = Quest.loadFromFile(file);
+						if (quest != null) {
+							addQuest(quest);
+							if (loadingFailure) createQuestBackup(path, "Error when loading quest.");
+						}else logger.severe("Quest from file " + file.getName() + " not activated");
+					}catch (Exception ex) {
+						ex.printStackTrace();
+					}
+			});
 		for (File file : saveFolder.listFiles()) {
 			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml") || file.getName().contains("backup")) continue;
-			loadingFailure = false;
-			try{
-				Quest quest = Quest.loadFromFile(file);
-				if (quest != null) {
-					addQuest(quest);
-				}else logger.severe("Quest from file " + file.getName() + " not activated");
-				if (loadingFailure) createQuestBackup(file, file.getName().substring(0, file.getName().lastIndexOf(".")), "Error when loading quest.");
-			}catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			
 		}
 		
 		if (QuestsConfiguration.firstQuestID != -1) {
@@ -551,10 +561,10 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 
-	public boolean createQuestBackup(File file, String id, String msg){
+	public boolean createQuestBackup(Path file, String msg) {
 		getLogger().info(msg + " Creating backup...");
 		try{
-			getLogger().info("Quest backup created at " + Files.copy(file.toPath(), new File(saveFolder, id + "-backup" + format.format(new Date()) + ".yml").toPath()).getFileName());
+			getLogger().info("Quest backup created at " + Files.copy(file, Path.of(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
 			return true;
 		}catch (Exception e) {
 			getLogger().severe("An error occured while creating the backup.");

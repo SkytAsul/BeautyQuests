@@ -390,7 +390,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		BeautyQuests.savingFailure = false;
 		save(fc);
 		DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
-		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
+		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file.toPath(), "Error when saving quest.");
 		fc.save(file);
 	}
 	
