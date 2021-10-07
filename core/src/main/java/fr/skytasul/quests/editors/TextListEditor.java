@@ -76,7 +76,7 @@ public class TextListEditor extends Editor{
 		case LIST:
 			p.sendMessage(texts
 					.stream()
-					.map(text -> text + "§7- §r")
+					.map(text -> "§7- §r" + text)
 					.collect(Collectors.joining("\n", "§6§lList:\n", "")));
 			break;
 

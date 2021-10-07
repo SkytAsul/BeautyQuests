@@ -59,9 +59,13 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	private List<Player> particles = new ArrayList<>();
 	
 	public Quest(int id) {
-		this.manager = new BranchesManager(this);
+		this(id, new File(BeautyQuests.saveFolder, id + ".yml"));
+	}
+	
+	public Quest(int id, File file) {
 		this.id = id;
-		this.file = new File(BeautyQuests.saveFolder, id + ".yml");
+		this.file = file;
+		this.manager = new BranchesManager(this);
 	}
 	
 	public void create() {
@@ -413,7 +417,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		try {
 			YamlConfiguration config = new YamlConfiguration();
 			config.load(file);
-			return deserialize(config);
+			return deserialize(file, config);
 		}catch (Exception e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
@@ -421,13 +425,13 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		}
 	}
 	
-	private static Quest deserialize(ConfigurationSection map) {
+	private static Quest deserialize(File file, ConfigurationSection map) {
 		if (!map.contains("id")) {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;
 		}
 		
-		Quest qu = new Quest(map.getInt("id"));
+		Quest qu = new Quest(map.getInt("id"), file);
 		
 		qu.manager = BranchesManager.deserialize(map.getConfigurationSection("manager"), qu);
 		if (qu.manager == null) return null;

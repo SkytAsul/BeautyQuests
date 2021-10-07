@@ -177,7 +177,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		Quest qu;
 		if (editing){
 			edited.remove(false);
-			qu = new Quest(edited.getID());
+			qu = new Quest(edited.getID(), edited.getFile());
 		}else {
 			int id = BeautyQuests.lastID + 1;
 			if (QuestsAPI.getQuests().stream().anyMatch(x -> x.getID() == id)) {

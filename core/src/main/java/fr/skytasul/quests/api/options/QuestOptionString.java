@@ -41,7 +41,7 @@ public abstract class QuestOptionString extends QuestOption<String> {
 		if (getItemDescription() == null) return new String[] { formatValue(getValue()) };
 		
 		String description = formatDescription(getItemDescription());
-		return new String[] { description, "", formatValue((isMultiline() ? "{nl}" : "") + getValue()) };
+		return new String[] { description, "", formatValue((isMultiline() && getValue() != null ? "{nl}" : "") + getValue()) };
 	}
 	
 	@Override
