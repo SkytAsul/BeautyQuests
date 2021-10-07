@@ -153,6 +153,8 @@ public enum Lang{
 	ALREADY_EDITOR("msg.editor.already"),
 	ENTER_EDITOR_TITLE("msg.editor.enter.title"),
 	ENTER_EDITOR_SUB("msg.editor.enter.subtitle"),
+	ENTER_EDITOR_LIST(
+			"msg.editor.enter.list"),
 	CHAT_EDITOR("msg.editor.chat"),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter"),
 

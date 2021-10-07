@@ -3,6 +3,7 @@ package fr.skytasul.quests.editors;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
@@ -23,7 +24,14 @@ public class TextListEditor extends Editor{
 		this.run = end;
 		this.texts = texts;
 	}
+	
+	@Override
+	protected void begin() {
+		super.begin();
+		Lang.ENTER_EDITOR_LIST.send(p);
+	}
 
+	@Override
 	public boolean chat(String coloredMessage, String strippedMessage){
 		String[] args = strippedMessage.split(" ");
 		String msg = "";
@@ -66,11 +74,10 @@ public class TextListEditor extends Editor{
 			break;
 
 		case LIST:
-			StringBuilder stb = new StringBuilder("§6§lList : §r§e(separator : \"§6§l|§r§e\")\n");
-			for (String s : texts){
-				stb.append("§r§a" + s + " §6§l| ");
-			}
-			p.sendMessage(stb.toString());
+			p.sendMessage(texts
+					.stream()
+					.map(text -> text + "§7- §r")
+					.collect(Collectors.joining("\n", "§6§lList:\n", "")));
 			break;
 
 		case HELP:

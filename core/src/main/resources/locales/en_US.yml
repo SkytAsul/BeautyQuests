@@ -173,6 +173,7 @@ msg:
     enter:
       title: §6~ Editor Mode ~
       subtitle: §6Write "/quests exitEditor" to force quit the editor.
+      list: '§c⚠ §7You have entered a "list" editor. Use "add" to add lines. Refer to "help" (without slash) for help. §e§lType "close" to exit editor.'
     chat: §6You are currently in the Editor Mode. Write "/quests exitEditor" to force
       leaving the editor. (Highly not recommended, consider using commands such as
       "close" or "cancel" to come back to the previous inventory.)
