@@ -120,7 +120,6 @@ public class Database {
 
 		public PreparedStatement getStatement() throws SQLException {
 			if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0)) {
-				System.out.println("prepare statement " + statement);
 				openConnection();
 				prepared = returnGeneratedKeys ? connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(statement);
 			}
