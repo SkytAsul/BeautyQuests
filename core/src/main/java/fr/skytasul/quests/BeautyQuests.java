@@ -504,16 +504,18 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 		}
-		data.set("lastID", lastID);
-		data.set("version", getDescription().getVersion());
-		
-		try{
-			PlayersManager.manager.save();
-		}catch (Exception ex) {
-			createDataBackup("Error when saving player datas.");
-			ex.printStackTrace();
+		if (loaded) {
+			data.set("lastID", lastID);
+			data.set("version", getDescription().getVersion());
+			
+			try {
+				PlayersManager.manager.save();
+			}catch (Exception ex) {
+				createDataBackup("Error when saving player datas.");
+				ex.printStackTrace();
+			}
+			data.save(dataFile);
 		}
-		data.save(dataFile);
 		
 		if (unload){
 			resetDatas();

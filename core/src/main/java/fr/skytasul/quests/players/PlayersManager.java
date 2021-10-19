@@ -26,7 +26,7 @@ public abstract class PlayersManager {
 
 	public static PlayersManager manager;
 
-	protected abstract Entry<PlayerAccount, Boolean> load(Player player);
+	protected abstract Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp);
 	
 	protected abstract void removeAccount(PlayerAccount acc);
 	
@@ -83,6 +83,7 @@ public abstract class PlayersManager {
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public static synchronized void loadPlayer(Player p) {
+		long time = System.currentTimeMillis();
 		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
@@ -90,7 +91,8 @@ public abstract class PlayersManager {
 			while (i > 0) {
 				i--;
 				try {
-					Entry<PlayerAccount, Boolean> entry = manager.load(p);
+					
+					Entry<PlayerAccount, Boolean> entry = manager.load(p, time);
 					PlayerAccount account = entry.getKey();
 					boolean created = entry.getValue();
 					if (!p.isOnline()) {
@@ -103,6 +105,7 @@ public abstract class PlayersManager {
 					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
 					cachedAccounts.put(p, account);
 					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+						DebugUtils.logMessage("Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time) + " ms");
 						if (p.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
 						}else {

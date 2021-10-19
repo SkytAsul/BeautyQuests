@@ -13,6 +13,7 @@ import fr.skytasul.quests.BeautyQuests;
 
 public class Database {
 
+	private ConfigurationSection config;
 	private Properties properties;
 	private String host, database;
 	private int port;
@@ -20,6 +21,7 @@ public class Database {
 	private Connection connection;
 
 	public Database(ConfigurationSection config) {
+		this.config = config;
 		this.host = config.getString("host");
 		this.database = config.getString("database");
 		this.port = config.getInt("port");
@@ -35,6 +37,10 @@ public class Database {
 
 	public String getDatabase() {
 		return database;
+	}
+	
+	public ConfigurationSection getConfig() {
+		return config;
 	}
 
 	public boolean openConnection() {
@@ -114,6 +120,7 @@ public class Database {
 
 		public PreparedStatement getStatement() throws SQLException {
 			if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0)) {
+				System.out.println("prepare statement " + statement);
 				openConnection();
 				prepared = returnGeneratedKeys ? connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(statement);
 			}

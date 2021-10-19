@@ -24,6 +24,10 @@ database:
   username: "unknown"
   password: "unknown"
   ssl: false
+  tables:
+    playerAccounts: "player_accounts"
+    playerQuests: "player_quests"
+    playerPools: "player_pools"
 
 # - Quests behaviors -
 # Enable or disable the scoreboards - more options in scoreboard.yml

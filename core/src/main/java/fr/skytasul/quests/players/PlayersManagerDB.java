@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,9 +30,9 @@ import fr.skytasul.quests.utils.Database.BQStatement;
 
 public class PlayersManagerDB extends PlayersManager {
 
-	private static final String ACCOUNTS_TABLE = "`player_accounts`";
-	private static final String QUESTS_DATAS_TABLE = "`player_quests`";
-	private static final String POOLS_DATAS_TABLE = "`player_pools`";
+	private final String ACCOUNTS_TABLE;
+	private final String QUESTS_DATAS_TABLE;
+	private final String POOLS_DATAS_TABLE;
 
 	private Database db;
 	
@@ -64,6 +66,9 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public PlayersManagerDB(Database db) {
 		this.db = db;
+		ACCOUNTS_TABLE = db.getConfig().getString("tables.playerAccounts");
+		QUESTS_DATAS_TABLE = db.getConfig().getString("tables.playerQuests");
+		POOLS_DATAS_TABLE = db.getConfig().getString("tables.playerPools");
 	}
 
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
@@ -92,7 +97,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	protected synchronized Entry<PlayerAccount, Boolean> load(Player player) {
+	protected synchronized Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
 		try {
 			String uuid = player.getUniqueId().toString();
 			PreparedStatement statement = getAccounts.getStatement();
@@ -103,6 +108,15 @@ public class PlayersManagerDB extends PlayersManager {
 				if (abs.isCurrent()) {
 					PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
 					result.close();
+					try {
+						// in order to ensure that, if the player was previously connected to another server,
+						// its datas have been fully pushed to database, we wait for 0,6 seconds
+						// (data pushing time is 0,5 seconds)
+						wait(550 - (System.currentTimeMillis() - joinTimestamp));
+					}catch (InterruptedException e) {
+						e.printStackTrace();
+						Thread.currentThread().interrupt();
+					}
 					retrievePlayerDatas(account);
 					return new AbstractMap.SimpleEntry<>(account, false);
 				}
@@ -115,7 +129,7 @@ public class PlayersManagerDB extends PlayersManager {
 			statement.setString(2, uuid);
 			statement.executeUpdate();
 			result = statement.getGeneratedKeys();
-			if (!result.next()) throw new RuntimeException("The plugin has not been able to create a player account.");
+			if (!result.next()) throw new SQLException("The plugin has not been able to create a player account.");
 			int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
 			result.close();
 			return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
@@ -209,7 +223,7 @@ public class PlayersManagerDB extends PlayersManager {
 	@Override
 	public void load() {
 		try {
-			createTables(db);
+			createTables();
 
 			getAccounts = db.new BQStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
 			insertAccount = db.new BQStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)", true);
@@ -249,7 +263,7 @@ public class PlayersManagerDB extends PlayersManager {
 	@Override
 	public void save() {}
 	
-	private static void createTables(Database db) throws SQLException {
+	private void createTables() throws SQLException {
 		Statement statement = db.getConnection().createStatement();
 		statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
 				+ " `id` int NOT NULL AUTO_INCREMENT ,"
@@ -295,13 +309,14 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 		result.close();
 
-		createTables(db);
+		PlayersManagerDB manager = new PlayersManagerDB(db);
+		manager.createTables();
 
-		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
+		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + manager.ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
 		PreparedStatement insertQuestData =
-				db.prepareStatement("INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				db.prepareStatement("INSERT INTO " + manager.QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		PreparedStatement insertPoolData =
-				db.prepareStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
+				db.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
 		
 		int amount = 0, failed = 0;
 		yaml.loadAllAccounts();
@@ -357,6 +372,7 @@ public class PlayersManagerDB extends PlayersManager {
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
 		private Map<BQStatement, Entry<BukkitTask, Object>> cachedDatas = new HashMap<>(5);
+		private Lock datasLock = new ReentrantLock();
 
 		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
 			super(acc, questID);
@@ -397,39 +413,46 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 
 		private void setDataStatement(BQStatement dataStatement, Object data) {
-			if (cachedDatas.containsKey(dataStatement)){
-				cachedDatas.get(dataStatement).setValue(data);
-				return;
-			}
-			cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(Bukkit.getScheduler().runTaskLaterAsynchronously(BeautyQuests.getInstance(), () -> {
-				try {
-					Entry<BukkitTask, Object> entry = cachedDatas.remove(dataStatement);
-					synchronized (dataStatement) {
-						synchronized (getQuestAccountData) {
-							PreparedStatement statement = getQuestAccountData.getStatement();
-							statement.setInt(1, acc.index);
-							statement.setInt(2, questID);
-							if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-								synchronized (insertQuestData) {
-									PreparedStatement insertStatement = insertQuestData.getStatement();
-									insertStatement.setInt(1, acc.index);
-									insertStatement.setInt(2, questID);
-									insertStatement.executeUpdate();
+			try {
+				datasLock.lock();
+				if (cachedDatas.containsKey(dataStatement)) {
+					cachedDatas.get(dataStatement).setValue(data);
+				}else {
+					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(Bukkit.getScheduler().runTaskLaterAsynchronously(BeautyQuests.getInstance(), () -> {
+						try {
+							datasLock.lock();
+							Entry<BukkitTask, Object> entry = cachedDatas.remove(dataStatement);
+							datasLock.unlock();
+							synchronized (dataStatement) {
+								synchronized (getQuestAccountData) {
+									PreparedStatement statement = getQuestAccountData.getStatement();
+									statement.setInt(1, acc.index);
+									statement.setInt(2, questID);
+									if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+										synchronized (insertQuestData) {
+											PreparedStatement insertStatement = insertQuestData.getStatement();
+											insertStatement.setInt(1, acc.index);
+											insertStatement.setInt(2, questID);
+											insertStatement.executeUpdate();
+										}
+									}
 								}
+								PreparedStatement statement = dataStatement.getStatement();
+								statement.setObject(1, entry.getValue());
+								statement.setInt(2, acc.index);
+								statement.setInt(3, questID);
+								statement.executeUpdate();
 							}
+						}catch (SQLException e) {
+							e.printStackTrace();
 						}
-						PreparedStatement statement = dataStatement.getStatement();
-						statement.setObject(1, entry.getValue());
-						statement.setInt(2, acc.index);
-						statement.setInt(3, questID);
-						statement.executeUpdate();
-					}
-				}catch (SQLException e) {
-					e.printStackTrace();
+					}, 8L), data));
 				}
-			}, 20L), data));
+			}finally {
+				datasLock.unlock();
+			}
 		}
-
+		
 	}
 	
 	public class PlayerPoolDatasDB extends PlayerPoolDatas {

@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
@@ -27,9 +28,9 @@ import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
 
 public class StageArea extends AbstractStage{
 	
-	private ProtectedRegion region;
-	private boolean exit = false;
-	private World world;
+	private final ProtectedRegion region;
+	private final boolean exit;
+	private final World world;
 	
 	public StageArea(QuestBranch branch, String regionName, String worldName, boolean exit) {
 		super(branch);
@@ -58,6 +59,10 @@ public class StageArea extends AbstractStage{
 	
 	@EventHandler
 	public void onRegionEntry(WorldGuardEntryEvent e) {
+		if (region == null) {
+			BeautyQuests.logger.warning("No region for " + debugName());
+			return;
+		}
 		if (e.getRegionsEntered().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) finishStage(e.getPlayer());
 		}
