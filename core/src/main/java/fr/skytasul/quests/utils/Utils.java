@@ -397,6 +397,7 @@ public class Utils{
 				if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
 					//System.out.println("long word : " + word);
 					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
+						//System.out.println("partial " + partialWord);
 						lines.add(partialWord);
 					}
 				}else if (line.length() + 1 + word.length() == lineLength) { // Line exactly the correct length...newline
@@ -406,6 +407,7 @@ public class Utils{
 					}
 					line.append(word);
 					lines.add(line.toString());
+					//System.out.println("append exact " + line.toString());
 					line = new StringBuilder();
 					line.append(colors);
 					first = true;
@@ -423,17 +425,18 @@ public class Utils{
 					}
 				}else {
 					if (line.length() > 0) {
-						if (first) {
-							first = false;
-						}else line.append(' ');
+						if (!first) line.append(' ');
 					}
+					first = false;
 					line.append(word);
 					lastColors = colors;
+					//System.out.println("append word " + word);
 				}
 				word = new StringBuilder();
 				
 				if (c == '\n') { // Newline forces the line to flush
 					lines.add(line.toString());
+					//System.out.println(lastColors.replace('§', '&') + " LINE " + line.toString());
 					line = new StringBuilder();
 					line.append(lastColors);
 					first = true;

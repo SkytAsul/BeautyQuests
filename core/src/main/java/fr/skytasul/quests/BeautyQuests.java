@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Charsets;
+import com.tchristofferson.configupdater.ConfigUpdater;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
@@ -291,12 +293,9 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			config = getConfig();
+			ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), null);
 			
-			try {
-				QuestsConfiguration.initConfiguration(config);
-			}catch (Exception ex) {
-				throw new LoadingException("An error occured while loading config parameters.", ex);
-			}
+			QuestsConfiguration.initConfiguration(config);
 			ConfigurationSection dbConfig = config.getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = new Database(dbConfig);
@@ -323,8 +322,7 @@ public class BeautyQuests extends JavaPlugin {
 		}catch (LoadingException ex) {
 			throw ex;
 		}catch (Exception ex){
-			getLogger().severe("Error when loading.");
-			ex.printStackTrace();
+			throw new LoadingException("Error while loading configuration and initializing values", ex);
 		}
 	}
 	
@@ -566,7 +564,7 @@ public class BeautyQuests extends JavaPlugin {
 	public boolean createQuestBackup(Path file, String msg) {
 		getLogger().info(msg + " Creating backup...");
 		try{
-			getLogger().info("Quest backup created at " + Files.copy(file, Path.of(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
+			getLogger().info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
 			return true;
 		}catch (Exception e) {
 			getLogger().severe("An error occured while creating the backup.");

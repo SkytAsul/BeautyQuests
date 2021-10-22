@@ -67,11 +67,9 @@ public class ItemUtils {
 			for (int i = 0; i < lore.length; i++) {
 				String line = lore[i];
 				if (line == null) {
-					if (i + 1 == lore.length) break; // last lien = null : not shown
+					if (i + 1 == lore.length) break; // if last line and null : not shown
 					finalLines.add("§a");
-					continue;
-				}
-				finalLines.addAll(Utils.wordWrap(line, 40));
+				}else finalLines.addAll(Utils.wordWrap(line, 40));
 			}
 		}
 		im.setLore(finalLines);
