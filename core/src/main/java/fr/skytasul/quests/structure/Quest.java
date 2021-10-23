@@ -1,4 +1,5 @@
 package fr.skytasul.quests.structure;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -190,7 +191,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 
 	public boolean hasStarted(PlayerAccount acc){
 		if (!acc.hasQuestDatas(this)) return false;
-		if (acc.getQuestDatas(this).getBranch() != -1) return true;
+		if (acc.getQuestDatas(this).hasStarted()) return true;
 		if (acc.isCurrent() && asyncStart != null && asyncStart.contains(acc.getPlayer())) return true;
 		return false;
 	}
@@ -313,6 +314,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
 				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 				if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
+				if (asyncStart != null) asyncStart.remove(p);
 				manager.startPlayer(acc);
 
 				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
@@ -358,7 +360,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			new Thread(() -> {
 				DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 				run.run();
-			}).start();
+			}, "BQ async end " + p.getName()).start();
 		}else run.run();
 	}
 
