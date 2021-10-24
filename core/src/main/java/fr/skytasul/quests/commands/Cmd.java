@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.structure.Quest;
 
-import net.citizensnpcs.api.npc.NPC;
-
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Cmd {

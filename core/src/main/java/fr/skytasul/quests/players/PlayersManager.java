@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -19,8 +20,6 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
-
-import net.citizensnpcs.npc.ai.NPCHolder;
 
 public abstract class PlayersManager {
 
@@ -135,7 +134,7 @@ public abstract class PlayersManager {
 	}
 	
 	public static PlayerAccount getPlayerAccount(Player p) {
-		if (p instanceof NPCHolder) return null;
+		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
 		
 		return cachedAccounts.get(p);
 	}

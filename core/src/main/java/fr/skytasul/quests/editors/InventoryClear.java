@@ -12,6 +12,7 @@ public abstract class InventoryClear extends Editor{
 		super(p, cancel);
 	}
 
+	@Override
 	public void begin(){
 		super.begin();
 		contents = p.getInventory().getContents();
@@ -19,10 +20,16 @@ public abstract class InventoryClear extends Editor{
 		p.getInventory().setContents(new ItemStack[0]);
 	}
 
+	@Override
 	public void end(){
 		super.end();
 		p.getInventory().setContents(contents);
 		p.getInventory().setHeldItemSlot(heldItemSlot);
+	}
+	
+	@Override
+	protected String cancelWord() {
+		return "cancel";
 	}
 	
 }

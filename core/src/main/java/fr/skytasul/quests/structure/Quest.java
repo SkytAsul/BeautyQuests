@@ -22,6 +22,7 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -42,8 +43,6 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
-
-import net.citizensnpcs.api.npc.NPC;
 
 public class Quest implements Comparable<Quest>, OptionSet {
 	
@@ -266,7 +265,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
 			Dialog dialog = getOption(OptionStartDialog.class).getValue();
-			NPC npc = getOptionValueOrDef(OptionStarterNPC.class);
+			BQNPC npc = getOptionValueOrDef(OptionStarterNPC.class);
 			Runnable runnable = () -> attemptStart(p, null);
 			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
 			Bukkit.getPluginManager().callEvent(event);
@@ -306,7 +305,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		acc.getQuestDatas(this).setTimer(0);
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
-			if (!"none".equals(startMsg)) Utils.sendMessageWP(p, startMsg, getName());
+			if (!"none".equals(startMsg)) Utils.IsendMessage(p, startMsg, true, getName());
 		}
 		
 		BukkitRunnable run = new BukkitRunnable() {
@@ -337,7 +336,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			String obtained = Utils.itemsToFormattedString(msg.toArray(new String[0]));
 			if (hasOption(OptionEndMessage.class)) {
 				String endMsg = getOption(OptionEndMessage.class).getValue();
-				if (!"none".equals(endMsg)) Utils.IsendMessage(p, Utils.format(endMsg, obtained), true);
+				if (!"none".equals(endMsg)) Utils.IsendMessage(p, endMsg, true, obtained);
 			}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
 			
 			Utils.runOrSync(() -> {

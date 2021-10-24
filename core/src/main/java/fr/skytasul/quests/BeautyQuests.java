@@ -36,6 +36,7 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
@@ -63,10 +64,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
-import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.nms.NMS;
-
-import net.citizensnpcs.api.npc.NPC;
 
 public class BeautyQuests extends JavaPlugin {
 
@@ -90,7 +88,7 @@ public class BeautyQuests extends JavaPlugin {
 	/* --------- Datas --------- */
 
 	private List<Quest> quests = new ArrayList<>();
-	private Map<NPC, NPCStarter> npcs = new HashMap<>();
+	private Map<BQNPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
 	private QuestPoolsManager pools;
 	public static int lastID = 0;
@@ -125,9 +123,6 @@ public class BeautyQuests extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		try {
-			if (!getServer().getPluginManager().isPluginEnabled("Citizens")) {
-				throw new LoadingException("Citizens plugin is not installed.");
-			}
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
 			
@@ -168,6 +163,10 @@ public class BeautyQuests extends JavaPlugin {
 			}catch (Throwable ex) {
 				logger.severe("Error when initializing compatibilities. Consider restarting.");
 				ex.printStackTrace();
+			}
+			
+			if (QuestsAPI.getNPCsManager() == null) {
+				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
 			}
 
 			logger.launchFlushTimer();
@@ -315,7 +314,6 @@ public class BeautyQuests extends JavaPlugin {
 				FinishGUI.initialize(); //				initializing default quest options
 				ItemComparisonGUI.initialize();
 				QuestsAPI.registerMobFactory(new BukkitEntityFactory());
-				QuestsAPI.registerMobFactory(new CitizensFactory());
 				if (NMS.getMCVersion() >= 9) QuestsAPI.setBossBarManager(new BQBossBarImplementation());
 			}
 		}catch (LoadingException ex) {
@@ -621,7 +619,7 @@ public class BeautyQuests extends JavaPlugin {
 	public void removeQuest(Quest quest){
 		quests.remove(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
-			NPC value = quest.getOptionValueOrDef(OptionStarterNPC.class);
+			BQNPC value = quest.getOptionValueOrDef(OptionStarterNPC.class);
 			NPCStarter starter = npcs.get(value);
 			if (starter == null) {
 				logger.warning("NPC Starter not registered for quest " + quest.getID() + ". NPC: " + (value == null ? "not set" : value.getId()));
@@ -633,7 +631,7 @@ public class BeautyQuests extends JavaPlugin {
 		lastID = Math.max(lastID, quest.getID());
 		quests.add(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
-			NPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
+			BQNPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
 			if (npc != null) {
 				NPCStarter starter = null;
 				if (!npcs.containsKey(npc)) {
@@ -650,7 +648,7 @@ public class BeautyQuests extends JavaPlugin {
 		return quests;
 	}
 
-	public Map<NPC, NPCStarter> getNPCs(){
+	public Map<BQNPC, NPCStarter> getNPCs() {
 		return npcs;
 	}
 	

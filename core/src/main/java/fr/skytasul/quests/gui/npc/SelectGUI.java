@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -16,7 +17,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-import net.citizensnpcs.api.npc.NPC;
 
 public class SelectGUI implements CustomInventory{
 	
@@ -24,12 +24,12 @@ public class SelectGUI implements CustomInventory{
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 	
 	private Runnable cancel;
-	private Consumer<NPC> run;
+	private Consumer<BQNPC> run;
 	private boolean nullable;
 	
 	public Inventory inv;
 	
-	public SelectGUI(Runnable cancel, Consumer<NPC> run) {
+	public SelectGUI(Runnable cancel, Consumer<BQNPC> run) {
 		this.cancel = cancel;
 		this.run = run;
 	}
@@ -44,6 +44,7 @@ public class SelectGUI implements CustomInventory{
 		return this;
 	}
 	
+	@Override
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_SELECT.toString());
 		
@@ -55,6 +56,7 @@ public class SelectGUI implements CustomInventory{
 		return inv;
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 

@@ -9,6 +9,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.CustomInventory;
@@ -18,11 +20,6 @@ import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-import net.citizensnpcs.Citizens;
-import net.citizensnpcs.Settings;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.trait.LookClose;
 
 public class NPCGUI implements CustomInventory{
 
@@ -32,14 +29,14 @@ public class NPCGUI implements CustomInventory{
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
-	private Consumer<NPC> end;
+	private Consumer<BQNPC> end;
 	private Runnable cancel;
 	
 	private Inventory inv;
 	private EntityType en = EntityType.VILLAGER;
 	private String name = "§cno name selected";
 	
-	public NPCGUI(Consumer<NPC> end, Runnable cancel) {
+	public NPCGUI(Consumer<BQNPC> end, Runnable cancel) {
 		this.end = end;
 		this.cancel = cancel;
 	}
@@ -49,6 +46,7 @@ public class NPCGUI implements CustomInventory{
 		return this;
 	}
 	
+	@Override
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_NPC.toString());
 		
@@ -63,6 +61,7 @@ public class NPCGUI implements CustomInventory{
 		return inv;
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		switch (slot){
 		
@@ -74,7 +73,7 @@ public class NPCGUI implements CustomInventory{
 			Lang.NPC_NAME.send(p);
 			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
 				name = obj;
-				ItemUtils.name(inv.getItem(1), Lang.optionValue.format(obj));
+				ItemUtils.lore(current, Lang.optionValue.format(obj));
 				openLastInv(p);
 			}).enter();
 			break;
@@ -83,7 +82,7 @@ public class NPCGUI implements CustomInventory{
 			Lang.NPC_SKIN.send(p);
 			Inventories.closeWithoutExit(p);
 			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
-				if (obj != null) inv.setItem(slot, ItemUtils.skull(ItemUtils.getName(skin), (String) obj, ItemUtils.getLore(skin)));
+				if (obj != null) inv.setItem(slot, ItemUtils.skull(ItemUtils.getName(skin), obj, ItemUtils.getLore(skin)));
 				openLastInv(p);
 			}).useStrippedMessage().enter();
 			break;
@@ -92,10 +91,10 @@ public class NPCGUI implements CustomInventory{
 			Inventories.create(p, new EntityTypeGUI(en -> {
 				this.en = en;
 				if (en == EntityType.PLAYER) {
-					inv.setItem(5, ItemUtils.skull(Lang.name.toString(), null, "player"));
+					inv.setItem(5, ItemUtils.skull(Lang.type.toString(), null, "player"));
 				}else inv.setItem(5, ItemUtils.item(XMaterial.mobItem(en), Lang.name.toString(), en.getName()));
 				Inventories.put(p, openLastInv(p), inv);
-			}, x -> x != null));
+			}, x -> x != null && QuestsAPI.getNPCsManager().isValidEntityType(x)));
 			break;
 			
 		case 7:
@@ -104,13 +103,14 @@ public class NPCGUI implements CustomInventory{
 			break;
 			
 		case 8:
-			NPC npc = CitizensAPI.getNPCRegistry().createNPC(en, name);
-			npc.data().setPersistent("player-skin-name", ItemUtils.getOwner(inv.getItem(3)));
-			if (!Settings.Setting.DEFAULT_LOOK_CLOSE.asBoolean()) npc.getOrAddTrait(LookClose.class).toggle();
-			npc.spawn(p.getLocation());
-			((Citizens) CitizensAPI.getPlugin()).getNPCSelector().select(p, npc);
 			Inventories.closeAndExit(p);
-			end.accept(npc);
+			try {
+				end.accept(QuestsAPI.getNPCsManager().createNPC(p.getLocation(), en, name, ItemUtils.getOwner(inv.getItem(3))));
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				Lang.ERROR_OCCURED.send(p, "npc creation " + ex.getMessage());
+				cancel.run();
+			}
 			break;
 		
 		}

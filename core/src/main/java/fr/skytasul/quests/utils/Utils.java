@@ -140,26 +140,26 @@ public class Utils{
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, QuestsConfiguration.getPrefix() + format(msg, replace), false);
+		IsendMessage(sender, QuestsConfiguration.getPrefix() + msg, false, replace);
 	}
 	
 	public static void sendMessageWP(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, "§6" + format(msg, replace), false);
+		IsendMessage(sender, "§6" + msg, false, replace);
 	}
 	
-	public static String finalFormat(CommandSender sender, String text, boolean playerName){
+	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
 		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
 		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
-		return text;
+		return format(text, replace);
 	}
 	
-	public static void IsendMessage(CommandSender sender, String text, boolean playerName){
-		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName), "{nl}"));
+	public static void IsendMessage(CommandSender sender, String text, boolean playerName, Object... replace) {
+		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName, replace), "{nl}"));
 	}
 	
-	public static void sendOffMessage(Player p, String msg){
-		IsendMessage(p, Lang.OffText.format(msg), true);
+	public static void sendOffMessage(Player p, String msg, Object... replace) {
+		IsendMessage(p, Lang.OffText.format(msg, replace), true);
 	}
 	
 	public static String itemsToFormattedString(String[] items){

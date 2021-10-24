@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -16,10 +18,7 @@ import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
-
-public class OptionStarterNPC extends QuestOption<NPC> {
+public class OptionStarterNPC extends QuestOption<BQNPC> {
 	
 	public OptionStarterNPC() {
 		super(OptionQuestPool.class);
@@ -32,11 +31,11 @@ public class OptionStarterNPC extends QuestOption<NPC> {
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(CitizensAPI.getNPCRegistry().getById(config.getInt(key)));
+		setValue(QuestsAPI.getNPCsManager().getById(config.getInt(key)));
 	}
 	
 	@Override
-	public NPC cloneValue(NPC value) {
+	public BQNPC cloneValue(BQNPC value) {
 		return value;
 	}
 	

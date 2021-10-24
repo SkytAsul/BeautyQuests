@@ -40,8 +40,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
 
-import net.citizensnpcs.api.npc.NPC;
-
 public class Commands {
 	
 	@Cmd(permission = "create", player = true, noEditorInventory = true)
@@ -56,13 +54,12 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
-		new SelectNPC(cmd.player, () -> {}, (obj) -> {
-			if (obj == null) return;
-			NPC npc = obj;
+		new SelectNPC(cmd.player, () -> {}, npc -> {
+			if (npc == null) return;
 			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						if (quObj == null) return;
-						Inventories.create(cmd.player, new StagesGUI(null)).edit(quObj);
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+					if (quest == null) return;
+					Inventories.create(cmd.player, new StagesGUI(null)).edit(quest);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
@@ -84,12 +81,12 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
-		new SelectNPC(cmd.player, () -> {}, (obj) -> {
-			if (obj == null) return;
-			NPC npc = obj;
+		new SelectNPC(cmd.player, () -> {}, npc -> {
+			if (npc == null) return;
 			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						remove(cmd.sender, quObj);
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+					if (quest == null) return;
+					remove(cmd.sender, quest);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);

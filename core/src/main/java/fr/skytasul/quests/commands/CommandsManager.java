@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,15 +18,13 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 
 public class CommandsManager implements CommandExecutor, TabCompleter{
 
@@ -124,7 +123,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			}else if (type.equals("NPCSID")){
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;
-				NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+				BQNPC npc = QuestsAPI.getNPCsManager().getById(id);
 				if (npc == null){
 					Lang.NPC_DOESNT_EXIST.send(sender, id);
 					return false;
@@ -172,7 +171,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			}else if (key.equals("PLAYERS")){
 				return null;
 			}else if (key.equals("NPCSID")){
-				for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) find.add(npc.getId() + "");
+				find.addAll(QuestsAPI.getNPCsManager().getIDs().stream().map(String::valueOf).collect(Collectors.toList()));
 			}else if (key.equals("BOOLEAN")) {
 				find.add("false");
 				find.add("true");

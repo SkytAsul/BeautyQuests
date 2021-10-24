@@ -13,6 +13,7 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
+
 import net.md_5.bungee.api.ChatColor;
 
 public class Dynmap {
@@ -52,7 +53,7 @@ public class Dynmap {
 			DebugUtils.logMessage("No marker created for quest " + quest.getID() + " : quest is hid");
 			return;
 		}
-		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getStoredLocation();
+		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getLocation();
 		
 		Marker marker = markers.createMarker("qu_" + quest.getID(), ChatColor.stripColor(quest.getName()), lc.getWorld().getName(), lc.getX(), lc.getBlockY(), lc.getBlockZ(), icon, false);
 		

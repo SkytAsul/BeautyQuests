@@ -11,12 +11,15 @@ import java.util.function.Supplier;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -31,8 +34,6 @@ import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 
-import net.citizensnpcs.api.npc.NPC;
-
 public class QuestsAPI {
 	
 	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new LinkedHashMap<>();
@@ -40,6 +41,7 @@ public class QuestsAPI {
 	public static final List<StageType<?>> stages = new LinkedList<>();
 	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
+	private static BQNPCsManager npcsManager = null;
 	private static AbstractHolograms<?> hologramsManager = null;
 	private static BQBossBarManager bossBarManager = null;
 	
@@ -116,6 +118,19 @@ public class QuestsAPI {
 	public static void registerItemComparison(ItemComparison comparison) {
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
+	}
+	
+	public static BQNPCsManager getNPCsManager() {
+		return npcsManager;
+	}
+	
+	public static void setNPCsManager(BQNPCsManager newNpcsManager) {
+		if (npcsManager != null) {
+			BeautyQuests.logger.warning(newNpcsManager.getClass().getSimpleName() + " will replace " + npcsManager.getClass().getSimpleName() + " as the new NPCs manager.");
+			HandlerList.unregisterAll(npcsManager);
+		}
+		npcsManager = newNpcsManager;
+		Bukkit.getPluginManager().registerEvents(npcsManager, BeautyQuests.getInstance());
 	}
 	
 	public static boolean hasHologramsManager() {
@@ -201,17 +216,17 @@ public class QuestsAPI {
 		return unstarted;
 	}
 
-	public static List<Quest> getQuestsAssigneds(NPC npc) {
+	public static List<Quest> getQuestsAssigneds(BQNPC npc) {
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		return starter == null ? Collections.emptyList() : new ArrayList<>(starter.getQuests());
 	}
 	
-	public static boolean isQuestStarter(NPC npc){
+	public static boolean isQuestStarter(BQNPC npc) {
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		return starter != null && !starter.getQuests().isEmpty();
 	}
 
-	public static boolean hasQuestStarted(Player p, NPC npc){
+	public static boolean hasQuestStarted(Player p, BQNPC npc) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		for (Quest qu : getQuestsAssigneds(npc)){
 			if (qu.hasStarted(acc)) return true;

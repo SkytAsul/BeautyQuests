@@ -16,10 +16,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.BQNPCClickEvent;
 import fr.skytasul.quests.api.events.DialogSendEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
@@ -36,15 +37,9 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCClickEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.npc.NPC;
-
 public class StageNPC extends AbstractStage{
 	
-	private NPC npc;
+	private BQNPC npc;
 	private int npcID;
 	protected Dialog dialog = null;
 	protected boolean hide = false;
@@ -92,7 +87,7 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	private void createHoloLaunch(){
-		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getStoredLocation(), false);
+		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getLocation(), false);
 		hologram.appendItem(QuestsConfiguration.getHoloTalkItem());
 	}
 	
@@ -102,7 +97,7 @@ public class StageNPC extends AbstractStage{
 		hologram = null;
 	}
 
-	public NPC getNPC(){
+	public BQNPC getNPC() {
 		return npc;
 	}
 	
@@ -112,7 +107,7 @@ public class StageNPC extends AbstractStage{
 
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
-		if (npcID >= 0) this.npc = CitizensAPI.getNPCRegistry().getById(npcID);
+		if (npcID >= 0) this.npc = QuestsAPI.getNPCsManager().getById(npcID);
 		if (npc == null) BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
 	}
 	
@@ -156,19 +151,11 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onRightClick(NPCRightClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.RIGHT)) onClick(e);
-	}
-	
-	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onLeftClick(NPCLeftClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.LEFT)) onClick(e);
-	}
-	
-	private void onClick(NPCClickEvent e) {
-		Player p = e.getClicker();
+	private void onClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
+		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		Player p = e.getPlayer();
 		if (!hasStarted(p)) return;
 		boolean canUpdate = canUpdate(p, true);
 		
@@ -215,7 +202,7 @@ public class StageNPC extends AbstractStage{
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
 		cached.add(p);
-		if (QuestsConfiguration.handleGPS() && !hide) GPS.launchCompass(p, npc.getStoredLocation());
+		if (QuestsConfiguration.handleGPS() && !hide) GPS.launchCompass(p, npc.getLocation());
 	}
 	
 	@Override
@@ -232,7 +219,7 @@ public class StageNPC extends AbstractStage{
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cached.add(p);
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getStoredLocation());
+			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getLocation());
 		}
 	}
 	

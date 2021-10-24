@@ -23,6 +23,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -32,11 +33,10 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import net.citizensnpcs.api.npc.NPC;
 
 public class NPCStarter {
 
-	private NPC npc;
+	private BQNPC npc;
 	private Set<Quest> quests = new TreeSet<>();
 	private Set<QuestPool> pools = new TreeSet<>();
 	
@@ -49,18 +49,20 @@ public class NPCStarter {
 	private Hologram hologramLaunch = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems(), QuestsConfiguration.getHoloLaunchItem());
 	private Hologram hologramLaunchNo = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility(), QuestsConfiguration.getHoloLaunchNoItem());
 	private Hologram hologramPool = new Hologram(false, QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility(), Lang.PoolHologramText.toString()) {
+		@Override
 		public double getYAdd() {
 			return hologramText.visible ? 0.3 : 0;
 		};
 	};
 	
-	public NPCStarter(NPC npc){
+	public NPCStarter(BQNPC npc) {
 		Validate.notNull(npc, "NPC cannot be null");
 		this.npc = npc;
 		
 		launcheableTask = new BukkitRunnable() {
 			private boolean holograms = hologramLaunch.enabled || hologramLaunchNo.enabled || hologramPool.enabled;
 			private int timer = 0;
+			@Override
 			public void run() {
 				if (!npc.isSpawned()) return;
 
@@ -132,6 +134,7 @@ public class NPCStarter {
 		
 		if (!hologramText.enabled && !hologramLaunch.enabled && !hologramLaunchNo.enabled && !hologramPool.enabled) return; // no hologram: no need to launch the update task
 		hologramsTask = new BukkitRunnable() {
+			@Override
 			public void run(){
 				LivingEntity en = null; // check if NPC is spawned and living
 				if (npc.isSpawned()){
@@ -153,7 +156,7 @@ public class NPCStarter {
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
 	
-	public NPC getNPC() {
+	public BQNPC getNPC() {
 		return npc;
 	}
 	

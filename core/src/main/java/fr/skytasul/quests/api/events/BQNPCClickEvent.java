@@ -2,27 +2,23 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
+import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
-import fr.skytasul.quests.utils.types.Dialog;
-import fr.skytasul.quests.utils.types.Message;
 
-public class DialogSendMessageEvent extends Event implements Cancellable {
+public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
+	
+	private final BQNPC npc;
+	private final ClickType click;
 	
 	private boolean cancelled = false;
 	
-	private Dialog dialog;
-	private Message msg;
-	private BQNPC npc;
-	private Player player;
-	
-	public DialogSendMessageEvent(Dialog dialog, Message msg, BQNPC npc, Player player) {
-		this.dialog = dialog;
-		this.msg = msg;
+	public BQNPCClickEvent(BQNPC npc, Player p, ClickType click) {
+		super(p);
 		this.npc = npc;
-		this.player = player;
+		this.click = click;
 	}
 	
 	@Override
@@ -35,20 +31,12 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 		this.cancelled = cancelled;
 	}
 	
-	public Dialog getDialog() {
-		return dialog;
-	}
-	
-	public Message getMessage() {
-		return msg;
-	}
-	
 	public BQNPC getNPC() {
 		return npc;
 	}
 	
-	public Player getPlayer(){
-		return player;
+	public ClickType getClick() {
+		return click;
 	}
 	
 	@Override

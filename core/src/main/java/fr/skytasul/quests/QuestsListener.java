@@ -21,9 +21,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.BQNPCClickEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
@@ -36,31 +37,19 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import net.citizensnpcs.api.event.NPCClickEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
-import net.citizensnpcs.api.event.NPCRemoveEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.npc.NPC;
 
 public class QuestsListener implements Listener{
 	
-	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCRightClick(NPCRightClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.RIGHT)) onNPCClick(e);
-	}
-	
-	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCLeftClick(NPCLeftClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.LEFT)) onNPCClick(e);
-	}
-	
-	private void onNPCClick(NPCClickEvent e) {
+	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
-		Player p = e.getClicker();
+		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		
+		Player p = e.getPlayer();
+		BQNPC npc = e.getNPC();
 		
 		if (Inventories.isInSystem(p)) return;
 		
-		NPC npc = e.getNPC();
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		if (starter != null) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -73,7 +62,7 @@ public class QuestsListener implements Listener{
 			List<Quest> launcheable = new ArrayList<>();
 			List<Quest> requirements = new ArrayList<>();
 			List<Quest> timer = new ArrayList<>();
-			for (Quest qu : quests){
+			for (Quest qu : quests) {
 				try {
 					if (!qu.testRequirements(p, acc, false)) {
 						requirements.add(qu);
@@ -97,9 +86,9 @@ public class QuestsListener implements Listener{
 			}).collect(Collectors.toSet());
 			
 			e.setCancelled(true);
-			if (!launcheable.isEmpty()){
-				for (Quest quest : launcheable){
-					if (quest.isInDialog(p)){
+			if (!launcheable.isEmpty()) {
+				for (Quest quest : launcheable) {
+					if (quest.isInDialog(p)) {
 						quest.clickNPC(p);
 						return;
 					}
@@ -121,11 +110,6 @@ public class QuestsListener implements Listener{
 				e.setCancelled(false);
 			}
 		}
-	}
-	
-	@EventHandler
-	public void onNPCRemove(NPCRemoveEvent e){
-		if (BeautyQuests.getInstance().getNPCs().containsKey(e.getNPC())) BeautyQuests.getInstance().getNPCs().get(e.getNPC()).delete();
 	}
 	
 	@EventHandler

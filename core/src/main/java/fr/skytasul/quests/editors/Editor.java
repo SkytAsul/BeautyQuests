@@ -99,7 +99,7 @@ public abstract class Editor implements Listener{
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
 		String coloredMessage = Utils.translateHexColorCodes("&#", "", ChatColor.translateAlternateColorCodes('&', rawText));
 		String strippedMessage = ChatColor.stripColor(rawText);
-		if (cancel != null && strippedMessage.equalsIgnoreCase("cancel")) {
+		if (cancel != null && strippedMessage.equalsIgnoreCase(cancelWord())) {
 			cancel();
 		}else if (!chat(coloredMessage, strippedMessage)) {
 			Lang.CHAT_EDITOR.send(p);

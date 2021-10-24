@@ -7,9 +7,10 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import net.citizensnpcs.api.npc.NPC;
+
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -28,7 +29,7 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getDialogsDefaultTime() : wait;
 	}
 
-	public void sendMessage(Player p, NPC npc, int id, int size) {
+	public void sendMessage(Player p, BQNPC npc, int id, int size) {
 		String sent = null;
 		switch (sender) {
 		case PLAYER:

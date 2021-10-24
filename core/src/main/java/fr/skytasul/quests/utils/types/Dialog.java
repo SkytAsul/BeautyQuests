@@ -13,10 +13,9 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.types.Message.Sender;
-
-import net.citizensnpcs.api.npc.NPC;
 
 public class Dialog implements Cloneable {
 
@@ -32,7 +31,7 @@ public class Dialog implements Cloneable {
 		this.messages = messages;
 	}
 	
-	public void send(Player p, NPC npc, final Runnable end) {
+	public void send(Player p, BQNPC npc, final Runnable end) {
 		if (messages.isEmpty()) {
 			end.run();
 			return;

@@ -3,22 +3,36 @@ package fr.skytasul.quests.utils.compatibility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
+import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
+import fr.skytasul.quests.utils.compatibility.npcs.BQCitizens;
+import fr.skytasul.quests.utils.compatibility.npcs.BQServerNPCs;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
-	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable());
+	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.setNPCsManager(new BQServerNPCs()), null, plugin -> {
+		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) return true;
+		BeautyQuests.logger.warning("Your version of znpcs (" + plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
+		return false;
+	});
+	public static final BQDependency citizens = new BQDependency("Citizens", () -> {
+		QuestsAPI.setNPCsManager(new BQCitizens());
+		QuestsAPI.registerMobFactory(new CitizensFactory());
+	});
+	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable(), null);
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> QuestsAPI.registerMobFactory(new MythicMobs()));
 	public static final BQDependency vault = new BQDependency("Vault");
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder")));
@@ -47,7 +61,7 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod, tokenEnchant, ultimateTimber));
+		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod, tokenEnchant, ultimateTimber));
 	}
 	
 	public List<BQDependency> getDependencies() {
@@ -97,28 +111,31 @@ public class DependenciesManager implements Listener {
 	public static class BQDependency {
 		private final String pluginName;
 		private final Runnable initialize;
+		private final Runnable disable;
+		private final Predicate<Plugin> isValid;
 		private boolean enabled = false;
 		private boolean forceDisable = false;
-		private Runnable disable;
 		
 		public BQDependency(String pluginName) {
 			this(pluginName, null);
 		}
 		
 		public BQDependency(String pluginName, Runnable initialize) {
-			this(pluginName, initialize, null);
+			this(pluginName, initialize, null, null);
 		}
 		
-		public BQDependency(String pluginName, Runnable initialize, Runnable disable) {
+		public BQDependency(String pluginName, Runnable initialize, Runnable disable, Predicate<Plugin> isValid) {
 			Validate.notNull(pluginName);
 			this.pluginName = pluginName;
 			this.initialize = initialize;
 			this.disable = disable;
+			this.isValid = isValid;
 		}
 		
 		boolean testCompatibility(boolean after) {
 			if (forceDisable) return false;
 			if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) return false;
+			if (isValid != null && !isValid.test(Bukkit.getPluginManager().getPlugin(pluginName))) return false;
 			BeautyQuests.logger.info("Hooked into " + pluginName + (after ? " after primary initialization" : ""));
 			enabled = true;
 			return true;

@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -21,9 +23,6 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 
 public class QuestPool implements Comparable<QuestPool> {
 	
@@ -53,7 +52,7 @@ public class QuestPool implements Comparable<QuestPool> {
 		this.requirements = requirements;
 		
 		if (npcID >= 0) {
-			NPC npc = CitizensAPI.getNPCRegistry().getById(npcID);
+			BQNPC npc = QuestsAPI.getNPCsManager().getById(npcID);
 			if (npc == null) return;
 			starter = BeautyQuests.getInstance().getNPCs().get(npc);
 			if (starter == null) {
