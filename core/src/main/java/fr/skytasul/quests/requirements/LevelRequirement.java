@@ -39,12 +39,13 @@ public class LevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public AbstractRequirement clone() {
-		return new LevelRequirement(target, comparison);
+	public String getDescription(Player p) {
+		return Lang.RDLevel.format(Integer.toString((int) target));
 	}
 	
-	protected void save(Map<String, Object> datas) {
-		super.save(datas);
+	@Override
+	public AbstractRequirement clone() {
+		return new LevelRequirement(target, comparison);
 	}
 	
 	protected void load(Map<String, Object> savedDatas) {

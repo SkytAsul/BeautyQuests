@@ -46,8 +46,9 @@ public enum Lang{
 	MOB_AMOUNT("msg.writeMobAmount"),
 	MOB_NAME("msg.writeMobName"),
 	CHAT_MESSAGE("msg.writeChatMessage"),
-	END_MESSAGE("msg.writeEndMessage"),
+	WRITE_MESSAGE("msg.writeMessage"),
 	WRITE_START_MESSAGE("msg.writeStartMessage"),
+	WRITE_END_MESSAGE("msg.writeEndMsg"),
 	DESC_MESSAGE("msg.writeDescriptionText"),
 	START_TEXT("msg.writeStageText"),
 	MOVE_TELEPORT_POINT("msg.moveToTeleportPoint"),
@@ -109,6 +110,7 @@ public enum Lang{
 	DATA_QUEST_REMOVED_INFO("msg.command.resetPlayerQuest.remover"),
 	QUEST_PLAYERS_REMOVED("msg.command.resetQuest"), // 0: amount of players
 	START_QUEST("msg.command.startQuest"),
+	START_QUEST_NO_REQUIREMENT("msg.command.startQuestNoRequirements"),
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	CANCEL_QUEST_UNAVAILABLE("msg.command.cancelQuestUnavailable"),
 	BACKUP_CREATED("msg.command.backupCreated"),
@@ -277,6 +279,7 @@ public enum Lang{
 	
 	stageCreate("inv.create.stageCreate"),
 	stageRemove("inv.create.stageRemove"),
+	cantFinish("inv.create.cantFinish"),
 	stageNPC("inv.create.findNPC"),
 	stageBring("inv.create.bringBack"),
 	stageGoTo("inv.create.findRegion"),
@@ -653,6 +656,8 @@ public enum Lang{
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
+	
+	RDLevel("misc.requirement.description.level"), // 0: lvl
 	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),

@@ -35,7 +35,7 @@ msg:
   writeMobAmount: '§aEscribe la cantidad de mobs a matar:'
   writeMobName: '§aEscribe el nombre personalizado del mob para matar:'
   writeChatMessage: '§aEscribir mensaje requerido: (Añadir "{SLASH}" al principio si quieres un comando)'
-  writeEndMessage: '§aEscribe el mensaje que será enviado al final de la misión o la etapa:'
+  writeStartMessage: '§aEscribe el mensaje que será enviado al iniciar la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno'
   writeDescriptionText: '§aEscribe el texto que describe el objetivo de la etapa:'
   writeStageText: '§aEscribe el texto que será enviado al jugador al comienzo del paso:'
   moveToTeleportPoint: '§aIr a la ubicación de teletransporte deseada.'
@@ -188,12 +188,6 @@ msg:
     dialog:
       syntax: '§cSintaxis correctas: {0}{1} <message>'
       syntaxRemove: '§cSytaxis correcta: remove <id>'
-      player: '§aMensaje "{0}" añadido por el jugador.'
-      npc: '§aMensaje "{0}", agregado al NPC.'
-      noSender: '§aMensaje "{0}" añadido sin un remitente.'
-      messageRemoved: '§aMensaje "{0}" eliminado.'
-      edited: '§aMensaje "{0}" editado.'
-      soundAdded: '§aSonido "{0}" añadido para el mensaje "{1}".'
       cleared: '§a{0} mensaje(s) removido.'
       help:
         header: '§6§lBeautyQuests — Ayuda del editor de diálogo'
@@ -219,8 +213,6 @@ msg:
     epicBossDoesntExist: '§cEste Epic Boss no existe.'
     textList:
       syntax: '§cSintaxis correcta: '
-      added: '§aTexto "{0}" añadido.'
-      removed: '§aTexto "{0}" eliminado.'
       help:
         header: '§6§lBeautyQuests — Ayuda del editor de listas'
         add: '§6add <message>: §eAgrega un texto.'
@@ -233,7 +225,14 @@ msg:
     pool:
       hologramText: 'Escriba el texto personalizado del holograma para este grupo (o "null" si desea el predeterminado).'
       maxQuests: 'Escribe la cantidad máxima de misiones lanzables desde este conjunto'
+      questsPerLaunch: 'Escribe la cantidad de misiones que se dan cuando los jugadores hacen clic en el NPC.'
       time: 'Escribe el número de días antes de que los jugadores puedan tomar una nueva misión.'
+    title:
+      title: 'Escribe el texto del título (o "null" si quieres ninguno).'
+      subtitle: 'Escribe el texto de subtítulos (o "null" si no quieres ninguno).'
+      fadeIn: 'Escriba la duración de "fade-in", en ticks (20 ticks = 1 segundo).'
+      stay: 'Escriba la duración de la estancia, en ticks (20 ticks = 1 segundo).'
+      fadeOut: 'Escriba la duración de "desvanecer", en ticks (20 ticks = 1 segundo).'
   writeCommandDelay: '§aEscriba el retardo de comando deseado, en ticks.'
 advancement:
   finished: Finalizado
@@ -344,13 +343,17 @@ inv:
     setPermReward: '§eEditar permisos'
     setMoneyReward: '§eEditar recompensa de dinero'
     setWaitReward: '§eEditar recompensa "esperar"'
+    setTitleReward: '§eEditar recompensa del título'
     selectStarterNPC: '§e§lSelecciona el NPC iniciador'
     selectStarterNPCLore: Al hacer clic en el PNJ seleccionado comenzará la misión.
+    selectStarterNPCPool: '§c⚠ Un grupo de misiones está seleccionado'
     createQuestName: '§lCrear misión'
     createQuestLore: Debes definir un nombre de misión.
     editQuestName: '§lEditar misión'
     endMessage: '§eEditar mensaje final'
     endMessageLore: Mensaje que se enviará al jugador al final de la misión.
+    startMessage: '§eEditar mensaje de inicio'
+    startMessageLore: Mensaje que se enviará al jugador al comienzo de la misión.
     startDialog: '§eEditar diálogo de inicio'
     startDialogLore: Diálogo que se reproducira antes de que las misiones comiencen cuando los jugadores hagan clic en el Inicio NPC.
     editRequirements: '§eEditar requisitos'
@@ -540,12 +543,20 @@ inv:
     enchantsLore: Comparar los encantamientos de los articulos
     repairCost: Coste de reparación
     repairCostLore: Compara el coste de reparación de armaduras y espadas
+  editTitle:
+    name: Editar título
+    title: '§6Título'
+    subtitle: '§eSubtítulo'
+    fadeIn: '§aDuración del Fade-in'
+    stay: '§bDuración'
+    fadeOut: '§aDuración del Fade-out'
 scoreboard:
   name: '§6§lMisión'
   noLaunched: '§cNo hay misiones en curso.'
   noLaunchedName: '§c§lCargando'
   noLaunchedDescription: '§c§oCargando'
   textBetwteenBranch: '§e o'
+  asyncEnd: '§ex'
   stage:
     region: '§eEncontrar región §6{0}'
     npc: '§eHablar con NPC §6{0}'

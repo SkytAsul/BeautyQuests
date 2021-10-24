@@ -35,8 +35,9 @@ msg:
   writeMobAmount: '§aEcrivez le nombre de mobs à tuer :'
   writeMobName: '§aÉcrivez le nom personnalisé du mob à tuer :'
   writeChatMessage: '§aÉcrivez le message requis (rajoutez "{SLASH}" au début pour en faire une commande.)'
-  writeEndMessage: '§aÉcrivez le message qui sera envoyé à la fin de la quête ou de l''étape :'
+  writeMessage: '§aÉcrivez le message qui sera envoyé au joueur'
   writeStartMessage: '§aÉcrivez le message qui sera envoyé au début de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas :'
+  writeEndMsg: '§aÉcrivez le message qui sera envoyé à la fin de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas. Vous pouvez utiliser "{0}" qui sera remplacé par les récompenses obtenues.'
   writeDescriptionText: '§aEcrivez le texte qui décrira le but de l''étape :'
   writeStageText: '§aEcrivez le texte qui sera transmis au joueur au début de l''étape :'
   moveToTeleportPoint: '§aAllez au lieu de téléportation désiré.'
@@ -107,6 +108,7 @@ msg:
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
     resetQuest: '§6Les données de la quête ont été supprimées pour {0} joueurs.'
     startQuest: '§6Vous avez forcé le début de la quête {0} (UUID du joueur : {1}).'
+    startQuestNoRequirements: '§cLe joueur ne remplit pas les conditions pour la quête {0}... Ajoutez "true" à la fin de votre commande pour ne pas effectuer la vérification des conditions.'
     cancelQuest: '§6Vous avez annulé la quête {0}.'
     cancelQuestUnavailable: '§cLa quête {0} ne peut être annulée.'
     backupCreated: '§6Vous avez créé une sauvegarde des quêtes et des données joueurs avec succès.'
@@ -152,6 +154,7 @@ msg:
     enter:
       title: '§6~ mode éditeur ~'
       subtitle: '§6Entrez "/quests exitEditor" pour forcer la sortie.'
+      list: '§c⚠ §7Vous êtes entré dans un éditeur "liste". Utilisez "add" pour ajouter des lignes. Tapez "help" (sans slash) pour obtenir de l''aide. §e§lTapez "close" pour quitter l''éditeur.'
     chat: '§6Vous êtes actuellement dans le mode éditeur. Entrez "/quests exitEditor" pour forcer la sortie de ce mode (peu recommandé, préférez l''usage de mots-clés tels que "close" ou "cancel" pour revenir à l''inventaire précédent).'
     npc:
       enter: '§aCliquez sur un NPC, ou tapez "cancel" pour annuler.'
@@ -189,12 +192,12 @@ msg:
     dialog:
       syntax: '§cSyntaxe correcte : {0}{1} <message>'
       syntaxRemove: '§cSyntaxe correcte : remove <id>'
-      player: '§aMessage {0} ajouté pour le joueur.'
-      npc: '§aMessage {0} ajouté pour le NPC.'
-      noSender: '§aMessage {0} ajouté pour aucune entité parlante.'
-      messageRemoved: '§aMessage "{0}" supprimé.'
-      edited: '§aMessage "{0}" modifié.'
-      soundAdded: '§aSon "{0}" ajouté pour le message "{1}".'
+      player: '§aMessage "§7{0}§a" ajouté pour le joueur.'
+      npc: '§aMessage "§7{0}§a" ajouté pour le NPC.'
+      noSender: '§aMessage "§7{0}§a" ajouté pour aucune entité parlante.'
+      messageRemoved: '§aMessage "§7{0}§a" supprimé.'
+      edited: '§aMessage "§7{0}§a" modifié.'
+      soundAdded: '§aSon "§7{0}§a" ajouté pour le message "§7{1}§a".'
       cleared: '§a{0} messages supprimés.'
       help:
         header: '§e§lBeautyQuests — §6Aide de l''éditeur de dialogues'
@@ -220,8 +223,8 @@ msg:
     epicBossDoesntExist: '§cCet EpicBoss n''existe pas.'
     textList:
       syntax: '§cSyntaxe correcte : '
-      added: '§aTexte "{0}§r§a" ajouté.'
-      removed: '§aTexte "{0}§r§a" supprimé.'
+      added: '§aTexte "§7{0}§a" ajouté.'
+      removed: '§aTexte "§7{0}§a" supprimé.'
       help:
         header: '§6§lBeautyQuests — Aide de l''éditeur de liste'
         add: '§6add <message> : §eAjouter un texte.'
@@ -258,6 +261,7 @@ inv:
   create:
     stageCreate: '§aCréer une nouvelle étape'
     stageRemove: '§cSupprimer cette étape'
+    cantFinish: '§7Vous devez créer au moins une étape avant de terminer la création de la quête !'
     findNPC: '§aTrouver un NPC'
     bringBack: '§aRapporter des objets'
     findRegion: '§aTrouver une région'

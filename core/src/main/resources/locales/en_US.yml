@@ -39,10 +39,12 @@ msg:
   writeMobName: '§aWrite the custom name of the mob to kill:'
   writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if
     you want a command.)'
-  writeEndMessage: '§aWrite the message that will be sent at the end of the quest
-    or the stage:'
+  writeMessage: '§aWrite the message that will be sent to the player'
   writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
     "null" if you want the default one or "none" if you want none:'
+  writeEndMsg: '§aWrite the message that will be sent at the end of the quest,
+    "null" if you want the default one or "none" if you want none. You can use "{0}" which
+    will be replaced with the rewards obtained.'
   writeDescriptionText: '§aWrite the text which describes the goal of the stage:'
   writeStageText: '§aWrite the text that will be sent to the player at the beginning
     of the step:'
@@ -122,6 +124,8 @@ msg:
       remover: §6{0} quest information(s) of {1} has/have been deleted.
     resetQuest: §6Removed datas of the quest for {0} players.
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
+    startQuestNoRequirements: '§cThe player does not meet the requirements for the quest {0}...
+      Append "true" at the end of your command to bypass the requirements check.'
     cancelQuest: §6You have cancelled the quest {0}.
     cancelQuestUnavailable: §cThe quest {0} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
@@ -216,13 +220,13 @@ msg:
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
-      player: §aMessage "{0}" added for the player.
-      npc: §aMessage "{0}" added for the NPC.
-      noSender: §aMessage "{0}" added without a sender.
-      messageRemoved: §aMessage "{0}" removed.
-      edited: §aMessage "{0}" edited.
-      soundAdded: §aSound "{0}" added for the message "{1}".
-      cleared: §a{0} removed message(s).
+      player: §aMessage "§7{0}§a" added for the player.
+      npc: §aMessage "§7{0}§a" added for the NPC.
+      noSender: §aMessage "§7{0}§a" added without a sender.
+      messageRemoved: §aMessage "§7{0}§a" removed.
+      edited: §aMessage "§7{0}§a" edited.
+      soundAdded: §aSound "§7{0}§a" added for the message "§7{1}§a".
+      cleared: §aRemoved §2§l{0}§a message(s).
       help:
         header: §6§lBeautyQuests — Dialog editor help
         npc: '§6npc <message>: §eAdd a message said by the NPC.'
@@ -248,8 +252,8 @@ msg:
     epicBossDoesntExist: §cThis Epic Boss doesn't exist.
     textList:
       syntax: '§cCorrect syntax: '
-      added: §aText "{0}" added.
-      removed: §aText "{0}" removed.
+      added: §aText "§7{0}§a" added.
+      removed: §aText "§7{0}§a" removed.
       help:
         header: §6§lBeautyQuests — List editor help
         add: '§6add <message>: §eAdd a text.'
@@ -286,6 +290,7 @@ inv:
   create:
     stageCreate: §aCreate new step
     stageRemove: §cDelete this step
+    cantFinish: §7You must create at least one stage before finishing quest creation!
     findNPC: §aFind NPC
     bringBack: §aBring back items
     findRegion: §aFind region

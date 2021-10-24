@@ -44,7 +44,7 @@ public class MessageReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.END_MESSAGE.send(p);
+		Lang.WRITE_MESSAGE.send(p);
 		new TextEditor<String>(p, () -> {
 			if (text == null) gui.remove(this);
 			gui.reopen();

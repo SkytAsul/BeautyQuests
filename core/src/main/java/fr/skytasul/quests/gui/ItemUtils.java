@@ -18,6 +18,8 @@ import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ItemUtils {
 	
 	/**
@@ -179,23 +181,32 @@ public class ItemUtils {
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
+	 * @see #itemNextPage
 	 */
-	public static ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
+	public static final ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
+	 * @see #itemLaterPage
 	 */
-	public static ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+	public static final ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
 	 */
-	public static ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
+	public static final ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
+	 * @see #itemNotDone
 	 */
-	public static ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
+	public static final ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
+	
+	/**
+	 * Immutable ItemStack instance with name: <i>inv.done</i> but red and strikethrough, material: charcoal
+	 * @see #itemDone
+	 */
+	public static final ImmutableItemStack itemNotDone = new ImmutableItemStack(item(XMaterial.CHARCOAL, "§c§l§m" + ChatColor.stripColor(Lang.done.toString())));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted

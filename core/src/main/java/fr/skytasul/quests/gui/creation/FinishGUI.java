@@ -211,6 +211,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		}else {
 			BeautyQuests.getInstance().addQuest(qu);
 			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
+			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
 			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 			try {
@@ -323,7 +324,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 42, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMessage", 43, OptionEndMessage.class, OptionEndMessage::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMsg", 43, OptionEndMessage.class, OptionEndMessage::new, QuestsConfiguration.getPrefix() + Lang.FINISHED_BASE.toString()));
 	}
 	
 }

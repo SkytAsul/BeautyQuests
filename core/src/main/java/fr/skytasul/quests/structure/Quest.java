@@ -34,6 +34,7 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -333,11 +334,13 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		
 		Runnable run = () -> {
 			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
-			Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
+			String obtained = Utils.itemsToFormattedString(msg.toArray(new String[0]));
+			if (hasOption(OptionEndMessage.class)) {
+				String endMsg = getOption(OptionEndMessage.class).getValue();
+				if (!"none".equals(endMsg)) Utils.IsendMessage(p, Utils.format(endMsg, obtained), true);
+			}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
 			
 			Utils.runOrSync(() -> {
-				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
-				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
@@ -452,6 +455,17 @@ public class Quest implements Comparable<Quest>, OptionSet {
 					}
 					break;
 				}
+			}
+		}
+		String endMessage = map.getString("endMessage");
+		if (endMessage != null) {
+			OptionEndRewards rewards;
+			if (qu.hasOption(OptionEndRewards.class)) {
+				rewards = qu.getOption(OptionEndRewards.class);
+			}else {
+				rewards = (OptionEndRewards) QuestOptionCreator.creators.get(OptionEndRewards.class).optionSupplier.get();
+				rewards.getValue().add(new MessageReward(endMessage));
+				qu.addOption(rewards);
 			}
 		}
 

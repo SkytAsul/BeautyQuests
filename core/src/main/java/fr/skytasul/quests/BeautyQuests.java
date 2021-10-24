@@ -216,25 +216,24 @@ public class BeautyQuests extends JavaPlugin {
 
 	@Override
 	public void onDisable(){
-		Editor.leaveAll();
-		Inventories.closeAll();
-		getServer().getScheduler().cancelTasks(this);
-		stopSaveCycle();
-		
 		try {
-			if (!disable) saveAllConfig(true);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			dependencies.disableCompatibilities();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
+			Editor.leaveAll();
+			Inventories.closeAll();
+			getServer().getScheduler().cancelTasks(this);
+			stopSaveCycle();
+			
+			try {
+				if (!disable) saveAllConfig(true);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				dependencies.disableCompatibilities();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}finally {
 			if (logger != null) logger.close();
-		}catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -321,7 +320,7 @@ public class BeautyQuests extends JavaPlugin {
 			}
 		}catch (LoadingException ex) {
 			throw ex;
-		}catch (Exception ex){
+		}catch (Throwable ex) {
 			throw new LoadingException("Error while loading configuration and initializing values", ex);
 		}
 	}

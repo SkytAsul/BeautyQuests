@@ -22,7 +22,7 @@ public interface QuestObject extends Cloneable {
 	
 	QuestObject clone();
 	
-	default String getDescription() { // will maybe eventually be abstract (and therefore needs to be implemented)
+	default String getDescription(Player p) { // will maybe eventually be abstract (and therefore needs to be implemented)
 		return null;
 	}
 	

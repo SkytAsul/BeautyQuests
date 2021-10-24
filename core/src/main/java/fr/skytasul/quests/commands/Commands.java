@@ -285,7 +285,10 @@ public class Commands {
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				Quest qu = obj;
-				if (testRequirements && !qu.isLauncheable(target, acc, true)) return;
+				if (testRequirements && !qu.isLauncheable(target, acc, true)) {
+					Lang.START_QUEST_NO_REQUIREMENT.send(cmd.sender, qu.getName());
+					return;
+				}
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 			}, acc, false, true, false);
