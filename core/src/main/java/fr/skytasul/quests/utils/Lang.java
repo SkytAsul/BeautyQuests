@@ -620,6 +620,7 @@ public enum Lang{
 	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
 	OffText("misc.format.offText"), // 1: msg
 	
+	TimeWeeks("misc.time.weeks"),
 	TimeDays("misc.time.days"),
 	TimeHours("misc.time.hours"),
 	TimeMinutes("misc.time.minutes"),

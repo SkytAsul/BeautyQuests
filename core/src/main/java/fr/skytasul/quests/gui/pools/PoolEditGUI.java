@@ -17,6 +17,8 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.DurationParser;
+import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -167,7 +169,7 @@ public class PoolEditGUI implements CustomInventory {
 				timeDiff = TimeUnit.DAYS.toMillis(msg);
 				ItemUtils.lore(current, getTimeLore());
 				reopen(p, inv, false);
-			}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+			}, new DurationParser(MinecraftTimeUnit.DAY)).enter();
 			break;
 		case SLOT_REDO:
 			redoAllowed = ItemUtils.toggle(current);

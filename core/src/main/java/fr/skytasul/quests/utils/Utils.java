@@ -111,7 +111,12 @@ public class Utils{
 	public static String millisToHumanString(long time) {
 		StringBuilder sb = new StringBuilder();
 		
+		long weeks = time / 604_800_000;
+		if (weeks != 0) sb.append(Lang.TimeWeeks.format(weeks));
+		time -= weeks * 604_800_000;
+		
 		long days = time / 86_400_000;
+		if (sb.length() != 0) sb.append(' ');
 		if (days != 0) sb.append(Lang.TimeDays.format(days));
 		time -= days * 86_400_000;
 		

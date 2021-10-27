@@ -643,6 +643,7 @@ misc:
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     offText: §r§e{0}
   time:
+    weeks: '{0} weeks'
     days: '{0} days'
     hours: '{0} hours'
     minutes: '{0} minutes'

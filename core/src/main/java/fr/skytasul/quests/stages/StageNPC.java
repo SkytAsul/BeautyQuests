@@ -310,7 +310,7 @@ public class StageNPC extends AbstractStage{
 		
 		public void setDialog(Dialog dialog) {
 			this.dialog = dialog;
-			line.editItem(SLOT_DIALOG, ItemUtils.lore(line.getItem(SLOT_DIALOG), QuestOption.formatDescription(dialog.messages.valuesSize() + " line(s)")));
+			line.editItem(SLOT_DIALOG, ItemUtils.lore(line.getItem(SLOT_DIALOG), dialog == null ? Lang.NotSet.toString() : QuestOption.formatDescription(dialog.messages.valuesSize() + " line(s)")));
 		}
 		
 		public void setHidden(boolean hidden) {

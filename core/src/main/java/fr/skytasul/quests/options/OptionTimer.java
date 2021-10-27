@@ -8,10 +8,12 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
+import fr.skytasul.quests.editors.checkers.DurationParser;
+import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionTimer extends QuestOption<Integer> {
@@ -46,7 +48,7 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.timerLore.toString()), "", formatValue(getValue() + " minutes") };
+		return new String[] { formatDescription(Lang.timerLore.toString()), "", formatValue(Utils.millisToHumanString(getValue() * 60 * 1000)) };
 	}
 	
 	@Override
@@ -60,7 +62,7 @@ public class OptionTimer extends QuestOption<Integer> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+		}, new DurationParser(MinecraftTimeUnit.MINUTE)).enter();
 	}
 	
 }
