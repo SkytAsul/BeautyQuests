@@ -7,7 +7,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -29,14 +28,14 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getDialogsDefaultTime() : wait;
 	}
 
-	public void sendMessage(Player p, BQNPC npc, int id, int size) {
+	public void sendMessage(Player p, String npc, int id, int size) {
 		String sent = null;
 		switch (sender) {
 		case PLAYER:
 			sent = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), text, id + 1, size), true);
 			break;
 		case NPC:
-			sent = Utils.finalFormat(p, Lang.NpcText.format(npc == null ? Lang.Unknown.toString() : npc.getName(), text, id + 1, size), true);
+			sent = Utils.finalFormat(p, Lang.NpcText.format(npc, text, id + 1, size), true);
 			break;
 		case NOSENDER:
 			sent = Utils.finalFormat(p, Utils.format(text, id + 1, size), true);

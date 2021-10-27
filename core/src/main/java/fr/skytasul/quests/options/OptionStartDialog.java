@@ -42,7 +42,7 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().messages.valuesSize() + " string(s)" };
+		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().messages.valuesSize() + " line(s)" };
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Utils.sendMessage(p, Lang.NPC_TEXT.toString());
 		if (getValue() == null) setValue(new Dialog());
-		new DialogEditor(p, (obj) -> {
+		new DialogEditor(p, () -> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}, getValue()).enter();

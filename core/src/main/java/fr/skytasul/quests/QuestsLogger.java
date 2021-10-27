@@ -14,8 +14,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.skytasul.quests.utils.Utils;
+
 public class QuestsLogger extends PluginLogger {
 
+	private final Date launchDate = new Date();
+	
 	private File file;
 	private PrintWriter stream;
 	
@@ -34,7 +38,7 @@ public class QuestsLogger extends PluginLogger {
 			}
 			file.createNewFile();
 			stream = new PrintWriter(new FileWriter(file));
-			write("---- BEAUTYQUESTS LOGGER - OPENED " + new Date(System.currentTimeMillis()).toString() + " ----");
+			write("---- BEAUTYQUESTS LOGGER - OPENED " + launchDate.toString() + " ----");
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -58,7 +62,9 @@ public class QuestsLogger extends PluginLogger {
 	}
 	
 	public void close() {
-		write("---- BEAUTYQUESTS LOGGER - CLOSED " + new Date(System.currentTimeMillis()).toString() + " ----");
+		Date endDate = new Date();
+		info("Logger was open during " + Utils.millisToHumanString(endDate.getTime() - launchDate.getTime()));
+		write("---- BEAUTYQUESTS LOGGER - CLOSED " + endDate.toString() + " ----");
 		if (!isEnabled()) return;
 		if (run != null) run.cancel();
 		stream.close();

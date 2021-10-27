@@ -232,6 +232,8 @@ public enum Lang{
 	DIALOG_SOUND_ADDED("msg.editor.dialog.soundAdded"),
 	DIALOG_TIME_SET("msg.editor.dialog.timeSet"), // 0: index, 1: time
 	DIALOG_TIME_REMOVED("msg.editor.dialog.timeRemoved"), // 0: index
+	DIALOG_NPCNAME_SET("msg.editor.dialog.npcName.set"), // 0: previous, 1: new
+	DIALOG_NPCNAME_UNSET("msg.editor.dialog.npcName.unset"), // 0: previous
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
 	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
 	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
@@ -245,6 +247,7 @@ public enum Lang{
 	DIALOG_HELP_EDIT("msg.editor.dialog.help.edit"),
 	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
 	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime"),
+	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName"),
 	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
 	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
 	
@@ -279,6 +282,9 @@ public enum Lang{
 	
 	stageCreate("inv.create.stageCreate"),
 	stageRemove("inv.create.stageRemove"),
+	stageUp("inv.create.stageUp"),
+	stageDown("inv.create.stageDown"),
+	stageType("inv.create.stageType"),
 	cantFinish("inv.create.cantFinish"),
 	stageNPC("inv.create.findNPC"),
 	stageBring("inv.create.bringBack"),
@@ -662,6 +668,11 @@ public enum Lang{
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
+	
+	ClickRight("misc.click.right"),
+	ClickLeft("misc.click.left"),
+	ClickShiftRight("misc.click.shift-right"),
+	ClickShiftLeft("misc.click.shift-left"),
 	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),

@@ -243,8 +243,12 @@ msg:
         clear: '§6clear: §eRemove all messages.'
         close: '§6close: §eValidate all messages.'
         setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
+        npcName: '§6npcName [custom NPC name]: §eSet (or reset to default) custom name of the NPC in the dialog'
       timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
       timeRemoved: '§aTime has been removed for message {0}.'
+      npcName:
+        set: '§aCustom NPC name set to §7{1}§a (was §7{0}§a)'
+        unset: '§aCustom NPC name reset to default (was §7{0}§a)'
     mythicmobs:
       list: '§aA list of all Mythic Mobs:'
       isntMythicMob: §cThis Mythic Mob doesn't exist.
@@ -290,6 +294,9 @@ inv:
   create:
     stageCreate: §aCreate new step
     stageRemove: §cDelete this step
+    stageUp: Move up
+    stageDown: Move down
+    stageType: '§7Stage type: §e{0}'
     cantFinish: §7You must create at least one stage before finishing quest creation!
     findNPC: §aFind NPC
     bringBack: §aBring back items
@@ -682,6 +689,11 @@ misc:
     water: Water bucket
     lava: Lava bucket
     milk: Milk bucket
+  click:
+    right: Right click
+    left: Left click
+    shift-right: Shift-right click
+    shift-left: Shift-left click
   ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC

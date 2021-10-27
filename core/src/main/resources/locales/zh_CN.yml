@@ -35,7 +35,9 @@ msg:
   writeMobAmount: '输入要击杀的怪物数.'
   writeMobName: '§a请输入要击杀的自定义怪物名称：'
   writeChatMessage: '要玩家输入的消息 (在开头加上 {SLASH} 来让玩家输入指令).'
+  writeMessage: '§a输入发送给玩家的消息'
   writeStartMessage: '§a输入在开始任务时发送给玩家的消息，输入“null”则发送默认消息，输入“none”则不发送消息：'
+  writeEndMsg: '§a输入任务结束时发送的消息，输入“null” 则发送默认消息，输入“none”则不发送。你可以使用 "{0}"显示获得的奖励。'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
   moveToTeleportPoint: 前往指定的传送点.
@@ -106,6 +108,7 @@ msg:
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
     resetQuest: '§6已移除{0}的任务数据。'
     startQuest: '§6你接受了任务 {0} (UUID： {1}).'
+    startQuestNoRequirements: '§c玩家不符合任务{0}需求... 在指令末尾加上“true”绕过任务需求检测。'
     cancelQuest: '§6你放弃了任务 {0}.'
     cancelQuestUnavailable: '§c无法取消任务 {0} .'
     backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
@@ -151,6 +154,7 @@ msg:
     enter:
       title: '§6~ 进入编辑器模式 ~'
       subtitle: '§e输入 "/quests exitEditor" 强制退出任务编辑器。'
+      list: '§c⚠ §7你已进入"list"编辑器。输入"add"添加一行。使用 "help" (无需斜杠) 查看帮助。§e§l输入"close"退出编辑器。'
     chat: '§6你已进入编辑器模式。输入"/quests exitEditor" 强制退出编辑器。（不推荐使用，最好使用 "close" 或 "cancel" 回到上一个菜单）'
     npc:
       enter: '§a点击一个NPC，或输入"cancel"取消.'
@@ -188,6 +192,12 @@ msg:
     dialog:
       syntax: '§c正确用法 : {0}{1} <消息>'
       syntaxRemove: '§c正确用法: remove <id>'
+      player: '§a已为玩家添加消息 "§7{0}§a"。'
+      npc: '§a已为NPC添加消息 "§7{0}§a"。'
+      noSender: '§a已添加无发送者的消息“{0}”。'
+      messageRemoved: '§a已删除消息  "§7{0}§a"。'
+      edited: '§a已编辑消息  "§7{0}§a"。'
+      soundAdded: '§a已为消息 "§7{1}§a"添加音效 "§7{0}§a"。'
       cleared: '§a已删除{0}条消息.'
       help:
         header: '§e§lBeautyQuest  - §6对话编辑器帮助'
@@ -213,6 +223,8 @@ msg:
     epicBossDoesntExist: '§c这个EpicBoss 不存在.'
     textList:
       syntax: '§c正确用法: '
+      added: '§a已添加文本 "§7{0}§a"。'
+      removed: '§a已删除文本 "§7{0}§a"。'
       help:
         header: '§6§lBeautyQuests — 编辑器列表帮助'
         add: '§6add [消息]: §e添加一条文本.'
@@ -249,6 +261,7 @@ inv:
   create:
     stageCreate: '§a创建新的阶段'
     stageRemove: '§c删除这一阶段'
+    cantFinish: '§7你必须先创建至少一个任务阶段！'
     findNPC: '§a寻找一个NPC'
     bringBack: '§a带回物品'
     findRegion: '§a找到一片区域'

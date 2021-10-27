@@ -104,7 +104,7 @@ public abstract class PlayersManager {
 					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
 					cachedAccounts.put(p, account);
 					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
-						DebugUtils.logMessage("Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time) + " ms");
+						DebugUtils.logMessage("Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time) + " ms (" + account.getQuestsDatas().size() + " quests, " + account.getPoolDatas().size() + " pools)");
 						if (p.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
 						}else {
@@ -127,7 +127,7 @@ public abstract class PlayersManager {
 	public static synchronized void unloadPlayer(Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
-		DebugUtils.logMessage("Unloading player " + p.getName() + "...");
+		DebugUtils.logMessage("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
 		manager.unloadAccount(acc);
 		cachedAccounts.remove(p);

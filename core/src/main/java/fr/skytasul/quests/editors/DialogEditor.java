@@ -1,7 +1,6 @@
 package fr.skytasul.quests.editors;
 
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
 
@@ -13,12 +12,12 @@ import fr.skytasul.quests.utils.types.Message.Sender;
 
 public class DialogEditor extends Editor{
 	
-	private Consumer<Dialog> run;
+	private Runnable end;
 	public Dialog d;
 
-	public DialogEditor(Player p, Consumer<Dialog> run, Dialog dialog) {
+	public DialogEditor(Player p, Runnable end, Dialog dialog) {
 		super(p, null);
-		this.run = run;
+		this.end = end;
 		this.d = dialog;
 	}
 
@@ -149,6 +148,14 @@ public class DialogEditor extends Editor{
 				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
 			}
 			break;
+		
+		case NPCNAME:
+			if (args.length < 2) {
+				Lang.DIALOG_NPCNAME_UNSET.send(p, d.npcName);
+				d.npcName = null;
+			}
+			Lang.DIALOG_NPCNAME_SET.send(p, d.npcName, d.npcName = msg);
+			break;
 
 		case CLEAR:
 			Lang.DIALOG_CLEARED.send(p, d.messages.clear());
@@ -162,7 +169,7 @@ public class DialogEditor extends Editor{
 
 		case CLOSE:
 			leave(p);
-			run.accept(d);
+			end.run();
 			break;
 
 		}
@@ -170,7 +177,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, NPCNAME, CLEAR;
 	}
 	
 }

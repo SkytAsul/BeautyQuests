@@ -20,7 +20,6 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -28,7 +27,6 @@ import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 public abstract class AbstractStage implements Listener{
@@ -169,18 +167,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount for which the stage starts
 	 */
 	public void start(PlayerAccount acc) {
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			if (startMessage != null){
-				if (startMessage.length() > 0){
-					if (branch.getID(this) == 0 && branch.getQuest().hasOption(OptionStarterNPC.class)) {
-						Utils.IsendMessage(p, Lang.NpcText.format(branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1), true);
-					}else {
-						Utils.sendOffMessage(p, startMessage);
-					}
-				}
-			}
-		}
+		if (acc.isCurrent()) Utils.sendOffMessage(acc.getPlayer(), startMessage);
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);

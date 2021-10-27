@@ -274,52 +274,57 @@ public class StageNPC extends AbstractStage{
 
 	public abstract static class AbstractCreator<T extends StageNPC> extends StageCreation<T> {
 		
+		private static final int SLOT_HIDE = 6;
+		private static final int SLOT_NPC = 7;
+		private static final int SLOT_DIALOG = 8;
+		
 		private int npcID = -1;
 		private Dialog dialog = null;
 		private boolean hidden = false;
 		
-		public AbstractCreator(Line line, boolean ending) {
+		protected AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(7, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), (p, item) -> {
-				new SelectGUI(() -> reopenGUI(p, true), npc -> {
-					setNPCId(npc.getId());
+			line.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), (p, item) -> {
+				new SelectGUI(() -> reopenGUI(p, true), newNPC -> {
+					setNPCId(newNPC.getId());
 					reopenGUI(p, true);
 				}).create(p);
 			});
 			
-			line.setItem(8, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString()), (p, item) -> {
+			line.setItem(SLOT_DIALOG, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString(), Lang.NotSet.toString()), (p, item) -> {
 				Utils.sendMessage(p, Lang.NPC_TEXT.toString());
-				new DialogEditor(p, (obj) -> {
+				new DialogEditor(p, () -> {
 					setDialog(dialog);
 					reopenGUI(p, false);
 				}, dialog == null ? dialog = new Dialog() : dialog).enter();
 			}, true, true);
 			
-			line.setItem(6, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
+			line.setItem(SLOT_HIDE, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
 		}
 		
 		public void setNPCId(int npcID) {
 			this.npcID = npcID;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription("ID: §l" + npcID)));
+			line.editItem(SLOT_NPC, ItemUtils.lore(line.getItem(SLOT_NPC), QuestOption.formatDescription("ID: §l" + npcID)));
 		}
 		
 		public void setDialog(Dialog dialog) {
 			this.dialog = dialog;
+			line.editItem(SLOT_DIALOG, ItemUtils.lore(line.getItem(SLOT_DIALOG), QuestOption.formatDescription(dialog.messages.valuesSize() + " line(s)")));
 		}
 		
 		public void setHidden(boolean hidden) {
 			if (this.hidden != hidden) {
 				this.hidden = hidden;
-				line.editItem(6, ItemUtils.set(line.getItem(6), hidden));
+				line.editItem(SLOT_HIDE, ItemUtils.set(line.getItem(SLOT_HIDE), hidden));
 			}
 		}
 
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new SelectGUI(removeAndReopen(p, true), npc -> {
-				setNPCId(npc.getId());
+			new SelectGUI(removeAndReopen(p, true), newNPC -> {
+				setNPCId(newNPC.getId());
 				reopenGUI(p, true);
 			}).create(p);
 		}

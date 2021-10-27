@@ -292,7 +292,10 @@ public class Commands {
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
 			Quest qu = (Quest) cmd.args[1];
-			if (testRequirements && !qu.isLauncheable(target, acc, true)) return;
+			if (testRequirements && !qu.isLauncheable(target, acc, true)) {
+				Lang.START_QUEST_NO_REQUIREMENT.send(cmd.sender, qu.getName());
+				return;
+			}
 			qu.start(target);
 			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 		}else {

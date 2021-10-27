@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
 			try {
-				PlayerAccount acc = loadFromFile(entry.getKey());
+				PlayerAccount acc = loadFromFile(entry.getKey(), false);
 				if (acc == null) {
 					acc = createPlayerAccount(entry.getValue(), entry.getKey());
 					addAccount(acc);
@@ -183,8 +184,11 @@ public class PlayersManagerYAML extends PlayersManager {
 		PlayerAccount acc = loadedAccounts.get(id);
 		if (acc != null) return acc;
 		acc = unloadedAccounts.asMap().remove(id);
-		if (acc != null) return acc;
-		acc = loadFromFile(id);
+		if (acc != null) {
+			loadedAccounts.put(id, acc);
+			return acc;
+		}
+		acc = loadFromFile(id, true);
 		if (acc != null) return acc;
 		acc = createPlayerAccount(identifiersIndex.get(id), id);
 		addAccount(acc);
@@ -197,9 +201,10 @@ public class PlayersManagerYAML extends PlayersManager {
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
 	}
 
-	public PlayerAccount loadFromFile(int index) {
+	public PlayerAccount loadFromFile(int index, boolean msg) {
 		File file = new File(directory, index + ".yml");
 		if (!file.exists()) return null;
+		DebugUtils.logMessage("Loading account #" + index + ". Last file edition: " + new Date(file.lastModified()).toString());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
 		return loadFromConfig(index, playerConfig);
 	}
@@ -268,8 +273,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	public void save() {
 		DebugUtils.logMessage("Saving " + loadedAccounts.size() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
-		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-		config.set("players", identifiersIndex);
+		BeautyQuests.getInstance().getDataFile().set("players", identifiersIndex);
 
 		for (PlayerAccount acc : loadedAccounts.values()) {
 			try {

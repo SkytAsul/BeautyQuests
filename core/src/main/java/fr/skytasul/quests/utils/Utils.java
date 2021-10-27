@@ -159,7 +159,7 @@ public class Utils{
 	}
 	
 	public static void sendOffMessage(Player p, String msg, Object... replace) {
-		IsendMessage(p, Lang.OffText.format(msg, replace), true);
+		if (msg != null && !msg.isEmpty()) IsendMessage(p, Lang.OffText.format(msg, replace), true);
 	}
 	
 	public static String itemsToFormattedString(String[] items){

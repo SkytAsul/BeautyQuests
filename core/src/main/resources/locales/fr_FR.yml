@@ -214,8 +214,12 @@ msg:
         clear: '§6clear: §eSupprimer tous les messages.'
         close: '§6close: §eValider les messages.'
         setTime: '§6setTime <id> <time>: §eModifie le temps (en ticks) avant que le message suivant ne se lance.'
+        npcName: '§6npcName [nom du NPC] : §eModifie (ou remet au nom par défaut) le nom personnalisé du NPC dans le dialogue'
       timeSet: '§aLe temps a été modifié pour le message {0}: il est maintenant de {1} tick(s).'
       timeRemoved: '§aLe temps a été supprimé du message {0}.'
+      npcName:
+        set: '§aNom du NPC personnalisé modifié pour §7{1}§a (avant: §7{0}§a)'
+        unset: '§aNom du NPC personnalisé réinitialisé à la valeur par défaut (était §7{0}§a)'
     mythicmobs:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
@@ -261,6 +265,9 @@ inv:
   create:
     stageCreate: '§aCréer une nouvelle étape'
     stageRemove: '§cSupprimer cette étape'
+    stageUp: Monter
+    stageDown: Descendre
+    stageType: '§7Type d''étape: §e{0}'
     cantFinish: '§7Vous devez créer au moins une étape avant de terminer la création de la quête !'
     findNPC: '§aTrouver un NPC'
     bringBack: '§aRapporter des objets'
@@ -649,6 +656,11 @@ misc:
     water: Seau d'eau
     lava: Seau de lave
     milk: Seau de lait
+  click:
+    right: Clic droit
+    left: Clic gauche
+    shift-right: Maj + clic-droit
+    shift-left: Maj + clic-gauche
   ticks: '{0} ticks'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'

@@ -25,6 +25,11 @@ import net.citizensnpcs.trait.LookClose;
 public class BQCitizens extends BQNPCsManager {
 	
 	@Override
+	public int getTimeToWaitForNPCs() {
+		return 2;
+	}
+	
+	@Override
 	public boolean isNPC(Entity entity) {
 		return CitizensAPI.getNPCRegistry().isNPC(entity);
 	}

@@ -100,8 +100,11 @@ startedQuestsPlaceholder:
   inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
 # dynmap integration options
 dynmap:
-  markerSetName: "Quests"
+  # Name of the marker set. To disable dynmap integration, put an empty string
+  markerSetName: ""
+  # Icon for quest markers
   markerIcon: "bookshelf"
+  # Minimum zoom level for markers to be displayed
   minZoom: 0
 
 # - Stage descriptions -

@@ -1,17 +1,19 @@
 package fr.skytasul.quests.gui.creation.stages;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.utils.types.NumberedList;
 import fr.skytasul.quests.utils.types.Pair;
 
 public class Line {
 	
 	public final StagesGUI gui;
-	private int line = 0;
+	protected int line = 0;
 	
 	private int activePage = 0;
 	private int maxPage = 1;
@@ -20,9 +22,13 @@ public class Line {
 
 	public StageCreation<?> creation = null;
 	
-	Line(int line, StagesGUI gui) {
+	protected Line(int line, StagesGUI gui) {
 		this.gui = gui;
 		this.line = line;
+	}
+	
+	public boolean isEmpty() {
+		return items.isEmpty();
 	}
 	
 	/**
@@ -75,9 +81,12 @@ public class Line {
 	/**
 	 * Get item from slot
 	 * @param slot item slot in the line
-	 * @return ItemStack in the gui if showed, or ItemStack stocked
+	 * @return ItemStack in the gui if shown, or stored ItemStack
 	 */
 	public ItemStack getItem(int slot){
+		ItemStack item = items.get(slot).getKey();
+		if (item == null) return null;
+		
 		boolean inLinePage = true;
 		if (maxPage > 1) {
 			int maxLineCapacity = activePage == 0 ? 8 : 7;
@@ -91,7 +100,7 @@ public class Line {
 				return gui.inv.getItem(firstSlot + (slot - activePage * 7));
 			}
 		}
-		return items.get(slot).getKey();
+		return item;
 	}
 	
 	/**
@@ -148,7 +157,7 @@ public class Line {
 		}
 	}
 	
-	int getActivePage(){
+	public int getActivePage() {
 		return activePage;
 	}
 	
@@ -164,7 +173,7 @@ public class Line {
 		return line >= gui.page*5 && line < (gui.page+1)*5;
 	}
 	
-	public void click(int slot, Player p, ItemStack is){
+	public void click(int slot, Player p, ItemStack is, ClickType click) {
 		if (slot == 0 && activePage > 0){
 			activePage--;
 			setItems(activePage);
@@ -175,12 +184,17 @@ public class Line {
 			int item = (activePage == 0 ? 0 : activePage * 7) + slot;
 			if (items.get(item) == null) return;
 			if (items.get(item).getValue() == null) return;
-			execute(item, p, is);
+			execute(item, p, is, click);
 		}
 	}
 	
-	public void execute(int lineSlot, Player p, ItemStack is) {
-		items.get(lineSlot).getValue().run(p, is);
+	public void execute(int lineSlot, Player p, ItemStack is, ClickType click) {
+		StageRunnable runnable = items.get(lineSlot).getValue();
+		if (runnable instanceof StageRunnableClick) {
+			((StageRunnableClick) runnable).run(p, is, click);
+		}else if (runnable instanceof StageRunnable) {
+			runnable.run(p, is);
+		}
 	}
 	
 	private void clearLine(){

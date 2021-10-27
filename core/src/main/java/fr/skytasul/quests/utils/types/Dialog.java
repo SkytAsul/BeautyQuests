@@ -15,11 +15,13 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Message.Sender;
 
 public class Dialog implements Cloneable {
 
 	public NumberedList<Message> messages;
+	public String npcName;
 	
 	private Map<Player, PlayerStatus> players = new HashMap<>();
 	
@@ -65,7 +67,7 @@ public class Dialog implements Cloneable {
 		}
 		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc, p);
 		Bukkit.getPluginManager().callEvent(event);
-		if (!event.isCancelled()) msg.sendMessage(p, npc, id, messages.valuesSize());
+		if (!event.isCancelled()) msg.sendMessage(p, npcName != null ? npcName : (npc == null ? Lang.Unknown.toString() : npc.getName()), id, messages.valuesSize());
 		if (msg.getWaitTime() != 0) {
 			status.task = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 				status.task = null;
@@ -102,12 +104,17 @@ public class Dialog implements Cloneable {
 		messages.insert(id, new Message(msg, sender));
 	}
 	
+	public void setNPCName(String npcName) {
+		this.npcName = npcName;
+	}
+	
 	@Override
 	public Dialog clone() {
 		Dialog clone = new Dialog();
 		for (Message msg : messages) {
 			clone.messages.add(msg.clone());
 		}
+		clone.npcName = npcName;
 		return clone;
 	}
 	
@@ -122,6 +129,7 @@ public class Dialog implements Cloneable {
 			ls.add(msgm);
 		}
 		map.put("msgs", ls);
+		if (npcName != null) map.put("npcName", npcName);
 		
 		return map;
 	}
@@ -134,6 +142,7 @@ public class Dialog implements Cloneable {
 			int id = (int) tmp.get("id");
 			di.messages.set(id, Message.deserialize((Map<String, Object>) tmp.get("message")));
 		}
+		if (map.containsKey("npcName")) di.npcName = (String) map.get("npcName");
 		
 		return di;
 	}

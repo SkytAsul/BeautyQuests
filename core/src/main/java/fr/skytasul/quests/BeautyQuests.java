@@ -125,7 +125,28 @@ public class BeautyQuests extends JavaPlugin {
 		try {
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
+
+			saveDefaultConfig();
+			NMS.getMCVersion();
+			registerCommands();
+
+			saveFolder = new File(getDataFolder(), "quests");
+			if (!saveFolder.exists()) saveFolder.mkdirs();
+			loadDataFile();
+			loadConfigParameters(true);
+
+			try {
+				dependencies.initializeCompatibilities();
+			}catch (Throwable ex) {
+				logger.severe("Error when initializing compatibilities. Consider restarting.");
+				ex.printStackTrace();
+			}
 			
+			if (QuestsAPI.getNPCsManager() == null) {
+				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
+			}
+			
+			// Launch loading task
 			new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -147,28 +168,10 @@ public class BeautyQuests extends JavaPlugin {
 						e.printStackTrace();
 					}
 				}
-			}.runTaskLater(this, 2L);
-
-			saveDefaultConfig();
-			NMS.getMCVersion();
-			registerCommands();
-
-			saveFolder = new File(getDataFolder(), "quests");
-			if (!saveFolder.exists()) saveFolder.mkdirs();
-			loadDataFile();
-			loadConfigParameters(true);
-
-			try {
-				dependencies.initializeCompatibilities();
-			}catch (Throwable ex) {
-				logger.severe("Error when initializing compatibilities. Consider restarting.");
-				ex.printStackTrace();
-			}
+			}.runTaskLater(this, QuestsAPI.getNPCsManager().getTimeToWaitForNPCs());
 			
-			if (QuestsAPI.getNPCsManager() == null) {
-				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
-			}
 
+			// Start of non-essential systems
 			logger.launchFlushTimer();
 			try {
 				new SpigotUpdater(this, 39255);
@@ -218,7 +221,6 @@ public class BeautyQuests extends JavaPlugin {
 		try {
 			Editor.leaveAll();
 			Inventories.closeAll();
-			getServer().getScheduler().cancelTasks(this);
 			stopSaveCycle();
 			
 			try {
@@ -231,6 +233,8 @@ public class BeautyQuests extends JavaPlugin {
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			getServer().getScheduler().cancelTasks(this);
 		}finally {
 			if (logger != null) logger.close();
 		}
@@ -358,7 +362,10 @@ public class BeautyQuests extends JavaPlugin {
 			}
 			Lang.loadStrings(YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("locales/en_US.yml"), Charsets.UTF_8)), conf);
 
-			if (changes) conf.save(file); // if there has been changes before, save the edited file
+			if (changes) {
+				getLogger().info("Copied new strings into " + language + " language file.");
+				conf.save(file); // if there has been changes before, save the edited file
+			}
 			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 			return conf;
 		} catch(Exception e) {

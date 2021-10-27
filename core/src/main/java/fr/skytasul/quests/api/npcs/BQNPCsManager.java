@@ -21,13 +21,19 @@ public abstract class BQNPCsManager implements Listener {
 	
 	private final Map<Integer, BQNPC> cache = new HashMap<>();
 	
+	public abstract int getTimeToWaitForNPCs();
+	
 	public abstract Collection<Integer> getIDs();
 	
 	public abstract boolean isNPC(Entity entity);
 	
 	public final BQNPC createNPC(Location location, EntityType type, String name, String skin) {
 		BQNPC npc = create(location, type, name);
-		if (type == EntityType.PLAYER) npc.setSkin(skin);
+		try {
+			if (type == EntityType.PLAYER) npc.setSkin(skin);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		cache.put(npc.getId(), npc);
 		return npc;
 	}

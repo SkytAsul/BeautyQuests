@@ -25,6 +25,11 @@ import io.github.znetworkw.znpcservers.npc.event.NPCInteractEvent;
 public class BQServerNPCs extends BQNPCsManager {
 	
 	@Override
+	public int getTimeToWaitForNPCs() {
+		return 45;
+	}
+	
+	@Override
 	public Collection<Integer> getIDs() {
 		return NPC.all().stream().map(x -> x.getNpcPojo().getId()).collect(Collectors.toList());
 	}
@@ -50,7 +55,9 @@ public class BQServerNPCs extends BQNPCsManager {
 		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
 		int id = ids.size();
 		while (ids.contains(id)) id++;
-		return new BQServerNPC(ServersNPC.createNPC(id, NPCType.valueOf(type.name()), location, name));
+		NPC npc = ServersNPC.createNPC(id, NPCType.valueOf(type.name()), location, name);
+		npc.getNpcPojo().getFunctions().put("look", true);
+		return new BQServerNPC(npc);
 	}
 	
 	@EventHandler
@@ -93,7 +100,7 @@ public class BQServerNPCs extends BQNPCsManager {
 		
 		@Override
 		public void setSkin(String skin) {
-			npc.changeSkin(NPCSkin.forValues(skin));
+			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
 		}
 		
 	}

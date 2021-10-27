@@ -20,6 +20,7 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -110,6 +111,17 @@ public class StagesGUI implements CustomInventory {
 		line.setItems(0);
 	}
 
+	private String[] getLineManageLore(int line) {
+		return new String[] {
+				"§7" + Lang.ClickRight + "/" + Lang.ClickLeft + " > §c" + Lang.stageRemove.toString(),
+				line == 0 || line == 15 ? ("§8" + Lang.ClickShiftRight + " > " + Lang.stageUp) : "§7" + Lang.ClickShiftRight + " > §e" + Lang.stageUp,
+				line == 14 || line == 19 || !isActiveLine(getLine(line + 1)) ? ("§8" + Lang.ClickShiftLeft + " > " + Lang.stageDown) : "§7" + Lang.ClickShiftLeft + " > §e" + Lang.stageDown };
+	}
+	
+	private void updateLineManageLore(Line line) {
+		line.editItem(0, ItemUtils.lore(line.getItem(0), getLineManageLore(line.getLine())));
+	}
+	
 	private StageCreation<?> runClick(Line line, StageType<?> creator, boolean branches) {
 		line.removeItems();
 		StageCreation<?> creation = creator.creationSupplier.supply(line, branches);
@@ -118,25 +130,52 @@ public class StagesGUI implements CustomInventory {
 		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 
 		int maxStages = branches ? 20 : 15;
-		line.setItem(0, ItemUtils.lore(stageRemove.clone(), QuestOption.formatDescription(creator.name)), (p, item) -> {
-			line.creation = null;
-			line.removeItems();
-			if (line.getLine() != maxStages - 1) {
-				for (int i1 = line.getLine() + 1; i1 < maxStages; i1++) {
-					getLine(i1).exchangeLines(getLine(i1 - 1));
+		ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(creator.name), getLineManageLore(line.getLine()));
+		line.setItem(0, manageItem, new StageRunnableClick() {
+			@Override
+			public void run(Player p, ItemStack item, ClickType click) {
+				if (click == ClickType.LEFT || click == ClickType.RIGHT) {
+					line.creation = null;
+					int lineID = line.getLine();
+					if (lineID != maxStages - 1) {
+						line.removeItems();
+						for (int i = line.getLine() + 1; i < maxStages; i++) {
+							Line exLine = getLine(i);
+							exLine.changeLine(i - 1);
+							if (!isActiveLine(exLine)) {
+								if (exLine.isEmpty()) {
+									setStageCreate(exLine, branches);
+								}else {
+									line.line = exLine.getLine() + 1;
+								}
+								break;
+							}
+						}
+						if (lineID == 0 || lineID == 15) updateLineManageLore(getLine(lineID));
+					}else setStageCreate(line, branches);
+					if (lineID != 0 && lineID != 15) updateLineManageLore(getLine(lineID - 1));
+					if (isEmpty()) inv.setItem(SLOT_FINISH, notDone);
+				}else if (click == ClickType.SHIFT_LEFT) {
+					if (line.getLine() != 14 && line.getLine() != 19) {
+						Line down = getLine(line.getLine() + 1);
+						if (isActiveLine(down)) {
+							down.exchangeLines(line);
+							updateLineManageLore(line);
+							updateLineManageLore(down);
+						}
+					}
+				}else if (click == ClickType.SHIFT_RIGHT) {
+					if (line.getLine() != 0 && line.getLine() != 15) {
+						Line up = getLine(line.getLine() - 1);
+						up.exchangeLines(line);
+						updateLineManageLore(line);
+						updateLineManageLore(up);
+					}
 				}
 			}
-			for (int i2 = 0; i2 < maxStages; i2++) {
-				Line l = getLine(i2);
-				if (!isActiveLine(l)) {
-					setStageCreate(l, i2 > maxStages - 1);
-					break;
-				}
-			}
-			if (isEmpty()) inv.setItem(SLOT_FINISH, notDone);
 		});
 
-		if (line.getLine() != maxStages-1){
+		if (line.getLine() != maxStages - 1) {
 			Line next = getLine(line.getLine() + 1);
 			if (!isActiveLine(next)) setStageCreate(next, branches);
 		}
@@ -145,6 +184,8 @@ public class StagesGUI implements CustomInventory {
 			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(this));
 			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.create(p, creation.getLeadingBranch()));
 		}
+		
+		if (line.getLine() != 0 && line.getLine() != 15) updateLineManageLore(getLine(line.getLine() - 1));
 		
 		return creation;
 	}
@@ -166,7 +207,7 @@ public class StagesGUI implements CustomInventory {
 	}
 	
 	public void deleteStageLine(Line line) {
-		if (isActiveLine(line)) line.execute(0, null, null); // item and player not used for deletion item
+		if (isActiveLine(line)) line.execute(0, null, null, ClickType.RIGHT); // item and player not used for deletion item
 	}
 
 	@Override
@@ -215,7 +256,7 @@ public class StagesGUI implements CustomInventory {
 			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 			branch.stagesEdited = true;
 			Line line = getLine((slot - slot % 9)/9 +5*page);
-			line.click(slot - (line.getLine() - page * 5) * 9, p, current);
+			line.click(slot - (line.getLine() - page * 5) * 9, p, current, click);
 		}
 		return true;
 	}
