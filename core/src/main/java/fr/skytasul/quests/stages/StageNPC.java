@@ -151,7 +151,7 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
-	private void onClick(BQNPCClickEvent e) {
+	public void onClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
 		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
