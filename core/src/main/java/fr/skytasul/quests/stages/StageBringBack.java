@@ -87,20 +87,24 @@ public class StageBringBack extends StageNPC{
 		return customMessage == null ? Lang.NEED_OBJECTS.toString() : customMessage;
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfiguration.splitDescription(source) ? splitted : line), npcName());
 	}
 	
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
 	}
 
+	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
 	
+	@Override
 	public void serialize(Map<String, Object> map) {
 		super.serialize(map);
 		map.put("items", items);

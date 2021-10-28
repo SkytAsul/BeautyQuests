@@ -83,6 +83,12 @@
 		<repository>
 			<id>lumine</id>
 			<url>https://mvn.lumine.io/repository/maven-public/</url>
+			<releases>
+				<updatePolicy>interval:10080</updatePolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>interval:10080</updatePolicy>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>citizens</id>

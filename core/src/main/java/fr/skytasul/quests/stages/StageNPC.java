@@ -158,7 +158,6 @@ public class StageNPC extends AbstractStage{
 		Player p = e.getPlayer();
 		if (!hasStarted(p)) return;
 		boolean canUpdate = canUpdate(p, true);
-		
 		if (!branch.isRegularStage(this)) { // is ending stage
 			if (bringBack == null || !canUpdate || !bringBack.checkItems(p, false)) { // if just text or don't have items
 				for (AbstractStage stage : branch.getEndingStages().keySet()) {
