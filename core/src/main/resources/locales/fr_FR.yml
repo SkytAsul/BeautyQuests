@@ -603,6 +603,18 @@ indication:
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
   cancelQuest: '§7Êtes-vous sûr de vouloir annuler la quête {0} ?'
   removeQuest: '§7Êtes-vous sûr de vouloir supprimer la quête {0} ?'
+description:
+  requirement:
+    title: '§8§lConditions :'
+    level: 'Niveau {0}'
+    jobLevel: 'Niveau {0} pour {1}'
+    combatLevel: 'Niveau de combat {0}'
+    skillLevel: 'Niveau {0} pour {1}'
+    class: 'Classe {0}'
+    faction: 'Faction {0}'
+    quest: 'Terminer la quête §e{0}'
+  reward:
+    title: '§8§lRécompenses :'
 misc:
   format:
     prefix: '§6<§e§lQuêtes§r§6> §r'
@@ -610,6 +622,7 @@ misc:
     selfText: '§6[{2}/{3}] §e§l{0} :§r§e {1}'
     offText: '§r§e{0}'
   time:
+    weeks: '{0} semaines'
     days: '{0} jours'
     hours: '{0} heures'
     minutes: '{0} minutes'
