@@ -46,6 +46,11 @@ public class XPReward extends AbstractReward {
 	}
 	
 	@Override
+	public String getDescription(Player p) {
+		return exp + " " + Lang.Exp.toString();
+	}
+	
+	@Override
 	public String[] getLore() {
 		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.Remove.toString() };
 	}

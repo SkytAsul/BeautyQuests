@@ -30,13 +30,20 @@ public class QuestRequirement extends AbstractRequirement {
 		this.questId = questId;
 	}
 	
+	@Override
 	public boolean test(Player p) {
 		if (exists()) return cached.hasFinished(PlayersManager.getPlayerAccount(p));
 		return true;
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		if (exists()) Lang.REQUIREMENT_QUEST.send(p, cached.getName());
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDQuest.format(exists() ? cached.getName() : questId);
 	}
 
 	private boolean exists(){
@@ -63,10 +70,12 @@ public class QuestRequirement extends AbstractRequirement {
 		return new QuestRequirement(questId);
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("questID", questId);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		questId = (int) savedDatas.get("questID");
 	}

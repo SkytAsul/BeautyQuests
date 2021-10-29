@@ -32,6 +32,7 @@ public class MoneyReward extends AbstractReward {
 		this.money = money;
 	}
 
+	@Override
 	public List<String> give(Player p) {
 		if (money > 0){
 			Vault.depositPlayer(p, money);
@@ -42,6 +43,11 @@ public class MoneyReward extends AbstractReward {
 	@Override
 	public AbstractReward clone() {
 		return new MoneyReward(money);
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Vault.format(money);
 	}
 	
 	@Override
@@ -62,10 +68,12 @@ public class MoneyReward extends AbstractReward {
 		}, new NumberParser<>(Double.class, false, true)).enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("money", money);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		money = (double) savedDatas.get("money");
 	}

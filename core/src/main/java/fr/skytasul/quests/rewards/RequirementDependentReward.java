@@ -58,6 +58,11 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
+	public String getDescription(Player p) {
+		return requirements.stream().allMatch(req -> req.test(p)) ? "aa" : null;
+	}
+	
+	@Override
 	public String[] getLore() {
 		return new String[] { QuestOption.formatDescription(Lang.requirements.format(requirements.size()) + ", " + Lang.actions.format(rewards.size())), "", Lang.Remove.toString() };
 	}

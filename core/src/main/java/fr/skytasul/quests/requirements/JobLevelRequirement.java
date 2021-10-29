@@ -46,8 +46,14 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 		Lang.CHOOSE_XP_REQUIRED.send(p);
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_JOB.send(p, getFormattedValue(), jobName);
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDJobLevel.format(Integer.toString((int) target), jobName);
 	}
 	
 	@Override
@@ -73,11 +79,13 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 		}).useStrippedMessage().enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 		datas.put("jobName", jobName);
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		jobName = (String) savedDatas.get("jobName");

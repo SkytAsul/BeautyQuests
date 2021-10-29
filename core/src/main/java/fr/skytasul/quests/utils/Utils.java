@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -272,12 +273,11 @@ public class Utils{
         return false;
     }
 	
-	public static void giveItem(Player p, ItemStack is){
-		if (p.getInventory().firstEmpty() == -1){
-			p.getWorld().dropItem(p.getLocation(), is);
+	public static void giveItems(Player p, List<ItemStack> items) {
+		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new));
+		if (!leftover.isEmpty()) {
+			leftover.values().forEach(item -> p.getWorld().dropItem(p.getLocation(), item));
 			Lang.ITEM_DROPPED.send(p);
-		}else {
-			p.getInventory().addItem(is);
 		}
 	}
 	

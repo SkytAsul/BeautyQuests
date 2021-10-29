@@ -29,19 +29,21 @@ public class ItemReward extends AbstractReward {
 		this.items = items;
 	}
 
+	@Override
 	public List<String> give(Player p) {
-		int amount = 0;
-		for (ItemStack is : items){
-			Utils.giveItem(p, is);
-			amount += is.getAmount();
-		}
-		if (amount == 0) return null;
-		return Arrays.asList(amount + " " + Lang.Item.toString());
+		Utils.giveItems(p, items);
+		int amount = items.stream().mapToInt(ItemStack::getAmount).sum();
+		return amount == 0 ? null : Arrays.asList(amount + " " + Lang.Item.toString());
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new ItemReward(items);
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return items.stream().mapToInt(ItemStack::getAmount).sum() + " " + Lang.Item.toString();
 	}
 	
 	@Override
@@ -58,10 +60,12 @@ public class ItemReward extends AbstractReward {
 		}, items).create(p);
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas){
 		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas){
 		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
 	}

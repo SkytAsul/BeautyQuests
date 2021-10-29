@@ -636,6 +636,19 @@ indication:
   closeInventory: §7Are you sure you want to close the GUI?
   cancelQuest: §7Are you sure you want to cancel the quest {0}?
   removeQuest: §7Are you sure you want to remove the quest {0}?
+description:
+  requirement:
+    title: '§8§lRequirements:'
+    level: 'Level {0}'
+    jobLevel: 'Level {0} for {1}'
+    combatLevel: 'Combat level {0}'
+    skillLevel: 'Level {0} for {1}'
+    class: 'Class {0}'
+    faction: 'Faction {0}'
+    quest: 'Finish quest §e{0}'
+  reward:
+    title: '§8§lRewards:'
+    
 misc:
   format:
     prefix: §6<§e§lQuests§r§6> §r

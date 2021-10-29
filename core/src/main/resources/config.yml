@@ -126,6 +126,21 @@ stageDescriptionItemsSplit:
   # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
   sources: [SCOREBOARD, MENU, PLACEHOLDER]
 
+# - Quest descriptions -
+# How is formatted the quest description in GUIs
+questDescription:
+  requirements:
+    # Enable the requirements section for quest description
+    display: true
+    # How to format requirements which match the player
+    valid: §a ✔ §7{0}
+    # How to format requirements which do not match the player
+    invalid: §c ✖ §7{0}
+  rewards:
+    # Enable the rewards section for quest description
+    display: true
+    # How to format rewards
+    format: §7- {0}
 
 # - Particles configuration -
 # enabled: will the particle be shown?

@@ -41,10 +41,16 @@ public class SkillAPILevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	public String getDescription(Player p) {
+		return Lang.RDLevel.format(Integer.toString((int) target));
+	}
+	
+	@Override
 	public AbstractRequirement clone() {
 		return new SkillAPILevelRequirement(target, comparison);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");

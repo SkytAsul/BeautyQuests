@@ -58,6 +58,11 @@ public class ClassRequirement extends AbstractRequirement {
 		}
 		return false;
 	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDClass.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> classes.stream().map(RPGClass::getName).iterator()));
+	}
 
 	@Override
 	public String[] getLore() {

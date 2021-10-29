@@ -194,7 +194,7 @@ public class StageNPC extends AbstractStage{
 	}
 	
 	protected String npcName(){
-		return (npc != null) ? npc.getName() : "§c§lunknown NPC " + npcID;
+		return (npc != null) ? (dialog != null && dialog.npcName != null ? dialog.npcName : npc.getName()) : "§c§lunknown NPC " + npcID;
 	}
 	
 	@Override

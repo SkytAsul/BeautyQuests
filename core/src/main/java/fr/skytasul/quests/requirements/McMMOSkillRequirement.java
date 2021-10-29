@@ -34,8 +34,14 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 		return McMMO.getLevel(p, skillName);
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_SKILL.send(p, getFormattedValue(), skillName);
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDSkillLevel.format(Integer.toString((int) target), skillName);
 	}
 	
 	@Override
@@ -65,11 +71,13 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 		}).useStrippedMessage().enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 		datas.put("skillName", skillName);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		skillName = (String) savedDatas.get("skillName");

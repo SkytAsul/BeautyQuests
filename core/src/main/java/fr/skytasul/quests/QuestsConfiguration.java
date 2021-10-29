@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -71,6 +72,7 @@ public class QuestsConfiguration {
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
 	private static boolean menuOpenNotStartedTabWhenEmpty = true;
+	private static QuestDescription questDescription;
 	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
@@ -164,6 +166,8 @@ public class QuestsConfiguration {
 				continue;
 			}
 		}
+		
+		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
 		if (NMS.isValid()) {
 			particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
@@ -401,6 +405,10 @@ public class QuestsConfiguration {
 		if (source == Source.FORCESPLIT) return true;
 		if (source == Source.FORCELINE) return false;
 		return descSources.contains(source);
+	}
+	
+	public static QuestDescription getQuestDescription() {
+		return questDescription;
 	}
 	
 	public static String getFinishSound(){

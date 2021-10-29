@@ -612,6 +612,19 @@ public enum Lang{
 	INDICATION_CLOSE("indication.closeInventory"),
 	INDICATION_CANCEL("indication.cancelQuest"), // 0: quest name
 	INDICATION_REMOVE("indication.removeQuest"), // 0: quest name
+
+	/* Description */
+	
+	RDTitle("description.requirement.title"),
+	RDLevel("description.requirement.level"), // 0: lvl
+	RDJobLevel("description.requirement.jobLevel"), // 0: lvl, 1: job
+	RDCombatLevel("description.requirement.combatLevel"), // 0: lvl
+	RDSkillLevel("description.requirement.skillLevel"), // 0: lvl, 1: skill
+	RDClass("description.requirement.class"), // 0: classes
+	RDFaction("description.requirement.faction"), // 0: factions
+	RDQuest("description.requirement.quest"), // 0: quest
+	
+	RWDTitle("description.reward.title"),
 	
 	/* Misc */
 	
@@ -663,8 +676,6 @@ public enum Lang{
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
-	
-	RDLevel("misc.requirement.description.level"), // 0: lvl
 	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),

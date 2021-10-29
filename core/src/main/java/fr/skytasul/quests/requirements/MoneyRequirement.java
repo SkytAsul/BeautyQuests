@@ -31,16 +31,24 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 		this.money = money;
 	}
 
+	@Override
 	public boolean test(Player p) {
 		return Vault.has(p, money);
 	}
 
+	@Override
 	public void trigger(Player p) {
 		Vault.withdrawPlayer(p, money);
 	}
 
+	@Override
 	public void sendReason(Player p) {
 		Lang.REQUIREMENT_MONEY.send(p, Vault.format(money));
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Vault.format(money);
 	}
 	
 	@Override
@@ -66,10 +74,12 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 		}, new NumberParser<>(Double.class, true, true)).enter();
 	}
 
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("money", money);
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		money = (double) savedDatas.get("money");
 	}

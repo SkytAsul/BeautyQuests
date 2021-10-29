@@ -46,6 +46,12 @@ public class FactionRequirement extends AbstractRequirement {
 		factions.add((Faction) faction);
 	}
 	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDFaction.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> factions.stream().map(Faction::getName).iterator()));
+	}
+	
+	@Override
 	public boolean test(Player p) {
 		if (factions.isEmpty()) return true;
 		for (Faction fac : factions){
@@ -99,6 +105,7 @@ public class FactionRequirement extends AbstractRequirement {
 		return new FactionRequirement(new ArrayList<>(factions));
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		List<String> ls = new ArrayList<>();
 		for (Faction fac : factions) {
@@ -107,6 +114,7 @@ public class FactionRequirement extends AbstractRequirement {
 		datas.put("factions", factions);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		for (String s : (List<String>) savedDatas.get("factions")) {
 			if (!FactionColl.get().containsId(s)) {

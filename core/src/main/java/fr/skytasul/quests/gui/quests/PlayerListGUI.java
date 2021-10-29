@@ -131,7 +131,7 @@ public class PlayerListGUI implements CustomInventory {
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
 				List<String> lore = new ArrayList<>(5);
-				if (qu.getDescription() != null) lore.add(qu.getDescription());
+				lore.addAll(QuestsConfiguration.getQuestDescription().formatDescription(qu, acc.getPlayer()));
 				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
 					lore.add("");
 					lore.add(qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString());

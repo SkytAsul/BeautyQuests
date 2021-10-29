@@ -114,7 +114,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(LogicalOrRequirement.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.RQuest.toString()), LogicalOrRequirement::new));
+		QuestsAPI.registerRequirement(new QuestObjectCreator<>(LogicalOrRequirement.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.RLOR.toString()), LogicalOrRequirement::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(QuestRequirement.class, ItemUtils.item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), QuestRequirement::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
