@@ -39,13 +39,13 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 		return value;
 	}
 	
-	private String[] getLore(OptionSet options) {
+	private List<String> getLore(OptionSet options) {
 		List<String> lore = new ArrayList<>(4);
 		lore.add(formatDescription(Lang.questStarterSelectLore.toString()));
 		lore.add(null);
 		if (options != null && options.hasOption(OptionQuestPool.class) && options.getOption(OptionQuestPool.class).hasCustomValue()) lore.add(Lang.questStarterSelectPool.toString());
 		lore.add(getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().getName() + " §8(" + getValue().getId() + ")");
-		return lore.toArray(new String[0]);
+		return lore;
 	}
 	
 	@Override

@@ -48,7 +48,7 @@ public class Mob<Data> implements Cloneable {
 			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data));
 			ex.printStackTrace();
 		}
-		ItemStack item = ItemUtils.item(mobItem, getName(), lore.toArray(new String[0]));
+		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
 		item.setAmount(Math.min(amount, 64));
 		return item;
 	}

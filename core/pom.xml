@@ -70,6 +70,10 @@
 			<url>https://repo.codemc.org/repository/maven-public/</url>
 		</repository>
 		<repository>
+			<id>mineacademy-repo</id>
+			<url>https://bitbucket.org/kangarko/libraries/raw/master</url>
+		</repository>
+		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -175,6 +179,12 @@
 			<version>4.12.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mineacademy.plugin</groupId>
+			<artifactId>Boss-API</artifactId>
+			<version>3.8.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Local JARs -->
 		<dependency>
@@ -234,12 +244,6 @@
 		<dependency>
 			<groupId>com.suxy</groupId>
 			<artifactId>skillapi</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.suxy</groupId>
-			<artifactId>boss</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>

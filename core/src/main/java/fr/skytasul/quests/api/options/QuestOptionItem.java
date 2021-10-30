@@ -37,7 +37,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 		return value.clone();
 	}
 	
-	private String[] getLore() {
+	private List<String> getLore() {
 		List<String> lore = new ArrayList<>();
 		
 		if (getItemDescription() != null) lore.add(formatDescription(getItemDescription()));
@@ -61,7 +61,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 			lore.add(Lang.Remove.toString());
 		}
 		
-		return lore.stream().toArray(String[]::new);
+		return lore;
 	}
 	
 	@Override

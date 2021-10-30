@@ -44,6 +44,7 @@ public class ItemCreatorGUI implements CustomInventory {
 	private boolean flags = false;
 	
 
+	@Override
 	public Inventory open(Player p) {
 		this.p = p;
 		inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
@@ -74,6 +75,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		}
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 		case 0:
@@ -153,7 +155,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		is.setItemMeta(im);
 		is.setAmount(amount);
 
-		if (lore != null) ItemUtils.lore(is, lore.toArray(new String[0]));
+		if (lore != null) ItemUtils.lore(is, lore);
 
 		if (quest) ItemUtils.loreAdd(is, " ", Lang.QuestItemLore.toString());
 		return is;

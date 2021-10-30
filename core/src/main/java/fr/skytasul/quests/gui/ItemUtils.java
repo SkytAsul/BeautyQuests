@@ -2,6 +2,7 @@ package fr.skytasul.quests.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -32,10 +33,23 @@ public class ItemUtils {
 	public static ItemStack item(XMaterial type, String name, String... lore) {
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(name);
 		im.addItemFlags(ItemFlag.values());
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
+		is.setItemMeta(applyMeta(im, name, lore));
+		return is;
+	}
+	
+	/**
+	 * Create an ItemStack instance from a generic XMaterial
+	 * @param type material type
+	 * @param name name of the item
+	 * @param lore lore of the item, formatted as a String array
+	 * @return the ItemStack instance
+	 */
+	public static ItemStack item(XMaterial type, String name, List<String> lore) {
+		ItemStack is = type.parseItem();
+		ItemMeta im = is.getItemMeta();
+		im.addItemFlags(ItemFlag.values());
+		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
 	
@@ -49,11 +63,49 @@ public class ItemUtils {
 	public static ItemStack skull(String name, String skull, String... lore) {
 		ItemStack is = XMaterial.playerSkullItem();
 		SkullMeta im = (SkullMeta) is.getItemMeta();
-		im.setDisplayName(name);
 		if (skull != null) im.setOwner(skull);
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
+		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
+	}
+	
+	private static ItemMeta applyMeta(ItemMeta im, String name, Object lore) {
+		List<String> editLore = null;
+		if (name != null) {
+			editLore = Utils.wordWrap(name, 50);
+			if (editLore.size() == 0) {
+				name = "";
+			}else if (editLore.size() == 1) {
+				name = editLore.get(0);
+				editLore = null;
+			}else {
+				name = editLore.remove(0);
+			}
+			im.setDisplayName(name);
+		}
+		
+		if (lore == null) {
+			if (editLore != null) im.setLore(getLoreLines(editLore));
+		}else {
+			if (lore instanceof List) {
+				List<String> loreList = (List<String>) lore;
+				if (!loreList.isEmpty()) {
+					if (editLore != null) {
+						editLore.addAll(loreList);
+						loreList = editLore;
+					}
+					im.setLore(getLoreLines(loreList));
+				}
+			}else {
+				String[] loreArray = (String[]) lore;
+				if (loreArray.length != 0) {
+					if (editLore != null) {
+						editLore.addAll(Arrays.asList(loreArray));
+						im.setLore(getLoreLines(editLore));
+					}else im.setLore(getLoreLines(loreArray));
+				}
+			}
+		}
+		return im;
 	}
 
 	/**
@@ -64,20 +116,56 @@ public class ItemUtils {
 	 */
 	public static ItemStack lore(ItemStack is, String... lore) {
 		ItemMeta im = is.getItemMeta();
-		List<String> finalLines = new ArrayList<>();
-		if (lore != null && lore.length != 0){
-			for (int i = 0; i < lore.length; i++) {
-				String line = lore[i];
-				if (line == null) {
-					if (i + 1 == lore.length) break; // if last line and null : not shown
-					finalLines.add("§a");
-				}else finalLines.addAll(Utils.wordWrap(line, 40));
-			}
-		}
-		im.setLore(finalLines);
+		im.setLore(getLoreLines(lore));
 		is.setItemMeta(im);
 		
 		return is;
+	}
+	
+	/**
+	 * Set the lore of an item (override old lore)
+	 * @param is ItemStack instance to edit
+	 * @param lore new lore of the item, formatted as a String array
+	 * @return the same ItemStack instance, with the new lore
+	 */
+	public static ItemStack lore(ItemStack is, List<String> lore) {
+		ItemMeta im = is.getItemMeta();
+		im.setLore(getLoreLines(lore));
+		is.setItemMeta(im);
+		
+		return is;
+	}
+	
+	private static List<String> getLoreLines(String... lore) {
+		if (lore != null) {
+			List<String> finalLines = new ArrayList<>();
+			if (lore != null) {
+				for (int i = 0; i < lore.length; i++) {
+					String line = lore[i];
+					if (line == null) {
+						if (i + 1 == lore.length) break; // if last line and null : not shown
+						finalLines.add("§a");
+					}else finalLines.addAll(Utils.wordWrap(line, 40));
+				}
+			}
+			return finalLines;
+		}else return Collections.emptyList();
+	}
+	
+	private static List<String> getLoreLines(List<String> lore) {
+		if (lore != null) {
+			List<String> finalLines = new ArrayList<>();
+			if (lore != null) {
+				for (int i = 0; i < lore.size(); i++) {
+					String line = lore.get(i);
+					if (line == null) {
+						if (i + 1 == lore.size()) break; // if last line and null : not shown
+						finalLines.add("§a");
+					}else finalLines.addAll(Utils.wordWrap(line, 40));
+				}
+			}
+			return finalLines;
+		}else return Collections.emptyList();
 	}
 	
 	/**
@@ -87,13 +175,16 @@ public class ItemUtils {
 	 * @return the same ItemStack instance, with the new lore added at the end
 	 */
 	public static ItemStack loreAdd(ItemStack is, String... add){
-		if (!is.getItemMeta().hasLore()){
-			lore(is, add);
+		ItemMeta im = is.getItemMeta();
+		if (!im.hasLore()) {
+			im.setLore(getLoreLines(add));
+			is.setItemMeta(im);
 			return is;
 		}
-		List<String> ls = is.getItemMeta().getLore();
+		List<String> ls = im.getLore();
 		ls.addAll(Arrays.asList(add));
-		lore(is, ls.toArray(new String[0]));
+		im.setLore(getLoreLines(ls));
+		is.setItemMeta(im);
 		return is;
 	}
 

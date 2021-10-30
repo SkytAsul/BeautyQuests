@@ -232,7 +232,7 @@ public class PlayersManagerDB extends PlayersManager {
 			insertQuestData = db.new BQStatement("INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
 			removeQuestData = db.new BQStatement("DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
 			getQuestsData = db.new BQStatement("SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?");
-			getQuestAccountData = db.new BQStatement("SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
+			getQuestAccountData = db.new BQStatement("SELECT 1 FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
 
 			removeExistingQuestDatas = db.new BQStatement("DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?");
 			
@@ -247,7 +247,7 @@ public class PlayersManagerDB extends PlayersManager {
 			insertPoolData = db.new BQStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)");
 			removePoolData = db.new BQStatement("DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
 			getPoolData = db.new BQStatement("SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?");
-			getPoolAccountData = db.new BQStatement("SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
+			getPoolAccountData = db.new BQStatement("SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
 			
 			updatePoolLastGive = db.new BQStatement("UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?");
 			updatePoolCompletedQuests = db.new BQStatement("UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?");
@@ -261,7 +261,9 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	@Override
-	public void save() {}
+	public void save() {
+		
+	}
 	
 	private void createTables() throws SQLException {
 		Statement statement = db.getConnection().createStatement();
@@ -385,34 +387,34 @@ public class PlayersManagerDB extends PlayersManager {
 		@Override
 		public void incrementFinished() {
 			super.incrementFinished();
-			setDataStatement(updateFinished, getTimesFinished());
+			setDataStatement(updateFinished, getTimesFinished(), false);
 		}
 		
 		@Override
 		public void setTimer(long timer) {
 			super.setTimer(timer);
-			setDataStatement(updateTimer, timer);
+			setDataStatement(updateTimer, timer, false);
 		}
 
 		@Override
 		public void setBranch(int branch) {
 			super.setBranch(branch);
-			setDataStatement(updateBranch, branch);
+			setDataStatement(updateBranch, branch, false);
 		}
 
 		@Override
 		public void setStage(int stage) {
 			super.setStage(stage);
-			setDataStatement(updateStage, stage);
+			setDataStatement(updateStage, stage, false);
 		}
 
 		@Override
 		public void setStageDatas(int stage, Map<String, Object> stageDatas) {
 			super.setStageDatas(stage, stageDatas);
-			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas), true);
 		}
 
-		private void setDataStatement(BQStatement dataStatement, Object data) {
+		private void setDataStatement(BQStatement dataStatement, Object data, boolean allowNull) {
 			try {
 				datasLock.lock();
 				if (cachedDatas.containsKey(dataStatement)) {
@@ -420,28 +422,37 @@ public class PlayersManagerDB extends PlayersManager {
 				}else {
 					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(Bukkit.getScheduler().runTaskLaterAsynchronously(BeautyQuests.getInstance(), () -> {
 						try {
+							Entry<BukkitTask, Object> entry = null;
 							datasLock.lock();
-							Entry<BukkitTask, Object> entry = cachedDatas.remove(dataStatement);
-							datasLock.unlock();
-							synchronized (dataStatement) {
-								synchronized (getQuestAccountData) {
-									PreparedStatement statement = getQuestAccountData.getStatement();
-									statement.setInt(1, acc.index);
-									statement.setInt(2, questID);
-									if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-										synchronized (insertQuestData) {
-											PreparedStatement insertStatement = insertQuestData.getStatement();
-											insertStatement.setInt(1, acc.index);
-											insertStatement.setInt(2, questID);
-											insertStatement.executeUpdate();
+							try {
+								entry = cachedDatas.remove(dataStatement);
+							}finally {
+								datasLock.unlock();
+							}
+							if (entry != null) {
+								synchronized (dataStatement) {
+									synchronized (getQuestAccountData) {
+										PreparedStatement statement = getQuestAccountData.getStatement();
+										statement.setInt(1, acc.index);
+										statement.setInt(2, questID);
+										if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+											synchronized (insertQuestData) {
+												PreparedStatement insertStatement = insertQuestData.getStatement();
+												insertStatement.setInt(1, acc.index);
+												insertStatement.setInt(2, questID);
+												insertStatement.executeUpdate();
+											}
 										}
 									}
+									PreparedStatement statement = dataStatement.getStatement();
+									statement.setObject(1, entry.getValue());
+									statement.setInt(2, acc.index);
+									statement.setInt(3, questID);
+									statement.executeUpdate();
 								}
-								PreparedStatement statement = dataStatement.getStatement();
-								statement.setObject(1, entry.getValue());
-								statement.setInt(2, acc.index);
-								statement.setInt(3, questID);
-								statement.executeUpdate();
+								if (entry.getValue() == null && !allowNull) {
+									BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement.getStatementCommand() + "\" for account " + acc.index + " and quest " + questID);
+								}
 							}
 						}catch (SQLException e) {
 							e.printStackTrace();
