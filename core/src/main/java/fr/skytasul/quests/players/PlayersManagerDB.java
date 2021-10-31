@@ -16,9 +16,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -27,6 +26,7 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Database.BQStatement;
+import fr.skytasul.quests.utils.DebugUtils;
 
 public class PlayersManagerDB extends PlayersManager {
 
@@ -110,9 +110,9 @@ public class PlayersManagerDB extends PlayersManager {
 					result.close();
 					try {
 						// in order to ensure that, if the player was previously connected to another server,
-						// its datas have been fully pushed to database, we wait for 0,6 seconds
-						// (data pushing time is 0,5 seconds)
-						wait(550 - (System.currentTimeMillis() - joinTimestamp));
+						// its datas have been fully pushed to database, we wait for 0,4 seconds
+						long timeout = 400 - (System.currentTimeMillis() - joinTimestamp);
+						if (timeout > 0) wait(timeout);
 					}catch (InterruptedException e) {
 						e.printStackTrace();
 						Thread.currentThread().interrupt();
@@ -164,9 +164,7 @@ public class PlayersManagerDB extends PlayersManager {
 	@Override
 	public synchronized void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {
 		try {
-			for (Entry<BukkitTask, Object> entry : ((PlayerQuestDatasDB) datas).cachedDatas.values()) {
-				entry.getKey().cancel();
-			}
+			((PlayerQuestDatasDB) datas).stop();
 			PreparedStatement statement = removeQuestData.getStatement();
 			statement.setInt(1, acc.index);
 			statement.setInt(2, id);
@@ -197,12 +195,17 @@ public class PlayersManagerDB extends PlayersManager {
 	public synchronized int removeQuestDatas(Quest quest) {
 		int amount = 0;
 		try {
+			for (PlayerAccount acc : PlayersManager.cachedAccounts.values()) {
+				PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getID());
+				if (datas != null) datas.stop();
+			}
 			PreparedStatement statement = removeExistingQuestDatas.getStatement();
 			statement.setInt(1, quest.getID());
 			amount += statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
+		DebugUtils.logMessage("Removed " + amount + " quest datas for quest " + quest.getID());
 		return amount;
 	}
 
@@ -262,7 +265,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	@Override
 	public void save() {
-		
+		PlayersManager.cachedAccounts.values().forEach(x -> saveAccount(x, false));
 	}
 	
 	private void createTables() throws SQLException {
@@ -364,7 +367,14 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	@Override
 	public void unloadAccount(PlayerAccount acc) {
-		// all datas are updated in real-time
+		saveAccount(acc, true);
+	}
+
+	public void saveAccount(PlayerAccount acc, boolean stop) {
+		acc.getQuestsDatas()
+			.stream()
+			.map(PlayerQuestDatasDB.class::cast)
+				.forEach(x -> x.flushAll(stop));
 	}
 	
 	protected static String getCompletedQuestsString(Set<Integer> completedQuests) {
@@ -373,8 +383,11 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
-		private Map<BQStatement, Entry<BukkitTask, Object>> cachedDatas = new HashMap<>(5);
+		private static final int DATA_FLUSHING_TIME = 60;
+		
+		private Map<BQStatement, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
+		private boolean disabled = false;
 
 		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
 			super(acc, questID);
@@ -415,53 +428,91 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 
 		private void setDataStatement(BQStatement dataStatement, Object data, boolean allowNull) {
+			if (disabled) return;
 			try {
 				datasLock.lock();
-				if (cachedDatas.containsKey(dataStatement)) {
+				if (disabled) {
+					// in case disabled while acquiring lock
+				}else if (cachedDatas.containsKey(dataStatement)) {
 					cachedDatas.get(dataStatement).setValue(data);
 				}else {
-					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(Bukkit.getScheduler().runTaskLaterAsynchronously(BeautyQuests.getInstance(), () -> {
-						try {
-							Entry<BukkitTask, Object> entry = null;
-							datasLock.lock();
+					BukkitRunnable runnable = new BukkitRunnable() {
+						
+						@Override
+						public void run() {
+							if (disabled) return;
 							try {
-								entry = cachedDatas.remove(dataStatement);
-							}finally {
-								datasLock.unlock();
-							}
-							if (entry != null) {
-								synchronized (dataStatement) {
-									synchronized (getQuestAccountData) {
-										PreparedStatement statement = getQuestAccountData.getStatement();
-										statement.setInt(1, acc.index);
-										statement.setInt(2, questID);
-										if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-											synchronized (insertQuestData) {
-												PreparedStatement insertStatement = insertQuestData.getStatement();
-												insertStatement.setInt(1, acc.index);
-												insertStatement.setInt(2, questID);
-												insertStatement.executeUpdate();
+								Entry<BukkitRunnable, Object> entry = null;
+								datasLock.lock();
+								try {
+									if (!disabled) { // in case disabled while acquiring lock
+										entry = cachedDatas.remove(dataStatement);
+									}
+								}finally {
+									datasLock.unlock();
+								}
+								if (entry != null) {
+									synchronized (dataStatement) {
+										synchronized (getQuestAccountData) {
+											PreparedStatement statement = getQuestAccountData.getStatement();
+											statement.setInt(1, acc.index);
+											statement.setInt(2, questID);
+											if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+												synchronized (insertQuestData) {
+													PreparedStatement insertStatement = insertQuestData.getStatement();
+													insertStatement.setInt(1, acc.index);
+													insertStatement.setInt(2, questID);
+													insertStatement.executeUpdate();
+												}
 											}
 										}
+										PreparedStatement statement = dataStatement.getStatement();
+										statement.setObject(1, entry.getValue());
+										statement.setInt(2, acc.index);
+										statement.setInt(3, questID);
+										statement.executeUpdate();
 									}
-									PreparedStatement statement = dataStatement.getStatement();
-									statement.setObject(1, entry.getValue());
-									statement.setInt(2, acc.index);
-									statement.setInt(3, questID);
-									statement.executeUpdate();
+									if (entry.getValue() == null && !allowNull) {
+										BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement.getStatementCommand() + "\" for account " + acc.index + " and quest " + questID);
+									}
 								}
-								if (entry.getValue() == null && !allowNull) {
-									BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement.getStatementCommand() + "\" for account " + acc.index + " and quest " + questID);
-								}
+							}catch (SQLException e) {
+								e.printStackTrace();
 							}
-						}catch (SQLException e) {
-							e.printStackTrace();
 						}
-					}, 8L), data));
+					};
+					runnable.runTaskLaterAsynchronously(BeautyQuests.getInstance(), DATA_FLUSHING_TIME);
+					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(runnable, data));
 				}
 			}finally {
 				datasLock.unlock();
 			}
+		}
+		
+		protected void flushAll(boolean stop) {
+			datasLock.lock();
+			cachedDatas.values()
+				.stream()
+				.map(Entry::getKey)
+				.collect(Collectors.toList()) // to prevent ConcurrentModificationException
+				.forEach(run -> {
+					run.run();
+					run.cancel();
+				});
+			if (!cachedDatas.isEmpty()) BeautyQuests.logger.warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
+			if (stop) disabled = true;
+			datasLock.unlock();
+		}
+		
+		protected void stop() {
+			disabled = true;
+			datasLock.lock();
+			cachedDatas.values()
+				.stream()
+				.map(Entry::getKey)
+				.forEach(BukkitRunnable::cancel);
+			cachedDatas.clear();
+			datasLock.unlock();
 		}
 		
 	}

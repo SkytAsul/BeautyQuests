@@ -249,11 +249,10 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public boolean testTimer(PlayerAccount acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
-			if (time > System.currentTimeMillis()){
+			if (time > System.currentTimeMillis()) {
 				if (sendMessage && acc.isCurrent()) Lang.QUEST_WAIT.send(acc.getPlayer(), getTimeLeft(acc));
 				return false;
-			}
-			acc.getQuestDatas(this).setTimer(0);
+			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
 		}
 		return true;
 	}
@@ -366,10 +365,13 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		}else run.run();
 	}
 
-	public void remove(boolean msg){
+	public void remove(boolean msg, boolean removeDatas) {
 		BeautyQuests.getInstance().removeQuest(this);
 		unloadAll();
-		if (file.exists()) file.delete();
+		if (removeDatas) {
+			PlayersManager.manager.removeQuestDatas(this);
+			if (file.exists()) file.delete();
+		}
 		removed = true;
 		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this));
 		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + getName() + "\" has been removed");

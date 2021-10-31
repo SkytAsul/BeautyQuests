@@ -176,7 +176,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	private void finish(){
 		Quest qu;
 		if (editing){
-			edited.remove(false);
+			edited.remove(false, false);
 			qu = new Quest(edited.getID(), edited.getFile());
 		}else {
 			int id = BeautyQuests.lastID + 1;
@@ -206,7 +206,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()){
-			qu.remove(false);
+			qu.remove(false, true);
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
 			BeautyQuests.getInstance().addQuest(qu);

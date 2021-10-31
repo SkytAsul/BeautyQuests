@@ -21,7 +21,7 @@ public class DebugUtils {
 		String s = "";
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		for (;from <= to; from++) {
-			s = s + stack[from].getClassName() + "." + stack[from].getMethodName() + " " + stack[from].getLineNumber() + "; ";
+			s = s + stack[from].getClassName().replace("fr.skytasul.quests", "f.s.q") + "." + stack[from].getMethodName() + " " + stack[from].getLineNumber() + "; ";
 		}
 		return s;
 	}

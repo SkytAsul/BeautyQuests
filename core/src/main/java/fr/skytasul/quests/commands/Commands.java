@@ -514,13 +514,11 @@ public class Commands {
 	private static void remove(CommandSender sender, Quest quest){
 		if (sender instanceof Player){
 			Inventories.create((Player) sender, new ConfirmGUI(() -> {
-				quest.remove(true);
+				quest.remove(true, true);
 				Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
-			}, () -> {
-				((Player) sender).closeInventory();
-			}, Lang.INDICATION_REMOVE.format(quest.getName())));
+			}, ((Player) sender)::closeInventory, Lang.INDICATION_REMOVE.format(quest.getName())));
 		}else {
-			quest.remove(true);
+			quest.remove(true, true);
 			Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
 		}
 	}

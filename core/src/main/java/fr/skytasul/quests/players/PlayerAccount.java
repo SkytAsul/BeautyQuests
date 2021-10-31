@@ -73,6 +73,10 @@ public class PlayerAccount {
 		return removed;
 	}
 	
+	protected PlayerQuestDatas removeQuestDatasSilently(int id) {
+		return questDatas.remove(id);
+	}
+	
 	public Collection<PlayerQuestDatas> getQuestsDatas() {
 		return questDatas.values();
 	}
