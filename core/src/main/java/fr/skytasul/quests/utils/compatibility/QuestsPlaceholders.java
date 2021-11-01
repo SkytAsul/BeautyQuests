@@ -165,17 +165,25 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		}
 		
 		if (identifier.startsWith("advancement_")) {
-			String sid = identifier.substring(12);
+			int rawId = identifier.indexOf("_raw");
+			String sid = rawId == -1 ? identifier.substring(12) : identifier.substring(12, rawId);
 			try {
 				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (qu.hasStarted(acc)) {
-					return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+				if (rawId == -1) {
+					if (qu.hasStarted(acc)) {
+						return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+					}
+					if (qu.hasFinished(acc)) return Lang.Finished.toString();
+					return Lang.Not_Started.toString();
+				}else {
+					if (!acc.hasQuestDatas(qu)) return "-1";
+					PlayerQuestDatas datas = acc.getQuestDatas(qu);
+					if (datas.hasStarted()) return Integer.toString(datas.getStage());
+					return "-1";
 				}
-				if (qu.hasFinished(acc)) return Lang.Finished.toString();
-				return Lang.Not_Started.toString();
 			}catch (NumberFormatException ex) {
-				return "§c§lError: §o" + sid;
+				return "§c§lError: §o" + sid + " not a number";
 			}
 		}
 		if (identifier.startsWith("player_quest_finished_")) {
