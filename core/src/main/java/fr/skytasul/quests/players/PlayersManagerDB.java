@@ -383,7 +383,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
-		private static final int DATA_FLUSHING_TIME = 60;
+		private static final int DATA_FLUSHING_TIME = 10;
 		
 		private Map<BQStatement, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
