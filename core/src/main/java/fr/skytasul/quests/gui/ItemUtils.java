@@ -83,28 +83,27 @@ public class ItemUtils {
 			im.setDisplayName(name);
 		}
 		
-		if (lore == null) {
-			if (editLore != null) im.setLore(getLoreLines(editLore));
-		}else {
-			if (lore instanceof List) {
-				List<String> loreList = (List<String>) lore;
-				if (!loreList.isEmpty()) {
-					if (editLore != null) {
-						editLore.addAll(loreList);
-						loreList = editLore;
-					}
-					im.setLore(getLoreLines(loreList));
+		if (lore instanceof List) {
+			List<String> loreList = (List<String>) lore;
+			if (!loreList.isEmpty()) {
+				if (editLore != null) {
+					editLore.addAll(loreList);
+					loreList = editLore;
 				}
-			}else {
-				String[] loreArray = (String[]) lore;
-				if (loreArray.length != 0) {
-					if (editLore != null) {
-						editLore.addAll(Arrays.asList(loreArray));
-						im.setLore(getLoreLines(editLore));
-					}else im.setLore(getLoreLines(loreArray));
-				}
+				im.setLore(getLoreLines(loreList));
+				return im;
+			}
+		}else if (lore instanceof String[]) {
+			String[] loreArray = (String[]) lore;
+			if (loreArray.length != 0) {
+				if (editLore != null) {
+					editLore.addAll(Arrays.asList(loreArray));
+					im.setLore(getLoreLines(editLore));
+				}else im.setLore(getLoreLines(loreArray));
+				return im;
 			}
 		}
+		if (editLore != null) im.setLore(getLoreLines(editLore));
 		return im;
 	}
 

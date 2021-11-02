@@ -52,7 +52,7 @@ public abstract class BQNPCsManager implements Listener {
 		BQNPC npc = cache.get(id);
 		if (npc == null) return;
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		if (starter != null) starter.delete();
+		if (starter != null) starter.delete("NPC #" + id + " removed");
 		cache.remove(id);
 	}
 	

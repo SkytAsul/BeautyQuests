@@ -31,6 +31,7 @@ import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.pools.QuestPool;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -187,7 +188,7 @@ public class NPCStarter {
 	public boolean removeQuest(Quest quest) {
 		boolean b = quests.remove(quest);
 		if (isEmpty()) {
-			delete();
+			delete("Quest remove");
 		}else if (quests.isEmpty()) {
 			hologramText.visible = false;
 			hologramText.delete();
@@ -208,7 +209,7 @@ public class NPCStarter {
 	public boolean removePool(QuestPool pool) {
 		boolean b = pools.remove(pool);
 		if (isEmpty()) {
-			delete();
+			delete("Pool remove");
 		}else if (pools.isEmpty()) {
 			hologramPool.visible = false;
 			hologramPool.delete();
@@ -228,9 +229,10 @@ public class NPCStarter {
 		return quests.isEmpty() && pools.isEmpty();
 	}
 	
-	public void delete() {
+	public void delete(String cause) {
+		DebugUtils.logMessage("Removing NPC Starter " + npc.getId());
 		for (Quest qu : quests) {
-			BeautyQuests.logger.warning("Starter NPC has been removed from quest " + qu.getID());
+			BeautyQuests.logger.warning("Starter NPC has been removed from quest " + qu.getID() + ". Reason: " + cause);
 			qu.removeOption(OptionStarterNPC.class);
 		}
 		quests = null;

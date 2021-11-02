@@ -272,6 +272,12 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			dialog.send(p, npc, runnable);
 		}else attemptStart(p, null);
 	}
+	
+	public void leave(Player p) {
+		if (hasOption(OptionStartDialog.class)) {
+			getOption(OptionStartDialog.class).getValue().remove(p);
+		}
+	}
 
 	public void attemptStart(Player p, Runnable atStart) {
 		String confirm;

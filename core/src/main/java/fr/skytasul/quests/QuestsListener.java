@@ -153,6 +153,7 @@ public class QuestsListener implements Listener{
 	@EventHandler
 	public void onAccountLeave(PlayerAccountLeaveEvent e) {
 		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+		BeautyQuests.getInstance().getQuests().forEach(x -> x.leave(e.getPlayer()));
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)
