@@ -57,6 +57,7 @@ public class BQCitizens extends BQNPCsManager {
 	
 	@EventHandler
 	public void onNPCRemove(NPCRemoveEvent e) {
+		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
 		super.removeEvent(e.getNPC().getId());
 	}
 	

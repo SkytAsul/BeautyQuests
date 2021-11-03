@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
@@ -134,9 +135,10 @@ public class DependenciesManager implements Listener {
 		
 		boolean testCompatibility(boolean after) {
 			if (forceDisable) return false;
-			if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) return false;
-			if (isValid != null && !isValid.test(Bukkit.getPluginManager().getPlugin(pluginName))) return false;
-			BeautyQuests.logger.info("Hooked into " + pluginName + (after ? " after primary initialization" : ""));
+			Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+			if (plugin == null || !plugin.isEnabled()) return false;
+			if (isValid != null && !isValid.test(plugin)) return false;
+			DebugUtils.logMessage("Hooked into " + pluginName + " v" + plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
 			enabled = true;
 			return true;
 		}
