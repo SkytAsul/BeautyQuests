@@ -1,11 +1,15 @@
 package fr.skytasul.quests.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
@@ -44,6 +48,8 @@ public class QuestsAPI {
 	private static BQNPCsManager npcsManager = null;
 	private static AbstractHolograms<?> hologramsManager = null;
 	private static BQBossBarManager bossBarManager = null;
+	
+	private static final Set<QuestsHandler> handlers = new HashSet<>();
 	
 	/**
 	 * Register new stage type into the plugin
@@ -159,6 +165,29 @@ public class QuestsAPI {
 		Validate.notNull(newBossBarManager);
 		if (bossBarManager != null) BeautyQuests.logger.warning(newBossBarManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
 		bossBarManager = newBossBarManager;
+	}
+	
+	public static void registerQuestsHandler(QuestsHandler handler) {
+		if (handlers.add(handler)) handler.load();
+	}
+	
+	public static void unregisterQuestsHandler(QuestsHandler handler) {
+		if (handlers.remove(handler)) handler.unload();
+	}
+	
+	public static Collection<QuestsHandler> getQuestsHandlers() {
+		return handlers;
+	}
+	
+	public static void propagateQuestsHandlers(Consumer<QuestsHandler> consumer) {
+		handlers.forEach(handler -> {
+			try {
+				consumer.accept(handler);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An error occurred while updating quests handler.");
+				ex.printStackTrace();
+			}
+		});
 	}
 
 	public static List<Quest> getQuestsStarteds(PlayerAccount acc){

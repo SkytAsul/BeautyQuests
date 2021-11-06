@@ -133,6 +133,10 @@ public enum Lang{
 	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
 	COMMAND_CHECKPOINT_NO("msg.command.checkpoint.noCheckpoint"), // 0: quest name
 	COMMAND_CHECKPOINT_NOT_STARTED("msg.command.checkpoint.questNotStarted"),
+	COMMAND_TRANSLATION_SYNTAX("msg.command.downloadTranslations.syntax"),
+	COMMAND_TRANSLATION_NOT_FOUND("msg.command.downloadTranslations.notFound"), // 0: lang, 1: version
+	COMMAND_TRANSLATION_EXISTS("msg.command.downloadTranslations.exists"), // 0: file
+	COMMAND_TRANSLATION_DOWNLOADED("msg.command.downloadTranslations.downloaded"), // 0: lang
 	
 	COMMAND_HELP("msg.command.help.header"),
 	COMMAND_HELP_CREATE("msg.command.help.create"),
@@ -148,6 +152,7 @@ public enum Lang{
 	COMMAND_HELP_SETITEM("msg.command.help.setItem"),
 	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode"),
 	COMMAND_HELP_VERSION("msg.command.help.version"),
+	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations"),
 	COMMAND_HELP_SAVE("msg.command.help.save"),
 	COMMAND_HELP_LIST("msg.command.help.list"),
 	
@@ -708,9 +713,10 @@ public enum Lang{
 	No("misc.no"),
 	And("misc.and");
 	
+	private static final String DEFAULT_STRING = "§cnot loaded";
 	
 	private String path;
-	private String value = "§cnot loaded";
+	private String value = DEFAULT_STRING;
 
 	private Lang(String path){
 		this.path = path;

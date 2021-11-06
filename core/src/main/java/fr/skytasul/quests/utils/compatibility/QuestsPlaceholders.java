@@ -99,7 +99,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	
 	@Override
 	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "player_quest_finished_ID", "started_id_list");
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
 	}
 	
 	@Override

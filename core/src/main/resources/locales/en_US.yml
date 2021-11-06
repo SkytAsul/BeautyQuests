@@ -94,6 +94,12 @@ msg:
   playerNeverConnected: §cUnable to find informations about the player {0}.
   playerNotOnline: §cThe player {0} is offline.
   command:
+    downloadTranslations:
+      syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
+      notFound: '§cLanguage {0} not found for version {1}.'
+      exists: '§cThe file {0} already exists. Append "true" to your command to overwrite it. (/quests downloadTranslations <lang> true)'
+      downloaded: '§aLanguage {0} has been downloaded! §7You must now edit the
+        file "/plugins/BeautyQuests/config.yml" to change the value of §ominecraftTranslationsFile§7 with {0}, then restart the server.'
     checkpoint:
       noCheckpoint: §cNo checkpoint found for the quest {0}.
       questNotStarted: §cYou are not doing this quest.

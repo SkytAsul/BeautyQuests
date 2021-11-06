@@ -171,6 +171,7 @@ public abstract class AbstractStage implements Listener{
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageStart(acc, this));
 	}
 	
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
@@ -181,19 +182,24 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void end(PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageEnd(acc, this));
 	}
 	
 	/**
 	 * Called when an account with this stage launched joins
 	 * @param acc PlayerAccount which just joined
 	 */
-	public void joins(PlayerAccount acc, Player p) {}
+	public void joins(PlayerAccount acc, Player p) {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, this));
+	}
 	
 	/**
 	 * Called when an account with this stage launched leaves
 	 * @param acc PlayerAccount which just left
 	 */
-	public void leaves(PlayerAccount acc, Player p) {}
+	public void leaves(PlayerAccount acc, Player p) {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, this));
+	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
@@ -244,6 +250,7 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageUnload(this));
         HandlerList.unregisterAll(this);
 		rewards.forEach(AbstractReward::detach);
 		validationRequirements.forEach(AbstractRequirement::detach);
@@ -252,7 +259,9 @@ public abstract class AbstractStage implements Listener{
 	/**
 	 * Called when the stage loads
 	 */
-	public void load() {}
+	public void load() {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLoad(this));
+	}
 	
 	@EventHandler
 	public void onJoin(PlayerAccountJoinEvent e) {

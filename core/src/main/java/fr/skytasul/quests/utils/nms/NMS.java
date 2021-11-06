@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ReflectUtils;
+
 import io.netty.buffer.ByteBuf;
 
 public abstract class NMS{
@@ -73,16 +74,34 @@ public abstract class NMS{
     }
     
     public static int getMCVersion(){
-    	return MCversion;
+		return versionMajor;
+	}
+	
+	public static int getNMSMinorVersion() {
+		return versionMinorNMS;
     }
+	
+	public static String getVersionString() {
+		return versionString;
+	}
     
     private static boolean versionValid = false;
 	private static NMS nms;
-	private static int MCversion;
+	private static int versionMajor;
+	private static int versionMinorNMS;
+	private static String versionString;
 	
 	static {
-		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3].substring(1);
-		MCversion = Integer.parseInt(version.split("_")[1]);
+		versionString = Bukkit.getBukkitVersion().split("-R")[0];
+		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
+		String[] versions = version.split("_");
+		versionMajor = Integer.parseInt(versions[1]); // 1.X
+		if (versionMajor >= 17) {
+			// e.g. Bukkit.getBukkitVersion() -> 1.17.1-R0.1-SNAPSHOT
+			versions = versionString.split("\\.");
+			versionMinorNMS = versions.length <= 2 ? 0 : Integer.parseInt(versions[2]);
+		}else versionMinorNMS = Integer.parseInt(versions[2].substring(1)); // 1.X.Y
+		
 		try {
 			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
 			versionValid = true;

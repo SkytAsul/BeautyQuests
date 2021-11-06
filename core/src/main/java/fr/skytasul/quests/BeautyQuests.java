@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -427,10 +428,11 @@ public class BeautyQuests extends JavaPlugin {
 			ex.printStackTrace();
 		}
 
-		Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)
-			.filter(Files::isRegularFile)
-			.filter(path -> !path.getFileName().toString().contains("backup"))
-			.filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
+		try (Stream<Path> files = Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)){
+			files
+				.filter(Files::isRegularFile)
+				.filter(path -> !path.getFileName().toString().contains("backup"))
+				.filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
 					loadingFailure = false;
 					try {
 						File file = path.toFile();
@@ -442,12 +444,8 @@ public class BeautyQuests extends JavaPlugin {
 					}catch (Exception ex) {
 						ex.printStackTrace();
 					}
-			});
-		for (File file : saveFolder.listFiles()) {
-			if (!file.getName().substring(file.getName().lastIndexOf(".") + 1).equals("yml") || file.getName().contains("backup")) continue;
-			
+				});
 		}
-		
 		if (QuestsConfiguration.firstQuestID != -1) {
 			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
 			Quest quest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);

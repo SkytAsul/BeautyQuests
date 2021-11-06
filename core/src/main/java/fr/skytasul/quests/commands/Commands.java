@@ -1,5 +1,12 @@
 package fr.skytasul.quests.commands;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -37,6 +44,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -94,7 +102,7 @@ public class Commands {
 		}).enter();
 	}
 
-	@Cmd(permission = "reload")
+	@Cmd (permission = "manage")
 	public void reload(CommandContext cmd){
 		BeautyQuests.getInstance().performReload(cmd.sender);
 	}
@@ -104,7 +112,7 @@ public class Commands {
 		cmd.sender.sendMessage("§eBeautyQuests version : §6§l" + BeautyQuests.getInstance().getDescription().getVersion());
 	}
 	
-	@Cmd(permission = "reload")
+	@Cmd (permission = "manage")
 	public void save(CommandContext cmd){
 		try {
 			BeautyQuests.getInstance().saveAllConfig(false);
@@ -157,7 +165,7 @@ public class Commands {
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
 		if (cmd.args.length < 3 && (datas == null || datas.isFinished())) { // start quest
 			qu.start(target);
-			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.debugName());
 			return;
 		}
 		if (datas == null) datas = acc.getQuestDatas(qu); // creates quest datas
@@ -184,6 +192,10 @@ public class Commands {
 				if (stageID == null) return;
 				if (stageID < 0) {
 					Lang.NUMBER_NEGATIVE.send(cmd.sender);
+					return;
+				}
+				if (currentBranch == null) {
+					Lang.ERROR_OCCURED.send(cmd.sender, "player " + acc.debugName() + " has not started quest");
 					return;
 				}
 				if (currentBranch.getRegularStages().size() <= stageID) {
@@ -342,7 +354,7 @@ public class Commands {
 		Lang.ITEM_CHANGED.send(cmd.sender);
 	}
 	
-	@Cmd(permission = "reload", min = 1, args = "save|force")
+	@Cmd (permission = "manage", min = 1, args = "save|force")
 	public void backup(CommandContext cmd){
 		if (cmd.args[0].equals("save")){
 			save(cmd);
@@ -469,7 +481,41 @@ public class Commands {
 		}else Lang.COMMAND_CHECKPOINT_NOT_STARTED.send(cmd.sender);
 	}
 	
-	@Cmd (permission = "reload")
+	@Cmd (permission = "manage")
+	public void downloadTranslations(CommandContext cmd) {
+		if (cmd.args.length == 0) {
+			Lang.COMMAND_TRANSLATION_SYNTAX.send(cmd.sender);
+			return;
+		}
+		String lang = cmd.<String>get(0).toLowerCase();
+		String version = NMS.getVersionString();
+		String url = MinecraftNames.LANG_DOWNLOAD_URL.replace("%version%", version).replace("%language%", lang);
+		
+		try {
+			File destination = new File(BeautyQuests.getInstance().getDataFolder(), lang + ".json");
+			if (destination.isDirectory()) {
+				Lang.ERROR_OCCURED.send(cmd.sender, lang + ".json is a directory");
+				return;
+			}
+			if (!(cmd.args.length > 1 && Boolean.parseBoolean(cmd.get(1))) && destination.exists()) {
+				Lang.COMMAND_TRANSLATION_EXISTS.send(cmd.sender, lang + ".json");
+				return;
+			}
+			try (ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream())) {
+				destination.createNewFile();
+				try (FileOutputStream output = new FileOutputStream(destination)) {
+					output.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
+					Lang.COMMAND_TRANSLATION_DOWNLOADED.send(cmd.sender, lang);
+				}
+			}catch (FileNotFoundException ex) {
+				Lang.COMMAND_TRANSLATION_NOT_FOUND.send(cmd.sender, lang, version);
+			}
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Cmd (permission = "manage")
 	public void migrateDatas(CommandContext cmd) {
 		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
 			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");

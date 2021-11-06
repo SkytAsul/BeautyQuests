@@ -149,6 +149,12 @@
 			<artifactId>worldguard-bukkit</artifactId>
 			<version>7.0.5</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.java.truevfs</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>fr.skytasul</groupId>
@@ -183,6 +189,12 @@
 			<groupId>org.mineacademy.plugin</groupId>
 			<artifactId>Boss-API</artifactId>
 			<version>3.8.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.promcteam</groupId>
+			<artifactId>proskillapi</artifactId>
+			<version>1.1.7.0.3</version>
 			<scope>provided</scope>
 		</dependency>
 
