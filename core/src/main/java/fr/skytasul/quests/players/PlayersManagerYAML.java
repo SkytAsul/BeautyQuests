@@ -33,6 +33,8 @@ import fr.skytasul.quests.utils.Utils;
 
 public class PlayersManagerYAML extends PlayersManager {
 
+	private static final int ACCOUNTS_THRESHOLD = 1000;
+	
 	Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
 	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
 	private int lastAccountID = 0;
@@ -267,6 +269,14 @@ public class PlayersManagerYAML extends PlayersManager {
 			}
 		}
 		DebugUtils.logMessage(loadedAccounts.size() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
+		
+		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
+			BeautyQuests.logger.warning(
+					"⚠ WARNING - " + identifiersIndex.size() + " are registered on this server."
+					+ " It is recommended to switch to a SQL database setup in order to keep proper performances and scalability."
+					+ " In order to do that, setup your database credentials in config.yml (without enabling it) and run the command"
+					+ " /quests migrateDatas. Then follow steps on screen.");
+		}
 	}
 
 	@Override

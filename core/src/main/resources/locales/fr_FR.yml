@@ -79,7 +79,13 @@ msg:
   inventoryFull: '§cVotre inventaire est plein, l''item a été jeté au sol.'
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
+  versionRequired: 'Version requise : §l{0}'
   command:
+    downloadTranslations:
+      syntax: '§cVous devez spécifier une langue à télécharger. Exemple: "/quests downloadTranslations fr_FR".'
+      notFound: '§cLangue {0} introuvable pour la version {1}.'
+      exists: '§cLe fichier {0} existe déjà. Ajoutez "true" à votre commande pour l''écraser. (/quests downloadTranslations <lang> true)'
+      downloaded: '§aLa langue {0} a été téléchargée ! §7Vous devez maintenant modifier le fichier "/plugins/BeautyQuests/config.yml" pour changer la valeur de §ominecraftTranslationsFile§7 avec {0}, puis redémarrer le serveur.'
     checkpoint:
       noCheckpoint: '§cAucun checkpoint trouvé pour la quête {0}.'
       questNotStarted: '§cVous ne faites pas cette quête.'

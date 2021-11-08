@@ -19,7 +19,7 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement> {
 	}
 	
 	@Override
-	protected AbstractRequirement deserialize(Map<String, Object> map) throws ClassNotFoundException {
+	protected AbstractRequirement deserialize(Map<String, Object> map) {
 		return AbstractRequirement.deserialize(map);
 	}
 	

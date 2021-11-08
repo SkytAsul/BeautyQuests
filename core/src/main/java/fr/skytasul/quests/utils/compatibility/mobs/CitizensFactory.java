@@ -79,7 +79,7 @@ public class CitizensFactory implements MobFactory<NPC> {
 
 	@Override
 	public List<String> getDescriptiveLore(NPC data) {
-		return Arrays.asList("NPC ID: " + data.getId());
+		return Arrays.asList("§8NPC ID: §7§l" + data.getId());
 	}
 
 	@EventHandler

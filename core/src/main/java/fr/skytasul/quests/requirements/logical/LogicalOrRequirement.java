@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -61,16 +60,7 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	@Override
 	protected void load(Map<String, Object> savedDatas) {
-		requirements = Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("requirements"), map -> {
-			try {
-				return AbstractRequirement.deserialize(map);
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("An exception occured while deserializing a quest object (class " + map.get("class") + ").");
-				BeautyQuests.loadingFailure = true;
-				e.printStackTrace();
-			}
-			return null;
-		});
+		requirements = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("requirements"), AbstractRequirement::deserialize);
 	}
 	
 }

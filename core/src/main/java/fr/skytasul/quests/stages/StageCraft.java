@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -51,6 +52,12 @@ public class StageCraft extends AbstractStage {
 		Player p = (Player) e.getView().getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		ItemStack item = e.getRecipe().getResult();
+		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
+			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
+			if (key.equals("minecraft:suspicious_stew")) {
+				item = XMaterial.SUSPICIOUS_STEW.parseItem();
+			}
+		}
 		
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (comparisons.isSimilar(result, item)) {
@@ -100,6 +107,7 @@ public class StageCraft extends AbstractStage {
 		}
 	}
 	
+	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", result.getAmount());
@@ -110,14 +118,17 @@ public class StageCraft extends AbstractStage {
 		return amount == null ? 0 : amount.intValue();
 	}
 
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
 	}
 
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
 	}
 	
+	@Override
 	protected void serialize(Map<String, Object> map){
 		map.put("result", result.serialize());
 		

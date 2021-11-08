@@ -2,7 +2,6 @@ package fr.skytasul.quests.structure.pools;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -13,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -218,14 +218,7 @@ public class QuestPool implements Comparable<QuestPool> {
 	}
 	
 	public static QuestPool deserialize(int id, ConfigurationSection config) {
-		List<AbstractRequirement> requirements = new ArrayList<>();
-		for (Map<?, ?> serializedRequirement : config.getMapList("requirements")) {
-			try {
-				requirements.add(AbstractRequirement.deserialize((Map<String, Object>) serializedRequirement));
-			}catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+		List<AbstractRequirement> requirements = QuestObject.deserializeList(config.getMapList("requirements"), AbstractRequirement::deserialize);
 		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
 	}
 	

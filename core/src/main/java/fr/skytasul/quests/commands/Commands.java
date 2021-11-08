@@ -483,6 +483,10 @@ public class Commands {
 	
 	@Cmd (permission = "manage")
 	public void downloadTranslations(CommandContext cmd) {
+		if (NMS.getMCVersion() < 13) {
+			Utils.sendMessage(cmd.sender, "§c" + Lang.VERSION_REQUIRED.toString(), "≥ 1.13");
+			return;
+		}
 		if (cmd.args.length == 0) {
 			Lang.COMMAND_TRANSLATION_SYNTAX.send(cmd.sender);
 			return;

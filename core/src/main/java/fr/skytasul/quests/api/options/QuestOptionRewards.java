@@ -25,7 +25,7 @@ public abstract class QuestOptionRewards extends QuestOptionObject<AbstractRewar
 	}
 
 	@Override
-	protected AbstractReward deserialize(Map<String, Object> map) throws ClassNotFoundException {
+	protected AbstractReward deserialize(Map<String, Object> map) {
 		return AbstractReward.deserialize(map);
 	}
 

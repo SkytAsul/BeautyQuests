@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
@@ -77,10 +78,21 @@ public abstract class AbstractReward implements QuestObject {
 		return map;
 	}
 	
-	public static AbstractReward deserialize(Map<String, Object> map) throws ClassNotFoundException {
-		AbstractReward reward = QuestsAPI.rewards.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
-		reward.load(map);
-		return reward;
+	public static AbstractReward deserialize(Map<String, Object> map) {
+		String className = (String) map.get("class");
+		try {
+			QuestObjectCreator<AbstractReward> creator = QuestsAPI.rewards.get(Class.forName(className));
+			if (creator == null) {
+				BeautyQuests.logger.severe("Cannot find reward creator " + className);
+				return null;
+			}
+			AbstractReward reward = creator.newObjectSupplier.get();
+			reward.load(map);
+			return reward;
+		}catch (ClassNotFoundException e) {
+			BeautyQuests.logger.severe("Cannot find reward class " + className);
+			return null;
+		}
 	}
 	
 }

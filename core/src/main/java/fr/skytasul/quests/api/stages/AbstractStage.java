@@ -2,7 +2,6 @@ package fr.skytasul.quests.api.stages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import org.bukkit.event.Listener;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -312,30 +312,8 @@ public abstract class AbstractStage implements Listener{
 		AbstractStage st = stageType.deserializationSupplier.supply(map, branch);
 		if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 		if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-		for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
-			try {
-				AbstractReward reward = AbstractReward.deserialize(rew);
-				st.rewards.add(reward);
-				reward.attach(branch.getQuest());
-				if (reward.isAsync()) st.asyncEnd = true;
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
-				e.printStackTrace();
-				continue;
-			}
-		}
-		
-		for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
-			try {
-				AbstractRequirement requirement = AbstractRequirement.deserialize(req);
-				requirement.attach(branch.getQuest());
-				st.validationRequirements.add(requirement);
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
-				e.printStackTrace();
-				continue;
-			}
-		}
+		if (map.containsKey("rewards")) st.setRewards(QuestObject.deserializeList((List<Map<?, ?>>) map.get("rewards"), AbstractReward::deserialize));
+		if (map.containsKey("requirements")) st.setValidationRequirements(QuestObject.deserializeList((List<Map<?, ?>>) map.get("requirements"), AbstractRequirement::deserialize));
 		
 		return st;
 	}

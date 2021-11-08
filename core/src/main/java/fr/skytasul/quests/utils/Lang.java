@@ -94,6 +94,10 @@ public enum Lang{
 	PLAYER_NEVER_CONNECTED("msg.playerNeverConnected"),
 	PLAYER_NOT_ONLINE("msg.playerNotOnline"),
 	
+	VERSION_REQUIRED("msg.versionRequired"), // 0: verion
+	
+	// * Commands *
+	
 	MUST_PLAYER("msg.command.playerNeeded"),
 	INCORRECT_SYNTAX("msg.command.incorrectSyntax"),
 	PERMISSION_REQUIRED("msg.command.noPermission"),

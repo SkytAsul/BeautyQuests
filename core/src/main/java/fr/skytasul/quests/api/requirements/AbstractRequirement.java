@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
@@ -77,10 +78,21 @@ public abstract class AbstractRequirement implements QuestObject {
 		return map;
 	}
 	
-	public static AbstractRequirement deserialize(Map<String, Object> map) throws ClassNotFoundException {
-		AbstractRequirement requirement = QuestsAPI.requirements.get(Class.forName((String) map.get("class"))).newObjectSupplier.get();
-		requirement.load(map);
-		return requirement;
+	public static AbstractRequirement deserialize(Map<String, Object> map) {
+		String className = (String) map.get("class");
+		try {
+			QuestObjectCreator<AbstractRequirement> creator = QuestsAPI.requirements.get(Class.forName(className));
+			if (creator == null) {
+				BeautyQuests.logger.severe("Cannot find requirement creator " + className);
+				return null;
+			}
+			AbstractRequirement requirement = creator.newObjectSupplier.get();
+			requirement.load(map);
+			return requirement;
+		}catch (ClassNotFoundException e) {
+			BeautyQuests.logger.severe("Cannot find requirement class " + className);
+			return null;
+		}
 	}
 	
 }

@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -94,7 +95,10 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	@Override
 	public List<String> getDescriptiveLore(MythicMob data) {
 		try {
-			return Arrays.asList("Base Health: " + data.getHealth().get(), "Base Damage: " + data.getDamage().get(), "Base Armor: " + data.getArmor().get());
+			return Arrays.asList(
+					QuestOption.formatDescription("Base Health: " + data.getHealth().get()),
+					QuestOption.formatDescription("Base Damage: " + data.getDamage().get()),
+					QuestOption.formatDescription("Base Armor: " + data.getArmor().get()));
 		}catch (NoSuchMethodError e) {
 			return Arrays.asList("§cError when retrieving mob informations", "§c-> §oPlease update MythicMobs");
 		}

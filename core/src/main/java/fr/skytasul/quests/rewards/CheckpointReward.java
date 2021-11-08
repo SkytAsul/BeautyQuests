@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -67,16 +66,7 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	protected void load(Map<String, Object> savedDatas) {
-		actions = Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("actions"), map -> {
-			try {
-				return super.deserialize(map);
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("An exception occured while deserializing a quest object (class " + map.get("class") + ").");
-				BeautyQuests.loadingFailure = true;
-				e.printStackTrace();
-			}
-			return null;
-		});
+		actions = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("actions"), AbstractReward::deserialize);
 	}
 	
 }

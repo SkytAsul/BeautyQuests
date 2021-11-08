@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -64,17 +63,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		List<Map<?, ?>> objectList = config.getMapList(key);
-		for (Map<?, ?> objectMap : objectList) {
-			try {
-				getValue().add(deserialize((Map<String, Object>) objectMap));
-			}catch (Exception e) {
-				BeautyQuests.getInstance().getLogger().severe("An exception occured while deserializing a quest object (class " + objectMap.get("class") + ").");
-				BeautyQuests.loadingFailure = true;
-				e.printStackTrace();
-				continue;
-			}
-		}
+		getValue().addAll(QuestObject.deserializeList(config.getMapList(key), this::deserialize));
 	}
 	
 	@Override
@@ -84,7 +73,7 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	protected abstract Function<T, Map<String, Object>> getSerializeFunction();
 	
-	protected abstract T deserialize(Map<String, Object> map) throws ClassNotFoundException;
+	protected abstract T deserialize(Map<String, Object> map);
 	
 	protected abstract String getSizeString(int size);
 	

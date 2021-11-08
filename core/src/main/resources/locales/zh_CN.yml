@@ -214,8 +214,12 @@ msg:
         clear: '§eclear: §b删除所有消息.'
         close: '§eclose: §b退出并保存所有消息.'
         setTime: '§6setTime <id> <时间>: §e设置自动播放下一条消息的时间(单位为刻) 。'
+        npcName: '§6npcname [自定义NPC名称]: §eSet (或重置为默认) 自定义NPC名称'
       timeSet: '§a已编辑消息 {0} 的时间: 现在是 {1} 刻。'
       timeRemoved: '§a已删除消息{0}的时间。'
+      npcName:
+        set: '§a自定义NPC名称已设置为§7{1}§a (原为§7{0}§a)'
+        unset: '§a自定义NPC名称重置为默认值 (原为§7{0}§a)'
     mythicmobs:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
@@ -261,6 +265,9 @@ inv:
   create:
     stageCreate: '§a创建新的阶段'
     stageRemove: '§c删除这一阶段'
+    stageUp: 上移
+    stageDown: 下移
+    stageType: '§7阶段类型：§e{0}'
     cantFinish: '§7你必须先创建至少一个任务阶段！'
     findNPC: '§a寻找一个NPC'
     bringBack: '§a带回物品'
@@ -595,6 +602,18 @@ indication:
   closeInventory: '§7你确定要关闭该页面吗？'
   cancelQuest: '§7您确定要取消任务 {0}?'
   removeQuest: '§7您确定要删除任务 {0}?'
+description:
+  requirement:
+    title: '§8§l要求：'
+    level: '{0}级'
+    jobLevel: '{1} {0}级'
+    combatLevel: '战斗等级 {0}'
+    skillLevel: '{1} {0}级'
+    class: '{0} 职业'
+    faction: '{0} 派系'
+    quest: '完成任务 §e{0}'
+  reward:
+    title: '§8§l奖励：'
 misc:
   format:
     prefix: '§6<§e§l任务§r§6> §r'
@@ -602,6 +621,7 @@ misc:
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e{0}'
   time:
+    weeks: '{0}周'
     days: '{0}天'
     hours: '{0}小时'
     minutes: '{0}分钟'
@@ -648,6 +668,11 @@ misc:
     water: 水桶
     lava: 岩浆桶
     milk: 牛奶桶
+  click:
+    right: 右击
+    left: 左击
+    shift-right: Shift+右击
+    shift-left: Shift+左击
   ticks: '{0}刻'
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'
