@@ -7,22 +7,13 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
-import fr.skytasul.quests.api.events.PlayerSetStageEvent;
-import fr.skytasul.quests.api.events.QuestCreateEvent;
-import fr.skytasul.quests.api.events.QuestFinishEvent;
-import fr.skytasul.quests.api.events.QuestLaunchEvent;
-import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
@@ -94,54 +85,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		updateBoard(false, true);
 	}
 	
-	@EventHandler
-	public void onChangeWorld(PlayerChangedWorldEvent e) {
-		if (e.getPlayer() != p) return;
-		boolean toAllowed = manager.isWorldAllowed(e.getPlayer().getWorld().getName());
-		if (hid) {
-			if (toAllowed) show(false);
-		}else {
-			if (!toAllowed) hide(false);
-		}
+	protected void questAdd(Quest quest) {
+		launched.add(launched.indexOf(shown) + 1, quest);
+		shown = quest;
+		refreshQuestsLines(true);
 	}
 	
-	@EventHandler
-	public void onQuestFinished(QuestFinishEvent e){
-		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onQuestReset(PlayerQuestResetEvent e) {
-		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onStageSet(PlayerSetStageEvent e) {
-		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest(), false);
-	}
-	
-	@EventHandler
-	public void onQuestRemove(QuestRemoveEvent e){
-		questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onQuestCreate(QuestCreateEvent e) {
-		if (e.isEdited()) {
-			if (e.getQuest().hasStarted(acc)) launched.add(e.getQuest());
-		}
-	}
-
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onQuestLaunch(QuestLaunchEvent e){
-		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
-			launched.add(launched.indexOf(shown) + 1, e.getQuest());
-			shown = e.getQuest();
-			refreshQuestsLines(true);
-		}
-	}
-	
-	private void questRemove(Quest quest){
+	protected void questRemove(Quest quest) {
 		int id = launched.indexOf(quest);
 		if (id == -1) return;
 		launched.remove(quest);
@@ -153,8 +103,44 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		}
 	}
 	
+	protected void questEdited(Quest newQuest, Quest oldQuest) {
+		int index = launched.indexOf(oldQuest);
+		if (index == -1) {
+			// if scoreboard has been enabled during quest edition,
+			// we add the quest to the player list
+			if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(acc)) launched.add(newQuest);
+			return;
+		}
+		
+		// if scoreboard has been disabled during quest edition,
+		// we remove the quest from the player list as it should no longer be displayed
+		if (!newQuest.isScoreboardEnabled()) {
+			questRemove(oldQuest);
+			return;
+		}
+		
+		// we replace the old quest instance by the new one
+		launched.set(index, newQuest);
+		if (shown == oldQuest) {
+			shown = newQuest;
+			refreshQuestsLines(true);
+		}
+	}
+	
+	protected void worldChange(boolean toAllowed) {
+		if (hid) {
+			if (toAllowed) show(false);
+		}else {
+			if (!toAllowed) hide(false);
+		}
+	}
+	
 	public Quest getShownQuest() {
 		return shown;
+	}
+	
+	public boolean isHidden() {
+		return hid;
 	}
 	
 	public void hide(boolean force) {

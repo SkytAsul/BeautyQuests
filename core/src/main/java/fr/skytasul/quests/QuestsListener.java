@@ -127,11 +127,6 @@ public class QuestsListener implements Listener{
 		Player player = e.getPlayer();
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			PlayersManager.loadPlayer(player);
-			/*Entry<PlayerAccount, Boolean> acc = PlayersManager.manager.load(player);
-			//boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
-			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, acc.getKey(), acc.getValue()));
-			}, 2L);*/
 		}
 	}
 	
@@ -142,17 +137,15 @@ public class QuestsListener implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOW)
 	public void onAccountJoin(PlayerAccountJoinEvent e) {
 		if (e.isFirstJoin()) {
 			QuestsAPI.getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
-		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onAccountLeave(PlayerAccountLeaveEvent e) {
-		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
 		BeautyQuests.getInstance().getQuests().forEach(x -> x.leave(e.getPlayer()));
 	}
 

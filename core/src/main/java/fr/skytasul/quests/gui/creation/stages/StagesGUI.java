@@ -34,7 +34,6 @@ public class StagesGUI implements CustomInventory {
 	private static final int SLOT_FINISH = 52;
 	
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
-	private static final ItemStack stageRemove = ItemUtils.item(XMaterial.BARRIER, Lang.stageRemove.toString());
 	private static final ItemStack notDone = ItemUtils.lore(ItemUtils.itemNotDone.clone(), Lang.cantFinish.toString());
 	
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
@@ -285,6 +284,7 @@ public class StagesGUI implements CustomInventory {
 		}
 	}
 
+	@SuppressWarnings ("rawtypes")
 	public List<StageCreation> getStageCreations() {
 		List<StageCreation> stages = new LinkedList<>();
 		for (int i = 0; i < 20; i++) {

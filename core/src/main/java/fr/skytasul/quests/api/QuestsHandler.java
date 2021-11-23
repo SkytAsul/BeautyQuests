@@ -1,40 +1,41 @@
 package fr.skytasul.quests.api;
 
+import org.bukkit.entity.Player;
+
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.structure.Quest;
 
-public class QuestsHandler {
+public interface QuestsHandler {
 	
-	public void load() {
-		// can be implemented
-	}
+	public default void load() {}
 	
-	public void unload() {
-		// can be implemented
-	}
+	public default void unload() {}
 	
-	public void stageStart(PlayerAccount acc, AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questCreate(Quest quest) {}
 	
-	public void stageEnd(PlayerAccount acc, AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questRemove(Quest quest) {}
 	
-	public void stageJoin(PlayerAccount acc, AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questEdit(Quest newQuest, Quest oldQuest, boolean keepDatas) {}
 	
-	public void stageLeave(PlayerAccount acc, AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questStart(PlayerAccount acc, Player p, Quest quest) {}
 	
-	public void stageLoad(AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questFinish(PlayerAccount acc, Player p, Quest quest) {}
 	
-	public void stageUnload(AbstractStage stage) {
-		// can be implemented
-	}
+	public default void questReset(PlayerAccount acc, Quest quest) {}
+	
+	public default void questUpdated(PlayerAccount acc, Player p, Quest quest) {}
+	
+	public default void stageStart(PlayerAccount acc, AbstractStage stage) {}
+	
+	public default void stageEnd(PlayerAccount acc, AbstractStage stage) {}
+	
+	public default void stageJoin(PlayerAccount acc, Player p, AbstractStage stage) {}
+	
+	public default void stageLeave(PlayerAccount acc, Player p, AbstractStage stage) {}
+	
+	public default void stageLoad(AbstractStage stage) {}
+	
+	public default void stageUnload(AbstractStage stage) {}
 	
 }

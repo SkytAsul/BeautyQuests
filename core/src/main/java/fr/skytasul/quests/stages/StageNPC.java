@@ -23,6 +23,7 @@ import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.Locatable;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -37,7 +38,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 
-public class StageNPC extends AbstractStage{
+public class StageNPC extends AbstractStage implements Locatable {
 	
 	private BQNPC npc;
 	private int npcID;
@@ -138,6 +139,16 @@ public class StageNPC extends AbstractStage{
 
 	public void setHid(boolean hide){
 		this.hide = hide;
+	}
+	
+	@Override
+	public Location getLocation() {
+		return npc != null && npc.isSpawned() ? npc.getLocation() : null;
+	}
+	
+	@Override
+	public boolean isShown() {
+		return !hide;
 	}
 
 	@Override

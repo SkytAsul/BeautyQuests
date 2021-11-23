@@ -217,6 +217,7 @@ public class Commands {
 				datas.setBranch(branchID);
 				branch.setStage(acc, stageID);
 			}
+			QuestsAPI.propagateQuestsHandlers(handler -> handler.questUpdated(acc, target, qu));
 		}
 	}
 

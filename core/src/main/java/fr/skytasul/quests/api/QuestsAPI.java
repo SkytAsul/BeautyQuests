@@ -168,6 +168,7 @@ public class QuestsAPI {
 	}
 	
 	public static void registerQuestsHandler(QuestsHandler handler) {
+		Validate.notNull(handler);
 		if (handlers.add(handler)) handler.load();
 	}
 	

@@ -78,11 +78,16 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
 
+	static boolean backups = true;
+	
 	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
 	static int firstQuestID = -1; // changed in 0.19, TODO
 	
 	static void initConfiguration(FileConfiguration config) {
+		backups = config.getBoolean("backups", true);
+		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
+		
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {

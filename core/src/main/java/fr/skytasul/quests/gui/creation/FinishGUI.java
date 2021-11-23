@@ -221,21 +221,27 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				BeautyQuests.logger.severe("Error when trying to save quest");
 				e.printStackTrace();
 			}
-		}
-		
-		if (keepPlayerDatas) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				PlayerAccount account = PlayersManager.getPlayerAccount(p);
-				if (account == null) continue;
-				if (account.hasQuestDatas(qu)) {
-					PlayerQuestDatas datas = account.getQuestDatas(qu);
-					if (datas.getBranch() == -1) continue;
-					QuestBranch branch = qu.getBranchesManager().getBranch(datas.getBranch());
-					if (datas.isInEndingStages()) {
-						branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, p));
-					}else branch.getRegularStage(datas.getStage()).joins(account, p);
+			
+			if (keepPlayerDatas) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					PlayerAccount account = PlayersManager.getPlayerAccount(p);
+					if (account == null) continue;
+					if (account.hasQuestDatas(qu)) {
+						PlayerQuestDatas datas = account.getQuestDatas(qu);
+						if (datas.getBranch() == -1) continue;
+						QuestBranch branch = qu.getBranchesManager().getBranch(datas.getBranch());
+						if (datas.isInEndingStages()) {
+							branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, p));
+						}else branch.getRegularStage(datas.getStage()).joins(account, p);
+					}
 				}
 			}
+			
+			QuestsAPI.propagateQuestsHandlers(handler -> {
+				if (editing)
+					handler.questEdit(qu, edited, keepPlayerDatas);
+				else handler.questCreate(qu);
+			});
 		}
 		
 		Inventories.closeAndExit(p);
@@ -255,10 +261,9 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					}
 					branch.addEndStage(stage, newBranch);
 				}else branch.addRegularStage(stage);
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
 				ex.printStackTrace();
-				continue;
 			}
 		}
 	}

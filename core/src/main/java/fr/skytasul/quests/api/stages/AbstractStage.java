@@ -190,7 +190,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just joined
 	 */
 	public void joins(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, this));
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, p, this));
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just left
 	 */
 	public void leaves(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, this));
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, p, this));
 	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
@@ -230,7 +230,7 @@ public abstract class AbstractStage implements Listener{
 		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		if (p != null) branch.getBranchesManager().objectiveUpdated(p, acc);
+		branch.getBranchesManager().objectiveUpdated(p, acc);
 	}
 
 	protected <T> T getData(PlayerAccount acc, String dataKey) {

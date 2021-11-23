@@ -405,6 +405,7 @@ public class BeautyQuests extends JavaPlugin {
 		File scFile = new File(getDataFolder(), "scoreboard.yml");
 		if (!scFile.exists()) saveResource("scoreboard.yml", true);
 		scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
+		QuestsAPI.registerQuestsHandler(scoreboards);
 		if (DependenciesManager.dyn.isEnabled()) {
 			try{
 				Dynmap.intitialize();
@@ -479,7 +480,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload){
-			if (scoreboards != null) scoreboards.unload();
+			QuestsAPI.unregisterQuestsHandler(scoreboards);
 		}
 		
 		/*int amount = 0; // no longer need to save quests
@@ -535,6 +536,7 @@ public class BeautyQuests extends JavaPlugin {
 	/* ---------- Backups ---------- */
 	
 	public boolean createFolderBackup(String msg){
+		if (!QuestsConfiguration.backups) return false;
 		getLogger().info(msg + " Creating backup...");
 		try {
 			File backupDir = backupDir();
@@ -552,6 +554,7 @@ public class BeautyQuests extends JavaPlugin {
 	}
 	
 	public boolean createDataBackup(String msg){
+		if (!QuestsConfiguration.backups) return false;
 		getLogger().info(msg + " Creating backup...");
 		try{
 			getLogger().info("Datas backup created in " + Files.copy(dataFile.toPath(), new File(backupDir(), "data.yml").toPath()).getParent().getFileName());
@@ -564,6 +567,7 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 	public boolean createQuestBackup(Path file, String msg) {
+		if (!QuestsConfiguration.backups) return false;
 		getLogger().info(msg + " Creating backup...");
 		try{
 			getLogger().info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());

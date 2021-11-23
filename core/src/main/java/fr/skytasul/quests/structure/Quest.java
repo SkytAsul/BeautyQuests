@@ -11,7 +11,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -202,6 +201,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	
 	public void cancelPlayer(PlayerAccount acc){
 		manager.remove(acc);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 	}
 	
@@ -313,21 +313,19 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			if (!"none".equals(startMsg)) Utils.IsendMessage(p, startMsg, true, getName());
 		}
 		
-		BukkitRunnable run = new BukkitRunnable() {
-			@Override
-			public void run(){
-				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
-				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
-				if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
-				if (asyncStart != null) asyncStart.remove(p);
-				manager.startPlayer(acc);
-
-				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
-			}
+		Runnable run = () -> {
+			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
+			if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
+			if (asyncStart != null) asyncStart.remove(p);
+			manager.startPlayer(acc);
+			QuestsAPI.propagateQuestsHandlers(handler -> handler.questStart(acc, p, this));
+			
+			Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
 		};
 		if (asyncStart != null){
 			asyncStart.add(p);
-			run.runTaskAsynchronously(BeautyQuests.getInstance());
+			Utils.runAsync(run);
 		}else run.run();
 	}
 	
@@ -357,8 +355,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				Utils.spawnFirework(p.getLocation());
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
 				
-				QuestFinishEvent event = new QuestFinishEvent(p, Quest.this);
-				Bukkit.getPluginManager().callEvent(event);
+				QuestsAPI.propagateQuestsHandlers(handler -> handler.questFinish(acc, p, this));
+				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, Quest.this));
 			});
 		};
 		
@@ -380,6 +378,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		}
 		removed = true;
 		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this));
+		if (removeDatas) QuestsAPI.propagateQuestsHandlers(handler -> handler.questRemove(this));
 		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + getName() + "\" has been removed");
 	}
 	
