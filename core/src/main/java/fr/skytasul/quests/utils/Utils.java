@@ -3,18 +3,14 @@
 	import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -23,7 +19,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -32,7 +27,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -193,82 +187,14 @@ public class Utils{
 		return en.getLocation().add(0, QuestsConfiguration.getHologramsHeight() + NMS.getNMS().entityNameplateHeight(en) + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
 	}
 	
-	public static void removeItems(Inventory inv, ItemStack i){
-		if (i.getAmount() <= 0) return;
-		ItemStack[] items = inv.getContents();
-		for (int slot = 0; slot < items.length; slot++){
-			ItemStack item = items[slot];
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == i.getAmount()) {
-					inv.setItem(slot, new ItemStack(Material.AIR));
-                    return;
-                }
-				if (item.getAmount() > i.getAmount()) {
-					item.setAmount(item.getAmount() - i.getAmount());
-					return;
-				}else if (item.getAmount() < i.getAmount()) {
-					i.setAmount(i.getAmount() - item.getAmount());
-					inv.setItem(slot, new ItemStack(Material.AIR));
-				}
-			}
-		}
-	}
-
-	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
-		for(ItemStack item : inv.getContents()) {
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == amount) {
-					return true;
-                }
-				if (item.getAmount() > amount) {
-					return true;
-				}else if (item.getAmount() < amount) {
-					amount -= item.getAmount();
-				}
-			}
-		}
-		return false;
-	}
-	
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
         if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
-            ItemMeta item1Meta = item1.getItemMeta();
-            ItemMeta item2Meta = item2.getItemMeta();
-
-			try {
-				return NMS.getNMS().equalsWithoutNBT(item1Meta, item2Meta);
+            try {
+				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
 			}catch (ReflectiveOperationException ex) {
+				BeautyQuests.logger.severe("An error occurred while attempting to compare items using NMS");
 				ex.printStackTrace();
 			}
-
-			/*if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
-			if (item1Meta.hasDisplayName()) {
-			    if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
-			}
-			
-			if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
-			if (item1Meta.hasLore()) {
-			    if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
-			    for (int index = 0; index < item1Meta.getLore().size(); index++) {
-			        if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
-			    }
-			}
-			
-			if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
-			if (item1Meta.hasEnchants()) {
-			    if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
-			    for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
-			        if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
-			    }
-			}
-			if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
-			for (ItemFlag flag : item1Meta.getItemFlags()) {
-			    if (!item2Meta.hasItemFlag(flag)) return false;
-			}*/
-
-            return true;
         }
         return false;
     }
@@ -353,126 +279,7 @@ public class Utils{
 		return 0;
 	}
 	
-	/**
-	 * Breaks a raw string up into a series of lines. Words are wrapped using
-	 * spaces as decimeters and the newline character is respected.
-	 *
-	 * @param rawString The raw string to break.
-	 * @param lineLength The length of a line of text.
-	 * @return An array of word-wrapped lines.
-	 */
-	public static List<String> wordWrap(String rawString, int lineLength) {
-		// A null string is a single line
-		if (rawString == null) {
-			return Arrays.asList("");
-		}
-		
-		rawString = rawString.replace("{nl}", "\n");
-		
-		// A string shorter than the lineWidth is a single line
-		if (rawString.length() <= lineLength && !rawString.contains("\n")) {
-			return Arrays.asList(rawString);
-		}
-		
-		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
-		StringBuilder word = new StringBuilder();
-		StringBuilder line = new StringBuilder();
-		String lastColors = "";
-		String colors = "";
-		boolean first = false;
-		//boolean colorsSkip = true;
-		List<String> lines = new LinkedList<String>();
-		
-		for (int i = 0; i < rawChars.length; i++) {
-			char c = rawChars[i];
-			
-			// skip chat color modifiers
-			if (c == ChatColor.COLOR_CHAR) {
-				ChatColor color = ChatColor.getByChar(rawChars[i + 1]);
-				if (color != null) {
-					word.append(color.toString());
-					colors = ChatColor.getLastColors(colors + color.toString());
-					i++; // Eat the next character as we have already processed it
-					//colorsSkip = true;
-					continue;
-				}
-			}
-			
-			if (c == ' ' || c == '\n') {
-				if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
-					//System.out.println("long word : " + word);
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						//System.out.println("partial " + partialWord);
-						lines.add(partialWord);
-					}
-				}else if (line.length() + 1 + word.length() == lineLength) { // Line exactly the correct length...newline
-					//System.out.println("good length");
-					if (line.length() > 0) {
-						line.append(' ');
-					}
-					line.append(word);
-					lines.add(line.toString());
-					//System.out.println("append exact " + line.toString());
-					line = new StringBuilder();
-					line.append(colors);
-					first = true;
-				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
-					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						lines.add(line.toString());
-						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
-						line = new StringBuilder(partialWord);
-						/*if (colorsSkip) {
-							colorsSkip = false;
-						}else {*/
-							line.insert(0, lastColors);
-						//}
-					}
-				}else {
-					if (line.length() > 0) {
-						if (!first) line.append(' ');
-					}
-					first = false;
-					line.append(word);
-					lastColors = colors;
-					//System.out.println("append word " + word);
-				}
-				word = new StringBuilder();
-				
-				if (c == '\n') { // Newline forces the line to flush
-					lines.add(line.toString());
-					//System.out.println(lastColors.replace('§', '&') + " LINE " + line.toString());
-					line = new StringBuilder();
-					line.append(lastColors);
-					first = true;
-				}
-				//colorsSkip = false;
-			}else {
-				word.append(c);
-			}
-		}
-		
-		if (line.length() > 0) { // Only add the last line if there is anything to add
-			lines.add(line.toString());
-		}
-		
-		// Iterate over the wrapped lines, applying the last color from one line to the beginning of the next
-		/*if (lines.get(0).length() == 0 || lines.get(0).charAt(0) != ChatColor.COLOR_CHAR) {
-			lines.set(0, ChatColor.WHITE + lines.get(0));
-		}*/
-		/*for (int i = 1; i < lines.size(); i++) {
-			final String pLine = lines.get(i - 1);
-			final String subLine = lines.get(i);
-			
-			//String color = ChatColor.getByChar(pLine.charAt(pLine.lastIndexOf(ChatColor.COLOR_CHAR) + 1));
-			String color = ChatColor.getLastColors(pLine);
-			if (subLine.length() == 0 || subLine.charAt(0) != ChatColor.COLOR_CHAR) {
-				lines.set(i, color + subLine);
-			}
-		}*/
-		
-		return lines;
-	}
+	
 	
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {
@@ -620,22 +427,6 @@ public class Utils{
 			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
 		}
 		return false;
-	}
-	
-	private static final char COLOR_CHAR = '\u00A7';
-	
-	public static String translateHexColorCodes(String startTag, String endTag, String message) {
-		final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})" + endTag);
-		Matcher matcher = hexPattern.matcher(message);
-		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
-		while (matcher.find()) {
-			String group = matcher.group(2);
-			matcher.appendReplacement(buffer, COLOR_CHAR + "x"
-					+ COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
-					+ COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
-					+ COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5));
-		}
-		return matcher.appendTail(buffer).toString();
 	}
 	
 }

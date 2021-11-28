@@ -757,7 +757,7 @@ public enum Lang{
 			String value = config.getString(l.path, null);
 			if (value == null) value = defaultConfig.getString(l.path, null);
 			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-			l.setValue(Utils.translateHexColorCodes("(&|§)#", "", ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
+			l.setValue(ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
 		}
 	}
 	

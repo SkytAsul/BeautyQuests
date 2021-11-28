@@ -18,11 +18,15 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class Scoreboard extends BukkitRunnable implements Listener {
 
+	private static final int maxLength = NMS.getMCVersion() >= 13 ? 128 : 30;
+	
 	private PlayerAccount acc;
 	private Player p;
 	private FastBoard board;
@@ -289,7 +293,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				text = Utils.finalFormat(p, text, true);
 				if (text.equals(lastValue)) return false;
 				
-				lines = Utils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength());
+				lines = ChatUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
 				
 				lastValue = text;
 				return true;

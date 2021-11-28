@@ -14,14 +14,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class ItemUtils {
+	
+	private static final int LORE_LINE_LENGTH = 40;
+	private static final int LORE_LINE_LENGTH_CRITICAL = 100;
 	
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
@@ -71,7 +74,7 @@ public class ItemUtils {
 	private static ItemMeta applyMeta(ItemMeta im, String name, Object lore) {
 		List<String> editLore = null;
 		if (name != null) {
-			editLore = Utils.wordWrap(name, 50);
+			editLore = ChatUtils.wordWrap(name, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL);
 			if (editLore.size() == 0) {
 				name = "";
 			}else if (editLore.size() == 1) {
@@ -144,7 +147,7 @@ public class ItemUtils {
 					if (line == null) {
 						if (i + 1 == lore.length) break; // if last line and null : not shown
 						finalLines.add("§a");
-					}else finalLines.addAll(Utils.wordWrap(line, 40));
+					}else finalLines.addAll(ChatUtils.wordWrap(line, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL));
 				}
 			}
 			return finalLines;
@@ -160,7 +163,7 @@ public class ItemUtils {
 					if (line == null) {
 						if (i + 1 == lore.size()) break; // if last line and null : not shown
 						finalLines.add("§a");
-					}else finalLines.addAll(Utils.wordWrap(line, 40));
+					}else finalLines.addAll(ChatUtils.wordWrap(line, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL));
 				}
 			}
 			return finalLines;

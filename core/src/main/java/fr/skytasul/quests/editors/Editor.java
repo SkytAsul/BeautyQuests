@@ -18,6 +18,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -95,9 +96,8 @@ public abstract class Editor implements Listener{
 	
 	private final void callChat(String rawText){
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
-		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		String coloredMessage = Utils.translateHexColorCodes("&#", "", ChatColor.translateAlternateColorCodes('&', rawText));
+		String coloredMessage = ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', rawText));
 		String strippedMessage = ChatColor.stripColor(rawText);
 		if (cancel != null && strippedMessage.equalsIgnoreCase(cancelWord())) {
 			cancel();
@@ -110,7 +110,7 @@ public abstract class Editor implements Listener{
 		return null;
 	}
 	
-	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;
 		e.setCancelled(true);

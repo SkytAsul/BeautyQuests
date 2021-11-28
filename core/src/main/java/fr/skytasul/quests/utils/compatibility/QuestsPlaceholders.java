@@ -28,8 +28,8 @@ import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
@@ -149,7 +149,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					if (noSplit) return format;
 				
 					try {
-						List<String> lines = Utils.wordWrap(format, lineLength);
+						List<String> lines = ChatUtils.wordWrap(format, lineLength);
 						if (i >= lines.size()) return "";
 						return lines.get(i);
 					}catch (Exception ex) {
