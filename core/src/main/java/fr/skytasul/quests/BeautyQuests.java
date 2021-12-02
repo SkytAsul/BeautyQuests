@@ -404,8 +404,14 @@ public class BeautyQuests extends JavaPlugin {
 		
 		File scFile = new File(getDataFolder(), "scoreboard.yml");
 		if (!scFile.exists()) saveResource("scoreboard.yml", true);
-		scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
-		QuestsAPI.registerQuestsHandler(scoreboards);
+		try {
+			scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
+			QuestsAPI.registerQuestsHandler(scoreboards);
+		}catch (Exception ex) {
+			getLogger().severe("An error occurred while initializing scoreboard system.");
+			ex.printStackTrace();
+		}
+		
 		if (DependenciesManager.dyn.isEnabled()) {
 			try{
 				Dynmap.intitialize();

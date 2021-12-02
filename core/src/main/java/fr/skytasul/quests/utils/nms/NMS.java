@@ -49,6 +49,10 @@ public abstract class NMS{
 		throw new UnsupportedOperationException();
 	}
 	
+	public List<String> getAvailableBlockTags() {
+		throw new UnsupportedOperationException();
+	}
+	
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
 		((Map<?, ?>) unhandledTags.get(meta1)).clear();
 		((Map<?, ?>) unhandledTags.get(meta2)).clear();

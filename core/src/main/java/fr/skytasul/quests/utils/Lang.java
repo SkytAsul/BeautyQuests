@@ -19,7 +19,8 @@ public enum Lang{
 	CANCELLED("msg.quest.createCancelled"),
 	QUEST_CANCEL("msg.quest.cancelling"),
 	QUEST_EDIT_CANCEL("msg.quest.editCancelling"),
-	QUEST_INVALID("msg.quest.invalidID"),
+	QUEST_INVALID("msg.quest.invalidID"), // 0: quest id
+	POOL_INVALID("msg.quest.invalidPoolID"), // 0: pool id
 	ALREADY_STARTED("msg.quest.alreadyStarted"),
 	
 	QUESTS_MAX_LAUNCHED("msg.quests.maxLaunched"), // 0: max quests
@@ -87,6 +88,7 @@ public enum Lang{
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
 	INVALID_BLOCK_DATA("msg.invalidBlockData"), // 0: blockdata, 1: material
+	INVALID_BLOCK_TAG("msg.invalidBlockTag"), // 0: tag
 	
 	NEED_OBJECTS("msg.bringBackObjects"),
 	ITEM_DROPPED("msg.inventoryFull"),
@@ -122,6 +124,8 @@ public enum Lang{
 	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed"),
 	ADMIN_MODE_ENTERED("msg.command.adminModeEntered"),
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
+	POOL_RESET_TIMER("msg.command.resetPlayerPool.timer"), // 0: pool ID, 1: player
+	POOL_RESET_FULL("msg.command.resetPlayerPool.full"), // 0: pool ID, 1: player
 	
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id
@@ -178,6 +182,7 @@ public enum Lang{
 	BLOCKS_AMOUNT("msg.editor.blockAmount"),
 	BLOCK_NAME("msg.editor.blockName"),
 	BLOCK_DATA("msg.editor.blockData"), // 0: available block datas
+	BLOCK_TAGS("msg.editor.blockTag"), // 0: available block tags
 	
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
 	
@@ -504,7 +509,10 @@ public enum Lang{
 	
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
+	materialNotItemLore("inv.block.materialNotItemLore"), // 0: block id
 	blockData("inv.block.blockData"),
+	blockTag("inv.block.blockTag"),
+	blockTagLore("inv.block.blockTagLore"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
 	addBlock("inv.blocksList.addBlock"),

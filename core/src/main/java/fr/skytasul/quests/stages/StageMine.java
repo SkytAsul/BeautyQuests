@@ -26,7 +26,6 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
@@ -88,7 +87,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 	
 	@Override
 	protected String getName(BQBlock object) {
-		return MinecraftNames.getMaterialName(object.getMaterial());
+		return object.getName();
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("blocks");
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> blockData = list.get(i);
-				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
+				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock.BQBlockMaterial(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
 			}
 		}
 

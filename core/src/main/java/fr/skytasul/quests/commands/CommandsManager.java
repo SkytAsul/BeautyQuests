@@ -17,11 +17,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -120,6 +122,15 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 					return false;
 				}
 				argsCmd[i-1] = qu;
+			}else if (type.equals("POOLSID")) {
+				Integer id = Utils.parseInt(sender, arg);
+				if (id == null) return false;
+				QuestPool pool = BeautyQuests.getInstance().getPoolsManager().getPool(i);
+				if (pool == null) {
+					Lang.POOL_INVALID.send(sender, id);
+					return false;
+				}
+				argsCmd[i - 1] = pool;
 			}else if (type.equals("NPCSID")){
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;

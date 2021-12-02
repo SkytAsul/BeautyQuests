@@ -259,6 +259,20 @@ public class Commands {
 		}else Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
 	}
 	
+	@Cmd (permission = "resetPlayer", min = 2, args = { "PLAYERS", "POOLSID", "BOOLEAN" })
+	public void resetPlayerPool(CommandContext cmd) {
+		Player target = (Player) cmd.args[0];
+		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		QuestPool pool = cmd.get(1);
+		if (Boolean.parseBoolean(cmd.get(2, "false"))) { // only timer
+			pool.resetPlayerTimer(acc);
+			Lang.POOL_RESET_TIMER.send(cmd.sender, pool.getID(), target.getName());
+		}else {
+			pool.resetPlayer(acc);
+			Lang.POOL_RESET_FULL.send(cmd.sender, pool.getID(), target.getName());
+		}
+	}
+	
 	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];

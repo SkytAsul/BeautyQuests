@@ -259,15 +259,15 @@ public class ItemUtils {
 	
 	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level){
 		ItemMeta im = is.getItemMeta();
-		im.addEnchant(en, level, true);
-		is.setItemMeta(im);
+		if (im.addEnchant(en, level, true))
+			is.setItemMeta(im);
 		return is;
 	}
 	
 	public static ItemStack removeEnchant(ItemStack is, Enchantment en){
 		ItemMeta im = is.getItemMeta();
-		im.removeEnchant(en);
-		is.setItemMeta(im);
+		if (im.removeEnchant(en))
+			is.setItemMeta(im);
 		return is;
 	}
 	
@@ -318,7 +318,7 @@ public class ItemUtils {
 	 * @return ItemStack instance of the created switch
 	 */
 	public static ItemStack itemSwitch(String name, boolean enabled, String... lore){
-		return item(XMaterial.requestOldXMaterial("INK_SACK", (byte) (enabled ? 10 : 8)), (enabled ? "§a" : "§7") + name, lore);
+		return item(enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE, (enabled ? "§a" : "§7") + name, lore);
 	}
 	
 	/**

@@ -26,7 +26,11 @@ public class CommandContext {
 	}
 	
 	public <T> T get(int arg) {
-		if (args.length <= arg) return null;
+		return get(arg, null);
+	}
+	
+	public <T> T get(int arg, T def) {
+		if (args.length <= arg) return def;
 		return (T) args[arg];
 	}
 

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.CraftParticle;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftParticle;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import io.netty.buffer.ByteBuf;
 
-public class v1_17_R1 extends NMS{
+public class v1_18_R1 extends NMS{
 	
 	@Override
 	public Object bookPacket(ByteBuf buf){

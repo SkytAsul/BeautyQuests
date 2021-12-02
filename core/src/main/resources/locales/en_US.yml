@@ -12,6 +12,7 @@ msg:
     cancelling: §cProcess of quest creation cancelled.
     editCancelling: §cProcess of quest edition cancelled.
     invalidID: §cThe quest with the id {0} doesn't exist.
+    invalidPoolID: §cThe pool {0} does not exist.
     alreadyStarted: §cYou have already started the quest!
   quests:
     maxLaunched: §cYou cannot have more than {0} quest(s) at the same time...
@@ -89,6 +90,7 @@ msg:
   indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and
     {2}.
   invalidBlockData: §cThe blockdata {0} is invalid or incompatible with the block {1}.
+  invalidBlockTag: §cUnavailable block tag {0}.
   bringBackObjects: Bring me back {0}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   playerNeverConnected: §cUnable to find informations about the player {0}.
@@ -141,6 +143,9 @@ msg:
     backupQuestsFailed: §cCreating a backup for all the quests has failed.
     adminModeEntered: §aYou have entered the Admin Mode.
     adminModeLeft: §aYou have left the Admin Mode.
+    resetPlayerPool:
+      timer: §aYou have reset the {0} pool timer of {1}.
+      full: §aYou have reset the {0} pool datas of {1}.
     scoreboard:
       lineSet: §6You have successfully edited the line {0}.
       lineReset: §6You have successfully reset the line {0}.
@@ -175,7 +180,8 @@ msg:
   editor:
     blockAmount: '§aWrite the amount of blocks:'
     blockName: '§aWrite the name of the block:'
-    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
+    blockData: '§aWrite the blockdata (available blockdatas: §7{0}§a):'
+    blockTag: '§aWrite the block tag (available tags: §7{0}§a):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
@@ -540,7 +546,12 @@ inv:
   block:
     name: Choose block
     material: '§eMaterial: {0}'
+    materialNotItemLore: 'The block chosen cannot be displayed as an item. It is still correctly stored as {0}.'
     blockData: '§dBlockdata (advanced)'
+    blockTag: '§dTag (advanced)'
+    blockTagLore: 'Choose a tag which describes a list of possible blocks.
+     Tags can be customized using datapacks.
+     You can find list of tags on the Minecraft wiki.'
   blocksList:
     name: Select blocks
     addBlock: §aClick to add a block.

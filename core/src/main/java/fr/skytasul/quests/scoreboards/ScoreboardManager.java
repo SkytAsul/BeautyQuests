@@ -15,6 +15,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
@@ -39,6 +40,12 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	
 	public ScoreboardManager(YamlConfiguration config){
 		if (!QuestsConfiguration.showScoreboards()) return;
+		
+		try {
+			new FastBoard(null); // trigger class initialization
+		}catch (ExceptionInInitializerError ex) {
+			throw new IllegalStateException("The Scoreboard util cannot load, probably due to an incompatible server version.", ex);
+		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
 		
 		changeTime = config.getInt("quests.changeTime", 11);
 		hide = config.getBoolean("quests.hideIfEmpty", true);

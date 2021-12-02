@@ -130,6 +130,11 @@ public class QuestPool implements Comparable<QuestPool> {
 		acc.removePoolDatas(this);
 	}
 	
+	public void resetPlayerTimer(PlayerAccount acc) {
+		if (!acc.hasPoolDatas(this)) return;
+		acc.getPoolDatas(this).setLastGive(0);
+	}
+	
 	public void questCompleted(PlayerAccount acc, Quest quest) {
 		if (!avoidDuplicates) return;
 		PlayerPoolDatas poolDatas = acc.getPoolDatas(this);
