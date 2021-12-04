@@ -11,6 +11,7 @@ msg:
     cancelling: '§cAnnulation du processus de création de quête.'
     editCancelling: '§cAnnulation du processus d''édition de la quête.'
     invalidID: '§cLa quête avec l''id {0} n''existe pas.'
+    invalidPoolID: '§cLe groupe {0} n''existe pas.'
     alreadyStarted: '§cVous avez déjà commencé cette quête !'
   quests:
     maxLaunched: '§cVous ne pouvez pas avoir plus de {0} quête(s) simultanément...'
@@ -75,6 +76,7 @@ msg:
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
   invalidBlockData: '§cLa blockdata {0} est invalide ou incompatible avec le bloc {1}.'
+  invalidBlockTag: '§cTag de bloc {0} indisponible.'
   bringBackObjects: Rapporte-moi {0}.
   inventoryFull: '§cVotre inventaire est plein, l''item a été jeté au sol.'
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
@@ -122,6 +124,9 @@ msg:
     backupQuestsFailed: '§cLa création d''une sauvegarde des quêtes a échoué.'
     adminModeEntered: '§aVous entrez dans le mode Administrateur.'
     adminModeLeft: '§aVous sortez du mode Administrateur.'
+    resetPlayerPool:
+      timer: '§aVous avez réinitialisé le minuteur de {1} pour le groupe {0}.'
+      full: '§aVous avez réinitialisé les données de {1} pour le groupe {0}.'
     scoreboard:
       lineSet: '§6Vous avez modifié la ligne {0}.'
       lineReset: '§6Vous avez réinitialisé la ligne {0}.'
@@ -152,6 +157,7 @@ msg:
     blockAmount: '§aÉcrivez le nombre de blocs :'
     blockName: '§aÉcrivez le nom du bloc :'
     blockData: '§aÉcrivez la blockdata (blockdatas disponibles : {0}) :'
+    blockTag: '§aÉcrivez le tag de bloc (tagsdisponibles: §7{0}§a):'
     typeBucketAmount: '§aÉcrivez la quantité de seaux à remplir :'
     goToLocation: '§aAllez à l''emplacement souhaité pour l''étape.'
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
@@ -507,7 +513,10 @@ inv:
   block:
     name: Choisir un bloc
     material: '§eType de bloc : {0}'
+    materialNotItemLore: 'Le bloc choisi ne peut pas être affiché comme un item. Il est toujours correctement sauvegardé comme {0}.'
     blockData: '§dBlockdata (avancé)'
+    blockTag: '§dTag (avancé)'
+    blockTagLore: 'Choisissez un tag qui décrit une liste de blocs possibles. Les tags peuvent être personnalisés en utilisant des datapacks. Vous pouvez trouver une liste des tags sur le Minecraft Wiki.'
   blocksList:
     name: Sélectionner des blocs
     addBlock: '§aCliquez pour ajouter un block.'

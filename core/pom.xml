@@ -170,8 +170,8 @@
 		</dependency>
 		<dependency>
 			<groupId>fr.mrmicky</groupId>
-			<artifactId>FastBoard</artifactId>
-			<version>1.2.0</version>
+			<artifactId>fastboard</artifactId>
+			<version>1.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
