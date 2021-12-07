@@ -75,7 +75,8 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
 	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
 	public static final BQDependency acc = new BQDependency("AccountsHook");
-	public static final BQDependency dyn = new BQDependency("dynmap");
+	public static final BQDependency dyn = new BQDependency("dynmap", () -> QuestsAPI.registerQuestsHandler(new BQDynmap()));
+	public static final BQDependency BlueMap = new BQDependency("BlueMap", () -> QuestsAPI.registerQuestsHandler(new BQBlueMap()));
 	public static final BQDependency gps = new BQDependency("GPS", GPS::init);
 	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
 	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
@@ -93,7 +94,7 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod, tokenEnchant, ultimateTimber));
+		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, BlueMap, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod, tokenEnchant, ultimateTimber));
 	}
 	
 	public List<BQDependency> getDependencies() {

@@ -16,6 +16,10 @@ public interface QuestsHandler {
 	
 	public default void questRemove(Quest quest) {}
 	
+	public default void questLoaded(Quest quest) {}
+	
+	public default void questUnload(Quest quest) {}
+	
 	public default void questEdit(Quest newQuest, Quest oldQuest, boolean keepDatas) {}
 	
 	public default void questStart(PlayerAccount acc, Player p, Quest quest) {}

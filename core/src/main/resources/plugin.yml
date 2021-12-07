@@ -2,11 +2,35 @@ name: BeautyQuests
 author: SkytAsul
 version: "${human.version}_BUILD${build.number}"
 #version: ${human.version}
-api-version: 1.13
 description: Quests system with a simple graphical interface.
-softdepend: [WorldGuard, MythicMobs, Vault, PlaceholderAPI, SkillAPI, HolographicDisplays, Jobs, Factions, AccountsHook, dynmap, EpicBosses, GPS, mcMMO, McCombatLevel, CMI, TokenEnchant, Boss, UltimateTimber, ServersNPC, Citizens, ProSkillAPI]
-main: fr.skytasul.quests.BeautyQuests
 website: https://www.spigotmc.org/resources/beautyquests.39255/
+api-version: 1.13
+main: fr.skytasul.quests.BeautyQuests
+
+softdepend:
+- WorldGuard
+- MythicMobs
+- Vault
+- PlaceholderAPI
+- SkillAPI
+- HolographicDisplays
+- Jobs
+- Factions
+- AccountsHook
+- dynmap
+- EpicBosses
+- GPS
+- mcMMO
+- McCombatLevel
+- CMI
+- TokenEnchant
+- Boss
+- UltimateTimber
+- ServersNPC
+- Citizens
+- ProSkillAPI
+- BlueMap
+
 commands:
   beautyquests:
     description: Main command for quests

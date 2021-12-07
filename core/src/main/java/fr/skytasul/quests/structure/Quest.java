@@ -39,8 +39,6 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
 
 public class Quest implements Comparable<Quest>, OptionSet {
@@ -68,8 +66,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		this.manager = new BranchesManager(this);
 	}
 	
-	public void create() {
-		if (DependenciesManager.dyn.isEnabled()) Dynmap.addMarker(this);
+	public void load() {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
 	void updateLauncheable(LivingEntity en) {
@@ -371,7 +369,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 
 	public void remove(boolean msg, boolean removeDatas) {
 		BeautyQuests.getInstance().removeQuest(this);
-		unloadAll();
+		unload();
 		if (removeDatas) {
 			PlayersManager.manager.removeQuestDatas(this);
 			if (file.exists()) file.delete();
@@ -382,9 +380,9 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + getName() + "\" has been removed");
 	}
 	
-	public void unloadAll(){
+	public void unload(){
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questUnload(this));
 		manager.remove();
-		if (DependenciesManager.dyn.isEnabled()) Dynmap.removeMarker(this);
 		options.forEach(QuestOption::detach);
 	}
 

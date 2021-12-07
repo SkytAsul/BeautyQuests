@@ -21,6 +21,7 @@ import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
+import net.citizensnpcs.trait.SkinTrait;
 
 public class BQCitizens extends BQNPCsManager {
 	
@@ -74,12 +75,16 @@ public class BQCitizens extends BQNPCsManager {
 		return new BQCitizensNPC(npc);
 	}
 	
-	private static class BQCitizensNPC implements BQNPC {
+	public static class BQCitizensNPC implements BQNPC {
 		
 		private NPC npc;
 		
 		private BQCitizensNPC(NPC npc) {
 			this.npc = npc;
+		}
+		
+		public NPC getCitizensNPC() {
+			return npc;
 		}
 		
 		@Override
@@ -109,7 +114,7 @@ public class BQCitizens extends BQNPCsManager {
 		
 		@Override
 		public void setSkin(String skin) {
-			npc.data().setPersistent("player-skin-name", skin);
+			npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
 		}
 		
 	}

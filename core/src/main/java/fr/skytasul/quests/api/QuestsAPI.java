@@ -169,7 +169,8 @@ public class QuestsAPI {
 	
 	public static void registerQuestsHandler(QuestsHandler handler) {
 		Validate.notNull(handler);
-		if (handlers.add(handler)) handler.load();
+		if (handlers.add(handler) && BeautyQuests.loaded)
+			handler.load(); // if BeautyQuests not loaded so far, it will automatically call the load method
 	}
 	
 	public static void unregisterQuestsHandler(QuestsHandler handler) {

@@ -1,5 +1,6 @@
 [![Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/badge/icon)](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
+[![Spiget Downloads](https://img.shields.io/spiget/downloads/39255)](https://www.spigotmc.org/resources/beautyquests.39255/)
 [![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
 
 # BeautyQuests

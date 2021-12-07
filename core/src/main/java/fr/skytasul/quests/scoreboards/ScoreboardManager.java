@@ -1,5 +1,6 @@
 package fr.skytasul.quests.scoreboards;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,12 @@ import fr.skytasul.quests.utils.DebugUtils;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
 
-	// Config parameters
-	private List<ScoreboardLine> lines = new ArrayList<>();
+	private final File file;
+	private Map<Player, Scoreboard> scoreboards;
+	
+	// Parameters
+	private final List<ScoreboardLine> lines = new ArrayList<>();
+	
 	private int changeTime;
 	private boolean hide;
 	private boolean refreshLines;
@@ -36,36 +41,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	private List<String> worldsFilter;
 	private boolean isWorldAllowList;
 	
-	private Map<Player, Scoreboard> scoreboards = new HashMap<>();
-	
-	public ScoreboardManager(YamlConfiguration config){
-		if (!QuestsConfiguration.showScoreboards()) return;
-		
-		try {
-			new FastBoard(null); // trigger class initialization
-		}catch (ExceptionInInitializerError ex) {
-			throw new IllegalStateException("The Scoreboard util cannot load, probably due to an incompatible server version.", ex);
-		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
-		
-		changeTime = config.getInt("quests.changeTime", 11);
-		hide = config.getBoolean("quests.hideIfEmpty", true);
-		refreshLines = config.getBoolean("quests.refreshLines", true);
-		
-		worldsFilter = config.getStringList("worlds.filterList");
-		isWorldAllowList = config.getBoolean("worlds.isAllowList");
-		
-		for (Map<?, ?> map : config.getMapList("lines")){
-			if (lines.size() == 15){
-				BeautyQuests.logger.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
-				break;
-			}
-			try{
-				lines.add(ScoreboardLine.deserialize((Map<String, Object>) map));
-			}catch (Exception ex){
-				ex.printStackTrace();
-			}
-		}
-		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
+	public ScoreboardManager(File file) {
+		this.file = file;
 	}
 	
 	public List<ScoreboardLine> getScoreboardLines(){
@@ -112,6 +89,37 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	
 	@Override
 	public void load() {
+		if (!QuestsConfiguration.showScoreboards()) return;
+		
+		try {
+			new FastBoard(null); // trigger class initialization
+		}catch (ExceptionInInitializerError ex) {
+			throw new IllegalStateException("The Scoreboard util cannot load, probably due to an incompatible server version.", ex);
+		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
+		
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		changeTime = config.getInt("quests.changeTime", 11);
+		hide = config.getBoolean("quests.hideIfEmpty", true);
+		refreshLines = config.getBoolean("quests.refreshLines", true);
+		
+		worldsFilter = config.getStringList("worlds.filterList");
+		isWorldAllowList = config.getBoolean("worlds.isAllowList");
+		
+		lines.clear();
+		for (Map<?, ?> map : config.getMapList("lines")) {
+			if (lines.size() == 15) {
+				BeautyQuests.logger.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
+				break;
+			}
+			try {
+				lines.add(ScoreboardLine.deserialize((Map<String, Object>) map));
+			}catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
+		
+		scoreboards = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
 	

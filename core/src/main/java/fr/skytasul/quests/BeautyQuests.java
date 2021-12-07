@@ -63,7 +63,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -402,24 +401,11 @@ public class BeautyQuests extends JavaPlugin {
 		if (disable) return 666;
 		dependencies.lockDependencies();
 		
-		File scFile = new File(getDataFolder(), "scoreboard.yml");
-		if (!scFile.exists()) saveResource("scoreboard.yml", true);
-		try {
-			scoreboards = new ScoreboardManager(YamlConfiguration.loadConfiguration(scFile));
+		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
+			File scFile = new File(getDataFolder(), "scoreboard.yml");
+			if (!scFile.exists()) saveResource("scoreboard.yml", true);
+			scoreboards = new ScoreboardManager(scFile);
 			QuestsAPI.registerQuestsHandler(scoreboards);
-		}catch (Exception ex) {
-			getLogger().severe("An error occurred while initializing scoreboard system.");
-			ex.printStackTrace();
-		}
-		
-		if (DependenciesManager.dyn.isEnabled()) {
-			try{
-				Dynmap.intitialize();
-			}catch (Throwable ex){
-				getLogger().severe("An error occured while initializing dynmap integration.");
-				ex.printStackTrace();
-				Dynmap.unload();
-			}
 		}
 		
 		pools = new QuestPoolsManager(new File(getDataFolder(), "questPools.yml"));
@@ -434,6 +420,14 @@ public class BeautyQuests extends JavaPlugin {
 			createDataBackup("Error when loading player datas.");
 			ex.printStackTrace();
 		}
+		
+		QuestsAPI.getQuestsHandlers().forEach(handler -> {
+			try {
+				handler.load();
+			}catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		});
 
 		try (Stream<Path> files = Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)){
 			files
@@ -475,7 +469,6 @@ public class BeautyQuests extends JavaPlugin {
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				PlayersManager.loadPlayer(p);
-				//getServer().getPluginManager().callEvent(new PlayerAccountJoinEvent(p, PlayersManager.getPlayerAccount(p), false));
 			}
 			loaded = true;
 		}, 1L);
@@ -486,7 +479,13 @@ public class BeautyQuests extends JavaPlugin {
 
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload){
-			QuestsAPI.unregisterQuestsHandler(scoreboards);
+			QuestsAPI.getQuestsHandlers().forEach(handler -> {
+				try {
+					handler.unload();
+				}catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			});
 		}
 		
 		/*int amount = 0; // no longer need to save quests
@@ -504,7 +503,7 @@ public class BeautyQuests extends JavaPlugin {
 		if (unload) {
 			for (Quest quest : quests) {
 				try {
-					quest.unloadAll();
+					quest.unload();
 				}catch (Exception ex) {
 					logger.severe("An error ocurred when unloading quest " + quest.getID());
 					ex.printStackTrace();
@@ -535,7 +534,6 @@ public class BeautyQuests extends JavaPlugin {
 		npcs.clear();
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
-		if (DependenciesManager.dyn.isEnabled()) Dynmap.unload();
 		loaded = false;
 	}
 	
@@ -656,7 +654,7 @@ public class BeautyQuests extends JavaPlugin {
 				starter.addQuest(quest);
 			}
 		}
-		quest.create();
+		quest.load();
 	}
 
 	public List<Quest> getQuests(){

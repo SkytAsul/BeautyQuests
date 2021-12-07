@@ -229,7 +229,8 @@ public class StageNPC extends AbstractStage implements Locatable {
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cached.add(p);
-			if (QuestsConfiguration.handleGPS()) GPS.launchCompass(p, npc.getLocation());
+			Location location = npc.getLocation();
+			if (QuestsConfiguration.handleGPS() && location != null) GPS.launchCompass(p, location);
 		}
 	}
 	
