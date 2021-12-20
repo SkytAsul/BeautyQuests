@@ -17,7 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.Editor;
@@ -125,7 +124,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			}else if (type.equals("POOLSID")) {
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;
-				QuestPool pool = BeautyQuests.getInstance().getPoolsManager().getPool(i);
+				QuestPool pool = QuestsAPI.getQuestPools().getPool(id);
 				if (pool == null) {
 					Lang.POOL_INVALID.send(sender, id);
 					return false;
@@ -178,7 +177,9 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("QUESTSID")){
-				for (Quest quest : QuestsAPI.getQuests()) find.add(quest.getID() + "");
+				for (Quest quest : QuestsAPI.getQuests()) find.add(Integer.toString(quest.getID()));
+			}else if (key.equals("POOLSID")) {
+				for (QuestPool pool : QuestsAPI.getQuestPools().getPools()) find.add(Integer.toString(pool.getID()));
 			}else if (key.equals("PLAYERS")){
 				return null;
 			}else if (key.equals("NPCSID")){

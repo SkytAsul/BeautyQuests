@@ -36,6 +36,7 @@ import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 
 public class QuestsAPI {
@@ -271,6 +272,10 @@ public class QuestsAPI {
 	
 	public static List<Quest> getQuests(){
 		return BeautyQuests.getInstance().getQuests();
+	}
+	
+	public static QuestPoolsManager getQuestPools() {
+		return BeautyQuests.getInstance().getPoolsManager();
 	}
 	
 }

@@ -74,7 +74,7 @@ public class StageBringBack extends StageNPC{
 	
 	public void removeItems(Player p){
 		for(ItemStack is : items){
-			comparisons.removeItems(p.getInventory(), is.clone());
+			comparisons.removeItems(p.getInventory(), is);
 		}
 		p.updateInventory();
 	}
