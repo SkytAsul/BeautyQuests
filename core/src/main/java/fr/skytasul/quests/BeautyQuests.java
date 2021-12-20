@@ -295,7 +295,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			config = getConfig();
-			ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), null);
+			ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"));
 			
 			QuestsConfiguration.initConfiguration(config);
 			ConfigurationSection dbConfig = config.getConfigurationSection("database");

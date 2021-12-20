@@ -356,17 +356,14 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoTalkItem;
 	}
 	

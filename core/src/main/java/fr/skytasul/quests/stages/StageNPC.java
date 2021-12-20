@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -30,6 +31,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -88,8 +90,11 @@ public class StageNPC extends AbstractStage implements Locatable {
 	}
 	
 	private void createHoloLaunch(){
+		ItemStack item = QuestsConfiguration.getHoloTalkItem();
 		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getLocation(), false);
-		hologram.appendItem(QuestsConfiguration.getHoloTalkItem());
+		if (QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+			hologram.appendTextLine(item.getItemMeta().getDisplayName());
+		hologram.appendItem(item);
 	}
 	
 	private void removeHoloLaunch(){
@@ -211,14 +216,32 @@ public class StageNPC extends AbstractStage implements Locatable {
 	@Override
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
-		cached.add(p);
+		cachePlayer(p);
 		if (QuestsConfiguration.handleGPS() && !hide) GPS.launchCompass(p, npc.getLocation());
+	}
+
+	private void cachePlayer(Player p) {
+		cached.add(p);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		if (starter != null) starter.hideForPlayer(p, this);
+	}
+	
+	private void uncachePlayer(Player p) {
+		cached.remove(p);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		if (starter != null) starter.removeHiddenForPlayer(p, this);
+	}
+	
+	private void uncacheAll() {
+		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
+		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
+		if (starter != null) cached.forEach(p -> starter.removeHiddenForPlayer(p, this));
 	}
 	
 	@Override
 	public void leaves(PlayerAccount acc, Player p) {
 		super.leaves(acc, p);
-		cached.remove(p);
+		uncachePlayer(p);
 		if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
 		if (dialog != null) dialog.remove(p);
 	}
@@ -228,7 +251,7 @@ public class StageNPC extends AbstractStage implements Locatable {
 		super.start(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
-			cached.add(p);
+			cachePlayer(p);
 			Location location = npc.getLocation();
 			if (QuestsConfiguration.handleGPS() && location != null) GPS.launchCompass(p, location);
 		}
@@ -240,7 +263,7 @@ public class StageNPC extends AbstractStage implements Locatable {
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			if (dialog != null) dialog.remove(p);
-			cached.remove(p);
+			uncachePlayer(p);
 			if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
 		}
 	}
@@ -250,8 +273,8 @@ public class StageNPC extends AbstractStage implements Locatable {
 		super.unload();
 		if (task != null) task.cancel();
 		if (hologram != null) removeHoloLaunch();
-		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
 		if (dialog != null) dialog.unload();
+		uncacheAll();
 	}
 	
 	@Override

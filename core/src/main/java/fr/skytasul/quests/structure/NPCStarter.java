@@ -1,14 +1,13 @@
 package fr.skytasul.quests.structure;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -53,8 +52,10 @@ public class NPCStarter {
 		@Override
 		public double getYAdd() {
 			return hologramText.visible ? 0.3 : 0;
-		};
+		}
 	};
+	
+	private List<Entry<Player, Object>> hiddenTickets = new ArrayList<>();
 	
 	public NPCStarter(BQNPC npc) {
 		Validate.notNull(npc, "NPC cannot be null");
@@ -93,41 +94,52 @@ public class NPCStarter {
 								break;
 							}
 						}
-					}catch (NullPointerException ex){continue;}
+					}catch (NullPointerException ex) {}
 				}
 				for (Quest quest : quests) quest.updateLauncheable(en);
 				
-				if (!holograms && !quests.isEmpty()/* || !QuestsAPI.getHologramsManager().supportPerPlayerVisibility()*/) return;
-				Map<Player, PlayerAccount> players = playersInRadius.stream().collect(Collectors.toMap(x -> x, PlayersManager::getPlayerAccount));
+				if (!holograms && !quests.isEmpty()) return;
 				List<Player> launcheable = new ArrayList<>();
 				List<Player> unlauncheable = new ArrayList<>();
-				for (Quest qu : quests){
-					for (Iterator<Entry<Player, PlayerAccount>> iterator = players.entrySet().iterator(); iterator.hasNext();) {
-						Entry<Player, PlayerAccount> player = iterator.next();
-						if (qu.hasFinished(player.getValue()) || qu.hasStarted(player.getValue())){
-							continue;
-						}else {
-							boolean pLauncheable = qu.launcheable.contains(player.getKey());
+				for (Iterator<Player> iterator = playersInRadius.iterator(); iterator.hasNext();) {
+					Player player = iterator.next();
+					if (hiddenTickets.stream().anyMatch(entry -> entry.getKey() == player)) {
+						iterator.remove();
+						continue;
+					}
+					PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+					boolean launchYes = false;
+					boolean launchNo = false;
+					for (Quest qu : quests) {
+						if (!qu.hasStarted(acc)) {
+							boolean pLauncheable = qu.launcheable.contains(player);
 							if (hologramLaunch.enabled && pLauncheable) {
-								launcheable.add(player.getKey());
+								launchYes = true;
+								break; // launcheable take priority over not launcheable
 							}else if (hologramLaunchNo.enabled && !pLauncheable) {
-								unlauncheable.add(player.getKey());
+								launchNo = true;
 							}
 						}
+					}
+					if (launchYes) {
+						launcheable.add(player);
+						iterator.remove();
+					}else if (launchNo) {
+						unlauncheable.add(player);
 						iterator.remove();
 					}
 				}
 				hologramLaunch.setVisible(launcheable);
 				hologramLaunchNo.setVisible(unlauncheable);
-				for (Entry<Player, PlayerAccount> p : players.entrySet()) {
+				for (Player p : playersInRadius) {
 					boolean visible = false;
 					for (QuestPool pool : pools) {
-						if (pool.canGive(p.getKey(), p.getValue())) {
+						if (pool.canGive(p, PlayersManager.getPlayerAccount(p))) {
 							visible = true;
 							break;
 						}
 					}
-					hologramPool.setVisible(p.getKey(), visible);
+					hologramPool.setVisible(p, visible);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
@@ -215,6 +227,20 @@ public class NPCStarter {
 			hologramPool.delete();
 		}
 		return b;
+	}
+	
+	public void hideForPlayer(Player p, Object holder) {
+		hiddenTickets.add(new AbstractMap.SimpleEntry<>(p, holder));
+	}
+	
+	public void removeHiddenForPlayer(Player p, Object holder) {
+		for (Iterator<Entry<Player, Object>> iterator = hiddenTickets.iterator(); iterator.hasNext();) {
+			Entry<Player, Object> entry = iterator.next();
+			if (entry.getKey() == p && entry.getValue() == holder) {
+				iterator.remove();
+				return;
+			}
+		}
 	}
 	
 	public void removeHolograms(){
