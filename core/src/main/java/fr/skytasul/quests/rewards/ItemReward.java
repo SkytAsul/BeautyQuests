@@ -8,11 +8,9 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -48,16 +46,16 @@ public class ItemReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + items.size() + " " + Lang.Item.toString(), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + items.size() + " " + Lang.Item.toString(), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ItemsGUI(items -> {
 			this.items = items;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}, items).create(p);
+			event.updateItemLore(getLore());
+			event.getGUI().reopen();
+		}, items).create(event.getPlayer());
 	}
 	
 	@Override

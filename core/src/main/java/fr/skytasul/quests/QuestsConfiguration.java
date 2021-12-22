@@ -384,7 +384,7 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean isMinecraftTranslationsEnabled() {
-		return minecraftTranslationsFile != null;
+		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
 	
 	public static String getDescriptionItemPrefix(){

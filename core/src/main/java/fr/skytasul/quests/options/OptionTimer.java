@@ -54,8 +54,8 @@ public class OptionTimer extends QuestOption<Integer> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Lang.TIMER.send(p);
-		new TextEditor<>(p, () -> gui.reopen(p), (obj) -> {
-			setValue(obj);
+		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
+			setValue(obj.intValue());
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}, () -> {

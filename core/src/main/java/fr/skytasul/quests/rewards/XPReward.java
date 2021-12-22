@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -52,20 +49,20 @@ public class XPReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Utils.sendMessage(p, Lang.XP_GAIN.toString(), exp);
-		new TextEditor<>(p, () -> {
-			if (exp == 0) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Utils.sendMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
+		new TextEditor<>(event.getPlayer(), () -> {
+			if (exp == 0) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
-			Utils.sendMessage(p, Lang.XP_EDITED.toString(), exp, obj);
+			Utils.sendMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
 			exp = obj;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
+			event.updateItemLore(getLore());
+			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}
 	

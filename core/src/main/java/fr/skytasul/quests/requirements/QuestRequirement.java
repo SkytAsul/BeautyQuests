@@ -3,14 +3,11 @@ package fr.skytasul.quests.requirements;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
@@ -53,16 +50,16 @@ public class QuestRequirement extends AbstractRequirement {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + (exists() ? cached.getName() : Lang.NotSet.toString()), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + (exists() ? cached.getName() : Lang.NotSet.toString()), "", Lang.RemoveMid.toString() };
 	}
 
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ChooseQuestGUI(BeautyQuests.getInstance().getQuests(), quest -> {
 			this.questId = quest.getID();
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}).create(p);
+			event.updateItemLore(getLore());
+			event.reopenGUI();
+		}).create(event.getPlayer());
 	}
 	
 	@Override

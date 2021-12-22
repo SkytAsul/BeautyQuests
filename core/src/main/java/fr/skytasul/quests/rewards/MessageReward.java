@@ -4,13 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -27,6 +24,7 @@ public class MessageReward extends AbstractReward {
 		this.text = text;
 	}
 
+	@Override
 	public List<String> give(Player p) {
 		Utils.sendOffMessage(p, text);
 		return null;
@@ -39,26 +37,28 @@ public class MessageReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(text), "", Lang.Remove.toString() };
+		return new String[] { Lang.optionValue.format(text), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.WRITE_MESSAGE.send(p);
-		new TextEditor<String>(p, () -> {
-			if (text == null) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.WRITE_MESSAGE.send(event.getPlayer());
+		new TextEditor<String>(event.getPlayer(), () -> {
+			if (text == null) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			this.text = obj;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
+			event.updateItemLore(getLore());
+			event.reopenGUI();
 		}).enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("text", text);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		text = (String) savedDatas.get("text");
 	}

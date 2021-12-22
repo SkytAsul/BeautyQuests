@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 
@@ -33,14 +32,14 @@ public interface QuestObject extends Cloneable {
 	}
 	
 	default String[] getLore() {
-		return new String[] { Lang.Remove.toString() };
+		return new String[] { Lang.RemoveMid.toString() };
 	}
 	
 	default ItemStack getItemStack() {
 		return ItemUtils.lore(getCreator().item.clone(), getLore());
 	}
 	
-	void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked);
+	void itemClick(QuestObjectClickEvent event);
 	
 	public static <T extends QuestObject> List<T> deserializeList(List<Map<?, ?>> objectList, Function<Map<String, Object>, T> deserializeFunction) {
 		List<T> objects = new ArrayList<>(objectList.size());

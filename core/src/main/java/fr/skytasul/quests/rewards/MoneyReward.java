@@ -5,14 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
@@ -52,19 +49,19 @@ public class MoneyReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(money), "", Lang.Remove.toString() };
+		return new String[] { Lang.optionValue.format(money), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.CHOOSE_MONEY_REWARD.send(p);
-		new TextEditor<>(p, () -> {
-			if (money == 0) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.CHOOSE_MONEY_REWARD.send(event.getPlayer());
+		new TextEditor<>(event.getPlayer(), () -> {
+			if (money == 0) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			money = obj;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
+			event.updateItemLore(getLore());
+			event.reopenGUI();
 		}, new NumberParser<>(Double.class, false, true)).enter();
 	}
 	

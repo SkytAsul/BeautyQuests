@@ -284,7 +284,7 @@ msg:
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
       questsPerLaunch: 'Write the amount of quests given when players click on the NPC.'
-      time: 'Write the number of days before players can take a new quest.'
+      timeMsg: 'Write the time before players can take a new quest. (default unit: days)'
     title:
       title: 'Write the title text (or "null" if you want none).'
       subtitle: 'Write the subtitle text (or "null" if you want none).'
@@ -399,6 +399,7 @@ inv:
     questName: §a§lEdit quest name
     questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
+    removeItemsReward: §eRemove items from inventory
     setXPRewards: §eEdit reward experience
     setCheckpointReward: §eEdit checkpoint rewards
     setRewardStopQuest: §cStop the quest
@@ -673,6 +674,7 @@ misc:
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     offText: §r§e{0}
+    editorPrefix: §a
   time:
     weeks: '{0} weeks'
     days: '{0} days'
@@ -726,6 +728,7 @@ misc:
     left: Left click
     shift-right: Shift-right click
     shift-left: Shift-left click
+    middle: Middle click
   ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
@@ -740,6 +743,7 @@ misc:
   unused: §2§lUnused
   used: §a§lUsed
   remove: §7Middle-click to remove
+  removeRaw: Remove
   or: or
   amount: '§eAmount: {0}'
   items: items

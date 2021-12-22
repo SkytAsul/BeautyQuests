@@ -4,16 +4,13 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -46,26 +43,27 @@ public class RegionRequirement extends AbstractRequirement {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(regionName), "", Lang.Remove.toString() };
+		return new String[] { Lang.optionValue.format(regionName), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
+		Player p = event.getPlayer();
 		Lang.CHOOSE_REGION_REQUIRED.send(p);
 		new TextEditor<String>(p, () -> {
-			if (regionName == null) gui.remove(this);
-			gui.reopen();
+			if (regionName == null) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			this.region = BQWorldGuard.getInstance().getRegion(obj, p.getWorld());
 			if (region != null) {
 				this.worldName = p.getWorld().getName();
 				this.regionName = region.getId();
-				ItemUtils.lore(clicked, getLore());
+				event.updateItemLore(getLore());
 			}else {
 				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
-				gui.remove(this);
+				event.getGUI().remove(this);
 			}
-			gui.reopen();
+			event.reopenGUI();
 		}).useStrippedMessage().enter();
 	}
 	

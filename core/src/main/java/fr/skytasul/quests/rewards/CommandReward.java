@@ -10,12 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.CommandGUI;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -35,6 +34,7 @@ public class CommandReward extends AbstractReward {
 		if (list != null) this.commands.addAll(list);
 	}
 
+	@Override
 	public List<String> give(Player p) {
 		if (commands.isEmpty()) return null;
 		for (Command cmd : commands){
@@ -50,12 +50,12 @@ public class CommandReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + Lang.commands.format(commands.size()), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + Lang.commands.format(commands.size()), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Inventories.create(p, new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
+	public void itemClick(QuestObjectClickEvent event) {
+		Inventories.create(event.getPlayer(), new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
 			
 			@Override
 			public void createObject(Function<Command, ItemStack> callback) {
@@ -78,17 +78,19 @@ public class CommandReward extends AbstractReward {
 			@Override
 			public void finish(List<Command> objects) {
 				commands = objects;
-				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
+				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}
 			
 		});
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas){
 		datas.put("commands", Utils.serializeList(commands, Command::serialize));
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas){
 		commands.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("commands"), Command::deserialize));
 	}

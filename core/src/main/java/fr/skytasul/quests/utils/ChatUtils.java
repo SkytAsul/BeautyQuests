@@ -34,6 +34,7 @@ public class ChatUtils {
 	private static final Pattern START_WITH_COLORS = Pattern.compile("(?i)^(" + ChatColor.COLOR_CHAR + "[0-9A-FK-ORX])+");
 	private static final Pattern COLOR = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "[0-9A-FK-ORX]");
 	private static final Pattern HEX_COLOR = Pattern.compile("(?i)[&§]#([A-F0-9]{6})");
+	private static final Pattern NEWLINE_PATTERN = Pattern.compile("\\\\n|\\{nl\\}");
 	
 	private static void test(String string, int line, int critical, String... expected) {
 		testID++;
@@ -71,7 +72,7 @@ public class ChatUtils {
 			return Arrays.asList("");
 		}
 		
-		rawString = rawString.replace("{nl}", "\n");
+		rawString = NEWLINE_PATTERN.matcher(rawString).replaceAll("\n");
 		
 		// A string shorter than the lineWidth is a single line
 		if (rawString.length() <= maxLineLength && !rawString.contains("\n")) {

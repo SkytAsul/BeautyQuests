@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -63,11 +64,11 @@ public class RequirementDependentReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.requirements.format(requirements.size()) + ", " + Lang.actions.format(rewards.size())), "", Lang.Remove.toString() };
+		return new String[] { QuestOption.formatDescription(Lang.requirements.format(requirements.size()) + ", " + Lang.actions.format(rewards.size())), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new CustomInventory() {
 			
 			private Inventory inv;
@@ -76,8 +77,8 @@ public class RequirementDependentReward extends AbstractReward {
 			public Inventory open(Player p) {
 				inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString());
 				
-				inv.setItem(0, ItemUtils.item(XMaterial.NETHER_STAR, Lang.requirements.format(requirements.size())));
-				inv.setItem(1, ItemUtils.item(XMaterial.CHEST, Lang.rewards.format(rewards.size())));
+				inv.setItem(0, ItemUtils.item(XMaterial.NETHER_STAR, "§b" + Lang.requirements.format(requirements.size())));
+				inv.setItem(1, ItemUtils.item(XMaterial.CHEST, "§a" + Lang.rewards.format(rewards.size())));
 				
 				inv.setItem(4, ItemUtils.itemDone);
 				
@@ -85,8 +86,8 @@ public class RequirementDependentReward extends AbstractReward {
 			}
 			
 			private void reopen() {
-				Inventories.put(p, this, inv);
-				p.openInventory(inv);
+				Inventories.put(event.getPlayer(), this, inv);
+				event.getPlayer().openInventory(inv);
 			}
 			
 			@Override
@@ -107,13 +108,13 @@ public class RequirementDependentReward extends AbstractReward {
 					}, rewards).create(p);
 					break;
 				case 4:
-					ItemUtils.lore(clicked, getLore());
-					gui.reopen();
+					event.updateItemLore(getLore());
+					event.reopenGUI();
 					break;
 				}
 				return false;
 			}
-		}.create(p);
+		}.create(event.getPlayer());
 	}
 	
 	@Override

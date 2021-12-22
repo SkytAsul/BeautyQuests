@@ -58,7 +58,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 				lore.add(Lang.defaultValue.toString());
 			}
 			lore.add("");
-			lore.add(Lang.Remove.toString());
+			lore.add(Lang.RemoveMid.toString());
 		}
 		
 		return lore;

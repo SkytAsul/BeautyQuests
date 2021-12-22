@@ -4,13 +4,10 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -18,6 +15,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
+
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -113,25 +111,25 @@ public class PlaceholderRequirement extends AbstractRequirement {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + rawPlaceholder, "§8> §7" + comparison.getTitle().format(value), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + rawPlaceholder, "§8> §7" + comparison.getTitle().format(value), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(p);
-		new TextEditor<String>(p, () -> {
-			if (rawPlaceholder == null) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(event.getPlayer());
+		new TextEditor<String>(event.getPlayer(), () -> {
+			if (rawPlaceholder == null) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, id -> {
 			setPlaceholder(id);
-			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(p, id);
-			new TextEditor<String>(p, () -> {
-				if (value == null) gui.remove(this);
-				gui.reopen();
+			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(event.getPlayer(), id);
+			new TextEditor<String>(event.getPlayer(), () -> {
+				if (value == null) event.getGUI().remove(this);
+				event.reopenGUI();
 			}, value -> {
 				this.value = value;
-				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
+				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}).enter();
 		}).useStrippedMessage().enter();
 	}

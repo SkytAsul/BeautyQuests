@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -47,16 +46,16 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.actions.format(actions.size())), "", Lang.Remove.toString() };
+		return new String[] { QuestOption.formatDescription(Lang.actions.format(actions.size())), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new QuestObjectGUI<>(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, QuestsAPI.rewards.values(), rewards -> {
 			actions = rewards;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}, actions).create(p);
+			event.updateItemLore(getLore());
+			event.reopenGUI();
+		}, actions).create(event.getPlayer());
 	}
 	
 	@Override

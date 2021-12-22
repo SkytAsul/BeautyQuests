@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -31,16 +30,16 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.requirements.format(requirements.size()), "", Lang.Remove.toString() };
+		return new String[] { Lang.requirements.format(requirements.size()), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.OTHER, QuestsAPI.requirements.values(), requirements -> {
 			LogicalOrRequirement.this.requirements = requirements;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}, requirements).create(p);
+			event.updateItemLore(getLore());
+			event.reopenGUI();
+		}, requirements).create(event.getPlayer());
 	}
 	
 	@Override

@@ -14,10 +14,9 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -66,16 +65,16 @@ public class ClassRequirement extends AbstractRequirement {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<RPGClass>(Lang.INVENTORY_CLASSES_REQUIRED.toString(), DyeColor.GREEN, classes) {
 			
 			@Override
 			public ItemStack getObjectItemStack(RPGClass object) {
-				return ItemUtils.loreAdd(object.getIcon(), "", Lang.Remove.toString());
+				return ItemUtils.loreAdd(object.getIcon(), "", Lang.RemoveMid.toString());
 			}
 			
 			@Override
@@ -97,11 +96,11 @@ public class ClassRequirement extends AbstractRequirement {
 			@Override
 			public void finish(List<RPGClass> objects) {
 				classes = objects;
-				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
+				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}
 			
-		}.create(p);
+		}.create(event.getPlayer());
 	}
 	
 	@Override

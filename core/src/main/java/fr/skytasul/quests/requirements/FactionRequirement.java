@@ -16,10 +16,9 @@ import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -62,16 +61,16 @@ public class FactionRequirement extends AbstractRequirement {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + factions.size() + " factions", "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + factions.size() + " factions", "", Lang.RemoveMid.toString() };
 	}
 
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<Faction>(Lang.INVENTORY_FACTIONS_REQUIRED.toString(), DyeColor.LIGHT_BLUE, factions) {
 			
 			@Override
 			public ItemStack getObjectItemStack(Faction object) {
-				return ItemUtils.item(XMaterial.IRON_SWORD, object.getName(), "", Lang.Remove.toString());
+				return ItemUtils.item(XMaterial.IRON_SWORD, object.getName(), "", Lang.RemoveMid.toString());
 			}
 			
 			@Override
@@ -93,11 +92,11 @@ public class FactionRequirement extends AbstractRequirement {
 			@Override
 			public void finish(List<Faction> objects) {
 				factions = objects;
-				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
+				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}
 			
-		}.create(p);
+		}.create(event.getPlayer());
 	}
 	
 	@Override

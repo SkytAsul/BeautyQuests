@@ -4,12 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.misc.TitleGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Title;
@@ -29,18 +26,18 @@ public class TitleReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { title == null ? Lang.NotSet.toString() : Lang.optionValue.format(title.toString()), "", Lang.Remove.toString() };
+		return new String[] { title == null ? Lang.NotSet.toString() : Lang.optionValue.format(title.toString()), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new TitleGUI(newTitle -> {
 			if (newTitle == null) {
-				if (title == null) gui.remove(this);
+				if (title == null) event.getGUI().remove(this);
 			}else title = newTitle;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}).edit(title).create(p);
+			event.updateItemLore(getLore());
+			event.reopenGUI();
+		}).edit(title).create(event.getPlayer());
 	}
 	
 	@Override

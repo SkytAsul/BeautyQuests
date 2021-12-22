@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -76,7 +77,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 			public void click(QuestObjectCreator<T> existing, ItemStack item, ClickType clickType) {
 				T object = existing.newObjectSupplier.get();
 				if (!existing.multiple) creators.remove(existing);
-				object.itemClick(p, QuestObjectGUI.this, callback.apply(object));
+				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true));
 			}
 			
 			@Override
@@ -90,7 +91,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	
 	@Override
 	public void clickObject(QuestObject existing, ItemStack item, ClickType clickType) {
-		existing.itemClick(p, this, item);
+		existing.itemClick(new QuestObjectClickEvent(p, this, item, clickType, false));
 	}
 	
 	@Override
@@ -103,6 +104,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 
 		QuestsAPI.registerReward(new QuestObjectCreator<>(CommandReward.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.command.toString()), CommandReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), ItemReward::new));
+		QuestsAPI.registerReward(new QuestObjectCreator<>(RemoveItemsReward.class, ItemUtils.item(XMaterial.CHEST, Lang.rewardRemoveItems.toString()), RemoveItemsReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new));

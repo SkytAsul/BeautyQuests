@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -32,6 +29,7 @@ public class PermissionReward extends AbstractReward {
 		this.permissions = permissions;
 	}
 
+	@Override
 	public List<String> give(Player p) {
 		for (Permission perm : permissions) {
 			perm.give(p);
@@ -46,22 +44,24 @@ public class PermissionReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + permissions.size() + " permissions", "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + permissions.size() + " permissions", "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new PermissionListGUI(permissions, permissions -> {
 			PermissionReward.this.permissions = permissions;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
-		}).create(p);
+			event.updateItemLore(getLore());
+			event.reopenGUI();
+		}).create(event.getPlayer());
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas){
 		datas.put("perms", Utils.serializeList(permissions, Permission::serialize));
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas){
 		permissions.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("perms"), Permission::deserialize));
 	}

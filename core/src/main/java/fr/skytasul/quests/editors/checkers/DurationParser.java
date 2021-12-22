@@ -8,32 +8,38 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
-public class DurationParser implements AbstractParser<Integer> {
+public class DurationParser implements AbstractParser<Long> {
 	
-	private MinecraftTimeUnit minUnit;
+	private static final Pattern DURATION_PATTERN = Pattern.compile("^(\\d+) *([a-zA-Z]*)|(\\d+) *([a-zA-Z]+)");
 	
-	private Pattern durationPattern = Pattern.compile("^(\\d+) *([a-zA-Z]*)|(\\d+) *([a-zA-Z]+)");
+	private final MinecraftTimeUnit targetUnit;
+	private final MinecraftTimeUnit defaultUnit;
 	
-	public DurationParser(MinecraftTimeUnit minUnit) {
-		this.minUnit = minUnit;
+	public DurationParser(MinecraftTimeUnit targetUnit) {
+		this(targetUnit, targetUnit);
+	}
+	
+	public DurationParser(MinecraftTimeUnit targetUnit, MinecraftTimeUnit defaultUnit) {
+		this.targetUnit = targetUnit;
+		this.defaultUnit = defaultUnit;
 	}
 	
 	@Override
-	public Integer parse(Player p, String msg) throws Throwable {
-		Matcher matcher = durationPattern.matcher(msg);
-		int duration = 0;
+	public Long parse(Player p, String msg) throws Throwable {
+		Matcher matcher = DURATION_PATTERN.matcher(msg);
+		long duration = 0;
 		while (matcher.find()) {
 			String num = matcher.group(1);
 			if (StringUtils.isEmpty(num)) num = matcher.group(3);
 			String unit = matcher.group(2);
 			if (StringUtils.isEmpty(unit)) unit = matcher.group(4);
 			
-			MinecraftTimeUnit munit = StringUtils.isEmpty(unit) ? minUnit : MinecraftTimeUnit.of(unit);
+			MinecraftTimeUnit munit = StringUtils.isEmpty(unit) ? defaultUnit : MinecraftTimeUnit.of(unit);
 			if (munit == null) {
 				p.sendMessage("§cUnknown unit " + unit);
 				return null;
 			}
-			duration += munit.in(minUnit, Integer.parseInt(num));
+			duration += munit.in(targetUnit, Long.parseLong(num));
 		}
 		return duration;
 	}
@@ -61,9 +67,9 @@ public class DurationParser implements AbstractParser<Integer> {
 				for (String name : unit.names) UNITS.put(name, unit);
 		}
 		
-		public int in(MinecraftTimeUnit unit, int duration) {
+		public long in(MinecraftTimeUnit unit, long duration) {
 			if (ordinal() < unit.ordinal()) return 0;
-			int finalDuration = duration;
+			long finalDuration = duration;
 			for (int i = ordinal(); i > unit.ordinal(); i--) {
 				MinecraftTimeUnit previous = values()[i];
 				finalDuration *= previous.previousDuration;

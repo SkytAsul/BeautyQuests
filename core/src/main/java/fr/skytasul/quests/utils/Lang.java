@@ -10,6 +10,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public enum Lang{
 	
+	/* Formats (must be first to be used after) */
+	Prefix("misc.format.prefix"),
+	NpcText("misc.format.npcText"), // 0: npc, 1: msg, 2: index, 3: max
+	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
+	OffText("misc.format.offText"), // 1: msg
+	EditorPrefix("misc.format.editorPrefix"),
+	
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),
 	FINISHED_OBTAIN("msg.quest.finished.obtain"),
@@ -197,10 +204,10 @@ public enum Lang{
 	
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 	
-	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText"),
-	POOL_MAXQUESTS("msg.editor.pool.maxQuests"),
-	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch"),
-	POOL_TIME("msg.editor.pool.time"),
+	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText", EditorPrefix),
+	POOL_MAXQUESTS("msg.editor.pool.maxQuests", EditorPrefix),
+	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch", EditorPrefix),
+	POOL_TIME("msg.editor.pool.timeMsg", EditorPrefix),
 	
 	TITLE_TITLE("msg.editor.title.title"),
 	TITLE_SUBTITLE("msg.editor.title.subtitle"),
@@ -379,6 +386,7 @@ public enum Lang{
 	questName("inv.details.questName"),
 	questNameLore("inv.details.questNameLore"),
 	rewardItems("inv.details.setItemsRewards"),
+	rewardRemoveItems("inv.details.removeItemsReward"),
 	rewardXP("inv.details.setXPRewards"),
 	rewardCheckpoint("inv.details.setCheckpointReward"),
 	rewardStopQuest("inv.details.setRewardStopQuest"),
@@ -645,11 +653,6 @@ public enum Lang{
 	
 	/* Misc */
 	
-	Prefix("misc.format.prefix"),
-	NpcText("misc.format.npcText"), // 0: npc, 1: msg, 2: index, 3: max
-	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
-	OffText("misc.format.offText"), // 1: msg
-	
 	TimeWeeks("misc.time.weeks"),
 	TimeDays("misc.time.days"),
 	TimeHours("misc.time.hours"),
@@ -702,6 +705,7 @@ public enum Lang{
 	ClickLeft("misc.click.left"),
 	ClickShiftRight("misc.click.shift-right"),
 	ClickShiftLeft("misc.click.shift-left"),
+	ClickMiddle("misc.click.middle"),
 	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
@@ -716,7 +720,8 @@ public enum Lang{
 	NotSet("misc.notSet"),
 	Unused("misc.unused"),
 	Used("misc.used"),
-	Remove("misc.remove"),
+	RemoveMid("misc.remove"),
+	Remove("misc.removeRaw"),
 	Or("misc.or"),
 	Amount("misc.amount"),
 	Item("misc.items"),
@@ -727,11 +732,18 @@ public enum Lang{
 	
 	private static final String DEFAULT_STRING = "§cnot loaded";
 	
-	private String path;
+	private final String path;
+	private final Lang prefix;
+	
 	private String value = DEFAULT_STRING;
 
 	private Lang(String path){
+		this(path, null);
+	}
+	
+	private Lang(String path, Lang prefix) {
 		this.path = path;
+		this.prefix = prefix;
 	}
 	
 	public String getPath(){
@@ -744,19 +756,19 @@ public enum Lang{
 	
 	@Override
 	public String toString(){
-		return value;
+		return prefix == null ? value : (prefix.toString() + value);
 	}
 	
 	public String format(Object... replace){
-		return Utils.format(value, replace);
+		return Utils.format(toString(), replace);
 	}
 	
 	public void send(CommandSender sender, Object... args){
-		Utils.sendMessage(sender, value, args);
+		Utils.sendMessage(sender, toString(), args);
 	}
 	
 	public void sendWP(CommandSender p, Object... args){
-		Utils.sendMessageWP(p, value, args);
+		Utils.sendMessageWP(p, toString(), args);
 	}
 
 
@@ -768,5 +780,7 @@ public enum Lang{
 			l.setValue(ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
 		}
 	}
+	
+	
 	
 }

@@ -47,6 +47,7 @@ public class TextEditor<T> extends Editor {
 		return this;
 	}
 
+	@Override
 	public boolean chat(String msg, String strippedMessage){
 		if (strippedMessage.equals("null")) {
 			if (nul == null && !nullIntoConsumer) {
@@ -57,6 +58,9 @@ public class TextEditor<T> extends Editor {
 			if (nullIntoConsumer) {
 				run.accept(null);
 			}else nul.run();
+			return true;
+		}else if (strippedMessage.equals("cancel") && cancel != null) {
+			cancel();
 			return true;
 		}
 		

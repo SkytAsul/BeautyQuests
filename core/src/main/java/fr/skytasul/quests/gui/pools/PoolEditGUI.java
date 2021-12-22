@@ -166,10 +166,10 @@ public class PoolEditGUI implements CustomInventory {
 		case SLOT_TIME:
 			Lang.POOL_TIME.send(p);
 			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
-				timeDiff = TimeUnit.DAYS.toMillis(msg);
+				timeDiff = msg * 1000;
 				ItemUtils.lore(current, getTimeLore());
 				reopen(p, inv, false);
-			}, new DurationParser(MinecraftTimeUnit.DAY)).enter();
+			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).enter();
 			break;
 		case SLOT_REDO:
 			redoAllowed = ItemUtils.toggle(current);

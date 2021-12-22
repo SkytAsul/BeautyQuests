@@ -198,7 +198,7 @@ public class BranchesGUI implements CustomInventory { // WIP
 		
 		@Override
 		public ItemStack getItem(ThingType type) {
-			return ItemUtils.item(type.material, "§4Thing §b§l" + id, Lang.Remove.toString(), type.name);
+			return ItemUtils.item(type.material, "§4Thing §b§l" + id, Lang.RemoveMid.toString(), type.name);
 		}
 	}
 	
