@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -131,7 +133,15 @@ public class Inventories{
 		}
 	}
 	
+	public static void onOpen(InventoryOpenEvent e) {
+		if (!e.isCancelled()) return;
+		HumanEntity p = e.getPlayer();
+		if (g.containsKey(p)) {
+			BeautyQuests.logger.warning("The opening of a BeautyQuests menu for player " + p.getName() + " has been cancelled by another plugin.");
+		}
+	}
 	
+
 	public static void closeWithoutExit(Player p){
 		if (!g.containsKey(p)) return;
 		if (p.getOpenInventory().getType() == InventoryType.CRAFTING){
