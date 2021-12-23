@@ -5,8 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.stages.Dialogable;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
@@ -15,7 +17,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Dialog;
 
-public class OptionStartDialog extends QuestOption<Dialog> {
+public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
 	
 	public OptionStartDialog() {
 		super(OptionStarterNPC.class);
@@ -58,6 +60,16 @@ public class OptionStartDialog extends QuestOption<Dialog> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}, getValue()).enter();
+	}
+	
+	@Override
+	public Dialog getDialog() {
+		return getValue();
+	}
+	
+	@Override
+	public BQNPC getNPC() {
+		return getAttachedQuest().getOptionValueOrDef(OptionStarterNPC.class);
 	}
 	
 }
