@@ -72,6 +72,7 @@ public class QuestsConfiguration {
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
 	private static boolean menuOpenNotStartedTabWhenEmpty = true;
+	private static boolean dialogHistory = true;
 	private static QuestDescription questDescription;
 	
 	private static ItemStack holoLaunchItem = null;
@@ -126,6 +127,7 @@ public class QuestsConfiguration {
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
+		dialogHistory = config.getBoolean("dialogHistory");
 		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		try {
@@ -297,6 +299,10 @@ public class QuestsConfiguration {
 	
 	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
 		return menuOpenNotStartedTabWhenEmpty;
+	}
+	
+	public static boolean isDialogHistoryEnabled() {
+		return dialogHistory;
 	}
 
 	public static int getStartParticleDistance() {

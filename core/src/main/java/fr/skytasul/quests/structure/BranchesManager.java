@@ -85,6 +85,7 @@ public class BranchesManager{
 	}
 
 	public void startPlayer(PlayerAccount acc){
+		acc.getQuestDatas(getQuest()).resetQuestFlow();
 		branches.get(0).start(acc);
 	}
 	

@@ -24,6 +24,7 @@ import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.Dialogable;
 import fr.skytasul.quests.api.stages.Locatable;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.DialogEditor;
@@ -40,7 +41,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 
-public class StageNPC extends AbstractStage implements Locatable {
+public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	
 	private BQNPC npc;
 	private int npcID;
@@ -103,6 +104,7 @@ public class StageNPC extends AbstractStage implements Locatable {
 		hologram = null;
 	}
 
+	@Override
 	public BQNPC getNPC() {
 		return npc;
 	}
@@ -134,6 +136,7 @@ public class StageNPC extends AbstractStage implements Locatable {
 		return dialog != null;
 	}
 	
+	@Override
 	public Dialog getDialog(){
 		return dialog;
 	}

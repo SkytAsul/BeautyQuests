@@ -2,9 +2,11 @@ package fr.skytasul.quests.players;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Utils;
 
@@ -17,13 +19,14 @@ public class PlayerQuestDatas {
 	private long timer = 0;
 	private int branch = -1, stage = -1;
 	private Map<String, Object>[] stageDatas = new Map[5];
+	private StringJoiner questFlow = new StringJoiner(";");
 
 	public PlayerQuestDatas(PlayerAccount acc, int questID) {
 		this.acc = acc;
 		this.questID = questID;
 	}
 
-	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
+	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas, String questFlow) {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = finished;
@@ -35,6 +38,7 @@ public class PlayerQuestDatas {
 		this.stageDatas[2] = stage2datas;
 		this.stageDatas[3] = stage3datas;
 		this.stageDatas[4] = stage4datas;
+		if (questFlow != null) this.questFlow.add(questFlow);
 		if (branch != -1 && stage == -1) BeautyQuests.logger.warning("Incorrect quest " + questID + " datas for " + acc.debugName());
 	}
 	
@@ -109,6 +113,24 @@ public class PlayerQuestDatas {
 	public void setStageDatas(int stage, Map<String, Object> stageDatas) {
 		this.stageDatas[stage] = stageDatas;
 	}
+	
+	public String getQuestFlow() {
+		return questFlow.toString();
+	}
+	
+	public void addQuestFlow(AbstractStage finished) {
+		String stageID;
+		if (finished.getQuestBranch().isRegularStage(finished)) {
+			stageID = Integer.toString(finished.getID());
+		}else {
+			stageID = "E" + finished.getStoredID();
+		}
+		questFlow.add(finished.getQuestBranch().getID() + ":" + stageID);
+	}
+	
+	public void resetQuestFlow() {
+		questFlow = new StringJoiner(";");
+	}
 
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
@@ -121,6 +143,7 @@ public class PlayerQuestDatas {
 		for (int i = 0; i < stageDatas.length; i++) {
 			if (stageDatas[i] != null) map.put("stage" + i + "datas", stageDatas[i]);
 		}
+		map.put("questFlow", questFlow.toString());
 
 		return map;
 	}
@@ -135,6 +158,7 @@ public class PlayerQuestDatas {
 		for (int i = 0; i < datas.stageDatas.length; i++) {
 			datas.stageDatas[i] = (Map<String, Object>) map.get("stage" + i + "datas");
 		}
+		if (map.containsKey("questFlow")) datas.questFlow.add((String) map.get("questFlow"));
 		return datas;
 	}
 

@@ -70,6 +70,8 @@ requirementUpdateTime: 1
 requirementReasonOnMultipleQuests: true
 # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
 menuOpenNotStartedTabWhenEmpty: true
+# Enables the dialog history
+dialogHistory: true
 
 # - Integrations -
 # Enable GPS integration

@@ -29,6 +29,15 @@ public class Message implements Cloneable {
 	}
 
 	public void sendMessage(Player p, String npc, int id, int size) {
+		String sent = formatMessage(p, npc, id, size);
+		if (QuestsConfiguration.sendDialogsInActionBar()) {
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
+		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
+		
+		if (sound != null) p.playSound(p.getLocation(), sound, 1, 1);
+	}
+
+	public String formatMessage(Player p, String npc, int id, int size) {
 		String sent = null;
 		switch (sender) {
 		case PLAYER:
@@ -41,11 +50,7 @@ public class Message implements Cloneable {
 			sent = Utils.finalFormat(p, Utils.format(text, id + 1, size), true);
 			break;
 		}
-		if (QuestsConfiguration.sendDialogsInActionBar()) {
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
-		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
-		
-		if (sound != null) p.playSound(p.getLocation(), sound, 1, 1);
+		return sent;
 	}
 	
 	@Override

@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
@@ -54,6 +55,7 @@ public class PlayersManagerDB extends PlayersManager {
 	private BQStatement updateBranch;
 	private BQStatement updateStage;
 	private BQStatement[] updateDatas = new BQStatement[5];
+	private BQStatement updateFlow;
 	
 	/* Pool datas statements */
 	private BQStatement insertPoolData;
@@ -78,7 +80,7 @@ public class PlayersManagerDB extends PlayersManager {
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				int questID = result.getInt("quest_id");
-				acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result.getInt("finished"), result.getLong("timer"), result.getInt("current_branch"), result.getInt("current_stage"), getStageDatas(result, 0), getStageDatas(result, 1), getStageDatas(result, 2), getStageDatas(result, 3), getStageDatas(result, 4)));
+				acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result));
 			}
 			result.close();
 			statement = getPoolData.getStatement();
@@ -150,7 +152,7 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 	}
 
-	private Map<String, Object> getStageDatas(ResultSet result, int index) throws SQLException {
+	private static Map<String, Object> extractStageDatas(ResultSet result, int index) throws SQLException {
 		String json = result.getString("stage_" + index + "_datas");
 		if (json == null) return null;
 		return CustomizedObjectTypeAdapter.GSON.fromJson(json, Map.class);
@@ -246,6 +248,7 @@ public class PlayersManagerDB extends PlayersManager {
 			for (int i = 0; i < 5; i++) {
 				updateDatas[i] = prepareDatasStatement("stage_" + i + "_datas");
 			}
+			updateFlow = prepareDatasStatement("quest_flow");
 			
 			insertPoolData = db.new BQStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)");
 			removePoolData = db.new BQStatement("DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
@@ -269,38 +272,40 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	private void createTables() throws SQLException {
-		Statement statement = db.getConnection().createStatement();
-		statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
-				+ " `id` int NOT NULL AUTO_INCREMENT ,"
-				+ " `identifier` text NOT NULL ,"
-				+ " `player_uuid` char(36) NOT NULL ,"
-				+ " PRIMARY KEY (`id`)"
-				+ " )");
-		statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
-				" `id` int NOT NULL AUTO_INCREMENT ," +
-				" `account_id` int(11) NOT NULL," +
-				" `quest_id` int(11) NOT NULL," +
-				" `finished` INT(11) DEFAULT NULL," +
-				" `timer` bigint(20) DEFAULT NULL," +
-				" `current_branch` tinyint(4) DEFAULT NULL," +
-				" `current_stage` tinyint(4) DEFAULT NULL," +
-				" `stage_0_datas` longtext DEFAULT NULL," +
-				" `stage_1_datas` longtext DEFAULT NULL," +
-				" `stage_2_datas` longtext DEFAULT NULL," +
-				" `stage_3_datas` longtext DEFAULT NULL," +
-				" `stage_4_datas` longtext DEFAULT NULL," +
-				" PRIMARY KEY (`id`)" +
-				")");
-		statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
-		statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
-				+ "`id` int NOT NULL AUTO_INCREMENT, "
-				+ "`account_id` int(11) NOT NULL, "
-				+ "`pool_id` int(11) NOT NULL, "
-				+ "`last_give` bigint(20) DEFAULT NULL, "
-				+ "`completed_quests` varchar(1000) DEFAULT NULL, "
-				+ "PRIMARY KEY (`id`)"
-				+ ")");
-		statement.close();
+		try (Statement statement = db.getConnection().createStatement()) {
+			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
+					+ " `id` int NOT NULL AUTO_INCREMENT ,"
+					+ " `identifier` text NOT NULL ,"
+					+ " `player_uuid` char(36) NOT NULL ,"
+					+ " PRIMARY KEY (`id`)"
+					+ " )");
+			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
+					" `id` int NOT NULL AUTO_INCREMENT ," +
+					" `account_id` int(11) NOT NULL," +
+					" `quest_id` int(11) NOT NULL," +
+					" `finished` INT(11) DEFAULT NULL," +
+					" `timer` bigint(20) DEFAULT NULL," +
+					" `current_branch` tinyint(4) DEFAULT NULL," +
+					" `current_stage` tinyint(4) DEFAULT NULL," +
+					" `stage_0_datas` longtext DEFAULT NULL," +
+					" `stage_1_datas` longtext DEFAULT NULL," +
+					" `stage_2_datas` longtext DEFAULT NULL," +
+					" `stage_3_datas` longtext DEFAULT NULL," +
+					" `stage_4_datas` longtext DEFAULT NULL," +
+					" `quest_flow` VARCHAR(8000) DEFAULT NULL" +
+					" PRIMARY KEY (`id`)" +
+					")");
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
+			statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
+					+ "`id` int NOT NULL AUTO_INCREMENT, "
+					+ "`account_id` int(11) NOT NULL, "
+					+ "`pool_id` int(11) NOT NULL, "
+					+ "`last_give` bigint(20) DEFAULT NULL, "
+					+ "`completed_quests` varchar(1000) DEFAULT NULL, "
+					+ "PRIMARY KEY (`id`)"
+					+ ")");
+		}
 	}
 
 	public static synchronized String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
@@ -393,8 +398,20 @@ public class PlayersManagerDB extends PlayersManager {
 			super(acc, questID);
 		}
 
-		public PlayerQuestDatasDB(PlayerAccount acc, int questID, int finished, long timer, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas) {
-			super(acc, questID, timer, finished, branch, stage, stage0datas, stage1datas, stage2datas, stage3datas, stage4datas);
+		public PlayerQuestDatasDB(PlayerAccount acc, int questID, ResultSet result) throws SQLException {
+			super(
+					acc,
+					questID,
+					result.getLong("timer"),
+					result.getInt("finished"),
+					result.getInt("current_branch"),
+					result.getInt("current_stage"),
+					extractStageDatas(result, 0),
+					extractStageDatas(result, 1),
+					extractStageDatas(result, 2),
+					extractStageDatas(result, 3),
+					extractStageDatas(result, 4),
+					result.getString("quest_flow"));
 		}
 		
 		@Override
@@ -425,6 +442,18 @@ public class PlayersManagerDB extends PlayersManager {
 		public void setStageDatas(int stage, Map<String, Object> stageDatas) {
 			super.setStageDatas(stage, stageDatas);
 			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas), true);
+		}
+		
+		@Override
+		public void addQuestFlow(AbstractStage finished) {
+			super.addQuestFlow(finished);
+			setDataStatement(updateFlow, getQuestFlow(), true);
+		}
+		
+		@Override
+		public void resetQuestFlow() {
+			super.resetQuestFlow();
+			setDataStatement(updateFlow, null, true);
 		}
 
 		private void setDataStatement(BQStatement dataStatement, Object data, boolean allowNull) {
