@@ -16,6 +16,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -120,6 +122,16 @@ public class QuestsListener implements Listener{
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 		Inventories.onClick(e);
+	}
+	
+	@EventHandler
+	public void onDrag(InventoryDragEvent e) {
+		Inventories.onDrag(e);
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onOpen(InventoryOpenEvent e) {
+		Inventories.onOpen(e);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
