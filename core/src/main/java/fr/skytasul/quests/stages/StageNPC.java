@@ -132,6 +132,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		this.dialog = dialog;
 	}
 	
+	@Override
 	public boolean hasDialog(){
 		return dialog != null;
 	}
@@ -275,8 +276,8 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	public void unload() {
 		super.unload();
 		if (task != null) task.cancel();
-		if (hologram != null) removeHoloLaunch();
 		if (dialog != null) dialog.unload();
+		removeHoloLaunch();
 		uncacheAll();
 	}
 	
@@ -347,7 +348,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		
 		public void setDialog(Dialog dialog) {
 			this.dialog = dialog;
-			line.editItem(SLOT_DIALOG, ItemUtils.lore(line.getItem(SLOT_DIALOG), dialog == null ? Lang.NotSet.toString() : QuestOption.formatDescription(dialog.messages.valuesSize() + " line(s)")));
+			line.editItem(SLOT_DIALOG, ItemUtils.lore(line.getItem(SLOT_DIALOG), dialog == null ? Lang.NotSet.toString() : QuestOption.formatDescription(Lang.dialogLines.format(dialog.messages.size()))));
 		}
 		
 		public void setHidden(boolean hidden) {

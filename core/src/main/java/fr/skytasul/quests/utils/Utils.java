@@ -364,11 +364,15 @@ public class Utils{
 	}
 	
 	public static void playPluginSound(Player p, String sound, float volume){
+		playPluginSound(p, sound, volume, 1);
+	}
+	
+	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
-			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
-			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
+			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, pitch);
+		}catch (Exception ex) {
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, pitch);
 		}
 	}
 	
@@ -376,7 +380,7 @@ public class Utils{
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
+		}catch (Exception ex) {
 			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}

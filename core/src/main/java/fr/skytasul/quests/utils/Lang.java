@@ -323,6 +323,7 @@ public enum Lang{
 	stageBreedAnimals("inv.create.breedAnimals"),
 	stageTameAnimals("inv.create.tameAnimals"),
 	stageText("inv.create.NPCText"),
+	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
 	stageGPS("inv.create.gps"),
@@ -488,7 +489,8 @@ public enum Lang{
 	notStarteds("inv.listQuests.notStarted"),
 	finisheds("inv.listQuests.finished"),
 	inProgress("inv.listQuests.inProgress"),
-	cancelLore("inv.listQuests.loreCancel"),
+	dialogsHistoryLore("inv.listQuests.loreDialogsHistoryClick"),
+	cancelLore("inv.listQuests.loreCancelClick"),
 	startLore("inv.listQuests.loreStart"),
 	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
 	timeWait("inv.listQuests.timeToWaitRedo"),

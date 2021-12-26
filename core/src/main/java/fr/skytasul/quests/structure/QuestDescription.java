@@ -40,7 +40,12 @@ public class QuestDescription {
 		if (p == null) return list;
 		
 		if (this.rewards) {
-			List<String> rewards = quest.getOptionValueOrDef(OptionEndRewards.class).stream().map(x -> x.getDescription(p)).filter(Objects::nonNull).map(x -> Utils.format(rewardsFormat, x)).collect(Collectors.toList());
+			List<String> rewards = quest.getOptionValueOrDef(OptionEndRewards.class)
+					.stream()
+					.map(x -> x.getDescription(p))
+					.filter(Objects::nonNull)
+					.map(x -> Utils.format(rewardsFormat, x))
+					.collect(Collectors.toList());
 			if (!rewards.isEmpty()) {
 				if (!list.isEmpty()) list.add("");
 				list.add(Lang.RWDTitle.toString());
@@ -49,11 +54,15 @@ public class QuestDescription {
 		}
 		
 		if (this.requirements) {
-			List<String> requirements = quest.getOptionValueOrDef(OptionRequirements.class).stream().map(x -> {
-				String description = x.getDescription(p);
-				if (description != null) description = Utils.format(x.test(p) ? requirementsValid : requirementsInvalid, description);
-				return description;
-			}).filter(Objects::nonNull).collect(Collectors.toList());
+			List<String> requirements = quest.getOptionValueOrDef(OptionRequirements.class)
+					.stream()
+					.map(x -> {
+						String description = x.getDescription(p);
+						if (description != null) description = Utils.format(x.test(p) ? requirementsValid : requirementsInvalid, description);
+						return description;
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
 			if (!requirements.isEmpty()) {
 				if (!list.isEmpty()) list.add("");
 				list.add(Lang.RDTitle.toString());

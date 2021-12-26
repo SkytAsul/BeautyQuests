@@ -1,7 +1,5 @@
 package fr.skytasul.quests.editors;
 
-import java.util.Map.Entry;
-
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -57,18 +55,19 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			try{
-				Message removed = d.messages.remove(Integer.parseInt(args[1]), true);
+				Message removed = d.messages.remove(Integer.parseInt(args[1]));
 				if (removed != null){
 					Utils.sendMessage(p, Lang.DIALOG_MSG_REMOVED.toString(), removed.text);
-				}else Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.valuesSize());
+				}else Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.size());
 			}catch (IllegalArgumentException ex){
 				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
 			}
 			break;
 
 		case LIST:
-			for (Entry<Integer, Message> en : d.messages.getOriginalMap().entrySet()){
-				p.sendMessage("§6" + en.getKey() + " :§a \"" + en.getValue().text + "§r§a\"§e by §l" + en.getValue().sender.name().toLowerCase());
+			for (int i = 0; i < d.messages.size(); i++) {
+				Message dmsg = d.messages.get(i);
+				p.sendMessage("§6" + i + " :§a \"" + dmsg.text + "§r§a\"§e by §l" + dmsg.sender.name().toLowerCase());
 			}
 			break;
 			
@@ -97,7 +96,7 @@ public class DialogEditor extends Editor{
 			try{
 				Message message = d.messages.get(Integer.parseInt(args[1]));
 				if (message == null) {
-					Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.valuesSize());
+					Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.size());
 				}else {
 					msg = Utils.buildFromArray(argsColored, 2, " ");
 					message.text = msg;
@@ -158,7 +157,8 @@ public class DialogEditor extends Editor{
 			break;
 
 		case CLEAR:
-			Lang.DIALOG_CLEARED.send(p, d.messages.clear());
+			Lang.DIALOG_CLEARED.send(p, d.messages.size());
+			d.messages.clear();
 			break;
 
 		case HELP:

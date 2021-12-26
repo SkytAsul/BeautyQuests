@@ -327,6 +327,7 @@ inv:
     breedAnimals: §aBreed animals
     tameAnimals: §aTame animals
     NPCText: §eEdit dialog
+    dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
     gps: Displays a compass towards the objective
@@ -509,7 +510,8 @@ inv:
     notStarted: Not started quests
     finished: Finished quests
     inProgress: Quests in progress
-    loreCancel: §c§oClick to cancel the quest.
+    loreDialogsHistoryClick: §7View the dialogs
+    loreCancelClick: §cCancel the quest
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
     timeToWaitRedo: §3§oYou can restart this quest in {0}.

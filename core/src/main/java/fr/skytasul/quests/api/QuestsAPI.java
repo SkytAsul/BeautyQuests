@@ -267,7 +267,7 @@ public class QuestsAPI {
 	}
 
 	public static Quest getQuestFromID(int id){
-		return BeautyQuests.getInstance().getQuests().stream().filter(x -> x.getID() == id).findFirst().orElse(null);
+		return BeautyQuests.getInstance().getQuests().stream().filter(x -> x.getID() == id).findAny().orElse(null);
 	}
 	
 	public static List<Quest> getQuests(){

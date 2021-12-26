@@ -9,4 +9,8 @@ public interface Dialogable {
 	
 	BQNPC getNPC();
 	
+	default boolean hasDialog() {
+		return getDialog() != null;
+	}
+	
 }
