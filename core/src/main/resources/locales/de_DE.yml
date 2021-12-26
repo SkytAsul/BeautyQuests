@@ -254,7 +254,6 @@ msg:
       hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
       maxQuests: 'Lege die maximale Anzahl an Quests fest, die aus dieser Gruppe gestartet werden können.'
       questsPerLaunch: 'Schreibe die Anzahl der Quests, die du bei einem Klick auf den NPC erhalten hast.'
-      time: 'Lege die Anzahl der Tage fest, bevor Spieler eine neue Quest annehmen können.'
     title:
       title: 'Schreibe den Titeltext (oder "null", wenn du keinen möchtest).'
       subtitle: 'Schreibe den Untertiteltext (oder "null", wenn du keinen möchtest).'
@@ -369,6 +368,7 @@ inv:
     questName: '§a§lQuestname bearbeiten'
     questNameLore: Ein Name muss gesetzt werden, um die Questerstellung abzuschließen.
     setItemsRewards: '§eBelohnungs‐Items bearbeiten'
+    removeItemsReward: '§eEntferne Items vom Inventar'
     setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
     setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
     setRewardStopQuest: '§cQuest stoppen'
@@ -478,7 +478,6 @@ inv:
     notStarted: Nicht gestartete Quests
     finished: Abgeschlossene Quests
     inProgress: Laufende Quests
-    loreCancel: '§c§oKlicke, um die Quest abzubrechen.'
     loreStart: '§a§oKlicke, um die Quest zu starten.'
     loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
     timeToWaitRedo: '§3§oDu kannst diese Quest in {0} erneut starten.'
@@ -689,6 +688,7 @@ misc:
     left: Linksklick
     shift-right: Shift-Rechtsklick
     shift-left: Shift-Linksklick
+    middle: Mittelklick
   ticks: '{0} Ticks'
   questItemLore: '§e§oQuest‐Item'
   hologramText: '§8§lQuest‐NPC'
@@ -703,6 +703,7 @@ misc:
   unused: '§2§lUnbenutzt'
   used: '§a§lBenutzt'
   remove: '§7Mittelklicke zum Entfernen'
+  removeRaw: Entfernen
   or: oder
   amount: '§eAnzahl: {0}'
   items: Items

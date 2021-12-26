@@ -11,6 +11,7 @@ msg:
     cancelling: '§cQuá trình tạo nhiệm vụ đã bị hủy.'
     editCancelling: '§cQuy trình của phiên bản nhiệm vụ bị hủy.'
     invalidID: '§cNhiệm vụ với id {0} không tồn tại.'
+    invalidPoolID: '§cDòng {0} không tồn tại'
     alreadyStarted: '§cNhiệm vụ này đã được bắt đầu!'
   quests:
     maxLaunched: '§cBạn không thể làm nhiềm hơn {0} nhiệm vụ cùng một lúc...'
@@ -35,8 +36,9 @@ msg:
   writeMobAmount: '§aViết số lượng mob cần tiêu diệt:'
   writeMobName: '§aViết tên của mobs mà bạn muốn giết'
   writeChatMessage: '§aViết tin nhắn bắt buộc: (Thêm "{SLASH}" ngay từ đầu nếu bạn muốn một lệnh.)'
-  writeEndMessage: '§aViết tin nhắn sẽ được gửi khi kết thúc nhiệm vụ hoặc giai đoạn:'
+  writeMessage: '§aViết tin nhắn sẽ gửi đến người chơi'
   writeStartMessage: '§aViết thông báo sẽ gửi khi bắt đầu nhiệm vụ, "null" nếu bạn muốn là 1 thông báo bình thường hoặc "none" nếu bạn không muốn'
+  writeEndMsg: '§aViết tin nhắn sẽ gửi khi nhiệm vụ kết thúc, "null" nếu bạn muốn một cái bình thường hoặc "none" nếu bạn không muốn gì hết. Bạn cso thể dùng "{0}" để thay thể với thông báo phần thưởng'
   writeDescriptionText: '§aViết văn bản mô tả mục tiêu của giai đoạn:'
   writeStageText: '§aViết văn bản sẽ được gửi đến người chơi lúc đầu của giai đoạn:'
   moveToTeleportPoint: '§aĐi đến địa điểm muốn đến.'
@@ -74,11 +76,18 @@ msg:
   commandsDisabled: '§cHiện tại bạn không được phép thực hiện lệnhs!'
   indexOutOfBounds: '§cSố {0} nằm ngoài giới hạn! Nó phải nằm trong khoảng từ {1} đến {2}.'
   invalidBlockData: '§cDữ liệu khối {0} không hợp lệ hoặc không tương thích với khối {1}.'
+  invalidBlockTag: '§cBlock tag không tồn tại {0}'
   bringBackObjects: Giao cho tôi {0}.
   inventoryFull: '§cTúi đồ của bạn đã đầy, vật phẩm đã bị rơi xuống sàn.'
   playerNeverConnected: '§cKhông thể tìm thấy thông tin về người chơi {0}.'
   playerNotOnline: '§cNgười chơi {0} đang ngoại tuyến.'
+  versionRequired: 'Phiên bản yêu cầu: §l{0}'
   command:
+    downloadTranslations:
+      syntax: '§cBạn cần phải tải file ngôn ngữ. Ví dụ: "/quests downloadTranslations vi_VN"'
+      notFound: '§cNgôn ngữ {0} không tìm thấy cho phiên bản {1}'
+      exists: '§cFile {0} đã tồn tại, Nối "true" vào lệnh của bạn để ghi đè nó. (/quests downlaodTranslations <lang> true)'
+      downloaded: '§aNgôn ngữ {0} đã được tải! §7Bạn cần chỉnh sửa file config.yml, đổi §ominecraftTranslationsFile§7 với {0}, sau đó khởi động lại máy chủ.'
     checkpoint:
       noCheckpoint: '§cKhông tìm thấy trạm kiểm soát nào cho nhiệm vụ {0}.'
       questNotStarted: '§cBạn không làm nhiệm vụ này.'
@@ -107,6 +116,7 @@ msg:
       remover: '§6Các thông tin nhiệm vụ {0} đã bị {1} xóa'
     resetQuest: '§6Xóa toàn bộ dữ liệu nhiệm vụ của {0} người chơi'
     startQuest: '§6Bạn đã buộc phải bắt đầu nhiệm vụ {0} (UUID của người chơi: {1}).'
+    startQuestNoRequirements: '§cNgười chơi không đủ điều kiện đề làm nhiệm vụ {0}.... Nối tiếp "true" ở cuối câu lệnh để vượt qua kiểm tra điều kiện'
     cancelQuest: '§6Bạn đã thoát khởi nhiệm vụ {0}'
     cancelQuestUnavailable: '§6Không thể thoát khỏi nhiệm vụ {0}'
     backupCreated: '§6Bạn đã tạo thành công file backup toàn bộ thông tin nhiệm vụ và thông tin người chơi'
@@ -144,6 +154,7 @@ msg:
     blockAmount: '§aViết số lượng khối'
     blockName: '§aViết tên của khối'
     blockData: '§aViết blockdata (blockdatas có sẵn: {0}):'
+    blockTag: '§aViết blockdata (blockdatas có sẵn: {0}):'
     typeBucketAmount: '§aViết số lượng xô nước cần làm đầy'
     goToLocation: '§aViết vị trí muốn đến cho giai đoạn'
     typeLocationRadius: '§aViết yêu cầu tầm xa từ vị trí đã đặt'
@@ -205,6 +216,7 @@ msg:
         list: '§6list: §eXem tất cả tin nhắn'
         npcInsert: '§6playerInsert <id> <message>: §eThêm một tin nhắn cho NPC nói.'
         playerInsert: '§6playerInsert <id> <message>: §eThêm một tin nhắn cho người chơi nói.'
+        nothingInsert: '§6nothingInsert <id> <message>: §eThêm một tin nhắn với không có chủ ngữ.'
         edit: 'Chỉnh sửa tin nhắn'
         addSound: '§6addSound <id> <sound>: §eThêm âm thanh khi tin nhắn hiển thị.'
         clear: '§6clear: §eXóa toàn bộ tin nhắn.'
@@ -308,7 +320,6 @@ inv:
     notStarted: Chưa Bắt Đầu Nhiệm Vụ
     finished: Nhiệm Vụ Đã Hoàn Thành
     inProgress: Nhiệm Vụ Đang Thực Hiện
-    loreCancel: '§c§oNhấn Để Thoát Nhiệm Vụ.'
     loreStart: '§a§oNhấn để bắt đầu nhiệm vụ.'
   itemCreator:
     itemName: '§bTên vật phẩm'

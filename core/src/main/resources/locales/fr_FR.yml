@@ -254,7 +254,7 @@ msg:
       hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
       maxQuests: 'Écrivez le nombre maximum de quêtes lancées dans ce groupe.'
       questsPerLaunch: 'Écrivez le nombre de quêtes données lorsque les joueurs cliquent sur le NPC.'
-      time: 'Écrivez le nombre de jours avant que les joueurs puissent prendre une nouvelle quête.'
+      timeMsg: 'Écrivez le temps avant que les joueurs puissent prendre une nouvelle quête. (Unité par défaut: jours)'
     title:
       title: 'Écrivez le titre (ou "null" si vous n''en voulez pas).'
       subtitle: 'Écrivez le sous-titre (ou "null" si vous n''en voulez pas).'
@@ -297,6 +297,7 @@ inv:
     breedAnimals: '§aFaire reproduire des animaux'
     tameAnimals: '§aApprivoiser des animaux'
     NPCText: '§eModifier le dialogue'
+    dialogLines: '{0} lignes'
     NPCSelect: '§eChoisir ou créer un NPC'
     hideClues: Cacher les particules et les hologrammes
     gps: Affiche une boussole vers l'objectif
@@ -369,6 +370,7 @@ inv:
     questName: '§a§lModifier le nom de la quête'
     questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
+    removeItemsReward: '§eRetirer des objets de l''inventaire'
     setXPRewards: '§eModifier les gains d''expérience'
     setCheckpointReward: '§eModifier les récompenses du checkpoints'
     setRewardStopQuest: '§cArrêter la quête'
@@ -478,7 +480,8 @@ inv:
     notStarted: Quêtes non commencées
     finished: Quêtes terminées
     inProgress: Quêtes en cours
-    loreCancel: '§c§oCliquez pour annuler la quête.'
+    loreDialogsHistoryClick: '§7Voir les dialogues'
+    loreCancelClick: '§cAnnuler la quête'
     loreStart: '§a§oCliquez pour commencer la quête.'
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWaitRedo: '§3§oVous pouvez refaire cette quête dans {0}.'
@@ -689,6 +692,7 @@ misc:
     left: Clic gauche
     shift-right: Maj + clic-droit
     shift-left: Maj + clic-gauche
+    middle: Clic central
   ticks: '{0} ticks'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'
@@ -703,6 +707,7 @@ misc:
   unused: '§2§lInutilisé'
   used: '§a§lUtilisé'
   remove: '§7Clic central pour supprimer'
+  removeRaw: Supprimer
   or: ou
   amount: '§eQuantité : {0}'
   items: objets
