@@ -5,9 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -292,11 +294,9 @@ public class PlayersManagerDB extends PlayersManager {
 					" `stage_2_datas` longtext DEFAULT NULL," +
 					" `stage_3_datas` longtext DEFAULT NULL," +
 					" `stage_4_datas` longtext DEFAULT NULL," +
-					" `quest_flow` VARCHAR(8000) DEFAULT NULL" +
+					" `quest_flow` VARCHAR(8000) DEFAULT NULL," +
 					" PRIMARY KEY (`id`)" +
 					")");
-			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
-			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
 			statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
 					+ "`id` int NOT NULL AUTO_INCREMENT, "
 					+ "`account_id` int(11) NOT NULL, "
@@ -305,6 +305,20 @@ public class PlayersManagerDB extends PlayersManager {
 					+ "`completed_quests` varchar(1000) DEFAULT NULL, "
 					+ "PRIMARY KEY (`id`)"
 					+ ")");
+			
+			List<String> columns = new ArrayList<>(14);
+			try (ResultSet set = db.getConnection().getMetaData().getColumns(db.getDatabase(), null, QUESTS_DATAS_TABLE, null)) {
+				while (set.next()) {
+					columns.add(set.getString("COLUMN_NAME").toLowerCase());
+				}
+			}
+			if (columns.isEmpty()) {
+				BeautyQuests.logger.severe("Cannot check integrity of SQL table " + QUESTS_DATAS_TABLE);
+			}else if (!columns.contains("quest_flow")) {
+				statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
+				BeautyQuests.logger.info("Updated database with quest_flow column.");
+			}
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
 		}
 	}
 
