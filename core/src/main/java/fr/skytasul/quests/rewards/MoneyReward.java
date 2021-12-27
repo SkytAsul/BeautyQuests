@@ -20,7 +20,6 @@ public class MoneyReward extends AbstractReward {
 	public double money = 0;
 	
 	public MoneyReward(){
-		super("moneyReward");
 		if (!DependenciesManager.vault.isEnabled()) throw new MissingDependencyException("Vault");
 	}
 	

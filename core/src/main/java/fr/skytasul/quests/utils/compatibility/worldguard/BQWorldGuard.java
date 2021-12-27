@@ -118,7 +118,7 @@ public class BQWorldGuard {
 	public static void init() {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
+		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
 	
 	public static BQWorldGuard getInstance() {

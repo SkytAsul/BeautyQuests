@@ -15,12 +15,9 @@ public class MessageReward extends AbstractReward {
 
 	public String text;
 	
-	public MessageReward(){
-		super("textReward");
-	}
+	public MessageReward() {}
 	
 	public MessageReward(String text){
-		super("textReward");
 		this.text = text;
 	}
 

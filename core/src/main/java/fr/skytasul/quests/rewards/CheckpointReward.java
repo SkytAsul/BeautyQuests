@@ -25,7 +25,6 @@ public class CheckpointReward extends AbstractReward {
 	}
 	
 	public CheckpointReward(List<AbstractReward> actions) {
-		super("checkpointReward");
 		this.actions = actions;
 	}
 	
@@ -51,7 +50,7 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		new QuestObjectGUI<>(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, QuestsAPI.rewards.values(), rewards -> {
+		new QuestObjectGUI<>(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, QuestsAPI.getRewards().getCreators(), rewards -> {
 			actions = rewards;
 			event.updateItemLore(getLore());
 			event.reopenGUI();

@@ -4,19 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
@@ -24,7 +20,7 @@ import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
-import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -38,11 +34,12 @@ import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.Lang;
 
 public class QuestsAPI {
 	
-	public static final Map<Class<? extends AbstractReward>, QuestObjectCreator<AbstractReward>> rewards = new LinkedHashMap<>();
-	public static final Map<Class<? extends AbstractRequirement>, QuestObjectCreator<AbstractRequirement>> requirements = new LinkedHashMap<>();
+	private static final QuestObjectsRegistry<AbstractRequirement> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
+	private static final QuestObjectsRegistry<AbstractReward> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
 	public static final List<StageType<?>> stages = new LinkedList<>();
 	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
@@ -61,48 +58,6 @@ public class QuestsAPI {
 	public static <T extends AbstractStage> void registerStage(StageType<T> creator) {
 		stages.add(creator);
 		DebugUtils.logMessage("Stage registered (" + creator.name + ", " + (stages.size() - 1) + ")");
-	}
-	
-	/**
-	 * Registers a new requirement type into the plugin
-	 * @param clazz Class extending {@link AbstractRequirement}
-	 * @param item ItemStack shown in requirements GUI
-	 * @param newRequirementSupplier lambda returning an instance of this Requirement (Requirement::new)
-	 * @deprecated use {@link QuestsAPI#registerRequirement(QuestObjectCreator)}
-	 */
-	@Deprecated
-	public static <T extends AbstractRequirement> void registerRequirement(Class<T> clazz, ItemStack item, Supplier<T> newRequirementSupplier) {
-		registerRequirement(new QuestObjectCreator<>(clazz, item, newRequirementSupplier, true));
-	}
-	
-	/**
-	 * Registers a new requirement type into the plugin
-	 * @param creator {@link QuestObjectCreator} instance of an {@link AbstractRequirement}
-	 */
-	public static <T extends AbstractRequirement> void registerRequirement(QuestObjectCreator<T> creator) {
-		requirements.put(creator.clazz, (QuestObjectCreator<AbstractRequirement>) creator);
-		DebugUtils.logMessage("Requirement registered (class: " + creator.clazz.getSimpleName() + ")");
-	}
-	
-	/**
-	 * Registers a new reward type into the plugin
-	 * @param clazz Class extending {@link AbstractReward}
-	 * @param item ItemStack shown in rewards GUI
-	 * @param newRewardSupplier lambda returning an instance of this Reward (Reward::new)
-	 * @deprecated use {@link QuestsAPI#registerReward(QuestObjectCreator)}
-	 */
-	@Deprecated
-	public static <T extends AbstractReward> void registerReward(Class<T> clazz, ItemStack item, Supplier<T> newRewardSupplier) {
-		registerReward(new QuestObjectCreator<T>(clazz, item, newRewardSupplier, true));
-	}
-	
-	/**
-	 * Registers a new reward type into the plugin
-	 * @param creator {@link QuestObjectCreator} instance of an {@link AbstractReward}
-	 */
-	public static <T extends AbstractReward> void registerReward(QuestObjectCreator<T> creator) {
-		rewards.put(creator.clazz, (QuestObjectCreator<AbstractReward>) creator);
-		DebugUtils.logMessage("Reward registered (class: " + creator.clazz.getSimpleName() + ")");
 	}
 	
 	/**
@@ -125,6 +80,14 @@ public class QuestsAPI {
 	public static void registerItemComparison(ItemComparison comparison) {
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
+	}
+	
+	public static QuestObjectsRegistry<AbstractRequirement> getRequirements() {
+		return requirements;
+	}
+	
+	public static QuestObjectsRegistry<AbstractReward> getRewards() {
+		return rewards;
 	}
 	
 	public static BQNPCsManager getNPCsManager() {

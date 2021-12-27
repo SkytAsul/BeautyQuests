@@ -2,6 +2,7 @@ package fr.skytasul.quests.utils.compatibility.maps;
 
 import org.bukkit.Location;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
@@ -17,7 +18,12 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 			return;
 		}
 		
-		addMarker(quest, quest.getOptionValueOrDef(OptionStarterNPC.class).getLocation());
+		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getLocation();
+		if (lc == null) {
+			BeautyQuests.logger.warning("Cannot create map marker for quest #" + quest.getID() + " (" + quest.getName() + ")");
+		}else {
+			addMarker(quest, lc);
+		}
 	}
 	
 	@Override

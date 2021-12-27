@@ -23,7 +23,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	public McMMOSkillRequirement(double target, ComparisonMethod comparison) {
-		super("mcmmoSklillLevelRequired", target, comparison);
+		super(target, comparison);
 		if (!DependenciesManager.mmo.isEnabled()) throw new MissingDependencyException("mcMMO");
 	}
 

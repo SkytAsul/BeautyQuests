@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.compatibility;
+package fr.skytasul.quests.utils.compatibility.maps;
 
 import java.io.IOException;
 
@@ -9,7 +9,6 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.compatibility.maps.AbstractMapIntegration;
 
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;

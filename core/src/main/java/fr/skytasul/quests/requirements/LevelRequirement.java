@@ -16,7 +16,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 	}
 	
 	public LevelRequirement(double target, ComparisonMethod comparison) {
-		super("levelRequired", target, comparison);
+		super(target, comparison);
 	}
 
 	@Override
@@ -24,6 +24,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 		return p.getLevel();
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_LEVEL.send(p, getFormattedValue());
 	}
@@ -48,6 +49,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 		return new LevelRequirement(target, comparison);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");

@@ -23,7 +23,6 @@ public class ItemReward extends AbstractReward {
 	}
 	
 	public ItemReward(List<ItemStack> items){
-		super("itemReward");
 		this.items = items;
 	}
 

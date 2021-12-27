@@ -20,7 +20,6 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	public WaitReward(int delay) {
-		super("wait");
 		this.delay = delay;
 	}
 	

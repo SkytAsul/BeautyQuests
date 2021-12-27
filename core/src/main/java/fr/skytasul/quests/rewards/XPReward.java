@@ -20,12 +20,9 @@ public class XPReward extends AbstractReward {
 
 	public int exp = 0;
 
-	public XPReward() {
-		super("expReward");
-	}
+	public XPReward() {}
 
 	public XPReward(int exp) {
-		this();
 		this.exp = exp;
 	}
 

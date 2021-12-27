@@ -19,7 +19,6 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	public double money = 0;
 
 	public MoneyRequirement() {
-		super("moneyRequired");
 		if (!DependenciesManager.vault.isEnabled()) throw new MissingDependencyException("Vault");
 	}
 

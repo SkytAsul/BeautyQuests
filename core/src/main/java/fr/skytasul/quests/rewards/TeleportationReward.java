@@ -17,12 +17,9 @@ public class TeleportationReward extends AbstractReward {
 
 	public Location teleportation;
 
-	public TeleportationReward(){
-		super("tpReward");
-	}
+	public TeleportationReward() {}
 	
 	public TeleportationReward(Location teleportation){
-		this();
 		this.teleportation = teleportation;
 	}
 

@@ -12,9 +12,7 @@ import fr.skytasul.quests.structure.Quest;
 
 public class QuestStopReward extends AbstractReward {
 	
-	public QuestStopReward() {
-		super("questStopReward");
-	}
+	public QuestStopReward() {}
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {}

@@ -29,7 +29,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 	
 	public PermissionsRequirement(List<Permission> permissions, String message) {
-		super("permissionRequired");
 		this.permissions = permissions;
 		this.message = message;
 	}

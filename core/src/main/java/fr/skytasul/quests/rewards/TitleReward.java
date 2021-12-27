@@ -15,12 +15,9 @@ public class TitleReward extends AbstractReward {
 	
 	private Title title;
 	
-	public TitleReward() {
-		this(null);
-	}
+	public TitleReward() {}
 	
 	public TitleReward(Title title) {
-		super("titleReward");
 		this.title = title;
 	}
 	

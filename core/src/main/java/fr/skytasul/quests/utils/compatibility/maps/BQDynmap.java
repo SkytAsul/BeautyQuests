@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.compatibility;
+package fr.skytasul.quests.utils.compatibility.maps;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,22 +12,18 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.compatibility.maps.AbstractMapIntegration;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class BQDynmap extends AbstractMapIntegration {
 
-	private DynmapAPI dynmap;
-	private MarkerAPI api;
 	private MarkerIcon icon;
-	
 	private MarkerSet markers;
 	
 	@Override
 	public void load() {
-		dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
-		api = dynmap.getMarkerAPI();
+		DynmapAPI dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
+		MarkerAPI api = dynmap.getMarkerAPI();
 		icon = api.getMarkerIcon(QuestsConfiguration.dynmapMarkerIcon());
 		
 		markers = api.getMarkerSet("beautyquests.markerset");

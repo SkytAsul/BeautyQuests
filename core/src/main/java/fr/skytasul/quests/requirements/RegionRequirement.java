@@ -28,7 +28,6 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	public RegionRequirement(String worldName, String regionName) {
-		super("regionRequired");
 		if (!DependenciesManager.wg.isEnabled()) throw new MissingDependencyException("WorldGuard");
 		
 		this.worldName = worldName;

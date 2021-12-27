@@ -24,7 +24,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 	
 	public ScoreboardRequirement(String objectiveName, double target, ComparisonMethod comparison) {
-		super("scoreboardRequired", target, comparison);
+		super(target, comparison);
 		if (objectiveName != null) this.objectiveName = objectiveName;
 	}
 

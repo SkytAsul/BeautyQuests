@@ -23,7 +23,6 @@ import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
@@ -178,7 +177,7 @@ public class PoolEditGUI implements CustomInventory {
 			avoidDuplicates = ItemUtils.toggle(current);
 			break;
 		case SLOT_REQUIREMENTS:
-			new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.POOL, QuestsAPI.requirements.values(), requirements -> {
+			QuestsAPI.getRequirements().createGUI(QuestObjectLocation.POOL, requirements -> {
 				PoolEditGUI.this.requirements = requirements;
 				ItemUtils.lore(current, getRequirementsLore());
 				reopen(p, inv, true);

@@ -22,8 +22,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	protected ComparisonMethod comparison;
 	protected double target;
 	
-	protected TargetNumberRequirement(String name, double target, ComparisonMethod comparison) {
-		super(name);
+	protected TargetNumberRequirement(double target, ComparisonMethod comparison) {
 		this.target = target;
 		this.comparison = comparison;
 	}

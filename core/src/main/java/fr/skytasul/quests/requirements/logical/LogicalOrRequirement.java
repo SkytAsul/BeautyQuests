@@ -11,7 +11,6 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -24,7 +23,6 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	}
 	
 	public LogicalOrRequirement(List<AbstractRequirement> requirements) {
-		super("logicalOr");
 		this.requirements = requirements;
 	}
 	
@@ -35,8 +33,8 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.OTHER, QuestsAPI.requirements.values(), requirements -> {
-			LogicalOrRequirement.this.requirements = requirements;
+		QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
+			this.requirements = requirements;
 			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, requirements).create(event.getPlayer());

@@ -24,13 +24,10 @@ import fr.skytasul.quests.utils.types.Command;
 public class CommandReward extends AbstractReward {
 
 	public List<Command> commands = new ArrayList<>();
-	
-	public CommandReward(){
-		super("commandReward");
-	}
 
+	public CommandReward() {}
+	
 	public CommandReward(List<Command> list){
-		this();
 		if (list != null) this.commands.addAll(list);
 	}
 

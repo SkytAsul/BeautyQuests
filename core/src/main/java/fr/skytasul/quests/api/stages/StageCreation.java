@@ -12,7 +12,6 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.structure.QuestBranch;
@@ -34,7 +33,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		this.line = line;
 		this.ending = ending;
 		
-		line.setItem(1, StagesGUI.ending.clone(), (p, item) -> new QuestObjectGUI<>(Lang.INVENTORY_REWARDS.toString(), QuestObjectLocation.STAGE, QuestsAPI.rewards.values(), rewards -> {
+		line.setItem(1, StagesGUI.ending.clone(), (p, item) -> QuestsAPI.getRewards().createGUI(QuestObjectLocation.STAGE, rewards -> {
 			setRewards(rewards);
 			reopenGUI(p, true);
 		}, rewards).create(p));
@@ -56,7 +55,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		});
 		
 		line.setItem(4, StagesGUI.validationRequirements.clone(), (p, item) -> {
-			new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.STAGE, QuestsAPI.requirements.values(), requirements -> {
+			QuestsAPI.getRequirements().createGUI(QuestObjectLocation.STAGE, requirements -> {
 				setRequirements(requirements);
 				reopenGUI(p, true);
 			}, requirements).create(p);

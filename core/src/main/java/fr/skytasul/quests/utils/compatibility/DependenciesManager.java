@@ -29,6 +29,8 @@ import fr.skytasul.quests.rewards.PermissionReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
+import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
@@ -50,19 +52,19 @@ public class DependenciesManager implements Listener {
 	});
 	
 	public static final BQDependency vault = new BQDependency("Vault", () -> {
-		QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
-		QuestsAPI.registerReward(new QuestObjectCreator<>(PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
+		QuestsAPI.getRewards().register(new QuestObjectCreator<>("moneyReward", MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
+		QuestsAPI.getRewards().register(new QuestObjectCreator<>("permReward", PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
+		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("moneyRequired", MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
 	});
 	
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> {
 		QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder"));
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
+		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("placeholderRequired", PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
 	});
 	
 	public static final BQDependency skapi = new BQDependency("SkillAPI", () -> {
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
-		QuestsAPI.registerRequirement(new QuestObjectCreator<>(SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
+		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("classRequired", ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
+		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("skillAPILevelRequired", SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
 	}).addPluginName("ProSkillAPI");
 	
 	public static final BQDependency cmi = new BQDependency("CMI", () -> {
@@ -73,14 +75,14 @@ public class DependenciesManager implements Listener {
 	
 	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable(), null);
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> QuestsAPI.registerMobFactory(new MythicMobs()));
-	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
-	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
+	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.getRequirements().register(new QuestObjectCreator<>("jobLevelRequired", JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
+	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.getRequirements().register(new QuestObjectCreator<>("factionRequired", FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
 	public static final BQDependency acc = new BQDependency("AccountsHook");
 	public static final BQDependency dyn = new BQDependency("dynmap", () -> QuestsAPI.registerQuestsHandler(new BQDynmap()));
 	public static final BQDependency BlueMap = new BQDependency("BlueMap", () -> QuestsAPI.registerQuestsHandler(new BQBlueMap()));
 	public static final BQDependency gps = new BQDependency("GPS", GPS::init);
-	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
-	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.registerRequirement(new QuestObjectCreator<>(McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
+	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.getRequirements().register(new QuestObjectCreator<>("mcmmoSklillLevelRequired", McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
+	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getRequirements().register(new QuestObjectCreator<>("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
 	public static final BQDependency boss = new BQDependency("Boss", () -> QuestsAPI.registerMobFactory(new BossAPI()));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));

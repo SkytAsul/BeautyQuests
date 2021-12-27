@@ -21,7 +21,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -36,7 +35,6 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	public RequirementDependentReward(List<AbstractRequirement> requirements, List<AbstractReward> rewards) {
-		super("requirementDependentReward");
 		this.requirements = requirements;
 		this.rewards = rewards;
 	}
@@ -94,14 +92,14 @@ public class RequirementDependentReward extends AbstractReward {
 			public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 				switch (slot) {
 				case 0:
-					new QuestObjectGUI<>(Lang.INVENTORY_REQUIREMENTS.toString(), QuestObjectLocation.OTHER, QuestsAPI.requirements.values(), requirements -> {
+					QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
 						RequirementDependentReward.this.requirements = requirements;
 						ItemUtils.name(current, Lang.requirements.format(requirements.size()));
 						reopen();
 					}, requirements).create(p);
 					break;
 				case 1:
-					new QuestObjectGUI<>(Lang.INVENTORY_REWARDS.toString(), QuestObjectLocation.OTHER, QuestsAPI.rewards.values(), rewards -> {
+					QuestsAPI.getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
 						RequirementDependentReward.this.rewards = rewards;
 						ItemUtils.name(current, Lang.rewards.format(rewards.size()));
 						reopen();

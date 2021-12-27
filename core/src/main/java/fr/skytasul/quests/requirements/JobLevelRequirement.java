@@ -23,7 +23,7 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	public JobLevelRequirement(String jobName, double target, ComparisonMethod comparison) {
-		super("jobLevelRequired", target, comparison);
+		super(target, comparison);
 		if (!DependenciesManager.jobs.isEnabled()) throw new MissingDependencyException("Jobs");
 		this.jobName = jobName;
 	}

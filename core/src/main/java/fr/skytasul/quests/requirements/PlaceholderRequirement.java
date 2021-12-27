@@ -35,7 +35,6 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 	
 	public PlaceholderRequirement(String placeholder, String value, ComparisonMethod comparison) {
-		super("placeholderRequired");
 		if (!DependenciesManager.papi.isEnabled()) throw new MissingDependencyException("PlaceholderAPI");
 		if (placeholder != null) setPlaceholder(placeholder);
 		this.value = value;

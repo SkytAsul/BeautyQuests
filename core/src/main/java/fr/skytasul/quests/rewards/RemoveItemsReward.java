@@ -27,7 +27,6 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 	
 	public RemoveItemsReward(List<ItemStack> items, ItemComparisonMap comparisons) {
-		super("removeItemsReward");
 		this.items = items;
 		this.comparisons = comparisons;
 	}

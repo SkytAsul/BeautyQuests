@@ -17,7 +17,7 @@ public class SkillAPILevelRequirement extends TargetNumberRequirement {
 	}
 	
 	public SkillAPILevelRequirement(double target, ComparisonMethod comparison) {
-		super("skillAPILevelRequired", target, comparison);
+		super(target, comparison);
 	}
 
 	@Override

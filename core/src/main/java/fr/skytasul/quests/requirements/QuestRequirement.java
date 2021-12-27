@@ -23,7 +23,6 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	public QuestRequirement(int questId) {
-		super("questRequired");
 		this.questId = questId;
 	}
 	
