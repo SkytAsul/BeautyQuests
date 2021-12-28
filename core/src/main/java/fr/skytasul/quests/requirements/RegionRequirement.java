@@ -68,7 +68,9 @@ public class RegionRequirement extends AbstractRequirement {
 	
 	@Override
 	public boolean test(Player p) {
-		return region != null && BQWorldGuard.getInstance().isInRegion(region, p.getLocation());
+		if (region == null) return false;
+		if (regionName.equals("__global__")) return p.getWorld().getName().equals(worldName);
+		return BQWorldGuard.getInstance().isInRegion(region, p.getLocation());
 	}
 	
 	@Override

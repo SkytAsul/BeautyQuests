@@ -76,7 +76,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 					tmp.add(p);
 				}
 				
-				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) {
+				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) {
 					if (hologram == null) createHoloLaunch();
 					hologram.setPlayersVisible(tmp);
 					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));

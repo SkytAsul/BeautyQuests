@@ -189,7 +189,13 @@ public class DependenciesManager implements Listener {
 		}
 		
 		void initialize() {
-			if (initialize != null) initialize.run();
+			try {
+				if (initialize != null) initialize.run();
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration");
+				ex.printStackTrace();
+				enabled = false;
+			}
 		}
 		
 		public void disable() {
