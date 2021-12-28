@@ -137,7 +137,7 @@ public class BeautyQuests extends JavaPlugin {
 
 			try {
 				dependencies.initializeCompatibilities();
-			}catch (Throwable ex) {
+			}catch (Exception ex) {
 				logger.severe("Error when initializing compatibilities. Consider restarting.");
 				ex.printStackTrace();
 			}

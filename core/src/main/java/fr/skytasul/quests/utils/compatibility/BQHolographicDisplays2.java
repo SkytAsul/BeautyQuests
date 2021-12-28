@@ -1,6 +1,7 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,10 +65,16 @@ public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 					visibilitiesField.set(visibility, map);
 				}
 				
-				for (Entry<String, Boolean> en : map.entrySet()) {
+				for (Iterator<Entry<String, Boolean>> iterator = map.entrySet().iterator(); iterator.hasNext();) {
+					Entry<String, Boolean> en = iterator.next();
 					if (!en.getValue()) continue;
 					if (!all.contains(en.getKey())) {
-						visibility.hideTo(Bukkit.getPlayer(en.getKey()));
+						Player player = Bukkit.getPlayer(en.getKey());
+						if (player != null) {
+							visibility.hideTo(player);
+						}else {
+							iterator.remove();
+						}
 					}
 					all.remove(en.getKey());
 				}
