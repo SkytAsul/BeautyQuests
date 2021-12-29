@@ -65,17 +65,17 @@ public class RemoveItemsReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		if (!event.isInCreation() && event.getClick().isRightClick()) {
-			new ItemComparisonGUI(comparisons, () -> {
-				event.updateItemLore(getLore());
-				event.reopenGUI();
-			}).create(event.getPlayer());
-		}else if (event.getClick().isLeftClick()) {
+		if (event.isInCreation() || event.getClick().isLeftClick()) {
 			new ItemsGUI(items -> {
 				this.items = items;
 				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}, items).create(event.getPlayer());
+		}else if (event.getClick().isRightClick()) {
+			new ItemComparisonGUI(comparisons, () -> {
+				event.updateItemLore(getLore());
+				event.reopenGUI();
+			}).create(event.getPlayer());
 		}
 	}
 	

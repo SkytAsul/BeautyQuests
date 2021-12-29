@@ -188,6 +188,9 @@ msg:
         permissionWorld: '§aIndiquez le monde dans lequel la permission sera mise à jour, ou "null" si vous voulez que ça le soit partout.'
         money: '§aEntrez la quantité de monnaie gagnée :'
         wait: '§aÉcrivez le nombre de ticks à attendre : (1 seconde = 20 ticks)'
+        random:
+          min: '§aÉcrivez le nombre minimum de récompenses données au joueur (inclus).'
+          max: '§aÉcrivez le nombre maximum de récompenses données au joueur (inclus).'
       chooseObjectiveRequired: '§aÉcrivez le nom de l''objectif.'
       chooseObjectiveTargetScore: '§aIndiquez le score visé pour cet objectif.'
       chooseRegionRequired: '§aÉcrivez le nom de la région requise (vous devez être dans le même monde).'
@@ -375,6 +378,7 @@ inv:
     setCheckpointReward: '§eModifier les récompenses du checkpoints'
     setRewardStopQuest: '§cArrêter la quête'
     setRewardsWithRequirements: '§eRécompenses avec requirements'
+    setRewardsRandom: '§dRécompenses aléatoires'
     setPermReward: '§eModifier les permissions'
     setMoneyReward: '§eModifier le gain de monnaie'
     setWaitReward: '§eModifier l''attente'
@@ -468,6 +472,9 @@ inv:
        Y : {1}
        Z : {2}
        World : {3}
+    random:
+      rewards: Modifier les récompenses
+      minMax: Modifier les quantités min/max
   checkpointActions:
     name: Actions du checkpoint
   rewardsWithRequirements:

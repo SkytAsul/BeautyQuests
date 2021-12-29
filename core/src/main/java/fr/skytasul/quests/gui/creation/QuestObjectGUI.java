@@ -111,6 +111,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.getRewards().register(new QuestObjectCreator<>("checkpointReward", CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE));
 		QuestsAPI.getRewards().register(new QuestObjectCreator<>("questStopReward", QuestStopReward.class, ItemUtils.item(XMaterial.BARRIER, Lang.rewardStopQuest.toString()), QuestStopReward::new, false, QuestObjectLocation.STAGE));
 		QuestsAPI.getRewards().register(new QuestObjectCreator<>("requirementDependentReward", RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, true));
+		QuestsAPI.getRewards().register(new QuestObjectCreator<>("randomReward", RandomReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardRandom.toString()), RandomReward::new, true));
 		QuestsAPI.getRewards().register(new QuestObjectCreator<>("wait", WaitReward.class, ItemUtils.item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true));
 		QuestsAPI.getRewards().register(new QuestObjectCreator<>("titleReward", TitleReward.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 		

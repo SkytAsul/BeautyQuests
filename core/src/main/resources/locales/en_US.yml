@@ -217,6 +217,9 @@ msg:
           or "null" if you want to be global.
         money: '§aWrite the amount of the received money:'
         wait: '§aWrite the amount of game ticks to wait: (1 second = 20 game ticks)'
+        random:
+          min: '§aWrite the minimum amount of rewards given to the player (inclusive).'
+          max: '§aWrite the maximum amount of rewards given to the player (inclusive).'
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
       chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
@@ -405,6 +408,7 @@ inv:
     setCheckpointReward: §eEdit checkpoint rewards
     setRewardStopQuest: §cStop the quest
     setRewardsWithRequirements: §eRewards with requirements
+    setRewardsRandom: §dRandom rewards
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     setWaitReward: '§eEdit "wait" reward'
@@ -498,6 +502,9 @@ inv:
        Y: {1}
        Z: {2}
        World: {3}
+    random:
+      rewards: Edit rewards
+      minMax: Edit min and max
   checkpointActions:
     name: Checkpoint actions
   rewardsWithRequirements:

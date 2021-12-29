@@ -3,6 +3,7 @@ package fr.skytasul.quests.structure;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +22,8 @@ public class QuestDescription {
 	
 	private boolean rewards;
 	private String rewardsFormat;
+	
+	private Pattern splitPattern = Pattern.compile("\\{JOIN\\}");
 	
 	public QuestDescription(ConfigurationSection config) {
 		requirements = config.getBoolean("requirements.display");
@@ -44,6 +47,8 @@ public class QuestDescription {
 					.stream()
 					.map(x -> x.getDescription(p))
 					.filter(Objects::nonNull)
+					.flatMap(x -> splitPattern.splitAsStream(x))
+					.filter(x -> !x.isEmpty())
 					.map(x -> Utils.format(rewardsFormat, x))
 					.collect(Collectors.toList());
 			if (!rewards.isEmpty()) {

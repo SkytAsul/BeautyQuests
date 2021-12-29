@@ -163,7 +163,7 @@ public class Commands {
 		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
 		
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
-		if (cmd.args.length < 3 && (datas == null || datas.isFinished())) { // start quest
+		if (cmd.args.length < 3 && (datas == null || !datas.hasStarted())) { // start quest
 			qu.start(target);
 			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.debugName());
 			return;

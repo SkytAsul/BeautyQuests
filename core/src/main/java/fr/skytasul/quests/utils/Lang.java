@@ -233,6 +233,8 @@ public enum Lang{
 	CHOOSE_PERM_WORLD("msg.editor.text.reward.permissionWorld"),
 	CHOOSE_MONEY_REWARD("msg.editor.text.reward.money"),
 	REWARD_EDITOR_WAIT("msg.editor.text.reward.wait"),
+	REWARD_EDITOR_RANDOM_MIN("msg.editor.text.reward.random.min"),
+	REWARD_EDITOR_RANDOM_MAX("msg.editor.text.reward.random.max"),
 
 	CHOOSE_ITEM_TYPE("msg.editor.itemCreator.itemType"),
 	CHOOSE_ITEM_AMOUNT("msg.editor.itemCreator.itemAmount"),
@@ -392,6 +394,7 @@ public enum Lang{
 	rewardCheckpoint("inv.details.setCheckpointReward"),
 	rewardStopQuest("inv.details.setRewardStopQuest"),
 	rewardWithRequirements("inv.details.setRewardsWithRequirements"),
+	rewardRandom("inv.details.setRewardsRandom"),
 	rewardPerm("inv.details.setPermReward"),
 	rewardMoney("inv.details.setMoneyReward"),
 	rewardWait("inv.details.setWaitReward"),
@@ -479,6 +482,8 @@ public enum Lang{
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
 	teleportation("inv.rewards.teleportation"),
+	rewardRandomRewards("inv.rewards.random.rewards"),
+	rewardRandomMinMax("inv.rewards.random.minMax"),
 	
 	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
 

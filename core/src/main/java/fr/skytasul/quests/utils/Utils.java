@@ -87,10 +87,9 @@ public class Utils{
 			try {
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
-			}catch (Throwable e) {
+			}catch (Exception e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
 				e.printStackTrace();
-				continue;
 			}
 		}
 		return msg;

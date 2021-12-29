@@ -3,6 +3,8 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -57,7 +59,13 @@ public class RequirementDependentReward extends AbstractReward {
 	
 	@Override
 	public String getDescription(Player p) {
-		return requirements.stream().allMatch(req -> req.test(p)) ? "aa" : null;
+		return requirements.stream().allMatch(req -> req.test(p)) ?
+				rewards
+				.stream()
+				.map(xreq -> xreq.getDescription(p))
+				.filter(Objects::nonNull)
+				.collect(Collectors.joining("{JOIN}"))
+				: null;
 	}
 	
 	@Override
@@ -94,14 +102,14 @@ public class RequirementDependentReward extends AbstractReward {
 				case 0:
 					QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
 						RequirementDependentReward.this.requirements = requirements;
-						ItemUtils.name(current, Lang.requirements.format(requirements.size()));
+						ItemUtils.name(current, "§b" + Lang.requirements.format(requirements.size()));
 						reopen();
 					}, requirements).create(p);
 					break;
 				case 1:
 					QuestsAPI.getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
 						RequirementDependentReward.this.rewards = rewards;
-						ItemUtils.name(current, Lang.rewards.format(rewards.size()));
+						ItemUtils.name(current, "§a" + Lang.rewards.format(rewards.size()));
 						reopen();
 					}, rewards).create(p);
 					break;
