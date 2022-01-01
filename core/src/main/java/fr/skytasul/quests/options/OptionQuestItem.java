@@ -13,6 +13,7 @@ import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionQuestItem extends QuestOption<ItemStack> {
@@ -62,9 +63,17 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 			}else {
 				setValue(obj.parseItem());
 			}
-			gui.inv.setItem(slot, ItemUtils.lore(getValue().clone(), getLore()));
+			gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
 			gui.reopen(p);
 		}, new MaterialParser(false, false)).passNullIntoEndConsumer().enter();
+	}
+	
+	@Override
+	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot) {
+		Utils.runSync(() -> p.setItemOnCursor(null));
+		setValue(cursor);
+		ItemUtils.nameAndLore(cursor, Lang.customMaterial.toString(), getLore());
+		return false;
 	}
 	
 }

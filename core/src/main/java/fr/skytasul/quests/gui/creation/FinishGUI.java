@@ -93,6 +93,11 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					}
 					
 					@Override
+					public boolean clickCursor(Player p, ItemStack item, ItemStack cursor) {
+						return option.clickCursor(FinishGUI.this, p, item, cursor, slot);
+					}
+					
+					@Override
 					public void update() {
 						if (option.shouldDisplay(FinishGUI.this)) {
 							inv.setItem(slot, option.getItemStack(FinishGUI.this));
@@ -168,6 +173,17 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			clicks.get(slot).click(p, current, click);
 		}catch (Exception ex) {
 			Lang.ERROR_OCCURED.send(p, "Finish GUI click slot #" + slot);
+			ex.printStackTrace();
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot) {
+		try {
+			return clicks.get(slot).clickCursor(p, current, cursor);
+		}catch (Exception ex) {
+			Lang.ERROR_OCCURED.send(p, "Finish GUI click cursor slot #" + slot);
 			ex.printStackTrace();
 		}
 		return true;
@@ -295,6 +311,10 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		}
 		
 		public abstract void click(Player p, ItemStack item, ClickType click);
+		
+		public boolean clickCursor(Player p, ItemStack item, ItemStack cursor) {
+			return true;
+		}
 	}
 	
 	abstract class UpdatableItem extends Item implements Updatable {
