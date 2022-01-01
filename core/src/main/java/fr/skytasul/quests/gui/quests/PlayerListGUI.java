@@ -89,7 +89,7 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			setQuests(QuestsAPI.getQuestsFinished(acc, hide));
+			setQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
@@ -112,7 +112,7 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 		
 		case IN_PROGRESS:
-			setQuests(QuestsAPI.getQuestsStarteds(acc));
+			setQuests(QuestsAPI.getQuests().getQuestsStarted(acc));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
@@ -139,7 +139,7 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		case NOT_STARTED:
-			setQuests(QuestsAPI.getQuestsUnstarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
+			setQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);

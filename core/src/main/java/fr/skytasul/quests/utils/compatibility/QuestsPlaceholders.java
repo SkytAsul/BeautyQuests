@@ -104,7 +104,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	
 	@Override
 	public String onRequest(OfflinePlayer off, String identifier) {
-		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
+		if (identifier.equals("total_amount")) return "" + QuestsAPI.getQuests().getQuestsAmount();
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -128,8 +128,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				}
 				
 				if (data.left.isEmpty()) {
-					data.left = QuestsAPI.getQuestsStarteds(data.acc, true);
-				}else QuestsAPI.updateQuestsStarteds(acc, true, data.left);
+					data.left = QuestsAPI.getQuests().getQuestsStarted(data.acc, true);
+				}else QuestsAPI.getQuests().updateQuestsStarted(acc, true, data.left);
 				
 				try {
 					int i = -1;
@@ -168,7 +168,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			int rawId = identifier.indexOf("_raw");
 			String sid = rawId == -1 ? identifier.substring(12) : identifier.substring(12, rawId);
 			try {
-				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (rawId == -1) {
 					if (qu.hasStarted(acc)) {
@@ -189,7 +189,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		if (identifier.startsWith("player_quest_finished_")) {
 			String sid = identifier.substring(22);
 			try {
-				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (!acc.hasQuestDatas(qu)) return "0";
 				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());

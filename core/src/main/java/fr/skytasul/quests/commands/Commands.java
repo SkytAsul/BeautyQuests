@@ -130,7 +130,7 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		int success = 0;
 		int errors = 0;
-		for (Quest q : QuestsAPI.getQuestsStarteds(acc)){
+		for (Quest q : QuestsAPI.getQuests().getQuestsStarted(acc)) {
 			try{
 				q.finish(target);
 				success++;

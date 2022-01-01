@@ -47,7 +47,7 @@ public class PlayerQuestDatas {
 	}
 	
 	public Quest getQuest() {
-		return QuestsAPI.getQuestFromID(questID);
+		return QuestsAPI.getQuests().getQuest(questID);
 	}
 	
 	public int getQuestID() {

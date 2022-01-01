@@ -179,9 +179,9 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			edited.remove(false, false);
 			qu = new Quest(edited.getID(), edited.getFile());
 		}else {
-			int id = BeautyQuests.lastID + 1;
-			if (QuestsAPI.getQuests().stream().anyMatch(x -> x.getID() == id)) {
-				BeautyQuests.lastID++;
+			int id = QuestsAPI.getQuests().getLastID() + 1;
+			if (QuestsAPI.getQuests().getQuests().stream().anyMatch(x -> x.getID() == id)) {
+				QuestsAPI.getQuests().incrementLastID();
 				BeautyQuests.logger.warning("Quest id " + id + " already taken, this should not happen.");
 				finish();
 				return;
@@ -209,7 +209,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			qu.remove(false, true);
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
-			BeautyQuests.getInstance().addQuest(qu);
+			QuestsAPI.getQuests().addQuest(qu);
 			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());

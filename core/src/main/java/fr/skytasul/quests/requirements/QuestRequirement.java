@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -43,7 +42,7 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 
 	private boolean exists(){
-		cached = QuestsAPI.getQuestFromID(questId);
+		cached = QuestsAPI.getQuests().getQuest(questId);
 		return cached != null;
 	}
 	
@@ -54,7 +53,7 @@ public class QuestRequirement extends AbstractRequirement {
 
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		new ChooseQuestGUI(BeautyQuests.getInstance().getQuests(), quest -> {
+		new ChooseQuestGUI(QuestsAPI.getQuests().getQuests(), quest -> {
 			this.questId = quest.getID();
 			event.updateItemLore(getLore());
 			event.reopenGUI();

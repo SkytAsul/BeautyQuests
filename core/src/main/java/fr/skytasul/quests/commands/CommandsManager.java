@@ -115,7 +115,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			}else if (type.equals("QUESTSID")){
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;
-				Quest qu = QuestsAPI.getQuestFromID(id);
+				Quest qu = QuestsAPI.getQuests().getQuest(id);
 				if (qu == null){
 					Lang.QUEST_INVALID.send(sender, id);
 					return false;

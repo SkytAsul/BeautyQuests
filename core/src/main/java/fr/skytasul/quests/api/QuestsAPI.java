@@ -26,12 +26,11 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -156,61 +155,6 @@ public class QuestsAPI {
 		});
 	}
 
-	public static List<Quest> getQuestsStarteds(PlayerAccount acc){
-		return getQuestsStarteds(acc, false);
-	}
-
-	public static List<Quest> getQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard){
-		List<Quest> launched = new ArrayList<>();
-		for (PlayerQuestDatas datas : acc.getQuestsDatas()) {
-			Quest quest = datas.getQuest();
-			if (quest == null) continue; // non-existent quest
-			if (datas.hasStarted() && (!withoutScoreboard || quest.isScoreboardEnabled())) launched.add(quest);
-		}
-		return launched;
-	}
-
-	public static void updateQuestsStarteds(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
-		for (Quest qu : BeautyQuests.getInstance().getQuests()) {
-			if (withoutScoreboard && !qu.isScoreboardEnabled()) continue;
-			boolean contains = list.contains(qu);
-			if (qu.hasStarted(acc)) {
-				if (!list.contains(qu)) list.add(qu);
-			}else if (contains) list.remove(qu);
-		}
-	}
-
-	public static int getStartedSize(PlayerAccount acc){
-		int i = 0;
-		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (qu.canBypassLimit()) continue;
-			if (qu.hasStarted(acc)) i++;
-		}
-		return i;
-	}
-
-	public static List<Quest> getQuestsFinished(PlayerAccount acc, boolean hide) {
-		List<Quest> finished = new ArrayList<>();
-		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (hide && qu.isHidden()) continue;
-			if (qu.hasFinished(acc)) finished.add(qu);
-		}
-		return finished;
-	}
-
-	public static List<Quest> getQuestsUnstarted(PlayerAccount acc, boolean hide, boolean clickableAndRedoable) {
-		List<Quest> unstarted = new ArrayList<>();
-		for (Quest qu : BeautyQuests.getInstance().getQuests()){
-			if (hide && qu.isHidden()) continue;
-			if (qu.hasStarted(acc)) continue;
-			if (qu.hasFinished(acc)) {
-				if (!clickableAndRedoable || !qu.isRepeatable() || !qu.getOptionValueOrDef(OptionStartable.class) || !qu.testTimer(acc, false)) continue;
-			}
-			unstarted.add(qu);
-		}
-		return unstarted;
-	}
-
 	public static List<Quest> getQuestsAssigneds(BQNPC npc) {
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		return starter == null ? Collections.emptyList() : new ArrayList<>(starter.getQuests());
@@ -228,13 +172,9 @@ public class QuestsAPI {
 		}
 		return false;
 	}
-
-	public static Quest getQuestFromID(int id){
-		return BeautyQuests.getInstance().getQuests().stream().filter(x -> x.getID() == id).findAny().orElse(null);
-	}
 	
-	public static List<Quest> getQuests(){
-		return BeautyQuests.getInstance().getQuests();
+	public static QuestsManager getQuests() {
+		return BeautyQuests.getInstance().getQuestsManager();
 	}
 	
 	public static QuestPoolsManager getQuestPools() {

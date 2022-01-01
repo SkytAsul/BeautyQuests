@@ -50,7 +50,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(new Line(line));
 		}
 
-		launched = QuestsAPI.getQuestsStarteds(acc, true);
+		launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 		
@@ -175,7 +175,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
 			if (errorWhenUnknown) {
-				launched = QuestsAPI.getQuestsStarteds(acc, true);
+				launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
 				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 			}else return;
 		}

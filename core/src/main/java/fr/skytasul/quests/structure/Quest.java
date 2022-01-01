@@ -229,7 +229,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !getOptionValueOrDef(OptionBypassLimit.class)) {
-			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
+			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
 				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
 				return false;
 			}
@@ -368,7 +368,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	}
 
 	public void remove(boolean msg, boolean removeDatas) {
-		BeautyQuests.getInstance().removeQuest(this);
+		QuestsAPI.getQuests().removeQuest(this);
 		unload();
 		if (removeDatas) {
 			PlayersManager.manager.removeQuestDatas(this);

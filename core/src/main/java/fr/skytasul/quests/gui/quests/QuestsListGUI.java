@@ -24,10 +24,10 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	public QuestsListGUI(Consumer<Quest> run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
 		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, x -> x.getName());
 		if (acc != null){
-			if (started) super.objects.addAll(QuestsAPI.getQuestsStarteds(acc));
-			if (notStarted) super.objects.addAll(QuestsAPI.getQuestsUnstarted(acc, false, false));
-			if (finished) super.objects.addAll(QuestsAPI.getQuestsFinished(acc, false));
-		}else super.objects.addAll(QuestsAPI.getQuests());
+			if (started) super.objects.addAll(QuestsAPI.getQuests().getQuestsStarted(acc));
+			if (notStarted) super.objects.addAll(QuestsAPI.getQuests().getQuestsNotStarted(acc, false, false));
+			if (finished) super.objects.addAll(QuestsAPI.getQuests().getQuestsFinished(acc, false));
+		}else super.objects.addAll(QuestsAPI.getQuests().getQuests());
 		this.run = run;
 	}
 

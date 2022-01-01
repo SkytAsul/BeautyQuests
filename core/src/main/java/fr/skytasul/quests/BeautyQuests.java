@@ -6,17 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -48,7 +44,6 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
@@ -56,12 +51,12 @@ import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.SpigotUpdater;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -87,11 +82,10 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* --------- Datas --------- */
 
-	private List<Quest> quests = new ArrayList<>();
 	private Map<BQNPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
+	private QuestsManager quests;
 	private QuestPoolsManager pools;
-	public static int lastID = 0;
 	
 	/* ---------- Operations -------- */
 
@@ -152,7 +146,8 @@ public class BeautyQuests extends JavaPlugin {
 				public void run() {
 					try {
 						long lastMillis = System.currentTimeMillis();
-						getLogger().info(loadAllDatas() + " quests loaded ("
+						loadAllDatas();
+						getLogger().info(quests.getQuestsAmount() + " quests loaded ("
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
 						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
@@ -196,9 +191,9 @@ public class BeautyQuests extends JavaPlugin {
 			}));
 			metrics.addCustomChart(new SimplePie("lang", () -> loadedLanguage));
 			metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
-			metrics.addCustomChart(new SingleLineChart("quests", () -> quests.size()));
+			metrics.addCustomChart(new SingleLineChart("quests", () -> quests.getQuestsAmount()));
 			metrics.addCustomChart(new SimplePie("quests_amount_slice", () -> {
-				int size = quests.size();
+				int size = quests.getQuestsAmount();
 				if (size > 200) return "> 200";
 				if (size > 100) return "100 - 200";
 				if (size > 50) return "50 - 100";
@@ -397,8 +392,8 @@ public class BeautyQuests extends JavaPlugin {
 		data.options().copyHeader(true);
 	}
 	
-	private int loadAllDatas() throws Throwable{
-		if (disable) return 666;
+	private void loadAllDatas() throws Throwable {
+		if (disable) return;
 		dependencies.lockDependencies();
 		
 		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
@@ -407,17 +402,12 @@ public class BeautyQuests extends JavaPlugin {
 			scoreboards = new ScoreboardManager(scFile);
 			QuestsAPI.registerQuestsHandler(scoreboards);
 		}
-		
-		pools = new QuestPoolsManager(new File(getDataFolder(), "questPools.yml"));
-		
-		quests.clear();
-		lastID = data.getInt("lastID");
 
 		try{
 			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
 			PlayersManager.manager.load();
 		}catch (Exception ex) {
-			createDataBackup("Error when loading player datas.");
+			createDataBackup("Error while loading player datas.");
 			ex.printStackTrace();
 		}
 		
@@ -428,28 +418,13 @@ public class BeautyQuests extends JavaPlugin {
 				ex.printStackTrace();
 			}
 		});
-
-		try (Stream<Path> files = Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)){
-			files
-				.filter(Files::isRegularFile)
-				.filter(path -> !path.getFileName().toString().contains("backup"))
-				.filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
-					loadingFailure = false;
-					try {
-						File file = path.toFile();
-						Quest quest = Quest.loadFromFile(file);
-						if (quest != null) {
-							addQuest(quest);
-							if (loadingFailure) createQuestBackup(path, "Error when loading quest.");
-						}else logger.severe("Quest from file " + file.getName() + " not activated");
-					}catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				});
-		}
+		
+		pools = new QuestPoolsManager(new File(getDataFolder(), "questPools.yml"));
+		quests = new QuestsManager(this, data.getInt("lastID"), saveFolder);
+		
 		if (QuestsConfiguration.firstQuestID != -1) {
 			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
-			Quest quest = QuestsAPI.getQuestFromID(QuestsConfiguration.firstQuestID);
+			Quest quest = quests.getQuest(QuestsConfiguration.firstQuestID);
 			if (quest != null) {
 				if (quest.hasOption(OptionAutoQuest.class)) {
 					OptionAutoQuest option = quest.getOption(OptionAutoQuest.class);
@@ -472,9 +447,6 @@ public class BeautyQuests extends JavaPlugin {
 			}
 			loaded = true;
 		}, 1L);
-		
-		
-		return quests.size();
 	}
 
 	public void saveAllConfig(boolean unload) throws Exception {
@@ -488,30 +460,9 @@ public class BeautyQuests extends JavaPlugin {
 			});
 		}
 		
-		/*int amount = 0; // no longer need to save quests
-		for (Quest qu : quests){
-			savingFailure = false;
-			try{
-				qu.saveToFile(unload);
-				amount++;
-			}catch (Exception ex) {
-				getLogger().warning("Error when saving quest ID " + qu.getID());
-				ex.printStackTrace();
-				continue;
-			}
-		}*/
-		if (unload) {
-			for (Quest quest : quests) {
-				try {
-					quest.unload();
-				}catch (Exception ex) {
-					logger.severe("An error ocurred when unloading quest " + quest.getID());
-					ex.printStackTrace();
-				}
-			}
-		}
+		if (unload) quests.unloadQuests();
 		if (loaded) {
-			data.set("lastID", lastID);
+			data.set("lastID", quests.getLastID());
 			data.set("version", getDescription().getVersion());
 			
 			try {
@@ -530,7 +481,8 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private void resetDatas(){
 		npcs.values().forEach(NPCStarter::removeHolograms);
-		quests.clear();
+		quests = null;
+		pools = null;
 		npcs.clear();
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
@@ -590,8 +542,6 @@ public class BeautyQuests extends JavaPlugin {
 		return f;
 	}
 	
-	/* ---------- Various quests-related methods ---------- */
-	
 	public void performReload(CommandSender sender){
 		try {
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
@@ -619,7 +569,8 @@ public class BeautyQuests extends JavaPlugin {
 			public void run() {
 				try {
 					data = YamlConfiguration.loadConfiguration(dataFile);
-					sender.sendMessage("§a " + loadAllDatas() + " quests loaded");
+					loadAllDatas();
+					sender.sendMessage("§a " + quests.getQuestsAmount() + " quests loaded");
 					sender.sendMessage("§a§lPlugin entierely reloaded from files !");
 				} catch (Throwable e) {
 					sender.sendMessage("§cError when loading the data file. §lOperation failed!");
@@ -627,38 +578,6 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
-	}
-	
-	public void removeQuest(Quest quest){
-		quests.remove(quest);
-		if (quest.hasOption(OptionStarterNPC.class)) {
-			BQNPC value = quest.getOptionValueOrDef(OptionStarterNPC.class);
-			NPCStarter starter = npcs.get(value);
-			if (starter == null) {
-				logger.warning("NPC Starter not registered for quest " + quest.getID() + ". NPC: " + (value == null ? "not set" : value.getId()));
-			}else starter.removeQuest(quest);
-		}
-	}
-
-	public void addQuest(Quest quest){
-		lastID = Math.max(lastID, quest.getID());
-		quests.add(quest);
-		if (quest.hasOption(OptionStarterNPC.class)) {
-			BQNPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
-			if (npc != null) {
-				NPCStarter starter = null;
-				if (!npcs.containsKey(npc)) {
-					starter = new NPCStarter(npc);
-					npcs.put(npc, starter);
-				}else starter = npcs.get(npc);
-				starter.addQuest(quest);
-			}
-		}
-		quest.load();
-	}
-
-	public List<Quest> getQuests(){
-		return quests;
 	}
 
 	public Map<BQNPC, NPCStarter> getNPCs() {
@@ -675,6 +594,10 @@ public class BeautyQuests extends JavaPlugin {
 
 	public ScoreboardManager getScoreboardManager(){
 		return scoreboards;
+	}
+	
+	public QuestsManager getQuestsManager() {
+		return quests;
 	}
 	
 	public QuestPoolsManager getPoolsManager() {
