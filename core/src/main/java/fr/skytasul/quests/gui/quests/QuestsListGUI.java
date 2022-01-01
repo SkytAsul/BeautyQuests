@@ -31,15 +31,18 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		this.run = run;
 	}
 
+	@Override
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.item(qu.getQuestMaterial(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
 	}
 
+	@Override
 	public void click(Quest existing, ItemStack item, ClickType clickType){
 		Inventories.closeAndExit(p);
 		run.accept(existing);
 	}
 	
+	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
 		return CloseBehavior.REMOVE;
 	}

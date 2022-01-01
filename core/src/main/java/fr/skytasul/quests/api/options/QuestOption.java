@@ -98,6 +98,10 @@ public abstract class QuestOption<T> implements Cloneable {
 	
 	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click);
 	
+	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot, ClickType click) {
+		return true;
+	}
+	
 	public String formatValue(String valueString) {
 		return formatNullableValue(valueString, !hasCustomValue());
 	}

@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -38,7 +39,6 @@ import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Dialog;
 
 public class Quest implements Comparable<Quest>, OptionSet {
@@ -150,8 +150,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return getOptionValueOrDef(OptionDescription.class);
 	}
 	
-	public XMaterial getQuestMaterial() {
-		return getOptionValueOrDef(OptionQuestMaterial.class);
+	public ItemStack getQuestItem() {
+		return getOptionValueOrDef(OptionQuestItem.class);
 	}
 	
 	public boolean isScoreboardEnabled() {

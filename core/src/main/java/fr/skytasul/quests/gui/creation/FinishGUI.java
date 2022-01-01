@@ -308,7 +308,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("name", 10, OptionName.class, OptionName::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("description", 12, OptionDescription.class, OptionDescription::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("customMaterial", 13, OptionQuestMaterial.class, OptionQuestMaterial::new, QuestsConfiguration.getItemMaterial()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("customItem", 13, OptionQuestItem.class, OptionQuestItem::new, QuestsConfiguration.getItemMaterial(), "customMaterial"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 19, OptionCancellable.class, OptionCancellable::new, true));

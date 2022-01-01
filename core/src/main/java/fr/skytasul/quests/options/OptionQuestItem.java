@@ -1,5 +1,6 @@
 package fr.skytasul.quests.options;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -14,27 +15,31 @@ import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class OptionQuestMaterial extends QuestOption<XMaterial> {
+public class OptionQuestItem extends QuestOption<ItemStack> {
 	
 	@Override
-	public void setValue(XMaterial value) {
-		if (value == XMaterial.AIR) value = XMaterial.BOOK;
+	public void setValue(ItemStack value) {
+		if (value == null || value.getType() == Material.AIR) {
+			value = XMaterial.BOOK.parseItem();
+		}else {
+			value = ItemUtils.clearNameAndLore(value.clone());
+		}
 		super.setValue(value);
 	}
 	
 	@Override
 	public Object save() {
-		return getValue().name();
+		return getValue();
 	}
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(XMaterial.valueOf(config.getString(key)));
+		setValue(config.isItemStack(key) ? config.getItemStack(key) : XMaterial.valueOf(config.getString(key)).parseItem());
 	}
 	
 	@Override
-	public XMaterial cloneValue(XMaterial value) {
-		return value;
+	public ItemStack cloneValue(ItemStack value) {
+		return value.clone();
 	}
 	
 	private String[] getLore() {
@@ -45,23 +50,21 @@ public class OptionQuestMaterial extends QuestOption<XMaterial> {
 	
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
-		return ItemUtils.item(getValue(), Lang.customMaterial.toString(), getLore());
+		return ItemUtils.nameAndLore(getValue(), Lang.customMaterial.toString(), getLore());
 	}
 
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		Lang.QUEST_MATERIAL.send(p);
 		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
-			setValue(obj);
-			item.setType(getValue().parseMaterial());
-			ItemUtils.lore(item, getLore());
+			if (obj == null) {
+				resetValue();
+			}else {
+				setValue(obj.parseItem());
+			}
+			gui.inv.setItem(slot, ItemUtils.lore(getValue().clone(), getLore()));
 			gui.reopen(p);
-		}, () -> {
-			resetValue();
-			item.setType(getValue().parseMaterial());
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
-		}, new MaterialParser(false, false)).enter();
+		}, new MaterialParser(false, false)).passNullIntoEndConsumer().enter();
 	}
 	
 }

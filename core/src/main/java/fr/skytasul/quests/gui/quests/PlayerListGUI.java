@@ -172,7 +172,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 	
 	private ItemStack createQuestItem(Quest qu, List<String> lore) {
-		return ItemUtils.item(qu.getQuestMaterial(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
 	}
 	
 	private void toggleCategoryEnchanted(){

@@ -109,6 +109,24 @@ public class ItemUtils {
 		if (editLore != null) im.setLore(getLoreLines(editLore));
 		return im;
 	}
+	
+	public static ItemStack nameAndLore(ItemStack is, String name, String... lore) {
+		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
+		return is;
+	}
+	
+	public static ItemStack nameAndLore(ItemStack is, String name, List<String> lore) {
+		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
+		return is;
+	}
+	
+	public static ItemStack clearNameAndLore(ItemStack is) {
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(null);
+		im.setLore(null);
+		is.setItemMeta(im);
+		return is;
+	}
 
 	/**
 	 * Set the lore of an item (override old lore)

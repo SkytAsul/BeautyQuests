@@ -34,7 +34,7 @@ public class QuestsConfiguration {
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
-	private static XMaterial item = XMaterial.BOOK;
+	private static ItemStack item = XMaterial.BOOK.parseItem();
 	private static XMaterial pageItem = XMaterial.ARROW;
 	private static int startParticleDistance, startParticleDistanceSquared;
 	private static int requirementUpdateTime;
@@ -118,9 +118,12 @@ public class QuestsConfiguration {
 		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		if (config.contains("item")) item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
+		if (config.isItemStack("item")) {
+			item = config.getItemStack("item");
+		}else if (config.isString("item")) {
+			item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
+		}else item = XMaterial.BOOK.parseItem();
 		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
 		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
@@ -281,7 +284,7 @@ public class QuestsConfiguration {
 		return scoreboard;
 	}
 
-	public static XMaterial getItemMaterial(){
+	public static ItemStack getItemMaterial() {
 		return item;
 	}
 	
