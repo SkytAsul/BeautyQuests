@@ -153,7 +153,7 @@ public class QuestsManager implements Iterable<Quest> {
 					if (hide && quest.isHidden()) return false;
 					if (quest.hasStarted(acc)) return false;
 					if (!quest.hasFinished(acc)) return true;
-					return clickableAndRedoable && quest.isRemoved() && quest.getOptionValueOrDef(OptionStartable.class) && quest.testTimer(acc, false);
+					return clickableAndRedoable && quest.isRepeatable() && quest.getOptionValueOrDef(OptionStartable.class) && quest.testTimer(acc, false);
 				})
 				.collect(Collectors.toList());
 	}
