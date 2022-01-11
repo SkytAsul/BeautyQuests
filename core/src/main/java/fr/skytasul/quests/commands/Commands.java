@@ -340,6 +340,11 @@ public class Commands {
 			}
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		if (acc == null) {
+			Lang.PLAYER_DATA_NOT_FOUND.send(cmd.sender, target.getName());
+			return;
+		}
+		
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
 				cancelQuest(cmd.sender, acc, obj);

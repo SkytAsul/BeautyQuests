@@ -95,6 +95,7 @@ msg:
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   playerNeverConnected: §cUnable to find informations about the player {0}.
   playerNotOnline: §cThe player {0} is offline.
+  playerDataNotFound: §cDatas of player {0} not found.
   versionRequired: 'Version required: §l{0}'
   command:
     downloadTranslations:
@@ -174,6 +175,7 @@ msg:
       adminMode: '§6/{0} adminMode: §eToggle the Admin Mode. (Useful for displaying
         little log messages.)'
       version: '§6/{0} version: §eSee the current plugin version.'
+      downloadTranslations: '§6/{0} downloadTranslations <language>: §eDownloads a vanilla translation file'
       save: '§6/{0} save: §eMake a manual plugin save.'
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.

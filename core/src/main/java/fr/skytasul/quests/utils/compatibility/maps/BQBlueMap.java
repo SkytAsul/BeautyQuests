@@ -1,6 +1,7 @@
 package fr.skytasul.quests.utils.compatibility.maps;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import org.bukkit.Location;
 
@@ -9,10 +10,12 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.DebugUtils;
 
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.BlueMapWorld;
+import de.bluecolored.bluemap.api.marker.MarkerAPI;
 import de.bluecolored.bluemap.api.marker.MarkerSet;
 import de.bluecolored.bluemap.api.marker.POIMarker;
 
@@ -20,14 +23,21 @@ public class BQBlueMap extends AbstractMapIntegration {
 	
 	private static final String MARKERSET_ID = "beautyquests.markerset";
 
+	private Consumer<BlueMapAPI> enableConsumer;
+	
 	@Override
-	public void load() {
-		BlueMapAPI.getInstance().ifPresent(api -> {
+	protected void initializeMarkers(Runnable initializeQuests) {
+		BlueMapAPI.onEnable(enableConsumer = api -> {
 			try {
-				MarkerSet set = api.getMarkerAPI().createMarkerSet(MARKERSET_ID);
+				MarkerAPI markerAPI = api.getMarkerAPI();
+				MarkerSet set = markerAPI.createMarkerSet(MARKERSET_ID);
 				set.setLabel(QuestsConfiguration.dynmapSetName());
 				set.setToggleable(true);
 				set.setDefaultHidden(false);
+				markerAPI.save();
+				DebugUtils.logMessage("Enabled BlueMap integration.");
+				
+				initializeQuests.run();
 			}catch (IOException e) {
 				BeautyQuests.logger.severe("An error occurred while loading BlueMap integration.");
 				e.printStackTrace();
@@ -38,6 +48,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 	
 	@Override
 	public void unload() {
+		BlueMapAPI.unregisterListener(enableConsumer);
 		BlueMapAPI.getInstance().ifPresent(api -> {
 			try {
 				api.getMarkerAPI().removeMarkerSet(MARKERSET_ID);
@@ -51,15 +62,19 @@ public class BQBlueMap extends AbstractMapIntegration {
 	protected void addMarker(Quest quest, Location lc) {
 		BlueMapAPI.getInstance().ifPresent(api -> {
 			try {
-				api.getMarkerAPI().getMarkerSet(MARKERSET_ID).ifPresent(set -> {
+				MarkerAPI markerAPI = api.getMarkerAPI();
+				markerAPI.getMarkerSet(MARKERSET_ID).ifPresent(set -> {
 					api.getWorld(lc.getWorld().getUID()).map(BlueMapWorld::getMaps).ifPresent(maps -> {
 						int i = 0;
 						for (BlueMapMap map : maps) {
 							POIMarker marker = set.createPOIMarker("qu_" + quest.getID() + "_" + i++, map, lc.getX(), lc.getY(), lc.getZ());
-							marker.setIcon(QuestsConfiguration.dynmapMarkerIcon(), lc.getBlockX(), lc.getBlockZ());
+							marker.setLabel(quest.getName());
+							marker.setIcon(QuestsConfiguration.dynmapMarkerIcon(), 0, 0);
 						}
+						DebugUtils.logMessage("Added " + i + " BlueMap markers for quest " + quest.getID());
 					});
 				});
+				markerAPI.save();
 			}catch (IOException e) {
 				e.printStackTrace();
 			}

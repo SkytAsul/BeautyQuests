@@ -21,7 +21,7 @@ public class BQDynmap extends AbstractMapIntegration {
 	private MarkerSet markers;
 	
 	@Override
-	public void load() {
+	protected void initializeMarkers(Runnable initializeQuests) {
 		DynmapAPI dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
 		MarkerAPI api = dynmap.getMarkerAPI();
 		icon = api.getMarkerIcon(QuestsConfiguration.dynmapMarkerIcon());
@@ -34,6 +34,8 @@ public class BQDynmap extends AbstractMapIntegration {
 		markers.setMinZoom(QuestsConfiguration.dynmapMinimumZoom());
 		markers.setHideByDefault(false);
 		markers.setDefaultMarkerIcon(icon);
+		
+		initializeQuests.run();
 	}
 	
 	@Override
