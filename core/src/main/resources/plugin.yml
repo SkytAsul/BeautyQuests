@@ -71,6 +71,7 @@ permissions:
       beautyquests.command.cancel: true
       beautyquests.command.cancel.other: true
       beautyquests.command.scoreboard: true
+      beautyquests.command.scoreboard.toggle: true
       beautyquests.command.checkpoint: true
   beautyquests.command.listPlayer:
     decription: 'Gives access to the menu GUI'
@@ -130,8 +131,11 @@ permissions:
     description: 'Gives access to "/quests cancel" for all players quests'
     default: op
   beautyquests.command.scoreboard:
-    description: 'Gives access to "/quests scoreboard"'
+    description: 'Gives access to "/quests scoreboard" to manage player scoreboards'
     default: op
+  beautyquests.command.scoreboard.toggle:
+    description: 'Gives access to "/quests scoreboard" to toggle player scoreboard'
+    default: true
   beautyquests.command.pools:
     description: 'Gives access to "/quests pools"'
     default: op

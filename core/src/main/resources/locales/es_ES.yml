@@ -166,6 +166,7 @@ msg:
     enter:
       title: '§6~ Modo editor ~'
       subtitle: '§2♣§d§kii§a§lSkyblock§d§kii§2♣ §aEscribe "/quests exitEditor" para forzar la salida del editor.'
+      list: '§c⚠ §7Has introducido un editor de "lista". Usa "add" para añadir líneas. Consulta "help" (sin barra) para ayuda. §eEscribe "close" para salir del editor.'
     chat: '§2♣§d§kii§a§lSkyblock§d§kii§2♣ §2Estás actualmente en modo editor. Escribe "/quests exitEditor" para forzar la salida del editor. (No se recomienda, considere usar comandos como "close" o "cancelar" para volver al inventario anterior.)'
     npc:
       enter: '§aHas click en un NPC, o escribe "cancel".'
@@ -187,6 +188,9 @@ msg:
         permissionWorld: '§aEscribe el mundo en el que el permiso será editado, o "nulo" si quieres ser global.'
         money: '§aEscribe la cantidad del dinero recibido:'
         wait: '§aEscribe la cantidad de ticks del juego para esperar: (1 segundo = 20 ticks del juego)'
+        random:
+          min: '§aEscribe la cantidad mínima de recompensas entregadas al jugador (inclusive).'
+          max: '§aEscribe la cantidad máxima de recompensas entregadas al jugador (inclusive).'
       chooseObjectiveRequired: '§aEscribe el nombre del objetivo.'
       chooseObjectiveTargetScore: '§aEscribe la puntuación objetivo para el objetivo.'
       chooseRegionRequired: '§aEscribe el nombre de la región requerida (debes estar en el mismo mundo).'
@@ -225,10 +229,12 @@ msg:
         clear: '§6clear: §eBorra todos los mensajes.'
         close: '&6close: &eGuardas y validas los mensajes.'
         setTime: '§6setTime <id> <time>: §eEstablece el tiempo (en ticks) despues de que el siguiente mensaje aparezca automaticamente'
+        npcName: '§6Nombre del npc [custom NPC name]: §eEstablecido (o restablecido a default) nombre personalizado del NPC en el diálogo'
       timeSet: '§aTiempo ha sido editado para el mensaje {0}: ahora {1} ticks.'
       timeRemoved: '§aTiempo eliminado para el mensaje {0}.'
       npcName:
         set: '§aNombre de NPC establecido a §7{1}§a (era §7{0}§a)'
+        unset: '§aNombre de NPC personalizado restablecido por defecto (§7{0}§a)'
     mythicmobs:
       list: '&aToda la lista de "Mythic Mobs":'
       isntMythicMob: '§cEste Mob Mítico no existe.'
@@ -251,6 +257,7 @@ msg:
       hologramText: 'Escriba el texto personalizado del holograma para este grupo (o "null" si desea el predeterminado).'
       maxQuests: 'Escribe la cantidad máxima de misiones lanzables desde este conjunto'
       questsPerLaunch: 'Escribe la cantidad de misiones que se dan cuando los jugadores hacen clic en el NPC.'
+      timeMsg: 'Escribe el tiempo antes de que los jugadores puedan tomar una nueva misión. (Unidad predeterminada: días)'
     title:
       title: 'Escribe el texto del título (o "null" si quieres ninguno).'
       subtitle: 'Escribe el texto de subtítulos (o "null" si no quieres ninguno).'
@@ -293,6 +300,7 @@ inv:
     breedAnimals: '§aReproducir Animales'
     tameAnimals: '§aDomesticar animales'
     NPCText: '§eEditar dialogo'
+    dialogLines: '{0} líneas'
     NPCSelect: '§eElegir o crear NPC'
     hideClues: Ocultar partículas y hologramas
     gps: Muestra una brújula hacia el objetivo
@@ -365,10 +373,12 @@ inv:
     questName: '§a§lEditar nombre de misión'
     questNameLore: Debe establecer un nombre para completar la creación de misión.
     setItemsRewards: '§eEditar objetos de recompensa'
+    removeItemsReward: '§eEliminar items del inventario'
     setXPRewards: '§eEditar experiencia de recompensa'
     setCheckpointReward: '§eEditar recompensas de puntos de control'
     setRewardStopQuest: '§cDetener la misión'
     setRewardsWithRequirements: '§eRecompensas con requerimientos'
+    setRewardsRandom: '§dRecompensas aleatorias'
     setPermReward: '§eEditar permisos'
     setMoneyReward: '§eEditar recompensa de dinero'
     setWaitReward: '§eEditar recompensa "esperar"'
@@ -462,6 +472,9 @@ inv:
       Y: {1}
       Z: {2}
       Mundo: {3}
+    random:
+      rewards: Editar recompensas
+      minMax: Editar mínimo y máximo
   checkpointActions:
     name: Acciones de puntos de control
   rewardsWithRequirements:
@@ -474,6 +487,8 @@ inv:
     notStarted: Misiones no comenzadas
     finished: Misiones finalizadas
     inProgress: Misiones en progreso
+    loreDialogsHistoryClick: '§7Ver los diálogos'
+    loreCancelClick: '§cCancela la misión'
     loreStart: '§a§oClic para comenzar la misión.'
     loreStartUnavailable: '§c§oNo cumples los requisitos para empezar la misión.'
     timeToWaitRedo: '§3§oPuedes reiniciar esta misión en {0}.'
@@ -541,6 +556,7 @@ inv:
     itemName: '§aGrupo #{0}'
     poolNPC: '§8NPC: §7{0}'
     poolMaxQuests: '§8Misiones máximas: §7{0}'
+    poolQuestsPerLaunch: '§8Misiones dadas por lanzamiento: §7{0}'
     poolRedo: '§8Puede rehacer misiones completadas: §7{0}'
     poolTime: '§8Tiempo entre misiones: §7{0}'
     poolHologram: '§8Texto del Holograma: §7{0}'
@@ -553,6 +569,7 @@ inv:
     name: Creación del conjunto de misiones
     hologramText: '§eHolograma personalizado grupal'
     maxQuests: '§aMximas misiones'
+    questsPerLaunch: '§aMisiones iniciadas por lanzamiento'
     time: '§bEstablecer tiempo entre misiones'
     redoAllowed: Está permitido rehacer
     avoidDuplicates: Evitar duplicados
@@ -659,6 +676,7 @@ misc:
     greater: estrictamente mayor que {0}
     greaterOrEquals: mayor que {0}
   requirement:
+    logicalOr: '§dLógica O (requerimientos)'
     skillAPILevel: '§bSkillAPI nivel requerido'
     class: '§bClase(s) requerida'
     faction: '§bFacción(es) requerida(s)'
@@ -681,6 +699,7 @@ misc:
     left: Clic izquierdo
     shift-right: Mayús-Clic derecho
     shift-left: Mayús-Clic izquierdo
+    middle: Clic central
   ticks: '{0} ticks'
   questItemLore: '§e§oObjeto de la misión'
   hologramText: '§8§lNPC de la misión'
@@ -695,6 +714,7 @@ misc:
   unused: '§a§lSin usar'
   used: '§a§lUsado'
   remove: '§7Click central para eliminar'
+  removeRaw: Eliminar
   or: o
   amount: '§eCantidad: {0}'
   items: Objetos

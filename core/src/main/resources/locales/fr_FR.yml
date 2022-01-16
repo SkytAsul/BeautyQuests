@@ -81,6 +81,7 @@ msg:
   inventoryFull: '§cVotre inventaire est plein, l''item a été jeté au sol.'
   playerNeverConnected: '§cImpossible de trouver les informations sur le joueur {0}.'
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
+  playerDataNotFound: '§cLes données du joueur {0} sont introuvables.'
   versionRequired: 'Version requise : §l{0}'
   command:
     downloadTranslations:
@@ -135,6 +136,9 @@ msg:
       resetAll: '§6Vous avez réinitialisé le scoreboard du joueur {0}.'
       hidden: '§6Le scoreboard du joueur {0} a été masqué.'
       shown: '§6Le scoreboard du joueur {0} est maintenant affiché.'
+      own:
+        hidden: '§6Votre scoreboard est désormais caché.'
+        shown: '§6Votre scoreboard est de nouveau visible.'
     help:
       header: '§6§lBeautyQuests — Aide'
       create: '§6/{0} create : §eCréer une quête.'
@@ -150,6 +154,7 @@ msg:
       setItem: '§6/{0} setItem <talk|launch> : §eSauvegarder l''item de l''hologramme dans le fichier de données.'
       adminMode: '§6/{0} adminMode : §eMode administrateur (réception d''informations journal)'
       version: '§6/{0} version : §eVoir la version du plugin.'
+      downloadTranslations: '§6/{0} downloadTranslations <langage>: §eTélécharge un fichier de traductions vanilla'
       save: '§6/{0} save: §eFaire une sauvegarde manuelles des données.'
       list: '§6/{0} list : §eVoir la liste des quêtes (seulement pour les versions supportées).'
   typeCancel: '§aTapez "cancel" pour revenir à l''ancien texte.'

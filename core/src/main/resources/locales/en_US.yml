@@ -155,6 +155,9 @@ msg:
       resetAll: §6You have successfully reset the scoreboard of the player {0}.
       hidden: §6The scoreboard of the player {0} has been hidden.
       shown: §6The scoreboard of the player {0} has been shown.
+      own:
+        hidden: §6Your scoreboard is now hidden.
+        shown: §6Your scoreboard is shown again.
     help:
       header: §6§lBeautyQuests — Help
       create: '§6/{0} create: §eCreate a quest.'

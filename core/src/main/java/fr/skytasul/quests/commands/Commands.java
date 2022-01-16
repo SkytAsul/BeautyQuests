@@ -293,17 +293,11 @@ public class Commands {
 	@Cmd (permission = "start", min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		boolean testRequirements = !(CommandsManager.hasPermission(cmd.sender, "start.other") && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
+		boolean testRequirements = !(CommandsManager.hasPermission(cmd.sender, "start.other", false) && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
 		if (cmd.isPlayer()){
 			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "start")){
-					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start");
-					return;
-				}
-			}else if (!CommandsManager.hasPermission(cmd.player, "start.other")){
-				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start.other");
-				return;
-			}
+				if (!CommandsManager.hasPermission(cmd.player, "start", true)) return;
+			}else if (!CommandsManager.hasPermission(cmd.player, "start.other", true)) return;
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
@@ -334,10 +328,7 @@ public class Commands {
 	public void cancel(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		if (cmd.isPlayer()){
-			if (target != cmd.player && !CommandsManager.hasPermission(cmd.player, "cancel.other")) {
-				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel.other");
-				return;
-			}
+			if (target != cmd.player && !CommandsManager.hasPermission(cmd.player, "cancel.other", true)) return;
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (acc == null) {
@@ -420,59 +411,82 @@ public class Commands {
 		}else Utils.sendMessage(cmd.sender, "Version not supported");
 	}
 	
-	@Cmd(permission = "scoreboard", min = 2, args = {"PLAYERS", "setline|removeline|resetline|resetall|hide|show"})
+	@Cmd (args = { "PLAYERS", "setline|removeline|resetline|resetall|hide|show" })
 	public void scoreboard(CommandContext cmd){
-		Player p = (Player) cmd.args[0];
-		Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-		switch (((String) cmd.args[1]).toLowerCase()){
-		case "setline":
-			if (cmd.args.length < 4){
+		if (cmd.args.length == 0) {
+			if (!cmd.isPlayer()) {
+				Lang.MUST_PLAYER.sendWP(cmd.sender);
+				return;
+			}
+			
+			if (!CommandsManager.hasPermission(cmd.sender, "scoreboard.toggle", true)) return;
+			Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(cmd.player);
+			if (board.isForceHidden()) {
+				board.show(true);
+				Lang.COMMAND_SCOREBOARD_OWN_SHOWN.send(cmd.player);
+			}else {
+				board.hide(true);
+				Lang.COMMAND_SCOREBOARD_OWN_HIDDEN.send(cmd.player);
+			}
+		}else {
+			if (!CommandsManager.hasPermission(cmd.sender, "scoreboard", true)) return;
+			if (cmd.args.length < 2) {
+				Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
+				return;
+			}
+			Player p = (Player) cmd.args[0];
+			Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+			
+			switch (((String) cmd.args[1]).toLowerCase()) {
+			case "setline":
+				if (cmd.args.length < 4) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				Integer id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				board.setCustomLine(id, Utils.buildFromArray(cmd.args, 3, " "));
+				Lang.COMMAND_SCOREBOARD_LINESET.send(cmd.sender, id);
+				break;
+			case "removeline":
+				if (cmd.args.length < 3) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				if (board.removeLine(id)) {
+					Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(cmd.sender, id);
+				}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+				break;
+			case "resetline":
+				if (cmd.args.length < 3) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				if (board.resetLine(id)) {
+					Lang.COMMAND_SCOREBOARD_LINERESET.send(cmd.sender, id);
+				}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+				break;
+			case "resetall":
+				BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(p);
+				BeautyQuests.getInstance().getScoreboardManager().create(p);
+				Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
+				break;
+			case "hide":
+				board.hide(true);
+				Lang.COMMAND_SCOREBOARD_HIDDEN.send(cmd.sender, p.getName());
+				break;
+			case "show":
+				board.show(true);
+				Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
+				break;
+			default:
 				Lang.INCORRECT_SYNTAX.send(cmd.sender);
 				break;
 			}
-			Integer id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			board.setCustomLine(id, Utils.buildFromArray(cmd.args, 3, " "));
-			Lang.COMMAND_SCOREBOARD_LINESET.send(cmd.sender, id);
-			break;
-		case "removeline":
-			if (cmd.args.length < 3){
-				Lang.INCORRECT_SYNTAX.send(cmd.sender);
-				break;
-			}
-			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			if (board.removeLine(id)){
-				Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(cmd.sender, id);
-			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
-			break;
-		case "resetline":
-			if (cmd.args.length < 3){
-				Lang.INCORRECT_SYNTAX.send(cmd.sender);
-				break;
-			}
-			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			if (board.resetLine(id)){
-				Lang.COMMAND_SCOREBOARD_LINERESET.send(cmd.sender, id);
-			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
-			break;
-		case "resetall":
-			BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(p);
-			BeautyQuests.getInstance().getScoreboardManager().create(p);
-			Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
-			break;
-		case "hide":
-			board.hide(true);
-			Lang.COMMAND_SCOREBOARD_HIDDEN.send(cmd.sender, p.getName());
-			break;
-		case "show":
-			board.show(true);
-			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
-			break;
-		default:
-			Lang.INCORRECT_SYNTAX.send(cmd.sender);
-			break;
 		}
 	}
 	
@@ -570,7 +584,7 @@ public class Commands {
 				String command = l.getPath().substring(17);
 				if (command.equals("header")){
 					l.sendWP(cmd.sender);
-				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.sendWP(cmd.sender, cmd.label);
+				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission(), false)) l.sendWP(cmd.sender, cmd.label);
 			}
 		}
 	}

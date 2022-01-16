@@ -147,6 +147,10 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return hid;
 	}
 	
+	public boolean isForceHidden() {
+		return hidForce;
+	}
+	
 	public void hide(boolean force) {
 		hid = true;
 		if (force) hidForce = true;
@@ -159,7 +163,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (hidForce && !force) return;
 		hid = false;
 		hidForce = false;
-		if (board == null) {
+		if (board == null && !(launched.isEmpty() && manager.hideEmtptyScoreboard())) {
 			initScoreboard();
 			updateBoard(true, false);
 		}

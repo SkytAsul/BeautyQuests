@@ -142,6 +142,8 @@ public enum Lang{
 	COMMAND_SCOREBOARD_RESETALL("msg.command.scoreboard.resetAll"), // 0: player
 	COMMAND_SCOREBOARD_HIDDEN("msg.command.scoreboard.hidden"), // 0: player
 	COMMAND_SCOREBOARD_SHOWN("msg.command.scoreboard.shown"), // 0: player
+	COMMAND_SCOREBOARD_OWN_HIDDEN("msg.command.scoreboard.own.hidden"),
+	COMMAND_SCOREBOARD_OWN_SHOWN("msg.command.scoreboard.own.shown"),
 	COMMAND_SETSTAGE_BRANCH_DOESNTEXIST("msg.command.setStage.branchDoesntExist"),
 	COMMAND_SETSTAGE_STAGE_DOESNTEXIST("msg.command.setStage.doesntExist"),
 	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),

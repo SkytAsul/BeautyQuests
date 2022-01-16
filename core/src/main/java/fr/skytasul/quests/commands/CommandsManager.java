@@ -82,10 +82,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			return false;
 		}
 		
-		if (!cmd.permission().isEmpty() && !hasPermission(sender, cmd.permission())){
-			Lang.PERMISSION_REQUIRED.sendWP(sender, cmd.permission());
-			return false;
-		}
+		if (!cmd.permission().isEmpty() && !hasPermission(sender, cmd.permission(), true)) return false;
 		
 		if (args.length - 1 < cmd.min()){
 			Lang.INCORRECT_SYNTAX.sendWP(sender);
@@ -165,7 +162,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		if (args.length == 1){
 			for (Entry<String, InternalCommand> en : commands.entrySet()){ // PERMISSIONS
-				if (!en.getValue().cmd.hide() && hasPermission(sender, en.getValue().cmd.permission())) find.add(en.getKey());
+				if (!en.getValue().cmd.hide() && hasPermission(sender, en.getValue().cmd.permission(), false)) find.add(en.getKey());
 			}
 		}else if (args.length >= 2){
 			int index = args.length-2;
@@ -173,7 +170,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			InternalCommand internal = commands.get(sel);
 			String[] needed = internal.cmd.args();
 			if (needed.length <= index) return tmp;
-			if (!hasPermission(sender, internal.cmd.permission())) return tmp;
+			if (!hasPermission(sender, internal.cmd.permission(), false)) return tmp;
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("QUESTSID")){
@@ -198,9 +195,13 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		return tmp;
 	}
 	
-	public static boolean hasPermission(CommandSender sender, String cmd){
+	public static boolean hasPermission(CommandSender sender, String cmd, boolean message) {
 		if (cmd == null || cmd.isEmpty()) return true;
-		return sender.hasPermission(("beautyquests.command." + cmd));
+		if (!sender.hasPermission(("beautyquests.command." + cmd))) {
+			Lang.PERMISSION_REQUIRED.sendWP(sender, "beautyquests.command." + cmd);
+			return false;
+		}
+		return true;
 	}
 	
 	class InternalCommand{

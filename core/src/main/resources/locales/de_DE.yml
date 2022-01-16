@@ -188,6 +188,9 @@ msg:
         permissionWorld: '§aGebe die Welt an, in welcher die Berechtigung bearbeitet werden soll, oder "null" wenn es Global gelten soll.'
         money: '§aSchreibe die zu bekommende Menge an Geld:'
         wait: '§aSchreibe die Anzahl von Game Ticks, zum warten: (1 Sekunde = 20 Game Ticks)'
+        random:
+          min: '§aSchreibe die minimale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
+          max: '§aSchreibe die maximale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
       chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
       chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
       chooseRegionRequired: '§aSchreibe den Namen der benötigten Region (du musst in der gleichen Welt sein).'
@@ -254,6 +257,7 @@ msg:
       hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
       maxQuests: 'Lege die maximale Anzahl an Quests fest, die aus dieser Gruppe gestartet werden können.'
       questsPerLaunch: 'Schreibe die Anzahl der Quests, die du bei einem Klick auf den NPC erhalten hast.'
+      timeMsg: 'Schreibe die Zeit, bevor Spieler eine neue Quest annehmen können (Standardeinheit: Tage).'
     title:
       title: 'Schreibe den Titeltext (oder "null", wenn du keinen möchtest).'
       subtitle: 'Schreibe den Untertiteltext (oder "null", wenn du keinen möchtest).'
@@ -296,6 +300,7 @@ inv:
     breedAnimals: '§aZüchte Tiere'
     tameAnimals: '§aZähme Tiere'
     NPCText: '§eDialog bearbeiten'
+    dialogLines: '{0} Zeilen'
     NPCSelect: '§eNPC auswählen oder erstellen'
     hideClues: Partikel und Hologramme verstecken
     gps: Zeigt einen Kompass zum Ziel an
@@ -373,6 +378,7 @@ inv:
     setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
     setRewardStopQuest: '§cQuest stoppen'
     setRewardsWithRequirements: '§eBelohnungen mit Voraussetzungen'
+    setRewardsRandom: '§dZufällige Belohnungen'
     setPermReward: '§eBerechtigungen bearbeiten'
     setMoneyReward: '§eGeldbelohnung bearbeiten'
     setWaitReward: '§e"Warte"-Belohnung bearbeiten'
@@ -466,6 +472,9 @@ inv:
       Y: {1}
       Z: {2}
       Welt: {3}
+    random:
+      rewards: Belohnungen bearbeiten
+      minMax: Bearbeite das min und max
   checkpointActions:
     name: Checkpoint-Aktionen
   rewardsWithRequirements:
@@ -478,6 +487,8 @@ inv:
     notStarted: Nicht gestartete Quests
     finished: Abgeschlossene Quests
     inProgress: Laufende Quests
+    loreDialogsHistoryClick: '§7Dialoge anzeigen'
+    loreCancelClick: '§cQuest abbrechen'
     loreStart: '§a§oKlicke, um die Quest zu starten.'
     loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
     timeToWaitRedo: '§3§oDu kannst diese Quest in {0} erneut starten.'
@@ -635,6 +646,7 @@ misc:
     npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
     offText: '§r§e{0}'
+    editorPrefix: '§a'
   time:
     weeks: '{0} Wochen'
     days: '{0} Tage'
