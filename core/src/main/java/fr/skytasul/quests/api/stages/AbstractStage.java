@@ -41,7 +41,7 @@ public abstract class AbstractStage implements Listener{
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
 	
-	public AbstractStage(QuestBranch branch){
+	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
 		
 		this.type = QuestsAPI.stages.stream().filter(type -> type.clazz == getClass()).findAny()

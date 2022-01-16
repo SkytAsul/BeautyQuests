@@ -204,12 +204,14 @@ public class QuestBranch {
 				new Thread(() -> {
 					DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 					asyncReward.add(acc);
-					Utils.giveRewards(p, stage.getRewards());
+					List<String> given = Utils.giveRewards(p, stage.getRewards());
+					if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
 					asyncReward.remove(acc);
 					Utils.runSync(runAfter);
 				}, "BQ async stage end " + p.getName()).start();
 			}else{
-				Utils.giveRewards(p, stage.getRewards());
+				List<String> given = Utils.giveRewards(p, stage.getRewards());
+				if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
 				runAfter.run();
 			}
 		}else {

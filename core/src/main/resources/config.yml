@@ -72,6 +72,8 @@ requirementReasonOnMultipleQuests: true
 menuOpenNotStartedTabWhenEmpty: true
 # Enables the dialog history
 dialogHistory: true
+# Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
+stageEndRewardsMessage: true
 
 # - Integrations -
 # Enable GPS integration
