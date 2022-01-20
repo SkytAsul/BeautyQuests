@@ -2,6 +2,7 @@ package fr.skytasul.quests.structure.pools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,7 @@ public class QuestPoolsManager {
 		QuestPool pool = pools.remove(id);
 		if (pool == null) return;
 		pool.unload();
-		pool.quests.forEach(quest -> quest.removeOption(OptionQuestPool.class));
+		new ArrayList<>(pool.quests).forEach(quest -> quest.removeOption(OptionQuestPool.class)); // prevents concurrent
 		config.set(Integer.toString(id), null);
 		try {
 			config.save(file);

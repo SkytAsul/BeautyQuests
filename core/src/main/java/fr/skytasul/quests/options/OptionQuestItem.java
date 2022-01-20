@@ -51,7 +51,7 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 	
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
-		return ItemUtils.nameAndLore(getValue(), Lang.customMaterial.toString(), getLore());
+		return ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore());
 	}
 
 	@Override

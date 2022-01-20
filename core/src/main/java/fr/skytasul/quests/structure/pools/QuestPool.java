@@ -53,14 +53,17 @@ public class QuestPool implements Comparable<QuestPool> {
 		
 		if (npcID >= 0) {
 			BQNPC npc = QuestsAPI.getNPCsManager().getById(npcID);
-			if (npc == null) return;
-			starter = BeautyQuests.getInstance().getNPCs().get(npc);
-			if (starter == null) {
-				starter = new NPCStarter(npc);
-				BeautyQuests.getInstance().getNPCs().put(npc, starter);
+			if (npc != null) {
+				starter = BeautyQuests.getInstance().getNPCs().get(npc);
+				if (starter == null) {
+					starter = new NPCStarter(npc);
+					BeautyQuests.getInstance().getNPCs().put(npc, starter);
+				}
+				starter.addPool(this);
+				return;
 			}
-			starter.addPool(this);
-		}else BeautyQuests.logger.warning("Unknown NPC " + npcID + " for quest pool #" + id);
+		}
+		BeautyQuests.logger.warning("Unknown NPC " + npcID + " for quest pool #" + id);
 	}
 	
 	public int getID() {
@@ -201,7 +204,10 @@ public class QuestPool implements Comparable<QuestPool> {
 					quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
 					datas.setTempStartQuest(quest);
 				}
-				quest.attemptStart(p, () -> datas.setLastGive(System.currentTimeMillis()));
+				quest.attemptStart(p, () -> {
+					datas.setLastGive(System.currentTimeMillis());
+					datas.setTempStartQuest(null);
+				});
 			}
 		}
 		return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
@@ -209,6 +215,10 @@ public class QuestPool implements Comparable<QuestPool> {
 	
 	void unload() {
 		if (starter != null) starter.removePool(this);
+	}
+	
+	public void unloadStarter() {
+		starter = null;
 	}
 	
 	public void save(ConfigurationSection config) {

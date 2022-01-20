@@ -214,7 +214,7 @@ public class NPCStarter {
 	
 	public void addPool(QuestPool pool) {
 		if (!pools.add(pool)) return;
-		if (hologramPool.enabled && (pool.getHologram() != null)) hologramText.setText(pool.getHologram());
+		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
 		hologramPool.visible = true;
 	}
 	
@@ -258,10 +258,14 @@ public class NPCStarter {
 	public void delete(String cause) {
 		DebugUtils.logMessage("Removing NPC Starter " + npc.getId());
 		for (Quest qu : quests) {
-			BeautyQuests.logger.warning("Starter NPC has been removed from quest " + qu.getID() + ". Reason: " + cause);
+			BeautyQuests.logger.warning("Starter NPC #" + npc.getId() + " has been removed from quest " + qu.getID() + ". Reason: " + cause);
 			qu.removeOption(OptionStarterNPC.class);
 		}
 		quests = null;
+		for (QuestPool pool : pools) {
+			BeautyQuests.logger.warning("NPC #" + npc.getId() + " has been removed from pool " + pool.getID() + ". Reason: " + cause);
+			pool.unloadStarter();
+		}
 		BeautyQuests.getInstance().getNPCs().remove(npc);
 		launcheableTask.cancel();
 		if (hologramsTask != null) hologramsTask.cancel();

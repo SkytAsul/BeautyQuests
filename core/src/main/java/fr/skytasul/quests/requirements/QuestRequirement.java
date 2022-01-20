@@ -11,6 +11,7 @@ import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 
 public class QuestRequirement extends AbstractRequirement {
 
@@ -57,7 +58,16 @@ public class QuestRequirement extends AbstractRequirement {
 			this.questId = quest.getID();
 			event.updateItemLore(getLore());
 			event.reopenGUI();
-		}).create(event.getPlayer());
+		}) {
+			@Override
+			public fr.skytasul.quests.gui.CustomInventory.CloseBehavior onClose(Player p, org.bukkit.inventory.Inventory inv) {
+				Utils.runSync(() -> {
+					event.getGUI().remove(QuestRequirement.this);
+					event.reopenGUI();
+				});
+				return CloseBehavior.NOTHING;
+			}
+		}.create(event.getPlayer());
 	}
 	
 	@Override
