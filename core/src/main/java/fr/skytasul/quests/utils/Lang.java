@@ -466,6 +466,8 @@ public enum Lang{
 	
 	INVENTORY_TYPE("inv.entityType.name"),
 	INVENTORY_CHOOSE("inv.chooseQuest.name"),
+	questMenu("inv.chooseQuest.menu"),
+	questMenuLore("inv.chooseQuest.menuLore"),
 	
 	INVENTORY_MOBS("inv.mobs.name"),
 	mobsNone("inv.mobs.none"),

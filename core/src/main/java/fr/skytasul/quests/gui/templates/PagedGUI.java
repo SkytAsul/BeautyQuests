@@ -40,6 +40,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	private DyeColor color;
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
+	private ItemStack validationItem = ItemUtils.itemDone;
 	private LevenshteinComparator<T> comparator;
 	
 	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
@@ -54,6 +55,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
 	}
 	
+	@Override
 	public Inventory open(Player p) {
 		this.p = p;
 		calcMaxPages();
@@ -62,7 +64,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
-		if (validate != null) setBarItem(2, ItemUtils.itemDone);
+		if (validate != null) setBarItem(2, validationItem);
 		if (comparator != null) setBarItem(3, itemSearch);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
@@ -71,6 +73,14 @@ public abstract class PagedGUI<T> implements CustomInventory {
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
+	}
+	
+	public void setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
+		if (this.validate != null) throw new IllegalStateException("A validation has already be added.");
+		if (this.inv != null) throw new IllegalStateException("Cannot add a validation after inventory opening.");
+		if (validationItem == null) throw new IllegalArgumentException("Cannot set a null validation item.");
+		this.validate = validate;
+		this.validationItem = validationItem;
 	}
 	
 	protected void calcMaxPages() {
@@ -112,6 +122,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	}
 
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot % 9){
 		case 8:

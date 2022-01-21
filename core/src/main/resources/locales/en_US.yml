@@ -480,6 +480,8 @@ inv:
     name: Choose entity type
   chooseQuest:
     name: Which quest?
+    menu: §aQuests Menu
+    menuLore: Gets you to your Quests Menu.
   mobs:
     name: Select mobs
     none: §aClick to add a mob.

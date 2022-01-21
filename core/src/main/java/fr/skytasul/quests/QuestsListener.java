@@ -27,8 +27,11 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.BQNPCClickEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -39,6 +42,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class QuestsListener implements Listener{
 	
@@ -95,10 +99,14 @@ public class QuestsListener implements Listener{
 						return;
 					}
 				}
-				new ChooseQuestGUI(launcheable, (quest) -> {
+				ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
 					if (quest == null) return;
 					quest.clickNPC(p);
-				}).create(p);
+				});
+				gui.setValidate(__ -> {
+					new PlayerListGUI(acc).open(p);
+				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
+				gui.create(p);
 			}else if (!startablePools.isEmpty()) {
 				startablePools.iterator().next().give(p);
 			}else {
