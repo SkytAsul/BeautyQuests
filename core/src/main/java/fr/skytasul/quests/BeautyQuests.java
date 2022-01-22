@@ -168,12 +168,20 @@ public class BeautyQuests extends JavaPlugin {
 
 			// Start of non-essential systems
 			logger.launchFlushTimer();
-			try {
-				new SpigotUpdater(this, 39255);
-				DebugUtils.logMessage("Started Spigot updater");
-			}catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			DebugUtils.logMessage("Starting Spigot updater");
+			UpdateChecker.init(this, 39255)
+				.setDownloadLink(39255)
+				.setNotifyOpsOnJoin(false)
+				.setNotifyRequesters(false)
+				.onSuccess((senders, version) -> {
+					if (getDescription().getVersion().contains("_")) {
+						String usingVersion = getDescription().getVersion().substring(0, getDescription().getVersion().indexOf('_'));
+						String newVersion = version.contains("_") ? version.substring(0, version.indexOf('_')) : version;
+							UpdateChecker.isOtherVersionNewer(usingVersion, newVersion);
+					}
+
+				})
+				.checkNow();
 
 			Metrics metrics = new Metrics(this, 7460);
 			metrics.addCustomChart(new DrilldownPie("customPluginVersion", () -> {

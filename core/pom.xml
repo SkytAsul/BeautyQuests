@@ -42,6 +42,10 @@
 							<pattern>com.tchristofferson.configupdater</pattern>
 							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>de.jeff_media.updatechecker</pattern>
+							<shadedPattern>fr.skytasul.utils.updatechecker</shadedPattern>
+						</relocation>
 					</relocations>
 				</configuration>
 				<executions>
@@ -107,6 +111,10 @@
 			<snapshots>
 				<updatePolicy>interval:10080</updatePolicy>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>jeff-media-gbr</id>
+			<url>https://repo.jeff-media.de/maven2/</url>
 		</repository>
 	</repositories>
 
@@ -212,6 +220,12 @@
 			<artifactId>BlueMapAPI</artifactId>
 			<version>v1.7.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.jeff_media</groupId>
+			<artifactId>SpigotUpdateChecker</artifactId>
+			<version>1.2.4</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Local JARs -->
