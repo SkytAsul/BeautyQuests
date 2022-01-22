@@ -27,7 +27,7 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
 	@Override
 	public ItemStack getItemStack(QuestPool object) {
-		return object == null ? CREATE_POOL : object.getItemStack();
+		return object == null ? CREATE_POOL : object.getItemStack(Lang.poolEdit.toString());
 	}
 	
 	@Override

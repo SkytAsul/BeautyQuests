@@ -5,19 +5,19 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.types.Dialog;
-import net.citizensnpcs.api.npc.NPC;
 
 public class DialogSendEvent extends Event implements Cancellable {
 
     private boolean cancelled = false;
 
     private Dialog dialog;
-    private NPC npc;
+	private BQNPC npc;
     private Player player;
     private Runnable runnable;
 
-    public DialogSendEvent(Dialog dialog, NPC npc, Player player, Runnable runnable) {
+	public DialogSendEvent(Dialog dialog, BQNPC npc, Player player, Runnable runnable) {
         this.dialog = dialog;
         this.npc = npc;
         this.player = player;
@@ -29,7 +29,8 @@ public class DialogSendEvent extends Event implements Cancellable {
         return cancelled;
     }
 
-    public void setCancelled(boolean cancelled) {
+    @Override
+	public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
     }
 
@@ -37,7 +38,7 @@ public class DialogSendEvent extends Event implements Cancellable {
         return dialog;
     }
 
-    public NPC getNPC() {
+	public BQNPC getNPC() {
         return npc;
     }
 

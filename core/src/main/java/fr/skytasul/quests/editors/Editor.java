@@ -15,12 +15,13 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBarImplementation;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public abstract class Editor implements Listener{
@@ -29,8 +30,8 @@ public abstract class Editor implements Listener{
 	private static BQBossBar bar = null;
 
 	static {
-		if (BQBossBar.BARS_ENABLED) {
-			bar = new BQBossBarImplementation("§6Quests Editor", "YELLOW", "SOLID");
+		if (QuestsAPI.hasBossBarManager()) {
+			bar = QuestsAPI.getBossBarManager().buildBossBar("§6Quests Editor", "YELLOW", "SOLID");
 			bar.setProgress(0);
 		}
 	}
@@ -44,6 +45,7 @@ public abstract class Editor implements Listener{
 	}
 	
 	protected void begin() {
+		DebugUtils.logMessage(p.getName() + " has entered editor " + getClass().getName() + ".");
 		Inventories.closeWithoutExit(p);
 		if (NMS.getMCVersion() > 11){
 			p.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
@@ -55,6 +57,7 @@ public abstract class Editor implements Listener{
 	}
 
 	protected void end() {
+		DebugUtils.logMessage(p.getName() + " has left the editor.");
 		if (bar != null) bar.removePlayer(p);
 	}
 	
@@ -93,11 +96,10 @@ public abstract class Editor implements Listener{
 	
 	private final void callChat(String rawText){
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
-		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		String coloredMessage = Utils.translateHexColorCodes("&#", "", ChatColor.translateAlternateColorCodes('&', rawText));
+		String coloredMessage = ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', rawText));
 		String strippedMessage = ChatColor.stripColor(rawText);
-		if (cancel != null && strippedMessage.equalsIgnoreCase("cancel")) {
+		if (cancel != null && strippedMessage.equalsIgnoreCase(cancelWord())) {
 			cancel();
 		}else if (!chat(coloredMessage, strippedMessage)) {
 			Lang.CHAT_EDITOR.send(p);
@@ -108,7 +110,7 @@ public abstract class Editor implements Listener{
 		return null;
 	}
 	
-	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;
 		e.setCancelled(true);
@@ -134,7 +136,7 @@ public abstract class Editor implements Listener{
 	public static void leave(Player player){
 		if (!hasEditor(player))
 			return;
-		Editor editor = (Editor) players.remove(player);
+		Editor editor = players.remove(player);
 		HandlerList.unregisterAll(editor);
 		editor.end();
 	}

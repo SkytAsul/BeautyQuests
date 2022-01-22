@@ -9,7 +9,7 @@ import java.util.Map;
 import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
 
 @SuppressWarnings ("rawtypes")
-public abstract class UpdatableOptionSet<U extends Updatable> implements Iterable<QuestOption>, OptionSet {
+public abstract class UpdatableOptionSet<U extends Updatable> implements OptionSet {
 	
 	private Map<Class<? extends QuestOption<?>>, OptionWrapper> options = new HashMap<>();
 	
@@ -25,6 +25,11 @@ public abstract class UpdatableOptionSet<U extends Updatable> implements Iterabl
 	@Override
 	public <T extends QuestOption<?>> T getOption(Class<T> optionClass) {
 		return (T) options.get(optionClass).option;
+	}
+	
+	@Override
+	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {
+		return options.containsKey(clazz);
 	}
 	
 	protected OptionWrapper getWrapper(Class<? extends QuestOption<?>> optionClass) {

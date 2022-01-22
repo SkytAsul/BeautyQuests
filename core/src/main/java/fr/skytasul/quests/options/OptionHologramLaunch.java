@@ -1,10 +1,10 @@
 package fr.skytasul.quests.options;
 
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionItem;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class OptionHologramLaunch extends QuestOptionItem {
 	
@@ -29,7 +29,7 @@ public class OptionHologramLaunch extends QuestOptionItem {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return DependenciesManager.holod.isEnabled() && options.getOption(OptionStarterNPC.class).getValue() != null;
+		return QuestsAPI.hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

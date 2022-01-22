@@ -86,6 +86,14 @@ public class QuestBranch {
 		return endStages;
 	}
 	
+	public AbstractStage getEndingStage(int id) {
+		int i = 0;
+		for (AbstractStage stage : endStages.keySet()) {
+			if (i++ == id) return stage;
+		}
+		return null;
+	}
+	
 	public String getDescriptionLine(PlayerAccount acc, Source source) {
 		PlayerQuestDatas datas;
 		if (!acc.hasQuestDatas(getQuest()) || (datas = acc.getQuestDatas(getQuest())).getBranch() != getID()) throw new IllegalArgumentException("Account does not have this branch launched");
@@ -147,8 +155,14 @@ public class QuestBranch {
 	
 	public void finishStage(Player p, AbstractStage stage){
 		DebugUtils.logMessage("Next stage for player " + p.getName() + ", via " + DebugUtils.stackTraces(2, 4));
-		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		if (datas.getBranch() != getID() || (datas.isInEndingStages() && isRegularStage(stage)) || (!datas.isInEndingStages() && datas.getStage() != stage.getID())) {
+			BeautyQuests.logger.warning("Trying to finish stage " + stage.debugName() + " for player " + p.getName() + ", but the player didn't have started it.");
+			return;
+		}
+		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());
+		datas.addQuestFlow(stage);
 		if (!isRegularStage(stage)){ // ending stage
 			for (AbstractStage end : endStages.keySet()){
 				if (end != stage) end.end(acc);
@@ -157,7 +171,7 @@ public class QuestBranch {
 		endStage(acc, stage, () -> {
 			if (!manager.getQuest().hasStarted(acc)) return;
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
-				int newId = acc.getQuestDatas(getQuest()).getStage() + 1;
+				int newId = datas.getStage() + 1;
 				if (newId == regularStages.size()){
 					if (endStages.isEmpty()){
 						remove(acc, false);
@@ -190,12 +204,14 @@ public class QuestBranch {
 				new Thread(() -> {
 					DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 					asyncReward.add(acc);
-					Utils.giveRewards(p, stage.getRewards());
+					List<String> given = Utils.giveRewards(p, stage.getRewards());
+					if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
 					asyncReward.remove(acc);
 					Utils.runSync(runAfter);
-				}).start();
+				}, "BQ async stage end " + p.getName()).start();
 			}else{
-				Utils.giveRewards(p, stage.getRewards());
+				List<String> given = Utils.giveRewards(p, stage.getRewards());
+				if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
 				runAfter.run();
 			}
 		}else {
@@ -227,7 +243,8 @@ public class QuestBranch {
 	public void setEndingStages(PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
 		if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && launchStage) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
-		acc.getQuestDatas(getQuest()).setInEndingStages();
+		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		datas.setInEndingStages();
 		for (AbstractStage newStage : endStages.keySet()){
 			newStage.start(acc);
 			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), newStage));
@@ -285,6 +302,7 @@ public class QuestBranch {
 		return map;
 	}
 	
+	@Override
 	public String toString() {
 		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + "}";
 	}

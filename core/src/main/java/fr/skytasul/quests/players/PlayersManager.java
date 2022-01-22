@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -19,13 +20,14 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
-import net.citizensnpcs.npc.ai.NPCHolder;
 
 public abstract class PlayersManager {
 
 	public static PlayersManager manager;
 
-	protected abstract Entry<PlayerAccount, Boolean> load(Player player);
+	protected abstract Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp);
+	
+	protected abstract void removeAccount(PlayerAccount acc);
 	
 	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
 
@@ -36,6 +38,8 @@ public abstract class PlayersManager {
 	public void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {}
 	
 	public abstract int removeQuestDatas(Quest quest);
+	
+	public abstract void unloadAccount(PlayerAccount acc);
 
 	public abstract void load();
 
@@ -78,6 +82,7 @@ public abstract class PlayersManager {
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	
 	public static synchronized void loadPlayer(Player p) {
+		long time = System.currentTimeMillis();
 		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
@@ -85,16 +90,29 @@ public abstract class PlayersManager {
 			while (i > 0) {
 				i--;
 				try {
-					Entry<PlayerAccount, Boolean> entry = manager.load(p);
+					
+					Entry<PlayerAccount, Boolean> entry = manager.load(p, time);
 					PlayerAccount account = entry.getKey();
 					boolean created = entry.getValue();
+					if (!p.isOnline()) {
+						if (created) {
+							DebugUtils.logMessage("New account registered for " + p.getName() + "... but deleted as player left before loading.");
+							manager.removeAccount(account);
+						}
+						return;
+					}
 					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
-					if (!p.isOnline()) return;
 					cachedAccounts.put(p, account);
 					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+						DebugUtils.logMessage("Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time) + " ms (" + account.getQuestsDatas().size() + " quests, " + account.getPoolDatas().size() + " pools)");
 						if (p.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
-						}else BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+						}else {
+							BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+							if (created) {
+								manager.removeAccount(account);
+							}
+						}
 					});
 					return;
 				}catch (Exception ex) {
@@ -109,12 +127,14 @@ public abstract class PlayersManager {
 	public static synchronized void unloadPlayer(Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
+		DebugUtils.logMessage("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
+		manager.unloadAccount(acc);
 		cachedAccounts.remove(p);
 	}
 	
 	public static PlayerAccount getPlayerAccount(Player p) {
-		if (p instanceof NPCHolder) return null;
+		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
 		
 		return cachedAccounts.get(p);
 	}

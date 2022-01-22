@@ -10,7 +10,7 @@ public class OptionEndMessage extends QuestOptionString {
 	
 	@Override
 	public void sendIndication(Player p) {
-		Lang.END_MESSAGE.send(p);
+		Lang.WRITE_END_MESSAGE.send(p);
 	}
 	
 	@Override

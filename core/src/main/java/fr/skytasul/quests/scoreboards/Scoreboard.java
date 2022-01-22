@@ -5,32 +5,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
-import fr.skytasul.quests.api.events.PlayerSetStageEvent;
-import fr.skytasul.quests.api.events.QuestCreateEvent;
-import fr.skytasul.quests.api.events.QuestFinishEvent;
-import fr.skytasul.quests.api.events.QuestLaunchEvent;
-import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class Scoreboard extends BukkitRunnable implements Listener {
 
+	private static final int maxLength = NMS.getMCVersion() >= 13 ? 128 : 30;
+	
 	private PlayerAccount acc;
 	private Player p;
 	private FastBoard board;
@@ -41,6 +37,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private Quest shown = null;
 	private List<Quest> launched;
 	private boolean hid = false;
+	private boolean hidForce = false;
 	private int changeTime = 1;
 
 	Scoreboard(Player player, ScoreboardManager manager) {
@@ -53,13 +50,14 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(new Line(line));
 		}
 
-		launched = QuestsAPI.getQuestsStarteds(acc, true);
+		launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 		
 		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
 
+	@Override
 	public void run() {
 		if (!p.isOnline()) return;
 		if (hid) return;
@@ -91,53 +89,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		updateBoard(false, true);
 	}
 	
-	@EventHandler
-	public void onChangeWorld(PlayerChangedWorldEvent e) {
-		boolean toAllowed = manager.isWorldAllowed(e.getPlayer().getWorld().getName());
-		if (hid) {
-			if (toAllowed) show();
-		}else {
-			if (!toAllowed) hide();
-		}
+	protected void questAdd(Quest quest) {
+		launched.add(launched.indexOf(shown) + 1, quest);
+		shown = quest;
+		refreshQuestsLines(true);
 	}
 	
-	@EventHandler
-	public void onQuestFinished(QuestFinishEvent e){
-		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onQuestReset(PlayerQuestResetEvent e) {
-		if (e.getPlayerAccount() == acc) questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onStageSet(PlayerSetStageEvent e) {
-		if (e.getPlayerAccount() == acc) setShownQuest(e.getQuest(), false);
-	}
-	
-	@EventHandler
-	public void onQuestRemove(QuestRemoveEvent e){
-		questRemove(e.getQuest());
-	}
-	
-	@EventHandler
-	public void onQuestCreate(QuestCreateEvent e) {
-		if (e.isEdited()) {
-			if (e.getQuest().hasStarted(acc)) launched.add(e.getQuest());
-		}
-	}
-
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onQuestLaunch(QuestLaunchEvent e){
-		if (e.getPlayerAccount() == acc && e.getQuest().isScoreboardEnabled()) {
-			launched.add(launched.indexOf(shown) + 1, e.getQuest());
-			shown = e.getQuest();
-			refreshQuestsLines(true);
-		}
-	}
-	
-	private void questRemove(Quest quest){
+	protected void questRemove(Quest quest) {
 		int id = launched.indexOf(quest);
 		if (id == -1) return;
 		launched.remove(quest);
@@ -149,20 +107,63 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		}
 	}
 	
+	protected void questEdited(Quest newQuest, Quest oldQuest) {
+		int index = launched.indexOf(oldQuest);
+		if (index == -1) {
+			// if scoreboard has been enabled during quest edition,
+			// we add the quest to the player list
+			if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(acc)) launched.add(newQuest);
+			return;
+		}
+		
+		// if scoreboard has been disabled during quest edition,
+		// we remove the quest from the player list as it should no longer be displayed
+		if (!newQuest.isScoreboardEnabled()) {
+			questRemove(oldQuest);
+			return;
+		}
+		
+		// we replace the old quest instance by the new one
+		launched.set(index, newQuest);
+		if (shown == oldQuest) {
+			shown = newQuest;
+			refreshQuestsLines(true);
+		}
+	}
+	
+	protected void worldChange(boolean toAllowed) {
+		if (hid) {
+			if (toAllowed) show(false);
+		}else {
+			if (!toAllowed) hide(false);
+		}
+	}
+	
 	public Quest getShownQuest() {
 		return shown;
 	}
 	
-	public void hide(){
+	public boolean isHidden() {
+		return hid;
+	}
+	
+	public boolean isForceHidden() {
+		return hidForce;
+	}
+	
+	public void hide(boolean force) {
 		hid = true;
+		if (force) hidForce = true;
 		if (board != null) {
 			deleteBoard();
 		}
 	}
 	
-	public void show(){
+	public void show(boolean force) {
+		if (hidForce && !force) return;
 		hid = false;
-		if (board == null) {
+		hidForce = false;
+		if (board == null && !(launched.isEmpty() && manager.hideEmtptyScoreboard())) {
 			initScoreboard();
 			updateBoard(true, false);
 		}
@@ -177,11 +178,13 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	public void setShownQuest(Quest quest, boolean errorWhenUnknown) {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
-			if (errorWhenUnknown) throw new IllegalArgumentException("Quest is not running for player.");
-		}else {
-			shown = quest;
-			refreshQuestsLines(true);
+			if (errorWhenUnknown) {
+				launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
+				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
+			}else return;
 		}
+		shown = quest;
+		refreshQuestsLines(true);
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {
@@ -204,6 +207,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			try {
 				if (line.tryRefresh(time) && !update) update = true;
 				linesStrings.addAll(line.lines);
+				if (linesStrings.size() >= ChatColor.values().length - 1) {
+					while (linesStrings.size() >= ChatColor.values().length - 1) {
+						linesStrings.remove(linesStrings.size() - 1);
+					}
+					break;
+				}
 			}catch (Exception ex) {
 				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i + " for " + p.getName());
 				ex.printStackTrace();
@@ -246,6 +255,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return true;
 	}
 	
+	@Override
 	public synchronized void cancel() throws IllegalStateException {
 		super.cancel();
 		HandlerList.unregisterAll(this);
@@ -287,7 +297,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				text = Utils.finalFormat(p, text, true);
 				if (text.equals(lastValue)) return false;
 				
-				lines = Utils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength());
+				lines = ChatUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
 				
 				lastValue = text;
 				return true;

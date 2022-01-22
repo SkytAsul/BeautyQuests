@@ -13,6 +13,7 @@ msg:
     invalidID: '§cA missão com o id {0} não existe.'
     alreadyStarted: '§cJá iniciaste a missão!'
   quests:
+    maxLaunched: '§cVocê não pode ter mais de {0} missões ao mesmo tempo...'
     nopStep: '§cEsta missão não tem nenhum passo.'
     updated: '§7Missão §e{0}§7 atualizada.'
     failed: '§cVocê falhou na missão {0}...'
@@ -41,6 +42,7 @@ msg:
   requirements:
     quest: '§cTens que ter terminado a missão §e{0}§c!'
     money: '§cVocê tem que ter {0}!'
+    waitTime: '§cVocê deve esperar {0} antes de reiniciar esta missão!'
   experience:
     edited: '§aAlteraste a experiência adquirida de {0} para {1} pontos.'
   selectNPCToKill: '§aSeleciona o NPC para matar.'
@@ -57,18 +59,21 @@ msg:
   errorOccurred: '§cOcorreu um erro, entra em contacto com um administrador! §4§lCódigo de erro: {0}'
   commandsDisabled: '§cNo momento, não tens permissão para executar comandos!'
   indexOutOfBounds: '§cO número {0} está fora dos limites! Deve estar entre {1} e {2}.'
+  invalidBlockData: '§cAs configurações desse bloco {0} é inválida ou incompatível  com o bloco {1}.'
   bringBackObjects: Traz-me {0} de volta.
   inventoryFull: '§cO teu inventário está cheio, o item foi largado no chão.'
   playerNeverConnected: '§cNão foi possível encontrar informações sobre o jogador {0}.'
   playerNotOnline: '§cO jogador {0} está offline.'
   command:
     setStage:
+      branchDoesntExist: '§cO ramo com o id {0} não existe.'
       doesntExist: '§cA etapa com o id {0} não existe.'
       next: '§aA etapa foi ignorada.'
       nextUnavailable: '§cThe "skip" option is not available when the player is at the end of a branch.'
       set: '§aA etapa {0} foi lançada.'
     playerNeeded: '§cDeves ser um jogador para executar este comando!'
     incorrectSyntax: '§cSintaxe incorreto.'
+    noPermission: '§cVocê não tem permissões suficientes para executar este comando! (Requer: {0})'
     invalidCommand:
       quests: '§cEste comando não existe, escreve §e/quests help§c.'
       simple: '§cEste comando não existe, escreve §ehelp§c.'
@@ -79,7 +84,7 @@ msg:
     leaveAll: '§aFoste forçado a terminar {0} missão(ões). Erros: {1}'
     resetPlayer:
       player: '§6Todas as informações da(s) tua(s) {0} missão(ões) foram apagadas por {1}.'
-      remover: '§6A(s) {0} informação(ões) de {1} foi/foram apagada(s).'
+      remover: '§6A/s {0} informação/ões de {1} foi/foram excluída/s.'
     resetPlayerQuest:
       player: '§6Todas as informações da missão {0} foram apagadas por {1}.'
       remover: '§6Informações da missão(ões) de {0} de {1} foi/foram apagada(s).'
@@ -97,6 +102,8 @@ msg:
       lineRemoved: '§6Removeste a linha {0} com sucesso.'
       lineInexistant: '§cA linha {0} não existe.'
       resetAll: '§6Redefiniste com sucesso o placar de classificação do jogador {0}.'
+      hidden: '§6O placar do jogador {0} foi ocultado.'
+      shown: '§6O placar do jogador {0} foi exibido.'
     help:
       header: '§6§lBeautyQuests — Ajuda'
       create: '§6/{0} create: §eCriar uma missão.'
@@ -116,9 +123,17 @@ msg:
       list: '§6/{0} list: §eVer a lista de missões. (Somente para versões suportadas.)'
   typeCancel: '§aEscreve "cancel" para voltar ao último texto.'
   editor:
+    blockAmount: '§aEspecifique a quantidade de blocos:'
+    blockData: '§aEspecifique as configurações do bloco (Configurações disponíveis: {0}):'
+    typeBucketAmount: '§aEspecifique a quantidade de baldes para encher:'
+    goToLocation: '§aVá ao local desejado para o estágio.'
+    typeLocationRadius: '§aEspecifique a distância necessária até o local:'
+    typeGameTicks: '§aEspecifique os TICKS necessários:'
     already: '§cJá estás no editor.'
     enter:
       title: '§6~ Modo Editor ~'
+      subtitle: '§6Escreva "/quests exitEditor" para sair do editor.'
+    chat: '§6Você está atualmente no modo Editor. Escreva "/quests exitEditor" para sair do editor. (Altamente não recomendado, considere usar comandos como "fechar" ou "cancelar" para voltar á aba anterior.)'
     npc:
       enter: '§aClica num NPC, ou escreve "cancel".'
       choseStarter: '§aEscolhe o NPC que inicia a missão.'
@@ -131,12 +146,17 @@ msg:
       choosePermissionMessage: '§aPodes escolher uma mensagem de rejeição caso o jogador não tiver a permissão necessária. (Para ignorar esta etapa, escreve "null".)'
       choosePlaceholderRequired:
         identifier: '§aEscreve o nome do espaço reservado obrigatório sem os caracteres percentuais:'
+        value: '§aEscreva o valor necessário para o placeholder §e%§e{0}§e%§a:'
       chooseSkillRequired: '§aEscreve o nome da habilidade necessária:'
       chooseMoneyRequired: '§aEscreva a quantidade de dinheiro necessário:'
       reward:
         permissionName: '§aEscreva o nome da permissão.'
+        permissionWorld: '§aEscreva o mundo em que a permissão será editada, ou "null" se você quiser ser global.'
         money: '§aEscreve a quantidade do dinheiro recebido:'
+        wait: '§aEscreva a quantidade de TICKS para esperar: (1 segundo = 20 ticks)'
       chooseObjectiveRequired: '§aEscreva o nome do objetivo.'
+      chooseObjectiveTargetScore: '§aEspecifique a pontuação necessária para o objetivo.'
+      chooseRegionRequired: '§aEscreva o nome da região necessária (você deve estar no mesmo mundo).'
     selectWantedBlock: '§aClica com o pau no bloco desejado para a etapa.'
     itemCreator:
       itemType: '§aEscreve o nome do tipo de item desejado:'
@@ -145,6 +165,8 @@ msg:
       itemLore: '§aModifica o conhecimento do item: (Escreve "help" para obter ajuda.)'
       unknownItemType: '§cTipo de item desconhecido.'
       invalidItemType: '§cTipo de item inválido. (O item não pode ser um bloco.)'
+      unknownBlockType: '§cTipo de bloco não reconhecido ou não existe.'
+      invalidBlockType: '§cTipo de bloco inválido'
     dialog:
       syntax: '§cSintaxe correta: {0}{1} <message>'
       syntaxRemove: '§cSintaxe correta: remove <id>'
@@ -169,6 +191,9 @@ msg:
         addSound: '§6addSound [id] [sound]: §eAdiciona um som para uma mensagem.'
         clear: '§6clear: §eRemove todas as mensagens.'
         close: '§6close: §eValida todas as mensagens.'
+        setTime: '§6setTime <id> <time>: §eDefiniu o tempo (em ticks) antes da próxima mensagem ser reproduzida automaticamente.'
+      timeSet: '§aTempo foi editado para a mensagem {0}: agora é {1} ticks.'
+      timeRemoved: '§aO tempo da mensagem foi removido{0}.'
     mythicmobs:
       list: '§aUma lista de todos os Mobs Míticos:'
       isntMythicMob: '§cEste Mob Mítico não existe.'
@@ -184,6 +209,12 @@ msg:
         remove: '§6remove [id]: §eRemove um texto.'
         list: '§6list: §eVer todos os textos.'
         close: '§6close: §eValidar os textos adicionados.'
+    noSuchElement: '§cEsse elemento não existe. Os elementos permitidos são: §e{0}'
+    comparisonType: '§aEscolha o tipo de comparação que deseja entre {0}. A comparação padrão é: §e§lmaior ou igual§r§a. Digite §onull§r§a para utilizá-lo.'
+    scoreboardObjectiveNotFound: '§cObjetivo de placar desconhecido'
+    pool:
+      maxQuests: 'Escreva a quantidade máxima de missões possíveis neste pool.'
+      time: 'Escreva o número de dias antes que os jogadores possam fazer uma nova missão.'
 advancement:
   finished: Concluído
   notStarted: Não iniciado
@@ -392,12 +423,6 @@ inv:
   poolsManage:
     name: Grupo de Missões
     itemName: '§aGrupo #{0}'
-    itemDescription: |-
-      §8NPC: §7{0}
-      §8Máximo de missões: §7{1}
-      §8Pode refazer missões concluídas: §7{2}
-      §8Tempo entre missões: §7{3}ms
-      §8Texto do holograma: §7{4}
     create: '§aCriar um grupo de missões'
   poolCreation:
     name: Criação de um grupo de missões

@@ -1,10 +1,10 @@
 # - General configuration -
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
 lang: en_US
 # (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
-minecraftTranslationsFile: null
+minecraftTranslationsFile: ''
 # Enable or disable update checking on the loading
 checkUpdates: true
 # Enable or disable prefix before plugin message
@@ -24,6 +24,10 @@ database:
   username: "unknown"
   password: "unknown"
   ssl: false
+  tables:
+    playerAccounts: "player_accounts"
+    playerQuests: "player_quests"
+    playerPools: "player_pools"
 
 # - Quests behaviors -
 # Enable or disable the scoreboards - more options in scoreboard.yml
@@ -66,6 +70,10 @@ requirementUpdateTime: 1
 requirementReasonOnMultipleQuests: true
 # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
 menuOpenNotStartedTabWhenEmpty: true
+# Enables the dialog history
+dialogHistory: true
+# Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
+stageEndRewardsMessage: true
 
 # - Integrations -
 # Enable GPS integration
@@ -96,8 +104,11 @@ startedQuestsPlaceholder:
   inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
 # dynmap integration options
 dynmap:
-  markerSetName: "Quests"
+  # Name of the marker set. To disable dynmap integration, put an empty string
+  markerSetName: ""
+  # Icon for quest markers
   markerIcon: "bookshelf"
+  # Minimum zoom level for markers to be displayed
   minZoom: 0
 
 # - Stage descriptions -
@@ -117,8 +128,23 @@ stageDescriptionItemsSplit:
   # When there is only one object, do not put it on a new line
   inlineAlone: true
   # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
-  sources: [SCOREBOARD, MENU]
+  sources: [SCOREBOARD, MENU, PLACEHOLDER]
 
+# - Quest descriptions -
+# How is formatted the quest description in GUIs
+questDescription:
+  requirements:
+    # Enable the requirements section for quest description
+    display: true
+    # How to format requirements which match the player
+    valid: §a ✔ §7{0}
+    # How to format requirements which do not match the player
+    invalid: §c ✖ §7{0}
+  rewards:
+    # Enable the rewards section for quest description
+    display: true
+    # How to format rewards
+    format: §7- {0}
 
 # - Particles configuration -
 # enabled: will the particle be shown?

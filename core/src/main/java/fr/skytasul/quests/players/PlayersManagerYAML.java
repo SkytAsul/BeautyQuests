@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -17,6 +19,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -28,14 +33,18 @@ import fr.skytasul.quests.utils.Utils;
 
 public class PlayersManagerYAML extends PlayersManager {
 
+	private static final int ACCOUNTS_THRESHOLD = 1000;
+	
 	Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
 	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
 	private int lastAccountID = 0;
 
+	private Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+	
 	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 	
 	@Override
-	protected Entry<PlayerAccount, Boolean> load(Player player) {
+	protected Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
 		String identifier = super.getIdentifier(player);
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
@@ -48,7 +57,15 @@ public class PlayersManagerYAML extends PlayersManager {
 
 		return new AbstractMap.SimpleEntry<>(acc, true);
 	}
+	
+	@Override
+	protected void removeAccount(PlayerAccount acc) {
+		loadedAccounts.remove(acc.index);
+		identifiersIndex.remove(acc.index);
+		removePlayerFile(acc.index);
+	}
 
+	@Override
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatas(acc, quest.getID());
 	}
@@ -58,6 +75,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		return new PlayerPoolDatas(acc, pool.getID());
 	}
 	
+	@Override
 	public int removeQuestDatas(Quest quest) {
 		loadAllAccounts();
 		int amount = 0;
@@ -88,7 +106,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
 			try {
-				PlayerAccount acc = loadFromFile(entry.getKey());
+				PlayerAccount acc = loadFromFile(entry.getKey(), false);
 				if (acc == null) {
 					acc = createPlayerAccount(entry.getValue(), entry.getKey());
 					addAccount(acc);
@@ -167,7 +185,12 @@ public class PlayersManagerYAML extends PlayersManager {
 		int id = index instanceof Integer ? (int) index : Utils.parseInt(index);
 		PlayerAccount acc = loadedAccounts.get(id);
 		if (acc != null) return acc;
-		acc = loadFromFile(id);
+		acc = unloadedAccounts.asMap().remove(id);
+		if (acc != null) {
+			loadedAccounts.put(id, acc);
+			return acc;
+		}
+		acc = loadFromFile(id, true);
 		if (acc != null) return acc;
 		acc = createPlayerAccount(identifiersIndex.get(id), id);
 		addAccount(acc);
@@ -180,9 +203,10 @@ public class PlayersManagerYAML extends PlayersManager {
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
 	}
 
-	public PlayerAccount loadFromFile(int index) {
+	public PlayerAccount loadFromFile(int index, boolean msg) {
 		File file = new File(directory, index + ".yml");
 		if (!file.exists()) return null;
+		DebugUtils.logMessage("Loading account #" + index + ". Last file edition: " + new Date(file.lastModified()).toString());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
 		return loadFromConfig(index, playerConfig);
 	}
@@ -226,6 +250,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		}else DebugUtils.logMessage("Can't remove " + file.getName() + ": file does not exist");
 	}
 
+	@Override
 	public void load() {
 		if (!directory.exists()) directory.mkdirs();
 
@@ -244,21 +269,44 @@ public class PlayersManagerYAML extends PlayersManager {
 			}
 		}
 		DebugUtils.logMessage(loadedAccounts.size() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
+		
+		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
+			BeautyQuests.logger.warning(
+					"⚠ WARNING - " + identifiersIndex.size() + " are registered on this server."
+					+ " It is recommended to switch to a SQL database setup in order to keep proper performances and scalability."
+					+ " In order to do that, setup your database credentials in config.yml (without enabling it) and run the command"
+					+ " /quests migrateDatas. Then follow steps on screen.");
+		}
 	}
 
+	@Override
 	public void save() {
 		DebugUtils.logMessage("Saving " + loadedAccounts.size() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
-		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-		config.set("players", identifiersIndex);
+		BeautyQuests.getInstance().getDataFile().set("players", identifiersIndex);
 
 		for (PlayerAccount acc : loadedAccounts.values()) {
 			try {
 				savePlayerFile(acc);
-			}catch (IOException e) {
+			}catch (Exception e) {
+				BeautyQuests.logger.severe("An error ocurred while trying to save " + acc.debugName() + " account file");
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	public void unloadAccount(PlayerAccount acc) {
+		loadedAccounts.remove(acc.index);
+		unloadedAccounts.put(acc.index, acc);
+		Utils.runAsync(() -> {
+			try {
+				savePlayerFile(acc);
+			}catch (IOException e) {
+				BeautyQuests.logger.warning("An error ocurred while saving player file " + acc.debugName());
+				e.printStackTrace();
+			}
+		});
 	}
 
 }

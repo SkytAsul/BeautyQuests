@@ -48,7 +48,7 @@ public class Mob<Data> implements Cloneable {
 			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data));
 			ex.printStackTrace();
 		}
-		ItemStack item = ItemUtils.item(mobItem, getName(), lore.toArray(new String[0]));
+		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
 		item.setAmount(Math.min(amount, 64));
 		return item;
 	}
@@ -57,6 +57,7 @@ public class Mob<Data> implements Cloneable {
 		return factory.mobApplies(this.data, data);
 	}
 	
+	@Override
 	public int hashCode() {
 		int hash = 1;
 		hash = hash * 27 + factory.hashCode();
@@ -64,6 +65,7 @@ public class Mob<Data> implements Cloneable {
 		return hash;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
 		if (obj instanceof Mob) {
@@ -73,8 +75,14 @@ public class Mob<Data> implements Cloneable {
 		return false;
 	}
 
+	@Override
 	public Mob<Data> clone(){
-		return new Mob<Data>(factory, data);
+		try {
+			return (Mob<Data>) super.clone();
+		}catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public Map<String, Object> serialize(){
@@ -94,7 +102,9 @@ public class Mob<Data> implements Cloneable {
 		
 		MobFactory<?> factory = MobFactory.getMobFactory(factoryName);
 		if (factory == null) throw new IllegalArgumentException("The factory " + factoryName + " is not installed in BeautyQuests.");
-		Mob<?> mob = new Mob(factory, factory.fromValue(value));
+		Object object = factory.fromValue(value);
+		if (object == null) throw new IllegalArgumentException("Can't find the mob " + value + " for factory " + factoryName);
+		Mob<?> mob = new Mob(factory, object);
 		if (map.containsKey("name")) mob.setCustomName((String) map.get("name"));
 		return mob;
 	}

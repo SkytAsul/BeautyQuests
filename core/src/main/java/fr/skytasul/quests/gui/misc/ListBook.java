@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
@@ -23,7 +22,7 @@ public class ListBook{
 		im.setTitle("Quests list");
 		im.setAuthor("BeautyQuests");
 		
-		QuestsAPI.getQuests().stream().sorted().forEach(qu -> {
+		QuestsAPI.getQuests().getQuests().stream().sorted().forEach(qu -> {
 			StringBuilder stb = new StringBuilder(formatLine(Lang.BOOK_NAME.toString(), qu.getName())
 					+ formatLine("ID", qu.getID() + "")
 					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(), qu.getOption(OptionStarterNPC.class).getValue().getName()) : "")
@@ -37,7 +36,7 @@ public class ListBook{
 					+ qu.getBranchesManager().getBranches().stream().mapToInt(QuestBranch::getStageSize).sum() + " stages in " + qu.getBranchesManager().getBranchesAmount() + " branches");
 			im.addPage(stb.toString());
 		});
-		if (BeautyQuests.getInstance().getQuests().isEmpty()){
+		if (QuestsAPI.getQuests().getQuests().isEmpty()) {
 			im.addPage(Lang.BOOK_NOQUEST.toString());
 		}
 		

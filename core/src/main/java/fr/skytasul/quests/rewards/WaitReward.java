@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 
 public class WaitReward extends AbstractReward {
@@ -23,7 +20,6 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	public WaitReward(int delay) {
-		super("wait");
 		this.delay = delay;
 	}
 	
@@ -34,19 +30,19 @@ public class WaitReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(Lang.Ticks.format(delay)), "", Lang.Remove.toString() };
+		return new String[] { Lang.optionValue.format(Lang.Ticks.format(delay)), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.REWARD_EDITOR_WAIT.send(p);
-		new TextEditor<>(p, () -> {
-			if (delay == 0) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.REWARD_EDITOR_WAIT.send(event.getPlayer());
+		new TextEditor<>(event.getPlayer(), () -> {
+			if (delay == 0) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			delay = obj;
-			ItemUtils.lore(clicked, getLore());
-			gui.reopen();
+			event.updateItemLore(getLore());
+			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}
 	

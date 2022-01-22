@@ -2,6 +2,7 @@ package fr.skytasul.quests.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -13,12 +14,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ItemUtils {
+	
+	private static final int LORE_LINE_LENGTH = 40;
+	private static final int LORE_LINE_LENGTH_CRITICAL = 100;
 	
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
@@ -30,10 +36,23 @@ public class ItemUtils {
 	public static ItemStack item(XMaterial type, String name, String... lore) {
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(name);
 		im.addItemFlags(ItemFlag.values());
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
+		is.setItemMeta(applyMeta(im, name, lore));
+		return is;
+	}
+	
+	/**
+	 * Create an ItemStack instance from a generic XMaterial
+	 * @param type material type
+	 * @param name name of the item
+	 * @param lore lore of the item, formatted as a String array
+	 * @return the ItemStack instance
+	 */
+	public static ItemStack item(XMaterial type, String name, List<String> lore) {
+		ItemStack is = type.parseItem();
+		ItemMeta im = is.getItemMeta();
+		im.addItemFlags(ItemFlag.values());
+		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
 	
@@ -47,10 +66,65 @@ public class ItemUtils {
 	public static ItemStack skull(String name, String skull, String... lore) {
 		ItemStack is = XMaterial.playerSkullItem();
 		SkullMeta im = (SkullMeta) is.getItemMeta();
-		im.setDisplayName(name);
 		if (skull != null) im.setOwner(skull);
+		is.setItemMeta(applyMeta(im, name, lore));
+		return is;
+	}
+	
+	private static ItemMeta applyMeta(ItemMeta im, String name, Object lore) {
+		List<String> editLore = null;
+		if (name != null) {
+			editLore = ChatUtils.wordWrap(name, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL);
+			if (editLore.size() == 0) {
+				name = "";
+			}else if (editLore.size() == 1) {
+				name = editLore.get(0);
+				editLore = null;
+			}else {
+				name = editLore.remove(0);
+			}
+			im.setDisplayName(name);
+		}
+		
+		if (lore instanceof List) {
+			List<String> loreList = (List<String>) lore;
+			if (!loreList.isEmpty()) {
+				if (editLore != null) {
+					editLore.addAll(loreList);
+					loreList = editLore;
+				}
+				im.setLore(getLoreLines(loreList));
+				return im;
+			}
+		}else if (lore instanceof String[]) {
+			String[] loreArray = (String[]) lore;
+			if (loreArray.length != 0) {
+				if (editLore != null) {
+					editLore.addAll(Arrays.asList(loreArray));
+					im.setLore(getLoreLines(editLore));
+				}else im.setLore(getLoreLines(loreArray));
+				return im;
+			}
+		}
+		if (editLore != null) im.setLore(getLoreLines(editLore));
+		return im;
+	}
+	
+	public static ItemStack nameAndLore(ItemStack is, String name, String... lore) {
+		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
+		return is;
+	}
+	
+	public static ItemStack nameAndLore(ItemStack is, String name, List<String> lore) {
+		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
+		return is;
+	}
+	
+	public static ItemStack clearNameAndLore(ItemStack is) {
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(null);
+		im.setLore(null);
 		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
 		return is;
 	}
 
@@ -62,22 +136,56 @@ public class ItemUtils {
 	 */
 	public static ItemStack lore(ItemStack is, String... lore) {
 		ItemMeta im = is.getItemMeta();
-		List<String> finalLines = new ArrayList<>();
-		if (lore != null && lore.length != 0){
-			for (int i = 0; i < lore.length; i++) {
-				String line = lore[i];
-				if (line == null) {
-					if (i + 1 == lore.length) break; // last lien = null : not shown
-					finalLines.add("§a");
-					continue;
-				}
-				finalLines.addAll(Utils.wordWrap(line, 40));
-			}
-		}
-		im.setLore(finalLines);
+		im.setLore(getLoreLines(lore));
 		is.setItemMeta(im);
 		
 		return is;
+	}
+	
+	/**
+	 * Set the lore of an item (override old lore)
+	 * @param is ItemStack instance to edit
+	 * @param lore new lore of the item, formatted as a String array
+	 * @return the same ItemStack instance, with the new lore
+	 */
+	public static ItemStack lore(ItemStack is, List<String> lore) {
+		ItemMeta im = is.getItemMeta();
+		im.setLore(getLoreLines(lore));
+		is.setItemMeta(im);
+		
+		return is;
+	}
+	
+	private static List<String> getLoreLines(String... lore) {
+		if (lore != null) {
+			List<String> finalLines = new ArrayList<>();
+			if (lore != null) {
+				for (int i = 0; i < lore.length; i++) {
+					String line = lore[i];
+					if (line == null) {
+						if (i + 1 == lore.length) break; // if last line and null : not shown
+						finalLines.add("§a");
+					}else finalLines.addAll(ChatUtils.wordWrap(line, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL));
+				}
+			}
+			return finalLines;
+		}else return Collections.emptyList();
+	}
+	
+	private static List<String> getLoreLines(List<String> lore) {
+		if (lore != null) {
+			List<String> finalLines = new ArrayList<>();
+			if (lore != null) {
+				for (int i = 0; i < lore.size(); i++) {
+					String line = lore.get(i);
+					if (line == null) {
+						if (i + 1 == lore.size()) break; // if last line and null : not shown
+						finalLines.add("§a");
+					}else finalLines.addAll(ChatUtils.wordWrap(line, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL));
+				}
+			}
+			return finalLines;
+		}else return Collections.emptyList();
 	}
 	
 	/**
@@ -87,13 +195,16 @@ public class ItemUtils {
 	 * @return the same ItemStack instance, with the new lore added at the end
 	 */
 	public static ItemStack loreAdd(ItemStack is, String... add){
-		if (!is.getItemMeta().hasLore()){
-			lore(is, add);
+		ItemMeta im = is.getItemMeta();
+		if (!im.hasLore()) {
+			im.setLore(getLoreLines(add));
+			is.setItemMeta(im);
 			return is;
 		}
-		List<String> ls = is.getItemMeta().getLore();
+		List<String> ls = im.getLore();
 		ls.addAll(Arrays.asList(add));
-		lore(is, ls.toArray(new String[0]));
+		im.setLore(getLoreLines(ls));
+		is.setItemMeta(im);
 		return is;
 	}
 
@@ -166,38 +277,47 @@ public class ItemUtils {
 	
 	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level){
 		ItemMeta im = is.getItemMeta();
-		im.addEnchant(en, level, true);
-		is.setItemMeta(im);
+		if (im.addEnchant(en, level, true))
+			is.setItemMeta(im);
 		return is;
 	}
 	
 	public static ItemStack removeEnchant(ItemStack is, Enchantment en){
 		ItemMeta im = is.getItemMeta();
-		im.removeEnchant(en);
-		is.setItemMeta(im);
+		if (im.removeEnchant(en))
+			is.setItemMeta(im);
 		return is;
 	}
 	
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
+	 * @see #itemNextPage
 	 */
-	public static ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
+	public static final ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
+	 * @see #itemLaterPage
 	 */
-	public static ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+	public static final ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
 	 */
-	public static ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
+	public static final ImmutableItemStack itemCancel = new ImmutableItemStack(item(XMaterial.BARRIER, Lang.cancel.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.done</i> and material : diamond
+	 * @see #itemNotDone
 	 */
-	public static ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
+	public static final ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
+	
+	/**
+	 * Immutable ItemStack instance with name: <i>inv.done</i> but red and strikethrough, material: charcoal
+	 * @see #itemDone
+	 */
+	public static final ImmutableItemStack itemNotDone = new ImmutableItemStack(item(XMaterial.CHARCOAL, "§c§l§m" + ChatColor.stripColor(Lang.done.toString())));
 	
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted
@@ -216,7 +336,7 @@ public class ItemUtils {
 	 * @return ItemStack instance of the created switch
 	 */
 	public static ItemStack itemSwitch(String name, boolean enabled, String... lore){
-		return item(XMaterial.requestOldXMaterial("INK_SACK", (byte) (enabled ? 10 : 8)), (enabled ? "§a" : "§7") + name, lore);
+		return item(enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE, (enabled ? "§a" : "§7") + name, lore);
 	}
 	
 	/**

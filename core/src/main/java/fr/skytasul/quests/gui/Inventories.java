@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -50,27 +52,27 @@ public class Inventories{
 		Player p = (Player) e.getWhoClicked();
 		Inventory inv = e.getClickedInventory();
 		ItemStack current = e.getCurrentItem();
-
+		
 		Pair<CustomInventory, Inventory> pair = g.get(p);
 		if (pair == null) return;
 		if (inv == null) return;
 		
 		e.setCancelled(false);
 		
-		if (inv == p.getInventory()){
-			if (e.isShiftClick()) e.setCancelled(true);
-			return;
-		}
-		
-		ClickType click = e.getClick();
-		if (click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK || click == ClickType.DROP || click == ClickType.CONTROL_DROP || click.name().equals("SWAP_OFFHAND")) { // SWAP_OFFHAND introduced in 1.16
-			e.setCancelled(true);
-			return;
-		}
-
-		if (!inv.equals(pair.getValue())) return;
-		
 		try {
+			if (inv == p.getInventory()) {
+				if (e.isShiftClick()) e.setCancelled(true);
+				return;
+			}
+			
+			ClickType click = e.getClick();
+			if (click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK || click == ClickType.DROP || click == ClickType.CONTROL_DROP || click.name().equals("SWAP_OFFHAND")) { // SWAP_OFFHAND introduced in 1.16
+				e.setCancelled(true);
+				return;
+			}
+			
+			if (!inv.equals(pair.getValue())) return;
+			
 			if (e.getCursor().getType() == Material.AIR) {
 				if (current == null || current.getType() == Material.AIR) return;
 				if (pair.getKey().onClick(p, inv, current, e.getSlot(), click)) e.setCancelled(true);
@@ -78,8 +80,10 @@ public class Inventories{
 				if (pair.getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
 			}
 		}catch (Exception ex) {
-			ex.printStackTrace();
 			e.setCancelled(true);
+			ex.printStackTrace();
+			Lang.ERROR_OCCURED.send(p, ex.getMessage() + " in " + pair.getKey().getClass().getSimpleName());
+			BeautyQuests.logger.severe("An error occurred when " + p.getName() + " clicked in inventory " + pair.getKey().getClass().getSimpleName());
 		}
 	}
 	
@@ -103,6 +107,7 @@ public class Inventories{
 				break;
 			case REOPEN:
 				new BukkitRunnable() {
+					@Override
 					public void run(){
 						p.openInventory(e.getInventory());
 					}
@@ -110,6 +115,7 @@ public class Inventories{
 				break;
 			case CONFIRM:
 				new BukkitRunnable() {
+					@Override
 					public void run(){
 						create(p, new ConfirmGUI(() -> {
 							remove(p);
@@ -127,7 +133,15 @@ public class Inventories{
 		}
 	}
 	
+	public static void onOpen(InventoryOpenEvent e) {
+		if (!e.isCancelled()) return;
+		HumanEntity p = e.getPlayer();
+		if (g.containsKey(p)) {
+			BeautyQuests.logger.warning("The opening of a BeautyQuests menu for player " + p.getName() + " has been cancelled by another plugin.");
+		}
+	}
 	
+
 	public static void closeWithoutExit(Player p){
 		if (!g.containsKey(p)) return;
 		if (p.getOpenInventory().getType() == InventoryType.CRAFTING){
@@ -149,7 +163,7 @@ public class Inventories{
 	
 	public static void closeAll(){
 		for (Iterator<Player> iterator = g.keySet().iterator(); iterator.hasNext();) {
-			Player p = (Player) iterator.next();
+			Player p = iterator.next();
 			iterator.remove();
 			p.closeInventory();
 		}

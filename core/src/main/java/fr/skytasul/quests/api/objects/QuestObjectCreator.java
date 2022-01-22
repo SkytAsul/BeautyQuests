@@ -8,6 +8,7 @@ import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 
 public class QuestObjectCreator<T extends QuestObject> {
 	
+	public final String id;
 	public final Class<T> clazz;
 	public final ItemStack item;
 	public final Supplier<T> newObjectSupplier;
@@ -15,22 +16,25 @@ public class QuestObjectCreator<T extends QuestObject> {
 	private QuestObjectLocation[] allowedLocations;
 	
 	/**
+	 * @param id unique identifier for the object
 	 * @param clazz Class extending {@link T}
 	 * @param item ItemStack shown in {@link QuestObjectGUI}
 	 * @param newObjectSupplier lambda returning an instance of this Object ({@link T}::new)
 	 */
-	public QuestObjectCreator(Class<T> clazz, ItemStack is, Supplier<T> newObjectSupplier) {
-		this(clazz, is, newObjectSupplier, true);
+	public QuestObjectCreator(String id, Class<T> clazz, ItemStack is, Supplier<T> newObjectSupplier) {
+		this(id, clazz, is, newObjectSupplier, true);
 	}
 	
 	/**
+	 * @param id unique identifier for the object
 	 * @param clazz Class extending {@link T}
 	 * @param item ItemStack shown in {@link QuestObjectGUI}
 	 * @param newObjectSupplier lambda returning an instance of this Object ({@link T}::new)
 	 * @param multiple can the object be present multiple times
-	 * @param allowedLocations if present, specifies where the object can be used
+	 * @param allowedLocations if present, specifies where the object can be used. If no location specified, the
 	 */
-	public QuestObjectCreator(Class<T> clazz, ItemStack is, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
+	public QuestObjectCreator(String id, Class<T> clazz, ItemStack is, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
+		this.id = id;
 		this.clazz = clazz;
 		this.item = is;
 		this.newObjectSupplier = newObjectSupplier;

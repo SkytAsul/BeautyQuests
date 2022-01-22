@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
@@ -52,7 +53,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	}
 
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.questPool.toString(), getLore());
 	}
 	
@@ -62,11 +63,11 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 			
 			@Override
 			public ItemStack getItemStack(QuestPool object) {
-				return object.getItemStack();
+				return object.getItemStack(Lang.poolChoose.toString());
 			}
 			
 			@Override
-			public void click(QuestPool existing, ItemStack item, ClickType click) {
+			public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
 				setValue(existing);
 				ItemUtils.lore(item, getLore());
 				gui.reopen(p);

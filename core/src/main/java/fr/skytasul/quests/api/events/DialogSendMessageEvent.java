@@ -5,9 +5,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.Message;
-import net.citizensnpcs.api.npc.NPC;
 
 public class DialogSendMessageEvent extends Event implements Cancellable {
 	
@@ -15,10 +15,10 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 	
 	private Dialog dialog;
 	private Message msg;
-	private NPC npc;
+	private BQNPC npc;
 	private Player player;
 	
-	public DialogSendMessageEvent(Dialog dialog, Message msg, NPC npc, Player player) {
+	public DialogSendMessageEvent(Dialog dialog, Message msg, BQNPC npc, Player player) {
 		this.dialog = dialog;
 		this.msg = msg;
 		this.npc = npc;
@@ -30,6 +30,7 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 		return cancelled;
 	}
 	
+	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
 	}
@@ -42,7 +43,7 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 		return msg;
 	}
 	
-	public NPC getNPC() {
+	public BQNPC getNPC() {
 		return npc;
 	}
 	

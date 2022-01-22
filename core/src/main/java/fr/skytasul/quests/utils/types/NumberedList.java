@@ -1,7 +1,9 @@
 package fr.skytasul.quests.utils.types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -113,17 +115,24 @@ public class NumberedList<T> implements Iterable<T>, Cloneable{
 		return size;
 	}
 	
+	@Override
 	public NumberedList<T> clone(){
 		return new NumberedList<>(new HashMap<>(map));
 	}
-
 	
+	@Override
 	public Iterator<T> iterator(){
 		return map.values().iterator();
 	}
 	
 	public Map<Integer, T> getOriginalMap(){
 		return map;
+	}
+	
+	public List<T> toList() {
+		List<T> list = new ArrayList<>(map.size());
+		map.entrySet().stream().sorted(Entry.comparingByKey()).forEach(en -> list.add(en.getValue()));
+		return list;
 	}
 	
 }

@@ -14,27 +14,33 @@ public class UUIDAccount extends AbstractAccount{
 		this.id = id;
 	}
 	
+	@Override
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(id);
 	}
 
+	@Override
 	public Player getPlayer(){
 		return Bukkit.getPlayer(id);
 	}
 
+	@Override
 	public String getIdentifier() {
 		return id.toString();
 	}
 
+	@Override
 	public boolean isCurrent() {
-		return getOfflinePlayer().isOnline();
+		Player p = getPlayer();
+		return p != null && p.isOnline();
 	}
 
+	@Override
 	protected boolean equalsAccount(AbstractAccount acc) {
 		return ((UUIDAccount) acc).id.equals(this.id);
 	}
-
 	
+	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}

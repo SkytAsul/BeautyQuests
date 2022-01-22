@@ -9,7 +9,9 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -19,7 +21,6 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.bossbar.BQBossBar;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
@@ -33,7 +34,7 @@ public class QuestsConfiguration {
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
-	private static XMaterial item = XMaterial.BOOK;
+	private static ItemStack item = XMaterial.BOOK.parseItem();
 	private static XMaterial pageItem = XMaterial.ARROW;
 	private static int startParticleDistance, startParticleDistanceSquared;
 	private static int requirementUpdateTime;
@@ -71,16 +72,24 @@ public class QuestsConfiguration {
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
 	private static boolean menuOpenNotStartedTabWhenEmpty = true;
+	private static boolean dialogHistory = true;
+	private static boolean stageEndRewardsMessage = true;
+	private static QuestDescription questDescription;
 	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
 
+	static boolean backups = true;
+	
 	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
 	static int firstQuestID = -1; // changed in 0.19, TODO
 	
 	static void initConfiguration(FileConfiguration config) {
+		backups = config.getBoolean("backups", true);
+		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
+		
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
@@ -110,16 +119,21 @@ public class QuestsConfiguration {
 		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		if (config.contains("item")) item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
+		if (config.isItemStack("item")) {
+			item = config.getItemStack("item");
+		}else if (config.isString("item")) {
+			item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
+		}else item = XMaterial.BOOK.parseItem();
 		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-		if (item == null) item = XMaterial.BOOK;
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
 		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
-		mobsProgressBar = BQBossBar.BARS_ENABLED && config.getBoolean("mobsProgressBar");
+		dialogHistory = config.getBoolean("dialogHistory");
+		stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
+		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		try {
 			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
@@ -164,6 +178,8 @@ public class QuestsConfiguration {
 				continue;
 			}
 		}
+		
+		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
 		if (NMS.isValid()) {
 			particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
@@ -247,7 +263,7 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean showMobsProgressBar() {
-		return mobsProgressBar;
+		return mobsProgressBar && QuestsAPI.hasBossBarManager();
 	}
 	
 	public static int getProgressBarTimeout(){
@@ -270,7 +286,7 @@ public class QuestsConfiguration {
 		return scoreboard;
 	}
 
-	public static XMaterial getItemMaterial(){
+	public static ItemStack getItemMaterial() {
 		return item;
 	}
 	
@@ -288,6 +304,14 @@ public class QuestsConfiguration {
 	
 	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
 		return menuOpenNotStartedTabWhenEmpty;
+	}
+	
+	public static boolean isDialogHistoryEnabled() {
+		return dialogHistory;
+	}
+	
+	public static boolean hasStageEndRewardsMessage() {
+		return stageEndRewardsMessage;
 	}
 
 	public static int getStartParticleDistance() {
@@ -347,17 +371,14 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!DependenciesManager.holod.isEnabled()) return null;
 		return holoTalkItem;
 	}
 	
@@ -378,7 +399,7 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean isMinecraftTranslationsEnabled() {
-		return minecraftTranslationsFile != null;
+		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
 	
 	public static String getDescriptionItemPrefix(){
@@ -401,6 +422,10 @@ public class QuestsConfiguration {
 		if (source == Source.FORCESPLIT) return true;
 		if (source == Source.FORCELINE) return false;
 		return descSources.contains(source);
+	}
+	
+	public static QuestDescription getQuestDescription() {
+		return questDescription;
 	}
 	
 	public static String getFinishSound(){

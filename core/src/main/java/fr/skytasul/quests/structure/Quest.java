@@ -1,4 +1,5 @@
 package fr.skytasul.quests.structure;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,7 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -21,44 +22,26 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
-import fr.skytasul.quests.options.OptionBypassLimit;
-import fr.skytasul.quests.options.OptionCancellable;
-import fr.skytasul.quests.options.OptionConfirmMessage;
-import fr.skytasul.quests.options.OptionDescription;
-import fr.skytasul.quests.options.OptionEndMessage;
-import fr.skytasul.quests.options.OptionEndRewards;
-import fr.skytasul.quests.options.OptionHide;
-import fr.skytasul.quests.options.OptionHideNoRequirements;
-import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.options.OptionQuestMaterial;
-import fr.skytasul.quests.options.OptionQuestPool;
-import fr.skytasul.quests.options.OptionRepeatable;
-import fr.skytasul.quests.options.OptionRequirements;
-import fr.skytasul.quests.options.OptionScoreboardEnabled;
-import fr.skytasul.quests.options.OptionStartDialog;
-import fr.skytasul.quests.options.OptionStartRewards;
-import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.Dynmap;
 import fr.skytasul.quests.utils.types.Dialog;
-import net.citizensnpcs.api.npc.NPC;
 
-public class Quest implements Comparable<Quest> {
+public class Quest implements Comparable<Quest>, OptionSet {
 	
 	private final int id;
 	private final File file;
@@ -74,13 +57,17 @@ public class Quest implements Comparable<Quest> {
 	private List<Player> particles = new ArrayList<>();
 	
 	public Quest(int id) {
-		this.manager = new BranchesManager(this);
-		this.id = id;
-		this.file = new File(BeautyQuests.saveFolder, id + ".yml");
+		this(id, new File(BeautyQuests.saveFolder, id + ".yml"));
 	}
 	
-	public void create() {
-		if (DependenciesManager.dyn.isEnabled()) Dynmap.addMarker(this);
+	public Quest(int id, File file) {
+		this.id = id;
+		this.file = file;
+		this.manager = new BranchesManager(this);
+	}
+	
+	public void load() {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
 	void updateLauncheable(LivingEntity en) {
@@ -92,6 +79,11 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
+	@Override
+	public Iterator<QuestOption> iterator() {
+		return (Iterator<QuestOption>) options;
+	}
+	
 	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (D) option.getValue();
@@ -99,6 +91,7 @@ public class Quest implements Comparable<Quest> {
 		return (D) QuestOptionCreator.creators.get(clazz).defaultValue;
 	}
 	
+	@Override
 	public <T extends QuestOption<?>> T getOption(Class<T> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
@@ -106,6 +99,7 @@ public class Quest implements Comparable<Quest> {
 		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
 	}
 	
+	@Override
 	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return true;
@@ -156,8 +150,8 @@ public class Quest implements Comparable<Quest> {
 		return getOptionValueOrDef(OptionDescription.class);
 	}
 	
-	public XMaterial getQuestMaterial() {
-		return getOptionValueOrDef(OptionQuestMaterial.class);
+	public ItemStack getQuestItem() {
+		return getOptionValueOrDef(OptionQuestItem.class);
 	}
 	
 	public boolean isScoreboardEnabled() {
@@ -194,7 +188,7 @@ public class Quest implements Comparable<Quest> {
 
 	public boolean hasStarted(PlayerAccount acc){
 		if (!acc.hasQuestDatas(this)) return false;
-		if (acc.getQuestDatas(this).getBranch() != -1) return true;
+		if (acc.getQuestDatas(this).hasStarted()) return true;
 		if (acc.isCurrent() && asyncStart != null && asyncStart.contains(acc.getPlayer())) return true;
 		return false;
 	}
@@ -205,6 +199,7 @@ public class Quest implements Comparable<Quest> {
 	
 	public void cancelPlayer(PlayerAccount acc){
 		manager.remove(acc);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 	}
 	
@@ -234,7 +229,7 @@ public class Quest implements Comparable<Quest> {
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !getOptionValueOrDef(OptionBypassLimit.class)) {
-			if (QuestsAPI.getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
+			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
 				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
 				return false;
 			}
@@ -252,11 +247,10 @@ public class Quest implements Comparable<Quest> {
 	public boolean testTimer(PlayerAccount acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
-			if (time > System.currentTimeMillis()){
+			if (time > System.currentTimeMillis()) {
 				if (sendMessage && acc.isCurrent()) Lang.QUEST_WAIT.send(acc.getPlayer(), getTimeLeft(acc));
 				return false;
-			}
-			acc.getQuestDatas(this).setTimer(0);
+			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
 		}
 		return true;
 	}
@@ -268,26 +262,42 @@ public class Quest implements Comparable<Quest> {
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
 			Dialog dialog = getOption(OptionStartDialog.class).getValue();
-			NPC npc = getOptionValueOrDef(OptionStarterNPC.class);
-			Runnable runnable = () -> attemptStart(p);
+			BQNPC npc = getOptionValueOrDef(OptionStarterNPC.class);
+			Runnable runnable = () -> attemptStart(p, null);
 			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
 			Bukkit.getPluginManager().callEvent(event);
 			if (event.isCancelled()) return;
 			dialog.send(p, npc, runnable);
-		}else attemptStart(p);
+		}else attemptStart(p, null);
+	}
+	
+	public void leave(Player p) {
+		if (hasOption(OptionStartDialog.class)) {
+			getOption(OptionStartDialog.class).getValue().remove(p);
+		}
 	}
 
-	public void attemptStart(Player p) {
+	public void attemptStart(Player p, Runnable atStart) {
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
-			new ConfirmGUI(() -> start(p), () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
-		}else start(p);
+			new ConfirmGUI(() -> {
+				start(p);
+				if (atStart != null) atStart.run();
+			}, () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
+		}else {
+			start(p);
+			if (atStart != null) atStart.run();
+		}
 	}
 	
 	public void start(Player p){
+		start(p, false);
+	}
+	
+	public void start(Player p, boolean silently) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
-			Lang.ALREADY_STARTED.send(p);
+			if (!silently) Lang.ALREADY_STARTED.send(p);
 			return;
 		}
 		QuestPreLaunchEvent event = new QuestPreLaunchEvent(p, this);
@@ -296,21 +306,24 @@ public class Quest implements Comparable<Quest> {
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
 		launcheable.remove(p);
 		acc.getQuestDatas(this).setTimer(0);
-		Lang.STARTED_QUEST.send(p, getName());
+		if (!silently) {
+			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
+			if (!"none".equals(startMsg)) Utils.IsendMessage(p, startMsg, true, getName());
+		}
 		
-		BukkitRunnable run = new BukkitRunnable() {
-			public void run(){
-				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
-				getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
-				if (!msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
-				manager.startPlayer(acc);
-
-				Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
-			}
+		Runnable run = () -> {
+			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
+			if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
+			if (asyncStart != null) asyncStart.remove(p);
+			manager.startPlayer(acc);
+			QuestsAPI.propagateQuestsHandlers(handler -> handler.questStart(acc, p, this));
+			
+			Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
 		};
 		if (asyncStart != null){
 			asyncStart.add(p);
-			run.runTaskAsynchronously(BeautyQuests.getInstance());
+			Utils.runAsync(run);
 		}else run.run();
 	}
 	
@@ -321,11 +334,13 @@ public class Quest implements Comparable<Quest> {
 		
 		Runnable run = () -> {
 			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
-			Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0])))));
+			String obtained = Utils.itemsToFormattedString(msg.toArray(new String[0]));
+			if (hasOption(OptionEndMessage.class)) {
+				String endMsg = getOption(OptionEndMessage.class).getValue();
+				if (!"none".equals(endMsg)) Utils.IsendMessage(p, endMsg, true, obtained);
+			}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
 			
 			Utils.runOrSync(() -> {
-				String endMessage = getOptionValueOrDef(OptionEndMessage.class);
-				if (endMessage != null) Utils.sendOffMessage(p, endMessage);
 				manager.remove(acc);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
@@ -338,8 +353,8 @@ public class Quest implements Comparable<Quest> {
 				Utils.spawnFirework(p.getLocation());
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
 				
-				QuestFinishEvent event = new QuestFinishEvent(p, Quest.this);
-				Bukkit.getPluginManager().callEvent(event);
+				QuestsAPI.propagateQuestsHandlers(handler -> handler.questFinish(acc, p, this));
+				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, Quest.this));
 			});
 		};
 		
@@ -348,22 +363,26 @@ public class Quest implements Comparable<Quest> {
 			new Thread(() -> {
 				DebugUtils.logMessage("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 				run.run();
-			}).start();
+			}, "BQ async end " + p.getName()).start();
 		}else run.run();
 	}
 
-	public void remove(boolean msg){
-		BeautyQuests.getInstance().removeQuest(this);
-		unloadAll();
-		if (file.exists()) file.delete();
+	public void remove(boolean msg, boolean removeDatas) {
+		QuestsAPI.getQuests().removeQuest(this);
+		unload();
+		if (removeDatas) {
+			PlayersManager.manager.removeQuestDatas(this);
+			if (file.exists()) file.delete();
+		}
 		removed = true;
 		Bukkit.getPluginManager().callEvent(new QuestRemoveEvent(this));
+		if (removeDatas) QuestsAPI.propagateQuestsHandlers(handler -> handler.questRemove(this));
 		if (msg) BeautyQuests.getInstance().getLogger().info("The quest \"" + getName() + "\" has been removed");
 	}
 	
-	public void unloadAll(){
+	public void unload(){
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.questUnload(this));
 		manager.remove();
-		if (DependenciesManager.dyn.isEnabled()) Dynmap.removeMarker(this);
 		options.forEach(QuestOption::detach);
 	}
 
@@ -372,6 +391,7 @@ public class Quest implements Comparable<Quest> {
 		return Integer.compare(id, o.id);
 	}
 	
+	@Override
 	public String toString(){
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}
@@ -383,7 +403,7 @@ public class Quest implements Comparable<Quest> {
 		BeautyQuests.savingFailure = false;
 		save(fc);
 		DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
-		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file, id + "", "Error when saving quest.");
+		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file.toPath(), "Error when saving quest.");
 		fc.save(file);
 	}
 	
@@ -404,8 +424,9 @@ public class Quest implements Comparable<Quest> {
 
 	public static Quest loadFromFile(File file){
 		try {
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-			return deserialize(config);
+			YamlConfiguration config = new YamlConfiguration();
+			config.load(file);
+			return deserialize(file, config);
 		}catch (Exception e) {
 			BeautyQuests.logger.warning("Error when loading quests from data file.");
 			e.printStackTrace();
@@ -413,13 +434,13 @@ public class Quest implements Comparable<Quest> {
 		}
 	}
 	
-	private static Quest deserialize(ConfigurationSection map) {
+	private static Quest deserialize(File file, ConfigurationSection map) {
 		if (!map.contains("id")) {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;
 		}
 		
-		Quest qu = new Quest(map.getInt("id"));
+		Quest qu = new Quest(map.getInt("id"), file);
 		
 		qu.manager = BranchesManager.deserialize(map.getConfigurationSection("manager"), qu);
 		if (qu.manager == null) return null;
@@ -438,6 +459,17 @@ public class Quest implements Comparable<Quest> {
 					}
 					break;
 				}
+			}
+		}
+		String endMessage = map.getString("endMessage");
+		if (endMessage != null) {
+			OptionEndRewards rewards;
+			if (qu.hasOption(OptionEndRewards.class)) {
+				rewards = qu.getOption(OptionEndRewards.class);
+			}else {
+				rewards = (OptionEndRewards) QuestOptionCreator.creators.get(OptionEndRewards.class).optionSupplier.get();
+				rewards.getValue().add(new MessageReward(endMessage));
+				qu.addOption(rewards);
 			}
 		}
 

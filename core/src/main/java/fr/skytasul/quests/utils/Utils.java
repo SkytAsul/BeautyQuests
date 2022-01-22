@@ -3,16 +3,14 @@
 	import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -21,7 +19,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -30,7 +27,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,6 +41,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -53,6 +50,10 @@ import io.netty.buffer.Unpooled;
  * @author SkytAsul
  */
 public class Utils{
+	
+	public static Optional<String> getFilenameExtension(String filename) {
+		return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
+	}
 	
 	public static void openBook(Player p, ItemStack book){
 		int slot = p.getInventory().getHeldItemSlot();
@@ -86,10 +87,9 @@ public class Utils{
 			try {
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
-			}catch (Throwable e) {
+			}catch (Exception e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
 				e.printStackTrace();
-				continue;
 			}
 		}
 		return msg;
@@ -105,7 +105,12 @@ public class Utils{
 	public static String millisToHumanString(long time) {
 		StringBuilder sb = new StringBuilder();
 		
+		long weeks = time / 604_800_000;
+		if (weeks != 0) sb.append(Lang.TimeWeeks.format(weeks));
+		time -= weeks * 604_800_000;
+		
 		long days = time / 86_400_000;
+		if (sb.length() != 0) sb.append(' ');
 		if (days != 0) sb.append(Lang.TimeDays.format(days));
 		time -= days * 86_400_000;
 		
@@ -134,26 +139,26 @@ public class Utils{
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, QuestsConfiguration.getPrefix() + format(msg, replace), false);
+		IsendMessage(sender, QuestsConfiguration.getPrefix() + msg, false, replace);
 	}
 	
 	public static void sendMessageWP(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, "§6" + format(msg, replace), false);
+		IsendMessage(sender, "§6" + msg, false, replace);
 	}
 	
-	public static String finalFormat(CommandSender sender, String text, boolean playerName){
+	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
 		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
-		if (playerName) text = text.replace("{PLAYER}", sender.getName());
-		return text;
+		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+		return format(text, replace);
 	}
 	
-	public static void IsendMessage(CommandSender sender, String text, boolean playerName){
-		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName), "{nl}"));
+	public static void IsendMessage(CommandSender sender, String text, boolean playerName, Object... replace) {
+		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName, replace), "{nl}"));
 	}
 	
-	public static void sendOffMessage(Player p, String msg){
-		IsendMessage(p, Lang.OffText.format(msg), true);
+	public static void sendOffMessage(Player p, String msg, Object... replace) {
+		if (msg != null && !msg.isEmpty()) IsendMessage(p, Lang.OffText.format(msg, replace), true);
 	}
 	
 	public static String itemsToFormattedString(String[] items){
@@ -181,92 +186,23 @@ public class Utils{
 		return en.getLocation().add(0, QuestsConfiguration.getHologramsHeight() + NMS.getNMS().entityNameplateHeight(en) + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
 	}
 	
-	public static void removeItems(Inventory inv, ItemStack i){
-		if (i.getAmount() <= 0) return;
-		ItemStack[] items = inv.getContents();
-		for (int slot = 0; slot < items.length; slot++){
-			ItemStack item = items[slot];
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == i.getAmount()) {
-					inv.setItem(slot, new ItemStack(Material.AIR));
-                    return;
-                }
-				if (item.getAmount() > i.getAmount()) {
-					item.setAmount(item.getAmount() - i.getAmount());
-					return;
-				}else if (item.getAmount() < i.getAmount()) {
-					i.setAmount(i.getAmount() - item.getAmount());
-					inv.setItem(slot, new ItemStack(Material.AIR));
-				}
-			}
-		}
-	}
-
-	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
-		for(ItemStack item : inv.getContents()) {
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == amount) {
-					return true;
-                }
-				if (item.getAmount() > amount) {
-					return true;
-				}else if (item.getAmount() < amount) {
-					amount -= item.getAmount();
-				}
-			}
-		}
-		return false;
-	}
-	
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
         if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
-            ItemMeta item1Meta = item1.getItemMeta();
-            ItemMeta item2Meta = item2.getItemMeta();
-
-			try {
-				return NMS.getNMS().equalsWithoutNBT(item1Meta, item2Meta);
+            try {
+				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
 			}catch (ReflectiveOperationException ex) {
+				BeautyQuests.logger.severe("An error occurred while attempting to compare items using NMS");
 				ex.printStackTrace();
 			}
-
-			/*if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
-			if (item1Meta.hasDisplayName()) {
-			    if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
-			}
-			
-			if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
-			if (item1Meta.hasLore()) {
-			    if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
-			    for (int index = 0; index < item1Meta.getLore().size(); index++) {
-			        if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
-			    }
-			}
-			
-			if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
-			if (item1Meta.hasEnchants()) {
-			    if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
-			    for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
-			        if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
-			    }
-			}
-			if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
-			for (ItemFlag flag : item1Meta.getItemFlags()) {
-			    if (!item2Meta.hasItemFlag(flag)) return false;
-			}*/
-
-            return true;
         }
         return false;
     }
 	
-	public static void giveItem(Player p, ItemStack is){
-		if (p.getInventory().firstEmpty() == -1){
-			p.getWorld().dropItem(p.getLocation(), is);
+	public static void giveItems(Player p, List<ItemStack> items) {
+		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new));
+		if (!leftover.isEmpty()) {
+			leftover.values().forEach(item -> p.getWorld().dropItem(p.getLocation(), item));
 			Lang.ITEM_DROPPED.send(p);
-		}else {
-			p.getInventory().addItem(is);
 		}
 	}
 	
@@ -342,123 +278,7 @@ public class Utils{
 		return 0;
 	}
 	
-	/**
-	 * Breaks a raw string up into a series of lines. Words are wrapped using
-	 * spaces as decimeters and the newline character is respected.
-	 *
-	 * @param rawString The raw string to break.
-	 * @param lineLength The length of a line of text.
-	 * @return An array of word-wrapped lines.
-	 */
-	public static List<String> wordWrap(String rawString, int lineLength) {
-		// A null string is a single line
-		if (rawString == null) {
-			return Arrays.asList("");
-		}
-		
-		rawString = rawString.replace("{nl}", "\n");
-		
-		// A string shorter than the lineWidth is a single line
-		if (rawString.length() <= lineLength && !rawString.contains("\n")) {
-			return Arrays.asList(rawString);
-		}
-		
-		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
-		StringBuilder word = new StringBuilder();
-		StringBuilder line = new StringBuilder();
-		String lastColors = "";
-		String colors = "";
-		boolean first = false;
-		//boolean colorsSkip = true;
-		List<String> lines = new LinkedList<String>();
-		
-		for (int i = 0; i < rawChars.length; i++) {
-			char c = rawChars[i];
-			
-			// skip chat color modifiers
-			if (c == ChatColor.COLOR_CHAR) {
-				ChatColor color = ChatColor.getByChar(rawChars[i + 1]);
-				if (color != null) {
-					word.append(color.toString());
-					colors = ChatColor.getLastColors(colors + color.toString());
-					i++; // Eat the next character as we have already processed it
-					//colorsSkip = true;
-					continue;
-				}
-			}
-			
-			if (c == ' ' || c == '\n') {
-				if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
-					//System.out.println("long word : " + word);
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						lines.add(partialWord);
-					}
-				}else if (line.length() + 1 + word.length() == lineLength) { // Line exactly the correct length...newline
-					//System.out.println("good length");
-					if (line.length() > 0) {
-						line.append(' ');
-					}
-					line.append(word);
-					lines.add(line.toString());
-					line = new StringBuilder();
-					line.append(colors);
-					first = true;
-				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
-					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						lines.add(line.toString());
-						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
-						line = new StringBuilder(partialWord);
-						/*if (colorsSkip) {
-							colorsSkip = false;
-						}else {*/
-							line.insert(0, lastColors);
-						//}
-					}
-				}else {
-					if (line.length() > 0) {
-						if (first) {
-							first = false;
-						}else line.append(' ');
-					}
-					line.append(word);
-					lastColors = colors;
-				}
-				word = new StringBuilder();
-				
-				if (c == '\n') { // Newline forces the line to flush
-					lines.add(line.toString());
-					line = new StringBuilder();
-					line.append(lastColors);
-					first = true;
-				}
-				//colorsSkip = false;
-			}else {
-				word.append(c);
-			}
-		}
-		
-		if (line.length() > 0) { // Only add the last line if there is anything to add
-			lines.add(line.toString());
-		}
-		
-		// Iterate over the wrapped lines, applying the last color from one line to the beginning of the next
-		/*if (lines.get(0).length() == 0 || lines.get(0).charAt(0) != ChatColor.COLOR_CHAR) {
-			lines.set(0, ChatColor.WHITE + lines.get(0));
-		}*/
-		/*for (int i = 1; i < lines.size(); i++) {
-			final String pLine = lines.get(i - 1);
-			final String subLine = lines.get(i);
-			
-			//String color = ChatColor.getByChar(pLine.charAt(pLine.lastIndexOf(ChatColor.COLOR_CHAR) + 1));
-			String color = ChatColor.getLastColors(pLine);
-			if (subLine.length() == 0 || subLine.charAt(0) != ChatColor.COLOR_CHAR) {
-				lines.set(i, color + subLine);
-			}
-		}*/
-		
-		return lines;
-	}
+	
 	
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {
@@ -543,11 +363,15 @@ public class Utils{
 	}
 	
 	public static void playPluginSound(Player p, String sound, float volume){
+		playPluginSound(p, sound, volume, 1);
+	}
+	
+	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
-			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
-			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
+			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, pitch);
+		}catch (Exception ex) {
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, pitch);
 		}
 	}
 	
@@ -555,7 +379,7 @@ public class Utils{
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
+		}catch (Exception ex) {
 			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}
@@ -606,22 +430,6 @@ public class Utils{
 			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
 		}
 		return false;
-	}
-	
-	private static final char COLOR_CHAR = '\u00A7';
-	
-	public static String translateHexColorCodes(String startTag, String endTag, String message) {
-		final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})" + endTag);
-		Matcher matcher = hexPattern.matcher(message);
-		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
-		while (matcher.find()) {
-			String group = matcher.group(2);
-			matcher.appendReplacement(buffer, COLOR_CHAR + "x"
-					+ COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
-					+ COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
-					+ COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5));
-		}
-		return matcher.appendTail(buffer).toString();
 	}
 	
 }

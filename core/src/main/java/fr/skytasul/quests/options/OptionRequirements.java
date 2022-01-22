@@ -1,11 +1,10 @@
 package fr.skytasul.quests.options;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.utils.Lang;
@@ -19,7 +18,7 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement> {
 	}
 	
 	@Override
-	protected AbstractRequirement deserialize(Map<String, Object> map) throws ClassNotFoundException {
+	protected AbstractRequirement deserialize(Map<String, Object> map) {
 		return AbstractRequirement.deserialize(map);
 	}
 	
@@ -29,13 +28,8 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement> {
 	}
 	
 	@Override
-	protected String getInventoryName() {
-		return Lang.INVENTORY_REQUIREMENTS.toString();
-	}
-	
-	@Override
-	protected Collection<QuestObjectCreator<AbstractRequirement>> getCreators() {
-		return QuestsAPI.requirements.values();
+	protected QuestObjectsRegistry<AbstractRequirement> getObjectsRegistry() {
+		return QuestsAPI.getRequirements();
 	}
 	
 	@Override

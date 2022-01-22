@@ -12,6 +12,7 @@ msg:
     cancelling: §cProcess of quest creation cancelled.
     editCancelling: §cProcess of quest edition cancelled.
     invalidID: §cThe quest with the id {0} doesn't exist.
+    invalidPoolID: §cThe pool {0} does not exist.
     alreadyStarted: §cYou have already started the quest!
   quests:
     maxLaunched: §cYou cannot have more than {0} quest(s) at the same time...
@@ -39,8 +40,12 @@ msg:
   writeMobName: '§aWrite the custom name of the mob to kill:'
   writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if
     you want a command.)'
-  writeEndMessage: '§aWrite the message that will be sent at the end of the quest
-    or the stage:'
+  writeMessage: '§aWrite the message that will be sent to the player'
+  writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
+    "null" if you want the default one or "none" if you want none:'
+  writeEndMsg: '§aWrite the message that will be sent at the end of the quest,
+    "null" if you want the default one or "none" if you want none. You can use "{0}" which
+    will be replaced with the rewards obtained.'
   writeDescriptionText: '§aWrite the text which describes the goal of the stage:'
   writeStageText: '§aWrite the text that will be sent to the player at the beginning
     of the step:'
@@ -85,11 +90,20 @@ msg:
   indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and
     {2}.
   invalidBlockData: §cThe blockdata {0} is invalid or incompatible with the block {1}.
+  invalidBlockTag: §cUnavailable block tag {0}.
   bringBackObjects: Bring me back {0}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   playerNeverConnected: §cUnable to find informations about the player {0}.
   playerNotOnline: §cThe player {0} is offline.
+  playerDataNotFound: §cDatas of player {0} not found.
+  versionRequired: 'Version required: §l{0}'
   command:
+    downloadTranslations:
+      syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
+      notFound: '§cLanguage {0} not found for version {1}.'
+      exists: '§cThe file {0} already exists. Append "true" to your command to overwrite it. (/quests downloadTranslations <lang> true)'
+      downloaded: '§aLanguage {0} has been downloaded! §7You must now edit the
+        file "/plugins/BeautyQuests/config.yml" to change the value of §ominecraftTranslationsFile§7 with {0}, then restart the server.'
     checkpoint:
       noCheckpoint: §cNo checkpoint found for the quest {0}.
       questNotStarted: §cYou are not doing this quest.
@@ -120,6 +134,8 @@ msg:
       remover: §6{0} quest information(s) of {1} has/have been deleted.
     resetQuest: §6Removed datas of the quest for {0} players.
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
+    startQuestNoRequirements: '§cThe player does not meet the requirements for the quest {0}...
+      Append "true" at the end of your command to bypass the requirements check.'
     cancelQuest: §6You have cancelled the quest {0}.
     cancelQuestUnavailable: §cThe quest {0} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
@@ -128,6 +144,9 @@ msg:
     backupQuestsFailed: §cCreating a backup for all the quests has failed.
     adminModeEntered: §aYou have entered the Admin Mode.
     adminModeLeft: §aYou have left the Admin Mode.
+    resetPlayerPool:
+      timer: §aYou have reset the {0} pool timer of {1}.
+      full: §aYou have reset the {0} pool datas of {1}.
     scoreboard:
       lineSet: §6You have successfully edited the line {0}.
       lineReset: §6You have successfully reset the line {0}.
@@ -136,6 +155,9 @@ msg:
       resetAll: §6You have successfully reset the scoreboard of the player {0}.
       hidden: §6The scoreboard of the player {0} has been hidden.
       shown: §6The scoreboard of the player {0} has been shown.
+      own:
+        hidden: §6Your scoreboard is now hidden.
+        shown: §6Your scoreboard is shown again.
     help:
       header: §6§lBeautyQuests — Help
       create: '§6/{0} create: §eCreate a quest.'
@@ -156,13 +178,15 @@ msg:
       adminMode: '§6/{0} adminMode: §eToggle the Admin Mode. (Useful for displaying
         little log messages.)'
       version: '§6/{0} version: §eSee the current plugin version.'
+      downloadTranslations: '§6/{0} downloadTranslations <language>: §eDownloads a vanilla translation file'
       save: '§6/{0} save: §eMake a manual plugin save.'
       list: '§6/{0} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.
   editor:
     blockAmount: '§aWrite the amount of blocks:'
     blockName: '§aWrite the name of the block:'
-    blockData: '§aWrite the blockdata (available blockdatas: {0}):'
+    blockData: '§aWrite the blockdata (available blockdatas: §7{0}§a):'
+    blockTag: '§aWrite the block tag (available tags: §7{0}§a):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
@@ -171,6 +195,7 @@ msg:
     enter:
       title: §6~ Editor Mode ~
       subtitle: §6Write "/quests exitEditor" to force quit the editor.
+      list: '§c⚠ §7You have entered a "list" editor. Use "add" to add lines. Refer to "help" (without slash) for help. §e§lType "close" to exit editor.'
     chat: §6You are currently in the Editor Mode. Write "/quests exitEditor" to force
       leaving the editor. (Highly not recommended, consider using commands such as
       "close" or "cancel" to come back to the previous inventory.)
@@ -197,6 +222,9 @@ msg:
           or "null" if you want to be global.
         money: '§aWrite the amount of the received money:'
         wait: '§aWrite the amount of game ticks to wait: (1 second = 20 game ticks)'
+        random:
+          min: '§aWrite the minimum amount of rewards given to the player (inclusive).'
+          max: '§aWrite the maximum amount of rewards given to the player (inclusive).'
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
       chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
@@ -213,13 +241,13 @@ msg:
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
-      player: §aMessage "{0}" added for the player.
-      npc: §aMessage "{0}" added for the NPC.
-      noSender: §aMessage "{0}" added without a sender.
-      messageRemoved: §aMessage "{0}" removed.
-      edited: §aMessage "{0}" edited.
-      soundAdded: §aSound "{0}" added for the message "{1}".
-      cleared: §a{0} removed message(s).
+      player: §aMessage "§7{0}§a" added for the player.
+      npc: §aMessage "§7{0}§a" added for the NPC.
+      noSender: §aMessage "§7{0}§a" added without a sender.
+      messageRemoved: §aMessage "§7{0}§a" removed.
+      edited: §aMessage "§7{0}§a" edited.
+      soundAdded: §aSound "§7{0}§a" added for the message "§7{1}§a".
+      cleared: §aRemoved §2§l{0}§a message(s).
       help:
         header: §6§lBeautyQuests — Dialog editor help
         npc: '§6npc <message>: §eAdd a message said by the NPC.'
@@ -236,8 +264,12 @@ msg:
         clear: '§6clear: §eRemove all messages.'
         close: '§6close: §eValidate all messages.'
         setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
+        npcName: '§6npcName [custom NPC name]: §eSet (or reset to default) custom name of the NPC in the dialog'
       timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
       timeRemoved: '§aTime has been removed for message {0}.'
+      npcName:
+        set: '§aCustom NPC name set to §7{1}§a (was §7{0}§a)'
+        unset: '§aCustom NPC name reset to default (was §7{0}§a)'
     mythicmobs:
       list: '§aA list of all Mythic Mobs:'
       isntMythicMob: §cThis Mythic Mob doesn't exist.
@@ -245,8 +277,8 @@ msg:
     epicBossDoesntExist: §cThis Epic Boss doesn't exist.
     textList:
       syntax: '§cCorrect syntax: '
-      added: §aText "{0}" added.
-      removed: §aText "{0}" removed.
+      added: §aText "§7{0}§a" added.
+      removed: §aText "§7{0}§a" removed.
       help:
         header: §6§lBeautyQuests — List editor help
         add: '§6add <message>: §eAdd a text.'
@@ -259,7 +291,8 @@ msg:
     pool:
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
-      time: 'Write the number of days before players can take a new quest.'
+      questsPerLaunch: 'Write the amount of quests given when players click on the NPC.'
+      timeMsg: 'Write the time before players can take a new quest. (default unit: days)'
     title:
       title: 'Write the title text (or "null" if you want none).'
       subtitle: 'Write the subtitle text (or "null" if you want none).'
@@ -282,6 +315,10 @@ inv:
   create:
     stageCreate: §aCreate new step
     stageRemove: §cDelete this step
+    stageUp: Move up
+    stageDown: Move down
+    stageType: '§7Stage type: §e{0}'
+    cantFinish: §7You must create at least one stage before finishing quest creation!
     findNPC: §aFind NPC
     bringBack: §aBring back items
     findRegion: §aFind region
@@ -298,8 +335,10 @@ inv:
     breedAnimals: §aBreed animals
     tameAnimals: §aTame animals
     NPCText: §eEdit dialog
+    dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
+    gps: Displays a compass towards the objective
     editMobsKill: §eEdit mobs to kill
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break
@@ -369,21 +408,26 @@ inv:
     questName: §a§lEdit quest name
     questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
+    removeItemsReward: §eRemove items from inventory
     setXPRewards: §eEdit reward experience
     setCheckpointReward: §eEdit checkpoint rewards
     setRewardStopQuest: §cStop the quest
     setRewardsWithRequirements: §eRewards with requirements
+    setRewardsRandom: §dRandom rewards
     setPermReward: §eEdit permissions
     setMoneyReward: §eEdit money reward
     setWaitReward: '§eEdit "wait" reward'
     setTitleReward: '§eEdit title reward'
     selectStarterNPC: §e§lSelect NPC starter
     selectStarterNPCLore: Clicking on the selected NPC will start the quest.
+    selectStarterNPCPool: §c⚠ A quest pool is selected
     createQuestName: §lCreate quest
     createQuestLore: You must define a quest name.
     editQuestName: §lEdit quest
     endMessage: §eEdit end message
     endMessageLore: Message which will be sent to the player at the end of the quest.
+    startMessage: §eEdit start message
+    startMessageLore: Message which will be sent to the player at the beginning of the quest.
     startDialog: §eEdit start dialog
     startDialogLore: Dialog which will be played before the quests start when players click on the Starter NPC.
     editRequirements: §eEdit requirements
@@ -436,6 +480,8 @@ inv:
     name: Choose entity type
   chooseQuest:
     name: Which quest?
+    menu: §aQuests Menu
+    menuLore: Gets you to your Quests Menu.
   mobs:
     name: Select mobs
     none: §aClick to add a mob.
@@ -463,6 +509,9 @@ inv:
        Y: {1}
        Z: {2}
        World: {3}
+    random:
+      rewards: Edit rewards
+      minMax: Edit min and max
   checkpointActions:
     name: Checkpoint actions
   rewardsWithRequirements:
@@ -475,7 +524,8 @@ inv:
     notStarted: Not started quests
     finished: Finished quests
     inProgress: Quests in progress
-    loreCancel: §c§oClick to cancel the quest.
+    loreDialogsHistoryClick: §7View the dialogs
+    loreCancelClick: §cCancel the quest
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
     timeToWaitRedo: §3§oYou can restart this quest in {0}.
@@ -513,7 +563,12 @@ inv:
   block:
     name: Choose block
     material: '§eMaterial: {0}'
+    materialNotItemLore: 'The block chosen cannot be displayed as an item. It is still correctly stored as {0}.'
     blockData: '§dBlockdata (advanced)'
+    blockTag: '§dTag (advanced)'
+    blockTagLore: 'Choose a tag which describes a list of possible blocks.
+     Tags can be customized using datapacks.
+     You can find list of tags on the Minecraft wiki.'
   blocksList:
     name: Select blocks
     addBlock: §aClick to add a block.
@@ -543,6 +598,7 @@ inv:
     itemName: '§aPool #{0}'
     poolNPC: '§8NPC: §7{0}'
     poolMaxQuests: '§8Max quests: §7{0}'
+    poolQuestsPerLaunch: '§8Quests given per launch: §7{0}'
     poolRedo: '§8Can redo completed quests: §7{0}'
     poolTime: '§8Time between quests: §7{0}'
     poolHologram: '§8Hologram text: §7{0}'
@@ -550,10 +606,12 @@ inv:
     poolQuestsList: '§7{0} §8quest(s): §7{1}'
     create: §aCreate a quest pool
     edit: §e> §6§oEdit the pool... §e<
+    choose: §e> §6§oChoose this pool §e<
   poolCreation:
     name: Quest pool creation
     hologramText: §ePool custom hologram
     maxQuests: §aMax quests
+    questsPerLaunch: §aQuests started per launch
     time: §bSet time between quests
     redoAllowed: Is redo allowed
     avoidDuplicates: Avoid duplicates
@@ -613,13 +671,28 @@ indication:
   closeInventory: §7Are you sure you want to close the GUI?
   cancelQuest: §7Are you sure you want to cancel the quest {0}?
   removeQuest: §7Are you sure you want to remove the quest {0}?
+description:
+  requirement:
+    title: '§8§lRequirements:'
+    level: 'Level {0}'
+    jobLevel: 'Level {0} for {1}'
+    combatLevel: 'Combat level {0}'
+    skillLevel: 'Level {0} for {1}'
+    class: 'Class {0}'
+    faction: 'Faction {0}'
+    quest: 'Finish quest §e{0}'
+  reward:
+    title: '§8§lRewards:'
+    
 misc:
   format:
     prefix: §6<§e§lQuests§r§6> §r
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     offText: §r§e{0}
+    editorPrefix: §a
   time:
+    weeks: '{0} weeks'
     days: '{0} days'
     hours: '{0} hours'
     minutes: '{0} minutes'
@@ -648,6 +721,7 @@ misc:
     greater: strictly greater than {0}
     greaterOrEquals: greater than {0}
   requirement:
+    logicalOr: §dLogical OR (requirements)
     skillAPILevel: §bSkillAPI level required
     class: §bClass(es) required
     faction: §bFaction(s) required
@@ -665,6 +739,12 @@ misc:
     water: Water bucket
     lava: Lava bucket
     milk: Milk bucket
+  click:
+    right: Right click
+    left: Left click
+    shift-right: Shift-right click
+    shift-left: Shift-left click
+    middle: Middle click
   ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
@@ -679,6 +759,7 @@ misc:
   unused: §2§lUnused
   used: §a§lUsed
   remove: §7Middle-click to remove
+  removeRaw: Remove
   or: or
   amount: '§eAmount: {0}'
   items: items

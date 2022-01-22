@@ -1,11 +1,12 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,10 +20,12 @@ import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.AbstractHolograms;
 
-public class BQHolographicDisplays extends AbstractHolograms<Hologram> {
+public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 
 	private final boolean protocolLib = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
 
+	private Field visibilitiesField;
+	
 	@Override
 	public boolean supportPerPlayerVisibility() {
 		return protocolLib;
@@ -34,42 +37,50 @@ public class BQHolographicDisplays extends AbstractHolograms<Hologram> {
 	}
 	
 	@Override
-	public HDHologram createHologram(Location lc, boolean visible) {
+	public HD2Hologram createHologram(Location lc, boolean visible) {
 		Hologram holo = HologramsAPI.createHologram(BeautyQuests.getInstance(), lc);
 		if (protocolLib) holo.getVisibilityManager().setVisibleByDefault(visible);
-		return new HDHologram(holo);
+		return new HD2Hologram(holo);
 	}
 	
-	public class HDHologram extends BQHologram {
+	public class HD2Hologram extends BQHologram {
 		
-		protected HDHologram(Hologram hologram) {
+		protected HD2Hologram(Hologram hologram) {
 			super(hologram);
 		}
 		
 		@Override
 		public void setPlayersVisible(List<Player> players) {
 			try {
-				List<Player> all = new ArrayList<>(players);
+				List<String> all = players.stream().map(Player::getName).collect(Collectors.toList());
 				VisibilityManager visibility = hologram.getVisibilityManager();
 				
-				Field field = visibility.getClass().getDeclaredField("playersVisibilityMap");
-				field.setAccessible(true);
-				Map<String, Boolean> map = (Map<String, Boolean>) field.get(visibility);
-				if (map == null) field.set(visibility, new ConcurrentHashMap<>());
-				map = (Map<String, Boolean>) field.get(visibility);
-				
-				for (Entry<String, Boolean> en : map.entrySet()) {
-					if (!en.getValue()) continue;
-					Player p = Bukkit.getPlayer(en.getKey());
-					if (p == null) continue;
-					if (!all.contains(p)) {
-						visibility.hideTo(p);
-					}
-					all.remove(p);
+				if (visibilitiesField == null) {
+					visibilitiesField = visibility.getClass().getDeclaredField("playersVisibilityMap");
+					visibilitiesField.setAccessible(true);
 				}
-				for (Player p : all) {
+				Map<String, Boolean> map = (Map<String, Boolean>) visibilitiesField.get(visibility);
+				if (map == null) {
+					map = new ConcurrentHashMap<>();
+					visibilitiesField.set(visibility, map);
+				}
+				
+				for (Iterator<Entry<String, Boolean>> iterator = map.entrySet().iterator(); iterator.hasNext();) {
+					Entry<String, Boolean> en = iterator.next();
+					if (!en.getValue()) continue;
+					if (!all.contains(en.getKey())) {
+						Player player = Bukkit.getPlayer(en.getKey());
+						if (player != null) {
+							visibility.hideTo(player);
+						}else {
+							iterator.remove();
+						}
+					}
+					all.remove(en.getKey());
+				}
+				for (String p : all) {
 					if (p == null) continue;
-					visibility.showTo(p);
+					visibility.showTo(Bukkit.getPlayer(p));
 				}
 			}catch (ReflectiveOperationException ex) {
 				ex.printStackTrace();

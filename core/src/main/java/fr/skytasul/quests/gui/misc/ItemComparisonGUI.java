@@ -14,6 +14,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 	
@@ -37,7 +38,11 @@ public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 	public static void initialize() {
 		QuestsAPI.registerItemComparison(new ItemComparison("bukkit", Lang.comparisonBukkit.toString(), Lang.comparisonBukkitLore.toString(), ItemStack::isSimilar).setEnabledByDefault());
 		QuestsAPI.registerItemComparison(new ItemComparison("customBukkit", Lang.comparisonCustomBukkit.toString(), Lang.comparisonCustomBukkitLore.toString(), Utils::isSimilar));
-		QuestsAPI.registerItemComparison(new ItemComparison("material", Lang.comparisonMaterial.toString(), Lang.comparisonMaterialLore.toString(), (item1, item2) -> item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()));
+		QuestsAPI.registerItemComparison(new ItemComparison("material", Lang.comparisonMaterial.toString(), Lang.comparisonMaterialLore.toString(), (item1, item2) -> {
+			if (item2.getType() != item1.getType()) return false;
+			if (item1.getType().getMaxDurability() > 0 || XMaterial.isNewVersion()) return true;
+			return item2.getDurability() == item1.getDurability();
+		}));
 		QuestsAPI.registerItemComparison(new ItemComparison("name", Lang.comparisonName.toString(), Lang.comparisonNameLore.toString(), (item1, item2) -> {
 			ItemMeta meta1 = item1.getItemMeta();
 			ItemMeta meta2 = item2.getItemMeta();

@@ -98,21 +98,22 @@ public class ItemComparisonMap implements Cloneable {
 	}
 	
 	public void removeItems(Inventory inv, ItemStack i) {
-		if (i.getAmount() <= 0) return;
+		int amount = i.getAmount();
+		if (amount <= 0) return;
 		ItemStack[] items = inv.getContents();
 		for (int slot = 0; slot < items.length; slot++) {
 			ItemStack item = items[slot];
 			if (item == null) continue;
 			if (isSimilar(item, i)) {
-				if (item.getAmount() == i.getAmount()) {
+				if (item.getAmount() == amount) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
 					return;
 				}
-				if (item.getAmount() > i.getAmount()) {
-					item.setAmount(item.getAmount() - i.getAmount());
+				if (item.getAmount() > amount) {
+					item.setAmount(item.getAmount() - amount);
 					return;
-				}else if (item.getAmount() < i.getAmount()) {
-					i.setAmount(i.getAmount() - item.getAmount());
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
 					inv.setItem(slot, new ItemStack(Material.AIR));
 				}
 			}

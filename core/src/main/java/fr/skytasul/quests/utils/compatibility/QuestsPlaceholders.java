@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,8 +28,9 @@ import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -63,7 +65,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		placeholders = new QuestsPlaceholders(placeholderConfig);
 		placeholders.register();
 		Bukkit.getPluginManager().registerEvents(placeholders, BeautyQuests.getInstance());
-		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
+		BeautyQuests.getInstance().getLogger().info("Placeholders registered !");
 	}
 	
 	public static void waitForExpansion(String identifier, Consumer<PlaceholderExpansion> callback) {
@@ -97,19 +99,20 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	
 	@Override
 	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "player_quest_finished_ID");
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
 	}
 	
 	@Override
 	public String onRequest(OfflinePlayer off, String identifier) {
-		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
+		if (identifier.equals("total_amount")) return "" + QuestsAPI.getQuests().getQuestsAmount();
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
-		if (identifier.equals("player_inprogress_amount")) return "" + QuestsAPI.getQuestsStarteds(acc).size();
-		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc, false).size();
+		if (identifier.equals("player_inprogress_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
+		if (identifier.equals("player_finished_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
 		if (identifier.equals("player_finished_total_amount")) return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
+		if (identifier.equals("started_id_list")) return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);
@@ -125,8 +128,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				}
 				
 				if (data.left.isEmpty()) {
-					data.left = QuestsAPI.getQuestsStarteds(data.acc, true);
-				}else QuestsAPI.updateQuestsStarteds(acc, true, data.left);
+					data.left = QuestsAPI.getQuests().getQuestsStarted(data.acc, true);
+				}else QuestsAPI.getQuests().updateQuestsStarted(acc, true, data.left);
 				
 				try {
 					int i = -1;
@@ -146,7 +149,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					if (noSplit) return format;
 				
 					try {
-						List<String> lines = Utils.wordWrap(format, lineLength);
+						List<String> lines = ChatUtils.wordWrap(format, lineLength);
 						if (i >= lines.size()) return "";
 						return lines.get(i);
 					}catch (Exception ex) {
@@ -162,23 +165,31 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		}
 		
 		if (identifier.startsWith("advancement_")) {
-			String sid = identifier.substring(12);
+			int rawId = identifier.indexOf("_raw");
+			String sid = rawId == -1 ? identifier.substring(12) : identifier.substring(12, rawId);
 			try {
-				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (qu.hasStarted(acc)) {
-					return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+				if (rawId == -1) {
+					if (qu.hasStarted(acc)) {
+						return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+					}
+					if (qu.hasFinished(acc)) return Lang.Finished.toString();
+					return Lang.Not_Started.toString();
+				}else {
+					if (!acc.hasQuestDatas(qu)) return "-1";
+					PlayerQuestDatas datas = acc.getQuestDatas(qu);
+					if (datas.hasStarted()) return Integer.toString(datas.getStage());
+					return "-1";
 				}
-				if (qu.hasFinished(acc)) return Lang.Finished.toString();
-				return Lang.Not_Started.toString();
 			}catch (NumberFormatException ex) {
-				return "§c§lError: §o" + sid;
+				return "§c§lError: §o" + sid + " not a number";
 			}
 		}
 		if (identifier.startsWith("player_quest_finished_")) {
 			String sid = identifier.substring(22);
 			try {
-				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (!acc.hasQuestDatas(qu)) return "0";
 				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());

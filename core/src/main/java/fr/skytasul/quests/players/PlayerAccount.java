@@ -49,6 +49,10 @@ public class PlayerAccount {
 	public boolean hasQuestDatas(Quest quest) {
 		return questDatas.containsKey(quest.getID());
 	}
+	
+	public PlayerQuestDatas getQuestDatasIfPresent(Quest quest) {
+		return questDatas.get(quest.getID());
+	}
 
 	public PlayerQuestDatas getQuestDatas(Quest quest) {
 		PlayerQuestDatas datas = questDatas.get(quest.getID());
@@ -67,6 +71,10 @@ public class PlayerAccount {
 		PlayerQuestDatas removed = questDatas.remove(id);
 		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, id, removed);
 		return removed;
+	}
+	
+	protected PlayerQuestDatas removeQuestDatasSilently(int id) {
+		return questDatas.remove(id);
 	}
 	
 	public Collection<PlayerQuestDatas> getQuestsDatas() {
@@ -100,6 +108,7 @@ public class PlayerAccount {
 		return poolDatas.values();
 	}
 
+	@Override
 	public boolean equals(Object arg0) {
 		if (arg0 == this) return true;
 		if (arg0.getClass() != this.getClass()) return false;
@@ -108,14 +117,29 @@ public class PlayerAccount {
 		return true;
 	}
 	
+	@Override
+	public int hashCode() {
+		int hash = 1;
+		
+		hash = hash * 31 + index;
+		hash = hash * 31 + abstractAcc.hashCode();
+		
+		return hash;
+	}
+	
+	public String getName() {
+		Player p = getPlayer();
+		return p == null ? debugName() : p.getName();
+	}
+	
 	public String debugName() {
 		return abstractAcc.getIdentifier() + " (#" + index + ")";
 	}
 
 	public void serialize(ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
-		config.set("quests", Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
-		config.set("pools", Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
+		config.set("quests", questDatas.isEmpty() ? null : Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
+		config.set("pools", poolDatas.isEmpty() ? null : Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
 	}
 	
 }

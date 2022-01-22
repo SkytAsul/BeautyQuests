@@ -35,7 +35,7 @@ msg:
   writeMobAmount: '§aNapisz liczbę potworów do zabicia:'
   writeMobName: '§aNapisz niestandardową nazwę potwora do zabicia:'
   writeChatMessage: '§aNapisz wymaganą wiadomość: (Dodaj "{SLASH}" na początku wiadomości jeśli chcesz wymagać komendy)'
-  writeEndMessage: '§aNapisz wiadomość, która zostanie wysłana na koniec zadania lub etapu:'
+  writeStartMessage: '§aNapisz wiadomość która będzie się wyświetlać na początku zadania, wpisz "null" aby pozostawić domyślną, wpisz "none" aby zostawić puste:'
   writeDescriptionText: '§aNapisz tekst, który opisuje cel tego etapu:'
   writeStageText: '§aNapisz tekst, który zostanie wysłany do gracza na początku tego etapu:'
   moveToTeleportPoint: '§aUdaj się do poszukiwanej lokalizacji.'
@@ -188,12 +188,6 @@ msg:
     dialog:
       syntax: '§cPoprawna składnia: {0}{1} <message>'
       syntaxRemove: '§cPoprawna składnia: remove <id>'
-      player: '§aWiadomość "{0}" została dodana dla gracza.'
-      npc: '§aWiadomość "{0}" została dodana dla NPC.'
-      noSender: '§aWiadomość "{0}" dodana bez nadawcy.'
-      messageRemoved: '§aWiadomość "{0}" usunięta.'
-      edited: '§aWiadomość "{0}" edytowana.'
-      soundAdded: '§aDźwięk "{0}" dodany dla wiadomości "{1}".'
       cleared: '§aUsunięto {0} wiadomość(ci).'
       help:
         header: '§6§lBeautyQuests - Pomoc do edytora okna dialogowego'
@@ -219,8 +213,6 @@ msg:
     epicBossDoesntExist: '§cTen Epicki Boss nie istnieje.'
     textList:
       syntax: '§cPoprawna składnia: '
-      added: '§aTekst "{0}" został dodany.'
-      removed: '§aTekst "{0}" został usunięty.'
       help:
         header: '§6§lBeautyQuests — Pomoc edytora list'
         add: '§6add <wiadomość>: §eDodaj tekst.'
@@ -233,7 +225,14 @@ msg:
     pool:
       hologramText: 'Napisz niestandardowy tekst hologramu dla tej puli (lub "null" jeśli chcesz domyślnie).'
       maxQuests: 'Wpisz maksymalną ilość zadań uruchamianych z tej puli.'
+      questsPerLaunch: 'Napisz liczbę zadań, gdy gracze klikną na NPC.'
       time: 'Napisz liczbę dni zanim gracze będą mogli wykonać nowe zadanie.'
+    title:
+      title: 'Napisz tytuł teksu (lub wpisz "null" aby pozostawić puste).'
+      subtitle: 'Napisz podtytuł teksu (lub wpisz "null" aby pozostawić puste).'
+      fadeIn: 'Wpisz czas "fade-in" w tickach (20 ticków = 1 sekunda).'
+      stay: 'Wpisz czas "stay" w tickach (20 ticków = 1 sekunda).'
+      fadeOut: 'Napisz czas "fade-out" w tickach (20 ticków = 1 sekunda).'
   writeCommandDelay: '§aNapisz żądane opóźnienie komendy, w tickach.'
 advancement:
   finished: Zakończono
@@ -268,6 +267,7 @@ inv:
     NPCText: '§eEdytuj okno dialogowe'
     NPCSelect: '§eWybierz lub utwórz NPC'
     hideClues: Ukryj cząsteczki i hologramy
+    gps: Wyświetla kompas pokazujący kierunek celu
     editMobsKill: '§eEdytuj moby do zabicia'
     mobsKillFromAFar: Należy zabić pociskiem
     editBlocksMine: '§eEdytuj bloki do zniszczenia'
@@ -344,13 +344,17 @@ inv:
     setPermReward: '§eEdytuj uprawnienia'
     setMoneyReward: '§eEdytuj nagrodę pieniężną'
     setWaitReward: '§eEdytuj nagrodę "czekania"'
+    setTitleReward: '§eEdytuj tytuł nagrody'
     selectStarterNPC: '§e§lWybierz NPC startowego'
     selectStarterNPCLore: Kliknięcie na wybranego NPC rozpocznie zadanie.
+    selectStarterNPCPool: '§c⚠ Wybrana pula zadań'
     createQuestName: '§lUtwórz zadanie'
     createQuestLore: Musisz zdefiniować nazwę zadania.
     editQuestName: '§lEdytuj zadanie'
     endMessage: '§eEdytuj wiadomość końcową'
     endMessageLore: Wiadomość, która zostanie wysłana do gracza po zakończeniu zadania.
+    startMessage: '§eEdytuj wiadomość początkową'
+    startMessageLore: Wiadomość, która zostanie wysłana do gracza po zakończeniu zadania.
     startDialog: '§eEdytuj okno startowe'
     startDialogLore: Okno dialogowe, które będzie wyświetlane przed rozpoczęciem zadań, kiedy gracze klikną na NPC Startowego.
     editRequirements: '§eEdytuj wymagania'
@@ -507,20 +511,25 @@ inv:
     itemName: '§aPula #{0}'
     poolNPC: '§8NPC: §7{0}'
     poolMaxQuests: '§8Maks. zadań: §7{0}'
+    poolQuestsPerLaunch: '§8Zadania podane podczas startu: §7{0}'
     poolRedo: '§8Można wykonywać ponownie ukończone zadania: §7{0}'
     poolTime: '§8Czas pomiędzy zadaniami: §7{0}'
     poolHologram: '§8Tekst hologramu: §7{0}'
     poolAvoidDuplicates: '§8Unikaj duplikatów: §7{0}'
     poolQuestsList: '§7{0} §8zadań(ia): §7{1}'
     create: '§aUtwórz pulę zadań'
+    edit: '§e> §6§oEdytuj pulę... §e<'
+    choose: '§e> §6§oWybierz tę pulę §e<'
   poolCreation:
     name: Tworzenie puli zadań
     hologramText: '§ePool niestandardowy hologram'
     maxQuests: '§aMaks. zadań'
+    questsPerLaunch: '§8Zadania podane podczas startu'
     time: '§bUstaw czas pomiędzy zadaniami'
     redoAllowed: Jest dozwolone ponawianie
     avoidDuplicates: Unikaj duplikatów
     avoidDuplicatesLore: '§8> §7Spróbuj unikać wykonywania\n tego samego zadania'
+    requirements: '§bWymagania do rozpoczęcia zadania'
   poolsList.name: Pule zadań
   itemComparisons:
     name: Porównania pozycji
@@ -538,12 +547,20 @@ inv:
     enchantsLore: Porównuje zaklęcia przedmiotów
     repairCost: Koszt naprawy
     repairCostLore: Porównuje koszty naprawy pancerza i mieczy
+  editTitle:
+    name: Edytuj tytuł
+    title: '§6Tytuł'
+    subtitle: '§ePodtytuł'
+    fadeIn: '§aCzas pojawiania'
+    stay: '§bCzas trwania'
+    fadeOut: '§aCzas zanikania'
 scoreboard:
   name: '§7§lZadania'
   noLaunched: '§cBrak zadań w toku.'
   noLaunchedName: '§c§lŁadowanie'
   noLaunchedDescription: '§c§lŁadowanie'
   textBetwteenBranch: '§e lub'
+  asyncEnd: '§ex'
   stage:
     region: '§eZnajdź region §6{0}'
     npc: '§ePorozmawiaj z NPC §6{0}'
@@ -601,6 +618,7 @@ misc:
     greater: ściśle więcej niż {0}
     greaterOrEquals: więcej niż {0}
   requirement:
+    logicalOr: '§dLogiczne LUB (wymagania)'
     skillAPILevel: '§bWymagany poziom SkillAPI'
     class: '§bKlasa(y) wymagane'
     faction: '§bFrakcja(e) wymagana(e)'

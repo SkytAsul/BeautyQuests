@@ -20,37 +20,27 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.stages.StageArea;
-import fr.skytasul.quests.stages.StageBreed;
-import fr.skytasul.quests.stages.StageBringBack;
-import fr.skytasul.quests.stages.StageBucket;
-import fr.skytasul.quests.stages.StageChat;
-import fr.skytasul.quests.stages.StageCraft;
-import fr.skytasul.quests.stages.StageFish;
-import fr.skytasul.quests.stages.StageInteract;
-import fr.skytasul.quests.stages.StageLocation;
-import fr.skytasul.quests.stages.StageMine;
-import fr.skytasul.quests.stages.StageMobs;
-import fr.skytasul.quests.stages.StageNPC;
-import fr.skytasul.quests.stages.StagePlaceBlocks;
-import fr.skytasul.quests.stages.StagePlayTime;
-import fr.skytasul.quests.stages.StageTame;
+import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
+import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class StagesGUI implements CustomInventory {
 
+	private static final int SLOT_FINISH = 52;
+	
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
-	private static final ItemStack stageRemove = ItemUtils.item(XMaterial.BARRIER, Lang.stageRemove.toString());
-
+	private static final ItemStack notDone = ItemUtils.lore(ItemUtils.itemNotDone.clone(), Lang.cantFinish.toString());
+	
 	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
 	public static final ItemStack descMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
 	public static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
 	public static final ItemStack validationRequirements = ItemUtils.item(XMaterial.NETHER_STAR, Lang.validationRequirements.toString(), QuestOption.formatDescription(Lang.validationRequirementsLore.toString()));
-
+	
 	private List<Line> lines = new ArrayList<>();
 	
 	private Quest edit;
@@ -67,6 +57,7 @@ public class StagesGUI implements CustomInventory {
 		this.previousBranch = previousBranch;
 	}
 	
+	@Override
 	public Inventory open(Player p) {
 		if (inv == null){
 			inv = Bukkit.createInventory(null, 54, Lang.INVENTORY_STAGES.toString());
@@ -79,7 +70,7 @@ public class StagesGUI implements CustomInventory {
 			inv.setItem(45, ItemUtils.itemLaterPage);
 			inv.setItem(50, ItemUtils.itemNextPage);
 
-			inv.setItem(52, ItemUtils.itemDone);
+			inv.setItem(SLOT_FINISH, isEmpty() ? notDone : ItemUtils.itemDone);
 			inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel : ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
 			refresh();
 		}
@@ -104,51 +95,86 @@ public class StagesGUI implements CustomInventory {
 
 	private void setStageCreate(Line line, boolean branches){
 		line.removeItems();
-		line.setItem(0, stageCreate.clone(), new StageRunnable() {
-			public void run(Player p, ItemStack item) {
-				line.setItem(0, null, null, true, false);
-				int i = 0;
-				for (StageType<?> creator : QuestsAPI.stages) {
-					if (creator.isValid()) {
-						line.setItem(++i, creator.item, new StageRunnable() {
-							public void run(Player p, ItemStack item) {
-								runClick(line, creator, branches).start(p);
-							}
-						}, true, false);
-					}
+		line.setItem(0, stageCreate.clone(), (p, item) -> {
+			line.setItem(0, null, null, true, false);
+			int i = 0;
+			for (StageType<?> creator : QuestsAPI.stages) {
+				if (creator.isValid()) {
+					line.setItem(++i, creator.item, (p1, item1) -> {
+						runClick(line, creator, branches).start(p1);
+					}, true, false);
 				}
-				line.setItems(0);
 			}
+			line.setItems(0);
 		});
 		line.setItems(0);
 	}
 
+	private String[] getLineManageLore(int line) {
+		return new String[] {
+				"§7" + Lang.ClickRight + "/" + Lang.ClickLeft + " > §c" + Lang.stageRemove.toString(),
+				line == 0 || line == 15 ? ("§8" + Lang.ClickShiftRight + " > " + Lang.stageUp) : "§7" + Lang.ClickShiftRight + " > §e" + Lang.stageUp,
+				line == 14 || line == 19 || !isActiveLine(getLine(line + 1)) ? ("§8" + Lang.ClickShiftLeft + " > " + Lang.stageDown) : "§7" + Lang.ClickShiftLeft + " > §e" + Lang.stageDown };
+	}
+	
+	private void updateLineManageLore(Line line) {
+		line.editItem(0, ItemUtils.lore(line.getItem(0), getLineManageLore(line.getLine())));
+	}
+	
 	private StageCreation<?> runClick(Line line, StageType<?> creator, boolean branches) {
 		line.removeItems();
 		StageCreation<?> creation = creator.creationSupplier.supply(line, branches);
 		line.creation = creation;
+		
+		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 
 		int maxStages = branches ? 20 : 15;
-		line.setItem(0, ItemUtils.lore(stageRemove.clone(), QuestOption.formatDescription(creator.name)), new StageRunnable() {
-			public void run(Player p, ItemStack item) {
-				line.creation = null;
-				line.removeItems();
-				if (line.getLine() != maxStages-1){
-					for (int i = line.getLine() + 1; i < maxStages; i++){
-						getLine(i).exchangeLines(getLine(i - 1));
+		ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(creator.name), getLineManageLore(line.getLine()));
+		line.setItem(0, manageItem, new StageRunnableClick() {
+			@Override
+			public void run(Player p, ItemStack item, ClickType click) {
+				if (click == ClickType.LEFT || click == ClickType.RIGHT) {
+					line.creation = null;
+					int lineID = line.getLine();
+					if (lineID != maxStages - 1) {
+						line.removeItems();
+						for (int i = line.getLine() + 1; i < maxStages; i++) {
+							Line exLine = getLine(i);
+							exLine.changeLine(i - 1);
+							if (!isActiveLine(exLine)) {
+								if (exLine.isEmpty()) {
+									setStageCreate(exLine, branches);
+								}else {
+									line.line = exLine.getLine() + 1;
+								}
+								break;
+							}
+						}
+						if (lineID == 0 || lineID == 15) updateLineManageLore(getLine(lineID));
+					}else setStageCreate(line, branches);
+					if (lineID != 0 && lineID != 15) updateLineManageLore(getLine(lineID - 1));
+					if (isEmpty()) inv.setItem(SLOT_FINISH, notDone);
+				}else if (click == ClickType.SHIFT_LEFT) {
+					if (line.getLine() != 14 && line.getLine() != 19) {
+						Line down = getLine(line.getLine() + 1);
+						if (isActiveLine(down)) {
+							down.exchangeLines(line);
+							updateLineManageLore(line);
+							updateLineManageLore(down);
+						}
 					}
-				}
-				for (int i = 0; i < maxStages; i++){
-					Line l = getLine(i);
-					if (!isActiveLine(l)){
-						setStageCreate(l, i > maxStages-1);
-						break;
+				}else if (click == ClickType.SHIFT_RIGHT) {
+					if (line.getLine() != 0 && line.getLine() != 15) {
+						Line up = getLine(line.getLine() - 1);
+						up.exchangeLines(line);
+						updateLineManageLore(line);
+						updateLineManageLore(up);
 					}
 				}
 			}
 		});
 
-		if (line.getLine() != maxStages-1){
+		if (line.getLine() != maxStages - 1) {
 			Line next = getLine(line.getLine() + 1);
 			if (!isActiveLine(next)) setStageCreate(next, branches);
 		}
@@ -157,6 +183,8 @@ public class StagesGUI implements CustomInventory {
 			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(this));
 			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.create(p, creation.getLeadingBranch()));
 		}
+		
+		if (line.getLine() != 0 && line.getLine() != 15) updateLineManageLore(getLine(line.getLine() - 1));
 		
 		return creation;
 	}
@@ -178,9 +206,10 @@ public class StagesGUI implements CustomInventory {
 	}
 	
 	public void deleteStageLine(Line line) {
-		if (isActiveLine(line)) line.execute(0, null, null); // item and player not used for deletion item
+		if (isActiveLine(line)) line.execute(0, null, null, ClickType.RIGHT); // item and player not used for deletion item
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		if (slot > 44) {
 			if (slot == 45) {
@@ -198,7 +227,11 @@ public class StagesGUI implements CustomInventory {
 				}
 			}else if (slot == 52) {
 				if (previousBranch == null){ // main inventory = directly finish if not empty
-					if (!isEmpty()) finish(p);
+					if (isEmpty()) {
+						Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+					}else {
+						finish(p);
+					}
 				}else { // branch inventory = get the main inventory to finish
 					StagesGUI branch = previousBranch;
 					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
@@ -222,11 +255,12 @@ public class StagesGUI implements CustomInventory {
 			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
 			branch.stagesEdited = true;
 			Line line = getLine((slot - slot % 9)/9 +5*page);
-			line.click(slot - (line.getLine() - page * 5) * 9, p, current);
+			line.click(slot - (line.getLine() - page * 5) * 9, p, current, click);
 		}
 		return true;
 	}
 
+	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
 		if (isEmpty() || stop) return CloseBehavior.REMOVE;
 		return CloseBehavior.REOPEN;
@@ -250,8 +284,9 @@ public class StagesGUI implements CustomInventory {
 		}
 	}
 
-	public List<StageCreation<?>> getStageCreations() {
-		List<StageCreation<?>> stages = new LinkedList<>();
+	@SuppressWarnings ("rawtypes")
+	public List<StageCreation> getStageCreations() {
+		List<StageCreation> stages = new LinkedList<>();
 		for (int i = 0; i < 20; i++) {
 			Line line = getLine(i);
 			if (isActiveLine(line)) stages.add(line.creation);
@@ -262,6 +297,7 @@ public class StagesGUI implements CustomInventory {
 	public void edit(Quest quest){
 		edit = quest;
 		editBranch(quest.getBranchesManager().getBranch(0));
+		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 	}
 	
 	private void editBranch(QuestBranch branch){

@@ -2,7 +2,6 @@ package fr.skytasul.quests.api.stages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +17,9 @@ import org.bukkit.event.Listener;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -28,7 +27,6 @@ import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 public abstract class AbstractStage implements Listener{
@@ -43,7 +41,7 @@ public abstract class AbstractStage implements Listener{
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
 	
-	public AbstractStage(QuestBranch branch){
+	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
 		
 		this.type = QuestsAPI.stages.stream().filter(type -> type.clazz == getClass()).findAny()
@@ -143,7 +141,7 @@ public abstract class AbstractStage implements Listener{
 	}
 	
 	public String debugName() {
-		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID();
+		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID() + "(" + type.id + ")";
 	}
 
 	/**
@@ -169,21 +167,11 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount for which the stage starts
 	 */
 	public void start(PlayerAccount acc) {
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			if (startMessage != null){
-				if (startMessage.length() > 0){
-					if (branch.getID(this) == 0 && branch.getQuest().hasOption(OptionStarterNPC.class)) {
-						Utils.IsendMessage(p, Lang.NpcText.format(branch.getQuest().getOption(OptionStarterNPC.class).getValue().getName(), startMessage, 1, 1), true);
-					}else {
-						Utils.sendOffMessage(p, startMessage);
-					}
-				}
-			}
-		}
+		if (acc.isCurrent()) Utils.sendOffMessage(acc.getPlayer(), startMessage);
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageStart(acc, this));
 	}
 	
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
@@ -194,19 +182,24 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void end(PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageEnd(acc, this));
 	}
 	
 	/**
 	 * Called when an account with this stage launched joins
 	 * @param acc PlayerAccount which just joined
 	 */
-	public void joins(PlayerAccount acc, Player p) {}
+	public void joins(PlayerAccount acc, Player p) {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, p, this));
+	}
 	
 	/**
 	 * Called when an account with this stage launched leaves
 	 * @param acc PlayerAccount which just left
 	 */
-	public void leaves(PlayerAccount acc, Player p) {}
+	public void leaves(PlayerAccount acc, Player p) {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, p, this));
+	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
@@ -237,7 +230,7 @@ public abstract class AbstractStage implements Listener{
 		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		if (p != null) branch.getBranchesManager().objectiveUpdated(p, acc);
+		branch.getBranchesManager().objectiveUpdated(p, acc);
 	}
 
 	protected <T> T getData(PlayerAccount acc, String dataKey) {
@@ -257,6 +250,7 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageUnload(this));
         HandlerList.unregisterAll(this);
 		rewards.forEach(AbstractReward::detach);
 		validationRequirements.forEach(AbstractRequirement::detach);
@@ -265,7 +259,9 @@ public abstract class AbstractStage implements Listener{
 	/**
 	 * Called when the stage loads
 	 */
-	public void load() {}
+	public void load() {
+		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLoad(this));
+	}
 	
 	@EventHandler
 	public void onJoin(PlayerAccountJoinEvent e) {
@@ -316,30 +312,8 @@ public abstract class AbstractStage implements Listener{
 		AbstractStage st = stageType.deserializationSupplier.supply(map, branch);
 		if (map.containsKey("text")) st.startMessage = (String) map.get("text");
 		if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-		for (Map<String, Object> rew : (List<Map<String, Object>>) map.getOrDefault("rewards", Collections.EMPTY_LIST)) {
-			try {
-				AbstractReward reward = AbstractReward.deserialize(rew);
-				st.rewards.add(reward);
-				reward.attach(branch.getQuest());
-				if (reward.isAsync()) st.asyncEnd = true;
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a reward (class " + rew.get("class") + ").");
-				e.printStackTrace();
-				continue;
-			}
-		}
-		
-		for (Map<String, Object> req : (List<Map<String, Object>>) map.getOrDefault("requirements", Collections.EMPTY_LIST)) {
-			try {
-				AbstractRequirement requirement = AbstractRequirement.deserialize(req);
-				requirement.attach(branch.getQuest());
-				st.validationRequirements.add(requirement);
-			}catch (ClassNotFoundException e) {
-				BeautyQuests.getInstance().getLogger().severe("Error while deserializing a requirement (class " + req.get("class") + ").");
-				e.printStackTrace();
-				continue;
-			}
-		}
+		if (map.containsKey("rewards")) st.setRewards(QuestObject.deserializeList((List<Map<?, ?>>) map.get("rewards"), AbstractReward::deserialize));
+		if (map.containsKey("requirements")) st.setValidationRequirements(QuestObject.deserializeList((List<Map<?, ?>>) map.get("requirements"), AbstractRequirement::deserialize));
 		
 		return st;
 	}

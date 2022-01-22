@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,14 +18,14 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 
 public class CommandsManager implements CommandExecutor, TabCompleter{
 
@@ -57,7 +58,11 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		}
 	}
 	
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+		String commandString = "/" + label + " " + Utils.buildFromArray(args, 0, " ");
+		DebugUtils.logMessage(sender.getName() + " issued server command: " + commandString);
+		
 		if (args.length == 0){
 			if (noArgs != null){
 				noArgs.accept(sender);
@@ -77,10 +82,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			return false;
 		}
 		
-		if (!cmd.permission().isEmpty() && !hasPermission(sender, cmd.permission())){
-			Lang.PERMISSION_REQUIRED.sendWP(sender, cmd.permission());
-			return false;
-		}
+		if (!cmd.permission().isEmpty() && !hasPermission(sender, cmd.permission(), true)) return false;
 		
 		if (args.length - 1 < cmd.min()){
 			Lang.INCORRECT_SYNTAX.sendWP(sender);
@@ -110,16 +112,25 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			}else if (type.equals("QUESTSID")){
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;
-				Quest qu = QuestsAPI.getQuestFromID(id);
+				Quest qu = QuestsAPI.getQuests().getQuest(id);
 				if (qu == null){
 					Lang.QUEST_INVALID.send(sender, id);
 					return false;
 				}
 				argsCmd[i-1] = qu;
+			}else if (type.equals("POOLSID")) {
+				Integer id = Utils.parseInt(sender, arg);
+				if (id == null) return false;
+				QuestPool pool = QuestsAPI.getQuestPools().getPool(id);
+				if (pool == null) {
+					Lang.POOL_INVALID.send(sender, id);
+					return false;
+				}
+				argsCmd[i - 1] = pool;
 			}else if (type.equals("NPCSID")){
 				Integer id = Utils.parseInt(sender, arg);
 				if (id == null) return false;
-				NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+				BQNPC npc = QuestsAPI.getNPCsManager().getById(id);
 				if (npc == null){
 					Lang.NPC_DOESNT_EXIST.send(sender, id);
 					return false;
@@ -131,7 +142,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		}
 		
 		try {
-			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: /" + label + " " + Utils.buildFromArray(args, 0, " "));
+			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: " + commandString);
 			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
 		}catch (Exception e) {
 			String errorType = e.getCause() == null ? e.getClass().getSimpleName() : e.getCause().getClass().getSimpleName();
@@ -143,6 +154,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		return false;
 	}
 
+	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args){
 		List<String> tmp = new ArrayList<>();
 		List<String> find = new ArrayList<>();
@@ -150,7 +162,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		
 		if (args.length == 1){
 			for (Entry<String, InternalCommand> en : commands.entrySet()){ // PERMISSIONS
-				if (hasPermission(sender, en.getValue().cmd.permission())) find.add(en.getKey());
+				if (!en.getValue().cmd.hide() && hasPermission(sender, en.getValue().cmd.permission(), false)) find.add(en.getKey());
 			}
 		}else if (args.length >= 2){
 			int index = args.length-2;
@@ -158,15 +170,17 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			InternalCommand internal = commands.get(sel);
 			String[] needed = internal.cmd.args();
 			if (needed.length <= index) return tmp;
-			if (!hasPermission(sender, internal.cmd.permission())) return tmp;
+			if (!hasPermission(sender, internal.cmd.permission(), false)) return tmp;
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("QUESTSID")){
-				for (Quest quest : QuestsAPI.getQuests()) find.add(quest.getID() + "");
+				for (Quest quest : QuestsAPI.getQuests()) find.add(Integer.toString(quest.getID()));
+			}else if (key.equals("POOLSID")) {
+				for (QuestPool pool : QuestsAPI.getQuestPools().getPools()) find.add(Integer.toString(pool.getID()));
 			}else if (key.equals("PLAYERS")){
 				return null;
 			}else if (key.equals("NPCSID")){
-				for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) find.add(npc.getId() + "");
+				find.addAll(QuestsAPI.getNPCsManager().getIDs().stream().map(String::valueOf).collect(Collectors.toList()));
 			}else if (key.equals("BOOLEAN")) {
 				find.add("false");
 				find.add("true");
@@ -181,9 +195,13 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 		return tmp;
 	}
 	
-	public static boolean hasPermission(CommandSender sender, String cmd){
+	public static boolean hasPermission(CommandSender sender, String cmd, boolean message) {
 		if (cmd == null || cmd.isEmpty()) return true;
-		return sender.hasPermission(("beautyquests.command." + cmd));
+		if (!sender.hasPermission(("beautyquests.command." + cmd))) {
+			Lang.PERMISSION_REQUIRED.sendWP(sender, "beautyquests.command." + cmd);
+			return false;
+		}
+		return true;
 	}
 	
 	class InternalCommand{

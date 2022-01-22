@@ -16,16 +16,22 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.BQNPCClickEvent;
+import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -36,31 +42,20 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import net.citizensnpcs.api.event.NPCClickEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
-import net.citizensnpcs.api.event.NPCRemoveEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.npc.NPC;
+import fr.skytasul.quests.utils.XMaterial;
 
 public class QuestsListener implements Listener{
 	
-	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCRightClick(NPCRightClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.RIGHT)) onNPCClick(e);
-	}
-	
-	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onNPCLeftClick(NPCLeftClickEvent e) {
-		if (QuestsConfiguration.getNPCClick().applies(ClickType.LEFT)) onNPCClick(e);
-	}
-	
-	private void onNPCClick(NPCClickEvent e) {
+	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
-		Player p = e.getClicker();
+		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		
+		Player p = e.getPlayer();
+		BQNPC npc = e.getNPC();
 		
 		if (Inventories.isInSystem(p)) return;
 		
-		NPC npc = e.getNPC();
 		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
 		if (starter != null) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -73,7 +68,7 @@ public class QuestsListener implements Listener{
 			List<Quest> launcheable = new ArrayList<>();
 			List<Quest> requirements = new ArrayList<>();
 			List<Quest> timer = new ArrayList<>();
-			for (Quest qu : quests){
+			for (Quest qu : quests) {
 				try {
 					if (!qu.testRequirements(p, acc, false)) {
 						requirements.add(qu);
@@ -97,17 +92,21 @@ public class QuestsListener implements Listener{
 			}).collect(Collectors.toSet());
 			
 			e.setCancelled(true);
-			if (!launcheable.isEmpty()){
-				for (Quest quest : launcheable){
-					if (quest.isInDialog(p)){
+			if (!launcheable.isEmpty()) {
+				for (Quest quest : launcheable) {
+					if (quest.isInDialog(p)) {
 						quest.clickNPC(p);
 						return;
 					}
 				}
-				new ChooseQuestGUI(launcheable, (quest) -> {
+				ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
 					if (quest == null) return;
 					quest.clickNPC(p);
-				}).create(p);
+				});
+				gui.setValidate(__ -> {
+					new PlayerListGUI(acc).open(p);
+				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
+				gui.create(p);
 			}else if (!startablePools.isEmpty()) {
 				startablePools.iterator().next().give(p);
 			}else {
@@ -124,11 +123,6 @@ public class QuestsListener implements Listener{
 	}
 	
 	@EventHandler
-	public void onNPCRemove(NPCRemoveEvent e){
-		if (BeautyQuests.getInstance().getNPCs().containsKey(e.getNPC())) BeautyQuests.getInstance().getNPCs().get(e.getNPC()).delete();
-	}
-	
-	@EventHandler
 	public void onClose(InventoryCloseEvent e) {
 		Inventories.onClose(e);
 	}
@@ -138,16 +132,21 @@ public class QuestsListener implements Listener{
 		Inventories.onClick(e);
 	}
 	
+	@EventHandler
+	public void onDrag(InventoryDragEvent e) {
+		Inventories.onDrag(e);
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onOpen(InventoryOpenEvent e) {
+		Inventories.onOpen(e);
+	}
+	
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			PlayersManager.loadPlayer(player);
-			/*Entry<PlayerAccount, Boolean> acc = PlayersManager.manager.load(player);
-			//boolean firstJoin = !PlayersManager.manager.hasAccounts(player);
-			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-				Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(player, acc.getKey(), acc.getValue()));
-			}, 2L);*/
 		}
 	}
 	
@@ -158,17 +157,16 @@ public class QuestsListener implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOW)
 	public void onAccountJoin(PlayerAccountJoinEvent e) {
 		if (e.isFirstJoin()) {
-			QuestsAPI.getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
+			QuestsAPI.getQuests().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
-		BeautyQuests.getInstance().getScoreboardManager().create(e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onAccountLeave(PlayerAccountLeaveEvent e) {
-		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(e.getPlayer());
+		QuestsAPI.getQuests().forEach(x -> x.leave(e.getPlayer()));
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)
