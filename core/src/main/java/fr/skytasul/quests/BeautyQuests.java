@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -56,10 +58,11 @@ import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.SpigotUpdater;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.nms.NMS;
+
+import de.jeff_media.updatechecker.UpdateChecker;
 
 public class BeautyQuests extends JavaPlugin {
 
@@ -141,6 +144,7 @@ public class BeautyQuests extends JavaPlugin {
 			}
 			
 			// Launch loading task
+			String pluginVersion = getDescription().getVersion();
 			new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -154,8 +158,8 @@ public class BeautyQuests extends JavaPlugin {
 						
 						launchSaveCycle();
 
-						if (!lastVersion.equals(getDescription().getVersion())) { // maybe change in data structure : update of all quest files
-							DebugUtils.logMessage("Migrating from " + lastVersion + " to " + getDescription().getVersion());
+						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
+							DebugUtils.logMessage("Migrating from " + lastVersion + " to " + pluginVersion);
 							for (Quest qu : quests) qu.saveToFile();
 							saveAllConfig(false);
 						}
@@ -168,48 +172,13 @@ public class BeautyQuests extends JavaPlugin {
 
 			// Start of non-essential systems
 			logger.launchFlushTimer();
-			DebugUtils.logMessage("Starting Spigot updater");
-			UpdateChecker.init(this, 39255)
-				.setDownloadLink(39255)
-				.setNotifyOpsOnJoin(false)
-				.setNotifyRequesters(false)
-				.onSuccess((senders, version) -> {
-					if (getDescription().getVersion().contains("_")) {
-						String usingVersion = getDescription().getVersion().substring(0, getDescription().getVersion().indexOf('_'));
-						String newVersion = version.contains("_") ? version.substring(0, version.indexOf('_')) : version;
-							UpdateChecker.isOtherVersionNewer(usingVersion, newVersion);
-					}
-
-				})
-				.checkNow();
-
-			Metrics metrics = new Metrics(this, 7460);
-			metrics.addCustomChart(new DrilldownPie("customPluginVersion", () -> {
-				Map<String, Map<String, Integer>> map = new HashMap<>();
-				String version = getDescription().getVersion();
-				Map<String, Integer> entry = new HashMap<>();
-				String[] split = version.split("_");
-				if (split.length == 1) {
-					entry.put("Release", 1);
-				}else {
-					entry.put(version, 1);
-				}
-				map.put(split[0], entry);
-				return map;
-			}));
-			metrics.addCustomChart(new SimplePie("lang", () -> loadedLanguage));
-			metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
-			metrics.addCustomChart(new SingleLineChart("quests", () -> quests.getQuestsAmount()));
-			metrics.addCustomChart(new SimplePie("quests_amount_slice", () -> {
-				int size = quests.getQuestsAmount();
-				if (size > 200) return "> 200";
-				if (size > 100) return "100 - 200";
-				if (size > 50) return "50 - 100";
-				if (size > 10) return "10 - 50";
-				if (size > 5) return "5 - 10";
-				return "0 - 5";
-			}));
-			DebugUtils.logMessage("Started bStats metrics");
+			launchMetrics(pluginVersion);
+			try {
+				launchUpdateChecker(pluginVersion);
+			}catch (ReflectiveOperationException e) {
+				logger.severe("An error occurred while checking updates.");
+				e.printStackTrace();
+			}
 		}catch (LoadingException ex) {
 			if (ex.getCause() != null) ex.getCause().printStackTrace();
 			logger.severe(ex.loggerMessage);
@@ -218,7 +187,7 @@ public class BeautyQuests extends JavaPlugin {
 			setEnabled(false);
 		}
 	}
-
+	
 	@Override
 	public void onDisable(){
 		try {
@@ -290,6 +259,62 @@ public class BeautyQuests extends JavaPlugin {
 			saveTask.cancel();
 			saveTask = null;
 			logger.info("Periodic saves task stopped.");
+		}
+	}
+	
+	private void launchMetrics(String pluginVersion) {
+		Metrics metrics = new Metrics(this, 7460);
+		metrics.addCustomChart(new DrilldownPie("customPluginVersion", () -> {
+			Map<String, Map<String, Integer>> map = new HashMap<>();
+			String version = pluginVersion;
+			Map<String, Integer> entry = new HashMap<>();
+			String[] split = version.split("_");
+			if (split.length == 1) {
+				entry.put("Release", 1);
+			}else {
+				entry.put(version, 1);
+			}
+			map.put(split[0], entry);
+			return map;
+		}));
+		metrics.addCustomChart(new SimplePie("lang", () -> loadedLanguage));
+		metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+		metrics.addCustomChart(new SingleLineChart("quests", () -> quests.getQuestsAmount()));
+		metrics.addCustomChart(new SimplePie("quests_amount_slice", () -> {
+			int size = quests.getQuestsAmount();
+			if (size > 200) return "> 200";
+			if (size > 100) return "100 - 200";
+			if (size > 50) return "50 - 100";
+			if (size > 10) return "10 - 50";
+			if (size > 5) return "5 - 10";
+			return "0 - 5";
+		}));
+		DebugUtils.logMessage("Started bStats metrics");
+	}
+	
+	private void launchUpdateChecker(String pluginVersion) throws ReflectiveOperationException {
+		DebugUtils.logMessage("Starting Spigot updater");
+		if (pluginVersion.contains("_")) {
+			Matcher matcher = Pattern.compile("_BUILD(.+)").matcher(pluginVersion);
+			if (matcher.find()) {
+				String build = matcher.group(1);
+				UpdateChecker checker = UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+						.setUserAgent("")
+						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
+						.setNotifyOpsOnJoin(false)
+						.setNameFreeVersion("(dev builds)");
+				Field usedVersion = checker.getClass().getDeclaredField("usedVersion");
+				usedVersion.setAccessible(true);
+				usedVersion.set(checker, build);
+				checker.checkNow();
+			}else {
+				logger.warning("Unknown plugin version, cannot check for updates.");
+			}
+		}else {
+			UpdateChecker.init(this, 39255)
+			.setDownloadLink(39255)
+			.setNotifyOpsOnJoin(false)
+			.checkNow();
 		}
 	}
 	
