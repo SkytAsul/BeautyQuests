@@ -298,23 +298,20 @@ public class BeautyQuests extends JavaPlugin {
 			Matcher matcher = Pattern.compile("_BUILD(.+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
-				UpdateChecker checker = UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+				UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
 						.setUserAgent("")
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
 						.setNotifyOpsOnJoin(false)
-						.setNameFreeVersion("(dev builds)");
-				Field usedVersion = checker.getClass().getDeclaredField("usedVersion");
-				usedVersion.setAccessible(true);
-				usedVersion.set(checker, build);
-				checker.checkNow();
+						.setUsedVersion(build)
+						.setNameFreeVersion("(dev builds)").checkNow();
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
 			}
 		}else {
 			UpdateChecker.init(this, 39255)
-			.setDownloadLink(39255)
-			.setNotifyOpsOnJoin(false)
-			.checkNow();
+					.setDownloadLink(39255)
+					.setNotifyOpsOnJoin(false)
+					.checkNow();
 		}
 	}
 	

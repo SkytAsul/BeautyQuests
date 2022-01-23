@@ -224,7 +224,7 @@
 		<dependency>
 			<groupId>de.jeff_media</groupId>
 			<artifactId>SpigotUpdateChecker</artifactId>
-			<version>1.3.0</version>
+			<version>1.3.2</version>
 			<scope>compile</scope>
 		</dependency>
 
