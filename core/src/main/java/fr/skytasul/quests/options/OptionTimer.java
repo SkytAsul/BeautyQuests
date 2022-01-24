@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.DurationParser;
 import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
@@ -62,7 +61,7 @@ public class OptionTimer extends QuestOption<Integer> {
 			resetValue();
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, new DurationParser(MinecraftTimeUnit.MINUTE)).enter();
+		}, MinecraftTimeUnit.MINUTE.getParser()).enter();
 	}
 	
 }

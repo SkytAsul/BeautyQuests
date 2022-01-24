@@ -12,7 +12,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
+import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -24,7 +24,7 @@ import fr.skytasul.quests.utils.XMaterial;
 
 public class StagePlayTime extends AbstractStage {
 
-	public long playTicks;
+	private final long playTicks;
 	
 	private Map<PlayerAccount, BukkitTask> tasks = new HashMap<>();
 	
@@ -33,9 +33,25 @@ public class StagePlayTime extends AbstractStage {
 		this.playTicks = ticks;
 	}
 	
+	public long getTicksToPlay() {
+		return playTicks;
+	}
+	
 	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source) {
-		return Lang.SCOREBOARD_PLAY_TIME.format(playTicks);
+		return Lang.SCOREBOARD_PLAY_TIME.format(descriptionFormat(acc, source));
+	}
+	
+	@Override
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Object[] { Utils.millisToHumanString(getRemaining(acc) * 50L) };
+	}
+	
+	private long getRemaining(PlayerAccount acc) {
+		long remaining = Utils.parseLong(getData(acc, "remainingTime"));
+		long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
+		long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
+		return remaining - playedTicks;
 	}
 	
 	private void launchTask(PlayerAccount acc, Player p, long remaining) {
@@ -55,10 +71,7 @@ public class StagePlayTime extends AbstractStage {
 		BukkitTask task = tasks.remove(acc);
 		if (task != null) {
 			task.cancel();
-			long remaining = Utils.parseLong(getData(acc, "remainingTime"));
-			long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
-			long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
-			updateObjective(acc, null, "remainingTime", remaining - playedTicks);
+			updateObjective(acc, null, "remainingTime", getRemaining(acc));
 		}else {
 			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + debugName() + " for player " + acc.getName());
 		}
@@ -113,7 +126,7 @@ public class StagePlayTime extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, false), obj -> {
 					setTicks(obj);
 					reopenGUI(p, false);
-				}, new NumberParser<>(Long.class, true, true)).enter();
+				}, MinecraftTimeUnit.TICK.getParser()).enter();
 			});
 		}
 		
@@ -129,7 +142,7 @@ public class StagePlayTime extends AbstractStage {
 			new TextEditor<>(p, removeAndReopen(p, false), obj -> {
 				setTicks(obj);
 				reopenGUI(p, false);
-			}, new NumberParser<>(Long.class, true, true)).enter();
+			}, MinecraftTimeUnit.TICK.getParser()).enter();
 		}
 		
 		@Override

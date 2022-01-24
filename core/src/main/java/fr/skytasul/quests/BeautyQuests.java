@@ -480,7 +480,9 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 	public void saveAllConfig(boolean unload) throws Exception {
-		if (unload){
+		if (unload) {
+			quests.unloadQuests();
+			
 			QuestsAPI.getQuestsHandlers().forEach(handler -> {
 				try {
 					handler.unload();
@@ -490,7 +492,6 @@ public class BeautyQuests extends JavaPlugin {
 			});
 		}
 		
-		if (unload) quests.unloadQuests();
 		if (loaded) {
 			data.set("lastID", quests.getLastID());
 			data.set("version", getDescription().getVersion());

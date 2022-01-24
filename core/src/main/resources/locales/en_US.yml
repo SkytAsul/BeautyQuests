@@ -663,7 +663,7 @@ scoreboard:
     craft: §eCraft §6{0}
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
-    playTime: §ePlay §6{0} game ticks
+    playTimeFormatted: §ePlay §6{0}
     breed: §eBreed §6{0}
     tame: §eTame §6{0}
 indication:

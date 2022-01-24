@@ -57,9 +57,16 @@ public class DurationParser implements AbstractParser<Long> {
 		private int previousDuration;
 		private String[] names;
 		
+		private DurationParser cachedParser;
+		
 		private MinecraftTimeUnit(int previousDuration, String... names) {
 			this.previousDuration = previousDuration;
 			this.names = names;
+		}
+		
+		public DurationParser getParser() {
+			if (cachedParser == null) cachedParser = new DurationParser(this, this);
+			return cachedParser;
 		}
 		
 		static {

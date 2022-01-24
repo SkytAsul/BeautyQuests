@@ -641,7 +641,7 @@ public enum Lang{
 	SCOREBOARD_BREED("scoreboard.stage.breed"), // 0: animals to breed
 	SCOREBOARD_TAME("scoreboard.stage.tame"), // 0: animals to breed
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
-	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTime"), // 0: ticks
+	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTimeFormatted"), // 0: remaining time
 	
 	/* Indications */
 	
