@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
@@ -39,7 +40,6 @@ public class StageBringBack extends StageNPC{
 		this.customMessage = customMessage;
 		this.comparisons = comparisons;
 		
-		this.bringBack = this;
 		this.items = items;
 		for (ItemStack item : items) {
 			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
@@ -103,6 +103,28 @@ public class StageBringBack extends StageNPC{
 		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
 	}
 	
+	@Override
+	protected void initDialogRunner() {
+		super.initDialogRunner();
+		
+		dialogRunner.addTest(p -> {
+			if (branch.isRegularStage(this)) return true;
+			
+			boolean canUpdate = canUpdate(p, true);
+			if (!canUpdate || !checkItems(p, false)) { // if player do not have items
+				for (AbstractStage stage : branch.getEndingStages().keySet()) {
+					if (stage instanceof StageBringBack) { // if other ending stage is bring back
+						StageBringBack other = (StageBringBack) stage;
+						if (other.getNPC() == getNPC() && other.checkItems(p, false)) return false; // if same NPC and can start: don't cancel event and stop there
+					}
+				}
+			}
+			return true;
+		});
+		dialogRunner.addTestCancelling(p -> checkItems(p, true));
+		
+		dialogRunner.addEndAction(this::removeItems);
+	}
 	
 	@Override
 	public void serialize(Map<String, Object> map) {

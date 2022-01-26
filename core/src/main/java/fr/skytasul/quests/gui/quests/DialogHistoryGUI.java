@@ -121,6 +121,11 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				lines.add(ChatUtils.wordWrap(formatted, 40, 100));
 			}
 			
+			if (lines.isEmpty()) {
+				pages = Arrays.asList(new Page());
+				return;
+			}
+			
 			pages = new ArrayList<>();
 			Page page = new Page();
 			int messagesAdded = 0;

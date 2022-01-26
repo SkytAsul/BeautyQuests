@@ -16,13 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -39,7 +37,6 @@ import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.Dialog;
 
 public class Quest implements Comparable<Quest>, OptionSet {
 	
@@ -211,7 +208,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			acc.removeQuestDatas(this);
 			c = true;
 		}
-		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getValue().remove(acc.getPlayer())) c = true;
+		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getRunner().removePlayer(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -256,24 +253,18 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	}
 	
 	public boolean isInDialog(Player p) {
-		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getValue().isInDialog(p);
+		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getRunner().isPlayerInDialog(p);
 	}
 	
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
-			Dialog dialog = getOption(OptionStartDialog.class).getValue();
-			BQNPC npc = getOptionValueOrDef(OptionStarterNPC.class);
-			Runnable runnable = () -> attemptStart(p, null);
-			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
-			Bukkit.getPluginManager().callEvent(event);
-			if (event.isCancelled()) return;
-			dialog.send(p, npc, runnable);
+			getOption(OptionStartDialog.class).getRunner().onClick(p);
 		}else attemptStart(p, null);
 	}
 	
 	public void leave(Player p) {
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getValue().remove(p);
+			getOption(OptionStartDialog.class).getRunner().removePlayer(p);
 		}
 	}
 

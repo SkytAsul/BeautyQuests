@@ -117,6 +117,13 @@ public class BQCitizens extends BQNPCsManager {
 			npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
 		}
 		
+		@Override
+		public boolean setNavigationPaused(boolean paused) {
+			boolean b = npc.getNavigator().isPaused();
+			npc.getNavigator().setPaused(paused);
+			return b;
+		}
+		
 	}
 	
 }

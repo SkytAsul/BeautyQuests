@@ -44,7 +44,7 @@
 						</relocation>
 						<relocation>
 							<pattern>de.jeff_media.updatechecker</pattern>
-							<shadedPattern>fr.skytasul.utils.updatechecker</shadedPattern>
+							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>

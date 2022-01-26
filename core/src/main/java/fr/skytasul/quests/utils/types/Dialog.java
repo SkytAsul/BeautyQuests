@@ -5,15 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
-import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Message.Sender;
 
@@ -22,8 +14,6 @@ public class Dialog implements Cloneable {
 	public List<Message> messages;
 	public String npcName;
 	
-	private Map<Player, PlayerStatus> players = new HashMap<>();
-	
 	public Dialog() {
 		this(new ArrayList<>());
 	}
@@ -31,72 +21,13 @@ public class Dialog implements Cloneable {
 	public Dialog(List<Message> messages) {
 		this.messages = messages;
 	}
-	
-	public void send(Player p, BQNPC npc, final Runnable end) {
-		if (messages.isEmpty()) {
-			end.run();
-			return;
-		}
-
-		PlayerStatus status;
-		if (players.containsKey(p)) {
-			status = players.get(p);
-			if (status.task != null) {
-				if (QuestsConfiguration.isDialogClickDisabled()) return;
-				status.task.cancel();
-				status.task = null;
-			}
-		}else {
-			status = new PlayerStatus();
-			players.put(p, status);
-		}
-		int id = ++status.lastId;
-		if (id == messages.size()) {
-			players.remove(p);
-			end.run();
-			return;
-		}
-
-		Message msg = messages.get(id);
-		if (msg == null){
-			p.sendMessage("§cMessage with ID " + id + " does not exist. Please report this to an adminstrator. Method caller : " + DebugUtils.stackTraces(2, 3));
-			players.remove(p);
-			end.run();
-			return;
-		}
-		DialogSendMessageEvent event = new DialogSendMessageEvent(this, msg, npc, p);
-		Bukkit.getPluginManager().callEvent(event);
-		if (!event.isCancelled()) msg.sendMessage(p, getNPCName(npc), id, messages.size());
-		if (msg.getWaitTime() != 0) {
-			status.task = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-				status.task = null;
-				send(p, npc, end);
-			}, msg.getWaitTime());
-		}
-	}
 
 	public String getNPCName(BQNPC defaultNPC) {
-		return npcName != null ? npcName : (defaultNPC == null ? Lang.Unknown.toString() : defaultNPC.getName());
-	}
-	
-	public boolean isInDialog(Player p) {
-		return players.containsKey(p);
-	}
-
-	public int getPlayerMessage(Player p) {
-		return players.get(p).lastId;
-	}
-	
-	public boolean remove(Player player) {
-		PlayerStatus status = players.remove(player);
-		if (status == null) return false;
-		status.cancel();
-		return true;
-	}
-	
-	public void unload() {
-		players.values().forEach(PlayerStatus::cancel);
-		players.clear();
+		if (npcName != null)
+			return npcName;
+		if (defaultNPC == null)
+			return Lang.Unknown.toString();
+		return defaultNPC.getName();
 	}
 	
 	public void add(String msg, Sender sender){
@@ -149,18 +80,6 @@ public class Dialog implements Cloneable {
 		if (map.containsKey("npcName")) di.npcName = (String) map.get("npcName");
 		
 		return di;
-	}
-	
-	class PlayerStatus {
-		int lastId = -1;
-		BukkitTask task = null;
-		
-		void cancel() {
-			if (task != null) {
-				task.cancel();
-				task = null;
-			}
-		}
 	}
 
 }

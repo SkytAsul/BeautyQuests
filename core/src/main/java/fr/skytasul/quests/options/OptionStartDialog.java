@@ -16,8 +16,11 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Dialog;
+import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
+	
+	private DialogRunner runner;
 	
 	public OptionStartDialog() {
 		super(OptionStarterNPC.class);
@@ -70,6 +73,23 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	@Override
 	public BQNPC getNPC() {
 		return getAttachedQuest().getOptionValueOrDef(OptionStarterNPC.class);
+	}
+	
+	@Override
+	public void detach() {
+		super.detach();
+		if (runner != null) {
+			runner.unload();
+			runner = null;
+		}
+	}
+	
+	public DialogRunner getRunner() {
+		if (runner == null) {
+			runner = new DialogRunner(getValue(), getNPC());
+			runner.addEndAction(p -> getAttachedQuest().attemptStart(p, null));
+		}
+		return runner;
 	}
 	
 }

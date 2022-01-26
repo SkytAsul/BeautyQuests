@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,7 +19,6 @@ import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQNPCClickEvent;
-import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -40,15 +38,15 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
+import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	
 	private BQNPC npc;
 	private int npcID;
 	protected Dialog dialog = null;
+	protected DialogRunner dialogRunner = null;
 	protected boolean hide = false;
-	
-	protected StageBringBack bringBack = null;
 	
 	private BukkitTask task;
 	
@@ -116,7 +114,11 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
 		if (npcID >= 0) this.npc = QuestsAPI.getNPCsManager().getById(npcID);
-		if (npc == null) BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
+		if (npc == null) {
+			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
+		}else {
+			initDialogRunner();
+		}
 	}
 	
 	public void setDialog(Object obj){
@@ -134,7 +136,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	
 	@Override
 	public boolean hasDialog(){
-		return dialog != null;
+		return dialog != null && !dialog.messages.isEmpty();
 	}
 	
 	@Override
@@ -162,12 +164,20 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 
 	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
-		return Utils.format(Lang.SCOREBOARD_NPC.toString(), npcName());
+		return Utils.format(Lang.SCOREBOARD_NPC.toString(), descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new String[]{npcName()};
+	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new String[] { npcName() };
+	}
+	
+	protected void initDialogRunner() {
+		dialogRunner = new DialogRunner(dialog, npc);
+		dialogRunner.addTest(super::hasStarted);
+		dialogRunner.addTestCancelling(p -> canUpdate(p, true));
+		
+		dialogRunner.addEndAction(this::finishStage);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -176,45 +186,16 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		if (e.getNPC() != npc) return;
 		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
 		Player p = e.getPlayer();
-		if (!hasStarted(p)) return;
-		boolean canUpdate = canUpdate(p, true);
-		if (!branch.isRegularStage(this)) { // is ending stage
-			if (bringBack == null || !canUpdate || !bringBack.checkItems(p, false)) { // if just text or don't have items
-				for (AbstractStage stage : branch.getEndingStages().keySet()) {
-					if (stage instanceof StageBringBack) { // if other ending stage is bring back
-						StageBringBack other = (StageBringBack) stage;
-						if (other.getNPC() == npc && other.checkItems(p, false)) return; // if same NPC and can start: don't cancel event and stop there
-					}
-				}
-			}
-		}
 
-		e.setCancelled(true);
-		
-		if (bringBack != null && !bringBack.checkItems(p, true)) return;
-		if (!canUpdate) return;
-		
-		if (dialog != null) { // dialog exists
-			Runnable runnable = () -> {
-				if (bringBack != null) {
-					if (!bringBack.checkItems(p, true)) return;
-					bringBack.removeItems(p);
-				}
-				finishStage(p);
-			};
-			DialogSendEvent event = new DialogSendEvent(dialog, npc, p, runnable);
-			Bukkit.getPluginManager().callEvent(event);
-			if (event.isCancelled()) return;
-			dialog.send(p, npc, runnable);
-			return;
-		}else if (bringBack != null){ // no dialog but bringback
-			bringBack.removeItems(p);
-		}
-		finishStage(p);
+		e.setCancelled(dialogRunner.onClick(p).shouldCancel());
 	}
 	
 	protected String npcName(){
-		return (npc != null) ? (dialog != null && dialog.npcName != null ? dialog.npcName : npc.getName()) : "§c§lunknown NPC " + npcID;
+		if (npc == null)
+			return "§c§lunknown NPC " + npcID;
+		if (dialog != null && dialog.npcName != null)
+			return dialog.npcName;
+		return npc.getName();
 	}
 	
 	@Override
@@ -247,7 +228,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		super.leaves(acc, p);
 		uncachePlayer(p);
 		if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
-		if (dialog != null) dialog.remove(p);
+		if (dialogRunner != null) dialogRunner.removePlayer(p);
 	}
 	
 	@Override
@@ -266,7 +247,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		super.end(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
-			if (dialog != null) dialog.remove(p);
+			if (dialogRunner != null) dialogRunner.removePlayer(p);
 			uncachePlayer(p);
 			if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
 		}
@@ -276,7 +257,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	public void unload() {
 		super.unload();
 		if (task != null) task.cancel();
-		if (dialog != null) dialog.unload();
+		if (dialogRunner != null) dialogRunner.unload();
 		removeHoloLaunch();
 		uncacheAll();
 	}

@@ -107,6 +107,11 @@ public class BQServerNPCs extends BQNPCsManager {
 			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
 		}
 		
+		@Override
+		public boolean setNavigationPaused(boolean paused) {
+			return true;
+		}
+		
 	}
 	
 }
