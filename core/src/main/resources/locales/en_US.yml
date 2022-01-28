@@ -192,6 +192,9 @@ msg:
     typeLocationRadius: '§aWrite the required distance from the location:'
     typeGameTicks: '§aWrite the required game ticks:'
     already: §cYou are already in the editor.
+    stage:
+      location:
+        typeWorldPattern: '§aWrite a regex for world names:'
     enter:
       title: §6~ Editor Mode ~
       subtitle: §6Write "/quests exitEditor" to force quit the editor.
@@ -286,6 +289,7 @@ msg:
         list: '§6list: §eView all added texts.'
         close: '§6close: §eValidate the added texts.'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
+    invalidPattern: '§cInvalid regex pattern §4{0}§c.'
     comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
@@ -366,6 +370,10 @@ inv:
     currentRadius: '§eCurrent distance: §6{0}'
     changeTicksRequired: '§eChange played ticks required'
     changeEntityType: '§eChange entity type'
+    stage:
+      location:
+        worldPattern: '§aSet world name pattern §d(ADVANCED)'
+        worldPatternLore: 'If you want the stage to be completed for any world matching a specific pattern, enter a regex (regular expression) here.'
   stages:
     name: Create stages
     nextPage: §eNext page

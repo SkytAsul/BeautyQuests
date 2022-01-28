@@ -217,7 +217,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
-		loadBranch(mainBranch, stages);
+		boolean failure = loadBranch(mainBranch, stages);
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
 		Bukkit.getPluginManager().callEvent(event);
@@ -229,7 +229,10 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
-			if (editing) BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
+			if (editing) {
+				BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
+				if (failure) BeautyQuests.getInstance().createQuestBackup(qu.getFile().toPath(), "Error occurred while editing");
+			}
 			try {
 				qu.saveToFile();
 			}catch (Exception e) {
@@ -264,7 +267,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		Inventories.closeAndExit(p);
 	}
 	
-	private void loadBranch(QuestBranch branch, StagesGUI gui){
+	private boolean loadBranch(QuestBranch branch, StagesGUI gui) {
+		boolean failure = false;
 		for (StageCreation<?> creation : gui.getStageCreations()) {
 			try{
 				AbstractStage stage = creation.finish(branch);
@@ -274,15 +278,17 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					if (!newGUI.isEmpty()){
 						newBranch = new QuestBranch(branch.getBranchesManager());
 						branch.getBranchesManager().addBranch(newBranch);
-						loadBranch(newBranch, newGUI);
+						failure |= loadBranch(newBranch, newGUI);
 					}
 					branch.addEndStage(stage, newBranch);
 				}else branch.addRegularStage(stage);
 			}catch (Exception ex) {
+				failure = true;
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
 				ex.printStackTrace();
 			}
 		}
+		return failure;
 	}
 
 	public void setStagesEdited(boolean force) {

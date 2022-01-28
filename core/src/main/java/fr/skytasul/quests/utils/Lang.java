@@ -178,8 +178,7 @@ public enum Lang{
 	ALREADY_EDITOR("msg.editor.already"),
 	ENTER_EDITOR_TITLE("msg.editor.enter.title"),
 	ENTER_EDITOR_SUB("msg.editor.enter.subtitle"),
-	ENTER_EDITOR_LIST(
-			"msg.editor.enter.list"),
+	ENTER_EDITOR_LIST("msg.editor.enter.list"),
 	CHAT_EDITOR("msg.editor.chat"),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter"),
 
@@ -198,10 +197,12 @@ public enum Lang{
 	
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
+	LOCATION_WORLDPATTERN("msg.editor.stage.location.typeWorldPattern"),
 	
 	GAME_TICKS("msg.editor.typeGameTicks"),
 	
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
+	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
 	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
 	
@@ -354,9 +355,11 @@ public enum Lang{
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
 	editBucketAmount("inv.create.editBucketAmount"),
-	editLocation("inv.create.editLocation"),
-	editRadius("inv.create.editRadius"),
-	currentRadius("inv.create.currentRadius"), // 0: radius
+	stageLocationLocation("inv.create.editLocation"),
+	stageLocationRadius("inv.create.editRadius"),
+	stageLocationCurrentRadius("inv.create.currentRadius"), // 0: radius
+	stageLocationWorldPattern("inv.create.stage.location.worldPattern"),
+	stageLocationWorldPatternLore("inv.create.stage.location.worldPatternLore"),
 	changeTicksRequired("inv.create.changeTicksRequired"),
 	changeEntityType("inv.create.changeEntityType"),
 	

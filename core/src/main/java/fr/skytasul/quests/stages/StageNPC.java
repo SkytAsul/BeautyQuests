@@ -359,8 +359,8 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		@Override
 		protected final T finishStage(QuestBranch branch) {
 			T stage = createStage(branch);
-			stage.setNPC(npcID);
 			stage.setDialog(dialog);
+			stage.setNPC(npcID);
 			stage.setHid(hidden);
 			return stage;
 		}

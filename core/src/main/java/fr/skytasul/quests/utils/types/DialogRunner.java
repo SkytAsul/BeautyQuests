@@ -82,7 +82,6 @@ public class DialogRunner {
 	
 	private TestResult handleNext(Player p) {
 		TestResult test = test(p);
-		System.out.println("DialogRunner.handleNext() " + test.name());
 		if (test == TestResult.ALLOW) {
 			// player fulfills conditions to start or continue the dialog
 			

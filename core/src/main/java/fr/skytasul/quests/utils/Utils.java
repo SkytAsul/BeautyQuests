@@ -179,7 +179,7 @@ public class Utils{
 
 	public static String locationToString(Location lc){
 		if (lc == null) return null;
-		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName());
+		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld() == null ? Lang.Unknown.toString() : lc.getWorld().getName());
 	}
 	
 	public static Location upLocationForEntity(LivingEntity en, double value) {
