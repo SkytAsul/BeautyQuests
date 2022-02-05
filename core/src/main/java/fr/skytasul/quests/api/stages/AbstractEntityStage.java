@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.stages;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -66,16 +67,16 @@ public abstract class AbstractEntityStage extends AbstractStage {
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Object[] { getMobsLeft(acc) };
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> getMobsLeft(acc) };
 	}
 	
-	public static abstract class AbstractCreator<T extends AbstractEntityStage> extends StageCreation<T> {
+	public abstract static class AbstractCreator<T extends AbstractEntityStage> extends StageCreation<T> {
 		
 		protected EntityType entity = null;
 		protected int amount = 1;
 		
-		public AbstractCreator(Line line, boolean ending) {
+		protected AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
 			line.setItem(6, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), (p, item) -> {

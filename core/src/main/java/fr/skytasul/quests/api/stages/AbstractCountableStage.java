@@ -4,6 +4,7 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
@@ -65,8 +66,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new String[] { Utils.itemsToFormattedString(buildRemainingArray(acc, source), QuestsConfiguration.getItemAmountColor()) };
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> Utils.itemsToFormattedString(buildRemainingArray(acc, source), QuestsConfiguration.getItemAmountColor()) };
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {

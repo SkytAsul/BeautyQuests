@@ -217,6 +217,7 @@ public abstract class AbstractStage implements Listener{
 	 * @return the progress of the stage for the player
 	 */
 	protected abstract String descriptionLine(PlayerAccount acc, Source source);
+	
 	/**
 	 * Will be called only if there is a {@link #customText}
 	 * @param acc PlayerAccount who has the stage in progress

@@ -1,5 +1,7 @@
 package fr.skytasul.quests.utils;
 
+import java.util.function.Supplier;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -775,6 +777,10 @@ public enum Lang{
 	}
 	
 	public String format(Object... replace){
+		return Utils.format(toString(), replace);
+	}
+	
+	public String format(Supplier<Object>... replace) {
 		return Utils.format(toString(), replace);
 	}
 	

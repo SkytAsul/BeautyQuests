@@ -1,6 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -124,8 +125,8 @@ public class StageCraft extends AbstractStage {
 	}
 
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new Object[] { Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
 	}
 	
 	@Override

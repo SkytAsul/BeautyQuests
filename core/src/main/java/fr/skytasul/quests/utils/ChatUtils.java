@@ -271,4 +271,47 @@ public class ChatUtils {
 		return matcher.appendTail(buffer).toString();
 	}
 	
+	public static String getLastColors(String originalColors, String appended) {
+		StringBuilder builder = new StringBuilder(originalColors);
+		StringBuilder hexBuilder = null;
+		boolean color = false;
+		for (int colorIndex = 0; colorIndex < appended.length(); colorIndex++) {
+			char cc = Character.toLowerCase(appended.charAt(colorIndex));
+			if (cc == ChatColor.COLOR_CHAR) {
+				color = true;
+			}else if (color) {
+				color = false;
+				if (hexBuilder != null) {
+					if ((cc >= 48 && cc <= 57) || (cc >= 97 && cc <= 102)) { // hex character
+						hexBuilder.append('§').append(cc);
+						if (hexBuilder.length() == 14) { // end of the color
+							builder = hexBuilder; // as it is a color, previous formatting is lost
+							hexBuilder = null;
+						}
+					}else {
+						hexBuilder = null;
+					}
+				}else if (cc == 'x') {
+					if (colorIndex + 2 * 6 < appended.length()) {
+						hexBuilder = new StringBuilder("§x");
+					}
+				}else {
+					ChatColor sub = ChatColor.getByChar(cc);
+					if (sub != null) {
+						if (sub == ChatColor.RESET) {
+							builder.setLength(0); // reset -> empty previous format and do not copy the reset code
+							continue;
+						}else if (sub.isColor()) {
+							builder.setLength(0); // color -> empty previous format and copy color
+						}
+						builder.append(sub.toString());
+					}else builder.append('§').append(cc); // unknown color character
+				}
+			}else if (hexBuilder != null) {
+				hexBuilder = null;
+			}
+		}
+		return builder.toString();
+	}
+	
 }

@@ -1,6 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,18 +64,22 @@ public class StageBucket extends AbstractStage {
 		return getData(acc, "amount");
 	}
 
+	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		datas.put("amount", amount);
 	}
 
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source) {
 		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false));
 	}
 
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Object[] { Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
+	@Override
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
 	}
 
+	@Override
 	protected void serialize(Map<String, Object> map) {
 		map.put("bucket", bucket.name());
 		map.put("amount", amount);

@@ -9,8 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -217,7 +221,7 @@ public class Utils{
 	}
 	
 	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
-		if (value == null) return Collections.EMPTY_LIST;
+		if (value == null) return Collections.emptyList();
 		List<T> list = new ArrayList<>();
 		for (Entry<T, E> entry : map.entrySet()) {
 			if (value.equals(entry.getValue())) {
@@ -226,20 +230,52 @@ public class Utils{
 		}
 		return list;
 	}
+	
+	public static String format(String msg, Supplier<Object>... replace) {
+		if (replace != null && replace.length != 0) {
+			for (int i = 0; i < replace.length; i++) {
+				Supplier<Object> supplier = replace[i];
+				msg = format(msg, i, supplier);
+			}
+		}
+		return msg;
+	}
 
 	public static String format(String msg, Object... replace){
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
-				msg = format(msg, i, (replace[i] != null) ? replace[i].toString() : "null");
+				Object replacement = replace[i];
+				if (replacement instanceof Supplier) {
+					msg = format(msg, i, (Supplier<Object>) replacement);
+				}else {
+					msg = format(msg, i, () -> replacement);
+				}
 			}
 		}
 		return msg;
 	}
 	
-	public static String format(String msg, int i, String replace){
-		String tmp = new String(msg);
-		tmp = tmp.replace("{" + i + "}", replace);
-		return tmp;
+	private static final Map<Integer, Pattern> REPLACEMENT_PATTERNS = new HashMap<>();
+	private static final Pattern RESET_PATTERN = Pattern.compile("§[rR]");
+	
+	public static String format(String msg, int i, Supplier<Object> replace) {
+		Pattern pattern = REPLACEMENT_PATTERNS.computeIfAbsent(i, __ -> Pattern.compile("\\{" + i + "\\}"));
+		Matcher matcher = pattern.matcher(msg);
+		StringBuilder output = new StringBuilder(msg.length());
+		int lastAppend = 0;
+		String colors = "";
+		String replacement = null;
+		while (matcher.find()) {
+			String substring = msg.substring(lastAppend, matcher.start());
+			colors = ChatUtils.getLastColors(colors, substring);
+			output.append(substring);
+			if (replacement == null) replacement = Objects.toString(replace.get());
+			Matcher replMatcher = RESET_PATTERN.matcher(replacement);
+			output.append(replMatcher.replaceAll("§r" + colors));
+			lastAppend = matcher.end();
+		}
+		output.append(msg, lastAppend, msg.length());
+		return output.toString();
 	}
 	
 	public static String buildFromArray(Object[] array, int start, String insert){

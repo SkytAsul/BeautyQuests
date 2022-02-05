@@ -3,6 +3,7 @@ package fr.skytasul.quests.stages;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -43,8 +44,8 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Object[] { Utils.millisToHumanString(getRemaining(acc) * 50L) };
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> Utils.millisToHumanString(getRemaining(acc) * 50L) };
 	}
 	
 	private long getRemaining(PlayerAccount acc) {
