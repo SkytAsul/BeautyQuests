@@ -104,7 +104,7 @@ public class QuestsListener implements Listener{
 					quest.clickNPC(p);
 				});
 				gui.setValidate(__ -> {
-					new PlayerListGUI(acc).open(p);
+					new PlayerListGUI(acc).create(p);
 				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
 				gui.create(p);
 			}else if (!startablePools.isEmpty()) {

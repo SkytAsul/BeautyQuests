@@ -72,7 +72,7 @@ public class DialogRunner {
 	 * @return the result of tests to run this dialog
 	 */
 	public TestResult onClick(Player p) {
-		if (QuestsConfiguration.isDialogClickDisabled()) {
+		if (QuestsConfiguration.getDialogsConfig().isClickDisabled()) {
 			PlayerStatus status = players.get(p);
 			if (status != null && status.task != null) return TestResult.DENY;
 		}

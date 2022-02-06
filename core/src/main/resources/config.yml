@@ -40,12 +40,6 @@ playerStageStartMessage: true
 allowPlayerCancelQuest: true
 # Shows a Yes/No GUI to let the player choose if he wants to accept the quest or not
 questConfirmGUI: false
-# Dialogs are shown in the action bar instead of the chat
-dialogsInActionBar: false
-# Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
-dialogsDefaultTime: 100
-# If enabled, players will not be allowed to click on the NPC to pass a line of dialog
-disableDialogClick: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest
@@ -70,10 +64,20 @@ requirementUpdateTime: 1
 requirementReasonOnMultipleQuests: true
 # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
 menuOpenNotStartedTabWhenEmpty: true
-# Enables the dialog history
-dialogHistory: true
 # Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
 stageEndRewardsMessage: true
+
+# - Dialogs -
+# Various options related to dialogs 
+dialogs:
+  # Dialogs are shown in the action bar instead of the chat
+  inActionBar: false
+  # Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
+  defaultTime: 100
+  # If enabled, players will not be allowed to click on the NPC to pass a line of dialog
+  disableClick: false
+  # Enables the dialog history in the Quests menu
+  history: true
 
 # - Integrations -
 # Enable GPS integration

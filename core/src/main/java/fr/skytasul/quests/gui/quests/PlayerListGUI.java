@@ -103,7 +103,7 @@ public class PlayerListGUI implements CustomInventory {
 					lore.add(null);
 					lore.add(Lang.timesFinished.format(acc.getQuestDatas(qu).getTimesFinished()));
 				}
-				if (QuestsConfiguration.isDialogHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
+				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
 				}
@@ -121,7 +121,7 @@ public class PlayerListGUI implements CustomInventory {
 					String desc = qu.getBranchesManager().getDescriptionLine(acc, Source.MENU);
 					List<String> lore = new ArrayList<>(4);
 					if (desc != null && !desc.isEmpty()) lore.add(desc);
-					boolean hasDialogs = QuestsConfiguration.isDialogHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
+					boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
 					boolean cancellable = QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable();
 					if (cancellable || hasDialogs) {
 						if (!lore.isEmpty()) lore.add(null);

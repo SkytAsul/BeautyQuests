@@ -25,12 +25,12 @@ public class Message implements Cloneable {
 	}
 	
 	public int getWaitTime() {
-		return wait == -1 ? QuestsConfiguration.getDialogsDefaultTime() : wait;
+		return wait == -1 ? QuestsConfiguration.getDialogsConfig().getDefaultTime() : wait;
 	}
 
 	public void sendMessage(Player p, String npc, int id, int size) {
 		String sent = formatMessage(p, npc, id, size);
-		if (QuestsConfiguration.sendDialogsInActionBar()) {
+		if (QuestsConfiguration.getDialogsConfig().sendInActionBar()) {
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
 		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
 		

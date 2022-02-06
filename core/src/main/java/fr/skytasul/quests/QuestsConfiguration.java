@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,6 +27,7 @@ import fr.skytasul.quests.utils.nms.NMS;
 public class QuestsConfiguration {
 
 	private static int timer = 5;
+	private static String lang;
 	private static String minecraftTranslationsFile = null;
 	private static int maxLaunchedQuests = 0;
 	private static boolean sounds = true;
@@ -42,8 +44,6 @@ public class QuestsConfiguration {
 	private static double hologramsHeight = 0.0;
 	private static boolean disableTextHologram = false;
 	private static boolean showCustomHologramName = true;
-	/*private static ConfigurationSection effect;
-	private static boolean effectEnabled;*/
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
@@ -54,10 +54,7 @@ public class QuestsConfiguration {
 	private static boolean stageStart = true;
 	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
-	private static boolean dialogsInActionBar = false;
-	private static int dialogsDefaultTime = 100;
 	private static ClickType npcClick = ClickType.RIGHT;
-	private static boolean disableDialogClick = false;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -72,7 +69,6 @@ public class QuestsConfiguration {
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
 	private static boolean menuOpenNotStartedTabWhenEmpty = true;
-	private static boolean dialogHistory = true;
 	private static boolean stageEndRewardsMessage = true;
 	private static QuestDescription questDescription;
 	
@@ -86,11 +82,34 @@ public class QuestsConfiguration {
 	static int saveCycle = 15;
 	static int firstQuestID = -1; // changed in 0.19, TODO
 	
-	static void initConfiguration(FileConfiguration config) {
+	private FileConfiguration config;
+	private DialogsConfig dialogs;
+	
+	QuestsConfiguration(BeautyQuests plugin) {
+		config = plugin.getConfig();
+		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
+	}
+	
+	public FileConfiguration getConfig() {
+		return config;
+	}
+	
+	public DialogsConfig getDialogs() {
+		return dialogs;
+	}
+	
+	boolean update() {
+		boolean result = false;
+		result |= dialogs.update();
+		return result;
+	}
+	
+	void init() {
 		backups = config.getBoolean("backups", true);
 		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
 		
 		timer = config.getInt("redoMinuts");
+		lang = config.getString("lang", "en_US");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
 			if (NMS.getMCVersion() >= 13) {
@@ -103,6 +122,8 @@ public class QuestsConfiguration {
 				minecraftTranslationsFile = null;
 			}
 		}
+		dialogs.init();
+		
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		firstQuestID = config.getInt("firstQuest", -1);
@@ -111,9 +132,6 @@ public class QuestsConfiguration {
 		stageStart = config.getBoolean("playerStageStartMessage");
 		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
-		dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("dialogsInActionBar");
-		dialogsDefaultTime = config.getInt("dialogsDefaultTime");
-		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
 		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
@@ -131,7 +149,6 @@ public class QuestsConfiguration {
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
-		dialogHistory = config.getBoolean("dialogHistory");
 		stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
@@ -159,8 +176,6 @@ public class QuestsConfiguration {
 		}catch (IllegalArgumentException ex){
 			BeautyQuests.logger.warning("Sound " + finishSound + " is not a valid Bukkit sound.");
 		}
-		/*effect = config.getConfigurationSection("effectLib");
-		effectEnabled = effect.getBoolean("enabled");*/
 		
 		// stageDescription
 		itemNameColor = config.getString("itemNameColor");
@@ -192,7 +207,7 @@ public class QuestsConfiguration {
 		holoTalkItem = loadHologram("talkItem");
 	}
 	
-	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
+	private Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle) {
 		Particle particle = null;
 		if (config.getBoolean(name + ".enabled")) {
 			try{
@@ -206,13 +221,21 @@ public class QuestsConfiguration {
 		return particle;
 	}
 	
-	private static ItemStack loadHologram(String name){
+	private ItemStack loadHologram(String name) {
 		if (BeautyQuests.getInstance().getDataFile().contains(name)){
 			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
 		}
 		return null;
 	}
 	
+	private boolean migrateEntry(ConfigurationSection config, ConfigurationSection migrateFrom, String key, String migrateKey) {
+		if (migrateFrom.contains(migrateKey)) {
+			config.set(key, migrateFrom.get(migrateKey));
+			migrateFrom.set(migrateKey, null);
+			return true;
+		}
+		return false;
+	}
 
 	public static String getPrefix(){
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
@@ -220,6 +243,10 @@ public class QuestsConfiguration {
 
 	public static int getTimeBetween(){
 		return timer;
+	}
+	
+	public static String getLanguage() {
+		return lang;
 	}
 	
 	public static int getMaxLaunchedQuests() {
@@ -240,18 +267,6 @@ public class QuestsConfiguration {
 
 	public static boolean questConfirmGUI(){
 		return questConfirmGUI;
-	}
-
-	public static boolean sendDialogsInActionBar(){
-		return dialogsInActionBar;
-	}
-
-	public static int getDialogsDefaultTime() {
-		return dialogsDefaultTime;
-	}
-
-	public static boolean isDialogClickDisabled() {
-		return disableDialogClick;
 	}
 	
 	public static boolean playSounds(){
@@ -304,10 +319,6 @@ public class QuestsConfiguration {
 	
 	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
 		return menuOpenNotStartedTabWhenEmpty;
-	}
-	
-	public static boolean isDialogHistoryEnabled() {
-		return dialogHistory;
 	}
 	
 	public static boolean hasStageEndRewardsMessage() {
@@ -432,13 +443,9 @@ public class QuestsConfiguration {
 		return finishSound;
 	}
 	
-	/*public static boolean isEffectLibEnabled(){
-		return elib ? effectEnabled : false;
-	}*/
-	
-	/*public static ConfigurationSection getEffectConfig(){
-		return effect;
-	}*/
+	public static DialogsConfig getDialogsConfig() {
+		return BeautyQuests.getInstance().getConfiguration().dialogs;
+	}
 	
 	public enum ClickType {
 		RIGHT, LEFT, ANY;
@@ -446,6 +453,55 @@ public class QuestsConfiguration {
 		public boolean applies(ClickType type) {
 			return (this == type) || (this == ANY) || (type == ANY);
 		}
+	}
+	
+	public class DialogsConfig {
+		
+		private boolean dialogsInActionBar = false;
+		private int dialogsDefaultTime = 100;
+		private boolean disableDialogClick = false;
+		private boolean dialogHistory = true;
+		
+		private ConfigurationSection config;
+		
+		private DialogsConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+		
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config, config.getParent(), "inActionBar", "dialogsInActionBar");
+				result |= migrateEntry(config, config.getParent(), "defaultTime", "dialogsDefaultTime");
+				result |= migrateEntry(config, config.getParent(), "disableClick", "disableDialogClick");
+				result |= migrateEntry(config, config.getParent(), "history", "dialogHistory");
+			}
+			return result;
+		}
+		
+		private void init() {
+			dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("inActionBar");
+			dialogsDefaultTime = config.getInt("defaultTime");
+			disableDialogClick = config.getBoolean("disableClick");
+			dialogHistory = config.getBoolean("history");
+		}
+		
+		public boolean sendInActionBar() {
+			return dialogsInActionBar;
+		}
+		
+		public int getDefaultTime() {
+			return dialogsDefaultTime;
+		}
+		
+		public boolean isClickDisabled() {
+			return disableDialogClick;
+		}
+		
+		public boolean isHistoryEnabled() {
+			return dialogHistory;
+		}
+		
 	}
 	
 }

@@ -73,7 +73,7 @@ public class BeautyQuests extends JavaPlugin {
 	/* --------- Storage --------- */
 	
 	private String lastVersion;
-	private FileConfiguration config;
+	private QuestsConfiguration config;
 
 	private String loadedLanguage;
 
@@ -319,11 +319,16 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
-			config = getConfig();
-			ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"));
+			File configFile = new File(getDataFolder(), "config.yml");
+			config = new QuestsConfiguration(this);
+			if (config.update()) {
+				config.getConfig().save(configFile);
+				logger.info("Updated config.");
+			}
+			ConfigUpdater.update(this, "config.yml", configFile);
+			config.init();
 			
-			QuestsConfiguration.initConfiguration(config);
-			ConfigurationSection dbConfig = config.getConfigurationSection("database");
+			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = new Database(dbConfig);
 				if (db.openConnection()) {
@@ -360,7 +365,7 @@ public class BeautyQuests extends JavaPlugin {
 			}
 
 			long lastMillis = System.currentTimeMillis();
-			loadedLanguage = config.getString("lang", "en_US");
+			loadedLanguage = QuestsConfiguration.getLanguage();
 			String language = "locales/" + loadedLanguage + ".yml";
 			File file = new File(getDataFolder(), language);
 			InputStream res = getResource(language);
@@ -609,6 +614,10 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
+	}
+	
+	public QuestsConfiguration getConfiguration() {
+		return config;
 	}
 
 	public Map<BQNPC, NPCStarter> getNPCs() {
