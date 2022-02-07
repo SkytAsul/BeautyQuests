@@ -457,10 +457,11 @@ public class QuestsConfiguration {
 	
 	public class DialogsConfig {
 		
-		private boolean dialogsInActionBar = false;
-		private int dialogsDefaultTime = 100;
-		private boolean disableDialogClick = false;
-		private boolean dialogHistory = true;
+		private boolean inActionBar = false;
+		private int defaultTime = 100;
+		private boolean defaultSkippable = true;
+		private boolean disableClick = false;
+		private boolean history = true;
 		
 		private ConfigurationSection config;
 		
@@ -480,26 +481,31 @@ public class QuestsConfiguration {
 		}
 		
 		private void init() {
-			dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("inActionBar");
-			dialogsDefaultTime = config.getInt("defaultTime");
-			disableDialogClick = config.getBoolean("disableClick");
-			dialogHistory = config.getBoolean("history");
+			inActionBar = NMS.getMCVersion() > 8 && config.getBoolean("inActionBar");
+			defaultTime = config.getInt("defaultTime");
+			defaultSkippable = config.getBoolean("defaultSkippable");
+			disableClick = config.getBoolean("disableClick");
+			history = config.getBoolean("history");
 		}
 		
 		public boolean sendInActionBar() {
-			return dialogsInActionBar;
+			return inActionBar;
 		}
 		
 		public int getDefaultTime() {
-			return dialogsDefaultTime;
+			return defaultTime;
+		}
+		
+		public boolean isSkippableByDefault() {
+			return defaultSkippable;
 		}
 		
 		public boolean isClickDisabled() {
-			return disableDialogClick;
+			return disableClick;
 		}
 		
 		public boolean isHistoryEnabled() {
-			return dialogHistory;
+			return history;
 		}
 		
 	}

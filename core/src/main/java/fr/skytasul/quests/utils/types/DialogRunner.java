@@ -17,6 +17,7 @@ import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.Lang;
 
 public class DialogRunner {
 	
@@ -77,6 +78,12 @@ public class DialogRunner {
 			if (status != null && status.task != null) return TestResult.DENY;
 		}
 		
+		if (p.isSneaking() && dialog.isSkippable() && test(p) == TestResult.ALLOW) {
+			Lang.DIALOG_SKIPPED.sendWP(p);
+			removePlayer(p);
+			end(p);
+			return TestResult.ALLOW;
+		}
 		return handleNext(p);
 	}
 	

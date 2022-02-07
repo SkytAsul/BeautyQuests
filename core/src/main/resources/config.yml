@@ -74,10 +74,13 @@ dialogs:
   inActionBar: false
   # Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
   defaultTime: 100
+  # Are dialogs skippable by default
+  defaultSkippable: false
   # If enabled, players will not be allowed to click on the NPC to pass a line of dialog
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
+  
 
 # - Integrations -
 # Enable GPS integration

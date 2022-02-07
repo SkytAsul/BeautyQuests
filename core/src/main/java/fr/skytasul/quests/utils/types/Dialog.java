@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Message.Sender;
@@ -12,7 +13,8 @@ import fr.skytasul.quests.utils.types.Message.Sender;
 public class Dialog implements Cloneable {
 
 	public List<Message> messages;
-	public String npcName;
+	public String npcName = null;
+	public Boolean skippable = null;
 	
 	public Dialog() {
 		this(new ArrayList<>());
@@ -42,6 +44,16 @@ public class Dialog implements Cloneable {
 		this.npcName = npcName;
 	}
 	
+	public boolean isSkippable() {
+		return skippable == null ? QuestsConfiguration.getDialogsConfig().isSkippableByDefault() : skippable.booleanValue();
+	}
+	
+	public String getSkippableStatus() {
+		String msg = isSkippable() ? Lang.Enabled.toString() : Lang.Disabled.toString();
+		if (skippable == null) msg += " " + Lang.defaultValue.toString();
+		return msg;
+	}
+	
 	@Override
 	public Dialog clone() {
 		Dialog clone = new Dialog();
@@ -64,6 +76,7 @@ public class Dialog implements Cloneable {
 		}
 		map.put("msgs", ls);
 		if (npcName != null) map.put("npcName", npcName);
+		if (skippable != null) map.put("skippable", skippable);
 		
 		return map;
 	}
@@ -78,6 +91,7 @@ public class Dialog implements Cloneable {
 		}
 		Dialog di = new Dialog(tmpMessages.toList());
 		if (map.containsKey("npcName")) di.npcName = (String) map.get("npcName");
+		if (map.containsKey("skippable")) di.skippable = (Boolean) map.get("skippable");
 		
 		return di;
 	}

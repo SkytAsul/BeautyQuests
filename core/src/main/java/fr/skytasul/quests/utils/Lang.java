@@ -38,6 +38,8 @@ public enum Lang{
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
+	DIALOG_SKIPPED("msg.dialogs.skipped"),
+	
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
 	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
 	POOL_NO_AVAILABLE("msg.pools.noAvailable"),
@@ -263,6 +265,8 @@ public enum Lang{
 	DIALOG_TIME_REMOVED("msg.editor.dialog.timeRemoved"), // 0: index
 	DIALOG_NPCNAME_SET("msg.editor.dialog.npcName.set"), // 0: previous, 1: new
 	DIALOG_NPCNAME_UNSET("msg.editor.dialog.npcName.unset"), // 0: previous
+	DIALOG_SKIPPABLE_SET("msg.editor.dialog.skippable.set"), // 0: previous, 1: new
+	DIALOG_SKIPPABLE_UNSET("msg.editor.dialog.skippable.unset"), // 0: previous
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
 	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
 	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
@@ -277,6 +281,7 @@ public enum Lang{
 	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
 	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime"),
 	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName"),
+	DIALOG_HELP_SKIPPABLE("msg.editor.dialog.help.skippable"),
 	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
 	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
 	

@@ -97,6 +97,8 @@ msg:
   playerNotOnline: §cThe player {0} is offline.
   playerDataNotFound: §cDatas of player {0} not found.
   versionRequired: 'Version required: §l{0}'
+  dialogs:
+    skipped: '§8§o Dialog skipped.'
   command:
     downloadTranslations:
       syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
@@ -268,11 +270,15 @@ msg:
         close: '§6close: §eValidate all messages.'
         setTime: '§6setTime <id> <time>: §eSet the time (in ticks) before the next msg plays automatically.'
         npcName: '§6npcName [custom NPC name]: §eSet (or reset to default) custom name of the NPC in the dialog'
+        skippable: '§6skippable [true|false]: §eSet if the dialog can be skipped or not'
       timeSet: '§aTime has been edited for message {0}: now {1} ticks.'
       timeRemoved: '§aTime has been removed for message {0}.'
       npcName:
         set: '§aCustom NPC name set to §7{1}§a (was §7{0}§a)'
         unset: '§aCustom NPC name reset to default (was §7{0}§a)'
+      skippable:
+        set: '§aThe dialog skippable status is now set to §7{1}§a (was §7{0}§a)'
+        unset: '§aThe dialog skippable status is reset to default (was §7{0}§a)'
     mythicmobs:
       list: '§aA list of all Mythic Mobs:'
       isntMythicMob: §cThis Mythic Mob doesn't exist.

@@ -152,8 +152,18 @@ public class DialogEditor extends Editor{
 			if (args.length < 2) {
 				Lang.DIALOG_NPCNAME_UNSET.send(p, d.npcName);
 				d.npcName = null;
+			}else Lang.DIALOG_NPCNAME_SET.send(p, d.npcName, d.npcName = msg);
+			break;
+		
+		case SKIPPABLE:
+			String prev = d.getSkippableStatus();
+			if (args.length < 2) {
+				d.skippable = null;
+				Lang.DIALOG_SKIPPABLE_UNSET.send(p, prev);
+			}else {
+				d.skippable = Boolean.parseBoolean(args[1]);
+				Lang.DIALOG_SKIPPABLE_SET.send(p, prev, d.getSkippableStatus());
 			}
-			Lang.DIALOG_NPCNAME_SET.send(p, d.npcName, d.npcName = msg);
 			break;
 
 		case CLEAR:
@@ -177,7 +187,7 @@ public class DialogEditor extends Editor{
 	}
 
 	private enum Command{
-		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, NPCNAME, CLEAR;
+		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, NPCNAME, SKIPPABLE, CLEAR;
 	}
 	
 }
