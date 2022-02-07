@@ -208,7 +208,7 @@ public enum Lang{
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
-	COMPARISON_TYPE("msg.editor.comparisonType"), // 0: available comparisons
+	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
 	
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 	

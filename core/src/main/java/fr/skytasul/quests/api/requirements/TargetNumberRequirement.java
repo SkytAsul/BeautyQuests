@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.EnumParser;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
@@ -15,8 +14,6 @@ import fr.skytasul.quests.utils.Utils;
 
 public abstract class TargetNumberRequirement extends AbstractRequirement {
 
-	private static final EnumParser<ComparisonMethod> COMPARISON_PARSER = new EnumParser<>(ComparisonMethod.class);
-	
 	private static NumberFormat numberFormat = NumberFormat.getInstance();
 
 	protected ComparisonMethod comparison;
@@ -80,16 +77,12 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 			event.reopenGUI();
 		}, number -> {
 			target = number.doubleValue();
-			Lang.COMPARISON_TYPE.send(event.getPlayer(), COMPARISON_PARSER.getNames());
+			Lang.COMPARISON_TYPE.send(event.getPlayer(), ComparisonMethod.getComparisonParser().getNames(), ComparisonMethod.GREATER_OR_EQUAL.name().toLowerCase());
 			new TextEditor<>(event.getPlayer(), null, comp -> {
-				this.comparison = comp;
+				this.comparison = comp == null ? ComparisonMethod.GREATER_OR_EQUAL : comp;
 				event.updateItemLore(getLore());
 				event.reopenGUI();
-			}, () -> {
-				this.comparison = ComparisonMethod.GREATER_OR_EQUAL;
-				event.updateItemLore(getLore());
-				event.reopenGUI();
-			}, COMPARISON_PARSER).enter();
+			}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().enter();
 		}, () -> {
 			event.getGUI().remove(this);
 			event.reopenGUI();

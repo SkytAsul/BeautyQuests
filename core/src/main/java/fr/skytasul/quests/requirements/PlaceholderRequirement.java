@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
@@ -68,15 +69,21 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	public void setPlaceholder(String placeholder){
 		this.rawPlaceholder = placeholder;
 		int index = placeholder.indexOf("_");
-		String identifier = placeholder.substring(0, index);
-		hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(identifier);
-		params = placeholder.substring(index + 1);
-		if (hook == null) {
-			DebugUtils.logMessage("Cannot find PlaceholderAPI expansion for " + rawPlaceholder);
-			QuestsPlaceholders.waitForExpansion(identifier, expansion -> {
-				hook = expansion;
-				DebugUtils.logMessage("Found " + rawPlaceholder + " from callback");
-			});
+		if (index == -1) {
+			hook = null;
+			params = placeholder;
+			BeautyQuests.logger.warning("Usage of invalid placeholder " + placeholder);
+		}else {
+			String identifier = placeholder.substring(0, index);
+			hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(identifier);
+			params = placeholder.substring(index + 1);
+			if (hook == null) {
+				BeautyQuests.logger.warning("Cannot find PlaceholderAPI expansion for " + rawPlaceholder);
+				QuestsPlaceholders.waitForExpansion(identifier, expansion -> {
+					hook = expansion;
+					DebugUtils.logMessage("Found " + rawPlaceholder + " from callback");
+				});
+			}
 		}
 	}
 	
@@ -127,8 +134,18 @@ public class PlaceholderRequirement extends AbstractRequirement {
 				event.reopenGUI();
 			}, value -> {
 				this.value = value;
-				event.updateItemLore(getLore());
-				event.reopenGUI();
+				try {
+					new BigDecimal(value); // tests if the value is a number
+					Lang.COMPARISON_TYPE.send(event.getPlayer(), ComparisonMethod.getComparisonParser().getNames(), ComparisonMethod.EQUALS.name().toLowerCase());
+					new TextEditor<>(event.getPlayer(), null, comp -> {
+						this.comparison = comp == null ? ComparisonMethod.EQUALS : comp;
+						event.updateItemLore(getLore());
+						event.reopenGUI();
+					}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().enter();
+				}catch (NumberFormatException __) {
+					event.updateItemLore(getLore());
+					event.reopenGUI();
+				}
 			}).enter();
 		}).useStrippedMessage().enter();
 	}

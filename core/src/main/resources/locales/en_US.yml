@@ -296,7 +296,7 @@ msg:
         close: '§6close: §eValidate the added texts.'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
     invalidPattern: '§cInvalid regex pattern §4{0}§c.'
-    comparisonType: '§aChoose the comparison type you want among {0}. Default comparison is: §e§lgreater or equals§r§a. Type §onull§r§a to use it.'
+    comparisonTypeDefault: '§aChoose the comparison type you want among {0}. Default comparison is: §e§l{1}§r§a. Type §onull§r§a to use it.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
