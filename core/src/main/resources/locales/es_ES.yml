@@ -81,6 +81,7 @@ msg:
   inventoryFull: '§cTu inventario está lleno, el objeto ha sido abandonado en el suelo.'
   playerNeverConnected: '§cNo se puede encontrar información sobre el jugador {0}.'
   playerNotOnline: '§cEl jugador {0} está desconectado.'
+  playerDataNotFound: '§cDatas del jugador {0} no encontrados.'
   versionRequired: 'Versión requerida: §l{0}'
   command:
     downloadTranslations:
@@ -135,6 +136,9 @@ msg:
       resetAll: '§6Has restablecido el marcador del jugador {0} con éxito.'
       hidden: '§6El marcador del jugador {0} ha sido ocultado.'
       shown: '§6El marcador del jugador {0} ha sido mostrado.'
+      own:
+        hidden: Su marcador ahora está oculto.
+        shown: Su marcador se muestra de nuevo
     help:
       header: '§6§lBeautyQuests — Ayuda'
       create: '§6/{0} create: §eCrea una misión.'
@@ -150,6 +154,7 @@ msg:
       setItem: '§6/{0} setItem <talk|launch>: §eGuarda el elemento del holograma.'
       adminMode: '§6/{0} adminMode: §eActiva el Modo de administración. (Útil para mostrar mensajes de poco registro.)'
       version: '§6/{0} version: §eVer la versión actual del plugin.'
+      downloadTranslations: '§6/{0} descargaTraducciones <language>: §eDescargas un archivo de traducción de vaina'
       save: '§6/{0} save: §eHacer un guardado manual.'
       list: '§6/{0} list: §eVer la lista de misiones. (Sólo para versiones soportadas.)'
   typeCancel: '§aEscribe "cancel" para volver al último texto.'
@@ -251,7 +256,7 @@ msg:
         list: '§6list: §eVer todos los textos añadidos'
         close: '§6close: §eValida los textos añadidos'
     noSuchElement: '§cNo hay tal elemento. Los elementos permitidos son: §e{0}'
-    comparisonType: '§aElige el tipo de comparación que quieres entre {0}. La comparación predeterminada es: §e§lmayor o iguales§r§a. Escribe §onull§r§a para usarlo.'
+    comparisonTypeDefault: '§aElige el tipo de comparación que quieres entre {0}. La comparación predeterminada es: §e§l{1}§r§a. Escribe §onull§r§a para usarlo.'
     scoreboardObjectiveNotFound: '§cObjetivo desconocido del marcador.'
     pool:
       hologramText: 'Escriba el texto personalizado del holograma para este grupo (o "null" si desea el predeterminado).'
@@ -620,7 +625,6 @@ scoreboard:
     craft: '§eCraftear §6{0}'
     bucket: '§eRellenar §6{0}'
     location: '§eIr a §6{0}§e, §6{1}§e, §6{2}§e en §6{3}'
-    playTime: '§eJuega §6{0} ticks de juego'
     breed: '§eReproducir §6{0}'
     tame: '§eDomar §6{0}'
 indication:

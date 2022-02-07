@@ -83,6 +83,8 @@ msg:
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   playerDataNotFound: '§cLes données du joueur {0} sont introuvables.'
   versionRequired: 'Version requise : §l{0}'
+  dialogs:
+    skipped: '§8§o Le dialogue a été passé.'
   command:
     downloadTranslations:
       syntax: '§cVous devez spécifier une langue à télécharger. Exemple: "/quests downloadTranslations fr_FR".'
@@ -168,6 +170,9 @@ msg:
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
     typeGameTicks: '§aEcrivez la quantité de ticks requis :'
     already: '§cVous êtes déjà dans un éditeur.'
+    stage:
+      location:
+        typeWorldPattern: '§aÉcrivez une expression régulière (regex) pour les noms de monde :'
     enter:
       title: '§6~ mode éditeur ~'
       subtitle: '§6Entrez "/quests exitEditor" pour forcer la sortie.'
@@ -235,11 +240,15 @@ msg:
         close: '§6close: §eValider les messages.'
         setTime: '§6setTime <id> <time>: §eModifie le temps (en ticks) avant que le message suivant ne se lance.'
         npcName: '§6npcName [nom du NPC] : §eModifie (ou remet au nom par défaut) le nom personnalisé du NPC dans le dialogue'
+        skippable: '§6skippable [true|false] : §eDéfinir si le dialogue peut être ignoré ou non'
       timeSet: '§aLe temps a été modifié pour le message {0}: il est maintenant de {1} tick(s).'
       timeRemoved: '§aLe temps a été supprimé du message {0}.'
       npcName:
         set: '§aNom du NPC personnalisé modifié pour §7{1}§a (avant: §7{0}§a)'
         unset: '§aNom du NPC personnalisé réinitialisé à la valeur par défaut (était §7{0}§a)'
+      skippable:
+        set: '§aStatut "ignorable" du dialogue modifié pour §7{1}§a (avant: §7{0}§a)'
+        unset: '§aStatut "ignorable" du dialogue remis à la valeur par défaut (était §7{0}§a)'
     mythicmobs:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
@@ -256,7 +265,8 @@ msg:
         list: '§6list: §eVoir tout les textes.'
         close: '§6close: §eValider les textes.'
     noSuchElement: '§cIl n''y a pas d’élément correspondant. Les éléments permis sont : §e{0}'
-    comparisonType: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§lgreater or equals§r§a. Tapez §onull§r§a pour l''utiliser.'
+    invalidPattern: '§cRegex invalide: §4{0}§c.'
+    comparisonTypeDefault: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§l{1}§r§a. Tapez §onull§r§a pour l''utiliser.'
     scoreboardObjectiveNotFound: '§cObjectif de scoreboard inconnu.'
     pool:
       hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
@@ -336,6 +346,10 @@ inv:
     currentRadius: '§eDistance actuelle : §6{0}'
     changeTicksRequired: '§eChanger la quantité de ticks requis'
     changeEntityType: '§eSélectionner un type d''entité'
+    stage:
+      location:
+        worldPattern: '§aModifier le motif de nom de monde §d(AVANCÉ)'
+        worldPatternLore: 'Si vous voulez que l''étape soit terminée pour un monde correspondant à un motif spécifique, entrez ici une regex (expression régulière).'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -450,6 +464,8 @@ inv:
     name: Choisir le type d'entité
   chooseQuest:
     name: Quelle quête ?
+    menu: '§aMenu des Quêtes'
+    menuLore: Vous ouvre votre menu de Quêtes.
   mobs:
     name: Choisir les mobs
     none: '§aCliquer pour ajouter un mob.'
@@ -625,7 +641,7 @@ scoreboard:
     craft: '§eFabriquez §6{0}'
     bucket: '§eRemplissez §6{0}'
     location: '§eAllez à §6{0}§e, §6{1}§e, §6{2}§e dans §6{3}'
-    playTime: '§eJouez §6{0} ticks de jeu'
+    playTimeFormatted: '§eJoue §6{0}'
     breed: '§eFaites se reproduire §6{0}'
     tame: '§eApprivoisez §6{0}'
 indication:
