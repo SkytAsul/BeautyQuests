@@ -324,12 +324,17 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
 		
 		Runnable run = () -> {
-			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
-			String obtained = Utils.itemsToFormattedString(msg.toArray(new String[0]));
-			if (hasOption(OptionEndMessage.class)) {
-				String endMsg = getOption(OptionEndMessage.class).getValue();
-				if (!"none".equals(endMsg)) Utils.IsendMessage(p, endMsg, true, obtained);
-			}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
+			try {
+				List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionEndRewards.class));
+				String obtained = Utils.itemsToFormattedString(msg.toArray(new String[0]));
+				if (hasOption(OptionEndMessage.class)) {
+					String endMsg = getOption(OptionEndMessage.class).getValue();
+					if (!"none".equals(endMsg)) Utils.IsendMessage(p, endMsg, true, obtained);
+				}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
+			}catch (Exception ex) {
+				Lang.ERROR_OCCURED.send(p, "reward message");
+				ex.printStackTrace();
+			}
 			
 			Utils.runOrSync(() -> {
 				manager.remove(acc);

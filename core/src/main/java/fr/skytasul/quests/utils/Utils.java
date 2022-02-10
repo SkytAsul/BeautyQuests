@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
@@ -172,7 +171,7 @@ public class Utils{
 	public static String itemsToFormattedString(String[] items, String separator){
 		if (items.length == 0) return "";
 		if (items.length == 1) return items[0];
-		if (items.length == 2) return items[0] + " " + separator + Lang.And.toString() + " " + ChatColor.getLastColors(items[0]) + items[1];
+		if (items.length == 2) return items[0] + " " + separator + Lang.And.toString() + " " + ChatUtils.getLastColors(null, items[0]) + items[1];
 		StringBuilder stb = new StringBuilder("§e" + items[0] + ", ");
 		for (int i = 1; i < items.length - 1; i++){
 			stb.append(items[i] + ((i == items.length - 2) ? "" : ", "));

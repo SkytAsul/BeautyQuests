@@ -272,7 +272,8 @@ public class ChatUtils {
 	}
 	
 	public static String getLastColors(String originalColors, String appended) {
-		StringBuilder builder = new StringBuilder(originalColors);
+		if (appended == null || appended.length() == 0) return originalColors;
+		StringBuilder builder = originalColors == null ? new StringBuilder() : new StringBuilder(originalColors);
 		StringBuilder hexBuilder = null;
 		boolean color = false;
 		for (int colorIndex = 0; colorIndex < appended.length(); colorIndex++) {
