@@ -30,6 +30,7 @@ softdepend:
 - Citizens
 - ProSkillAPI
 - BlueMap
+- Sentinel
 
 commands:
   beautyquests:
