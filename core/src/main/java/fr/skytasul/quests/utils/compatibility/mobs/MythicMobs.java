@@ -21,6 +21,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
+
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
@@ -40,7 +41,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 
 	@Override
 	public void itemClick(Player p, Consumer<MythicMob> run) {
-		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, x -> x.getInternalName()) {
+		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, MythicMob::getInternalName) {
 			@Override
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
@@ -59,7 +60,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 				Inventories.closeAndExit(p);
 				run.accept(existing);
 			}
-		}.create(p);
+		}.sortValues(MythicMob::getInternalName).create(p);
 	}
 
 	@Override

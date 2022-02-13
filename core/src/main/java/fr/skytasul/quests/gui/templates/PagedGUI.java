@@ -75,12 +75,24 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		return inv;
 	}
 	
-	public void setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
+	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
 		if (this.validate != null) throw new IllegalStateException("A validation has already be added.");
 		if (this.inv != null) throw new IllegalStateException("Cannot add a validation after inventory opening.");
 		if (validationItem == null) throw new IllegalArgumentException("Cannot set a null validation item.");
 		this.validate = validate;
 		this.validationItem = validationItem;
+		return this;
+	}
+	
+	public <C extends Comparable<C>> PagedGUI<T> sortValues(Function<T, C> mapper) {
+		objects.sort((o1, o2) -> {
+			C map1;
+			if (o1 == null || (map1 = mapper.apply(o1)) == null) return 1;
+			C map2;
+			if (o2 == null || (map2 = mapper.apply(o2)) == null) return -1;
+			return map1.compareTo(map2);
+		});
+		return this;
 	}
 	
 	protected void calcMaxPages() {
@@ -147,6 +159,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 				new TextEditor<String>(p, () -> p.openInventory(inv), (obj) -> {
 					//objects.stream().filter(x -> getName(x).contains((String) obj));
 					objects.sort(comparator.setReference(obj));
+					page = 0;
 					setItems();
 					p.openInventory(inv);
 				}).enter();

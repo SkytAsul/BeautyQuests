@@ -35,6 +35,7 @@ import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.compatibility.npcs.BQCitizens;
+import fr.skytasul.quests.utils.compatibility.npcs.BQSentinel;
 import fr.skytasul.quests.utils.compatibility.npcs.BQServerNPCs;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 

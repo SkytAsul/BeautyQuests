@@ -37,11 +37,8 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 	private Consumer<EntityType> run;
 	
 	public EntityTypeGUI(Consumer<EntityType> run, Predicate<EntityType> typeFilter) {
-		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).sorted((o1, o2) -> {
-			if (o1 == null || o1.getName() == null) return 1;
-			if (o2 == null || o2.getName() == null) return -1;
-			return o1.getName().compareTo(o2.getName());
-		}).collect(Collectors.toList()), null, EntityTypeGUI::getName);
+		super(Lang.INVENTORY_TYPE.toString(), DyeColor.PURPLE, entities.keySet().stream().filter(typeFilter).collect(Collectors.toList()), null, EntityTypeGUI::getName);
+		sortValues(EntityType::getName);
 		this.run = run;
 	}
 
