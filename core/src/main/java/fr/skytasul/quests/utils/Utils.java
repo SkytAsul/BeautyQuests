@@ -1,6 +1,6 @@
- package fr.skytasul.quests.utils;
+package fr.skytasul.quests.utils;
 
-	import java.text.DateFormat;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -67,7 +67,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	@Override
 	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Supplier[] { () -> Utils.itemsToFormattedString(buildRemainingArray(acc, source), QuestsConfiguration.getItemAmountColor()) };
+		return new Supplier[] { () -> Utils.descriptionLines(source, buildRemainingArray(acc, source)) };
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {

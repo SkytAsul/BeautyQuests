@@ -67,7 +67,7 @@ public class DialogEditor extends Editor{
 		case LIST:
 			for (int i = 0; i < d.messages.size(); i++) {
 				Message dmsg = d.messages.get(i);
-				p.sendMessage("§6" + i + " :§a \"" + dmsg.text + "§r§a\"§e by §l" + dmsg.sender.name().toLowerCase());
+				Utils.IsendMessage(p, "§6{0}: §7 \"{1}§7\"§e by §l{2}", false, i, dmsg.text, dmsg.sender.name().toLowerCase());
 			}
 			break;
 			

@@ -10,7 +10,13 @@ import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.KnowledgeBookMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.skytasul.quests.QuestsConfiguration;
@@ -120,9 +126,13 @@ public class ItemUtils {
 		return is;
 	}
 	
-	public static ItemStack clearNameAndLore(ItemStack is) {
+	public static ItemStack clearVisibleAttributes(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(null);
+		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		if (im instanceof Damageable || im.hasAttributeModifiers()) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
+		if (im instanceof BookMeta || im instanceof KnowledgeBookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
 		im.setLore(null);
 		is.setItemMeta(im);
 		return is;

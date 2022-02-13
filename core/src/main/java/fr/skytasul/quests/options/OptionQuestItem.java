@@ -23,7 +23,7 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 		if (value == null || value.getType() == Material.AIR) {
 			value = XMaterial.BOOK.parseItem();
 		}else {
-			value = ItemUtils.clearNameAndLore(value.clone());
+			value = ItemUtils.clearVisibleAttributes(value.clone());
 		}
 		super.setValue(value);
 	}
