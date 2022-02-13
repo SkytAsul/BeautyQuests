@@ -117,7 +117,7 @@ public class QuestPool implements Comparable<QuestPool> {
 	
 	public ItemStack getItemStack(String action) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
-				Lang.poolItemNPC.format(npcID),
+				Lang.poolItemNPC.format(npcID + " (" + (starter == null ? "unknown" : starter.getNPC().getName()) + ")"),
 				Lang.poolItemMaxQuests.format(maxQuests),
 				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
 				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),

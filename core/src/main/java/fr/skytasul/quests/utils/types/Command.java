@@ -29,9 +29,9 @@ public class Command {
 			}else o.performCommand(formattedcmd);
 			DebugUtils.logMessage((console ? "Console" : o.getName()) + " just performed command " + formattedcmd);
 		};
-		if (delay == 0) {
+		if (delay == 0 && Bukkit.isPrimaryThread()) {
 			run.run();
-		}else Bukkit.getScheduler().scheduleSyncDelayedTask(BeautyQuests.getInstance(), run, delay);
+		}else Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), run, delay);
 	}
 	
 	public Map<String, Object> serialize(){
