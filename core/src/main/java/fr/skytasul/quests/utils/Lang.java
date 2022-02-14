@@ -428,6 +428,8 @@ public enum Lang{
 	editRequirementsLore("inv.details.editRequirementsLore"),
 	startRewards("inv.details.startRewards"),
 	startRewardsLore("inv.details.startRewardsLore"),
+	cancelRewards("inv.details.cancelRewards"),
+	cancelRewardsLore("inv.details.cancelRewardsLore"),
 	hologramText("inv.details.hologramText"),
 	hologramTextLore("inv.details.hologramTextLore"),
 	timer("inv.details.timer"),
@@ -501,6 +503,8 @@ public enum Lang{
 	rewardRandomMinMax("inv.rewards.random.minMax"),
 	
 	INVENTORY_CHECKPOINT_ACTIONS("inv.checkpointActions.name"),
+	
+	INVENTORY_CANCEL_ACTIONS("inv.cancelActions.name"),
 
 	INVENTORY_REWARDS_WITH_REQUIREMENTS("inv.rewardsWithRequirements.name"),
 	

@@ -23,7 +23,9 @@ import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -37,8 +39,8 @@ import fr.skytasul.quests.utils.Lang;
 
 public class QuestsAPI {
 	
-	private static final QuestObjectsRegistry<AbstractRequirement> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
-	private static final QuestObjectsRegistry<AbstractReward> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
+	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
+	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
 	public static final List<StageType<?>> stages = new LinkedList<>();
 	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
@@ -81,11 +83,11 @@ public class QuestsAPI {
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 	
-	public static QuestObjectsRegistry<AbstractRequirement> getRequirements() {
+	public static QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getRequirements() {
 		return requirements;
 	}
 	
-	public static QuestObjectsRegistry<AbstractReward> getRewards() {
+	public static QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards() {
 		return rewards;
 	}
 	

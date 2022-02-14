@@ -14,7 +14,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.SessionManager;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -118,7 +118,7 @@ public class BQWorldGuard {
 	public static void init() {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
 	
 	public static BQWorldGuard getInstance() {

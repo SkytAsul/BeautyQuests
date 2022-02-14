@@ -448,6 +448,8 @@ inv:
     editRequirementsLore: Every requirements must apply to the player before it can start the quest.
     startRewards: §6Start rewards
     startRewardsLore: Actions performed when the quest starts.
+    cancelRewards: §cCancel actions
+    cancelRewardsLore: Actions performed when players cancel this quest.
     hologramText: §eHologram text
     hologramTextLore: Text displayed on the hologram above the Starter NPC's head.
     timer: §bRestart timer
@@ -528,6 +530,8 @@ inv:
       minMax: Edit min and max
   checkpointActions:
     name: Checkpoint actions
+  cancelActions:
+    name: Cancel actions
   rewardsWithRequirements:
     name: Rewards with requirements
   listAllQuests:

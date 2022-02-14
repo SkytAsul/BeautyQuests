@@ -29,10 +29,6 @@ public abstract class QuestObject implements Cloneable {
 		return creator;
 	}
 	
-	public boolean isAsync() {
-		return false;
-	}
-	
 	public void attach(Quest quest) {
 		this.quest = quest;
 	}
@@ -97,7 +93,7 @@ public abstract class QuestObject implements Cloneable {
 		return objects;
 	}
 	
-	public static <T extends QuestObject> T deserialize(Map<String, Object> map, QuestObjectsRegistry<T> registry) {
+	public static <T extends QuestObject, C extends QuestObjectCreator<T>> T deserialize(Map<String, Object> map, QuestObjectsRegistry<T, C> registry) {
 		QuestObjectCreator<T> creator = null;
 		
 		String id = (String) map.get("id");
@@ -106,13 +102,16 @@ public abstract class QuestObject implements Cloneable {
 		if (creator == null) {
 			String className = (String) map.get("class");
 			try {
-				creator = registry.getByClass((Class<T>) Class.forName(className));
-			}catch (ClassNotFoundException e) {
+				creator = registry.getByClass(Class.forName(className));
+			}catch (ClassNotFoundException e) {}
+			
+			if (creator == null) {
 				BeautyQuests.logger.severe("Cannot find object class " + className);
+				return null;
 			}
 		}
 		if (creator == null) {
-			BeautyQuests.logger.severe("Cannot find reward creator with id: " + id);
+			BeautyQuests.logger.severe("Cannot find object creator with id: " + id);
 			return null;
 		}
 		T reward = creator.newObjectSupplier.get();

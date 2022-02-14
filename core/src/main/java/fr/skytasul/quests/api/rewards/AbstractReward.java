@@ -14,6 +14,11 @@ public abstract class AbstractReward extends QuestObject {
 		super(QuestsAPI.getRewards());
 	}
 	
+	@Override
+	public RewardCreator getCreator() {
+		return (RewardCreator) super.getCreator();
+	}
+	
 	/**
 	 * Called when the reward should be given to the player
 	 * @param p Player to give the reward
@@ -26,6 +31,10 @@ public abstract class AbstractReward extends QuestObject {
 	
 	public static AbstractReward deserialize(Map<String, Object> map) {
 		return QuestObject.deserialize(map, QuestsAPI.getRewards());
+	}
+	
+	public boolean isAsync() {
+		return false;
 	}
 	
 }

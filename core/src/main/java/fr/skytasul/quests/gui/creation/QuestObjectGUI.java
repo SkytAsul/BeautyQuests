@@ -17,6 +17,8 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.requirements.RequirementCreator;
+import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -102,26 +104,26 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default rewards.");
 
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("commandReward", CommandReward.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.command.toString()), CommandReward::new));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("itemReward", ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), ItemReward::new));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("removeItemsReward", RemoveItemsReward.class, ItemUtils.item(XMaterial.CHEST, Lang.rewardRemoveItems.toString()), RemoveItemsReward::new));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("textReward", MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("tpReward", TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("expReward", XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("checkpointReward", CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("questStopReward", QuestStopReward.class, ItemUtils.item(XMaterial.BARRIER, Lang.rewardStopQuest.toString()), QuestStopReward::new, false, QuestObjectLocation.STAGE));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("requirementDependentReward", RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, true));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("randomReward", RandomReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardRandom.toString()), RandomReward::new, true));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("wait", WaitReward.class, ItemUtils.item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true));
-		QuestsAPI.getRewards().register(new QuestObjectCreator<>("titleReward", TitleReward.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
+		QuestsAPI.getRewards().register(new RewardCreator("commandReward", CommandReward.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.command.toString()), CommandReward::new));
+		QuestsAPI.getRewards().register(new RewardCreator("itemReward", ItemReward.class, ItemUtils.item(XMaterial.STONE_SWORD, Lang.rewardItems.toString()), ItemReward::new));
+		QuestsAPI.getRewards().register(new RewardCreator("removeItemsReward", RemoveItemsReward.class, ItemUtils.item(XMaterial.CHEST, Lang.rewardRemoveItems.toString()), RemoveItemsReward::new));
+		QuestsAPI.getRewards().register(new RewardCreator("textReward", MessageReward.class, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.endMessage.toString()), MessageReward::new));
+		QuestsAPI.getRewards().register(new RewardCreator("tpReward", TeleportationReward.class, ItemUtils.item(XMaterial.ENDER_PEARL, Lang.location.toString()), TeleportationReward::new, false));
+		QuestsAPI.getRewards().register(new RewardCreator("expReward", XPReward.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.rewardXP.toString()), XPReward::new));
+		QuestsAPI.getRewards().register(new RewardCreator("checkpointReward", CheckpointReward.class, ItemUtils.item(XMaterial.NETHER_STAR, Lang.rewardCheckpoint.toString()), CheckpointReward::new, false, QuestObjectLocation.STAGE));
+		QuestsAPI.getRewards().register(new RewardCreator("questStopReward", QuestStopReward.class, ItemUtils.item(XMaterial.BARRIER, Lang.rewardStopQuest.toString()), QuestStopReward::new, false, QuestObjectLocation.STAGE));
+		QuestsAPI.getRewards().register(new RewardCreator("requirementDependentReward", RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, true).setCanBeAsync(true));
+		QuestsAPI.getRewards().register(new RewardCreator("randomReward", RandomReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardRandom.toString()), RandomReward::new, true).setCanBeAsync(true));
+		QuestsAPI.getRewards().register(new RewardCreator("wait", WaitReward.class, ItemUtils.item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true).setCanBeAsync(true));
+		QuestsAPI.getRewards().register(new RewardCreator("titleReward", TitleReward.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("logicalOr", LogicalOrRequirement.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.RLOR.toString()), LogicalOrRequirement::new));
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("questRequired", QuestRequirement.class, ItemUtils.item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), QuestRequirement::new));
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("levelRequired", LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("permissionRequired", PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
-		QuestsAPI.getRequirements().register(new QuestObjectCreator<>("scoreboardRequired", ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("logicalOr", LogicalOrRequirement.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.RLOR.toString()), LogicalOrRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("questRequired", QuestRequirement.class, ItemUtils.item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), QuestRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("levelRequired", LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("permissionRequired", PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
+		QuestsAPI.getRequirements().register(new RequirementCreator("scoreboardRequired", ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
 	}
 
 }

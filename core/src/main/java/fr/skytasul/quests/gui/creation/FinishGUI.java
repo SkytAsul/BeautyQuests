@@ -336,12 +336,13 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("description", 12, OptionDescription.class, OptionDescription::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("customItem", 13, OptionQuestItem.class, OptionQuestItem::new, QuestsConfiguration.getItemMaterial(), "customMaterial"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 19, OptionCancellable.class, OptionCancellable::new, true));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 19, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 20, OptionStartable.class, OptionStartable::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 21, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 22, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 24, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 22, OptionCancellable.class, OptionCancellable::new, true));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancelActions", 23, OptionCancelRewards.class, OptionCancelRewards::new, new ArrayList<>()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class, OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class, OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class, OptionScoreboardEnabled::new, true));
@@ -355,8 +356,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startMessage", 39, OptionStartMessage.class, OptionStartMessage::new, QuestsConfiguration.getPrefix() + Lang.STARTED_QUEST.toString()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 42, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMsg", 43, OptionEndMessage.class, OptionEndMessage::new, QuestsConfiguration.getPrefix() + Lang.FINISHED_BASE.toString()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 43, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMsg", 44, OptionEndMessage.class, OptionEndMessage::new, QuestsConfiguration.getPrefix() + Lang.FINISHED_BASE.toString()));
 	}
 	
 }

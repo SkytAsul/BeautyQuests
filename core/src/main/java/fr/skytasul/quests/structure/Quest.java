@@ -198,6 +198,9 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
+		
+		if (acc.isCurrent())
+			Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){

@@ -12,7 +12,6 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -50,7 +49,7 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		new QuestObjectGUI<>(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, QuestsAPI.getRewards().getCreators(), rewards -> {
+		QuestsAPI.getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
 			actions = rewards;
 			event.updateItemLore(getLore());
 			event.reopenGUI();

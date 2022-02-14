@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -20,7 +21,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public abstract class QuestOptionObject<T extends QuestObject> extends QuestOption<List<T>> {
+public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>> extends QuestOption<List<T>> {
 	
 	@Override
 	public void attach(Quest quest) {
@@ -75,9 +76,9 @@ public abstract class QuestOptionObject<T extends QuestObject> extends QuestOpti
 	
 	protected abstract String getSizeString(int size);
 	
-	protected abstract QuestObjectsRegistry<T> getObjectsRegistry();
+	protected abstract QuestObjectsRegistry<T, C> getObjectsRegistry();
 	
-	private String[] getLore() {
+	protected String[] getLore() {
 		String count = "§7" + getSizeString(getValue().size());
 		if (getItemDescription() == null) return new String[] { count };
 		return new String[] { formatDescription(getItemDescription()), "", count };

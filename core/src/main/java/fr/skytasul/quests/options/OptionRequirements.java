@@ -7,10 +7,11 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class OptionRequirements extends QuestOptionObject<AbstractRequirement> {
+public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator> {
 	
 	@Override
 	protected Function<AbstractRequirement, Map<String, Object>> getSerializeFunction() {
@@ -28,7 +29,7 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement> {
 	}
 	
 	@Override
-	protected QuestObjectsRegistry<AbstractRequirement> getObjectsRegistry() {
+	protected QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getObjectsRegistry() {
 		return QuestsAPI.getRequirements();
 	}
 	
