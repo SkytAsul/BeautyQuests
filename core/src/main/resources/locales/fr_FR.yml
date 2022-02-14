@@ -418,6 +418,8 @@ inv:
     editRequirementsLore: Toutes les conditions doivent s’appliquer au joueur avant de pouvoir commencer la quête.
     startRewards: '§6Récompenses de début'
     startRewardsLore: Actions effectuées au démarrage de la quête.
+    cancelRewards: '§cActions d''annulation'
+    cancelRewardsLore: Actions effectuées lorsque les joueurs annulent cette quête.
     hologramText: '§eTexte de l''hologramme'
     hologramTextLore: Texte affiché sur l'hologramme au-dessus de la tête du NPC de démarrage.
     timer: '§bTimer de redémarrage'
@@ -498,6 +500,8 @@ inv:
       minMax: Modifier les quantités min/max
   checkpointActions:
     name: Actions du checkpoint
+  cancelActions:
+    name: Actions d'annulation
   rewardsWithRequirements:
     name: Récompenses avec requirements
   listAllQuests:

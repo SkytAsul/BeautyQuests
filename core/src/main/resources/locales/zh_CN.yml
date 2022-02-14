@@ -81,7 +81,10 @@ msg:
   inventoryFull: '§c你的背包已满, 任务奖励已掉落在地上.'
   playerNeverConnected: '§c在玩家{0}身上找不到数据.'
   playerNotOnline: '§c玩家 {0} 不在线.'
+  playerDataNotFound: '§c找不到玩家{0}的数据。'
   versionRequired: '需要版本：§l{0}'
+  dialogs:
+    skipped: '§8§o已跳过对话。'
   command:
     downloadTranslations:
       syntax: '§c你必须指定要下载的语言。例如："/quests downloadTranslations en_US"。'
@@ -135,6 +138,9 @@ msg:
       resetAll: '§6你成功地清空了 {0} 的计分版.'
       hidden: '§6已隐藏{0}的计分版.'
       shown: '§6已重新显示{0}的计分版。'
+      own:
+        hidden: '§6已隐藏你的计分板。'
+        shown: '§6已显示你的计分板。'
     help:
       header: '§6§lBeautyQuests - §6帮助§r'
       create: '§6/{0} create: §a创建任务'
@@ -150,6 +156,7 @@ msg:
       setItem: '§6/{0} setItem <talk|launch> : §e保存全息物品到数据文件内.'
       adminMode: '§6/{0} adminMode : §e切换管理员模式 (显示消息)'
       version: '§6/{0} version: §e查看插件版本.'
+      downloadTranslations: '§6/{0} downloadTranslations <language>: §e下载翻译文件'
       save: '§6/{0} save: §a手动保存数据.'
       list: '§e/{0} list: §a查看任务列表 (部分版本无效)'
   typeCancel: '§a输入 "cancel" 返回到上一条消息.'
@@ -163,6 +170,9 @@ msg:
     typeLocationRadius: '§a请输入距离指定位置所需的距离：'
     typeGameTicks: '§a请输入所需的刻数：'
     already: '§c你已在编辑器中.'
+    stage:
+      location:
+        typeWorldPattern: '§a输入世界名称的正则表达式：'
     enter:
       title: '§6~ 进入编辑器模式 ~'
       subtitle: '§e输入 "/quests exitEditor" 强制退出任务编辑器。'
@@ -230,11 +240,15 @@ msg:
         close: '§eclose: §b退出并保存所有消息.'
         setTime: '§6setTime <id> <时间>: §e设置自动播放下一条消息的时间(单位为刻) 。'
         npcName: '§6npcname [自定义NPC名称]: §eSet (或重置为默认) 自定义NPC名称'
+        skippable: '§6skippable [true|false]: §e设置是否可跳过对话'
       timeSet: '§a已编辑消息 {0} 的时间: 现在是 {1} 刻。'
       timeRemoved: '§a已删除消息{0}的时间。'
       npcName:
         set: '§a自定义NPC名称已设置为§7{1}§a (原为§7{0}§a)'
         unset: '§a自定义NPC名称重置为默认值 (原为§7{0}§a)'
+      skippable:
+        set: '§a对话可跳过状态已设置为§7{1}§a (原为§7{0}§a)'
+        unset: '§a对话可跳过状态已重置为默认§7{1}§a (原为§7{0}§a)'
     mythicmobs:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
@@ -251,7 +265,8 @@ msg:
         list: '§6list: §e查看所有已添加的文本.'
         close: '6close: §e确认添加文本并退出编辑器.'
     noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
-    comparisonType: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§lger或equals§r§a。输入 §onull §r§a 来使用。'
+    invalidPattern: '§c无效的正则表达式§4{0}§c。'
+    comparisonTypeDefault: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§l{1}§r§a。输入§onull§r§a使用。'
     scoreboardObjectiveNotFound: '§c未知的计分板目标。'
     pool:
       hologramText: '请输入该池的自定义全息显示文本（输入“null”使用默认值）。'
@@ -331,6 +346,10 @@ inv:
     currentRadius: '§e当前距离: §6{0}'
     changeTicksRequired: '§e需要更改游玩刻'
     changeEntityType: '§e更改实体类型'
+    stage:
+      location:
+        worldPattern: '§a设置世界名称模式 §d(高级选项)'
+        worldPatternLore: '如果你想要匹配特定模式的任意世界都能完成任务阶段，请在此输入正则表达式。'
   stages:
     name: '§8创建任务阶段'
     nextPage: '§e下一页'
@@ -444,6 +463,8 @@ inv:
     name: '§5选择生物类型'
   chooseQuest:
     name: '§5选择哪一个任务?'
+    menu: '§a任务菜单'
+    menuLore: 前往任务菜单。
   mobs:
     name: 选择怪物
     none: '§a点击添加怪物'
@@ -619,7 +640,7 @@ scoreboard:
     craft: '§e合成 §6{0}'
     bucket: '§e装满 §6{0}'
     location: '§e前往位于 §6{3}的坐标§6{0}§e, §6{1}§e, §6{2}§e '
-    playTime: '§e游玩游戏§6{0}刻'
+    playTimeFormatted: '§e游玩 §6{0}'
     breed: '§e饲养§6{0}'
     tame: '§e驯服§6{0}'
 indication:
