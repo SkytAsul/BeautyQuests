@@ -325,6 +325,7 @@ public class BeautyQuests extends JavaPlugin {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
 			}
+			if (init && loadLang() == null) return;
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 			
@@ -342,7 +343,6 @@ public class BeautyQuests extends JavaPlugin {
 			
 			/*				static initialization				*/
 			if (init) {
-				if (loadLang() == null) return;
 				StagesGUI.initialize(); // 			initializing default stage types
 				QuestObjectGUI.initialize(); //			initializing default rewards and requirements
 				FinishGUI.initialize(); //				initializing default quest options
@@ -365,7 +365,7 @@ public class BeautyQuests extends JavaPlugin {
 			}
 
 			long lastMillis = System.currentTimeMillis();
-			loadedLanguage = QuestsConfiguration.getLanguage();
+			loadedLanguage = config.getConfig().getString("lang", "en_US");
 			String language = "locales/" + loadedLanguage + ".yml";
 			File file = new File(getDataFolder(), language);
 			InputStream res = getResource(language);

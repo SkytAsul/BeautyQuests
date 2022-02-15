@@ -2,6 +2,8 @@ package fr.skytasul.quests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -10,7 +12,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.collect.Sets;
+
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
@@ -27,7 +32,6 @@ import fr.skytasul.quests.utils.nms.NMS;
 public class QuestsConfiguration {
 
 	private static int timer = 5;
-	private static String lang;
 	private static String minecraftTranslationsFile = null;
 	private static int maxLaunchedQuests = 0;
 	private static boolean sounds = true;
@@ -53,7 +57,6 @@ public class QuestsConfiguration {
 	private static ParticleEffect.Particle particleNext;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
-	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
 	private static ClickType npcClick = ClickType.RIGHT;
 	private static String dSetName = "Quests";
@@ -69,7 +72,6 @@ public class QuestsConfiguration {
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
-	private static boolean menuOpenNotStartedTabWhenEmpty = true;
 	private static boolean stageEndRewardsMessage = true;
 	private static QuestDescription questDescription;
 	
@@ -85,10 +87,12 @@ public class QuestsConfiguration {
 	
 	private FileConfiguration config;
 	private DialogsConfig dialogs;
+	private QuestsMenuConfig menu;
 	
 	QuestsConfiguration(BeautyQuests plugin) {
 		config = plugin.getConfig();
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
+		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
 	}
 	
 	public FileConfiguration getConfig() {
@@ -99,9 +103,14 @@ public class QuestsConfiguration {
 		return dialogs;
 	}
 	
+	public QuestsMenuConfig getQuestsMenu() {
+		return menu;
+	}
+	
 	boolean update() {
 		boolean result = false;
 		result |= dialogs.update();
+		result |= menu.update();
 		return result;
 	}
 	
@@ -110,7 +119,6 @@ public class QuestsConfiguration {
 		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
 		
 		timer = config.getInt("redoMinuts");
-		lang = config.getString("lang", "en_US");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
 			if (NMS.getMCVersion() >= 13) {
@@ -124,6 +132,7 @@ public class QuestsConfiguration {
 			}
 		}
 		dialogs.init();
+		menu.init();
 		
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
@@ -131,7 +140,6 @@ public class QuestsConfiguration {
 		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");
-		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
@@ -149,7 +157,6 @@ public class QuestsConfiguration {
 		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		menuOpenNotStartedTabWhenEmpty = config.getBoolean("menuOpenNotStartedTabWhenEmpty");
 		stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
@@ -253,10 +260,6 @@ public class QuestsConfiguration {
 		return timer;
 	}
 	
-	public static String getLanguage() {
-		return lang;
-	}
-	
 	public static int getMaxLaunchedQuests() {
 		return maxLaunchedQuests;
 	}
@@ -267,10 +270,6 @@ public class QuestsConfiguration {
 
 	public static boolean sendStageStartMessage(){
 		return stageStart;
-	}
-
-	public static boolean allowPlayerCancelQuest(){
-		return playerCancelQuest;
 	}
 
 	public static boolean questConfirmGUI(){
@@ -323,10 +322,6 @@ public class QuestsConfiguration {
 	
 	public static boolean isRequirementReasonSentOnMultipleQuests() {
 		return requirementReasonOnMultipleQuests;
-	}
-	
-	public static boolean doesMenuOpenNotStartedTabWhenEmpty() {
-		return menuOpenNotStartedTabWhenEmpty;
 	}
 	
 	public static boolean hasStageEndRewardsMessage() {
@@ -459,6 +454,10 @@ public class QuestsConfiguration {
 		return BeautyQuests.getInstance().getConfiguration().dialogs;
 	}
 	
+	public static QuestsMenuConfig getMenuConfig() {
+		return BeautyQuests.getInstance().getConfiguration().menu;
+	}
+	
 	public enum ClickType {
 		RIGHT, LEFT, ANY;
 		
@@ -518,6 +517,51 @@ public class QuestsConfiguration {
 		
 		public boolean isHistoryEnabled() {
 			return history;
+		}
+		
+	}
+	
+	public class QuestsMenuConfig {
+		
+		private Set<Category> tabs;
+		private boolean openNotStartedTabWhenEmpty = true;
+		private boolean allowPlayerCancelQuest = true;
+		
+		private ConfigurationSection config;
+		
+		private QuestsMenuConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+		
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config, config.getParent(), "openNotStartedTabWhenEmpty", "menuOpenNotStartedTabWhenEmpty");
+				result |= migrateEntry(config, config.getParent(), "allowPlayerCancelQuest", "allowPlayerCancelQuest");
+			}
+			return result;
+		}
+		
+		private void init() {
+			tabs = config.getStringList("enabledTabs").stream().map(Category::fromString).collect(Collectors.toSet());
+			if (tabs.isEmpty()) {
+				BeautyQuests.logger.warning("Quests Menu must have at least one enabled tab.");
+				tabs = Sets.newHashSet(Category.values());
+			}
+			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
+			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
+		}
+		
+		public boolean isNotStartedTabOpenedWhenEmpty() {
+			return openNotStartedTabWhenEmpty;
+		}
+		
+		public boolean allowPlayerCancelQuest() {
+			return allowPlayerCancelQuest;
+		}
+		
+		public Set<Category> getEnabledTabs() {
+			return tabs;
 		}
 		
 	}

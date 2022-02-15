@@ -36,8 +36,6 @@ scoreboards: true
 playerQuestUpdateMessage: true
 # Enable or disable default messages when a stage starts
 playerStageStartMessage: true
-# Allows player to cancel quests they have started with the GUI
-allowPlayerCancelQuest: true
 # Shows a Yes/No GUI to let the player choose if he wants to accept the quest or not
 questConfirmGUI: false
 # Enable of disable playing sounds on various actions
@@ -64,8 +62,6 @@ startParticleDistance: 20
 requirementUpdateTime: 1
 # When there is several quests on the same NPC, will the server send the reason to the player if it does not match a requirement
 requirementReasonOnMultipleQuests: true
-# Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
-menuOpenNotStartedTabWhenEmpty: true
 # Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
 stageEndRewardsMessage: true
 
@@ -82,7 +78,16 @@ dialogs:
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
-  
+
+# - Quests Menu -
+# Options related to the "/quests" menu
+questsMenu:
+  # Enabled tabs in the quests menu. Valid parameters: NOT_STARTED, IN_PROGRESS, FINISHED
+  enabledTabs: [NOT_STARTED, IN_PROGRESS, FINISHED]
+  # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
+  openNotStartedTabWhenEmpty: true
+  # Allows player to cancel quests they have started with the GUI
+  allowPlayerCancelQuest: true
 
 # - Integrations -
 # Enable GPS integration
