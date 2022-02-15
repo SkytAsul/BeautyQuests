@@ -143,6 +143,11 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	public Dialog getDialog(){
 		return dialog;
 	}
+	
+	@Override
+	public DialogRunner getDialogRunner() {
+		return dialogRunner;
+	}
 
 	public boolean isHid(){
 		return hide;

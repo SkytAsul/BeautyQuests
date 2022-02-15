@@ -84,7 +84,8 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 		}
 	}
 	
-	public DialogRunner getRunner() {
+	@Override
+	public DialogRunner getDialogRunner() {
 		if (runner == null) {
 			runner = new DialogRunner(getValue(), getNPC());
 			runner.addEndAction(p -> getAttachedQuest().attemptStart(p, null));

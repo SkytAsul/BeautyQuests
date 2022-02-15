@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.Dialogable;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
@@ -29,6 +30,7 @@ import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
+import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerPoolDatas;
@@ -47,6 +49,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
+import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class Commands {
 	
@@ -218,6 +221,42 @@ public class Commands {
 				branch.setStage(acc, stageID);
 			}
 			QuestsAPI.propagateQuestsHandlers(handler -> handler.questUpdated(acc, target, qu));
+		}
+	}
+	
+	@Cmd (permission = "setStage", min = 2, args = { "PLAYERS", "QUESTSID" })
+	public void startDialog(CommandContext cmd) {
+		Player target = (Player) cmd.args[0];
+		Quest qu = (Quest) cmd.args[1];
+		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
+		
+		DialogRunner runner = null;
+		if (datas == null || !qu.hasStarted(acc)) {
+			if (qu.hasOption(OptionStartDialog.class)) {
+				runner = qu.getOption(OptionStartDialog.class).getDialogRunner();
+			}
+		}else {
+			if (datas.isInEndingStages() || datas.isInQuestEnd()) {
+				Lang.COMMAND_STARTDIALOG_IMPOSSIBLE.send(cmd.sender);
+				return;
+			}else {
+				AbstractStage stage = qu.getBranchesManager().getBranch(datas.getBranch()).getRegularStage(datas.getStage());
+				if (stage instanceof Dialogable) {
+					runner = ((Dialogable) stage).getDialogRunner();
+				}
+			}
+		}
+		
+		if (runner == null) {
+			Lang.COMMAND_STARTDIALOG_NO.send(cmd.sender);
+		}else {
+			if (runner.isPlayerInDialog(target)) {
+				Lang.COMMAND_STARTDIALOG_ALREADY.send(cmd.sender);
+			}else {
+				runner.handleNext(target);
+				Lang.COMMAND_STARTDIALOG_SUCCESS.send(cmd.sender, target.getName(), qu.getID());
+			}
 		}
 	}
 

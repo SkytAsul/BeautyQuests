@@ -211,7 +211,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			acc.removeQuestDatas(this);
 			c = true;
 		}
-		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getRunner().removePlayer(acc.getPlayer())) c = true;
+		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().removePlayer(acc.getPlayer())) c = true;
 		return c;
 	}
 	
@@ -256,18 +256,18 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	}
 	
 	public boolean isInDialog(Player p) {
-		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getRunner().isPlayerInDialog(p);
+		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().isPlayerInDialog(p);
 	}
 	
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getRunner().onClick(p);
+			getOption(OptionStartDialog.class).getDialogRunner().onClick(p);
 		}else attemptStart(p, null);
 	}
 	
 	public void leave(Player p) {
 		if (hasOption(OptionStartDialog.class)) {
-			getOption(OptionStartDialog.class).getRunner().removePlayer(p);
+			getOption(OptionStartDialog.class).getDialogRunner().removePlayer(p);
 		}
 	}
 

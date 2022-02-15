@@ -153,6 +153,10 @@ public enum Lang{
 	COMMAND_SETSTAGE_NEXT("msg.command.setStage.next"),
 	COMMAND_SETSTAGE_NEXT_UNAVAILABLE("msg.command.setStage.nextUnavailable"),
 	COMMAND_SETSTAGE_SET("msg.command.setStage.set"),
+	COMMAND_STARTDIALOG_IMPOSSIBLE("msg.command.startDialog.impossible"),
+	COMMAND_STARTDIALOG_NO("msg.command.startDialog.noDialog"),
+	COMMAND_STARTDIALOG_ALREADY("msg.command.startDialog.alreadyIn"),
+	COMMAND_STARTDIALOG_SUCCESS("msg.command.startDialog.success"), // 0: player, 1: quest id
 	COMMAND_CHECKPOINT_NO("msg.command.checkpoint.noCheckpoint"), // 0: quest name
 	COMMAND_CHECKPOINT_NOT_STARTED("msg.command.checkpoint.questNotStarted"),
 	COMMAND_TRANSLATION_SYNTAX("msg.command.downloadTranslations.syntax"),
@@ -166,6 +170,7 @@ public enum Lang{
 	COMMAND_HELP_REMOVE("msg.command.help.remove"),
 	COMMAND_HELP_FINISH("msg.command.help.finishAll"),
 	COMMAND_HELP_STAGE("msg.command.help.setStage"),
+	COMMAND_HELP_DIALOG("msg.command.help.startDialog"),
 	COMMAND_HELP_RESET("msg.command.help.resetPlayer"),
 	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest"),
 	COMMAND_HELP_SEE("msg.command.help.seePlayer"),

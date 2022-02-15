@@ -116,6 +116,11 @@ msg:
       nextUnavailable: §cThe "skip" option is not available when the player is at
         the end of a branch.
       set: §aStage {0} launched.
+    startDialog:
+      impossible: §cImpossible to start the dialog now.
+      noDialog: §cThe player has no pending dialog.
+      alreadyIn: §cThe player is already playing a dialog.
+      success: §aStarted dialog for player {0} in quest {1}!
     playerNeeded: §cYou must be a player to execute this command!
     incorrectSyntax: §cIncorrect syntax.
     noPermission: '§cYou haven''t enough permissions to execute this command! (Required:
@@ -169,6 +174,8 @@ msg:
       finishAll: '§6/{0} finishAll <player>: §eFinish all quests of a player.'
       setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the
         current stage/start the branch/set a stage for a branch.'
+      startDialog: '§6/{0} startDialog <player> <quest id>: §eStarts the pending dialog
+        for a NPC stage or the starting dialog for a quest.'
       resetPlayer: '§6/{0} resetPlayer <player>: §eRemove all informations about a
         player.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eDelete informations
