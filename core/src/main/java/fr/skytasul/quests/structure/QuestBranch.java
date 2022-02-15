@@ -239,10 +239,7 @@ public class QuestBranch {
 			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
 			if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && questDatas.getStage() != -1) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
 			questDatas.setStage(id);
-			if (p != null) {
-				Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
-				if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
-			}
+			if (p != null) playNextStage(p);
 			stage.start(acc);
 			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
 		}
@@ -257,10 +254,12 @@ public class QuestBranch {
 			newStage.start(acc);
 			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), newStage));
 		}
-		if (p != null && launchStage){
-			Utils.playPluginSound(p.getLocation(), "ITEM_FIRECHARGE_USE", 0.5F);
-			if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
-		}
+		if (p != null && launchStage) playNextStage(p);
+	}
+
+	private void playNextStage(Player p) {
+		Utils.playPluginSound(p.getLocation(), QuestsConfiguration.getNextStageSound(), 0.5F);
+		if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
 	}
 	
 	public void remove(){

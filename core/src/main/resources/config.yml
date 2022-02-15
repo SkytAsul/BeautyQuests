@@ -44,6 +44,8 @@ questConfirmGUI: false
 sounds: true
 # Sound played at the end of a quest
 finishSound: ENTITY_PLAYER_LEVELUP
+# Sound played when the player updates its quest
+nextStageSound: ITEM_FIRECHARGE_USE
 # Enable or disable end fireworks
 fireworks: true
 # Show a progress bar (bossbar) when a player has to kill some mobs for a quest

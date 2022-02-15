@@ -36,6 +36,7 @@ public class QuestsConfiguration {
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
+	private static String nextStageSound = "ITEM_FIRECHARGE_USE";
 	private static ItemStack item = XMaterial.BOOK.parseItem();
 	private static XMaterial pageItem = XMaterial.ARROW;
 	private static int startParticleDistance, startParticleDistanceSquared;
@@ -170,12 +171,8 @@ public class QuestsConfiguration {
 		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
-		finishSound = config.getString("finishSound");
-		try{
-			Sound.valueOf(finishSound.toUpperCase());
-		}catch (IllegalArgumentException ex){
-			BeautyQuests.logger.warning("Sound " + finishSound + " is not a valid Bukkit sound.");
-		}
+		finishSound = loadSound("finishSound");
+		nextStageSound = loadSound("nextStageSound");
 		
 		// stageDescription
 		itemNameColor = config.getString("itemNameColor");
@@ -226,6 +223,17 @@ public class QuestsConfiguration {
 			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
 		}
 		return null;
+	}
+	
+	private String loadSound(String key) {
+		String sound = config.getString(key);
+		try {
+			Sound.valueOf(sound.toUpperCase());
+			sound = sound.toUpperCase();
+		}catch (IllegalArgumentException ex) {
+			BeautyQuests.logger.warning("Sound " + sound + " is not a valid Bukkit sound.");
+		}
+		return sound;
 	}
 	
 	private boolean migrateEntry(ConfigurationSection config, ConfigurationSection migrateFrom, String key, String migrateKey) {
@@ -441,6 +449,10 @@ public class QuestsConfiguration {
 	
 	public static String getFinishSound(){
 		return finishSound;
+	}
+	
+	public static String getNextStageSound() {
+		return nextStageSound;
 	}
 	
 	public static DialogsConfig getDialogsConfig() {
