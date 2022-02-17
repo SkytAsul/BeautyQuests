@@ -27,6 +27,7 @@ msg:
   questItem:
     drop: '§cVous ne pouvez pas jeter un objet de quête !'
     craft: '§cVous ne pouvez pas utiliser un objet de quête pour crafter !'
+    eat: '§cVous ne pouvez pas manger un objet de quête !'
   stageMobs:
     noMobs: '§cCette étape ne nécessite de tuer aucun mob.'
     listMobs: '§aIl faut que vous tuiez {0}.'
@@ -83,6 +84,7 @@ msg:
   playerNotOnline: '§cLe joueur {0} n''est pas en ligne.'
   playerDataNotFound: '§cLes données du joueur {0} sont introuvables.'
   versionRequired: 'Version requise : §l{0}'
+  restartServer: '§7Redémarrez votre serveur pour voir les modifications.'
   dialogs:
     skipped: '§8§o Le dialogue a été passé.'
   command:
@@ -100,6 +102,11 @@ msg:
       next: '§aL''étape a été passée.'
       nextUnavailable: '§cL''option "passer l''étape" n''est pas disponible quand le joueur est à la fin d''une branche.'
       set: '§aL''étape {0} a été lancée.'
+    startDialog:
+      impossible: '§cImpossible de démarrer le dialogue maintenant.'
+      noDialog: '§cLe joueur n''a aucun dialogue en attente.'
+      alreadyIn: '§cLe joueur est déjà dans un dialogue.'
+      success: '§aDébut du dialogue pour le joueur {0} dans la quête {1}!'
     playerNeeded: '§cVous devez être un joueur pour effectuer cette commande!'
     incorrectSyntax: '§cSyntaxe incorrecte.'
     noPermission: '§cVous devez disposer de la permission "{0}" pour pouvoir exécuter cette commande !'
@@ -148,12 +155,14 @@ msg:
       remove: '§6/{0} remove <id> : §eSupprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
       finishAll: '§6/{0} finishAll <joueur> : §eFinir toutes les quêtes d''un joueur.'
       setStage: '§6/{0} setStage <player> <id> [nouvelle branche] [nouvelle étape]: §ePasser l''étape en cours/lancer une branche/lancer une étape pour une branche.'
+      startDialog: '§6/{0} startDialog <joueur> <id de quête>: §eDémarre le dialogue en attente pour une étape "NPC" ou le dialogue de début d''une quête.'
       resetPlayer: '§6/{0} resetPlayer <joueur> : §eSupprimer les données d''un joueur.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <joueur> [id] : §eSupprimer les données d''une seule quête pour un joueur.'
       seePlayer: '§6/{0} seePlayer <joueur> : §eVoir les données d''un joueur.'
       reload: '§6/{0} reload : §eSauvegarder et recharger les fichiers de configuration/sauvegarde. (§cdéconseillé§e)'
       start: '§6/{0} start <joueur> [id] : §eForcer le lancement d''une quête.'
       setItem: '§6/{0} setItem <talk|launch> : §eSauvegarder l''item de l''hologramme dans le fichier de données.'
+      setFirework: '§6/{0} setFirework : §eModifie le feu d''artifice de fin par défaut.'
       adminMode: '§6/{0} adminMode : §eMode administrateur (réception d''informations journal)'
       version: '§6/{0} version : §eVoir la version du plugin.'
       downloadTranslations: '§6/{0} downloadTranslations <langage>: §eTélécharge un fichier de traductions vanilla'
@@ -279,6 +288,11 @@ msg:
       fadeIn: 'Écrivez la durée du fondu d''entrée, en ticks (20 ticks = 1 seconde).'
       stay: 'Écrivez la durée où le titre reste affiché, en ticks (20 ticks = 1 seconde).'
       fadeOut: 'Écrivez la durée du fondu de sortie, en ticks (20 ticks = 1 seconde).'
+    firework:
+      invalid: 'Cet objet n''est pas un feu d''artifice valide.'
+      invalidHand: 'Vous devez tenir un feu d''artifice dans votre main principale.'
+      edited: 'Feu d''artifice de quête modifié !'
+      removed: 'Feu d''artifice de quête supprimé !'
   writeCommandDelay: '§aIndiquez le délai de commande désiré, en ticks.'
 advancement:
   finished: Terminée
@@ -434,6 +448,9 @@ inv:
     failOnDeathLore: La quête sera-t-elle annulée à la mort du joueur ?
     questPool: '§eGroupe de quêtes'
     questPoolLore: Attacher cette quête à un groupe de quêtes
+    firework: '§dFeu d''artifice de fin'
+    fireworkLore: Feu d'artifice lancé lorsque le joueur termine la quête
+    fireworkLoreDrop: Déposez votre feu d'artifice personnalisé ici
     keepDatas: Conserver les données des joueurs
     keepDatasLore: |-
       Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées.
@@ -740,6 +757,7 @@ misc:
   used: '§a§lUtilisé'
   remove: '§7Clic central pour supprimer'
   removeRaw: Supprimer
+  reset: Réinitialiser
   or: ou
   amount: '§eQuantité : {0}'
   items: objets
