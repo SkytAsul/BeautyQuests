@@ -78,6 +78,10 @@ dialogs:
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
+  # Default dialog sound when players are speaking
+  defaultPlayerSound: 'none'
+  # Default dialog sound when NPCs are speaking
+  defaultNPCSound: 'none'
 
 # - Quests Menu -
 # Options related to the "/quests" menu

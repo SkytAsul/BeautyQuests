@@ -263,11 +263,10 @@ public class QuestBranch {
 	}
 	
 	public void remove(){
-		for (AbstractStage stage : regularStages){
-			stage.unload();
-		}
-		endStages.clear();
+		regularStages.forEach(AbstractStage::unload);
 		regularStages.clear();
+		endStages.keySet().forEach(AbstractStage::unload);
+		endStages.clear();
 	}
 	
 	public Map<String, Object> serialize(){

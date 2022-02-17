@@ -84,12 +84,21 @@ public class MythicMobs implements MobFactory<MythicMob> {
 
 	@Override
 	public EntityType getEntityType(MythicMob data) {
-		String typeName = data.getEntityType().toUpperCase();
+		String typeName;
+		if (data.getEntityType() == null) {
+			typeName = data.getMythicEntity() == null ? null : data.getMythicEntity().getClass().getSimpleName().substring(6);
+		}else {
+			typeName = data.getEntityType().toUpperCase();
+		}
 		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
 		if (NMS.getMCVersion() < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
 		EntityType type = EntityType.fromName(typeName);
-		if (type == null) type = EntityType.valueOf(typeName);
+		if (type == null) {
+			try {
+				type = EntityType.valueOf(typeName);
+			}catch (IllegalArgumentException ex) {}
+		}
 		return type;
 	}
 
@@ -107,6 +116,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 
 	@EventHandler
 	public void onMythicDeath(MythicMobDeathEvent e) {
+		System.out.println("MythicMobs.onMythicDeath()");
 		if (e.getKiller() == null) return;
 		if (!(e.getKiller() instanceof Player)) return;
 		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());

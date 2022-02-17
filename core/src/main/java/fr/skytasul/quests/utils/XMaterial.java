@@ -3215,6 +3215,7 @@ public enum XMaterial {
 	}
 	
 	public static XMaterial mobItem(EntityType type) {
+		if (type == null) return SPONGE;
 		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
 		if (material.isPresent()) return material.get();
 		if (type == EntityType.WITHER) return WITHER_SKELETON_SKULL;

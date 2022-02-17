@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -190,6 +191,14 @@ public class QuestsListener implements Listener{
 				Lang.QUEST_ITEM_CRAFT.send(e.getWhoClicked());
 				break;
 			}
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onEat(PlayerItemConsumeEvent e) {
+		if (Utils.isQuestItem(e.getItem())) {
+			e.setCancelled(true);
+			Lang.QUEST_ITEM_EAT.send(e.getPlayer());
 		}
 	}
 	

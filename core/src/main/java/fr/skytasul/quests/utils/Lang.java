@@ -18,6 +18,8 @@ public enum Lang{
 	SelfText("misc.format.selfText"), // 0: player, 1: msg, 2: index, 3: max
 	OffText("misc.format.offText"), // 1: msg
 	EditorPrefix("misc.format.editorPrefix"),
+	ErrorPrefix("misc.format.errorPrefix"),
+	SuccessPrefix("misc.format.successPrefix"),
 	
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),
@@ -47,6 +49,7 @@ public enum Lang{
 	
 	QUEST_ITEM_DROP("msg.questItem.drop"),
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),
+	QUEST_ITEM_EAT("msg.questItem.eat"),
 	
 	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
@@ -109,6 +112,8 @@ public enum Lang{
 	PLAYER_DATA_NOT_FOUND("msg.playerDataNotFound"), // 0: player name
 	
 	VERSION_REQUIRED("msg.versionRequired"), // 0: version
+	
+	RESTART_SERVER("msg.restartServer"),
 	
 	// * Commands *
 	
@@ -177,6 +182,7 @@ public enum Lang{
 	COMMAND_HELP_RELOAD("msg.command.help.reload"),
 	COMMAND_HELP_START("msg.command.help.start"),
 	COMMAND_HELP_SETITEM("msg.command.help.setItem"),
+	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework"),
 	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode"),
 	COMMAND_HELP_VERSION("msg.command.help.version"),
 	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations"),
@@ -227,6 +233,11 @@ public enum Lang{
 	TITLE_FADEIN("msg.editor.title.fadeIn"),
 	TITLE_STAY("msg.editor.title.stay"),
 	TITLE_FADEOUT("msg.editor.title.fadeOut"),
+	
+	FIREWORK_INVALID("msg.editor.firework.invalid", ErrorPrefix),
+	FIREWORK_INVALID_HAND("msg.editor.firework.invalidHand", ErrorPrefix),
+	FIREWORK_EDITED("msg.editor.firework.edited", SuccessPrefix),
+	FIREWORK_REMOVED("msg.editor.firework.removed", SuccessPrefix),
 	
 	// requirements
 	CHOOSE_XP_REQUIRED("msg.editor.text.chooseLvlRequired"),
@@ -457,6 +468,9 @@ public enum Lang{
 	failOnDeathLore("inv.details.failOnDeathLore"),
 	questPool("inv.details.questPool"),
 	questPoolLore("inv.details.questPoolLore"),
+	optionFirework("inv.details.firework"),
+	optionFireworkLore("inv.details.fireworkLore"),
+	optionFireworkDrop("inv.details.fireworkLoreDrop"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
@@ -753,6 +767,7 @@ public enum Lang{
 	Used("misc.used"),
 	RemoveMid("misc.remove"),
 	Remove("misc.removeRaw"),
+	Reset("misc.reset"),
 	Or("misc.or"),
 	Amount("misc.amount"),
 	Item("misc.items"),

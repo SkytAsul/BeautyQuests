@@ -18,9 +18,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -35,6 +32,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.util.Consumer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -72,15 +70,20 @@ public class Utils{
 	}
 	
 	
-	public static void spawnFirework(Location lc) {
-		if (!QuestsConfiguration.doFireworks()) return;
-		runSync(() -> {
-			Firework f = (Firework) lc.getWorld().spawnEntity(lc, EntityType.FIREWORK);
-			f.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
-			FireworkMeta fm = f.getFireworkMeta();
-			fm.addEffect(FireworkEffect.builder().with(Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
-			fm.setPower(1);
-			f.setFireworkMeta(fm);
+	public static void spawnFirework(Location lc, FireworkMeta meta) {
+		if (!QuestsConfiguration.doFireworks() || meta == null) return;
+		runOrSync(() -> {
+			Consumer<Firework> fwConsumer = fw -> {
+				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
+				fw.setFireworkMeta(meta);
+			};
+			if (NMS.getMCVersion() >= 12) {
+				lc.getWorld().spawn(lc, Firework.class, fwConsumer);
+				// much better to use the built-in since 1.12 method to do operations on entity
+				// before it is sent to the players, as it will not create flickering
+			}else {
+				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
+			}
 		});
 	}
 	

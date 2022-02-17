@@ -81,8 +81,9 @@ public class ItemUtils {
 		List<String> editLore = null;
 		if (name != null) {
 			editLore = ChatUtils.wordWrap(name, LORE_LINE_LENGTH, LORE_LINE_LENGTH_CRITICAL);
-			if (editLore.size() == 0) {
+			if (editLore.isEmpty()) {
 				name = "";
+				editLore = null;
 			}else if (editLore.size() == 1) {
 				name = editLore.get(0);
 				editLore = null;

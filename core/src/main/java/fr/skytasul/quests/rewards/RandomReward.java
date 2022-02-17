@@ -40,7 +40,7 @@ public class RandomReward extends AbstractReward {
 		this.max = Math.max(min, max);
 		
 		if (max > rewards.size())
-			BeautyQuests.logger.warning("Random reward with max amount (" + max + ") greather than amount of rewards available (" + rewards.size() + ")");
+			BeautyQuests.logger.warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ")");
 	}
 	
 	@Override

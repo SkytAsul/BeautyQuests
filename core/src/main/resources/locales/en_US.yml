@@ -28,6 +28,7 @@ msg:
   questItem:
     drop: §cYou can't drop a quest item!
     craft: §cYou can't use a quest item to craft!
+    eat: §cYou cannot eat a quest item!
   stageMobs:
     noMobs: §cThis stage doesn't need any mobs to kill.
     listMobs: §aYou must kill {0}.
@@ -97,6 +98,7 @@ msg:
   playerNotOnline: §cThe player {0} is offline.
   playerDataNotFound: §cDatas of player {0} not found.
   versionRequired: 'Version required: §l{0}'
+  restartServer: '§7Restart your server to see the modifications.'
   dialogs:
     skipped: '§8§o Dialog skipped.'
   command:
@@ -184,6 +186,7 @@ msg:
       reload: '§6/{0} reload: §eSave and reload all configurations and files. (§cdeprecated§e)'
       start: '§6/{0} start <player> [id]: §eForce the starting of a quest.'
       setItem: '§6/{0} setItem <talk|launch>: §eSave the hologram item.'
+      setFirework: '§6/{0} setFirework: §eEdit the default ending firework.'
       adminMode: '§6/{0} adminMode: §eToggle the Admin Mode. (Useful for displaying
         little log messages.)'
       version: '§6/{0} version: §eSee the current plugin version.'
@@ -316,6 +319,11 @@ msg:
       fadeIn: 'Write the "fade-in" duration, in ticks (20 ticks = 1 second).'
       stay: 'Write the "stay" duration, in ticks (20 ticks = 1 second).'
       fadeOut: 'Write the "fade-out" duration, in ticks (20 ticks = 1 second).'
+    firework:
+      invalid: 'This item is not a valid firework.'
+      invalidHand: 'You must hold a firework in your main hand.'
+      edited: 'Edited the quest firework!'
+      removed: 'Removed the quest firework!'
   writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
   finished: Finished
@@ -471,6 +479,9 @@ inv:
     failOnDeathLore: Will the quest be cancelled when the player dies?
     questPool: §eQuest Pool
     questPoolLore: Attach this quest to a quest pool
+    firework: §dEnding Firework
+    fireworkLore: Firework launched when the player finishes the quest
+    fireworkLoreDrop: Drop your custom firework here
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.
@@ -716,6 +727,8 @@ misc:
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     offText: §r§e{0}
     editorPrefix: §a
+    errorPrefix: §4✖ §c
+    successPrefix: §2✔ §a
   time:
     weeks: '{0} weeks'
     days: '{0} days'
@@ -785,6 +798,7 @@ misc:
   used: §a§lUsed
   remove: §7Middle-click to remove
   removeRaw: Remove
+  reset: Reset
   or: or
   amount: '§eAmount: {0}'
   items: items

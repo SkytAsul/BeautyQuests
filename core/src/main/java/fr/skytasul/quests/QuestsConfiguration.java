@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import com.google.common.collect.Sets;
 
@@ -78,6 +80,8 @@ public class QuestsConfiguration {
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
+	
+	private static FireworkMeta defaultFirework = null;
 
 	static boolean backups = true;
 	
@@ -209,6 +213,15 @@ public class QuestsConfiguration {
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
 		holoTalkItem = loadHologram("talkItem");
+		
+		if (BeautyQuests.getInstance().getDataFile().contains("firework")) {
+			defaultFirework = BeautyQuests.getInstance().getDataFile().getSerializable("firework", FireworkMeta.class);
+		}else {
+			FireworkMeta fm = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(XMaterial.FIREWORK_ROCKET.parseMaterial());
+			fm.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
+			fm.setPower(0);
+			defaultFirework = fm;
+		}
 	}
 	
 	private Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle) {
@@ -396,6 +409,10 @@ public class QuestsConfiguration {
 		return holoTalkItem;
 	}
 	
+	public static FireworkMeta getDefaultFirework() {
+		return defaultFirework;
+	}
+	
 	public static boolean hookAccounts(){
 		return hookAcounts;
 	}
@@ -474,6 +491,9 @@ public class QuestsConfiguration {
 		private boolean disableClick = false;
 		private boolean history = true;
 		
+		private String defaultPlayerSound = null;
+		private String defaultNPCSound = null;
+		
 		private ConfigurationSection config;
 		
 		private DialogsConfig(ConfigurationSection config) {
@@ -497,6 +517,9 @@ public class QuestsConfiguration {
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
 			history = config.getBoolean("history");
+			
+			defaultPlayerSound = config.getString("defaultPlayerSound");
+			defaultNPCSound = config.getString("defaultNPCSound");
 		}
 		
 		public boolean sendInActionBar() {
@@ -517,6 +540,14 @@ public class QuestsConfiguration {
 		
 		public boolean isHistoryEnabled() {
 			return history;
+		}
+		
+		public String getDefaultPlayerSound() {
+			return defaultPlayerSound;
+		}
+		
+		public String getDefaultNPCSound() {
+			return defaultNPCSound;
 		}
 		
 	}

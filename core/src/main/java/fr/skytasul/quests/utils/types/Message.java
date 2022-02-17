@@ -34,7 +34,17 @@ public class Message implements Cloneable {
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
 		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
 		
-		if (sound != null) p.playSound(p.getLocation(), sound, 1, 1);
+		if (!"none".equals(sound)) {
+			String sentSound = sound;
+			if (sentSound == null) {
+				if (sender == Sender.PLAYER) {
+					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultPlayerSound();
+				}else if (sender == Sender.NPC) {
+					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultNPCSound();
+				}
+			}
+			if (sentSound != null) p.playSound(p.getLocation(), sentSound, 1, 1);
+		}
 	}
 
 	public String formatMessage(Player p, String npc, int id, int size) {

@@ -349,7 +349,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
-				Utils.spawnFirework(p.getLocation());
+				Utils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class));
 				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
 				
 				QuestsAPI.propagateQuestsHandlers(handler -> handler.questFinish(acc, p, this));

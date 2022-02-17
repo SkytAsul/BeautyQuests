@@ -15,6 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -395,13 +397,31 @@ public class Commands {
 			return;
 		}
 		ItemStack item = cmd.player.getInventory().getItemInMainHand();
-		if (item == null || item.getType() == Material.AIR){
+		if (item.getType() == Material.AIR) {
 			BeautyQuests.getInstance().getDataFile().set(name.toLowerCase() + "Item", null);
 			Lang.ITEM_REMOVED.send(cmd.sender);
 			return;
 		}
 		BeautyQuests.getInstance().getDataFile().set(name.toLowerCase() + "Item", item.serialize());
 		Lang.ITEM_CHANGED.send(cmd.sender);
+	}
+	
+	@Cmd (permission = "setItem", player = true)
+	public void setFirework(CommandContext cmd) {
+		if ("none".equals(cmd.get(0, null))) {
+			BeautyQuests.getInstance().getDataFile().set("firework", "none");
+			Lang.FIREWORK_REMOVED.send(cmd.sender);
+			Lang.RESTART_SERVER.send(cmd.sender);
+		}else {
+			ItemMeta meta = cmd.player.getInventory().getItemInMainHand().getItemMeta();
+			if (meta instanceof FireworkMeta) {
+				BeautyQuests.getInstance().getDataFile().set("firework", meta);
+				Lang.FIREWORK_EDITED.send(cmd.sender);
+				Lang.RESTART_SERVER.send(cmd.sender);
+			}else {
+				Lang.FIREWORK_INVALID_HAND.send(cmd.sender);
+			}
+		}
 	}
 	
 	@Cmd (permission = "manage", min = 1, args = "save|force")

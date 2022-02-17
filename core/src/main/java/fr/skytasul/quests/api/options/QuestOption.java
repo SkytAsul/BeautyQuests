@@ -34,11 +34,11 @@ public abstract class QuestOption<T> implements Cloneable {
 		return creator;
 	}
 	
-	public boolean hasCustomValue() {
+	public final boolean hasCustomValue() {
 		return !Objects.equals(this.value, creator.defaultValue);
 	}
 	
-	public T getValue() {
+	public final T getValue() {
 		return value;
 	}
 	
