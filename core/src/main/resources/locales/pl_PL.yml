@@ -11,6 +11,7 @@ msg:
     cancelling: '§cAnulowano proces tworzenia misji.'
     editCancelling: '§cAnulowano proces edytowania misji.'
     invalidID: '§cZadanie o id {0} nie istnieje'
+    invalidPoolID: '§cPula {0} nie istnieje.'
     alreadyStarted: '§cJuż rozpocząłeś te zadanie!'
   quests:
     maxLaunched: '§cNie możesz mieć aktywnych więcej niż {0} zadań jednocześnie...'
@@ -26,6 +27,7 @@ msg:
   questItem:
     drop: '§cNie możesz wyrzucić przedmiotu misji!'
     craft: '§cNie możesz użyć przedmiotu misji do stworzenia innych przedmiotów!'
+    eat: '§cNie możesz zjeść przedmiotu misji!'
   stageMobs:
     noMobs: '§cTen etap nie wymaga żadnych potworów do zabicia.'
     listMobs: '§aMusisz zabić {0}'
@@ -35,7 +37,9 @@ msg:
   writeMobAmount: '§aNapisz liczbę potworów do zabicia:'
   writeMobName: '§aNapisz niestandardową nazwę potwora do zabicia:'
   writeChatMessage: '§aNapisz wymaganą wiadomość: (Dodaj "{SLASH}" na początku wiadomości jeśli chcesz wymagać komendy)'
+  writeMessage: '§aNapisz wiadomość, która zostanie wysłana graczowi'
   writeStartMessage: '§aNapisz wiadomość która będzie się wyświetlać na początku zadania, wpisz "null" aby pozostawić domyślną, wpisz "none" aby zostawić puste:'
+  writeEndMsg: '§aNapisz wiadomość, która zostanie wysłana na koniec zadania, "null" jeśli chcesz domyślną lub "none" jeśli nie chcesz. Możesz użyć "{0}", które zostanie zastąpione otrzymanymi nagrodami.'
   writeDescriptionText: '§aNapisz tekst, który opisuje cel tego etapu:'
   writeStageText: '§aNapisz tekst, który zostanie wysłany do gracza na początku tego etapu:'
   moveToTeleportPoint: '§aUdaj się do poszukiwanej lokalizacji.'
@@ -73,11 +77,22 @@ msg:
   commandsDisabled: '§cObecnie nie możesz wykonywać poleceń!'
   indexOutOfBounds: '§cLiczba {0} jest poza granicami! Musi być pomiędzy {1} a {2}.'
   invalidBlockData: '§cBlokada danych {0} jest nieprawidłowa lub niezgodna z blokiem {1}.'
+  invalidBlockTag: '§cNiedostępny tag bloku {0}.'
   bringBackObjects: Przynieś mnie z powrotem {0}.
   inventoryFull: '§cTwój ekwipunek jest pełny, przedmiot został wyrzucony na podłogę.'
   playerNeverConnected: '§cNie można znaleźć informacji o graczu {0}.'
   playerNotOnline: '§cGracz {0} jest offline.'
+  playerDataNotFound: '§cNie znaleziono danych gracza {0}.'
+  versionRequired: 'Wymagana wersja: §l{0}'
+  restartServer: '§7Uruchom ponownie serwer, aby zobaczyć zmiany.'
+  dialogs:
+    skipped: '§8Dialog pominięty.'
   command:
+    downloadTranslations:
+      syntax: '§cMusisz określić język do pobrania. Przykład: "/quests downloadTranslations en_US".'
+      notFound: '§cJęzyk {0} nie został znaleziony dla wersji {1}. .'
+      exists: '§cPlik {0} już istnieje. Dodaj "true" do swojej komendy aby ją nadpisać. (/quests downloadTranslations <język> true)'
+      downloaded: '§aJęzyk {0} został pobrany! §7Musisz teraz edytować plik "/plugins/BeautyQuests/config.yml" aby zmienić wartość §ominecraftTranslationsFile§7 na {0}, a następnie zrestartować serwer.'
     checkpoint:
       noCheckpoint: '§cNie znaleziono punktu kontrolnego dla zadania {0}.'
       questNotStarted: '§cNie wykonujesz tego zadania.'
@@ -87,6 +102,11 @@ msg:
       next: '§aEtap został pominięty.'
       nextUnavailable: '§cOpcja pominięcia nie jest dostępna kiedy gracz jest na końcu gałęzi.'
       set: '§aEtap {0} został uruchomiony.'
+    startDialog:
+      impossible: '§cNie można teraz uruchomić dialogu.'
+      noDialog: '§cGracz nie ma oczekującego dialogu.'
+      alreadyIn: '§cGracz jest już w trakcie dialogu.'
+      success: '§aRozpoczęto dialog dla gracza {0} w misji {1}!'
     playerNeeded: '§cMusisz być graczem aby użyć tego polecenia.'
     incorrectSyntax: '§cNiepoprawna składnia.'
     noPermission: '§cNie masz wystarczających uprawnień do wykonania tej komendy! (Wymagane: {0})'
@@ -106,6 +126,7 @@ msg:
       remover: '§6{0} informacja(e/i) o zadaniu {1} została(y) usunięta(e).'
     resetQuest: '§6Usunięto dane zadania dla {0} graczy.'
     startQuest: '§6Wymusiłeś/aś rozpoczęcie zadania {0} (UUID gracza: {1}).'
+    startQuestNoRequirements: '§cGracz nie spełnia wymagań dla zadania {0}... Dodaj "true" na końcu komendy aby pominąć sprawdzanie wymagań.'
     cancelQuest: '§6Anulowałeś zadanie {0}.'
     cancelQuestUnavailable: '§cZadanie {0} nie może zostać anulowane.'
     backupCreated: '§6Pomyślnie utworzyłeś kopie zapasowe wszystkich zadań i informacji o graczach.'
@@ -220,13 +241,11 @@ msg:
         list: '§6list: §eZobacz wszystkie dodane teksty.'
         close: '§6close: §ePotwierdź dodane teksty.'
     noSuchElement: '§cNie ma takiego elementu. Dozwolone elementy to: §e{0}'
-    comparisonType: '§aWybierz typ porównania, który chcesz użyć wśród {0}. Domyślne porównanie to: §e§lwięcej lub równe§r§a. Wpisz §onull§r§a, aby go użyć.'
     scoreboardObjectiveNotFound: '§cNieznany cel tablicy wyników.'
     pool:
       hologramText: 'Napisz niestandardowy tekst hologramu dla tej puli (lub "null" jeśli chcesz domyślnie).'
       maxQuests: 'Wpisz maksymalną ilość zadań uruchamianych z tej puli.'
       questsPerLaunch: 'Napisz liczbę zadań, gdy gracze klikną na NPC.'
-      time: 'Napisz liczbę dni zanim gracze będą mogli wykonać nowe zadanie.'
     title:
       title: 'Napisz tytuł teksu (lub wpisz "null" aby pozostawić puste).'
       subtitle: 'Napisz podtytuł teksu (lub wpisz "null" aby pozostawić puste).'
@@ -446,7 +465,6 @@ inv:
     notStarted: Nierozpoczęte zadania
     finished: Ukończone zadania
     inProgress: Aktywne zadania
-    loreCancel: '§c§oKliknij aby anulować zadanie'
     loreStart: '§a§oKliknij aby rozpocząć zadanie'
     loreStartUnavailable: '§c§oNie spełniasz wymagań do rozpoczęcia zadania'
     timeToWaitRedo: '§3§oMożesz ponownie uruchomić to zadanie za {0}.'
@@ -575,7 +593,6 @@ scoreboard:
     craft: '§eStwórz §6{0}'
     bucket: '§eUzupełnij §6{0}'
     location: '§eIdź do §7{0}§e, §7{1}§e, §7{2}§e w §6{3}'
-    playTime: '§eOdtwarzaj §6{0} ticków gry'
     breed: '§eRozmnóż §6{0}'
     tame: '§eOswój §6{0}'
 indication:

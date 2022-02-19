@@ -27,6 +27,7 @@ msg:
   questItem:
     drop: '§c你不能丢弃任务物品！'
     craft: '§c你不能用任务物品来合成物品！'
+    eat: '§c你不能吃下任务物品！'
   stageMobs:
     noMobs: '§c这个任务阶段没有要杀的怪物 :-)'
     listMobs: '§a你需要杀死 {0}.'
@@ -83,6 +84,7 @@ msg:
   playerNotOnline: '§c玩家 {0} 不在线.'
   playerDataNotFound: '§c找不到玩家{0}的数据。'
   versionRequired: '需要版本：§l{0}'
+  restartServer: '§7重启服务器查看修改。'
   dialogs:
     skipped: '§8§o已跳过对话。'
   command:
@@ -100,6 +102,11 @@ msg:
       next: '§a已跳过该任务阶段.'
       nextUnavailable: '§c"skip"选项在玩家到达任务分支结尾时无法使用。'
       set: '§a已进入任务阶段 {0} .'
+    startDialog:
+      impossible: '§c现在无法开始对话。'
+      noDialog: '§c玩家没有待定对话。'
+      alreadyIn: '§c已对玩家播放对话。'
+      success: '§a已为玩家{0}播放任务{1}的对话！'
     playerNeeded: '§c你必须是玩家才能使用这个指令.'
     incorrectSyntax: '§c错误用法.'
     noPermission: '§c你没有足够的权限以执行这个指令! (需要权限: {0})'
@@ -148,12 +155,14 @@ msg:
       remove: '§6/{0} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
       finishAll: '§6/{0} finishAll <玩家名>: §a结束一名玩家所有进行中的任务。'
       setStage: '§6/{0} setStage <玩家名> <id> [新任务分支] [新任务阶段]: §e跳过玩家当前的任务阶段/开始任务分支/s为任务分支设置任务阶段。'
+      startDialog: '§6/{0} startDialog <player> <quest id>: §e播放NPC任务阶段的待定对话或任务起始对话。'
       resetPlayer: '§6/{0} resetPlayer <玩家名>: §e删除一名玩家的所有任务数据。'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <玩家名> [id]: §e删除一名玩家的一个任务数据'
       seePlayer: '§6/{0} seePlayer <玩家名>: §a查看玩家的任务数据。'
       reload: '§e/{0} reload: §a保存并重载配置和插件数据 - §c§o不推荐使用'
       start: '§6/{0} start <玩家名> [id] : §e强制玩家接受任务.'
       setItem: '§6/{0} setItem <talk|launch> : §e保存全息物品到数据文件内.'
+      setFirework: '§6/{0} setFirework: §e编辑默认结束烟花。'
       adminMode: '§6/{0} adminMode : §e切换管理员模式 (显示消息)'
       version: '§6/{0} version: §e查看插件版本.'
       downloadTranslations: '§6/{0} downloadTranslations <language>: §e下载翻译文件'
@@ -279,6 +288,11 @@ msg:
       fadeIn: '输入淡入持续时间，单位为刻（20刻=1秒）。'
       stay: '输入停留持续时间，单位为刻（20刻=1秒）。'
       fadeOut: '输入淡出持续时间，单位为刻（20刻=1秒）。'
+    firework:
+      invalid: '这件物品不是有效的烟花。'
+      invalidHand: '你必须在主手手持烟花。'
+      edited: '已编辑任务烟花！'
+      removed: '已移除任务烟花！'
   writeCommandDelay: '§a请输入指令延迟，单位为刻。'
 advancement:
   finished: Finished
@@ -418,6 +432,8 @@ inv:
     editRequirementsLore: 接受任务所需前置。
     startRewards: '§6开始任务的奖励'
     startRewardsLore: 玩家接受任务时执行的行动。
+    cancelRewards: '§c取消行动'
+    cancelRewardsLore: 玩家取消该任务时触发的行动。
     hologramText: '§e全息文字'
     hologramTextLore: 显示在可接受任务的NPC的头上的全息文字。
     timer: '§b重启计时器'
@@ -432,6 +448,9 @@ inv:
     failOnDeathLore: 当玩家死亡时是否取消任务？
     questPool: '§e任务池'
     questPoolLore: 将该任务加到任务池中
+    firework: '§d任务结束烟花'
+    fireworkLore: 玩家完成任务时发射的烟花
+    fireworkLoreDrop: 把你的自定义烟花放在这里
     keepDatas: 保留玩家数据
     keepDatasLore: |-
       强制插件保存玩家数据，即使是已编辑阶段也会保存。
@@ -497,6 +516,8 @@ inv:
       minMax: 编辑最小和最大值
   checkpointActions:
     name: 记录点行动
+  cancelActions:
+    name: 取消行动
   rewardsWithRequirements:
     name: 需满足需求的奖励
   listAllQuests:
@@ -735,6 +756,7 @@ misc:
   used: '§6§l已设置'
   remove: '§e§o点击鼠标中键删除'
   removeRaw: 移除
+  reset: 重置
   or: 或
   amount: '§e数量: {0}'
   items: 物品
