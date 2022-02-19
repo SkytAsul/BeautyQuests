@@ -36,7 +36,7 @@ public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	}
 	
 	@Override
-	public ItemStack getItemStack() {
+	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.itemSwitch(getName(), getValue(), formatDescription(getDescription()));
 	}
 	

@@ -4,18 +4,23 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
+import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.Post1_9;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
@@ -38,7 +43,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	public Map<Integer, Entry<T, Integer>> cloneObjects() {
 		Map<Integer, Entry<T, Integer>> map = new HashMap<>();
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
-			map.put(entry.getKey(), new AbstractMap.SimpleEntry<>(entry.getValue().getKey(), entry.getValue().getValue()));
+			map.put(entry.getKey(), new AbstractMap.SimpleEntry<>(cloneObject(entry.getValue().getKey()), entry.getValue().getValue()));
 		}
 		return map;
 	}
@@ -55,12 +60,14 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		barsEnabled = QuestsConfiguration.showMobsProgressBar() && cachedSize > 0;
 	}
 
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.descriptionLines(source, buildRemainingArray(acc, source));
 	}
 
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new String[] { Utils.itemsToFormattedString(buildRemainingArray(acc, source), QuestsConfiguration.getItemAmountColor()) };
+	@Override
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+		return new Supplier[] { () -> Utils.descriptionLines(source, buildRemainingArray(acc, source)) };
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
@@ -73,12 +80,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
 			Entry<T, Integer> object = objects.get(obj.getKey());
-			elements[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
+			elements[i] = object == null ? "no object " + obj.getKey() : QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
 			i++;
 		}
 		return elements;
 	}
 
+	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		Map<Integer, Integer> amounts = new HashMap<>();
@@ -88,31 +96,53 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		datas.put("remaining", amounts);
 	}
 
-	public void event(PlayerAccount acc, Player p, Object object, int amount) {
+	/**
+	 * When called, this will test the player datas for the passed object.
+	 * If found, the remaining amount will be lowered.
+	 * If no remaining items are found, the stage will complete.
+	 * @param acc player account
+	 * @param p player
+	 * @param object object of the event
+	 * @param amount amount completed
+	 * @return <code>false</code> if there is no need to call this method again in the same game tick.
+	 */
+	public boolean event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
-		if (!canUpdate(p)) return;
+		if (!canUpdate(p)) return true;
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-				if (!playerAmounts.containsKey(id)) return;
-				int playerAmount = playerAmounts.get(id);
-				if (playerAmount <= amount) {
-					playerAmounts.remove(id);
-				}else playerAmounts.put(id, playerAmount -= amount);
-
+				if (playerAmounts == null) {
+					BeautyQuests.logger.warning(p.getName() + " oesdoes not have object datas for stage " + debugName() + ". This is a bug!");
+					return true;
+				}
+				if (playerAmounts.containsKey(id)) {
+					int playerAmount = playerAmounts.get(id);
+					if (playerAmount <= amount) {
+						playerAmounts.remove(id);
+					}else playerAmounts.put(id, playerAmount -= amount);
+				}
+				
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
+					return true;
 				}else {
-					if (barsEnabled) bars.get(p).update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					if (barsEnabled) {
+						BossBar bar = bars.get(p);
+						if (bar == null) {
+							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + debugName() + ". This is a bug!");
+						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
+					}
 					updateObjective(acc, p, "remaining", playerAmounts);
+					return false;
 				}
-				return;
 			}
 		}
+		return true;
 	}
 
-	@SuppressWarnings ("deprecation")
+	@Deprecated
 	protected void migrateDatas(PlayerAccount acc, Map<T, Integer> oldObjects) {
 		Map<Integer, Integer> amounts = new HashMap<>();
 		for (int i = 0; i < objects.size(); i++) {
@@ -124,16 +154,19 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		setData(acc, "remaining", amounts);
 	}
 
+	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
 	}
 
+	@Override
 	public void end(PlayerAccount acc) {
 		super.end(acc);
 		if (acc.isCurrent()) removeBar(acc.getPlayer());
 	}
 
+	@Override
 	public void unload() {
 		super.unload();
 		bars.values().forEach(BossBar::remove);
@@ -167,6 +200,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected boolean objectApplies(T object, Object other) {
 		return object.equals(other);
 	}
+	
+	protected T cloneObject(T object) {
+		return object;
+	}
 
 	protected abstract String getName(T object);
 
@@ -174,6 +211,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	protected abstract T deserialize(Object object);
 
+	@Override
 	protected void serialize(Map<String, Object> map) {
 		Map<Integer, Map<String, Object>> serializedObjects = new HashMap<>(objects.size());
 		for (Entry<Integer, Entry<T, Integer>> obj : objects.entrySet()) {
@@ -198,35 +236,47 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	class BossBar {
 		private Player p;
-		private Object bar;
+		private BQBossBar bar;
 		private BukkitTask timer;
 
 		public BossBar(Player p, int amount) {
 			this.p = p;
-			bar = Post1_9.createMobsBar(branch.getQuest().getName(), cachedSize);
+			
+			BarStyle style = null;
+			if (cachedSize % 20 == 0) {
+				style = BarStyle.SEGMENTED_20;
+			}else if (cachedSize % 10 == 0) {
+				style = BarStyle.SEGMENTED_10;
+			}else if (cachedSize % 12 == 0) {
+				style = BarStyle.SEGMENTED_12;
+			}else if (cachedSize % 6 == 0) {
+				style = BarStyle.SEGMENTED_6;
+			}else style = BarStyle.SOLID;
+			bar = QuestsAPI.getBossBarManager().buildBossBar(Lang.MobsProgression.format(branch.getQuest().getName(), 100, 100), BarColor.YELLOW, style);
 			update(amount);
 		}
 
 		public void remove() {
-			Post1_9.removeBar(bar);
+			bar.removeAll();
 			if (timer != null) timer.cancel();
 		}
 
 		public void update(int amount) {
-			Post1_9.setBarProgress(branch.getQuest().getName(), bar, amount, cachedSize);
-			Post1_9.showBar(bar, p);
+			if (amount >= 0 && amount <= cachedSize) {
+				bar.setProgress((double) (cachedSize - amount) / (double) cachedSize);
+			}else BeautyQuests.logger.warning("Amount of objects superior to max objects in " + debugName() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
+			bar.setTitle(Lang.MobsProgression.format(branch.getQuest().getName(), cachedSize - amount, cachedSize));
+			bar.addPlayer(p);
 			timer();
 		}
 
 		private void timer() {
 			if (QuestsConfiguration.getProgressBarTimeout() <= 0) return;
 			if (timer != null) timer.cancel();
-			timer = new BukkitRunnable() {
-				public void run() {
-					Post1_9.hideBar(bar, p);
-					timer = null;
-				}
-			}.runTaskLater(BeautyQuests.getInstance(), QuestsConfiguration.getProgressBarTimeout() * 20L);
+			timer = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+				bar.removePlayer(p);
+				timer = null;
+			}, QuestsConfiguration.getProgressBarTimeout() * 20L);
 		}
 	}
 

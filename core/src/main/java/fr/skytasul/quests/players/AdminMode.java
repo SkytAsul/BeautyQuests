@@ -29,9 +29,9 @@ public class AdminMode {
 	}
 	
 	public static void broadcast(String message){
-		BeautyQuests.logger.write("[LOG]: " + message);
+		BeautyQuests.logger.write("[ADMIN]: " + message);
 		for (CommandSender p : senders){
-			p.sendMessage(message);
+			p.sendMessage("§e" + message);
 		}
 	}
 	

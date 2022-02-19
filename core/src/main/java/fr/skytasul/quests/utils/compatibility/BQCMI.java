@@ -1,14 +1,33 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.lang.reflect.Constructor;
+
 import org.bukkit.Location;
 
 import com.Zrips.CMI.CMI;
-import com.Zrips.CMI.Containers.CMILocation;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 
 import fr.skytasul.quests.api.AbstractHolograms;
 
 public class BQCMI extends AbstractHolograms<CMIHologram> {
+	
+	private Constructor<CMIHologram> holoConstructor;
+	private Constructor<?> locationConstructor;
+	
+	public BQCMI() {
+		try {
+			Class<?> locationClass;
+			try {
+				locationClass = Class.forName("net.Zrips.CMILib.Container.CMILocation");
+			}catch (ClassNotFoundException ex) {
+				locationClass = Class.forName("com.Zrips.CMI.Containers.CMILocation");
+			}
+			locationConstructor = locationClass.getDeclaredConstructor(Location.class);
+			holoConstructor = CMIHologram.class.getDeclaredConstructor(String.class, locationClass);
+		}catch (ReflectiveOperationException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 	
 	@Override
 	public boolean supportPerPlayerVisibility() {
@@ -22,9 +41,13 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 	
 	@Override
 	public AbstractHolograms<CMIHologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
-		CMIHologram hologram = new CMIHologram("BQ Hologram " + hashCode(), new CMILocation(lc));
-		CMI.getInstance().getHologramManager().addHologram(hologram);
-		return new BQCMIHologram(hologram);
+		try {
+			CMIHologram hologram = holoConstructor.newInstance("BQ Hologram " + hashCode(), locationConstructor.newInstance(lc));
+			CMI.getInstance().getHologramManager().addHologram(hologram);
+			return new BQCMIHologram(hologram);
+		}catch (ReflectiveOperationException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 	
 	public class BQCMIHologram extends BQHologram {

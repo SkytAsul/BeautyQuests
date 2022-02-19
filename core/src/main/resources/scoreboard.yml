@@ -7,6 +7,12 @@ quests:
   # If enabled, scoreboard lines containing {questName} or {questDescription} will be automatically refreshed whenever the quest tracker is refreshed
   refreshLines: true
 
+worlds:
+  # List of worlds to filter
+  filterList: []
+  # If true, the list above will be treated as an "allow list" and not a "block list"
+  isAllowList: false
+
 # Lines contained in the scoreboard
 #  Available parameters:
 #  * value: the value of line, surrounded by '

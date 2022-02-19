@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.structure.Quest;
-import net.citizensnpcs.api.npc.NPC;
 
 @Retention(RUNTIME)
 @Target(METHOD)
@@ -52,5 +51,7 @@ public @interface Cmd {
 	 * @return name of the permission
 	 */
 	public String permission() default "";
+	
+	public boolean hide() default false;
 	
 }

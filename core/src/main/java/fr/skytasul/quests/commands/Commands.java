@@ -1,5 +1,13 @@
 package fr.skytasul.quests.commands;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
@@ -7,22 +15,27 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.Dialogable;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.gui.misc.BranchesGUI;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
+import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.QuestsListGUI;
+import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerPoolDatas;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
@@ -32,11 +45,13 @@ import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
-import net.citizensnpcs.api.npc.NPC;
+import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class Commands {
 	
@@ -52,13 +67,12 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
-		new SelectNPC(cmd.player, () -> {}, (obj) -> {
-			if (obj == null) return;
-			NPC npc = (NPC) obj;
+		new SelectNPC(cmd.player, () -> {}, npc -> {
+			if (npc == null) return;
 			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						if (quObj == null) return;
-						Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) quObj);
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+					if (quest == null) return;
+					Inventories.create(cmd.player, new StagesGUI(null)).edit(quest);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);
@@ -80,12 +94,12 @@ public class Commands {
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
-		new SelectNPC(cmd.player, () -> {}, (obj) -> {
-			if (obj == null) return;
-			NPC npc = (NPC) obj;
+		new SelectNPC(cmd.player, () -> {}, npc -> {
+			if (npc == null) return;
 			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), (quObj) -> {
-						remove(cmd.sender, (Quest) quObj);
+				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+					if (quest == null) return;
+					remove(cmd.sender, quest);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.sender);
@@ -93,7 +107,7 @@ public class Commands {
 		}).enter();
 	}
 
-	@Cmd(permission = "reload")
+	@Cmd (permission = "manage")
 	public void reload(CommandContext cmd){
 		BeautyQuests.getInstance().performReload(cmd.sender);
 	}
@@ -103,7 +117,7 @@ public class Commands {
 		cmd.sender.sendMessage("§eBeautyQuests version : §6§l" + BeautyQuests.getInstance().getDescription().getVersion());
 	}
 	
-	@Cmd(permission = "reload")
+	@Cmd (permission = "manage")
 	public void save(CommandContext cmd){
 		try {
 			BeautyQuests.getInstance().saveAllConfig(false);
@@ -121,7 +135,7 @@ public class Commands {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		int success = 0;
 		int errors = 0;
-		for (Quest q : QuestsAPI.getQuestsStarteds(acc)){
+		for (Quest q : QuestsAPI.getQuests().getQuestsStarted(acc)) {
 			try{
 				q.finish(target);
 				success++;
@@ -152,13 +166,15 @@ public class Commands {
 		Quest qu = (Quest) cmd.args[1];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		BranchesManager manager = qu.getBranchesManager();	// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		if (cmd.args.length < 3 && !acc.hasQuestDatas(qu)) { // start quest
+		
+		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
+		if (cmd.args.length < 3 && (datas == null || !datas.hasStarted())) { // start quest
 			qu.start(target);
-			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.debugName());
 			return;
 		}
-
-		PlayerQuestDatas datas = acc.getQuestDatas(qu);
+		if (datas == null) datas = acc.getQuestDatas(qu); // creates quest datas
+		
 		QuestBranch currentBranch = manager.getBranch(datas.getBranch());
 
 		if (cmd.args.length < 3) { // next
@@ -179,6 +195,14 @@ public class Commands {
 			if (cmd.args.length > 3){
 				stageID = Utils.parseInt(cmd.sender, (String) cmd.args[3]);
 				if (stageID == null) return;
+				if (stageID < 0) {
+					Lang.NUMBER_NEGATIVE.send(cmd.sender);
+					return;
+				}
+				if (currentBranch == null) {
+					Lang.ERROR_OCCURED.send(cmd.sender, "player " + acc.debugName() + " has not started quest");
+					return;
+				}
 				if (currentBranch.getRegularStages().size() <= stageID) {
 					Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.send(cmd.sender, stageID);
 					return;
@@ -198,6 +222,43 @@ public class Commands {
 				datas.setBranch(branchID);
 				branch.setStage(acc, stageID);
 			}
+			QuestsAPI.propagateQuestsHandlers(handler -> handler.questUpdated(acc, target, qu));
+		}
+	}
+	
+	@Cmd (permission = "setStage", min = 2, args = { "PLAYERS", "QUESTSID" })
+	public void startDialog(CommandContext cmd) {
+		Player target = (Player) cmd.args[0];
+		Quest qu = (Quest) cmd.args[1];
+		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(qu);
+		
+		DialogRunner runner = null;
+		if (datas == null || !qu.hasStarted(acc)) {
+			if (qu.hasOption(OptionStartDialog.class)) {
+				runner = qu.getOption(OptionStartDialog.class).getDialogRunner();
+			}
+		}else {
+			if (datas.isInEndingStages() || datas.isInQuestEnd()) {
+				Lang.COMMAND_STARTDIALOG_IMPOSSIBLE.send(cmd.sender);
+				return;
+			}else {
+				AbstractStage stage = qu.getBranchesManager().getBranch(datas.getBranch()).getRegularStage(datas.getStage());
+				if (stage instanceof Dialogable) {
+					runner = ((Dialogable) stage).getDialogRunner();
+				}
+			}
+		}
+		
+		if (runner == null) {
+			Lang.COMMAND_STARTDIALOG_NO.send(cmd.sender);
+		}else {
+			if (runner.isPlayerInDialog(target)) {
+				Lang.COMMAND_STARTDIALOG_ALREADY.send(cmd.sender);
+			}else {
+				runner.handleNext(target);
+				Lang.COMMAND_STARTDIALOG_SUCCESS.send(cmd.sender, target.getName(), qu.getID());
+			}
 		}
 	}
 
@@ -205,12 +266,23 @@ public class Commands {
 	public void resetPlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
-		int i = 0;
-		for (Quest q : BeautyQuests.getInstance().getQuests()){
-			if (q.resetPlayer(acc)) i++;
+		int quests = 0, pools = 0;
+		for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
+			Quest quest = questDatas.getQuest();
+			if (quest != null) {
+				quest.resetPlayer(acc);
+			}else acc.removeQuestDatas(questDatas.getQuestID());
+			quests++;
 		}
-		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), i, cmd.sender.getName());
-		Lang.DATA_REMOVED_INFO.send(cmd.sender, i, target.getName());
+		for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
+			QuestPool pool = poolDatas.getPool();
+			if (pool != null) {
+				pool.resetPlayer(acc);
+			}else acc.removePoolDatas(poolDatas.getPoolID());
+			pools++;
+		}
+		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), quests, cmd.sender.getName(), pools);
+		Lang.DATA_REMOVED_INFO.send(cmd.sender, quests, target.getName(), pools);
 	}
 	
 	@Cmd(permission = "resetPlayer", min = 1, args = {"PLAYERS", "QUESTSID"})
@@ -222,16 +294,30 @@ public class Commands {
 			reset(cmd.sender, target, acc, qu);
 		}else if (cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				reset(cmd.sender, target, acc, (Quest) obj);
+				reset(cmd.sender, target, acc, obj);
 			}, acc, true, false, true);
 			Inventories.create(cmd.player, gui);
 		}else Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
 	}
 	
+	@Cmd (permission = "resetPlayer", min = 2, args = { "PLAYERS", "POOLSID", "BOOLEAN" })
+	public void resetPlayerPool(CommandContext cmd) {
+		Player target = (Player) cmd.args[0];
+		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		QuestPool pool = cmd.get(1);
+		if (Boolean.parseBoolean(cmd.get(2, "false"))) { // only timer
+			pool.resetPlayerTimer(acc);
+			Lang.POOL_RESET_TIMER.send(cmd.sender, pool.getID(), target.getName());
+		}else {
+			pool.resetPlayer(acc);
+			Lang.POOL_RESET_FULL.send(cmd.sender, pool.getID(), target.getName());
+		}
+	}
+	
 	@Cmd(permission = "seePlayer", player = true, min = 1, args = "PLAYERS")
 	public void seePlayer(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
-		new PlayerListGUI(PlayersManager.getPlayerAccount(target)).create(cmd.player);
+		new PlayerListGUI(PlayersManager.getPlayerAccount(target), false).create(cmd.player);
 	}
 	
 	@Cmd(permission = "resetQuest", min = 1, args = {"QUESTSID"})
@@ -245,56 +331,55 @@ public class Commands {
 		Lang.QUEST_PLAYERS_REMOVED.send(cmd.sender, amount);
 	}
 	
-	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
+	@Cmd (permission = "start", min = 1, args = { "PLAYERS", "QUESTSID", "BOOLEAN" })
 	public void start(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
+		boolean testRequirements = !(CommandsManager.hasPermission(cmd.sender, "start.other", false) && (cmd.args.length > 2 ? Boolean.parseBoolean(cmd.<String>get(2)) : false));
 		if (cmd.isPlayer()){
 			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "start")){
-					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start");
-					return;
-				}
-			}else if (!CommandsManager.hasPermission(cmd.player, "start.other")){
-				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.start.other");
-				return;
-			}
+				if (!CommandsManager.hasPermission(cmd.player, "start", true)) return;
+			}else if (!CommandsManager.hasPermission(cmd.player, "start.other", true)) return;
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				Quest qu = (Quest) obj;
-				if (!CommandsManager.hasPermission(cmd.player, "start.other") && !qu.isLauncheable(target, acc, true)) return;
+				Quest qu = obj;
+				if (testRequirements && !qu.isLauncheable(target, acc, true)) {
+					Lang.START_QUEST_NO_REQUIREMENT.send(cmd.sender, qu.getName());
+					return;
+				}
 				qu.start(target);
 				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 			}, acc, false, true, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
-				Quest qu = (Quest) cmd.args[1];
-				qu.start(target);
-				Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
+			Quest qu = (Quest) cmd.args[1];
+			if (testRequirements && !qu.isLauncheable(target, acc, true)) {
+				Lang.START_QUEST_NO_REQUIREMENT.send(cmd.sender, qu.getName());
+				return;
+			}
+			qu.start(target);
+			Lang.START_QUEST.send(cmd.sender, qu.getName(), acc.abstractAcc.getIdentifier());
 		}else {
 			Lang.INCORRECT_SYNTAX.send(cmd.sender);
 		}
 	}
 	
-	@Cmd(min = 1, args = {"PLAYERS", "QUESTSID"})
+	@Cmd (permission = "cancel", min = 1, args = { "PLAYERS", "QUESTSID" })
 	public void cancel(CommandContext cmd){
 		Player target = (Player) cmd.args[0];
 		if (cmd.isPlayer()){
-			if (target == cmd.player){
-				if (!CommandsManager.hasPermission(cmd.player, "cancel")){
-					Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel");
-					return;
-				}
-			}else if (!CommandsManager.hasPermission(cmd.player, "cancel.other")){
-				Lang.PERMISSION_REQUIRED.sendWP(cmd.sender, "beautyquests.command.cancel.other");
-				return;
-			}
+			if (target != cmd.player && !CommandsManager.hasPermission(cmd.player, "cancel.other", true)) return;
 		}
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		if (acc == null) {
+			Lang.PLAYER_DATA_NOT_FOUND.send(cmd.sender, target.getName());
+			return;
+		}
+		
 		if (cmd.args.length < 2 && cmd.isPlayer()){
 			QuestsListGUI gui = new QuestsListGUI((obj) -> {
-				cancelQuest(cmd.sender, acc, (Quest) obj);
+				cancelQuest(cmd.sender, acc, obj);
 			}, acc, true, false, false);
 			Inventories.create(cmd.player, gui);
 		}else if (cmd.args.length >= 2){
@@ -312,7 +397,7 @@ public class Commands {
 			return;
 		}
 		ItemStack item = cmd.player.getInventory().getItemInMainHand();
-		if (item == null || item.getType() == Material.AIR){
+		if (item.getType() == Material.AIR) {
 			BeautyQuests.getInstance().getDataFile().set(name.toLowerCase() + "Item", null);
 			Lang.ITEM_REMOVED.send(cmd.sender);
 			return;
@@ -321,7 +406,25 @@ public class Commands {
 		Lang.ITEM_CHANGED.send(cmd.sender);
 	}
 	
-	@Cmd(permission = "reload", min = 1, args = "save|force")
+	@Cmd (permission = "setItem", player = true)
+	public void setFirework(CommandContext cmd) {
+		if ("none".equals(cmd.get(0, null))) {
+			BeautyQuests.getInstance().getDataFile().set("firework", "none");
+			Lang.FIREWORK_REMOVED.send(cmd.sender);
+			Lang.RESTART_SERVER.send(cmd.sender);
+		}else {
+			ItemMeta meta = cmd.player.getInventory().getItemInMainHand().getItemMeta();
+			if (meta instanceof FireworkMeta) {
+				BeautyQuests.getInstance().getDataFile().set("firework", meta);
+				Lang.FIREWORK_EDITED.send(cmd.sender);
+				Lang.RESTART_SERVER.send(cmd.sender);
+			}else {
+				Lang.FIREWORK_INVALID_HAND.send(cmd.sender);
+			}
+		}
+	}
+	
+	@Cmd (permission = "manage", min = 1, args = "save|force")
 	public void backup(CommandContext cmd){
 		if (cmd.args[0].equals("save")){
 			save(cmd);
@@ -347,13 +450,13 @@ public class Commands {
 		AdminMode.toggle(cmd.sender);
 	}
 	
-	@Cmd(player = true)
+	@Cmd (player = true, hide = true)
 	public void exitEditor(CommandContext cmd){
 		Editor.leave(cmd.player);
 		Inventories.closeAndExit(cmd.player);
 	}
 	
-	@Cmd(player = true)
+	@Cmd (player = true, hide = true)
 	public void reopenInventory(CommandContext cmd){
 		if (Inventories.isInSystem(cmd.player)){
 			Inventories.openInventory(cmd.player);
@@ -367,57 +470,88 @@ public class Commands {
 		}else Utils.sendMessage(cmd.sender, "Version not supported");
 	}
 	
-	@Cmd(permission = "scoreboard", min = 2, args = {"PLAYERS", "setline|removeline|resetline|resetall|hide|show"})
+	@Cmd (args = { "PLAYERS", "setline|removeline|resetline|resetall|hide|show" })
 	public void scoreboard(CommandContext cmd){
-		Player p = (Player) cmd.args[0];
-		Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-		switch (((String) cmd.args[1]).toLowerCase()){
-		case "setline":
-			if (cmd.args.length < 4){
+		if (cmd.args.length == 0) {
+			if (!cmd.isPlayer()) {
+				Lang.MUST_PLAYER.sendWP(cmd.sender);
+				return;
+			}
+			
+			if (!CommandsManager.hasPermission(cmd.sender, "scoreboard.toggle", true)) return;
+			Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(cmd.player);
+			if (board.isForceHidden()) {
+				board.show(true);
+				Lang.COMMAND_SCOREBOARD_OWN_SHOWN.send(cmd.player);
+			}else {
+				board.hide(true);
+				Lang.COMMAND_SCOREBOARD_OWN_HIDDEN.send(cmd.player);
+			}
+		}else {
+			if (!CommandsManager.hasPermission(cmd.sender, "scoreboard", true)) return;
+			if (cmd.args.length < 2) {
+				Lang.INCORRECT_SYNTAX.sendWP(cmd.sender);
+				return;
+			}
+			Player p = (Player) cmd.args[0];
+			Scoreboard board = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
+			
+			switch (((String) cmd.args[1]).toLowerCase()) {
+			case "setline":
+				if (cmd.args.length < 4) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				Integer id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				board.setCustomLine(id, Utils.buildFromArray(cmd.args, 3, " "));
+				Lang.COMMAND_SCOREBOARD_LINESET.send(cmd.sender, id);
+				break;
+			case "removeline":
+				if (cmd.args.length < 3) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				if (board.removeLine(id)) {
+					Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(cmd.sender, id);
+				}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+				break;
+			case "resetline":
+				if (cmd.args.length < 3) {
+					Lang.INCORRECT_SYNTAX.send(cmd.sender);
+					break;
+				}
+				id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
+				if (id == null) return;
+				if (board.resetLine(id)) {
+					Lang.COMMAND_SCOREBOARD_LINERESET.send(cmd.sender, id);
+				}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
+				break;
+			case "resetall":
+				BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(p);
+				BeautyQuests.getInstance().getScoreboardManager().create(p);
+				Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
+				break;
+			case "hide":
+				board.hide(true);
+				Lang.COMMAND_SCOREBOARD_HIDDEN.send(cmd.sender, p.getName());
+				break;
+			case "show":
+				board.show(true);
+				Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
+				break;
+			default:
 				Lang.INCORRECT_SYNTAX.send(cmd.sender);
 				break;
 			}
-			Integer id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			board.setCustomLine(id, Utils.buildFromArray(cmd.args, 3, " "));
-			Lang.COMMAND_SCOREBOARD_LINESET.send(cmd.sender, id);
-			break;
-		case "removeline":
-			if (cmd.args.length < 3){
-				Lang.INCORRECT_SYNTAX.send(cmd.sender);
-				break;
-			}
-			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			if (board.removeLine(id)){
-				Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(cmd.sender, id);
-			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
-			break;
-		case "resetline":
-			if (cmd.args.length < 3){
-				Lang.INCORRECT_SYNTAX.send(cmd.sender);
-				break;
-			}
-			id = Utils.parseInt(cmd.sender, (String) cmd.args[2]);
-			if (id == null) return;
-			if (board.resetLine(id)){
-				Lang.COMMAND_SCOREBOARD_LINERESET.send(cmd.sender, id);
-			}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(cmd.sender, id);
-			break;
-		case "resetall":
-			BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(p);
-			BeautyQuests.getInstance().getScoreboardManager().create(p);
-			Lang.COMMAND_SCOREBOARD_RESETALL.send(cmd.sender, p.getName());
-			break;
-		case "hide":
-			board.hide();
-			Lang.COMMAND_SCOREBOARD_HIDDEN.send(cmd.sender, p.getName());
-			break;
-		case "show":
-			board.show();
-			Lang.COMMAND_SCOREBOARD_SHOWN.send(cmd.sender, p.getName());
-			break;
 		}
+	}
+	
+	@Cmd (player = true, permission = "pools")
+	public void pools(CommandContext cmd) {
+		PoolsManageGUI.get().create(cmd.player);
 	}
 	
 	@Cmd (player = true, args = "QUESTSID", min = 1)
@@ -440,7 +574,45 @@ public class Commands {
 		}else Lang.COMMAND_CHECKPOINT_NOT_STARTED.send(cmd.sender);
 	}
 	
-	@Cmd (permission = "reload")
+	@Cmd (permission = "manage")
+	public void downloadTranslations(CommandContext cmd) {
+		if (NMS.getMCVersion() < 13) {
+			Utils.sendMessage(cmd.sender, "§c" + Lang.VERSION_REQUIRED.toString(), "≥ 1.13");
+			return;
+		}
+		if (cmd.args.length == 0) {
+			Lang.COMMAND_TRANSLATION_SYNTAX.send(cmd.sender);
+			return;
+		}
+		String lang = cmd.<String>get(0).toLowerCase();
+		String version = NMS.getVersionString();
+		String url = MinecraftNames.LANG_DOWNLOAD_URL.replace("%version%", version).replace("%language%", lang);
+		
+		try {
+			File destination = new File(BeautyQuests.getInstance().getDataFolder(), lang + ".json");
+			if (destination.isDirectory()) {
+				Lang.ERROR_OCCURED.send(cmd.sender, lang + ".json is a directory");
+				return;
+			}
+			if (!(cmd.args.length > 1 && Boolean.parseBoolean(cmd.get(1))) && destination.exists()) {
+				Lang.COMMAND_TRANSLATION_EXISTS.send(cmd.sender, lang + ".json");
+				return;
+			}
+			try (ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream())) {
+				destination.createNewFile();
+				try (FileOutputStream output = new FileOutputStream(destination)) {
+					output.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
+					Lang.COMMAND_TRANSLATION_DOWNLOADED.send(cmd.sender, lang);
+				}
+			}catch (FileNotFoundException ex) {
+				Lang.COMMAND_TRANSLATION_NOT_FOUND.send(cmd.sender, lang, version);
+			}
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Cmd (permission = "manage")
 	public void migrateDatas(CommandContext cmd) {
 		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
 			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");
@@ -471,25 +643,9 @@ public class Commands {
 				String command = l.getPath().substring(17);
 				if (command.equals("header")){
 					l.sendWP(cmd.sender);
-				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission())) l.sendWP(cmd.sender, cmd.label);
+				}else if (CommandsManager.hasPermission(cmd.sender, cmd.manager.commands.get(command.toLowerCase()).cmd.permission(), false)) l.sendWP(cmd.sender, cmd.label);
 			}
 		}
-	}
-	
-	@Cmd (permission = "reload")
-	public void removeDuplicate(CommandContext cmd){
-		if (cmd.isPlayer()) {
-			cmd.player.sendMessage("§cThis command can't be performed by a player, as it will kick everybody on the server.");
-			return;
-		}
-		if ("confirm".equals(cmd.get(0))) {
-			PlayersManager.getMigrationYAML().debugDuplicate();
-		}else cmd.sender.sendMessage("§cWarning! This command will kick every player on the server. Please enter §o\"/quests removeDuplicate confirm\"");
-	}
-	
-	@Cmd (player = true)
-	public void test(CommandContext cmd) {
-		new BranchesGUI().create(cmd.player);
 	}
 	
 	private static void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu){
@@ -501,13 +657,11 @@ public class Commands {
 	private static void remove(CommandSender sender, Quest quest){
 		if (sender instanceof Player){
 			Inventories.create((Player) sender, new ConfirmGUI(() -> {
-				quest.remove(true);
+				quest.remove(true, true);
 				Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
-			}, () -> {
-				((Player) sender).closeInventory();
-			}, Lang.INDICATION_REMOVE.format(quest.getName())));
+			}, ((Player) sender)::closeInventory, Lang.INDICATION_REMOVE.format(quest.getName())));
 		}else {
-			quest.remove(true);
+			quest.remove(true, true);
 			Lang.SUCCESFULLY_REMOVED.send(sender, quest.getName());
 		}
 	}

@@ -11,12 +11,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.player.PlayerClass;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -33,8 +33,7 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	public ClassRequirement(List<RPGClass> classes) {
-		super("classRequired");
-		if (!DependenciesManager.skapi) throw new MissingDependencyException("SkillAPI");
+		if (!DependenciesManager.skapi.isEnabled()) throw new MissingDependencyException("SkillAPI");
 		this.classes = classes;
 	}
 
@@ -48,26 +47,33 @@ public class ClassRequirement extends AbstractRequirement {
 		classes.add((RPGClass) classe);
 	}
 	
+	@Override
 	public boolean test(Player p) {
 		if (classes.isEmpty()) return true;
 		for (RPGClass classe : classes){
-			if (com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass().getData() == classe) return true;
+			PlayerClass mainClass = com.sucy.skill.SkillAPI.getPlayerData(p).getMainClass();
+			if (mainClass != null && mainClass.getData() == classe) return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String getDescription(Player p) {
+		return Lang.RDClass.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> classes.stream().map(RPGClass::getName).iterator()));
 	}
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<RPGClass>(Lang.INVENTORY_CLASSES_REQUIRED.toString(), DyeColor.GREEN, classes) {
 			
 			@Override
 			public ItemStack getObjectItemStack(RPGClass object) {
-				return ItemUtils.loreAdd(object.getIcon(), "", Lang.Remove.toString());
+				return ItemUtils.loreAdd(object.getIcon(), "", Lang.RemoveMid.toString());
 			}
 			
 			@Override
@@ -89,11 +95,11 @@ public class ClassRequirement extends AbstractRequirement {
 			@Override
 			public void finish(List<RPGClass> objects) {
 				classes = objects;
-				ItemUtils.lore(clicked, getLore());
-				gui.reopen();
+				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}
 			
-		}.create(p);
+		}.create(event.getPlayer());
 	}
 	
 	@Override
@@ -101,6 +107,7 @@ public class ClassRequirement extends AbstractRequirement {
 		return new ClassRequirement(new ArrayList<>(classes));
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		if (classes.isEmpty()) return;
 		List<String> ls = new ArrayList<>();
@@ -110,6 +117,7 @@ public class ClassRequirement extends AbstractRequirement {
 		datas.put("classes", ls);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		if (!savedDatas.containsKey("classes")) return;
 		for (String s : (List<String>) savedDatas.get("classes")) {

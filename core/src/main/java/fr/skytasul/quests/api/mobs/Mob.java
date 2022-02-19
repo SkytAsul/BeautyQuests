@@ -12,12 +12,12 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class Mob<Data> implements Cloneable {
 
 	protected final MobFactory<Data> factory;
 	protected final Data data;
+	protected String customName;
 
 	public Mob(MobFactory<Data> factory, Data data) {
 		Validate.notNull(factory, "Mob factory cannot be null");
@@ -27,7 +27,11 @@ public class Mob<Data> implements Cloneable {
 	}
 	
 	public String getName() {
-		return factory.getName(data);
+		return customName == null ? factory.getName(data) : customName;
+	}
+	
+	public void setCustomName(String customName) {
+		this.customName = customName;
 	}
 
 	public ItemStack createItemStack(int amount) {
@@ -44,13 +48,16 @@ public class Mob<Data> implements Cloneable {
 			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data));
 			ex.printStackTrace();
 		}
-		return ItemUtils.item(mobItem, getName(), lore.toArray(new String[0]));
+		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
+		item.setAmount(Math.min(amount, 64));
+		return item;
 	}
 	
 	public boolean applies(Object data) {
 		return factory.mobApplies(this.data, data);
 	}
 	
+	@Override
 	public int hashCode() {
 		int hash = 1;
 		hash = hash * 27 + factory.hashCode();
@@ -58,6 +65,7 @@ public class Mob<Data> implements Cloneable {
 		return hash;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
 		if (obj instanceof Mob) {
@@ -67,8 +75,14 @@ public class Mob<Data> implements Cloneable {
 		return false;
 	}
 
+	@Override
 	public Mob<Data> clone(){
-		return new Mob<Data>(factory, data);
+		try {
+			return (Mob<Data>) super.clone();
+		}catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public Map<String, Object> serialize(){
@@ -76,6 +90,7 @@ public class Mob<Data> implements Cloneable {
 
 		map.put("factoryName", factory.getID());
 		map.put("value", factory.getValue(data));
+		if (customName != null) map.put("name", customName);
 		
 		return map;
 	}
@@ -84,23 +99,13 @@ public class Mob<Data> implements Cloneable {
 	public static Mob<?> deserialize(Map<String, Object> map) {
 		String factoryName = (String) map.get("factoryName");
 		String value = (String) map.get("value");
-		if (factoryName == null) { // TODO remove on 0.19
-			if (map.containsKey("bmob")) {
-				factoryName = "bukkitEntity";
-				value = (String) map.get("bmob");
-			}else if (map.containsKey("mmob") && DependenciesManager.mm) {
-				factoryName = "mythicMobs";
-				value = (String) map.get("mmob");
-			}else if (map.containsKey("npc")) {
-				factoryName = "citizensNPC";
-				value = Integer.toString((int) map.get("npc"));
-			}else {
-				throw new IllegalArgumentException("Old mob data has failed to load.");
-			}
-		}
 		
 		MobFactory<?> factory = MobFactory.getMobFactory(factoryName);
-		Mob<?> mob = new Mob(factory, factory.fromValue(value));
+		if (factory == null) throw new IllegalArgumentException("The factory " + factoryName + " is not installed in BeautyQuests.");
+		Object object = factory.fromValue(value);
+		if (object == null) throw new IllegalArgumentException("Can't find the mob " + value + " for factory " + factoryName);
+		Mob<?> mob = new Mob(factory, object);
+		if (map.containsKey("name")) mob.setCustomName((String) map.get("name"));
 		return mob;
 	}
 	

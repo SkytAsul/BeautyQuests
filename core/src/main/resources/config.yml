@@ -1,10 +1,10 @@
 # - General configuration -
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
 lang: en_US
 # (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
-minecraftTranslationsFile: null
+minecraftTranslationsFile: ''
 # Enable or disable update checking on the loading
 checkUpdates: true
 # Enable or disable prefix before plugin message
@@ -13,8 +13,6 @@ enablePrefix: true
 saveCycle: 15
 # Enable "periodic save" message in console
 saveCycleMessage: true
-# ID of the quest who will be started on first connection of players (to disable: -1)
-firstQuest: -1
 # Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
 maxLaunchedQuests: 0
 # Database configuration
@@ -26,6 +24,10 @@ database:
   username: "unknown"
   password: "unknown"
   ssl: false
+  tables:
+    playerAccounts: "player_accounts"
+    playerQuests: "player_quests"
+    playerPools: "player_pools"
 
 # - Quests behaviors -
 # Enable or disable the scoreboards - more options in scoreboard.yml
@@ -34,26 +36,22 @@ scoreboards: true
 playerQuestUpdateMessage: true
 # Enable or disable default messages when a stage starts
 playerStageStartMessage: true
-# Allows player to cancel quests they have started with the GUI
-allowPlayerCancelQuest: true
 # Shows a Yes/No GUI to let the player choose if he wants to accept the quest or not
 questConfirmGUI: false
-# Dialogs are shown in the action bar instead of the chat
-dialogsInActionBar: false
-# Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
-dialogsDefaultTime: 100
-# If enabled, players will not be allowed to click on the NPC to pass a line of dialog
-disableDialogClick: false
 # Enable of disable playing sounds on various actions
 sounds: true
 # Sound played at the end of a quest
 finishSound: ENTITY_PLAYER_LEVELUP
+# Sound played when the player updates its quest
+nextStageSound: ITEM_FIRECHARGE_USE
 # Enable or disable end fireworks
 fireworks: true
 # Show a progress bar (bossbar) when a player has to kill some mobs for a quest
 mobsProgressBar: false
 # Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
 progressBarTimeoutSeconds: 15
+# Which click the player has to do on the NPC to start a quest, follow a dialog... (can be: RIGHT, LEFT, ANY)
+npcClick: RIGHT
 # Item which represents a quest in the Choose Quest GUI
 item: BOOK
 # Page item material
@@ -64,6 +62,36 @@ startParticleDistance: 20
 requirementUpdateTime: 1
 # When there is several quests on the same NPC, will the server send the reason to the player if it does not match a requirement
 requirementReasonOnMultipleQuests: true
+# Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
+stageEndRewardsMessage: true
+
+# - Dialogs -
+# Various options related to dialogs 
+dialogs:
+  # Dialogs are shown in the action bar instead of the chat
+  inActionBar: false
+  # Default time between two dialogs lines (in ticks: 1s = 20 ticks). 0 to disable.
+  defaultTime: 100
+  # Are dialogs skippable by default
+  defaultSkippable: false
+  # If enabled, players will not be allowed to click on the NPC to pass a line of dialog
+  disableClick: false
+  # Enables the dialog history in the Quests menu
+  history: true
+  # Default dialog sound when players are speaking
+  defaultPlayerSound: 'none'
+  # Default dialog sound when NPCs are speaking
+  defaultNPCSound: 'none'
+
+# - Quests Menu -
+# Options related to the "/quests" menu
+questsMenu:
+  # Enabled tabs in the quests menu. Valid parameters: NOT_STARTED, IN_PROGRESS, FINISHED
+  enabledTabs: [NOT_STARTED, IN_PROGRESS, FINISHED]
+  # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
+  openNotStartedTabWhenEmpty: true
+  # Allows player to cancel quests they have started with the GUI
+  allowPlayerCancelQuest: true
 
 # - Integrations -
 # Enable GPS integration
@@ -72,8 +100,6 @@ gps: false
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
-# (PlaceholderAPI) Max amount of lines for the splitted placeholder %beautyquests_started_ordered_X%
-splittedAdvancementPlaceholderMax: 3
 # (HolographicDisplays) Disable the hologram above NPC's head
 disableTextHologram: false
 # (HolographicDisplays) Value added to the hologram height (decimal value)
@@ -84,10 +110,23 @@ holoLaunchItemName: BOOK
 holoTalkItemName: COAL
 # (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
+# (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
+startedQuestsPlaceholder:
+  # Max length of a line if using splitted placeholder
+  lineLength: 30
+  # Time (in seconds) before the shown quest change in placeholder
+  changeTime: 10
+  # Format of the placeholder %beautyquests_started_ordered_X%. Available placeholders: {questName} and {questDescription}, use \n to skip a line
+  splitPlaceholderFormat: "§6{questName}\n{questDescription}"
+  # Format of the empty placeholder %beautyquests_started_ordered%. Available placeholders: {questName} and {questDescription}
+  inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
 # dynmap integration options
 dynmap:
-  markerSetName: "Quests"
+  # Name of the marker set. To disable dynmap integration, put an empty string
+  markerSetName: ""
+  # Icon for quest markers
   markerIcon: "bookshelf"
+  # Minimum zoom level for markers to be displayed
   minZoom: 0
 
 # - Stage descriptions -
@@ -97,6 +136,7 @@ stageDescriptionFormat: "§8({0}/{1}) §e{2}"
 itemNameColor: "§6§o"
 # Prefix before object's amount in lists (example: first§ex2, second§ex7 and third§ex4)
 itemAmountColor: "§e"
+# Describes the way stage with multiple objects are described
 stageDescriptionItemsSplit:
   # Prefix before each line
   prefix: "§e- §6"
@@ -107,8 +147,23 @@ stageDescriptionItemsSplit:
   # When there is only one object, do not put it on a new line
   inlineAlone: true
   # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
-  sources: [SCOREBOARD, MENU]
+  sources: [SCOREBOARD, MENU, PLACEHOLDER]
 
+# - Quest descriptions -
+# How is formatted the quest description in GUIs
+questDescription:
+  requirements:
+    # Enable the requirements section for quest description
+    display: true
+    # How to format requirements which match the player
+    valid: §a ✔ §7{0}
+    # How to format requirements which do not match the player
+    invalid: §c ✖ §7{0}
+  rewards:
+    # Enable the rewards section for quest description
+    display: true
+    # How to format rewards
+    format: §7- {0}
 
 # - Particles configuration -
 # enabled: will the particle be shown?

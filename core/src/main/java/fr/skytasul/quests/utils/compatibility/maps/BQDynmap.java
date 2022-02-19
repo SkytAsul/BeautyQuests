@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.compatibility;
+package fr.skytasul.quests.utils.compatibility.maps;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,22 +10,20 @@ import org.dynmap.markers.MarkerSet;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
+
 import net.md_5.bungee.api.ChatColor;
 
-public class Dynmap {
+public class BQDynmap extends AbstractMapIntegration {
 
-	private static DynmapAPI dynmap;
-	private static MarkerAPI api;
-	private static MarkerIcon icon;
+	private MarkerIcon icon;
+	private MarkerSet markers;
 	
-	private static MarkerSet markers;
-	
-	public static void intitialize(){
-		dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
-		api = dynmap.getMarkerAPI();
+	@Override
+	protected void initializeMarkers(Runnable initializeQuests) {
+		DynmapAPI dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
+		MarkerAPI api = dynmap.getMarkerAPI();
 		icon = api.getMarkerIcon(QuestsConfiguration.dynmapMarkerIcon());
 		
 		markers = api.getMarkerSet("beautyquests.markerset");
@@ -36,23 +34,21 @@ public class Dynmap {
 		markers.setMinZoom(QuestsConfiguration.dynmapMinimumZoom());
 		markers.setHideByDefault(false);
 		markers.setDefaultMarkerIcon(icon);
+		
+		initializeQuests.run();
 	}
 	
-	public static void unload(){
+	@Override
+	public void unload() {
 		if (markers != null){
 			markers.deleteMarkerSet();
 			markers = null;
 		}
 	}
 	
-	public static void addMarker(Quest quest){
+	@Override
+	public void addMarker(Quest quest, Location lc) {
 		if (markers == null) return;
-		if (!quest.hasOption(OptionStarterNPC.class)) return;
-		if (quest.isHidden()) {
-			DebugUtils.logMessage("No marker created for quest " + quest.getID() + " : quest is hid");
-			return;
-		}
-		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getStoredLocation();
 		
 		Marker marker = markers.createMarker("qu_" + quest.getID(), ChatColor.stripColor(quest.getName()), lc.getWorld().getName(), lc.getX(), lc.getBlockY(), lc.getBlockZ(), icon, false);
 		
@@ -61,9 +57,10 @@ public class Dynmap {
 		}else DebugUtils.logMessage("Marker " + marker.getMarkerID() + " created");
 	}
 	
-	public static void removeMarker(Quest quest){
+	@Override
+	public void removeMarker(Quest quest) {
 		if (markers == null) return;
-		if (quest.isHidden()) return;
+		
 		Marker marker = markers.findMarker("qu_" + quest.getID());
 		if (marker == null) {
 			BeautyQuests.logger.warning("Unable to find marker for quest " + quest.getID());

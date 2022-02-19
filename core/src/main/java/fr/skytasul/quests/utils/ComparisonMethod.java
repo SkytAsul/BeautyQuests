@@ -1,9 +1,13 @@
 package fr.skytasul.quests.utils;
 
+import fr.skytasul.quests.editors.checkers.EnumParser;
+
 public enum ComparisonMethod {
 	EQUALS(Lang.ComparisonEquals), DIFFERENT(Lang.ComparisonDifferent), LESS(Lang.ComparisonLess), LESS_OR_EQUAL(Lang.ComparisonLessOrEquals), GREATER(Lang.ComparisonGreater), GREATER_OR_EQUAL(Lang.ComparisonGreaterOrEquals);
 
 	private Lang title;
+	
+	private static final EnumParser<ComparisonMethod> COMPARISON_PARSER = new EnumParser<>(ComparisonMethod.class);
 
 	private ComparisonMethod(Lang title) {
 		this.title = title;
@@ -43,4 +47,9 @@ public enum ComparisonMethod {
 		if (diff < 0) return this == ComparisonMethod.LESS || this == ComparisonMethod.LESS_OR_EQUAL;
 		return false;
 	}
+	
+	public static EnumParser<ComparisonMethod> getComparisonParser() {
+		return COMPARISON_PARSER;
+	}
+	
 }

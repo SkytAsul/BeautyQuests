@@ -1,38 +1,75 @@
 package fr.skytasul.quests.utils.compatibility;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-public class QuestsPlaceholders extends PlaceholderExpansion {
+public class QuestsPlaceholders extends PlaceholderExpansion implements Listener {
 	
-	Map<Player, List<Quest>> ordered = new HashMap<>();
-	Map<Player, List<String>> split = new HashMap<>();
+	private static QuestsPlaceholders placeholders;
 	
-	private QuestsPlaceholders() {}
+	private final int lineLength;
+	private final int changeTime;
+	private final String splitFormat;
+	private final String inlineFormat;
+	
+	private BukkitTask task;
+	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
+	private ReentrantLock playersLock = new ReentrantLock();
+	
+	private List<Entry<String, Consumer<PlaceholderExpansion>>> waitingExpansions = new ArrayList<>();
+	
+	private QuestsPlaceholders(ConfigurationSection placeholderConfig) {
+		lineLength = placeholderConfig.getInt("lineLength");
+		changeTime = placeholderConfig.getInt("changeTime");
+		splitFormat = placeholderConfig.getString("splitPlaceholderFormat");
+		inlineFormat = placeholderConfig.getString("inlinePlaceholderFormat");
+	}
 	
 	public static String setPlaceholders(OfflinePlayer p, String text) {
 		return PlaceholderAPI.setPlaceholders(p, text);
 	}
 	
-	static void registerPlaceholders(){
-		new QuestsPlaceholders().register();
-		BeautyQuests.getInstance().getLogger().info("Placeholders registereds !");
+	static void registerPlaceholders(ConfigurationSection placeholderConfig) {
+		placeholders = new QuestsPlaceholders(placeholderConfig);
+		placeholders.register();
+		Bukkit.getPluginManager().registerEvents(placeholders, BeautyQuests.getInstance());
+		BeautyQuests.getInstance().getLogger().info("Placeholders registered !");
+	}
+	
+	public static void waitForExpansion(String identifier, Consumer<PlaceholderExpansion> callback) {
+		placeholders.waitingExpansions.add(new AbstractMap.SimpleEntry<>(identifier, callback));
 	}
 	
 	@Override
@@ -61,76 +98,145 @@ public class QuestsPlaceholders extends PlaceholderExpansion {
 	}
 	
 	@Override
+	public List<String> getPlaceholders() {
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
+	}
+	
+	@Override
 	public String onRequest(OfflinePlayer off, String identifier) {
-		if (identifier.equals("total_amount")) return "" + BeautyQuests.getInstance().getQuests().size();
+		if (identifier.equals("total_amount")) return "" + QuestsAPI.getQuests().getQuestsAmount();
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
-		if (identifier.equals("player_inprogress_amount")) return "" + QuestsAPI.getQuestsStarteds(acc).size();
-		if (identifier.equals("player_finished_amount")) return "" + QuestsAPI.getQuestsFinished(acc).size();
+		if (identifier.equals("player_inprogress_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
+		if (identifier.equals("player_finished_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
+		if (identifier.equals("player_finished_total_amount")) return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
+		if (identifier.equals("started_id_list")) return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);
+			if (task == null) launchTask();
+			
+			playersLock.lock();
 			try {
-				Quest qu = null;
-				String desc = null;
-				if (after.isEmpty() || after.equals("_1")) {
-					if (!ordered.containsKey(p)) ordered.put(p, QuestsAPI.getQuestsStarteds(acc, true));
-					List<Quest> left = ordered.get(p);
-					QuestsAPI.updateQuestsStarteds(acc, true, left);
-					if (left.isEmpty()) {
-						split.remove(p);
-						return Lang.SCOREBOARD_NONE.toString();
-					}
-					while (!(qu = left.get(0)).hasStarted(acc)) {
-						left.remove(0);
-					}
-					left.remove(0);
-					if (left.isEmpty()) ordered.remove(p);
-					desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
+				PlayerPlaceholderData data = players.get(p);
+				
+				if (data == null) {
+					data = new PlayerPlaceholderData(acc);
+					players.put(p, data);
 				}
 				
-				if (after.isEmpty()) {
-					return "§6" + qu.getName() + " §e: §o" + desc;
-				}
-				int i = Integer.parseInt(after.substring(1));
-				if (i > 1) {
-					if (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() < i) return "§cConfig too low";
-					List<String> ls = split.get(p);
-					if (ls != null && ls.size() > i - 2) return ls.get(i - 2);
-					return "";
-				}
-				split.put(p, Utils.wordWrap(desc, (QuestsConfiguration.getMaxSplittedAdvancementPlaceholder() - 1) * 25));
-				return "§6" + qu.getName();
+				if (data.left.isEmpty()) {
+					data.left = QuestsAPI.getQuests().getQuestsStarted(data.acc, true);
+				}else QuestsAPI.getQuests().updateQuestsStarted(acc, true, data.left);
 				
-				/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
-				return "§6" + qu.getName() + " §e: §o" + (stage == null ? "finishing" : stage.getDescriptionLine(acc));*/
-			}catch (Exception ex) {
-				ordered.remove(p);
-				split.remove(p);
-				return ex.getMessage();
+				try {
+					int i = -1;
+					boolean noSplit = after.isEmpty();
+					if (!noSplit) {
+						i = Integer.parseInt(after.substring(1)) - 1;
+						if (i < 0) return "§cindex must be positive";
+					}
+					
+					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
+					
+					Quest quest = data.left.get(0);
+					String desc = quest.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+					String format = noSplit ? inlineFormat : splitFormat;
+					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
+					
+					if (noSplit) return format;
+				
+					try {
+						List<String> lines = ChatUtils.wordWrap(format, lineLength);
+						if (i >= lines.size()) return "";
+						return lines.get(i);
+					}catch (Exception ex) {
+						players.remove(p);
+						return "§c" + ex.getMessage();
+					}
+				}catch (Exception ex) {
+					return "§cinvalid placeholder";
+				}
+			}finally {
+				playersLock.unlock();
 			}
 		}
 		
 		if (identifier.startsWith("advancement_")) {
-			String sid = identifier.substring(12);
+			int rawId = identifier.indexOf("_raw");
+			String sid = rawId == -1 ? identifier.substring(12) : identifier.substring(12, rawId);
 			try {
-				Quest qu = QuestsAPI.getQuestFromID(Integer.parseInt(sid));
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (qu.hasStarted(acc)) {
-					return qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.PLACEHOLDER);
-					
-					/*AbstractStage stage = qu.getStageManager().getPlayerStage(acc);
-					return stage == null ? "§ofinishing" : stage.getDescriptionLine(acc);*/
+				if (rawId == -1) {
+					if (qu.hasStarted(acc)) {
+						return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+					}
+					if (qu.hasFinished(acc)) return Lang.Finished.toString();
+					return Lang.Not_Started.toString();
+				}else {
+					if (!acc.hasQuestDatas(qu)) return "-1";
+					PlayerQuestDatas datas = acc.getQuestDatas(qu);
+					if (datas.hasStarted()) return Integer.toString(datas.getStage());
+					return "-1";
 				}
-				if (qu.hasFinished(acc)) return Lang.Finished.toString();
-				return Lang.Not_Started.toString();
+			}catch (NumberFormatException ex) {
+				return "§c§lError: §o" + sid + " not a number";
+			}
+		}
+		if (identifier.startsWith("player_quest_finished_")) {
+			String sid = identifier.substring(22);
+			try {
+				Quest qu = QuestsAPI.getQuests().getQuest(Integer.parseInt(sid));
+				if (qu == null) return "§c§lError: unknown quest §o" + sid;
+				if (!acc.hasQuestDatas(qu)) return "0";
+				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
 			}
 		}
 		return null;
+	}
+	
+	private void launchTask() {
+		task = Bukkit.getScheduler().runTaskTimerAsynchronously(BeautyQuests.getInstance(), () -> {
+			playersLock.lock();
+			try {
+				for (Iterator<Entry<Player, PlayerPlaceholderData>> iterator = players.entrySet().iterator(); iterator.hasNext();) {
+					Entry<Player, PlayerPlaceholderData> entry = iterator.next();
+					if (!entry.getKey().isOnline()) {
+						iterator.remove();
+						continue;
+					}
+					PlayerPlaceholderData data = entry.getValue();
+					if (!data.left.isEmpty()) data.left.remove(0);
+				}
+			}finally {
+				playersLock.unlock();
+			}
+		}, 0, changeTime * 20);
+	}
+	
+	@EventHandler
+	public void onExpansionRegister(ExpansionRegisterEvent e) {
+		for (Iterator<Entry<String, Consumer<PlaceholderExpansion>>> iterator = waitingExpansions.iterator(); iterator.hasNext();) {
+			Entry<String, Consumer<PlaceholderExpansion>> entry = iterator.next();
+			if (entry.getKey().equalsIgnoreCase(e.getExpansion().getIdentifier())) {
+				entry.getValue().accept(e.getExpansion());
+				iterator.remove();
+			}
+		}
+	}
+	
+	class PlayerPlaceholderData {
+		private List<Quest> left = Collections.emptyList();
+		private PlayerAccount acc;
+		
+		public PlayerPlaceholderData(PlayerAccount acc) {
+			this.acc = acc;
+		}
 	}
 	
 }

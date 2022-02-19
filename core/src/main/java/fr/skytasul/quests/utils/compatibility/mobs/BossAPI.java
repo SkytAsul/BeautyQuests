@@ -15,6 +15,7 @@ import org.mineacademy.boss.api.Boss;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -23,45 +24,58 @@ import fr.skytasul.quests.utils.XMaterial;
 
 public class BossAPI implements MobFactory<Boss> {
 
+	@Override
 	public String getID() {
 		return "boss";
 	}
 
 	private ItemStack item = ItemUtils.item(XMaterial.BLAZE_ROD, Lang.boss.toString());
+	@Override
 	public ItemStack getFactoryItem() {
 		return item;
 	}
 
+	@Override
 	public void itemClick(Player p, Consumer<Boss> run) {
 		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses(), null, x -> x.getName()) {
+			@Override
 			public ItemStack getItemStack(Boss object) {
 				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
 			}
 
+			@Override
 			public void click(Boss existing, ItemStack item, ClickType clickType) {
+				Inventories.closeAndExit(p);
 				run.accept(existing);
 			}
 		}.create(p);
 	}
 
+	@Override
 	public Boss fromValue(String value) {
 		return org.mineacademy.boss.api.BossAPI.getBoss(value);
 	}
 
+	@Override
 	public String getValue(Boss data) {
 		return data.getName();
 	}
 
+	@Override
 	public String getName(Boss data) {
 		return data.getName();
 	}
 
+	@Override
 	public EntityType getEntityType(Boss data) {
 		return data.getType();
 	}
 
+	@Override
 	public List<String> getDescriptiveLore(Boss data) {
-		return Arrays.asList(Lang.EntityType.format(MinecraftNames.getEntityName(data.getType())), "Health:" + data.getSettings().getHealth());
+		return Arrays.asList(
+				Lang.EntityType.format(MinecraftNames.getEntityName(data.getType())),
+				"§8Health: §7§l" + data.getSettings().getHealth());
 	}
 
 	@EventHandler

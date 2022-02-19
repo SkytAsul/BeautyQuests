@@ -10,11 +10,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -30,11 +29,11 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 	
 	public PermissionsRequirement(List<Permission> permissions, String message) {
-		super("permissionRequired");
 		this.permissions = permissions;
 		this.message = message;
 	}
 
+	@Override
 	public boolean test(Player p) {
 		for (Permission perm : permissions) {
 			if (!perm.match(p)) return false;
@@ -42,22 +41,23 @@ public class PermissionsRequirement extends AbstractRequirement {
 		return true;
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		if (message != null) Utils.IsendMessage(p, message, true);
 	}
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + permissions.size() + " permission(s)", "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.Remove.toString() };
+		return new String[] { "§8> §7" + permissions.size() + " permission(s)", "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<Permission>(Lang.INVENTORY_PERMISSION_LIST.toString(), DyeColor.PURPLE, permissions) {
 			
 			@Override
 			public ItemStack getObjectItemStack(Permission object) {
-				return ItemUtils.item(XMaterial.PAPER, object.toString(), "", Lang.Remove.toString());
+				return ItemUtils.item(XMaterial.PAPER, object.toString(), "", Lang.RemoveMid.toString());
 			}
 			
 			@Override
@@ -72,18 +72,14 @@ public class PermissionsRequirement extends AbstractRequirement {
 			public void finish(List<Permission> objects) {
 				permissions = objects;
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor<String>(p, gui::reopen, obj -> {
+				new TextEditor<String>(p, event::reopenGUI, obj -> {
 					message = obj;
-					ItemUtils.lore(clicked, getLore());
-					gui.reopen();
-				}, () -> {
-					message = null;
-					ItemUtils.lore(clicked, getLore());
-					gui.reopen();
-				}).enter();
+					event.updateItemLore(getLore());
+					event.reopenGUI();
+				}).passNullIntoEndConsumer().enter();
 			}
 			
-		}.create(p);
+		}.create(event.getPlayer());
 	}
 	
 	@Override
@@ -91,11 +87,13 @@ public class PermissionsRequirement extends AbstractRequirement {
 		return new PermissionsRequirement(new ArrayList<>(permissions), message);
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		datas.put("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
 		if (message != null) datas.put("message", message);
 	}
 	
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		permissions = ((List<String>) savedDatas.get("permissions")).stream().map(Permission::fromString).collect(Collectors.toList());
 		if (savedDatas.containsKey("message")) message = (String) savedDatas.get("message");
@@ -115,6 +113,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 			return has == value;
 		}
 
+		@Override
 		public String toString() {
 			return (value ? "" : "-") + permission;
 		}

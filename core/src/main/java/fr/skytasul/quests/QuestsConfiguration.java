@@ -2,15 +2,24 @@ package fr.skytasul.quests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 
-import fr.skytasul.quests.structure.Quest;
+import com.google.common.collect.Sets;
+
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -33,30 +42,25 @@ public class QuestsConfiguration {
 	private static boolean skillAPIoverride = true;
 	private static boolean scoreboard = true;
 	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
-	private static XMaterial item = XMaterial.BOOK;
+	private static String nextStageSound = "ITEM_FIRECHARGE_USE";
+	private static ItemStack item = XMaterial.BOOK.parseItem();
 	private static XMaterial pageItem = XMaterial.ARROW;
-	private static int startParticleDistance;
+	private static int startParticleDistance, startParticleDistanceSquared;
 	private static int requirementUpdateTime;
 	private static boolean enablePrefix = true;
 	private static double hologramsHeight = 0.0;
 	private static boolean disableTextHologram = false;
 	private static boolean showCustomHologramName = true;
-	/*private static ConfigurationSection effect;
-	private static boolean effectEnabled;*/
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
-	private static int splittedAdvancementPlaceholderMax = 3;
 	private static ParticleEffect.Particle particleStart;
 	private static ParticleEffect.Particle particleTalk;
 	private static ParticleEffect.Particle particleNext;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
-	private static boolean playerCancelQuest = false;
 	private static boolean questConfirmGUI = false;
-	private static boolean dialogsInActionBar = false;
-	private static int dialogsDefaultTime = 100;
-	private static boolean disableDialogClick = false;
+	private static ClickType npcClick = ClickType.RIGHT;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -70,19 +74,54 @@ public class QuestsConfiguration {
 	private static boolean inlineAlone = true;
 	private static List<Source> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
+	private static boolean stageEndRewardsMessage = true;
+	private static QuestDescription questDescription;
 	
 	private static ItemStack holoLaunchItem = null;
 	private static ItemStack holoLaunchNoItem = null;
 	private static ItemStack holoTalkItem = null;
+	
+	private static FireworkMeta defaultFirework = null;
 
-	public static Quest firstQuest;
-
+	static boolean backups = true;
+	
 	static boolean saveCycleMessage = true;
 	static int saveCycle = 15;
-	static int firstQuestID = -1;
-
+	static int firstQuestID = -1; // changed in 0.19, TODO
 	
-	static void initConfiguration(FileConfiguration config) {
+	private FileConfiguration config;
+	private DialogsConfig dialogs;
+	private QuestsMenuConfig menu;
+	
+	QuestsConfiguration(BeautyQuests plugin) {
+		config = plugin.getConfig();
+		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
+		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
+	}
+	
+	public FileConfiguration getConfig() {
+		return config;
+	}
+	
+	public DialogsConfig getDialogs() {
+		return dialogs;
+	}
+	
+	public QuestsMenuConfig getQuestsMenu() {
+		return menu;
+	}
+	
+	boolean update() {
+		boolean result = false;
+		result |= dialogs.update();
+		result |= menu.update();
+		return result;
+	}
+	
+	void init() {
+		backups = config.getBoolean("backups", true);
+		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
+		
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
@@ -96,53 +135,55 @@ public class QuestsConfiguration {
 				minecraftTranslationsFile = null;
 			}
 		}
+		dialogs.init();
+		menu.init();
+		
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
-		firstQuestID = config.getInt("firstQuest");
+		firstQuestID = config.getInt("firstQuest", -1);
 		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
 		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
 		stageStart = config.getBoolean("playerStageStartMessage");
-		playerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		questConfirmGUI = config.getBoolean("questConfirmGUI");
-		dialogsInActionBar = NMS.getMCVersion() > 8 && config.getBoolean("dialogsInActionBar");
-		dialogsDefaultTime = config.getInt("dialogsDefaultTime");
-		disableDialogClick = config.getBoolean("disableDialogClick");
 		sounds = config.getBoolean("sounds");
 		fireworks = config.getBoolean("fireworks");
-		gps = DependenciesManager.gps && config.getBoolean("gps");
+		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		scoreboard = config.getBoolean("scoreboards");
-		item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK);
-		pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-		if (item == null) item = XMaterial.BOOK;
+		if (config.isItemStack("item")) {
+			item = config.getItemStack("item");
+		}else if (config.isString("item")) {
+			item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
+		}else item = XMaterial.BOOK.parseItem();
+		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");
+		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
 		requirementUpdateTime = config.getInt("requirementUpdateTime");
 		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		mobsProgressBar = NMS.isValid() && config.getBoolean("mobsProgressBar");
+		stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
+		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
+		try {
+			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
+		}catch (IllegalArgumentException ex) {
+			BeautyQuests.logger.warning("Unknown click type " + config.getString("npcClick") + " for config entry \"npcClick\"");
+		}
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		splittedAdvancementPlaceholderMax = config.getInt("splittedAdvancementPlaceholderMax");
-		hookAcounts = DependenciesManager.acc ? config.getBoolean("accountsHook") : false;
+		hookAcounts = DependenciesManager.acc.isEnabled() && config.getBoolean("accountsHook");
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
 		dSetName = config.getString("dynmap.markerSetName");
-		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn = false;
+		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
-		finishSound = config.getString("finishSound");
-		try{
-			Sound.valueOf(finishSound.toUpperCase());
-		}catch (IllegalArgumentException ex){
-			BeautyQuests.logger.warning("Sound " + finishSound + " is not a valid Bukkit sound.");
-		}
-		/*effect = config.getConfigurationSection("effectLib");
-		effectEnabled = effect.getBoolean("enabled");*/
+		finishSound = loadSound("finishSound");
+		nextStageSound = loadSound("nextStageSound");
 		
 		// stageDescription
 		itemNameColor = config.getString("itemNameColor");
@@ -161,6 +202,8 @@ public class QuestsConfiguration {
 			}
 		}
 		
+		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
+		
 		if (NMS.isValid()) {
 			particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
 			particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
@@ -170,9 +213,18 @@ public class QuestsConfiguration {
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
 		holoTalkItem = loadHologram("talkItem");
+		
+		if (BeautyQuests.getInstance().getDataFile().contains("firework")) {
+			defaultFirework = BeautyQuests.getInstance().getDataFile().getSerializable("firework", FireworkMeta.class);
+		}else {
+			FireworkMeta fm = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(XMaterial.FIREWORK_ROCKET.parseMaterial());
+			fm.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
+			fm.setPower(0);
+			defaultFirework = fm;
+		}
 	}
 	
-	private static Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle){
+	private Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle) {
 		Particle particle = null;
 		if (config.getBoolean(name + ".enabled")) {
 			try{
@@ -186,13 +238,32 @@ public class QuestsConfiguration {
 		return particle;
 	}
 	
-	private static ItemStack loadHologram(String name){
+	private ItemStack loadHologram(String name) {
 		if (BeautyQuests.getInstance().getDataFile().contains(name)){
 			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
 		}
 		return null;
 	}
 	
+	private String loadSound(String key) {
+		String sound = config.getString(key);
+		try {
+			Sound.valueOf(sound.toUpperCase());
+			sound = sound.toUpperCase();
+		}catch (IllegalArgumentException ex) {
+			BeautyQuests.logger.warning("Sound " + sound + " is not a valid Bukkit sound.");
+		}
+		return sound;
+	}
+	
+	private boolean migrateEntry(ConfigurationSection config, ConfigurationSection migrateFrom, String key, String migrateKey) {
+		if (migrateFrom.contains(migrateKey)) {
+			config.set(key, migrateFrom.get(migrateKey));
+			migrateFrom.set(migrateKey, null);
+			return true;
+		}
+		return false;
+	}
 
 	public static String getPrefix(){
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
@@ -214,24 +285,8 @@ public class QuestsConfiguration {
 		return stageStart;
 	}
 
-	public static boolean allowPlayerCancelQuest(){
-		return playerCancelQuest;
-	}
-
 	public static boolean questConfirmGUI(){
 		return questConfirmGUI;
-	}
-
-	public static boolean sendDialogsInActionBar(){
-		return dialogsInActionBar;
-	}
-
-	public static int getDialogsDefaultTime() {
-		return dialogsDefaultTime;
-	}
-
-	public static boolean isDialogClickDisabled() {
-		return disableDialogClick;
 	}
 	
 	public static boolean playSounds(){
@@ -243,11 +298,15 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean showMobsProgressBar() {
-		return mobsProgressBar;
+		return mobsProgressBar && QuestsAPI.hasBossBarManager();
 	}
 	
 	public static int getProgressBarTimeout(){
 		return progressBarTimeoutSeconds;
+	}
+	
+	public static ClickType getNPCClick() {
+		return npcClick;
 	}
 	
 	public static boolean handleGPS(){
@@ -262,7 +321,7 @@ public class QuestsConfiguration {
 		return scoreboard;
 	}
 
-	public static XMaterial getItemMaterial(){
+	public static ItemStack getItemMaterial() {
 		return item;
 	}
 	
@@ -277,11 +336,19 @@ public class QuestsConfiguration {
 	public static boolean isRequirementReasonSentOnMultipleQuests() {
 		return requirementReasonOnMultipleQuests;
 	}
+	
+	public static boolean hasStageEndRewardsMessage() {
+		return stageEndRewardsMessage;
+	}
 
 	public static int getStartParticleDistance() {
 		return startParticleDistance;
 	}
 
+	public static int getStartParticleDistanceSquared() {
+		return startParticleDistanceSquared;
+	}
+	
 	public static boolean isTextHologramDisabled(){
 		return disableTextHologram;
 	}
@@ -331,18 +398,19 @@ public class QuestsConfiguration {
 	}
 
 	public static ItemStack getHoloLaunchItem(){
-		if (!DependenciesManager.holod) return null;
 		return holoLaunchItem;
 	}
 
 	public static ItemStack getHoloLaunchNoItem(){
-		if (!DependenciesManager.holod) return null;
 		return holoLaunchNoItem;
 	}
 
 	public static ItemStack getHoloTalkItem(){
-		if (!DependenciesManager.holod) return null;
 		return holoTalkItem;
+	}
+	
+	public static FireworkMeta getDefaultFirework() {
+		return defaultFirework;
 	}
 	
 	public static boolean hookAccounts(){
@@ -361,12 +429,8 @@ public class QuestsConfiguration {
 		return dMinZoom;
 	}
 	
-	public static int getMaxSplittedAdvancementPlaceholder(){
-		return splittedAdvancementPlaceholderMax;
-	}
-	
 	public static boolean isMinecraftTranslationsEnabled() {
-		return minecraftTranslationsFile != null;
+		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
 	
 	public static String getDescriptionItemPrefix(){
@@ -391,15 +455,146 @@ public class QuestsConfiguration {
 		return descSources.contains(source);
 	}
 	
+	public static QuestDescription getQuestDescription() {
+		return questDescription;
+	}
+	
 	public static String getFinishSound(){
 		return finishSound;
 	}
 	
-	/*public static boolean isEffectLibEnabled(){
-		return elib ? effectEnabled : false;
-	}*/
+	public static String getNextStageSound() {
+		return nextStageSound;
+	}
 	
-	/*public static ConfigurationSection getEffectConfig(){
-		return effect;
-	}*/
+	public static DialogsConfig getDialogsConfig() {
+		return BeautyQuests.getInstance().getConfiguration().dialogs;
+	}
+	
+	public static QuestsMenuConfig getMenuConfig() {
+		return BeautyQuests.getInstance().getConfiguration().menu;
+	}
+	
+	public enum ClickType {
+		RIGHT, LEFT, ANY;
+		
+		public boolean applies(ClickType type) {
+			return (this == type) || (this == ANY) || (type == ANY);
+		}
+	}
+	
+	public class DialogsConfig {
+		
+		private boolean inActionBar = false;
+		private int defaultTime = 100;
+		private boolean defaultSkippable = true;
+		private boolean disableClick = false;
+		private boolean history = true;
+		
+		private String defaultPlayerSound = null;
+		private String defaultNPCSound = null;
+		
+		private ConfigurationSection config;
+		
+		private DialogsConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+		
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config, config.getParent(), "inActionBar", "dialogsInActionBar");
+				result |= migrateEntry(config, config.getParent(), "defaultTime", "dialogsDefaultTime");
+				result |= migrateEntry(config, config.getParent(), "disableClick", "disableDialogClick");
+				result |= migrateEntry(config, config.getParent(), "history", "dialogHistory");
+			}
+			return result;
+		}
+		
+		private void init() {
+			inActionBar = NMS.getMCVersion() > 8 && config.getBoolean("inActionBar");
+			defaultTime = config.getInt("defaultTime");
+			defaultSkippable = config.getBoolean("defaultSkippable");
+			disableClick = config.getBoolean("disableClick");
+			history = config.getBoolean("history");
+			
+			defaultPlayerSound = config.getString("defaultPlayerSound");
+			defaultNPCSound = config.getString("defaultNPCSound");
+		}
+		
+		public boolean sendInActionBar() {
+			return inActionBar;
+		}
+		
+		public int getDefaultTime() {
+			return defaultTime;
+		}
+		
+		public boolean isSkippableByDefault() {
+			return defaultSkippable;
+		}
+		
+		public boolean isClickDisabled() {
+			return disableClick;
+		}
+		
+		public boolean isHistoryEnabled() {
+			return history;
+		}
+		
+		public String getDefaultPlayerSound() {
+			return defaultPlayerSound;
+		}
+		
+		public String getDefaultNPCSound() {
+			return defaultNPCSound;
+		}
+		
+	}
+	
+	public class QuestsMenuConfig {
+		
+		private Set<Category> tabs;
+		private boolean openNotStartedTabWhenEmpty = true;
+		private boolean allowPlayerCancelQuest = true;
+		
+		private ConfigurationSection config;
+		
+		private QuestsMenuConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+		
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config, config.getParent(), "openNotStartedTabWhenEmpty", "menuOpenNotStartedTabWhenEmpty");
+				result |= migrateEntry(config, config.getParent(), "allowPlayerCancelQuest", "allowPlayerCancelQuest");
+			}
+			return result;
+		}
+		
+		private void init() {
+			tabs = config.getStringList("enabledTabs").stream().map(Category::fromString).collect(Collectors.toSet());
+			if (tabs.isEmpty()) {
+				BeautyQuests.logger.warning("Quests Menu must have at least one enabled tab.");
+				tabs = Sets.newHashSet(Category.values());
+			}
+			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
+			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
+		}
+		
+		public boolean isNotStartedTabOpenedWhenEmpty() {
+			return openNotStartedTabWhenEmpty;
+		}
+		
+		public boolean allowPlayerCancelQuest() {
+			return allowPlayerCancelQuest;
+		}
+		
+		public Set<Category> getEnabledTabs() {
+			return tabs;
+		}
+		
+	}
+	
 }

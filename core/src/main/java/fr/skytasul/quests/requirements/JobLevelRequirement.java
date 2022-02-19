@@ -3,14 +3,12 @@ package fr.skytasul.quests.requirements;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Jobs;
@@ -21,12 +19,12 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	public String jobName;
 	
 	public JobLevelRequirement() {
-		this(null, 0);
+		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public JobLevelRequirement(String jobName, double target) {
-		super("jobLevelRequired", target);
-		if (!DependenciesManager.jobs) throw new MissingDependencyException("Jobs");
+	public JobLevelRequirement(String jobName, double target, ComparisonMethod comparison) {
+		super(target, comparison);
+		if (!DependenciesManager.jobs.isEnabled()) throw new MissingDependencyException("Jobs");
 		this.jobName = jobName;
 	}
 
@@ -45,38 +43,46 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 		Lang.CHOOSE_XP_REQUIRED.send(p);
 	}
 	
+	@Override
 	public void sendReason(Player p){
 		Lang.REQUIREMENT_JOB.send(p, getFormattedValue(), jobName);
 	}
 	
 	@Override
+	public String getDescription(Player p) {
+		return Lang.RDJobLevel.format(Integer.toString((int) target), jobName);
+	}
+	
+	@Override
 	public AbstractRequirement clone() {
-		return new JobLevelRequirement(jobName, target);
+		return new JobLevelRequirement(jobName, target, comparison);
 	}
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { getValueLore(), "§8>Job name: §7" + jobName, "", Lang.Remove.toString() };
+		return new String[] { getValueLore(), "§8>Job name: §7" + jobName, "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.CHOOSE_JOB_REQUIRED.send(p);
-		new TextEditor<String>(p, () -> {
-			if (jobName == null) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.CHOOSE_JOB_REQUIRED.send(event.getPlayer());
+		new TextEditor<String>(event.getPlayer(), () -> {
+			if (jobName == null) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			jobName = obj;
-			ItemUtils.lore(clicked, getLore());
-			super.itemClick(p, gui, clicked);
+			event.updateItemLore(getLore());
+			super.itemClick(event);
 		}).useStrippedMessage().enter();
 	}
 	
+	@Override
 	protected void save(Map<String, Object> datas) {
 		super.save(datas);
 		datas.put("jobName", jobName);
 	}
 
+	@Override
 	protected void load(Map<String, Object> savedDatas) {
 		super.load(savedDatas);
 		jobName = (String) savedDatas.get("jobName");

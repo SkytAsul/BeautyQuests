@@ -2,6 +2,7 @@ package fr.skytasul.quests.editors.checkers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,8 @@ import fr.skytasul.quests.utils.Lang;
 
 public class EnumParser<T extends Enum<T>> implements AbstractParser<T> {
 
+	private static final Pattern FORMAT = Pattern.compile("[ _]");
+	
 	private Map<String, T> names;
 	private String namesString;
 
@@ -37,7 +40,7 @@ public class EnumParser<T extends Enum<T>> implements AbstractParser<T> {
 	}
 
 	private String proceed(String key) {
-		return key.toLowerCase().replaceAll(" |_", "");
+		return FORMAT.matcher(key.toLowerCase()).replaceAll("");
 	}
 
 }

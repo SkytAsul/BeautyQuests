@@ -16,11 +16,15 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/Factions.jar -DgroupId=com.massivecraft -DartifactId=factions -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/MassiveCore.jar -DgroupId=com.massivecraft -DartifactId=massivecore -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/GPS.jar -DgroupId=com.live.bemmamin -DartifactId=gps -Dversion=1.0 -Dpackaging=jar
-"$mavenPath" install:install-file -Dfile=$jarsPath/Jobs.jar -DgroupId=com.gamingmesh -DartifactId=jobs -Dversion=1.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/Jobs.jar -DgroupId=com.gamingmesh -DartifactId=jobs -Dversion=5.0.0.9 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/McCombatLevel.jar -DgroupId=com.gmail.mrphpfan -DartifactId=mccombatlevel -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/mcMMO.jar -DgroupId=com.gmail.nossr50 -DartifactId=mcmmo -Dversion=1.0 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/SkillAPI.jar -DgroupId=com.suxy -DartifactId=skillapi -Dversion=1.0 -Dpackaging=jar
-"$mavenPath" install:install-file -Dfile=$jarsPath/BossAPI.jar -DgroupId=com.suxy -DartifactId=boss -Dversion=1.0 -Dpackaging=jar
-"$mavenPath" install:install-file -Dfile=$jarsPath/CMIAPI.jar -DgroupId=com.zrips -DartifactId=cmi-api -Dversion=1.0 -Dpackaging=jar
+#"$mavenPath" install:install-file -Dfile=$jarsPath/BossAPI.jar -DgroupId=com.suxy -DartifactId=boss -Dversion=1.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/CMI.jar -DgroupId=com.zrips -DartifactId=cmi -Dversion=9.0.2.1 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/CMILib.jar -DgroupId=com.zrips -DartifactId=cmilib -Dversion=1.0.4.1 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/UltimateTimber.jar -DgroupId=com.songoda -DartifactId=ultimatetimber -Dversion=2.2.5 -Dpackaging=jar
+#"$mavenPath" install:install-file -Dfile=$jarsPath/MythicMobs.jar -DgroupId=io.lumine.xikage -DartifactId=MythicMobs -Dversion=4.12.0 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/TokenEnchantAPI.jar -DgroupId=com.vk2gpz.tokenenchant -DartifactId=TokenEnchantAPI -Dversion=18.15.2 -Dpackaging=jar
 
 echo -e "\e[92mOperation complete."

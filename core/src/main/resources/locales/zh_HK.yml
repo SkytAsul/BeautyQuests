@@ -13,10 +13,19 @@ msg:
     invalidID: '§cID為 {0} 的任務不存在.'
     alreadyStarted: '§c你已經接受了這個任務!'
   quests:
+    maxLaunched: '§c你不可以同時接多過 {0} 個任務...'
     nopStep: '§c這個任務沒有任何階段...  :-)'
     updated: '§7已更新任務 {0} !'
     checkpoint: '§7已到達任務記錄點！'
     failed: '§6任務{0}失敗……'
+  pools:
+    noTime: '§c你必須等待 {0} 才能做其他任務'
+    allCompleted: '§7你已經完成所有任務!'
+    noAvailable: '§7這裡沒有更多可以接的任務'
+    maxQuests: '§c你不可以同時接多過 {0} 個任務...'
+  questItem:
+    drop: '§c你不可以掉落一個任務道具'
+    craft: '§c你不可以用一個任務道具去合成'
   stageMobs:
     noMobs: '§c這個任務階段沒有要殺的怪物 :-)'
     listMobs: '§a你需要殺死 {0}.'
@@ -24,6 +33,7 @@ msg:
   writeRegionName: '輸入任務階段所需前往的區域名.'
   writeXPGain: '輸入玩家獲得的經驗點. 最終獲得: §a{0}'
   writeMobAmount: '輸入要擊殺的怪物數.'
+  writeMobName: '§a填寫特殊怪物的名稱用作擊殺'
   writeChatMessage: '要玩家輸入的消息 (在開頭加上 {SLASH} 來讓玩家輸入指令).'
   writeEndMessage: '輸入在任務或任務階段結束後發送給玩家的消息'
   writeDescriptionText: '任務階段目標描述.'
@@ -45,7 +55,7 @@ msg:
     skill: '§e你的{1}技能必須要達到{0}級!'
     combatLevel: '§e你必須達到戰鬥等級 {0}!'
     money: '§c你必須擁有{0}!'
-    wait: '§c你必須等待 {0} 分鐘才能再次接受任務!'
+    waitTime: '§c你必須等待 {0} 分鐘才能再次接受這個任務!'
   experience:
     edited: '已編輯獲得的經驗: {0}pts. 改為 {1}pts.'
   selectNPCToKill: 選擇要擊殺的NPC.
@@ -90,7 +100,7 @@ msg:
     leaveAll: '§e你強制結束了{0}個任務. §c出現{1}個錯誤.'
     resetPlayer:
       player: '§6你的所有任務數據 ({0}) 被 {1} 刪除了.'
-      remover: '§6已刪除 {1} 的 {0} 條任務數據.'
+      remover: '§6{0} 個任務資料 (包含 {2} 個池) 已經移除. 原本有 {1} 個.'
     resetPlayerQuest:
       player: '§6任務數據 {0} 已被 {1} 刪除.'
       remover: '§6{1} 的 {0} 條任務信息已被刪除.'
@@ -140,8 +150,8 @@ msg:
     already: '§c你已在編輯器中.'
     enter:
       title: '§6~ 進入編輯器模式 ~'
-      subtitle: '§e輸入 "/quests exitEditor" 強制離開任務編輯器.'
-    chat: '§6你已進入編輯器模式. 輸入"/quests exitEditor" 強制退出編輯器(不推薦使用, 最好使用 "close" 或 "cancel" 回到上一個菜單).'
+      subtitle: '§6使用指令 "/quests exitEditor" 強制離開編輯器'
+    chat: '§6你現在在編輯模式. 使用  "/quests exitEditor" 強制離開編輯器 (極度不推薦，請使用指令例如 "close" 或者 "cancel" 返回上一頁)'
     npc:
       enter: '§a點擊一個NPC，或輸入"cancel"取消.'
       choseStarter: '§a選擇接受任務的NPC.'
@@ -154,13 +164,14 @@ msg:
       choosePermissionMessage: '§e如果玩家沒有所需權限則顯示的拒絕消息. (輸入 "null" 跳過這步)'
       choosePlaceholderRequired:
         identifier: '§e輸入所需的占位符名 (§l不用加上 %%§r§e).'
-        value: '§a輸入所需的 §6%{0}% 占位符的數值§a:'
+        value: '§a請為所需要的參數填寫適當資料 §e%§e{0}§e%§a:'
       chooseSkillRequired: '§a輸入技能名:'
       chooseMoneyRequired: '§e輸入所需金額:'
       reward:
         permissionName: '§a請輸入權限名稱。'
         permissionWorld: '§a請輸入可編輯權限的世界名，輸入"null"則所有世界可編輯。'
         money: '§e輸入獲得的錢數:'
+        wait: '§a填寫多少遊戲時間需要等待: (1 現實秒數 = 20 遊戲秒數)'
       chooseObjectiveRequired: '§a請輸入目標名。'
       chooseObjectiveTargetScore: '§a請輸入完成任務目標所需目標數。'
       chooseRegionRequired: '§a請輸入所需區域名 (你必須與該區域在同一個世界中)。'
@@ -172,6 +183,8 @@ msg:
       itemLore: '§e修改物品描述. 輸入 "help" 查看幫助.'
       unknownItemType: '§c未知的物品類型.'
       invalidItemType: '§c無效的物品類型 (必須是物品而不能是方塊).'
+      unknownBlockType: '§c未知方塊種類'
+      invalidBlockType: '§c未知方塊種類'
     dialog:
       syntax: '§c正確用法 : {0}{1} <消息>'
       syntaxRemove: '§c正確用法: remove <id>'
@@ -179,6 +192,7 @@ msg:
       npc: '§a已為NPC增加消息“{0}”。'
       noSender: '§a已增加沒有發送者的消息“{0}”。'
       messageRemoved: '§a已刪除消息 {0}.'
+      edited: '§a已更改訊息 {0}.'
       soundAdded: '§a已為消息 {1} 增加音效 {0}.'
       cleared: '§a已刪除{0}條消息.'
       help:
@@ -191,6 +205,7 @@ msg:
         npcInsert: '§enpcinsert <id> <消息>: §b插入一條由NPC說出的話.'
         playerInsert: '§eplayerinsert <id> <消息>: §b插入一條由玩家說出的話.'
         nothingInsert: '§enothinginsert <id> <消息>: §b插入一條沒有任何前綴的消息.'
+        edit: '§6更改 <id> <message>: §e更改一個訊息'
         addSound: '§eaddsound <id> <音效名>: §b給一條消息增加音效.'
         clear: '§eclear: §b刪除所有消息.'
         close: '§eclose: §b退出並保存所有消息.'
@@ -215,11 +230,25 @@ msg:
     noSuchElement: '§c沒有這樣的元素。可用元素：§e{0}'
     comparisonType: '§a請選擇你想要在{0}中使用的比較類型。默認比較類型為：§e§lger或equals§r§a。輸入 §onull §r§a 來使用。'
     scoreboardObjectiveNotFound: '§c未知的計分板目標。'
+    pool:
+      hologramText: '為這個池設定一個特定的浮空字 (如果你想用預設的請寫 "null")'
+      maxQuests: '填寫這個池最多可以開始的任務.'
+      time: '填寫多少日玩家才可以接新的任務'
+    title:
+      title: '填寫任務的標題 (填寫 "null" 代表沒有)'
+      subtitle: '填寫任務的副標題 (填寫 "null" 代表沒有)'
+      fadeIn: '填寫 "fade-in" 淡入時間, 單位是遊戲秒數 (20 遊戲妙數 = 1 秒).'
+      stay: '填寫 "stay" 逗留時間, 單位是遊戲秒數 (20 遊戲妙數 = 1 秒).'
+      fadeOut: '填寫 "fade-out" 淡出時間, 單位是遊戲秒數 (20 遊戲妙數 = 1 秒).'
   writeCommandDelay: '§a請輸入指令延遲，單位為刻。'
+advancement:
+  finished: 已完成
+  notStarted: 未完成
 inv:
   validate: '§b§l確認'
   cancel: '§c§l取消'
   search: '§e§l搜索'
+  addObject: '§a添加一個物件'
   confirm:
     name: '§8你確認?'
     'yes': '§a確認'
@@ -240,7 +269,10 @@ inv:
     bucket: '§a裝滿桶'
     location: 前往指定位置
     playTime: '§e遊戲時間'
+    breedAnimals: '§a餵飼動物'
+    tameAnimals: '§a領養動物'
     NPCText: '§e編輯NPC的文本對話'
+    NPCSelect: '§e選擇或者創建一個NPC'
     hideClues: 隱藏任務指示 (粒子效果和全息文字)
     editMobsKill: '§e編輯要擊殺的怪物'
     mobsKillFromAFar: 需要遠程擊殺怪物
@@ -250,11 +282,15 @@ inv:
     editMessageType: '§e編輯要輸入的消息'
     cancelMessage: 取消發送
     ignoreCase: 忽略消息大小寫
+    replacePlaceholders: 替換 {PLAYER} 或者 PlaceholderAPI 的佔位符
     selectItems: '§b選擇所需的物品'
+    selectItemsMessage: '§e編輯發問訊息'
+    selectItemsComparisons: '§e選取道具比較(複雜)'
     selectRegion: '§7選擇一片區域'
     toggleRegionExit: 退出時
     stageStartMsg: '§e編輯階段開始的消息'
     selectBlockLocation: '§6選擇方塊位置'
+    selectBlockMaterial: '§e選擇方塊物料'
     leftClick: 必須左擊
     editFishes: '§e編輯所需的魚'
     editItem: '§e編輯要合成的物品'
@@ -264,6 +300,7 @@ inv:
     editRadius: '§e編輯離目的地的距離'
     currentRadius: '§e當前距離: §6{0}'
     changeTicksRequired: '§e需要更改遊玩刻'
+    changeEntityType: '§e更改一個生物類型'
   stages:
     name: '§8創建任務階段'
     nextPage: '§e下一頁'
@@ -297,15 +334,23 @@ inv:
     scoreboardItemLore: 如果禁用，則該任務目標不會顯示在計分板上。
     hideItem: 隱藏任務 (菜單和衛星地圖)
     hideItemLore: 如果啟用，任務將不會在dynmap或任務菜單中顯示。
+    hideNoRequirementsItem: 當條件未滿足的時候隱藏
+    hideNoRequirementsItemLore: 如果開啟這個設定，任務列表GUI不會顯示未滿足任務接取條件的任務
     bypassLimit: 忽略任務上限
     bypassLimitLore: 如果啟用，即使玩家已經達到任務上限也能接受任務。
+    auto: 首次進入伺服器自動啟動
+    autoLore: 如果開啟這個設定，玩家首次進入伺服器將會接這個任務
     questName: '§a§l編輯任務名'
     questNameLore: 必須設置一個名稱來創建任務。
     setItemsRewards: '§7編輯獲得的物品'
     setXPRewards: '§e編輯獲得的經驗'
     setCheckpointReward: '§e編輯記錄點獎勵'
+    setRewardStopQuest: '§c停止這個任務'
+    setRewardsWithRequirements: '§e有條件發送獎勵'
     setPermReward: '§e編輯權限'
     setMoneyReward: '§e編輯獲得的金錢'
+    setWaitReward: '§e編輯"wait" 等待獎勵'
+    setTitleReward: '§e編輯標題獎勵'
     selectStarterNPC: '§6§l選擇接受任務的NPC'
     selectStarterNPCLore: 點擊選中的NPC將開始任務。
     createQuestName: '§l創建任務'
@@ -331,9 +376,16 @@ inv:
     customMaterialLore: 在任務菜單中代表該任務的物品圖標。
     failOnDeath: 玩家死亡時任務失敗
     failOnDeathLore: 當玩家死亡時是否取消任務？
+    questPool: '§e任務池'
+    questPoolLore: 將這個任務加入任務池
+    keepDatas: 保存玩家資料
+    keepDatasLore: |-
+      強制任務插件記錄玩家資料，即使這個任務的內容已經更改。
+      §c§l警告 §c- 開啟這個設定可能會導致玩家資料毀壞
     loreReset: '§e§l所有玩家的進度將被重置'
     optionValue: '§8數值：§7{0}'
     defaultValue: '§8(默認值)'
+    requiredParameter: '§7必需的參數'
   itemsSelect:
     name: 編輯物品
     none: |-
@@ -360,8 +412,10 @@ inv:
   mobs:
     name: 選擇怪物
     none: '§a點擊增加怪物'
-    click: |-
-      §7左鍵編輯,右鍵刪除.
+    clickLore: |-
+      §a§l左鍵§a 更改數量
+      §a§l§nShift§a§l + 左鍵§a 更改生物名稱.
+      §c§l右鍵§c移除
   mobSelect:
     name: 選擇怪物
     bukkitEntityType: '§e選擇一個生物類型'
@@ -384,6 +438,8 @@ inv:
       世界: {3}
   checkpointActions:
     name: 記錄點行動
+  rewardsWithRequirements:
+    name: 有條件發送獎勵
   listAllQuests:
     name: '§8任務'
   listPlayerQuests:
@@ -395,8 +451,9 @@ inv:
     loreCancel: '§c§o點擊取消任務'
     loreStart: '§a§o點擊開始任務。'
     loreStartUnavailable: '§c§o你不滿足任務需求，無法開始任務。'
-    timeToWait: '§3§o你需要等待{0} 分鐘才能再次接受任務'
+    timeToWaitRedo: '§3§o你可以在此時間之後再次接任務: {0} '
     canRedo: '§3§o你可以再次接受這個任務!'
+    timesFinished: '§3任務已經做過 {0} 次.'
   itemCreator:
     name: '§8物品編輯器'
     itemType: '§b物品類型'
@@ -430,6 +487,10 @@ inv:
   blocksList:
     name: 選擇方塊
     addBlock: '§a點擊增加一個方塊.'
+  blockAction:
+    name: 選擇方塊行動
+    location: '§6選擇準確位置'
+    material: '§e選擇方塊物料'
   buckets:
     name: 桶的類型
   permission:
@@ -443,6 +504,55 @@ inv:
     name: 權限列表
     removed: '§e已移除: §6{0}'
     world: '§e世界:§6{0}'
+  classesRequired.name: 需要職業
+  classesList.name: 職業列表
+  factionsRequired.name: 需要派系/公會
+  factionsList.name: 派系/公會列表
+  poolsManage:
+    name: 任務池
+    itemName: '§a池#{0}'
+    poolNPC: '§8NPC：§7{0}'
+    poolMaxQuests: '§8最大任務數：§7{0}'
+    poolRedo: '§8可以重新接受已完成的任務：§7{0}'
+    poolTime: '§8任務之間的間隔：§7{0}'
+    poolHologram: '§8浮空字：§7{0}'
+    poolAvoidDuplicates: '§8避免重複：§7{0}'
+    poolQuestsList: '§7{0} §8任務：§7{1}'
+    create: '§a創建一個任務池'
+    edit: '§e> §6§o更改任務池... §e<'
+  poolCreation:
+    name: 創建任務池
+    hologramText: '§e任務池特殊浮空字'
+    maxQuests: '§a最大任務數'
+    time: '§b設置任務之間的間隔'
+    redoAllowed: 是否可重複完成
+    avoidDuplicates: 避免重複
+    avoidDuplicatesLore: '§8> §7 嘗試避免重複\n相同任務'
+    requirements: '§b接任務的需求'
+  poolsList.name: 任務池
+  itemComparisons:
+    name: 比較物品
+    bukkit: Bukkit原生比較
+    bukkitLore: "使用Bukkit預設道具比較系統。\n比較材料、耐久度、NBT標籤……"
+    customBukkit: Bukkit原生比較 -沒NBT
+    customBukkitLore: "使用Bukkit預設物品比較系統，但除去NBT標籤。\n比較材料名、耐久度等"
+    material: 物品材料
+    materialLore: '比較物品材料（如石頭|stone、鐵劍|iron sword）'
+    itemName: 物品名
+    itemNameLore: 比較物品名稱
+    itemLore: 物品描述
+    itemLoreLore: 比較物品描述
+    enchants: 物品附魔
+    enchantsLore: 比較物品附魔
+    repairCost: 修復花費
+    repairCostLore: 比較盔甲和武器的修復花費
+  editTitle:
+    name: 更改標題
+    title: '§6標題'
+    subtitle: '§e副標題'
+    fadeIn: '§a淡入時間'
+    stay: '§b停留時間'
+    fadeOut: '§a淡出時間'
 scoreboard:
   name: '§6§l任務'
   noLaunched: '§c你沒有進行中的任務.'
@@ -458,11 +568,14 @@ scoreboard:
     placeBlocks: '§e放置 {0}'
     chat: '§e輸入 §6{0}'
     interact: '§e點擊在§6{0}的方塊'
+    interactMaterial: '§e點擊 §6{0}§e 方塊'
     fish: '§e釣魚 §6{0}'
     craft: '§e合成 §6{0}'
     bucket: '§e裝滿 §6{0}'
     location: '§e前往位於 §6{3}的坐標§6{0}§e, §6{1}§e, §6{2}§e '
     playTime: '§e遊玩遊戲§6{0}刻'
+    breed: '§e餵飼 §6{0}'
+    tame: '§e餵養 §6{0}'
 indication:
   startQuest: '§7您是否想要接受任務 {0}?'
   closeInventory: '§7你確定要關閉該頁面嗎？'
@@ -473,6 +586,12 @@ misc:
     prefix: '§f<§e任務§f> §r'
     npcText: '§f<§e任務§f> §7[§f{2}§8/§7{3}] §f{0} §8§l»§f {1}'
     selfText: '§f<§e任務§f> §7[§f{2}§8/§7{3}] §f{0} §8§l»§f {1}'
+    offText: '§r§e{0}'
+  time:
+    days: '{0} 日'
+    hours: '{0} 小時'
+    minutes: '{0} 分鐘'
+    lessThanAMinute: '少於一分鐘'
   stageType:
     region: 尋找區域
     npc: 尋找 NPC
@@ -487,6 +606,8 @@ misc:
     Bucket: 裝滿桶
     location: 尋找地點
     playTime: 遊戲時間
+    breedAnimals: 餵飼動物
+    tameAnimals: 領養動物
   comparison:
     equals: 等於{0}
     different: 不同於{0}
@@ -495,6 +616,7 @@ misc:
     greater: 精確大於{0}
     greaterOrEquals: 大於{0}
   requirement:
+    skillAPILevel: '§d需要SkillAPI技能等級'
     class: '§b所需職業'
     faction: '§b所需派系'
     jobLevel: '§b所需工作等級'
@@ -511,9 +633,13 @@ misc:
     water: 水桶
     lava: 巖漿桶
     milk: 牛奶桶
+  ticks: '{0} 遊戲秒數'
   questItemLore: '§e§o任務物品'
+  hologramText: '§8§l任務 NPC'
+  poolHologramText: '§e有新任務可接'
   mobsProgression: '§f階段進度 §8§l» §f{1}§8/§7{2}'
   entityType: '§e生物類型: {0}'
+  entityTypeAny: '§e任何實體'
   enabled: 已啟用
   disabled: 已關閉
   unknown: 未知

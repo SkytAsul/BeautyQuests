@@ -1,22 +1,23 @@
 package fr.skytasul.quests.structure;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
-import fr.skytasul.quests.scoreboards.Scoreboard;
+import fr.skytasul.quests.players.PlayerQuestDatas;
+import fr.skytasul.quests.structure.QuestBranch.Source;
+import fr.skytasul.quests.utils.Lang;
 
 public class BranchesManager{
 
@@ -48,12 +49,8 @@ public class BranchesManager{
 		return 666;
 	}
 	
-	public LinkedList<QuestBranch> getBranches(){
-		LinkedList<QuestBranch> tmp = new LinkedList<>();
-		for (Entry<Integer, QuestBranch> en : branches.entrySet()){
-			tmp.add(en.getKey(), en.getValue());
-		}
-		return tmp;
+	public List<QuestBranch> getBranches() {
+		return branches.entrySet().stream().sorted(Comparator.comparingInt(Entry::getKey)).map(Entry::getValue).collect(Collectors.toList());
 	}
 	
 	public QuestBranch getBranch(int id){
@@ -70,18 +67,25 @@ public class BranchesManager{
 		return acc.getQuestDatas(quest).getBranch() == branch.getID();
 	}
 	
+	public String getDescriptionLine(PlayerAccount acc, Source source) {
+		if (!acc.hasQuestDatas(quest)) throw new IllegalArgumentException("Account do not have quest datas");
+		PlayerQuestDatas datas = acc.getQuestDatas(quest);
+		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
+		return branches.get(datas.getBranch()).getDescriptionLine(acc, source);
+	}
+	
 	/**
 	 * Called internally when the quest is updated for the player
 	 * @param p Player
 	 */
-	public final void objectiveUpdated(Player p) {
-		if (quest.isScoreboardEnabled()) {
-			Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(p);
-			if (sb != null) sb.setShownQuest(quest, true);
+	public final void objectiveUpdated(Player p, PlayerAccount acc) {
+		if (quest.hasStarted(acc)) {
+			QuestsAPI.propagateQuestsHandlers(x -> x.questUpdated(acc, p, quest));
 		}
 	}
 
 	public void startPlayer(PlayerAccount acc){
+		acc.getQuestDatas(getQuest()).resetQuestFlow();
 		branches.get(0).start(acc);
 	}
 	
@@ -106,11 +110,10 @@ public class BranchesManager{
 			try{
 				Map<String, Object> datas = branch.serialize();
 				if (datas != null) st.add(datas);
-			}catch (Throwable ex){
+			}catch (Exception ex) {
 				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID());
 				ex.printStackTrace();
 				BeautyQuests.savingFailure = true;
-				continue;
 			}
 		}
 		map.put("branches", st);
@@ -118,6 +121,7 @@ public class BranchesManager{
 		return map;
 	}
 	
+	@Override
 	public String toString() {
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
@@ -150,34 +154,6 @@ public class BranchesManager{
 				return null;
 			}
 		}
-		
-		if (!config.contains("playersAdvancement")) return bm; // before pre10, player datas were not saved this way
-		new BukkitRunnable() {
-			public void run(){
-				PlayersManagerYAML managerYAML = PlayersManager.getMigrationYAML();
-				config.getConfigurationSection("playersAdvancement").getValues(false).forEach((accId, advancement) -> {
-					try{
-						PlayerAccount acc = managerYAML.getByIndex(accId);
-						if (acc == null) return;
-						
-						String adv = advancement.toString();
-						int separator = adv.indexOf('|');
-						QuestBranch branch = separator != -1 ? bm.getBranch(Integer.parseInt(adv.substring(0, separator))) : bm.getBranch(0);
-						if (branch == null){
-							BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID() + ": branch is null");
-							BeautyQuests.loadingFailure = true;
-							return;
-						}
-						acc.getQuestDatas(qu).setBranch(branch.getID());
-						if ("end".equals(adv.substring(separator+1))) branch.setEndingStages(acc, false); else branch.setStage(acc, Integer.parseInt(adv.substring(separator+1)));
-					}catch (Exception ex){
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing player datas for the quest " + qu.getID());
-						ex.printStackTrace();
-						BeautyQuests.loadingFailure = true;
-					}
-				});
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 1L);
 		
 		return bm;
 	}

@@ -501,8 +501,9 @@ public enum ParticleEffect {
 		 * @return The offsetX value
 		 */
 		
+		@Override
 		public float getValueX() {
-			return (float) red / 255F;
+			return red / 255F;
 		}
 
 		/**
@@ -511,8 +512,9 @@ public enum ParticleEffect {
 		 * @return The offsetY value
 		 */
 		
+		@Override
 		public float getValueY() {
-			return (float) green / 255F;
+			return green / 255F;
 		}
 
 		/**
@@ -521,8 +523,9 @@ public enum ParticleEffect {
 		 * @return The offsetZ value
 		 */
 		
+		@Override
 		public float getValueZ() {
-			return (float) blue / 255F;
+			return blue / 255F;
 		}
 	}
 
@@ -559,8 +562,9 @@ public enum ParticleEffect {
 		 * @return The offsetX value
 		 */
 		
+		@Override
 		public float getValueX() {
-			return (float) note / 24F;
+			return note / 24F;
 		}
 
 		/**
@@ -569,6 +573,7 @@ public enum ParticleEffect {
 		 * @return zero
 		 */
 		
+		@Override
 		public float getValueY() {
 			return 0;
 		}
@@ -579,6 +584,7 @@ public enum ParticleEffect {
 		 * @return zero
 		 */
 		
+		@Override
 		public float getValueZ() {
 			return 0;
 		}
@@ -606,6 +612,7 @@ public enum ParticleEffect {
 			this.typeCode = (byte) (effect == ParticleEffect.NOTE ? 2 : (effect.hasProperty(ParticleProperty.COLORABLE) ? 1 : 0));
 		}
 		
+		@Override
 		public String toString(){
 			return effect.name() + " in shape " + shape.name() + (typeCode != 0 ? " with color \"R" + (typeCode == 1 ? color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") + "\"": "");
 		}
@@ -616,7 +623,7 @@ public enum ParticleEffect {
 			Location lc = en.getEyeLocation();
 			switch (shape){
 			case POINT:
-				sendParticle(lc.add(0, 1, 0), p, 0.1, 0.1, 0.1, 1);
+				sendParticle(lc.add(0, 1, 0), p, 0.01, 0.01, 0.01, 2);
 				break;
 			case NEAR:
 				sendParticle(lc.add(random.nextDouble()*1.2 - 0.6, random.nextDouble()*2 - en.getEyeHeight(), random.nextDouble()*1.2 - 0.6), p,0.1, 0.1, 0.1, 1);

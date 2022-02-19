@@ -40,6 +40,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	private DyeColor color;
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
+	private ItemStack validationItem = ItemUtils.itemDone;
 	private LevenshteinComparator<T> comparator;
 	
 	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
@@ -54,6 +55,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
 	}
 	
+	@Override
 	public Inventory open(Player p) {
 		this.p = p;
 		calcMaxPages();
@@ -62,7 +64,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
-		if (validate != null) setBarItem(2, ItemUtils.itemDone);
+		if (validate != null) setBarItem(2, validationItem);
 		if (comparator != null) setBarItem(3, itemSearch);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
@@ -71,6 +73,26 @@ public abstract class PagedGUI<T> implements CustomInventory {
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
+	}
+	
+	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
+		if (this.validate != null) throw new IllegalStateException("A validation has already be added.");
+		if (this.inv != null) throw new IllegalStateException("Cannot add a validation after inventory opening.");
+		if (validationItem == null) throw new IllegalArgumentException("Cannot set a null validation item.");
+		this.validate = validate;
+		this.validationItem = validationItem;
+		return this;
+	}
+	
+	public <C extends Comparable<C>> PagedGUI<T> sortValues(Function<T, C> mapper) {
+		objects.sort((o1, o2) -> {
+			C map1;
+			if (o1 == null || (map1 = mapper.apply(o1)) == null) return 1;
+			C map2;
+			if (o2 == null || (map2 = mapper.apply(o2)) == null) return -1;
+			return map1.compareTo(map2);
+		});
+		return this;
 	}
 	
 	protected void calcMaxPages() {
@@ -112,6 +134,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	}
 
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot % 9){
 		case 8:
@@ -136,6 +159,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 				new TextEditor<String>(p, () -> p.openInventory(inv), (obj) -> {
 					//objects.stream().filter(x -> getName(x).contains((String) obj));
 					objects.sort(comparator.setReference(obj));
+					page = 0;
 					setItems();
 					p.openInventory(inv);
 				}).enter();
@@ -156,6 +180,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	}
 	
 	public void reopen() {
+		Inventories.closeWithoutExit(p);
 		Inventories.put(p, this, inv);
 		inv = p.openInventory(inv).getTopInventory();
 	}

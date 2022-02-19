@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -22,8 +22,7 @@ public class ListBook{
 		im.setTitle("Quests list");
 		im.setAuthor("BeautyQuests");
 		
-		for (int i = 0; i < BeautyQuests.getInstance().getQuests().size(); i++){
-			Quest qu = BeautyQuests.getInstance().getQuests().get(i);
+		QuestsAPI.getQuests().getQuests().stream().sorted().forEach(qu -> {
 			StringBuilder stb = new StringBuilder(formatLine(Lang.BOOK_NAME.toString(), qu.getName())
 					+ formatLine("ID", qu.getID() + "")
 					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(), qu.getOption(OptionStarterNPC.class).getValue().getName()) : "")
@@ -34,10 +33,10 @@ public class ListBook{
 					+ formatLine(Lang.BOOK_REQUIREMENTS.toString(), qu.getOptionValueOrDef(OptionRequirements.class).size() + "")
 					+ "\n"
 					+ formatLine(Lang.BOOK_STAGES.toString(), "")
-					+ "unsupported");
+					+ qu.getBranchesManager().getBranches().stream().mapToInt(QuestBranch::getStageSize).sum() + " stages in " + qu.getBranchesManager().getBranchesAmount() + " branches");
 			im.addPage(stb.toString());
-		}
-		if (BeautyQuests.getInstance().getQuests().isEmpty()){
+		});
+		if (QuestsAPI.getQuests().getQuests().isEmpty()) {
 			im.addPage(Lang.BOOK_NOQUEST.toString());
 		}
 		

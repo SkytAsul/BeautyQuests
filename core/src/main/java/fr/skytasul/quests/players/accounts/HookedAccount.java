@@ -15,30 +15,34 @@ public class HookedAccount extends AbstractAccount {
 		this.hook = acc;
 	}
 
+	@Override
 	public OfflinePlayer getOfflinePlayer() {
 		return hook.getOfflinePlayer();
 	}
 
+	@Override
 	public Player getPlayer(){
 		return hook.getPlayer();
 	}
 	
+	@Override
 	public boolean isCurrent(){
 		return hook.isCurrent();
 	}
 	
+	@Override
 	public String getIdentifier() {
 		String identifier = hook.getIdentifier();
 		if (identifier == null) return null;
 		return "Hooked|" + identifier;
 	}
-
 	
+	@Override
 	protected boolean equalsAccount(AbstractAccount acc) {
 		return ((HookedAccount) acc).hook.equals(this.hook);
 	}
-
 	
+	@Override
 	public int hashCode() {
 		return hook.hashCode();
 	}

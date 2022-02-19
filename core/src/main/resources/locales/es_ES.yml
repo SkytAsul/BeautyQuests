@@ -11,12 +11,19 @@ msg:
     cancelling: '§cProceso de creación de la misión cancelada.'
     editCancelling: '§cProceso de edición de misión cancelada.'
     invalidID: '§cLa misión con la id {0} no existe.'
+    invalidPoolID: '§cEl grupo {0} no existe.'
     alreadyStarted: '§cYa has comenzado la misión!'
   quests:
+    maxLaunched: '§cNo puedes tener mas de {0} Misiones al mismo tiempo...'
     nopStep: '§cEsta misión no tiene ningún paso.'
     updated: '§7Misión §e{0}§7 actualizada.'
     checkpoint: El punto de control de tarea ha sido alcanzado
     failed: Has fallado en la búsquedast {0}
+  pools:
+    noTime: '§cDebes esperar {0} antes de hacer otra misión.'
+    allCompleted: '§7¡Has completado todas las misiones!'
+    noAvailable: '§7No hay más misiones disponibles...'
+    maxQuests: '§cNo puedes tener más de {0} mision(es) al mismo tiempo...'
   questItem:
     drop: '§c¡No puedes soltar un objeto de misión!'
     craft: '§c¡No puedes usar un objeto de misión para fabricar!'
@@ -27,8 +34,11 @@ msg:
   writeRegionName: '§aEscribe el nombre de la región requerida para este paso:'
   writeXPGain: '§aEscribe la cantidad de puntos de experiencia que el jugador obtendrá: (Último valor: {0})'
   writeMobAmount: '§aEscribe la cantidad de mobs a matar:'
+  writeMobName: '§aEscribe el nombre personalizado del mob para matar:'
   writeChatMessage: '§aEscribir mensaje requerido: (Añadir "{SLASH}" al principio si quieres un comando)'
-  writeEndMessage: '§aEscribe el mensaje que será enviado al final de la misión o la etapa:'
+  writeMessage: '§aEscribe el mensaje que se enviará al jugador'
+  writeStartMessage: '§aEscribe el mensaje que será enviado al iniciar la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno'
+  writeEndMsg: '§aEscribe el mensaje que se enviará al final de la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno. Puedes usar "{0}" que será reemplazado por las recompensas obtenidas.'
   writeDescriptionText: '§aEscribe el texto que describe el objetivo de la etapa:'
   writeStageText: '§aEscribe el texto que será enviado al jugador al comienzo del paso:'
   moveToTeleportPoint: '§aIr a la ubicación de teletransporte deseada.'
@@ -45,10 +55,10 @@ msg:
     quest: '§cDebes haber terminado la misión §e{0}§c!'
     level: '§c¡Tu nivel debe ser {0}!'
     job: '§c¡Tu nivel para el trabajo §e{1}§c debe ser {0}!'
-    skill: '§c¡Tu nivel para la habilidad §e{1}§c debe ser {0}!'
-    combatLevel: '§c¡Tu nivel de combate debe ser {0}!'
-    money: '§aDebes tener {0}!'
-    wait: '§cDebes esperar {0} minuto(s) antes de poder reiniciar esta misión!'
+    skill: '§cTu nivel para la habilidad §e{1}§c debe ser {0}!'
+    combatLevel: '§cTu nivel de combate debe ser {0}!'
+    money: '§cDebes tener {0}!'
+    waitTime: '§cDebes esperar {0} para poder reiniciar esta misión!'
   experience:
     edited: '§aHas cambiado la ganancia de la experiencia de {0} a {1} puntos.'
   selectNPCToKill: '§aSelecciona el NPC para matar.'
@@ -65,12 +75,22 @@ msg:
   errorOccurred: '§cHa ocurrido un error, ¡contacta con un administrador! §4§lError: {0}'
   commandsDisabled: '§cActualmente no tienes permisos para ejecutar comandos!'
   indexOutOfBounds: '§cEl número {0} está fuera de límites! Debe estar entre {1} y {2}.'
+  invalidBlockData: '§cLos datos del bloque {0} no son válidos o son incompatibles con el bloque {1}.'
+  invalidBlockTag: '§cEtiqueta de bloque {0} no disponible.'
   bringBackObjects: Tráeme de nuevo {0}.
   inventoryFull: '§cTu inventario está lleno, el objeto ha sido abandonado en el suelo.'
   playerNeverConnected: '§cNo se puede encontrar información sobre el jugador {0}.'
   playerNotOnline: '§cEl jugador {0} está desconectado.'
+  playerDataNotFound: '§cDatas del jugador {0} no encontrados.'
+  versionRequired: 'Versión requerida: §l{0}'
   command:
+    downloadTranslations:
+      syntax: '§cDebes especificar un idioma para descargar. Ejemplo: "/quests downloadTranslations en_US".'
+      notFound: '§cIdioma {0} no encontrado para la versión {1}.'
+      exists: '§cEl archivo {0} ya existe. Añade "true" a tu comando para sobrescribirlo. (/quests downloadTranslations <lang> true)'
+      downloaded: '§a¡El idioma {0} ha sido descargado! §7Ahora debes editar el archivo "/plugins/BeautyQuests/config.yml" para cambiar el valor de §ominecraftTranslationsFile§7 con {0}, y luego reiniciar el servidor.'
     checkpoint:
+      noCheckpoint: '§cNo se ha encontrado ningún punto de control para la misión {0}.'
       questNotStarted: '§cNo estás haciendo esta misión.'
     setStage:
       branchDoesntExist: '§cLa rama con el id {0} no existe.'
@@ -91,35 +111,68 @@ msg:
     leaveAll: '§aHas forzado el final de {0} misión(s). Errores: {1}'
     resetPlayer:
       player: '§6Todas las informaciones de tu misión(s) {0} han sido eliminadas por {1}.'
-      remover: '§6{0} información(es) de la misión de {1} ha/han sido borradas.'
+      remover: '§6{0} información(es) de misiones (y {2} pool) de {1} ha sido eliminada.'
     resetPlayerQuest:
       player: '§6Toda la información sobre la misión {0} fue borrada por {1}.'
       remover: '§6{0} información de {1} ha sido eliminado.'
     resetQuest: '§6Removida información de misiones de {0} jugadores.'
     startQuest: '§6Obligaste a empezar la misión {0} (UUID de Jugador: {1}).'
+    startQuestNoRequirements: '§cEl jugador no cumple con los requisitos para la misión {0}... Añade "verdadero" al final de tu comando para evitar la comprobación de los requisitos.'
     cancelQuest: '§6Cancelaste la misión {0}.'
     cancelQuestUnavailable: '&cLa misión {0} no puede ser cancelada.'
     backupCreated: '&6Creaste correctamente copias de seguridad de misiones e información.'
+    backupPlayersFailed: '§cLa creación de la copia de seguridad para toda la información de los jugadores ha fallado.'
+    backupQuestsFailed: '§cLa creación de la copia de seguridad para todas las misiones ha fallado.'
     adminModeEntered: '&aEntraste en el modo Admin.'
     adminModeLeft: '&aSaliste del modo Admin.'
+    resetPlayerPool:
+      timer: '§aHas reiniciado el {0} contador del grupo en {1}.'
+      full: '§aHas reiniciado la {0} información del grupo en {1}.'
+    scoreboard:
+      lineSet: '§6Has editado con éxito la línea {0}.'
+      lineReset: '§6Has restablecido con éxito la línea {0}.'
+      lineRemoved: '§6Has eliminado con éxito la línea {0}.'
+      lineInexistant: '§cLa línea {0} no existe.'
+      resetAll: '§6Has restablecido el marcador del jugador {0} con éxito.'
+      hidden: '§6El marcador del jugador {0} ha sido ocultado.'
+      shown: '§6El marcador del jugador {0} ha sido mostrado.'
+      own:
+        hidden: Su marcador ahora está oculto.
+        shown: Su marcador se muestra de nuevo
     help:
+      header: '§6§lBeautyQuests — Ayuda'
+      create: '§6/{0} create: §eCrea una misión.'
+      edit: '§6/{0} edit: §eEditar una misión.'
+      remove: '§6/{0} remove <id>: §eElimina una misión con un id especificado o haz clic en el NPC cuando no se haya definido.'
       finishAll: '§6/{0} finishAll <player>: §eFinish all quests of a player.'
       setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the current stage/start the branch/set a stage for a branch.'
+      resetPlayer: '§6/{0} restablecido jugador <player>: §eElimina toda la información sobre un jugador.'
+      resetPlayerQuest: '§6/{0} restablecida la Misión de Jugador <player> [id]: §eElimina información de una misión para un jugador.'
+      seePlayer: '§6/{0} seePlayer <player>: §eVer la informacion sobre un jugador'
+      reload: '§6/{0} reload: §eGuarda y recarga todas las configuraciones y archivos. (§cdeprecado§e)'
+      start: '§6/{0} start <player> [id]: §eForzar el inicio de una mision'
       setItem: '§6/{0} setItem <talk|launch>: §eGuarda el elemento del holograma.'
       adminMode: '§6/{0} adminMode: §eActiva el Modo de administración. (Útil para mostrar mensajes de poco registro.)'
       version: '§6/{0} version: §eVer la versión actual del plugin.'
+      downloadTranslations: '§6/{0} descargaTraducciones <language>: §eDescargas un archivo de traducción de vaina'
       save: '§6/{0} save: §eHacer un guardado manual.'
       list: '§6/{0} list: §eVer la lista de misiones. (Sólo para versiones soportadas.)'
   typeCancel: '§aEscribe "cancel" para volver al último texto.'
   editor:
+    blockAmount: '§aEscribe la cantidad de bloques:'
+    blockName: '§aEscribe el nombre del bloque:'
+    blockData: '§aEscribe los datos de bloque (datos de bloques disponibles: {0}):'
+    blockTag: '§aEscribe la etiqueta de bloque (etiquetas disponibles: §7{0}§a):'
     typeBucketAmount: '§aEscribe la cantidad de cubos a rellenar:'
     goToLocation: '§aVe a la ubicación deseada para la etapa y click a la esmeralda.'
     typeLocationRadius: '§aEscribe la distancia requerida de la ubicación:'
+    typeGameTicks: '§aEscribe los ticks requeridos:'
     already: '§cYa estás en el editor.'
     enter:
       title: '§6~ Modo editor ~'
-      subtitle: '§6Escribe "/quests exitEditor" para forzar a salir.'
-    chat: '§6Estás actualmente en el modo editor. Escribe "/quests exitEditor" para forzar a salir del editor. (No se recomienda, considera usar comandos como "close" o "cancel" para volver al inventario anterior.)'
+      subtitle: '§2♣§d§kii§a§lSkyblock§d§kii§2♣ §aEscribe "/quests exitEditor" para forzar la salida del editor.'
+      list: '§c⚠ §7Has introducido un editor de "lista". Usa "add" para añadir líneas. Consulta "help" (sin barra) para ayuda. §eEscribe "close" para salir del editor.'
+    chat: '§2♣§d§kii§a§lSkyblock§d§kii§2♣ §2Estás actualmente en modo editor. Escribe "/quests exitEditor" para forzar la salida del editor. (No se recomienda, considere usar comandos como "close" o "cancelar" para volver al inventario anterior.)'
     npc:
       enter: '§aHas click en un NPC, o escribe "cancel".'
       choseStarter: '§aElige el NPC que inicia la misión.'
@@ -132,25 +185,39 @@ msg:
       choosePermissionMessage: '§aPuedes elegir un mensaje de rechazo si el jugador no tiene el permiso requerido. (Para saltar este paso, escribe "null".)'
       choosePlaceholderRequired:
         identifier: '§aEscribe el nombre de la variable sin el símbolo de porcentaje:'
-        value: '§aEscribe el valor requerido para la variable §6%{0}%§a:'
+        value: '§aEscribe el valor requerido para la variable §e%§e{0}§e%§a:'
       chooseSkillRequired: '§aEscribe el nombre de la habilidad requerida:'
+      chooseMoneyRequired: '§aEscribe la cantidad de dinero necesario:'
       reward:
+        permissionName: '§aEscribe el nombre del permiso.'
+        permissionWorld: '§aEscribe el mundo en el que el permiso será editado, o "nulo" si quieres ser global.'
         money: '§aEscribe la cantidad del dinero recibido:'
+        wait: '§aEscribe la cantidad de ticks del juego para esperar: (1 segundo = 20 ticks del juego)'
+        random:
+          min: '§aEscribe la cantidad mínima de recompensas entregadas al jugador (inclusive).'
+          max: '§aEscribe la cantidad máxima de recompensas entregadas al jugador (inclusive).'
+      chooseObjectiveRequired: '§aEscribe el nombre del objetivo.'
+      chooseObjectiveTargetScore: '§aEscribe la puntuación objetivo para el objetivo.'
+      chooseRegionRequired: '§aEscribe el nombre de la región requerida (debes estar en el mismo mundo).'
     selectWantedBlock: '§aHaz clic con el palo en el bloque deseado para la etapa.'
     itemCreator:
       itemType: '§aEscribe el nombre del tipo de elemento deseado:'
+      itemAmount: '§aEscribe la cantidad de objeto(s):'
       itemName: '§aEscribe el nombre del item:'
       itemLore: '§aModificar la descripción del objeto: (Escribe "help" para ayuda.)'
       unknownItemType: '§cTipo de elemento desconocido.'
       invalidItemType: '§cTipo de elemento inválido. (El elemento no puede ser un bloque.)'
+      unknownBlockType: '§cTipo de bloque desconocido.'
+      invalidBlockType: '§cTipo de bloque inválido.'
     dialog:
       syntax: '§cSintaxis correctas: {0}{1} <message>'
       syntaxRemove: '§cSytaxis correcta: remove <id>'
-      player: '§aMensaje "{0}" añadido por el jugador.'
-      npc: '§aMensaje "{0}", agregado al NPC.'
-      noSender: '§aMensaje "{0}" añadido sin un remitente.'
-      messageRemoved: '§aMensaje "{0}" eliminado.'
-      soundAdded: '§aSonido "{0}" añadido para el mensaje "{1}".'
+      player: '§aMensaje "§7{0}§a" añadido por el jugador.'
+      npc: '§aMensaje "§7{0}§a" añadido al NPC.'
+      noSender: '§aMensaje "§7{0}§a" añadido sin remitente.'
+      messageRemoved: '§aMensaje "§7{0}§a" eliminado.'
+      edited: '§aMensaje "§7{0}§a" editado.'
+      soundAdded: '§aSonido "§7{0}§a" agregado al mensaje "§7{1}§a".'
       cleared: '§a{0} mensaje(s) removido.'
       help:
         header: '§6§lBeautyQuests — Ayuda del editor de diálogo'
@@ -159,11 +226,50 @@ msg:
         nothing: '§6noSender <message>: §eAgrega un mensaje sin remitente.'
         remove: '§6remove <id>: §eRemover un mensaje.'
         list: '§6list: §eVer todos los mensajes.'
+        npcInsert: '§6npcInsert <id> <message>: §eInsertar un mensaje dicho por el NPC.'
+        playerInsert: '§6playerInsert <id> <message>: §eInsertar un mensaje dicho por el jugador'
+        nothingInsert: '§6nothingInsert <id> <message>: §eInserta un mensaje sin ningún prefijo.'
+        edit: '§6edit <id> <message>: §eEditar un mensaje.'
+        addSound: '§6addSound <id> <sound>: §eAñade un sonido a un mensaje'
         clear: '§6clear: §eBorra todos los mensajes.'
         close: '&6close: &eGuardas y validas los mensajes.'
+        setTime: '§6setTime <id> <time>: §eEstablece el tiempo (en ticks) despues de que el siguiente mensaje aparezca automaticamente'
+        npcName: '§6Nombre del npc [custom NPC name]: §eEstablecido (o restablecido a default) nombre personalizado del NPC en el diálogo'
+      timeSet: '§aTiempo ha sido editado para el mensaje {0}: ahora {1} ticks.'
+      timeRemoved: '§aTiempo eliminado para el mensaje {0}.'
+      npcName:
+        set: '§aNombre de NPC establecido a §7{1}§a (era §7{0}§a)'
+        unset: '§aNombre de NPC personalizado restablecido por defecto (§7{0}§a)'
     mythicmobs:
       list: '&aToda la lista de "Mythic Mobs":'
+      isntMythicMob: '§cEste Mob Mítico no existe.'
+      disabled: '§cMythicMob está deshabilitado.'
     epicBossDoesntExist: '§cEste Epic Boss no existe.'
+    textList:
+      syntax: '§cSintaxis correcta: '
+      added: '§aTexto "§7{0}§a" añadido.'
+      removed: '§aTexto "§7{0}§a" eliminado.'
+      help:
+        header: '§6§lBeautyQuests — Ayuda del editor de listas'
+        add: '§6add <message>: §eAgrega un texto.'
+        remove: '§6remove <id>: §eEliminar un texto.'
+        list: '§6list: §eVer todos los textos añadidos'
+        close: '§6close: §eValida los textos añadidos'
+    noSuchElement: '§cNo hay tal elemento. Los elementos permitidos son: §e{0}'
+    comparisonTypeDefault: '§aElige el tipo de comparación que quieres entre {0}. La comparación predeterminada es: §e§l{1}§r§a. Escribe §onull§r§a para usarlo.'
+    scoreboardObjectiveNotFound: '§cObjetivo desconocido del marcador.'
+    pool:
+      hologramText: 'Escriba el texto personalizado del holograma para este grupo (o "null" si desea el predeterminado).'
+      maxQuests: 'Escribe la cantidad máxima de misiones lanzables desde este conjunto'
+      questsPerLaunch: 'Escribe la cantidad de misiones que se dan cuando los jugadores hacen clic en el NPC.'
+      timeMsg: 'Escribe el tiempo antes de que los jugadores puedan tomar una nueva misión. (Unidad predeterminada: días)'
+    title:
+      title: 'Escribe el texto del título (o "null" si quieres ninguno).'
+      subtitle: 'Escribe el texto de subtítulos (o "null" si no quieres ninguno).'
+      fadeIn: 'Escriba la duración de "fade-in", en ticks (20 ticks = 1 segundo).'
+      stay: 'Escriba la duración de la estancia, en ticks (20 ticks = 1 segundo).'
+      fadeOut: 'Escriba la duración de "desvanecer", en ticks (20 ticks = 1 segundo).'
+  writeCommandDelay: '§aEscriba el retardo de comando deseado, en ticks.'
 advancement:
   finished: Finalizado
   notStarted: No comenzado
@@ -171,10 +277,55 @@ inv:
   validate: '§b§lValidar'
   cancel: '§c§lCancelar'
   search: '§e§lBuscar'
+  addObject: '§aAñadir un objeto'
   confirm:
     name: Estas seguro?
     'yes': '§aConfirmar'
+    'no': "Cancelar\n"
   create:
+    stageCreate: '§aCrear nuevo paso'
+    stageRemove: '§cBorrar este paso'
+    stageUp: Mover arriba
+    stageDown: Mover abajo
+    stageType: '§7Tipo de etapa: §e{0}'
+    cantFinish: '§7¡Debes crear al menos una etapa antes de terminar la creación de misión!'
+    findNPC: "Encuentra al NPC\n"
+    bringBack: Trae devuelta ciertos items
+    findRegion: "Encuentra una región\n"
+    killMobs: "Asesina mobs\n"
+    mineBlocks: Rompe bloques
+    placeBlocks: "Coloca bloques\n"
+    talkChat: Escribe en el chat
+    interact: Interactúa con el bloque
+    fish: "Pesca peces\n"
+    craft: Craftea items
+    bucket: Llena cubetas 
+    location: Dirígete a la localización 
+    playTime: '§eTiempo de juego'
+    breedAnimals: '§aReproducir Animales'
+    tameAnimals: '§aDomesticar animales'
+    NPCText: '§eEditar dialogo'
+    dialogLines: '{0} líneas'
+    NPCSelect: '§eElegir o crear NPC'
+    hideClues: Ocultar partículas y hologramas
+    gps: Muestra una brújula hacia el objetivo
+    editMobsKill: '§eEditar mobs a matar'
+    mobsKillFromAFar: Necesita ser asesinado con proyectil
+    editBlocksMine: '§eEditar bloques a romper'
+    preventBlockPlace: Evita que los jugadores rompan sus propios bloques
+    editBlocksPlace: '§eEditar bloques a colocar'
+    editMessageType: '§eEditar mensaje a escribir'
+    cancelMessage: Cancelar envío
+    ignoreCase: Ignorar el caso del mensaje
+    replacePlaceholders: Reemplazar {PLAYER} y marcadores de posición de PAPI
+    selectItems: '§eEditar elementos requeridos'
+    selectItemsMessage: '§eEditar mensaje preguntando'
+    selectItemsComparisons: '§eSeleccionar comparaciones de objetos (AVANZADO)'
+    selectRegion: '§7Elegir región'
+    toggleRegionExit: Al salir
+    stageStartMsg: '§eEditar mensaje inicial'
+    selectBlockLocation: '§eSelecciona la ubicación del bloque'
+    selectBlockMaterial: '§eSeleccionar material de bloque'
     leftClick: Haga clic izquierdo
     editFishes: '§eEditar peces para capturar'
     editItem: '§eEditar elemento a crear'
@@ -183,6 +334,8 @@ inv:
     editLocation: '§eEditar ubicación'
     editRadius: '§eEditar distancia de la ubicación'
     currentRadius: '§eDistancia actual: §6{0}'
+    changeTicksRequired: '§eCambiar ticks reproducidos requeridos'
+    changeEntityType: '§eCambiar tipo de entidad'
   stages:
     name: Crear etapas
     nextPage: '§eSiguiente página'
@@ -193,31 +346,86 @@ inv:
     branchesPage: '§dRamas de las etapas'
     previousBranch: '§eRegresa a la rama anterior'
     newBranch: '§eIr a una nueva rama'
+    validationRequirements: '§eRequisitos de validación'
+    validationRequirementsLore: Todos los requisitos deben coincidir con el jugador que intenta completar la etapa. Si no, la etapa no se puede completar.
   details:
     hologramLaunch: '§eEditar "launch" item del holograma'
+    hologramLaunchLore: El Holograma se muestra sobre la cabeza de Starter NPC cuando el jugador puede comenzar la misión.
     hologramLaunchNo: '§eEditar "launch unavailable" holograma no disponible"'
+    hologramLaunchNoLore: El Holograma se muestra sobre la cabeza de Starter NPC cuando el jugador NO puede iniciar la misión.
     customConfirmMessage: '§eEditar mensaje de confirmación de búsqueda'
+    customConfirmMessageLore: Mensaje mostrado en la interfaz de usuario de confirmación cuando un jugador está a punto de comenzar la misión.
+    customDescription: '§eEditar descripción de la misión'
+    customDescriptionLore: Descripción mostrada a continuación el nombre de la misión en GUIs.
     name: Últimos detalles de la misión
     multipleTime:
+      itemName: Alternar repetible
       itemLore: "¿Puede hacerse la misión\nvarias veces?"
     cancellable: Cancelar por jugador
+    cancellableLore: Permite al jugador cancelar la misión a través de su Menú de misiones.
+    startableFromGUI: Empezable desde GUI
+    startableFromGUILore: Permite al jugador comenzar la misión desde el Menú de Misiones.
     scoreboardItem: Habilitar el scoreboard
+    scoreboardItemLore: Si está desactivado, la misión no será rastreada a través del marcador.
     hideItem: Ocultar menú y dynmap
+    hideItemLore: Si está activado, la misión no se mostrará en el mapa ni en el menú de misiones.
+    hideNoRequirementsItem: Ocultar cuando no se cumplan los requisitos
+    hideNoRequirementsItemLore: Si está activado, la misión no se mostrará en el menú de misiones cuando no se cumplan los requisitos.
     bypassLimit: No cuente el límite de misiones
+    bypassLimitLore: Si está activado, la misión será iniciada incluso si el jugador ha alcanzado la cantidad máxima de misiones iniciadas.
+    auto: Iniciar automáticamente en el primer ingreso
+    autoLore: Si está activado, la misión se iniciará automáticamente cuando el jugador se una al servidor por primera vez.
     questName: '§a§lEditar nombre de misión'
+    questNameLore: Debe establecer un nombre para completar la creación de misión.
     setItemsRewards: '§eEditar objetos de recompensa'
+    removeItemsReward: '§eEliminar items del inventario'
     setXPRewards: '§eEditar experiencia de recompensa'
+    setCheckpointReward: '§eEditar recompensas de puntos de control'
+    setRewardStopQuest: '§cDetener la misión'
+    setRewardsWithRequirements: '§eRecompensas con requerimientos'
+    setRewardsRandom: '§dRecompensas aleatorias'
     setPermReward: '§eEditar permisos'
     setMoneyReward: '§eEditar recompensa de dinero'
+    setWaitReward: '§eEditar recompensa "esperar"'
+    setTitleReward: '§eEditar recompensa del título'
     selectStarterNPC: '§e§lSelecciona el NPC iniciador'
+    selectStarterNPCLore: Al hacer clic en el PNJ seleccionado comenzará la misión.
+    selectStarterNPCPool: '§c⚠ Un grupo de misiones está seleccionado'
+    createQuestName: '§lCrear misión'
+    createQuestLore: Debes definir un nombre de misión.
+    editQuestName: '§lEditar misión'
     endMessage: '§eEditar mensaje final'
+    endMessageLore: Mensaje que se enviará al jugador al final de la misión.
+    startMessage: '§eEditar mensaje de inicio'
+    startMessageLore: Mensaje que se enviará al jugador al comienzo de la misión.
     startDialog: '§eEditar diálogo de inicio'
+    startDialogLore: Diálogo que se reproducira antes de que las misiones comiencen cuando los jugadores hagan clic en el Inicio NPC.
     editRequirements: '§eEditar requisitos'
+    editRequirementsLore: Todos los requisitos deben aplicarse al jugador antes de que pueda comenzar la misión.
     startRewards: '§6Recompensas de inicio'
+    startRewardsLore: Acciones realizadas cuando comienza la misión.
     hologramText: '§eTexto del holograma'
+    hologramTextLore: Texto mostrado en el holograma sobre la cabeza del NPC de inicio.
+    timer: '§bReiniciar temporizador'
+    timerLore: Tiempo antes de que el jugador pueda volver a empezar la misión.
     requirements: '{0} requisito(s)'
     rewards: '{0} recompensa(s)'
+    actions: '{0} acción(es)'
+    rewardsLore: Acciones realizadas cuando termina la misión.
     customMaterial: '§eEditar material del objeto de la misión'
+    customMaterialLore: Artículo representativo de esta misión en el Menú de Misiones.
+    failOnDeath: Fracaso al morir
+    failOnDeathLore: '¿Se cancelará la misión cuando el jugador muera?'
+    questPool: '§eHerramienta de Misión'
+    questPoolLore: Adjuntar esta misión a un grupo de misiones
+    keepDatas: Conservar datos de los jugadores
+    keepDatasLore: |-
+      Forzar el plugin para preservar los datos de los jugadores, aunque las etapas han sido editadas.
+      §c§lADVERTENCIA §c- habilitar esta opción puede dañar los datos de tus jugadores.
+    loreReset: '§e§lTodos los avances de los jugadores serán reiniciados'
+    optionValue: '§8Valor: §7{0}'
+    defaultValue: '§8(valor predeterminado)'
+    requiredParameter: '§7Parámetro requerido'
   itemsSelect:
     name: Editar elementos
     none: |-
@@ -228,9 +436,31 @@ inv:
   npcCreate:
     name: Crear NPC
     setName: '§eEditar nombre NPC'
+    setSkin: '§eEdit NPC skin'
+    setType: '§eEditar tipo NPC'
+    move:
+      itemName: '§eMover'
+      itemLore: '§aCambiar la ubicación del NPC.'
+    moveItem: '§a§lValidar lugar'
   npcSelect:
+    name: '¿Seleccionar o crear?'
+    selectStageNPC: '§eSeleccionar NPC existente'
     createStageNPC: '&eCrea un NPC'
+  entityType:
+    name: Elija el tipo de entidad
+  chooseQuest:
+    name: '¿Qué misión?'
+  mobs:
+    name: Seleccionar mobs
+    none: '§aClic para añadir un Mob.'
+    clickLore: |-
+      §a§lHaz clic izquierdo§a para editar la cantidad.
+      §a§l§nShift§l + clic izquierdo§l para editar el nombre del ratón.
+      §c§lHaz clic derecho§c para eliminar.
   mobSelect:
+    name: Seleccionar tipo de mob
+    bukkitEntityType: '§eSeleccionar tipo de entidad'
+    mythicMob: '§6Selecciona un mob mítico'
     epicBoss: '§6Selecciona un Epic Boss'
     boss: '§6Selecciona un Boss'
   stageEnding:
@@ -247,6 +477,13 @@ inv:
       Y: {1}
       Z: {2}
       Mundo: {3}
+    random:
+      rewards: Editar recompensas
+      minMax: Editar mínimo y máximo
+  checkpointActions:
+    name: Acciones de puntos de control
+  rewardsWithRequirements:
+    name: Recompensas con requisitos
   listAllQuests:
     name: Misiones
   listPlayerQuests:
@@ -255,39 +492,197 @@ inv:
     notStarted: Misiones no comenzadas
     finished: Misiones finalizadas
     inProgress: Misiones en progreso
-    loreCancel: '§c§oClick para cancelar la misión.'
+    loreDialogsHistoryClick: '§7Ver los diálogos'
+    loreCancelClick: '§cCancela la misión'
+    loreStart: '§a§oClic para comenzar la misión.'
+    loreStartUnavailable: '§c§oNo cumples los requisitos para empezar la misión.'
+    timeToWaitRedo: '§3§oPuedes reiniciar esta misión en {0}.'
+    canRedo: '§3§oPuedes reiniciar esta misión!'
+    timesFinished: '§3Mision Finalizada {0} veces.'
+  itemCreator:
+    name: Creador de objetos
+    itemType: '§bTipo de artículo'
+    itemFlags: Alternar variables de elementos
+    itemName: '§bNombre del objeto'
+    itemLore: '§bDescripcion del objeto'
+    isQuestItem: '§bObjeto de misión:'
+  command:
+    name: Comando
+    value: '§eComando'
+    console: Consola
+    delay: '§bRetraso'
+  chooseAccount:
+    name: '¿Qué cuenta?'
+  listBook:
+    questName: Nombre
+    questStarter: Interruptor
+    questRewards: Recompensas
+    questMultiple: Varias veces
+    requirements: Requisitos
+    questStages: Etapas
+    noQuests: No se han creado misiones previamente.
   commandsList:
+    name: Lista de comandos
+    value: '§Comando: {0}'
     console: '§eConsole: {0}'
   block:
     name: Elegir bloque
     material: '§eMaterial: {0}'
+    materialNotItemLore: 'El bloque elegido no puede mostrarse como objeto. Todavía se almacena correctamente como {0}.'
+    blockData: '§dBlockdata (avanzado)'
+    blockTag: '§dEtiqueta (avanzado)'
+    blockTagLore: 'Elija una etiqueta que describa una lista de posibles bloques. Las etiquetas se pueden personalizar usando datapacks. Puedes encontrar la lista de etiquetas en la wiki de Minecraft.'
   blocksList:
     name: Seleccionar bloques
     addBlock: '§aClick para añadir un bloque.'
+  blockAction:
+    name: Seleccionar acción de bloque
+    location: '§eSelecciona una ubicación precisa'
+    material: '§eSelecciona un material de bloque'
   buckets:
     name: Tipo de cubo
+  permission:
+    name: Elegir permiso
+    perm: '§aPermiso'
+    world: '§aMundo'
+    worldGlobal: '§b§lGlobal'
+    remove: Quitar permiso
+    removeLore: '§7El permiso será retirado de\n§7en lugar de dado.'
+  permissionList:
+    name: Lista de permisos
+    removed: '§eDesactivado: §6{0}'
+    world: '§eMundo: §6{0}'
+  classesRequired.name: Clases requeridas
+  classesList.name: Lista de clases
+  factionsRequired.name: Facciones requeridas
+  factionsList.name: Lista de facciones
+  poolsManage:
+    name: Grupos de Misiones
+    itemName: '§aGrupo #{0}'
+    poolNPC: '§8NPC: §7{0}'
+    poolMaxQuests: '§8Misiones máximas: §7{0}'
+    poolQuestsPerLaunch: '§8Misiones dadas por lanzamiento: §7{0}'
+    poolRedo: '§8Puede rehacer misiones completadas: §7{0}'
+    poolTime: '§8Tiempo entre misiones: §7{0}'
+    poolHologram: '§8Texto del Holograma: §7{0}'
+    poolAvoidDuplicates: "citizens.changed-implementation=Citizens implementation changed, disabling plugin.\ncitizens.commands.citizens.save.help=Use the -a flag to save async (off the main server thread).\ncitizens.commands.console-error=Please report this error: [See console]\ncitizens.commands.errors.missing-world=World not found.\ncitizens.commands.help.command-missing=Command /{0} not found.\ncitizens.commands.help.header=Help\ncitizens.commands.id-not-found=Couldn''t find any NPC with ID [[{0}]].\ncitizens.commands.invalid.class=Invalid external commands class.\ncitizens.commands.invalid-mobtype=[[{0}]] is not a valid mobtype.\ncitizens.commands.invalid-number=That is not a valid number.\ncitizens.commands.npc.ai.started=Now using Minecraft AI.\ncitizens.commands.npc.ai.stopped=No longer using Minecraft AI.\ncitizens.commands.npc.age.cannot-be-aged=The mob type {0} cannot be aged.\ncitizens.commands.npc.age.help=Can only be used on entities that can become babies. Use the [[-l]] flag to lock age over time (note: relogs may be required to see this).\ncitizens.commands.npc.age.invalid-age=Invalid age. Valid ages are adult, baby, number between -24000 and 0\ncitizens.commands.npc.age.locked=Age locked.\ncitizens.commands.npc.age.set-adult=[[{0}]] is now an adult.\ncitizens.commands.npc.age.set-baby=[[{0}]] is now a baby.\ncitizens.commands.npc.age.set-normal=[[{0}]] is now age [[{1}]].\ncitizens.commands.npc.age.set=[[{0}]] is now [[{1}]].\ncitizens.commands.npc.age.unlocked=Age unlocked.\ncitizens.commands.npc.anchor.added=Anchor added.\ncitizens.commands.npc.anchor.already-exists=The anchor [[{0}]] already exists.\ncitizens.commands.npc.anchor.invalid-name=Invalid anchor name.\ncitizens.commands.npc.anchor.missing=The anchor [[{1}]] does not exist.\ncitizens.commands.npc.anchor.removed=Anchor removed.\ncitizens.commands.npc.bee.anger-set=Anger set to [[{0}]].\ncitizens.commands.npc.bee.has-nectar=[[{0}]] has nectar.\ncitizens.commands.npc.bee.no-nectar=[[{0}]] has no nectar.\ncitizens.commands.npc.bee.not-stung=[[{0}]] has no longer stung.\ncitizens.commands.npc.bee.bee-stung=[[{0}]] has now stung.\ncitizens.commands.npc.bee.invalid-anger=Anger should be above zero.\ncitizens.commands.npc.behaviour.added=Behaviours added.\ncitizens.commands.npc.behaviour.help=The scripts argument is a comma-separated list of file names. Scripts will be loaded automatically and run every tick. Use the [[-r]] flag to remove behaviours.\ncitizens.commands.npc.behaviour.removed=Behaviours removed.\ncitizens.commands.npc.cat.invalid-type=Invalid type specified. Valid types are [[{0}]].\ncitizens.commands.npc.cat.invalid-collar-color=Invalid collar color specified. Valid types are [[{0}]].\ncitizens.commands.npc.cat.collar-color-set=Collar color set to [[{0}]].\ncitizens.commands.npc.cat.sitting-start=[[{0}]] started sitting.\ncitizens.commands.npc.cat.sitting-stop=[[{0}]] stopped sitting.\ncitizens.commands.npc.cat.lying-start=[[{0}]] started lying down.\ncitizens.commands.npc.cat.lying-stop=[[{0}]] stopped lying down.\ncitizens.commands.npc.cat.type-set=Type set to [[{0}]].\ncitizens.commands.npc.collidable.set=[[{0}]] will now collide with entities.\ncitizens.commands.npc.collidable.unset=[[{0}]] will no longer collide with entities.\ncitizens.commands.npc.command.none-added=No commands have been added.\ncitizens.commands.npc.command.cost-set=Set cost per click to [[{0}]].\ncitizens.commands.npc.command.left-hand-header=Commands to run on [[left click]]:\ncitizens.commands.npc.command.right-hand-header=Commands to run on [[right click]]:\ncitizens.commands.npc.command.command-removed=Command [[{0}]] removed.\ncitizens.commands.npc.command.command-added=Command [[{0}]] added with id [[{1}]].\ncitizens.commands.npc.command.help=<br>Use the [[-l]] flag to make the command run on left click, [[-r]] on right click (default).<br>Set the per-player cooldown before the command can be used again using [[--cooldown]] (in [[seconds]]).<br>Set the server-wide cooldown in seconds using [[--gcooldown]].<br>[[--delay]] will wait the specified amount in [[ticks]] before executing the command.<br>[[--permissions]] will set the command to require specific permissions (separate multiple with commas).<br>[[--n]] will only let the player run the command that number of times.<br>Use [[-o]] to temporarily execute the command as an op and [[-p]] to run the command as the clicking player instead of the server.<br>To give the player temporary permissions instead of op, use [[/npc command permissions]].<br>Set the cost of each click with [[/npc command cost]].<br>Commands can be executed one by one instead of all at once by using [[/npc command sequential]].\ncitizens.commands.npc.command.unknown-id=Unknown command id [[{0}]] for this NPC.\ncitizens.commands.npc.command.temporary-permissions-set=Temporary permissions set to [[{0}]].\ncitizens.commands.npc.commands.sequential-set=Commands will now execute sequentially.\ncitizens.commands.npc.commands.sequential-unset=Commands will no longer execute sequentially.\ncitizens.commands.npc.commands.random-set=Commands will now execute at random.\ncitizens.commands.npc.commands.random-unset=Commands will no longer execute at random.\ncitizens.commands.npc.controllable.not-controllable=[[{0}]] is not controllable.\ncitizens.commands.npc.controllable.removed=[[{0}]] can no longer be controlled.\ncitizens.commands.npc.controllable.set=[[{0}]] can now be controlled.\ncitizens.commands.npc.copy.copied=[[{0}]] has been copied.\ncitizens.commands.npc.create.mobtype-missing=[[{0}]] is not supported as an NPC mobtype.\ncitizens.commands.npc.create.invalid-location=Spawn location could not be parsed or was not found.\ncitizens.commands.npc.create.invalid-mobtype=[[{0}]] is not a valid mob type.\ncitizens.commands.npc.create.npc-name-too-long=NPC names cannot be longer than [[{0}]] characters. The name has been shortened.\ncitizens.commands.npc.create.no-player-for-spawn=No player could be found by that name to spawn an NPC at.\ncitizens.commands.npc.despawn.despawned=You despawned [[{0}]].\ncitizens.commands.npc.endercrystal.showing-bottom=[[{0}]] is now showing its base.\ncitizens.commands.npc.endercrystal.not-showing-bottom=[[{0}]] is no longer showing its base.\ncitizens.commands.npc.enderman.angry-set=[[{0}]] is now angry.\ncitizens.commands.npc.enderman.angry-unset=[[{0}]] is no longer angry.\ncitizens.commands.npc.flyable.set=[[{0}]] is now flyable.\ncitizens.commands.npc.flyable.unset=[[{0}]] is no longer flyable.\ncitizens.commands.npc.fox.crouching-set=[[{0}]] is now crouching.\ncitizens.commands.npc.fox.crouching-unset=[[{0}]] is no longer crouching.\ncitizens.commands.npc.fox.sitting-set=[[{0}]] is now sitting.\ncitizens.commands.npc.fox.sitting-unset=[[{0}]] is no longer sitting.\ncitizens.commands.npc.fox.sleeping-set=[[{0}]] is now sleeping.\ncitizens.commands.npc.fox.sleeping-unset=[[{0}]] is no longer sleeping.\ncitizens.commands.npc.fox.fox-type-set=Fox type set to [[{0}]].\ncitizens.commands.npc.fox.invalid-fox-type=Invalid fox type specified. Valid types are [[{0}]].\ncitizens.commands.npc.follow.set=[[{0}]] is now following [[{1}]]. \ncitizens.commands.npc.follow.unset=[[{0}]] is no longer following anyone.\ncitizens.commands.npc.gamemode.describe={0}''s gamemode is [[{1}]].\ncitizens.commands.npc.gamemode.invalid={0} is not a valid gamemode.\ncitizens.commands.npc.gamemode.set=Gamemode set to [[{0}]].\ncitizens.commands.npc.gravity.disabled=Gravity [[disabled]].\ncitizens.commands.npc.gravity.enabled=Gravity [[enabled]].\ncitizens.commands.npc.glowing.set=[[{0}]] is now glowing.\ncitizens.commands.npc.glowing.player-only=Glowing color can only be changed for player-type NPCs.\ncitizens.commands.npc.glowing.unset=[[{0}]] is no longer glowing.\ncitizens.commands.npc.glowing.color-set=[[{0}]]''s glowing color set to {1}]].\ncitizens.commands.npc.guardian.elder-unset=[[{0}]] is no longer an elder guardian.\ncitizens.commands.npc.guardian.elder-set=[[{0}]] is now an elder guardian.\ncitizens.commands.npc.hologram.text-set=Set hologram text line [[{0}]] to [[{1}]].\ncitizens.commands.npc.hologram.text-removed=Removed hologram text.\ncitizens.commands.npc.hologram.text-missing=Missing text to add.\ncitizens.commands.npc.hologram.text-describe-header=[[{0}]]''s hologram text (in bottom-up order):\ncitizens.commands.npc.hologram.invalid-text-id=Invalid line number.\ncitizens.commands.npc.hologram.line-height-set=Line height set to [[{0}]].\ncitizens.commands.npc.hologram.line-removed=Removed line [[{0}]].\ncitizens.commands.npc.hologram.direction-set=Direction set to [[{0}]].\ncitizens.commands.npc.hologram.line-add=Added a new hologram line: [[{0}]].\ncitizens.commands.npc.hologram.cleared=Hologram lines cleared.\ncitizens.commands.npc.horse.chest-set=The horse is now carrying a chest.\ncitizens.commands.npc.horse.chest-unset=The horse is no longer carrying a chest.\ncitizens.commands.npc.horse.color-set=The horse''s color was set to [[{0}]].\ncitizens.commands.npc.horse.type-set=The horse''s type was set to [[{0}]].\ncitizens.commands.npc.horse.style-set=The horse''s style was set to [[{0}]].\ncitizens.commands.npc.horse.describe=The horse''s color is [[{0}]], the type is [[{1}]] and the style is [[{2}]].\ncitizens.commands.npc.horse.invalid-color=Invalid horse color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.horse.invalid-type=Invalid horse type given. Valid types are: [[{0}]].\ncitizens.commands.npc.horse.invalid-style=Invalid horse style given. Valid styles are: [[{0}]].\ncitizens.commands.npc.item.item-set=NPC item set to [[{0}]].\ncitizens.commands.npc.item.unknown-material=Unknown material given.\ncitizens.commands.npc.leashable.set=[[{0}]] is now leashable.\ncitizens.commands.npc.leashable.stopped=[[{0}]] is no longer leashable.\ncitizens.commands.npc.llama.strength-set=Llama strength set to [[{0}]].\ncitizens.commands.npc.llama.color-set=Llama color set to [[{0}]].\ncitizens.commands.npc.llama.invalid-color=Invalid llama color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.lookclose.random-look-delay-set=[[{0}]] will now randomly look every [[{1}]] ticks.\ncitizens.commands.npc.lookclose.random-pitch-range-set=[[{0}]] will now randomly choose a pitch in the range [{1}].\ncitizens.commands.npc.lookclose.random-yaw-range-set=[[{0}]] will now randomly choose a yaw in the range [{1}].\ncitizens.commands.npc.lookclose.random-set=[[{0}]] will now randomly look around.\ncitizens.commands.npc.lookclose.random-stopped=[[{0}]] will no longer randomly look around.\ncitizens.commands.npc.lookclose.error-random-range=Invalid range [[{0}]]. Use the format `min,max`.\ncitizens.commands.npc.lookclose.set=[[{0}]] will now rotate when players are nearby.\ncitizens.commands.npc.lookclose.stopped=[[{0}]] will no longer rotate when players are nearby.\ncitizens.commands.npc.metadata.set=[[{0}]] set to [[{1}]].\ncitizens.commands.npc.metadata.unset=Removed [[{{0}}]] from [[{1}]].\ncitizens.commands.npc.minecart.set=[[{0}]] now has item [[{1}]]:[[{2}]] with offset [[{3}]].\ncitizens.commands.npc.mount.failed=Couldn''t mount [[{0}]].\ncitizens.commands.npc.mount.must-be-spawned=Couldn''t mount [[{0}]]. Make sure that the destination NPC ID is correct and it is spawned.\ncitizens.commands.npc.moveto.format=Format is x:y:z(:world) or x y z( world).\ncitizens.commands.npc.mount.mount-on-itself=Can''t mount NPC on itself.\ncitizens.commands.npc.moveto.teleported=[[{0}]] teleported to [[{1}]].\ncitizens.commands.npc.mushroomcow.invalid-variant=Invalid variant. Valid values are: [[{0}]].\ncitizens.commands.npc.mushroomcow.variant-set=[[{0}]]''s variant set to [[{1}]].\ncitizens.commands.npc.nameplate.toggled=Nameplate visibility toggled.\ncitizens.commands.npc.ocelot.deprecated=Ocelot types don''t work in this version of Minecraft. Use [[/npc type cat]] if you want to change the colour.\ncitizens.commands.npc.ocelot.invalid-type=Invalid ocelot type. Valid types are: [[{0}]].\ncitizens.commands.npc.owner.already-owner={0} is already the owner of [[{1}]].\ncitizens.commands.npc.owner.owner=[[{0}]]''s owner is [[{1}]].\ncitizens.commands.npc.owner.set-server=[[The server]] is now the owner of [[{0}]].\ncitizens.commands.npc.owner.set=[[{1}]] is now the owner of [[{0}]].\ncitizens.commands.npc.panda.invalid-gene=Invalid gene. Valid genes are [[{0}]].\ncitizens.commands.npc.panda.sitting=Started sitting.\ncitizens.commands.npc.panda.stopped-sitting=Stopped sitting.\ncitizens.commands.npc.panda.main-gene-set=Main gene set to [[{0}]].\ncitizens.commands.npc.panda.hidden-gene-set=Hidden gene set to [[{0}]].\ncitizens.commands.npc.passive.set=[[{0}]] will no longer damage entities.\ncitizens.commands.npc.passive.unset=[[{0}]] will now damage entities.\ncitizens.commands.npc.pathfindingrange.set=Pathfinding range set to [[{0}]].\ncitizens.commands.npc.parrot.invalid-variant=Invalid parrot variant. Valid variants are [[{0}]].\ncitizens.commands.npc.parrot.variant-set=Variant set to [[{0}]].\ncitizens.commands.npc.pathopt.avoid-water-set=[[{0}]] will now avoid water.\ncitizens.commands.npc.pathopt.avoid-water-unset=[[{0}]] will no longer avoid water.\ncitizens.commands.npc.pathopt.stationary-ticks-set=[[{0}]]''s maximum stationary ticks set to [[{1}]].\ncitizens.commands.npc.pathopt.distance-margin-set=[[{0}]]''s pathfinding distance margin set to [[{1}]].\ncitizens.commands.npc.pathopt.path-distance-margin-set=[[{0}]]''s pathfinding path distance margin set to [[{1}]].\ncitizens.commands.npc.pathopt.attack-range-set=[[{0}]]''s attack range set to [[{1}]].\ncitizens.commands.npc.pathopt.use-new-finder=[[{0}]]''s use new finder set to [[{1}]].\ncitizens.commands.npc.playerlist.added=Added [[{0}]] to the player list.\ncitizens.commands.npc.playerlist.removed=Removed [[{0}]] from the player list. \ncitizens.commands.npc.polarbear.rearing-set=[[{0}]] is now rearing.\ncitizens.commands.npc.polarbear.rearing-unset=[[{0}]] is no longer rearing.\ncitizens.commands.npc.pose.added=Pose added.\ncitizens.commands.npc.pose.already-exists=The pose [[{0}]] already exists.\ncitizens.commands.npc.pose.invalid-name=Invalid pose name.\ncitizens.commands.npc.pose.missing=The pose [[{0}]] does not exist.\ncitizens.commands.npc.pose.default-pose-set=Default pose set to [[{0}]].\ncitizens.commands.npc.pose.removed=Pose removed.\ncitizens.commands.npc.powered.set=[[{0}]] will now be powered.\ncitizens.commands.npc.powered.stopped=[[{0}]] will no longer be powered.\ncitizens.commands.npc.phantom.phantom-set=Size set to [[{0}]].\ncitizens.commands.npc.tropicalfish.invalid-color=Invalid fish color. Valid colors are: [[{0}]]\ncitizens.commands.npc.tropicalfish.invalid-pattern=Invalid fish pattern. Valid patterns are: [[{0}]]\ncitizens.commands.npc.tropicalfish.body-color-set=Body color set to [[{0}]].\ncitizens.commands.npc.tropicalfish.pattern-color-set=Pattern color set to [[{0}]].\ncitizens.commands.npc.tropicalfish.pattern-set=Pattern set to [[{0}]].\ncitizens.commands.npc.profession.invalid-profession=[[{0}]] is not a valid profession. Try one of the following: [[{1}]].\ncitizens.commands.npc.profession.set=[[{0}]] is now a [[{1}]].\ncitizens.commands.npc.pufferfish.state-set=State set to [[{0}]].\ncitizens.commands.npc.rabbittype.invalid-type=Invalid rabbit type. Try one of the following: [[{0}]].\ncitizens.commands.npc.rabbittype.type-set=[[{0}]]''s rabbit type has been set to [[{1}]]\ncitizens.commands.npc.remove.npcs-removed=NPCs removed.\ncitizens.commands.npc.remove.incorrect-syntax=Incorrect syntax. /npc remove (all)\ncitizens.commands.npc.remove.removed-all=You permanently removed all NPCs.\ncitizens.commands.npc.remove.removed=You permanently removed [[{0}]].\ncitizens.commands.npc.rename.renamed=You renamed [[{0}]] to [[{1}]].\ncitizens.commands.npc.respawn.delay-set=Respawn delay set to [[{0}]].\ncitizens.commands.npc.respawn.describe=Respawn delay is currently [[{0}]].\ncitizens.commands.npc.select.already-selected=You already have that NPC selected.\ncitizens.commands.npc.script.invalid-file=Unknown or unavailable script ''[[{0}]]''.\ncitizens.commands.npc.scoreboard.added-tags=Added these tags: [[{0}]].\ncitizens.commands.npc.scoreboard.removed-tags=Removed these tags: [[{0}]].\ncitizens.commands.npc.sheep.color-set=The sheep''s color was set to [[{0}]].\ncitizens.commands.npc.sheep.invalid-color=Invalid sheep color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.script.current-scripts=[[{0}]]''s current scripts are [[{1}]].\ncitizens.commands.npc.shulker.peek-set=[[{0}]]''s peek amount set to [[{1}]].\ncitizens.commands.npc.shulker.color-set=[[{0}]]''s color set to [[{1}]].\ncitizens.commands.npc.shulker.invalid-color=Invalid shulker color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.skin.error-setting-url=Error downloading skin texture from [[{0}]]. Are you sure the URL is valid?\ncitizens.commands.npc.skin.skin-url-set=Downloaded [[{0}]]''s skin from [[{1}]].\ncitizens.commands.npc.skin.set=[[{0}]]''s skin name set to [[{1}]].\ncitizens.commands.npc.skin.missing-skin=A skin name is required.\ncitizens.commands.npc.skin.cleared=[[{0}]]''s skin name was cleared.\ncitizens.commands.npc.skin.layers-set=[[{0}]]''s skin layers: cape - [[{1}]], hat - [[{2}]], jacket - [[{3}]], sleeves - [[{4}]], pants - [[{5}]].\ncitizens.commands.npc.size.description=[[{0}]]''s size is [[{1}]].\ncitizens.commands.npc.size.set=[[{0}]]''s size set to [[{1}]].\ncitizens.commands.npc.sound.invalid-sound=Invalid sound.\ncitizens.commands.npc.sound.set=[[{0}]]''s sounds are now: ambient - [[{1}]] hurt - [[{2}]] and death - [[{3}]].\ncitizens.commands.npc.sound.info=[[{0}]]''s sounds are: ambient - [[{1}]] hurt - [[{2}]] and death - [[{3}]].<br><br>Valid sounds are {4}.\ncitizens.commands.npc.skeletontype.set={0}''s skeleton type set to [[{1}]].\ncitizens.commands.npc.skeletontype.invalid-type=Invalid skeleton type. Try one of the following: [[{0}]].\ncitizens.commands.npc.snowman.derp-set=[[{0}]] is now in derp mode.\ncitizens.commands.npc.snowman.derp-stopped=[[{0}]] is no longer in derp mode.\ncitizens.commands.npc.spawn.already-spawned=[[{0}]] is already spawned at another location. Use ''/npc tphere'' to teleport the NPC to your location.\ncitizens.commands.npc.spawn.missing-npc-id=No NPC with the ID {0} exists.\ncitizens.commands.npc.spawn.no-location=No stored location available - command must be used ingame.\ncitizens.commands.npc.spawn.numeric-id-only=Only numeric IDs can be used for /npc spawn.\ncitizens.commands.npc.spawn.spawned=You spawned [[{0}]].\ncitizens.commands.npc.speed.modifier-above-limit=Speed is above the limit.\ncitizens.commands.npc.speed.set=NPC speed modifier set to [[{0}]].\ncitizens.commands.npc.swim.set=[[{0}]] will now swim in water.\ncitizens.commands.npc.swim.unset=[[{0}]] will no longer swim in water.\ncitizens.commands.npc.targetable.set=[[{0}]] can now be targeted by mobs.\ncitizens.commands.npc.targetable.unset=[[{0}]] can no longer be targeted by mobs.\ncitizens.commands.npc.tp.teleported=You teleported to [[{0}]].\ncitizens.commands.npc.tp.location-not-found=Couldn''t find the target NPC''s location.\ncitizens.commands.npc.tpto.success=Teleported successfully.\ncitizens.commands.npc.tpto.to-not-found=Destination entity not found.\ncitizens.commands.npc.tpto.from-not-found=Source entity not found.\ncitizens.commands.npc.tphere.missing-cursor-block=Please look at a block to teleport to.\ncitizens.commands.npc.tphere.teleported=[[{0}]] was teleported to {1}.\ncitizens.commands.npc.type.set=[[{0}]]''s type set to [[{1}]].\ncitizens.commands.npc.type.invalid=[[{0}]] is not a valid type.\ncitizens.commands.npc.vulnerable.set=[[{0}]] is now vulnerable.\ncitizens.commands.npc.vulnerable.stopped=[[{0}]] is no longer vulnerable.\ncitizens.commands.npc.wolf.unknown-collar-color=[[{0}]] is not an RGB-formatted collar color or the name of a DyeColor.\ncitizens.commands.npc.wolf.collar-color-unsupported=[[{0}]] is not a RGB color code that can be used on a wolf''s collar.\ncitizens.commands.npc.villager.level-set=Level set to [[{0}]].\ncitizens.commands.npc.villager.invalid-type=Invalid villager type. Valid types are: [[{0}]].\ncitizens.commands.npc.villager.type-set=Type set to [[{0}]].\ncitizens.commands.npc.zombiemod.villager-set=[[{0}]] is now a villager.\ncitizens.commands.npc.zombiemod.villager-unset=[[{0}]] is no longer a villager.\ncitizens.commands.npc.zombiemod.baby-set=[[{0}]] is now a baby.\ncitizens.commands.npc.zombiemod.baby-unset=[[{0}]] is no longer a baby.\ncitizens.commands.npc.zombiemod.villager-profession-set=[[{0}]]''s profession set to [[{1}]].\ncitizens.commands.page-missing=The page [[{0}]] does not exist.\ncitizens.commands.requirements.disallowed-mobtype=The NPC cannot be the mob type [[{0}]] for that command.\ncitizens.commands.requirements.living-entity=The NPC must be a living entity.\ncitizens.commands.requirements.missing-permission=You don''t have permission to execute that command.\ncitizens.commands.requirements.missing-required-trait=Missing required trait [[{0}]].\ncitizens.commands.requirements.must-be-ingame=You must be ingame to use that command.\ncitizens.commands.requirements.must-be-owner=You must be the owner of this NPC to execute that command.\ncitizens.commands.requirements.must-have-selected=You must have an NPC selected to execute that command.\ncitizens.commands.requirements.too-few-arguments=Too few arguments.\ncitizens.commands.requirements.too-many-arguments=Too many arguments.\ncitizens.commands.script.compiled=Script compiled.\ncitizens.commands.script.compiling=Script compiling...\ncitizens.commands.script.file-missing=The file [[{0}]] doesn''t exist!\ncitizens.commands.template.applied=Template applied to [[{0}]] NPCs.\ncitizens.commands.template.conflict=A template by that name already exists.\ncitizens.commands.template.created=Template created.\ncitizens.commands.template.missing=Template not found.\ncitizens.commands.template.delete.deleted=Deleted template [[{0}]].\ncitizens.commands.template.list.header=]]Available templates[[:]]\ncitizens.commands.trait.added=Added {0} successfully.\ncitizens.commands.trait.failed-to-add=<7>Couldn''t add {0}.\ncitizens.commands.trait.failed-to-change=<7>Couldn''t change {0}.\ncitizens.commands.trait.failed-to-remove=<7>Couldn''t remove {0}.\ncitizens.commands.trait.removed=Removed {0} successfully.\ncitizens.commands.traitc.missing=Trait not found.\ncitizens.commands.traitc.not-configurable=That trait is not configurable.\ncitizens.commands.traitc.not-on-npc=The NPC doesn''t have that trait.\ncitizens.commands.unknown-command=Unknown command. Did you mean:\ncitizens.commands.waypoints.add.waypoint-added=Added waypoint at [[{0}]] (index [[{1}]]).\ncitizens.commands.waypoints.disableteleporting.disabled=[[{0}]] will no longer teleport when stuck pathfinding.\ncitizens.commands.waypoints.opendoors.enabled=[[{0}]] will now open doors while pathfinding.\ncitizens.commands.waypoints.opendoors.disabled=[[{0}]] will no longer doors while pathfinding.\ncitizens.commands.wolf.traits-updated=[[{0}]]''s Traits were updated. Angry:[[{1}]], Sitting:[[{2}]], Tamed:[[{3}]], Collar Color:[[{4}]] \ncitizens.conversations.selection.invalid-choice=[[{0}]] is not a valid option.\ncitizens.economy.error-loading=Vault not found -> no economy handling.\ncitizens.economy.minimum-cost-required=Need at least [[{0}]].\ncitizens.economy.money-withdrawn=Withdrew [[{0}]] for your NPC.\ncitizens.editors.already-in-editor=You''re already in an editor!\ncitizens.editors.copier.begin=<b>Entered the NPC copier!<br>Click anywhere to copy the currently selected NPC.\ncitizens.editors.copier.end=Exited the NPC copier.\ncitizens.editors.equipment.all-items-removed=[[{0}]] had all of its items removed.\ncitizens.editors.equipment.begin=<b>Entered the equipment editor!<br>[[Right click]] to equip the NPC or [[crouch right click]] to change the item in hand!<br>Type [[offhand]], [[chestplate]], [[helmet]], etc. in chat to equip specific slots with the item you''re holding!\ncitizens.editors.equipment.end=Exited the equipment editor.\ncitizens.editors.equipment.invalid-block=Invalid block!\ncitizens.editors.equipment.saddled-set=[[{0}]] is now saddled.\ncitizens.editors.equipment.saddled-stopped=[[{0}]] is no longer saddled.\ncitizens.editors.equipment.sheared-set=[[{0}]] is now sheared.\ncitizens.editors.equipment.sheared-stopped=[[{0}]] is no longer sheared.\ncitizens.editors.equipment.sheep-coloured=[[{0}]] is now coloured [[{1}]].\ncitizens.editors.selection.start-prompt=There were multiple NPCs with the supplied name.<br>Please enter an id or number from the list below to select that NPC.\ncitizens.editors.text.add-prompt=Enter text to add to the NPC.\ncitizens.editors.text.added-entry=[[Added]] the entry [[{0}]].\ncitizens.editors.text.begin=<b>Entered the text editor! Type ''exit'' to leave the editor.\ncitizens.editors.text.change-page-prompt=Enter a page number to view more text entries.\ncitizens.editors.text.close-talker-set=[[Close talker]] set to [[{0}]].\ncitizens.editors.text.edit-begin-prompt=Enter the index of the entry you wish to edit or [[page]] to view more pages.\ncitizens.editors.text.edit-prompt=Enter text to edit the entry.\ncitizens.editors.text.edited-text=Changed entry at index [[{0}]] to [[{1}]].\ncitizens.editors.text.end=Exited the text editor.\ncitizens.editors.text.missing-item-set-pattern=Missing item in hand pattern.\ncitizens.editors.text.invalid-edit-type=Invalid edit type.\ncitizens.editors.text.invalid-index=[[{0}]] is not a valid index!\ncitizens.editors.text.invalid-input=Invalid input.\ncitizens.editors.text.invalid-page=Invalid page number.\ncitizens.editors.text.invalid-range=Invalid range.\ncitizens.editors.text.invalid-delay=Invalid delay.\ncitizens.editors.text.random-talker-set=[[Random talking]] set to [[{0}]].\ncitizens.editors.text.range-set=[[Range]] set to [[{0}]].\ncitizens.editors.text.delay-set=[[Delay]] set to [[{0}]] seconds.\ncitizens.editors.text.realistic-looking-set=[[Realistic looking]] set to [[{0}]].\ncitizens.editors.text.remove-prompt=Enter the index of the entry you wish to remove or [[page]] to view more pages.\ncitizens.editors.text.removed-entry=[[Removed]] entry at index [[{0}]].\ncitizens.editors.text.start-prompt=Type [[add]] to add an entry, [[edit]] to edit entries, [[remove]] to remove entries, [[close]] to toggle the NPC to send messages when players get close, [[item]] to set the talk item in hand pattern (set to [[default]] to clear), [[range]] to set the talking range, [[delay]] to set the talking delay in seconds and [[random]] to toggle the NPC as a random talker. Type [[help]] to show this again.\ncitizens.editors.text.talk-item-set=[[Talk item pattern]] set to [[{0}]].\ncitizens.editors.waypoints.wander.editing-regions-stop=Exited the region editor.\ncitizens.editors.waypoints.wander.worldguard-region-not-found=WorldGuard region not found.\ncitizens.editors.waypoints.wander.worldguard-region-set=WorldGuard region set to [[{0}]].\ncitizens.editors.waypoints.wander.range-set=Wander range set to xrange [[{0}]] and yrange [[{1}]].\ncitizens.editors.waypoints.wander.begin=<b>Entered the wander waypoint editor.<br>    Type [[xrange <number>]] or [[yrange <number>]] to modify the random wander range. Type [[regions]] to enter the region editor.<br>Type [[delay <ticks>]] to delay the NPC between wanders. Type [[worldguardregion <regionId>]] to restrict movement to a WorldGuard region.\ncitizens.editors.waypoints.wander.end=Exited the wander waypoint editor.\ncitizens.editors.waypoints.wander.delay-set=Delay between wanders set to [[{0}]] ticks.\ncitizens.editors.waypoints.wander.invalid-delay=Invalid delay specified.\ncitizens.editors.waypoints.wander.added-region=[[Added]] wanderable region at ({0}) ([[{1}]]).\ncitizens.editors.waypoints.wander.removed-region=[[Removed]] wanderable region at ({0}) ([[{1}]] remaining).\ncitizens.editors.waypoints.wander.editing-regions=Now editing regions!<br>    [[Left click]] to add a new wanderable region using the xrange/yrange box centred at that block.<br>    [[Right click]] an existing marker to remove that region.<br>    Type [[regions]] to stop or simply exit the editor. Regions should be overlapping with each other.\ncitizens.editors.waypoints.guided.end=Exited the guided waypoint editor.\ncitizens.editors.waypoints.guided.begin=<b>Entered the guided waypoint editor!<br>    [[Left click]] to add a waypoint guide, [[right click]] an existing waypoint to remove.<br>    [[Sneak]] while left clicking to add a destination waypoint.<br>    Type [[toggle path]] to toggle showing entities at waypoints.\ncitizens.editors.waypoints.guided.added-guide=Added a [[guide]] waypoint. This will guide NPCs to their destination.\ncitizens.editors.waypoints.guided.added-available=Added a [[destination]] waypoint. This will be available for NPCs to path to.\ncitizens.editors.waypoints.guided.already-taken=There is already a waypoint here.\ncitizens.editors.waypoints.linear.added-waypoint=[[Added]] a waypoint at ({0}) ([[{1}]] total).\ncitizens.editors.waypoints.linear.begin=<b>=== <l>Linear Waypoint Editor ===<br>    [[Left click]] to add a waypoint, [[right click]] to remove it.<br>    You can right click while sneaking to select and remove specific points.<br>    Type [[markers]] to hide waypoints,<br>    [[triggers]] to enter the trigger editor,<br>    [[clear]] to clear all waypoints,<br>    [[cycle]] to make NPCs cycle through waypoints instead of looping.\ncitizens.editors.waypoints.linear.selected-waypoint=Selected waypoint at {0}. Sneak + right click again to remove this waypoint.\ncitizens.editors.waypoints.linear.end=Exited the linear waypoint editor.\ncitizens.editors.waypoints.linear.not-showing-markers=[[Stopped]] showing waypoint markers.\ncitizens.editors.waypoints.linear.range-exceeded=Previous waypoint is {0} blocks away but the distance limit is {1}.\ncitizens.editors.waypoints.linear.removed-waypoint=[[Removed]] a waypoint ([[{0}]] remaining)\ncitizens.editors.waypoints.linear.showing-markers=[[Showing]] waypoint markers.\ncitizens.editors.waypoints.linear.waypoints-cleared=Waypoints cleared.\ncitizens.editors.waypoints.linear.cycle-set=Now [[cycling]] through waypoints.\ncitizens.editors.waypoints.linear.cycle-unset=Now [[looping]] through waypoints.\ncitizens.editors.waypoints.triggers.add.added=<b>Added waypoint trigger successfully ({0}).\ncitizens.editors.waypoints.triggers.add.invalid-trigger=Couldn''t create a trigger by the name [[{0}]].\ncitizens.editors.waypoints.triggers.add.prompt=Enter in a trigger name to add or type [[back]] to return to the edit prompt. Valid trigger names are {0}.\ncitizens.editors.waypoints.triggers.animation.added=Animation [[{0}]] added.\ncitizens.editors.waypoints.triggers.list=Current triggers are:{0}\ncitizens.editors.waypoints.triggers.animation.prompt=Enter in animations to perform - valid animations are {0}.<br>Type in [[finish]] to finish the animation trigger or [[back]] to return to the previous prompt.\ncitizens.editors.waypoints.triggers.animation.invalid-animation=Invalid animation [[{0}]]. Valid animations are {1}.\ncitizens.editors.waypoints.triggers.chat.invalid-radius=The radius must be a number.\ncitizens.editors.waypoints.triggers.chat.missing-radius=No radius supplied.\ncitizens.editors.waypoints.triggers.chat.message-added=Message added: [[{0}]].\ncitizens.editors.waypoints.triggers.chat.radius-set=Radius set to [[{0}]] blocks.\ncitizens.editors.waypoints.triggers.chat.prompt=Enter in chat lines to say.<br>Type in [[radius (radius)]] to set the block radius to broadcast the messages.<br>Type [[finish]] to finish the chat trigger or [[back]] to return to the previous prompt.\ncitizens.editors.waypoints.triggers.delay.prompt=Enter the delay in [[server ticks]] to use. (20 ticks = 1 second)\ncitizens.editors.waypoints.triggers.main.missing-waypoint=Not editing a waypoint.\ncitizens.editors.waypoints.triggers.main.exit=<b>Exited the waypoint trigger editor.\ncitizens.editors.waypoints.triggers.main.prompt=<b>- Waypoint Trigger Editor -<br>    Type [[add]] or [[remove]] to edit triggers.<br>    Type [[triggers]] or [[exit]] to exit this editor.<br>    Current triggers are:{0}\ncitizens.editors.waypoints.triggers.remove.index-out-of-range=Index must be in the range [[1-{0}]].\ncitizens.editors.waypoints.triggers.remove.not-a-number=Index must be a number.\ncitizens.editors.waypoints.triggers.remove.prompt=Enter in the index of the trigger to delete or [[back]] to return to the edit prompt. Current triggers are:{0}\ncitizens.editors.waypoints.triggers.remove.removed=Successfully removed trigger [[{0}]].\ncitizens.editors.waypoints.triggers.speed.prompt=Enter the speed modifier as a [[percentage]] of its base speed.\ncitizens.editors.waypoints.triggers.teleport.invalid-format=Invalid location given. Format is [[world]]:[[x]]:[[y]]:[[z]].\ncitizens.editors.waypoints.triggers.teleport.prompt=Enter the destination in the format world:x:y:z. Type [[here]] to use your current location. Type [[back]] to return to the edit prompt.\ncitizens.limits.over-npc-limit=Over the NPC limit of {0}.\ncitizens.load-task-error=NPC load task couldn''t be scheduled, disabling...\ncitizens.nms-errors.clearing-goals=Could not clear goals: {0}.\ncitizens.nms-errors.restoring-goals=Could not restore goals: {0}.\ncitizens.nms-errors.error-setting-persistent=Could not set NPC as persistent: {0}. NPC entity may despawn.\ncitizens.nms-errors.getting-field=Could not fetch NMS field {0}: [[{1}.\ncitizens.nms-errors.getting-method=Could not fetch NMS method {0}: [[{1}.\ncitizens.nms-errors.getting-id-mapping=Could not fetch entity id mapping fields: {0}.\ncitizens.nms-errors.spawning-custom-entity=Could not spawn custom entity: {0}.\ncitizens.nms-errors.stopping-network-threads=Could not stop network threads: {0}.\ncitizens.nms-errors.updating-land-modifier=Could not update land speed modifier: {0}.\ncitizens.nms-errors.updating-navigation-world=Could not update navigation world: {0}.\ncitizens.nms-errors.updating-pathfinding-range=Could not update pathfinding range: {0}.\ncitizens.notifications.database-connection-failed=Unable to connect to database, falling back to YAML\ncitizens.notifications.error-reloading=Error occured while reloading, see console.\ncitizens.notifications.exception-updating-npc=Exception while updating {0}: {1}.\ncitizens.notifications.incompatible-version=v{0} is not compatible with Minecraft v{1} - try upgrading or downgrading Citizens. Disabling.\ncitizens.notifications.locale=Using locale {0}.\ncitizens.notifications.metrics-load-error=Unable to start metrics: {0}.\ncitizens.notifications.missing-translations=Missing translations file for locale {0}. Defaulting to en locale.\ncitizens.notifications.npc-name-not-found=Could not find a name for ID {0}.\ncitizens.notifications.npc-not-found=No NPC could be found.\ncitizens.notifications.npcs-loaded=Loaded {0} NPCs.\ncitizens.notifications.reloaded=Citizens reloaded.\ncitizens.notifications.reloading=Reloading Citizens...\ncitizens.notifications.saved=Citizens saved.\ncitizens.notifications.saving=Saving Citizens...\ncitizens.notifications.skipping-broken-trait=Skipped broken or missing trait {0} while loading ID {1}. Has the name changed?\ncitizens.notifications.skipping-invalid-pose=Skipping pose {0} - invalid yaw/pitch ({1}).\ncitizens.notifications.trait-load-failed=The trait {0} failed to load for NPC ID: {1}.\ncitizens.notifications.trait-onspawn-failed=An exception occurred while the trait {0} was spawning for NPC ID {1}.\ncitizens.notifications.unknown-npc-type=NPC type {0} was not recognized. Did you spell it correctly?\ncitizens.saves.load-failed=Unable to load saves, disabling...\ncitizens.settings.writing-default=Writing default setting: {0}\ncitizens.sub-plugins.error-on-load={0} initializing {1}\ncitizens.sub-plugins.load=Loading {0}\ncitizens.traits.age-description={0}''s age is [[{1}]]. Locked is [[{2}]].\ncitizens.waypoints.available-providers-header=<b>List of available providers\ncitizens.waypoints.current-provider=The current waypoint provider is [[{0}]].\ncitizens.waypoints.set-provider=Set the waypoint provider to [[{0}]]."
+    poolQuestsList: "citizens.changed-implementation=Citizens implementation changed, disabling plugin.\ncitizens.commands.citizens.save.help=Use the -a flag to save async (off the main server thread).\ncitizens.commands.console-error=Please report this error: [See console]\ncitizens.commands.errors.missing-world=World not found.\ncitizens.commands.help.command-missing=Command /{0} not found.\ncitizens.commands.help.header=Help\ncitizens.commands.id-not-found=Couldn''t find any NPC with ID [[{0}]].\ncitizens.commands.invalid.class=Invalid external commands class.\ncitizens.commands.invalid-mobtype=[[{0}]] is not a valid mobtype.\ncitizens.commands.invalid-number=That is not a valid number.\ncitizens.commands.npc.ai.started=Now using Minecraft AI.\ncitizens.commands.npc.ai.stopped=No longer using Minecraft AI.\ncitizens.commands.npc.age.cannot-be-aged=The mob type {0} cannot be aged.\ncitizens.commands.npc.age.help=Can only be used on entities that can become babies. Use the [[-l]] flag to lock age over time (note: relogs may be required to see this).\ncitizens.commands.npc.age.invalid-age=Invalid age. Valid ages are adult, baby, number between -24000 and 0\ncitizens.commands.npc.age.locked=Age locked.\ncitizens.commands.npc.age.set-adult=[[{0}]] is now an adult.\ncitizens.commands.npc.age.set-baby=[[{0}]] is now a baby.\ncitizens.commands.npc.age.set-normal=[[{0}]] is now age [[{1}]].\ncitizens.commands.npc.age.set=[[{0}]] is now [[{1}]].\ncitizens.commands.npc.age.unlocked=Age unlocked.\ncitizens.commands.npc.anchor.added=Anchor added.\ncitizens.commands.npc.anchor.already-exists=The anchor [[{0}]] already exists.\ncitizens.commands.npc.anchor.invalid-name=Invalid anchor name.\ncitizens.commands.npc.anchor.missing=The anchor [[{1}]] does not exist.\ncitizens.commands.npc.anchor.removed=Anchor removed.\ncitizens.commands.npc.bee.anger-set=Anger set to [[{0}]].\ncitizens.commands.npc.bee.has-nectar=[[{0}]] has nectar.\ncitizens.commands.npc.bee.no-nectar=[[{0}]] has no nectar.\ncitizens.commands.npc.bee.not-stung=[[{0}]] has no longer stung.\ncitizens.commands.npc.bee.bee-stung=[[{0}]] has now stung.\ncitizens.commands.npc.bee.invalid-anger=Anger should be above zero.\ncitizens.commands.npc.behaviour.added=Behaviours added.\ncitizens.commands.npc.behaviour.help=The scripts argument is a comma-separated list of file names. Scripts will be loaded automatically and run every tick. Use the [[-r]] flag to remove behaviours.\ncitizens.commands.npc.behaviour.removed=Behaviours removed.\ncitizens.commands.npc.cat.invalid-type=Invalid type specified. Valid types are [[{0}]].\ncitizens.commands.npc.cat.invalid-collar-color=Invalid collar color specified. Valid types are [[{0}]].\ncitizens.commands.npc.cat.collar-color-set=Collar color set to [[{0}]].\ncitizens.commands.npc.cat.sitting-start=[[{0}]] started sitting.\ncitizens.commands.npc.cat.sitting-stop=[[{0}]] stopped sitting.\ncitizens.commands.npc.cat.lying-start=[[{0}]] started lying down.\ncitizens.commands.npc.cat.lying-stop=[[{0}]] stopped lying down.\ncitizens.commands.npc.cat.type-set=Type set to [[{0}]].\ncitizens.commands.npc.collidable.set=[[{0}]] will now collide with entities.\ncitizens.commands.npc.collidable.unset=[[{0}]] will no longer collide with entities.\ncitizens.commands.npc.command.none-added=No commands have been added.\ncitizens.commands.npc.command.cost-set=Set cost per click to [[{0}]].\ncitizens.commands.npc.command.left-hand-header=Commands to run on [[left click]]:\ncitizens.commands.npc.command.right-hand-header=Commands to run on [[right click]]:\ncitizens.commands.npc.command.command-removed=Command [[{0}]] removed.\ncitizens.commands.npc.command.command-added=Command [[{0}]] added with id [[{1}]].\ncitizens.commands.npc.command.help=<br>Use the [[-l]] flag to make the command run on left click, [[-r]] on right click (default).<br>Set the per-player cooldown before the command can be used again using [[--cooldown]] (in [[seconds]]).<br>Set the server-wide cooldown in seconds using [[--gcooldown]].<br>[[--delay]] will wait the specified amount in [[ticks]] before executing the command.<br>[[--permissions]] will set the command to require specific permissions (separate multiple with commas).<br>[[--n]] will only let the player run the command that number of times.<br>Use [[-o]] to temporarily execute the command as an op and [[-p]] to run the command as the clicking player instead of the server.<br>To give the player temporary permissions instead of op, use [[/npc command permissions]].<br>Set the cost of each click with [[/npc command cost]].<br>Commands can be executed one by one instead of all at once by using [[/npc command sequential]].\ncitizens.commands.npc.command.unknown-id=Unknown command id [[{0}]] for this NPC.\ncitizens.commands.npc.command.temporary-permissions-set=Temporary permissions set to [[{0}]].\ncitizens.commands.npc.commands.sequential-set=Commands will now execute sequentially.\ncitizens.commands.npc.commands.sequential-unset=Commands will no longer execute sequentially.\ncitizens.commands.npc.commands.random-set=Commands will now execute at random.\ncitizens.commands.npc.commands.random-unset=Commands will no longer execute at random.\ncitizens.commands.npc.controllable.not-controllable=[[{0}]] is not controllable.\ncitizens.commands.npc.controllable.removed=[[{0}]] can no longer be controlled.\ncitizens.commands.npc.controllable.set=[[{0}]] can now be controlled.\ncitizens.commands.npc.copy.copied=[[{0}]] has been copied.\ncitizens.commands.npc.create.mobtype-missing=[[{0}]] is not supported as an NPC mobtype.\ncitizens.commands.npc.create.invalid-location=Spawn location could not be parsed or was not found.\ncitizens.commands.npc.create.invalid-mobtype=[[{0}]] is not a valid mob type.\ncitizens.commands.npc.create.npc-name-too-long=NPC names cannot be longer than [[{0}]] characters. The name has been shortened.\ncitizens.commands.npc.create.no-player-for-spawn=No player could be found by that name to spawn an NPC at.\ncitizens.commands.npc.despawn.despawned=You despawned [[{0}]].\ncitizens.commands.npc.endercrystal.showing-bottom=[[{0}]] is now showing its base.\ncitizens.commands.npc.endercrystal.not-showing-bottom=[[{0}]] is no longer showing its base.\ncitizens.commands.npc.enderman.angry-set=[[{0}]] is now angry.\ncitizens.commands.npc.enderman.angry-unset=[[{0}]] is no longer angry.\ncitizens.commands.npc.flyable.set=[[{0}]] is now flyable.\ncitizens.commands.npc.flyable.unset=[[{0}]] is no longer flyable.\ncitizens.commands.npc.fox.crouching-set=[[{0}]] is now crouching.\ncitizens.commands.npc.fox.crouching-unset=[[{0}]] is no longer crouching.\ncitizens.commands.npc.fox.sitting-set=[[{0}]] is now sitting.\ncitizens.commands.npc.fox.sitting-unset=[[{0}]] is no longer sitting.\ncitizens.commands.npc.fox.sleeping-set=[[{0}]] is now sleeping.\ncitizens.commands.npc.fox.sleeping-unset=[[{0}]] is no longer sleeping.\ncitizens.commands.npc.fox.fox-type-set=Fox type set to [[{0}]].\ncitizens.commands.npc.fox.invalid-fox-type=Invalid fox type specified. Valid types are [[{0}]].\ncitizens.commands.npc.follow.set=[[{0}]] is now following [[{1}]]. \ncitizens.commands.npc.follow.unset=[[{0}]] is no longer following anyone.\ncitizens.commands.npc.gamemode.describe={0}''s gamemode is [[{1}]].\ncitizens.commands.npc.gamemode.invalid={0} is not a valid gamemode.\ncitizens.commands.npc.gamemode.set=Gamemode set to [[{0}]].\ncitizens.commands.npc.gravity.disabled=Gravity [[disabled]].\ncitizens.commands.npc.gravity.enabled=Gravity [[enabled]].\ncitizens.commands.npc.glowing.set=[[{0}]] is now glowing.\ncitizens.commands.npc.glowing.player-only=Glowing color can only be changed for player-type NPCs.\ncitizens.commands.npc.glowing.unset=[[{0}]] is no longer glowing.\ncitizens.commands.npc.glowing.color-set=[[{0}]]''s glowing color set to {1}]].\ncitizens.commands.npc.guardian.elder-unset=[[{0}]] is no longer an elder guardian.\ncitizens.commands.npc.guardian.elder-set=[[{0}]] is now an elder guardian.\ncitizens.commands.npc.hologram.text-set=Set hologram text line [[{0}]] to [[{1}]].\ncitizens.commands.npc.hologram.text-removed=Removed hologram text.\ncitizens.commands.npc.hologram.text-missing=Missing text to add.\ncitizens.commands.npc.hologram.text-describe-header=[[{0}]]''s hologram text (in bottom-up order):\ncitizens.commands.npc.hologram.invalid-text-id=Invalid line number.\ncitizens.commands.npc.hologram.line-height-set=Line height set to [[{0}]].\ncitizens.commands.npc.hologram.line-removed=Removed line [[{0}]].\ncitizens.commands.npc.hologram.direction-set=Direction set to [[{0}]].\ncitizens.commands.npc.hologram.line-add=Added a new hologram line: [[{0}]].\ncitizens.commands.npc.hologram.cleared=Hologram lines cleared.\ncitizens.commands.npc.horse.chest-set=The horse is now carrying a chest.\ncitizens.commands.npc.horse.chest-unset=The horse is no longer carrying a chest.\ncitizens.commands.npc.horse.color-set=The horse''s color was set to [[{0}]].\ncitizens.commands.npc.horse.type-set=The horse''s type was set to [[{0}]].\ncitizens.commands.npc.horse.style-set=The horse''s style was set to [[{0}]].\ncitizens.commands.npc.horse.describe=The horse''s color is [[{0}]], the type is [[{1}]] and the style is [[{2}]].\ncitizens.commands.npc.horse.invalid-color=Invalid horse color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.horse.invalid-type=Invalid horse type given. Valid types are: [[{0}]].\ncitizens.commands.npc.horse.invalid-style=Invalid horse style given. Valid styles are: [[{0}]].\ncitizens.commands.npc.item.item-set=NPC item set to [[{0}]].\ncitizens.commands.npc.item.unknown-material=Unknown material given.\ncitizens.commands.npc.leashable.set=[[{0}]] is now leashable.\ncitizens.commands.npc.leashable.stopped=[[{0}]] is no longer leashable.\ncitizens.commands.npc.llama.strength-set=Llama strength set to [[{0}]].\ncitizens.commands.npc.llama.color-set=Llama color set to [[{0}]].\ncitizens.commands.npc.llama.invalid-color=Invalid llama color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.lookclose.random-look-delay-set=[[{0}]] will now randomly look every [[{1}]] ticks.\ncitizens.commands.npc.lookclose.random-pitch-range-set=[[{0}]] will now randomly choose a pitch in the range [{1}].\ncitizens.commands.npc.lookclose.random-yaw-range-set=[[{0}]] will now randomly choose a yaw in the range [{1}].\ncitizens.commands.npc.lookclose.random-set=[[{0}]] will now randomly look around.\ncitizens.commands.npc.lookclose.random-stopped=[[{0}]] will no longer randomly look around.\ncitizens.commands.npc.lookclose.error-random-range=Invalid range [[{0}]]. Use the format `min,max`.\ncitizens.commands.npc.lookclose.set=[[{0}]] will now rotate when players are nearby.\ncitizens.commands.npc.lookclose.stopped=[[{0}]] will no longer rotate when players are nearby.\ncitizens.commands.npc.metadata.set=[[{0}]] set to [[{1}]].\ncitizens.commands.npc.metadata.unset=Removed [[{{0}}]] from [[{1}]].\ncitizens.commands.npc.minecart.set=[[{0}]] now has item [[{1}]]:[[{2}]] with offset [[{3}]].\ncitizens.commands.npc.mount.failed=Couldn''t mount [[{0}]].\ncitizens.commands.npc.mount.must-be-spawned=Couldn''t mount [[{0}]]. Make sure that the destination NPC ID is correct and it is spawned.\ncitizens.commands.npc.moveto.format=Format is x:y:z(:world) or x y z( world).\ncitizens.commands.npc.mount.mount-on-itself=Can''t mount NPC on itself.\ncitizens.commands.npc.moveto.teleported=[[{0}]] teleported to [[{1}]].\ncitizens.commands.npc.mushroomcow.invalid-variant=Invalid variant. Valid values are: [[{0}]].\ncitizens.commands.npc.mushroomcow.variant-set=[[{0}]]''s variant set to [[{1}]].\ncitizens.commands.npc.nameplate.toggled=Nameplate visibility toggled.\ncitizens.commands.npc.ocelot.deprecated=Ocelot types don''t work in this version of Minecraft. Use [[/npc type cat]] if you want to change the colour.\ncitizens.commands.npc.ocelot.invalid-type=Invalid ocelot type. Valid types are: [[{0}]].\ncitizens.commands.npc.owner.already-owner={0} is already the owner of [[{1}]].\ncitizens.commands.npc.owner.owner=[[{0}]]''s owner is [[{1}]].\ncitizens.commands.npc.owner.set-server=[[The server]] is now the owner of [[{0}]].\ncitizens.commands.npc.owner.set=[[{1}]] is now the owner of [[{0}]].\ncitizens.commands.npc.panda.invalid-gene=Invalid gene. Valid genes are [[{0}]].\ncitizens.commands.npc.panda.sitting=Started sitting.\ncitizens.commands.npc.panda.stopped-sitting=Stopped sitting.\ncitizens.commands.npc.panda.main-gene-set=Main gene set to [[{0}]].\ncitizens.commands.npc.panda.hidden-gene-set=Hidden gene set to [[{0}]].\ncitizens.commands.npc.passive.set=[[{0}]] will no longer damage entities.\ncitizens.commands.npc.passive.unset=[[{0}]] will now damage entities.\ncitizens.commands.npc.pathfindingrange.set=Pathfinding range set to [[{0}]].\ncitizens.commands.npc.parrot.invalid-variant=Invalid parrot variant. Valid variants are [[{0}]].\ncitizens.commands.npc.parrot.variant-set=Variant set to [[{0}]].\ncitizens.commands.npc.pathopt.avoid-water-set=[[{0}]] will now avoid water.\ncitizens.commands.npc.pathopt.avoid-water-unset=[[{0}]] will no longer avoid water.\ncitizens.commands.npc.pathopt.stationary-ticks-set=[[{0}]]''s maximum stationary ticks set to [[{1}]].\ncitizens.commands.npc.pathopt.distance-margin-set=[[{0}]]''s pathfinding distance margin set to [[{1}]].\ncitizens.commands.npc.pathopt.path-distance-margin-set=[[{0}]]''s pathfinding path distance margin set to [[{1}]].\ncitizens.commands.npc.pathopt.attack-range-set=[[{0}]]''s attack range set to [[{1}]].\ncitizens.commands.npc.pathopt.use-new-finder=[[{0}]]''s use new finder set to [[{1}]].\ncitizens.commands.npc.playerlist.added=Added [[{0}]] to the player list.\ncitizens.commands.npc.playerlist.removed=Removed [[{0}]] from the player list. \ncitizens.commands.npc.polarbear.rearing-set=[[{0}]] is now rearing.\ncitizens.commands.npc.polarbear.rearing-unset=[[{0}]] is no longer rearing.\ncitizens.commands.npc.pose.added=Pose added.\ncitizens.commands.npc.pose.already-exists=The pose [[{0}]] already exists.\ncitizens.commands.npc.pose.invalid-name=Invalid pose name.\ncitizens.commands.npc.pose.missing=The pose [[{0}]] does not exist.\ncitizens.commands.npc.pose.default-pose-set=Default pose set to [[{0}]].\ncitizens.commands.npc.pose.removed=Pose removed.\ncitizens.commands.npc.powered.set=[[{0}]] will now be powered.\ncitizens.commands.npc.powered.stopped=[[{0}]] will no longer be powered.\ncitizens.commands.npc.phantom.phantom-set=Size set to [[{0}]].\ncitizens.commands.npc.tropicalfish.invalid-color=Invalid fish color. Valid colors are: [[{0}]]\ncitizens.commands.npc.tropicalfish.invalid-pattern=Invalid fish pattern. Valid patterns are: [[{0}]]\ncitizens.commands.npc.tropicalfish.body-color-set=Body color set to [[{0}]].\ncitizens.commands.npc.tropicalfish.pattern-color-set=Pattern color set to [[{0}]].\ncitizens.commands.npc.tropicalfish.pattern-set=Pattern set to [[{0}]].\ncitizens.commands.npc.profession.invalid-profession=[[{0}]] is not a valid profession. Try one of the following: [[{1}]].\ncitizens.commands.npc.profession.set=[[{0}]] is now a [[{1}]].\ncitizens.commands.npc.pufferfish.state-set=State set to [[{0}]].\ncitizens.commands.npc.rabbittype.invalid-type=Invalid rabbit type. Try one of the following: [[{0}]].\ncitizens.commands.npc.rabbittype.type-set=[[{0}]]''s rabbit type has been set to [[{1}]]\ncitizens.commands.npc.remove.npcs-removed=NPCs removed.\ncitizens.commands.npc.remove.incorrect-syntax=Incorrect syntax. /npc remove (all)\ncitizens.commands.npc.remove.removed-all=You permanently removed all NPCs.\ncitizens.commands.npc.remove.removed=You permanently removed [[{0}]].\ncitizens.commands.npc.rename.renamed=You renamed [[{0}]] to [[{1}]].\ncitizens.commands.npc.respawn.delay-set=Respawn delay set to [[{0}]].\ncitizens.commands.npc.respawn.describe=Respawn delay is currently [[{0}]].\ncitizens.commands.npc.select.already-selected=You already have that NPC selected.\ncitizens.commands.npc.script.invalid-file=Unknown or unavailable script ''[[{0}]]''.\ncitizens.commands.npc.scoreboard.added-tags=Added these tags: [[{0}]].\ncitizens.commands.npc.scoreboard.removed-tags=Removed these tags: [[{0}]].\ncitizens.commands.npc.sheep.color-set=The sheep''s color was set to [[{0}]].\ncitizens.commands.npc.sheep.invalid-color=Invalid sheep color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.script.current-scripts=[[{0}]]''s current scripts are [[{1}]].\ncitizens.commands.npc.shulker.peek-set=[[{0}]]''s peek amount set to [[{1}]].\ncitizens.commands.npc.shulker.color-set=[[{0}]]''s color set to [[{1}]].\ncitizens.commands.npc.shulker.invalid-color=Invalid shulker color given. Valid colors are: [[{0}]].\ncitizens.commands.npc.skin.error-setting-url=Error downloading skin texture from [[{0}]]. Are you sure the URL is valid?\ncitizens.commands.npc.skin.skin-url-set=Downloaded [[{0}]]''s skin from [[{1}]].\ncitizens.commands.npc.skin.set=[[{0}]]''s skin name set to [[{1}]].\ncitizens.commands.npc.skin.missing-skin=A skin name is required.\ncitizens.commands.npc.skin.cleared=[[{0}]]''s skin name was cleared.\ncitizens.commands.npc.skin.layers-set=[[{0}]]''s skin layers: cape - [[{1}]], hat - [[{2}]], jacket - [[{3}]], sleeves - [[{4}]], pants - [[{5}]].\ncitizens.commands.npc.size.description=[[{0}]]''s size is [[{1}]].\ncitizens.commands.npc.size.set=[[{0}]]''s size set to [[{1}]].\ncitizens.commands.npc.sound.invalid-sound=Invalid sound.\ncitizens.commands.npc.sound.set=[[{0}]]''s sounds are now: ambient - [[{1}]] hurt - [[{2}]] and death - [[{3}]].\ncitizens.commands.npc.sound.info=[[{0}]]''s sounds are: ambient - [[{1}]] hurt - [[{2}]] and death - [[{3}]].<br><br>Valid sounds are {4}.\ncitizens.commands.npc.skeletontype.set={0}''s skeleton type set to [[{1}]].\ncitizens.commands.npc.skeletontype.invalid-type=Invalid skeleton type. Try one of the following: [[{0}]].\ncitizens.commands.npc.snowman.derp-set=[[{0}]] is now in derp mode.\ncitizens.commands.npc.snowman.derp-stopped=[[{0}]] is no longer in derp mode.\ncitizens.commands.npc.spawn.already-spawned=[[{0}]] is already spawned at another location. Use ''/npc tphere'' to teleport the NPC to your location.\ncitizens.commands.npc.spawn.missing-npc-id=No NPC with the ID {0} exists.\ncitizens.commands.npc.spawn.no-location=No stored location available - command must be used ingame.\ncitizens.commands.npc.spawn.numeric-id-only=Only numeric IDs can be used for /npc spawn.\ncitizens.commands.npc.spawn.spawned=You spawned [[{0}]].\ncitizens.commands.npc.speed.modifier-above-limit=Speed is above the limit.\ncitizens.commands.npc.speed.set=NPC speed modifier set to [[{0}]].\ncitizens.commands.npc.swim.set=[[{0}]] will now swim in water.\ncitizens.commands.npc.swim.unset=[[{0}]] will no longer swim in water.\ncitizens.commands.npc.targetable.set=[[{0}]] can now be targeted by mobs.\ncitizens.commands.npc.targetable.unset=[[{0}]] can no longer be targeted by mobs.\ncitizens.commands.npc.tp.teleported=You teleported to [[{0}]].\ncitizens.commands.npc.tp.location-not-found=Couldn''t find the target NPC''s location.\ncitizens.commands.npc.tpto.success=Teleported successfully.\ncitizens.commands.npc.tpto.to-not-found=Destination entity not found.\ncitizens.commands.npc.tpto.from-not-found=Source entity not found.\ncitizens.commands.npc.tphere.missing-cursor-block=Please look at a block to teleport to.\ncitizens.commands.npc.tphere.teleported=[[{0}]] was teleported to {1}.\ncitizens.commands.npc.type.set=[[{0}]]''s type set to [[{1}]].\ncitizens.commands.npc.type.invalid=[[{0}]] is not a valid type.\ncitizens.commands.npc.vulnerable.set=[[{0}]] is now vulnerable.\ncitizens.commands.npc.vulnerable.stopped=[[{0}]] is no longer vulnerable.\ncitizens.commands.npc.wolf.unknown-collar-color=[[{0}]] is not an RGB-formatted collar color or the name of a DyeColor.\ncitizens.commands.npc.wolf.collar-color-unsupported=[[{0}]] is not a RGB color code that can be used on a wolf''s collar.\ncitizens.commands.npc.villager.level-set=Level set to [[{0}]].\ncitizens.commands.npc.villager.invalid-type=Invalid villager type. Valid types are: [[{0}]].\ncitizens.commands.npc.villager.type-set=Type set to [[{0}]].\ncitizens.commands.npc.zombiemod.villager-set=[[{0}]] is now a villager.\ncitizens.commands.npc.zombiemod.villager-unset=[[{0}]] is no longer a villager.\ncitizens.commands.npc.zombiemod.baby-set=[[{0}]] is now a baby.\ncitizens.commands.npc.zombiemod.baby-unset=[[{0}]] is no longer a baby.\ncitizens.commands.npc.zombiemod.villager-profession-set=[[{0}]]''s profession set to [[{1}]].\ncitizens.commands.page-missing=The page [[{0}]] does not exist.\ncitizens.commands.requirements.disallowed-mobtype=The NPC cannot be the mob type [[{0}]] for that command.\ncitizens.commands.requirements.living-entity=The NPC must be a living entity.\ncitizens.commands.requirements.missing-permission=You don''t have permission to execute that command.\ncitizens.commands.requirements.missing-required-trait=Missing required trait [[{0}]].\ncitizens.commands.requirements.must-be-ingame=You must be ingame to use that command.\ncitizens.commands.requirements.must-be-owner=You must be the owner of this NPC to execute that command.\ncitizens.commands.requirements.must-have-selected=You must have an NPC selected to execute that command.\ncitizens.commands.requirements.too-few-arguments=Too few arguments.\ncitizens.commands.requirements.too-many-arguments=Too many arguments.\ncitizens.commands.script.compiled=Script compiled.\ncitizens.commands.script.compiling=Script compiling...\ncitizens.commands.script.file-missing=The file [[{0}]] doesn''t exist!\ncitizens.commands.template.applied=Template applied to [[{0}]] NPCs.\ncitizens.commands.template.conflict=A template by that name already exists.\ncitizens.commands.template.created=Template created.\ncitizens.commands.template.missing=Template not found.\ncitizens.commands.template.delete.deleted=Deleted template [[{0}]].\ncitizens.commands.template.list.header=]]Available templates[[:]]\ncitizens.commands.trait.added=Added {0} successfully.\ncitizens.commands.trait.failed-to-add=<7>Couldn''t add {0}.\ncitizens.commands.trait.failed-to-change=<7>Couldn''t change {0}.\ncitizens.commands.trait.failed-to-remove=<7>Couldn''t remove {0}.\ncitizens.commands.trait.removed=Removed {0} successfully.\ncitizens.commands.traitc.missing=Trait not found.\ncitizens.commands.traitc.not-configurable=That trait is not configurable.\ncitizens.commands.traitc.not-on-npc=The NPC doesn''t have that trait.\ncitizens.commands.unknown-command=Unknown command. Did you mean:\ncitizens.commands.waypoints.add.waypoint-added=Added waypoint at [[{0}]] (index [[{1}]]).\ncitizens.commands.waypoints.disableteleporting.disabled=[[{0}]] will no longer teleport when stuck pathfinding.\ncitizens.commands.waypoints.opendoors.enabled=[[{0}]] will now open doors while pathfinding.\ncitizens.commands.waypoints.opendoors.disabled=[[{0}]] will no longer doors while pathfinding.\ncitizens.commands.wolf.traits-updated=[[{0}]]''s Traits were updated. Angry:[[{1}]], Sitting:[[{2}]], Tamed:[[{3}]], Collar Color:[[{4}]] \ncitizens.conversations.selection.invalid-choice=[[{0}]] is not a valid option.\ncitizens.economy.error-loading=Vault not found -> no economy handling.\ncitizens.economy.minimum-cost-required=Need at least [[{0}]].\ncitizens.economy.money-withdrawn=Withdrew [[{0}]] for your NPC.\ncitizens.editors.already-in-editor=You''re already in an editor!\ncitizens.editors.copier.begin=<b>Entered the NPC copier!<br>Click anywhere to copy the currently selected NPC.\ncitizens.editors.copier.end=Exited the NPC copier.\ncitizens.editors.equipment.all-items-removed=[[{0}]] had all of its items removed.\ncitizens.editors.equipment.begin=<b>Entered the equipment editor!<br>[[Right click]] to equip the NPC or [[crouch right click]] to change the item in hand!<br>Type [[offhand]], [[chestplate]], [[helmet]], etc. in chat to equip specific slots with the item you''re holding!\ncitizens.editors.equipment.end=Exited the equipment editor.\ncitizens.editors.equipment.invalid-block=Invalid block!\ncitizens.editors.equipment.saddled-set=[[{0}]] is now saddled.\ncitizens.editors.equipment.saddled-stopped=[[{0}]] is no longer saddled.\ncitizens.editors.equipment.sheared-set=[[{0}]] is now sheared.\ncitizens.editors.equipment.sheared-stopped=[[{0}]] is no longer sheared.\ncitizens.editors.equipment.sheep-coloured=[[{0}]] is now coloured [[{1}]].\ncitizens.editors.selection.start-prompt=There were multiple NPCs with the supplied name.<br>Please enter an id or number from the list below to select that NPC.\ncitizens.editors.text.add-prompt=Enter text to add to the NPC.\ncitizens.editors.text.added-entry=[[Added]] the entry [[{0}]].\ncitizens.editors.text.begin=<b>Entered the text editor! Type ''exit'' to leave the editor.\ncitizens.editors.text.change-page-prompt=Enter a page number to view more text entries.\ncitizens.editors.text.close-talker-set=[[Close talker]] set to [[{0}]].\ncitizens.editors.text.edit-begin-prompt=Enter the index of the entry you wish to edit or [[page]] to view more pages.\ncitizens.editors.text.edit-prompt=Enter text to edit the entry.\ncitizens.editors.text.edited-text=Changed entry at index [[{0}]] to [[{1}]].\ncitizens.editors.text.end=Exited the text editor.\ncitizens.editors.text.missing-item-set-pattern=Missing item in hand pattern.\ncitizens.editors.text.invalid-edit-type=Invalid edit type.\ncitizens.editors.text.invalid-index=[[{0}]] is not a valid index!\ncitizens.editors.text.invalid-input=Invalid input.\ncitizens.editors.text.invalid-page=Invalid page number.\ncitizens.editors.text.invalid-range=Invalid range.\ncitizens.editors.text.invalid-delay=Invalid delay.\ncitizens.editors.text.random-talker-set=[[Random talking]] set to [[{0}]].\ncitizens.editors.text.range-set=[[Range]] set to [[{0}]].\ncitizens.editors.text.delay-set=[[Delay]] set to [[{0}]] seconds.\ncitizens.editors.text.realistic-looking-set=[[Realistic looking]] set to [[{0}]].\ncitizens.editors.text.remove-prompt=Enter the index of the entry you wish to remove or [[page]] to view more pages.\ncitizens.editors.text.removed-entry=[[Removed]] entry at index [[{0}]].\ncitizens.editors.text.start-prompt=Type [[add]] to add an entry, [[edit]] to edit entries, [[remove]] to remove entries, [[close]] to toggle the NPC to send messages when players get close, [[item]] to set the talk item in hand pattern (set to [[default]] to clear), [[range]] to set the talking range, [[delay]] to set the talking delay in seconds and [[random]] to toggle the NPC as a random talker. Type [[help]] to show this again.\ncitizens.editors.text.talk-item-set=[[Talk item pattern]] set to [[{0}]].\ncitizens.editors.waypoints.wander.editing-regions-stop=Exited the region editor.\ncitizens.editors.waypoints.wander.worldguard-region-not-found=WorldGuard region not found.\ncitizens.editors.waypoints.wander.worldguard-region-set=WorldGuard region set to [[{0}]].\ncitizens.editors.waypoints.wander.range-set=Wander range set to xrange [[{0}]] and yrange [[{1}]].\ncitizens.editors.waypoints.wander.begin=<b>Entered the wander waypoint editor.<br>    Type [[xrange <number>]] or [[yrange <number>]] to modify the random wander range. Type [[regions]] to enter the region editor.<br>Type [[delay <ticks>]] to delay the NPC between wanders. Type [[worldguardregion <regionId>]] to restrict movement to a WorldGuard region.\ncitizens.editors.waypoints.wander.end=Exited the wander waypoint editor.\ncitizens.editors.waypoints.wander.delay-set=Delay between wanders set to [[{0}]] ticks.\ncitizens.editors.waypoints.wander.invalid-delay=Invalid delay specified.\ncitizens.editors.waypoints.wander.added-region=[[Added]] wanderable region at ({0}) ([[{1}]]).\ncitizens.editors.waypoints.wander.removed-region=[[Removed]] wanderable region at ({0}) ([[{1}]] remaining).\ncitizens.editors.waypoints.wander.editing-regions=Now editing regions!<br>    [[Left click]] to add a new wanderable region using the xrange/yrange box centred at that block.<br>    [[Right click]] an existing marker to remove that region.<br>    Type [[regions]] to stop or simply exit the editor. Regions should be overlapping with each other.\ncitizens.editors.waypoints.guided.end=Exited the guided waypoint editor.\ncitizens.editors.waypoints.guided.begin=<b>Entered the guided waypoint editor!<br>    [[Left click]] to add a waypoint guide, [[right click]] an existing waypoint to remove.<br>    [[Sneak]] while left clicking to add a destination waypoint.<br>    Type [[toggle path]] to toggle showing entities at waypoints.\ncitizens.editors.waypoints.guided.added-guide=Added a [[guide]] waypoint. This will guide NPCs to their destination.\ncitizens.editors.waypoints.guided.added-available=Added a [[destination]] waypoint. This will be available for NPCs to path to.\ncitizens.editors.waypoints.guided.already-taken=There is already a waypoint here.\ncitizens.editors.waypoints.linear.added-waypoint=[[Added]] a waypoint at ({0}) ([[{1}]] total).\ncitizens.editors.waypoints.linear.begin=<b>=== <l>Linear Waypoint Editor ===<br>    [[Left click]] to add a waypoint, [[right click]] to remove it.<br>    You can right click while sneaking to select and remove specific points.<br>    Type [[markers]] to hide waypoints,<br>    [[triggers]] to enter the trigger editor,<br>    [[clear]] to clear all waypoints,<br>    [[cycle]] to make NPCs cycle through waypoints instead of looping.\ncitizens.editors.waypoints.linear.selected-waypoint=Selected waypoint at {0}. Sneak + right click again to remove this waypoint.\ncitizens.editors.waypoints.linear.end=Exited the linear waypoint editor.\ncitizens.editors.waypoints.linear.not-showing-markers=[[Stopped]] showing waypoint markers.\ncitizens.editors.waypoints.linear.range-exceeded=Previous waypoint is {0} blocks away but the distance limit is {1}.\ncitizens.editors.waypoints.linear.removed-waypoint=[[Removed]] a waypoint ([[{0}]] remaining)\ncitizens.editors.waypoints.linear.showing-markers=[[Showing]] waypoint markers.\ncitizens.editors.waypoints.linear.waypoints-cleared=Waypoints cleared.\ncitizens.editors.waypoints.linear.cycle-set=Now [[cycling]] through waypoints.\ncitizens.editors.waypoints.linear.cycle-unset=Now [[looping]] through waypoints.\ncitizens.editors.waypoints.triggers.add.added=<b>Added waypoint trigger successfully ({0}).\ncitizens.editors.waypoints.triggers.add.invalid-trigger=Couldn''t create a trigger by the name [[{0}]].\ncitizens.editors.waypoints.triggers.add.prompt=Enter in a trigger name to add or type [[back]] to return to the edit prompt. Valid trigger names are {0}.\ncitizens.editors.waypoints.triggers.animation.added=Animation [[{0}]] added.\ncitizens.editors.waypoints.triggers.list=Current triggers are:{0}\ncitizens.editors.waypoints.triggers.animation.prompt=Enter in animations to perform - valid animations are {0}.<br>Type in [[finish]] to finish the animation trigger or [[back]] to return to the previous prompt.\ncitizens.editors.waypoints.triggers.animation.invalid-animation=Invalid animation [[{0}]]. Valid animations are {1}.\ncitizens.editors.waypoints.triggers.chat.invalid-radius=The radius must be a number.\ncitizens.editors.waypoints.triggers.chat.missing-radius=No radius supplied.\ncitizens.editors.waypoints.triggers.chat.message-added=Message added: [[{0}]].\ncitizens.editors.waypoints.triggers.chat.radius-set=Radius set to [[{0}]] blocks.\ncitizens.editors.waypoints.triggers.chat.prompt=Enter in chat lines to say.<br>Type in [[radius (radius)]] to set the block radius to broadcast the messages.<br>Type [[finish]] to finish the chat trigger or [[back]] to return to the previous prompt.\ncitizens.editors.waypoints.triggers.delay.prompt=Enter the delay in [[server ticks]] to use. (20 ticks = 1 second)\ncitizens.editors.waypoints.triggers.main.missing-waypoint=Not editing a waypoint.\ncitizens.editors.waypoints.triggers.main.exit=<b>Exited the waypoint trigger editor.\ncitizens.editors.waypoints.triggers.main.prompt=<b>- Waypoint Trigger Editor -<br>    Type [[add]] or [[remove]] to edit triggers.<br>    Type [[triggers]] or [[exit]] to exit this editor.<br>    Current triggers are:{0}\ncitizens.editors.waypoints.triggers.remove.index-out-of-range=Index must be in the range [[1-{0}]].\ncitizens.editors.waypoints.triggers.remove.not-a-number=Index must be a number.\ncitizens.editors.waypoints.triggers.remove.prompt=Enter in the index of the trigger to delete or [[back]] to return to the edit prompt. Current triggers are:{0}\ncitizens.editors.waypoints.triggers.remove.removed=Successfully removed trigger [[{0}]].\ncitizens.editors.waypoints.triggers.speed.prompt=Enter the speed modifier as a [[percentage]] of its base speed.\ncitizens.editors.waypoints.triggers.teleport.invalid-format=Invalid location given. Format is [[world]]:[[x]]:[[y]]:[[z]].\ncitizens.editors.waypoints.triggers.teleport.prompt=Enter the destination in the format world:x:y:z. Type [[here]] to use your current location. Type [[back]] to return to the edit prompt.\ncitizens.limits.over-npc-limit=Over the NPC limit of {0}.\ncitizens.load-task-error=NPC load task couldn''t be scheduled, disabling...\ncitizens.nms-errors.clearing-goals=Could not clear goals: {0}.\ncitizens.nms-errors.restoring-goals=Could not restore goals: {0}.\ncitizens.nms-errors.error-setting-persistent=Could not set NPC as persistent: {0}. NPC entity may despawn.\ncitizens.nms-errors.getting-field=Could not fetch NMS field {0}: [[{1}.\ncitizens.nms-errors.getting-method=Could not fetch NMS method {0}: [[{1}.\ncitizens.nms-errors.getting-id-mapping=Could not fetch entity id mapping fields: {0}.\ncitizens.nms-errors.spawning-custom-entity=Could not spawn custom entity: {0}.\ncitizens.nms-errors.stopping-network-threads=Could not stop network threads: {0}.\ncitizens.nms-errors.updating-land-modifier=Could not update land speed modifier: {0}.\ncitizens.nms-errors.updating-navigation-world=Could not update navigation world: {0}.\ncitizens.nms-errors.updating-pathfinding-range=Could not update pathfinding range: {0}.\ncitizens.notifications.database-connection-failed=Unable to connect to database, falling back to YAML\ncitizens.notifications.error-reloading=Error occured while reloading, see console.\ncitizens.notifications.exception-updating-npc=Exception while updating {0}: {1}.\ncitizens.notifications.incompatible-version=v{0} is not compatible with Minecraft v{1} - try upgrading or downgrading Citizens. Disabling.\ncitizens.notifications.locale=Using locale {0}.\ncitizens.notifications.metrics-load-error=Unable to start metrics: {0}.\ncitizens.notifications.missing-translations=Missing translations file for locale {0}. Defaulting to en locale.\ncitizens.notifications.npc-name-not-found=Could not find a name for ID {0}.\ncitizens.notifications.npc-not-found=No NPC could be found.\ncitizens.notifications.npcs-loaded=Loaded {0} NPCs.\ncitizens.notifications.reloaded=Citizens reloaded.\ncitizens.notifications.reloading=Reloading Citizens...\ncitizens.notifications.saved=Citizens saved.\ncitizens.notifications.saving=Saving Citizens...\ncitizens.notifications.skipping-broken-trait=Skipped broken or missing trait {0} while loading ID {1}. Has the name changed?\ncitizens.notifications.skipping-invalid-pose=Skipping pose {0} - invalid yaw/pitch ({1}).\ncitizens.notifications.trait-load-failed=The trait {0} failed to load for NPC ID: {1}.\ncitizens.notifications.trait-onspawn-failed=An exception occurred while the trait {0} was spawning for NPC ID {1}.\ncitizens.notifications.unknown-npc-type=NPC type {0} was not recognized. Did you spell it correctly?\ncitizens.saves.load-failed=Unable to load saves, disabling...\ncitizens.settings.writing-default=Writing default setting: {0}\ncitizens.sub-plugins.error-on-load={0} initializing {1}\ncitizens.sub-plugins.load=Loading {0}\ncitizens.traits.age-description={0}''s age is [[{1}]]. Locked is [[{2}]].\ncitizens.waypoints.available-providers-header=<b>List of available providers\ncitizens.waypoints.current-provider=The current waypoint provider is [[{0}]].\ncitizens.waypoints.set-provider=Set the waypoint provider to [[{0}]]."
+    create: '§aCrear conjunto de misiones'
+    edit: '§e> §6§oEditar el conjunto... §e<'
+    choose: '§e> §6§oElige este grupo §e<'
+  poolCreation:
+    name: Creación del conjunto de misiones
+    hologramText: '§eHolograma personalizado grupal'
+    maxQuests: '§aMximas misiones'
+    questsPerLaunch: '§aMisiones iniciadas por lanzamiento'
+    time: '§bEstablecer tiempo entre misiones'
+    redoAllowed: Está permitido rehacer
+    avoidDuplicates: Evitar duplicados
+    avoidDuplicatesLore: '§8> §7Intenta evitar hacer\n  la misma misión una y otra vez.'
+    requirements: '§bRequerimientos para iniciar una misión'
+  poolsList.name: Grupos de misiones
+  itemComparisons:
+    name: Comparaciones de artículos
+    bukkit: Comparación nativa de Bukkit
+    bukkitLore: "Utiliza el sistema predeterminado de comparación de artículos de Bukkit.\nCompara material, durabilidad, etiquetas..."
+    customBukkit: Comparación nativa de bukkit - NO NBT
+    customBukkitLore: "Utiliza el sistema de comparación de artículos por defecto de Bukkit, pero elimina las etiquetas NBT.\nCompara material, durabilidad..."
+    material: Material del artículo
+    materialLore: 'Compara el material del objeto (i.e. piedra, espada de hierro...)'
+    itemName: Nombre del artículo
+    itemNameLore: Comparar nombres de artículos
+    itemLore: Descripcion del objeto
+    itemLoreLore: Comparar descripcion de los artículos
+    enchants: Encantamientos de los articulos
+    enchantsLore: Comparar los encantamientos de los articulos
+    repairCost: Coste de reparación
+    repairCostLore: Compara el coste de reparación de armaduras y espadas
+  editTitle:
+    name: Editar título
+    title: '§6Título'
+    subtitle: '§eSubtítulo'
+    fadeIn: '§aDuración del Fade-in'
+    stay: '§bDuración'
+    fadeOut: '§aDuración del Fade-out'
 scoreboard:
   name: '§6§lMisión'
   noLaunched: '§cNo hay misiones en curso.'
   noLaunchedName: '§c§lCargando'
   noLaunchedDescription: '§c§oCargando'
+  textBetwteenBranch: '§e o'
+  asyncEnd: '§ex'
   stage:
     region: '§eEncontrar región §6{0}'
     npc: '§eHablar con NPC §6{0}'
+    items: '§eTrae objetos a §6{0}§e:'
     mobs: '§eMata §6{0}'
     mine: '§eMina {0}'
+    placeBlocks: '§eColocar {0}'
     chat: '§eEscribir §6{0}'
     interact: '§eClick en el bloque en §6{0}'
+    interactMaterial: '§eHaz clic en un bloque §6{0}§e'
     fish: '§ePez §6{0}'
     craft: '§eCraftear §6{0}'
     bucket: '§eRellenar §6{0}'
     location: '§eIr a §6{0}§e, §6{1}§e, §6{2}§e en §6{3}'
+    breed: '§eReproducir §6{0}'
+    tame: '§eDomar §6{0}'
 indication:
   startQuest: '§7Quieres iniciar la misión {0}?'
   closeInventory: '§7¿Estás seguro de que quieres cerrar la GUI?'
   cancelQuest: '§7Estás seguro de que quieres cancelar la misión {0}?'
-misc:
+  removeQuest: '§7¿Estás seguro de que quieres eliminar la misión {0}?'
+description:
   requirement:
+    title: '§8§lRequisitos:'
+    level: 'Nivel {0}'
+    jobLevel: 'Nivel {0} de {1}'
+    combatLevel: 'Nivel de combate {0}'
+    skillLevel: 'Nivel {0} de {1}'
+    class: 'Clase {0}'
+    faction: 'Facción {0}'
+    quest: 'Finalizar misión §e{0}'
+  reward:
+    title: '§8§lRecompensas:'
+misc:
+  format:
+    prefix: '§6<§e§lMisiones§r§6> §r'
+    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
+  time:
+    weeks: '{0} semanas'
+    days: '{0} días'
+    hours: '{0} horas'
+    minutes: '{0} minutos'
+    lessThanAMinute: 'menos de un minuto'
+  stageType:
+    region: Buscar región
+    npc: Buscar NPC
+    items: Traer elementos
+    mobs: Mata mobs
+    mine: Romper bloques
+    placeBlocks: Colocar bloques
+    chat: Escribir en el chat
+    interact: Interactuar con el bloque
+    Fish: Captura de peces
+    Craft: Fabrica objetos
+    Bucket: Rellenar cubo
+    location: Buscar ubicación
+    playTime: Tiempo de juego
+    breedAnimals: Reproducir Animales
+    tameAnimals: Domar animales
+  comparison:
+    equals: igual a {0}
+    different: diferente a {0}
+    less: estrictamente menos de {0}
+    lessOrEquals: menos de {0}
+    greater: estrictamente mayor que {0}
+    greaterOrEquals: mayor que {0}
+  requirement:
+    logicalOr: '§dLógica O (requerimientos)'
+    skillAPILevel: '§bSkillAPI nivel requerido'
+    class: '§bClase(s) requerida'
     faction: '§bFacción(es) requerida(s)'
     jobLevel: '§bNivel de trabajo requerido'
     combatLevel: '§bNivel de combate requerido'
@@ -303,10 +698,19 @@ misc:
     water: Balde de agua
     lava: Balde de lava
     milk: Balde de leche
+  click:
+    right: Click derecho
+    left: Clic izquierdo
+    shift-right: Mayús-Clic derecho
+    shift-left: Mayús-Clic izquierdo
+    middle: Clic central
+  ticks: '{0} ticks'
   questItemLore: '§e§oObjeto de la misión'
   hologramText: '§8§lNPC de la misión'
+  poolHologramText: '§e¡Nueva misión disponible!'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eTipo de entidad: {0}'
+  entityTypeAny: '§eCualquier entidad'
   enabled: Activado
   disabled: Desactivado
   unknown: desconocido
@@ -314,6 +718,7 @@ misc:
   unused: '§a§lSin usar'
   used: '§a§lUsado'
   remove: '§7Click central para eliminar'
+  removeRaw: Eliminar
   or: o
   amount: '§eCantidad: {0}'
   items: Objetos

@@ -10,11 +10,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.stages.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.Inventories;
@@ -23,11 +23,9 @@ import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
@@ -47,20 +45,22 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		this.placeCancelled = cancelPlaced;
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_MINE.format(super.descriptionLine(acc, source));
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onMine(BlockBreakEvent e){
-		if (e.isCancelled() || e.getPlayer() == null) return;
+	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
-			if (placeCancelled && e.getBlock().hasMetadata("playerInStage")){
-				if (e.getBlock().getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+			for (Block block : e.getBlocks()) {
+				if (placeCancelled && block.hasMetadata("playerInStage")) {
+					if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+				}
+				if (event(acc, p, block, 1)) return;
 			}
-			event(acc, p, e.getBlock(), 1);
 		}
 	}
 	
@@ -85,18 +85,22 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		return super.objectApplies(object, other);
 	}
 	
+	@Override
 	protected String getName(BQBlock object) {
-		return MinecraftNames.getMaterialName(object.getMaterial());
+		return object.getName();
 	}
 
+	@Override
 	protected Object serialize(BQBlock object) {
 		return object.getAsString();
 	}
 
+	@Override
 	protected BQBlock deserialize(Object object) {
 		return BQBlock.fromString((String) object);
 	}
 
+	@Override
 	protected void serialize(Map<String, Object> map){
 		super.serialize(map);
 		if (placeCancelled) map.put("placeCancelled", placeCancelled);
@@ -109,23 +113,12 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("blocks");
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> blockData = list.get(i);
-				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
+				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock.BQBlockMaterial(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
 			}
 		}
 
 		StageMine stage = new StageMine(branch, objects);
 		stage.deserialize(map);
-
-		if (map.containsKey("remaining")) {
-			PlayersManagerYAML migration = PlayersManagerYAML.getMigrationYAML();
-			((Map<String, List<Map<String, Object>>>) map.get("remaining")).forEach((acc, blocks) -> {
-				Map<BQBlock, Integer> blocksMap = new HashMap<>();
-				for (Map<String, Object> block : blocks) {
-					blocksMap.put(new BQBlock(XMaterial.valueOf((String) block.get("type"))), (int) block.get("amount"));
-				}
-				stage.migrateDatas(migration.getByIndex(acc), blocksMap);
-			});
-		}
 
 		if (map.containsKey("placeCancelled")) stage.placeCancelled = (boolean) map.get("placeCancelled");
 		return stage;

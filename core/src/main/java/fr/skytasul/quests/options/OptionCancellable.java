@@ -9,7 +9,7 @@ public class OptionCancellable extends QuestOptionBoolean {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return QuestsConfiguration.allowPlayerCancelQuest();
+		return QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest();
 	}
 	
 	@Override

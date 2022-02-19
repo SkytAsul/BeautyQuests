@@ -39,7 +39,7 @@ public class CommandGUI implements CustomInventory {
 		inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_COMMAND.toString());
 		
 		inv.setItem(0, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.commandValue.toString()));
-		inv.setItem(1, ItemUtils.itemSwitch(Lang.commandConsole.toString(), false));
+		inv.setItem(1, ItemUtils.itemSwitch(Lang.commandConsole.toString(), console));
 		inv.setItem(2, ItemUtils.item(XMaterial.CLOCK, Lang.commandDelay.toString()));
 
 		inv.setItem(4, ItemUtils.itemDone);
@@ -54,6 +54,7 @@ public class CommandGUI implements CustomInventory {
 			this.cmd = cmd.label;
 			this.console = cmd.console;
 			this.delay = cmd.delay;
+			if (inv != null && console) ItemUtils.set(inv.getItem(1), true);
 			if (inv != null) inv.getItem(4).setType(Material.DIAMOND);
 		}
 		return this;

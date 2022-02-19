@@ -1,0 +1,607 @@
+---
+msg:
+  quest:
+    finished:
+      base: '§aยินดีด้วย! คุณได้ทำภารกิจสำเร็จแล้ว§e{0}§a!'
+      obtain: '§aคุณได้รับ {0}!'
+    started: '§aภารกิจของคุณเริ่มแล้ว §r§e{0}§o§6!'
+    created: '§aยินดีด้วย! คุณได้สร้างภารกิจ §e{0}§a which includes {1} branch(es)!'
+    edited: '§aยินดีด้วย! คุณได้แก้ไขภารกิจ §e{0}§a which includes now {1} branch(es)!'
+    createCancelled: '§cการสร้าง หรือแก้ไข ถูกยกเลิกโดย Plugin อื่น!'
+    cancelling: '§cกระบวนการสร้างเควสถูกยกเลิก.'
+    editCancelling: '§cการแก้ไขเควส ถูกยกเลิก.'
+    invalidID: '§cภารกิจ id {0} ไม่มีอยู่จริง.'
+    alreadyStarted: '§cคุณเริ่มภารกิจเรียบร้อยแล้ว!'
+  quests:
+    maxLaunched: '§cไม่สามารถรับได้มากกว่า {0} quest(s) ในเวลาเดียวกัน...'
+    nopStep: '§cภารกิจนี้ไม่มีขั้นตอนอื่น.'
+    updated: '§7ภารกิจ §e{0}§7 อัพเดต.'
+    checkpoint: '§7ถึงจุดตรวจภารกิจแล้ว!'
+    failed: '§cภารกิจของคุณล้มเหลว {0}...'
+  pools:
+    noTime: '§cคุณต้องรอเวลา {0} ก่อนจะไปทำภารกิจอื่นt.'
+    allCompleted: '§7ภารกิจของคุณเสร็จหมดแล้ว!'
+    noAvailable: '§7ยังไม่มีภารกิจอื่นในตอนนี้...'
+    maxQuests: '§cไม่สามารถรับได้มากกว่า {0} quest(s) ในเวลาเดียวกัน...'
+  questItem:
+    drop: '§cคุณไม่สามารถทิ้ง ไอเท่ม เควสนี้ได้!'
+    craft: '§cไอเท่มเควสชิ้นนี้ไม่สามารถคราฟได้!'
+  stageMobs:
+    noMobs: '§cสเตจนี้ไม่จำเป็นต้องฆ่า mobs.'
+    listMobs: '§aคุณต้องฆ่า {0}.'
+  writeNPCText: '§เขียน dialog เพื่อให้ NPC คุยกับผู้เล่น: (เขียน "help" เพื่อที่จะแสดงคำว่า help.)'
+  writeRegionName: '§aเขียนชื่อ region ที่ต้องการ เพื่อ step ขั้นต่อไป:'
+  writeXPGain: '§aกำหนดจำนวน EXP ที่ผู้เล่นจะได้รับ: (Last value: {0})'
+  writeMobAmount: '§aกำหนดจำนวน mobs ที่ต้องฆ่า:'
+  writeMobName: '§aเขียนชื่อที่กำหนดเองของ mob ที่จะฆ่า:'
+  writeChatMessage: '§aเขียนข้อความ: (Add "{SLASH}" หากคุณต้องการให้ใช้ command ในการเริ่มต้น.)'
+  writeEndMessage: "§aเขียนข้อความที่ต้องการส่ง เมื่อจบภารกิจ หรือจบสเตจ:\n"
+  writeDescriptionText: '§aเขียนข้อความ เพื่ออธิบายเป้าหมายของสเตจ:'
+  writeStageText: '§aเขียนข้อความ  ที่จะส่งไปให้ผู้เล่น เมื่อเริ่ม step:'
+  moveToTeleportPoint: '§aไปยังจุด teleport ที่ต้องการ .'
+  writeNpcName: "§aเขียนชื่อ NPC:\n"
+  writeNpcSkinName: '§aกำหนดชื่อ skin ให้ NPC:'
+  writeQuestName: '§aเขียนชื่อ ภารกิจ ของคุณ:'
+  writeCommand: '§aเขียน command ที่ต้องการ: (command ไม่มีเครื่องหมาย "'
+  writeHologramText: '§aเขียนข้อความ โฮโลแกรม: (เขียน "none" ถ้าไม่ต้องการใช้ฮโลแกรมและ "null" ถ้าต้องการข้อความเริ่มต้น)'
+  writeQuestTimer: '§เขียนเวลาที่ต้องการให้รอ (นาที) ก่อนที่จะสามารถรีสตาร์ทภารกิจได้: (เขียน "null" หากต้องการจับเวลาเริ่มต้น)'
+  writeConfirmMessage: '§เขียนข้อความยืนยัน เมื่อผู้เล่นกำลังจะเริ่มภารกิจ: (เขียน "null" หากต้องการข้อความเริ่มต้น)'
+  writeQuestDescription: '§aเขียนคำอธิบายของภารกิจที่แสดงใน GUI ภารกิจของผู้เล่น'
+  writeQuestMaterial: '§aกำหนดไอเท่ม material ของภารกิจ.'
+  requirements:
+    quest: คุณต้องทำภารกิจ e {0} §c! ให้เสร็จ
+    level: '§cคุณต้องมีเลเวล {0}!'
+    job: '§cเลเวลอาชีพ §e{1}§c ต้อง {0}!'
+    skill: '§cเลเวลสกิล §e{1}§c ต้อง {0}!'
+    combatLevel: '§cเลเวล combat ต้อง {0}!'
+    money: "§cคุณต้องมี {0}!\n"
+    waitTime: '§cคุณต้องรอ {0} นาที จึงจะสามารถเริ่มภารกิจนี้ใหม่ได้!'
+  experience:
+    edited: '§คุณเปลี่ยนค่า EXP ที่ได้รับจาก {0} เป็น {1} คะแนน.'
+  selectNPCToKill: '§aเลือก NPC ที่จะฆ่า.'
+  npc:
+    remove: '§aลบ NPC.'
+    talk: "§aไปคุยกับ NPC ชื่อ §e{0}§a.\n"
+  regionDoesntExists: '§ไม่มี region นี้ (คุณต้องอยู่ในโลกเดียวกัน)'
+  npcDoesntExist: '§cไม่มี NPC ที่มี id {0}'
+  objectDoesntExist: '§ไม่มี ไอเท่ม ที่ระบุด้วยรหัส {0}'
+  number:
+    negative: "§cคุณต้องป้อนจำนวนบวก!\n"
+    zero: '§cคุณต้องป้อนตัวเลขอื่นที่ไม่ใช่ 0!'
+    invalid: '§c{0} ไม่ใช่ตัวเลขที่ถูกต้อง.'
+  errorOccurred: '§cเกิดข้อผิดพลาด โปรดติดต่อผู้ดูแลระบบ! §4§lError code: {0}'
+  commandsDisabled: ตอนนี้คุณไม่ได้รับอนุญาตให้ใช้ commands!
+  indexOutOfBounds: '§หมายเลข {0} อยู่นอกขอบเขต! ต้องอยู่ระหว่าง {1} ถึง {2}'
+  invalidBlockData: '§blockdata {0} ไม่ถูกต้อง หรือเข้ากันไม่ได้กับ block {1}'
+  bringBackObjects: พาฉันกลับมาที่ {0}
+  inventoryFull: '§cช่องเก็บ ไอเท่ม ของคุณเต็ม, ไอเทมหล่นลงพื้น.'
+  playerNeverConnected: '§cไม่สามารถค้นหาข้อมูลเกี่ยวกับผู้เล่นนี้ได้ {0}'
+  playerNotOnline: '§cผู้เล่น {0} offline.'
+  command:
+    checkpoint:
+      noCheckpoint: '§cไม่พบ checkpoint สำหรับภารกิจ {0}'
+      questNotStarted: '§cคุณไม่ได้ทำภารกิจนี้.'
+    setStage:
+      branchDoesntExist: '§cไม่มี branch ที่มี id {0}'
+      doesntExist: "§cไม่มี stage ที่มี id {0}\n"
+      next: "§a stage ถูกข้าม.\n"
+      nextUnavailable: '§ตัวเลือก "ข้าม" ไม่สามารถใช้ได้เมื่อผู้เล่นอยู่ในจุดสิ้นสุด branch.'
+      set: '§aStage {0} เริ่ม.'
+    playerNeeded: '§cคุณต้องเป็นผู้เล่น เพื่อดำเนินการ command นี้!'
+    incorrectSyntax: '§csyntax ไม่ถูกต้อง.'
+    noPermission: '§c permissions ของคุณใช้ command นี้ไม่ได้! (Required: {0})'
+    invalidCommand:
+      quests: '§cไม่มี command นี้, เขียน §e/quests help§c.'
+      simple: '§cไม่มี command นี้, เขียน §help§c.'
+    needItem: '§cคุณต้องถือ ไอเท่ม ไว้ในมือหลัก!'
+    itemChanged: '§ ไอเท่ม ที่ได้รับการแก้ไข การเปลี่ยนแปลงจะมีผล หลังจากรีสตาร์ท.'
+    itemRemoved: '§ไอเท่ม โฮโลแกรม ถูกลบออก'
+    removed: '§ภารกิจ {0} ถูกลบออกเรียบร้อยแล้ว'
+    leaveAll: '§คุณบังคับให้สิ้นสุด {0} เควส) ข้อผิดพลาด: {1}'
+    resetPlayer:
+      player: '§6ข้อมูลทั้งหมดเกี่ยวกับภารกิจของคุณ {0} รายการได้ถูกลบโดย {1}.'
+    resetPlayerQuest:
+      player: '§6ข้อมูลทั้งหมดเกี่ยวกับภารกิจ {0} ถูกลบโดย {1}'
+      remover: '§6 {0} ข้อมูลภารกิจของ {1} ถูกลบไปแล้ว'
+    resetQuest: '§6ลบข้อมูลของภารกิจสำหรับ  {0} players.'
+    startQuest: '§6คุณบังคับให้เริ่มภารกิจ {0} (UUID ของผู้เล่น: {1})'
+    cancelQuest: '§6คุณได้ยกเลิกภารกิจ {0}.'
+    cancelQuestUnavailable: '§ภารกิจ {0} ไม่สามารถยกเลิกได้'
+    backupCreated: '§6คุณได้สร้างการสำรองข้อมูลของ ภารกิจ และข้อมูลผู้เล่นทั้งหมดเรียบร้อยแล้ว'
+    backupPlayersFailed: '§การสร้างข้อมูลสำรองสำหรับข้อมูลผู้เล่นทั้งหมดล้มเหลว'
+    backupQuestsFailed: '§การสร้างข้อมูลสำรองสำหรับเควสทั้งหมดล้มเหลว'
+    adminModeEntered: '§คุณได้เข้าสู่โหมดผู้ดูแลระบบ'
+    adminModeLeft: '§คุณออกจากโหมดผู้ดูแลระบบแล้ว'
+    scoreboard:
+      lineSet: '§6คุณแก้ไข line เรียบร้อยแล้ว {0}'
+      lineReset: '§6คุณรีเซ็ต line สำเร็จแล้ว {0}'
+      lineRemoved: '§6คุณลบ line เรียบร้อยแล้ว {0}.'
+      lineInexistant: '§ไม่มี line {0}'
+      resetAll: '§6คุณรีเซ็ต สกอร์บอร์ด ของผู้เล่นสำเร็จแล้ว {0}'
+      hidden: '§6ป้ายบอกคะแนนของผู้เล่น {0} ถูกซ่อนไว้'
+      shown: '§6ป้ายบอกคะแนนของผู้เล่น {0} มีการแสดง.'
+    help:
+      header: '§6§lBeautyQuests — Help'
+      create: '§6/{0} create: §eสร้างภารกิจ'
+      edit: '§6/{0} edit: §eแก้ไขภารกิจ'
+      remove: '§6/{0} remove <id>: §eลบเควสด้วย id ที่ระบุหรือคลิกที่ NPC เมื่อไม่ได้กำหนดไว้'
+      finishAll: '§6/{0} finishAll <player>: §eจบภารกิจทั้งหมดของผู้เล่น'
+      setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eข้ามขั้นตอน stage/start the branch/set a stage สำหรับ branch.'
+      resetPlayer: '§6/{0} resetPlayer <player>: §eลบข้อมูลทั้งหมดเกี่ยวกับผู้เล่น'
+      resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eลบข้อมูลของภารกิจให้ผู้เล่น'
+      seePlayer: '§6/{0} seePlayer <player>: §eดูข้อมูลเกี่ยวกับผู้เล่น'
+      reload: '§6/{0} reload: §eSบันทึกและโหลดการกำหนดค่าและไฟล์ทั้งหมดซ้ำ. (§cdeprecated§e)'
+      start: '§6/{0} start <player> [id]: §eบังคับให้เริ่มเควส'
+      setItem: '§6/{0} setItem <talk|launch>: §eบันทึก hologram ไอเท่ม'
+      adminMode: '§6/{0} adminMode: §eสลับโหมดผู้ดูแลระบบ (มีประโยชน์สำหรับการแสดงข้อความบันทึกเล็กน้อย)'
+      version: '§6/{0} version: §eดูเวอร์ชันปลั๊กอินปัจจุบัน'
+      save: '§6/{0} save: §eทำการบันทึกปลั๊กอินด้วยตนเอง'
+      list: '§6/{0} list: §eดูรายการเควส (สำหรับเวอร์ชันที่รองรับเท่านั้น)'
+  typeCancel: '§aเขียนคำว่า "cancel" เพื่อกลับไปที่ข้อความสุดท้าย'
+  editor:
+    blockAmount: '§aเขียนจำนวน blocks:'
+    blockName: '§aเขียนชื่อ block:'
+    blockData: '§aเขียน blockdata (available blockdatas: {0}):'
+    typeBucketAmount: '§aเขียนจำนวน buckets ที่จะเติม:'
+    goToLocation: '§aไปยังตำแหน่งที่ต้องการสำหรับ stage.'
+    typeLocationRadius: '§aเขียนระยะทางที่ต้องการจาก location:'
+    typeGameTicks: '§aเขียน game ticks ที่ต้องการ:'
+    already: '§cคุณอยู่ในเครื่องมือแก้ไขแล้ว'
+    enter:
+      title: '§6 ~ โหมดแก้ไข ~'
+      subtitle: พิม /quests exitEditor เพื่อออกจากโหมดแก้ไข
+    npc:
+      enter: '§aคลิกที่ NPC หรือเขียน "cancel".'
+      choseStarter: '§aเลือก NPC ที่เริ่มภารกิจ'
+      notStarter: '§cNPC ตัวนี้ไม่ใช่ตัวเริ่มต้นภารกิจ'
+    text:
+      argNotSupported: '§cThe argument {0} ไม่รองรับ.'
+      chooseLvlRequired: '§aเขียนระดับ levels ที่ต้องการ:'
+      chooseJobRequired: '§aเขียนชื่อ job ที่ต้องการ:'
+      choosePermissionRequired: '§aเขียน permission ที่ต้องการ เพื่อเริ่มภารกิจ:'
+      choosePermissionMessage: '§aคุณสามารถเลือกข้อความปฏิเสธหากผู้เล่นไม่มี permission. ที่จำเป็น (หากต้องการข้ามขั้นตอนนี้ให้เขียน "null".)'
+      choosePlaceholderRequired:
+        identifier: '§aเขียนชื่อของ placeholder ต้องการ โดยไม่ต้องมี %:'
+        value: '§aขียนค่าที่ต้องการสำหรับ placeholder §e%§e{0}§e%§a:'
+      chooseSkillRequired: '§aเขียนชื่อของ skill ที่ต้องการ:'
+      chooseMoneyRequired: '§aเขียนจำนวนเงินที่ต้องการ:'
+      reward:
+        permissionName: '§aเขียนชื่อ permission'
+        permissionWorld: '§aเขียน world ที่จะแก้ไข permission หรือเขียน "null" ถ้าคุณต้องการให้เป็นแบบ global'
+        money: '§aเขียนจำนวนเงินที่ได้รับ:'
+      chooseObjectiveRequired: '§aเขียนชื่อ objective.'
+      chooseObjectiveTargetScore: '§aเขียน เป้าหมาย score สำหรับ objective.'
+      chooseRegionRequired: '§aเขียนชื่อ region ที่ต้องการ (คุณต้องอยู่ใน world เดียวกัน).'
+    selectWantedBlock: '§aคลิกด้วย stick บน block สำหรับ stage.'
+    itemCreator:
+      itemType: '§aเขียนชื่อ type ไอเท่ม ที่ต้องการ:'
+      itemAmount: '§เขียนจำนวน ไอเท่ม(s):'
+      itemName: '§aเขียนชื่อ item:'
+      itemLore: '§aแก้ไข lore ของ ไอเท่ม: (Write "help" for help.)'
+      unknownItemType: '§cไม่ทราบ item type.'
+      invalidItemType: '§cประเภท ไอเท่ม ไม่ถูกต้อง (item ไม่สามารถ block ได้)'
+      unknownBlockType: '§cไม่ทราบ block type. '
+      invalidBlockType: '§c block type ไม่ถูกต้อง'
+    dialog:
+      syntax: '§cCorrect syntax: {0}{1} <message>'
+      syntaxRemove: '§cCorrect sytax: remove <id>'
+      player: เพิ่ม §aMessage "{0}" สำหรับผู้เล่นแล้ว.
+      npc: เพิ่ม §aMessage "{0}" สำหรับ NPC แล้ว
+      noSender: '§aMessage "{0}" ถูกเพิ่มโดยไม่มีผู้ส่ง'
+      messageRemoved: '§aMessage "{0}" ถูกลบออก'
+      edited: ข้อความ "{0}" ได้ถูกแก้ไขแล้ว
+      soundAdded: เพิ่ม§aSound "{0}" สำหรับ message "{1}"
+      cleared: '§a {0} ข้อความที่ถูกลบ'
+      help:
+        header: '§6§lBeautyQuests — Dialog editor help'
+        npc: '§6npc <message>: §eเพิ่มข้อความที่ NPC พูด'
+        player: '§6player <ข้อความ>: §เพิ่มข้อความที่ผู้เล่นพูด.'
+        nothing: '§6noSender <message>: §eเพิ่มข้อความโดยไม่มีผู้ส่ง'
+        remove: '§6remove <id>: §ลบข้อความ'
+        list: '§6list: §eดูl messages ทั้งหมด.'
+        npcInsert: '§6npcInsert <id> <message>: §eใส่ข้อความที่ NPC พูด'
+        playerInsert: '§6playerInsert <id> <message>: §eใส่ข้อความที่ผู้เล่นพูด'
+        nothingInsert: '§6nothingInsert <id> <message>: §eใส่ข้อความโดยไม่มีคำนำหน้าใดๆ'
+        edit: 'แก้ไข <id> <message>:§eข้อความที่แก้ไข'
+        addSound: '§6addSound <id> <sound>: §เพิ่มเสียงให้กับข้อความ'
+        clear: '§6clear: §ลบข้อความทั้งหมด'
+        close: '§6close: §eตรวจสอบข้อความทั้งหมด'
+        setTime: '§6setTime <id> <time>: §eSetเวลา (in ticks) ก่อนที่ข้อความถัดไปจะเล่นโดยอัตโนมัติ'
+      timeSet: '§aTime ถูกแก้ไขสำหรับ message {0}: now {1} ticks.'
+      timeRemoved: '§aTime ถูกลบออกสำหรับ message {0}'
+    mythicmobs:
+      list: '§aรายการทั้งหมดของ Mythic Mobs:'
+      isntMythicMob: '§cMythic Mob นี้ไม่มีอยู่จริง'
+      disabled: '§cMythicMob ถูกปิดใช้งาน'
+    epicBossDoesntExist: '§c Epic Boss ตัวนี้ไม่มีอยู่จริง'
+    textList:
+      syntax: '§cCorrect syntax: '
+      added: เพิ่ม §aText "{0}" แล้ว
+      removed: '§aText "{0}" ถูกลบออก'
+      help:
+        header: '§6§lBeautyQuests — List editor help'
+        add: '§6add <message>: §eเพิ่มข้อความ'
+        remove: '§6remove <id>: §ลบข้อความ'
+        list: '§6list: §eดูข้อความที่เพิ่มทั้งหมด'
+        close: '§6close: §eตรวจสอบข้อความที่เพิ่มเข้ามา'
+    noSuchElement: '§ไม่มี element ดังกล่าว element ที่อนุญาต ได้แก่ §e {0}'
+    comparisonType: '§aตัวเลือก การเปรียบเทียบ type ที่คุณต้องการ among {0}. การเปรียบเทียบ ค่าเริ่มต้น คือ: §e§lมากกว่า หรือ เท่ากับ§r§a. Type §onull§r§a เพื่อใช้.'
+    scoreboardObjectiveNotFound: '§cไม่ทราบวัตถุประสงค์ของ สกอร์บอร์ด'
+    pool:
+      hologramText: 'เขียนข้อความโฮโลแกรมที่กำหนดเองสำหรับพูลนี้ (หรือ "null" ถ้าคุณต้องการใช้ค่าเริ่มต้น)'
+      maxQuests: 'เขียนจำนวนสูงสุดของ ภารกิจ ที่สามารถเรียกใช้งานได้จาก pool นี้'
+      time: 'เขียนจำนวนวันก่อนที่ผู้เล่นจะทำภารกิจใหม่ได้'
+  writeCommandDelay: '§aเขียนการหน่วงเวลาคำสั่งที่ต้องการ ใน ticks.'
+advancement:
+  finished: เสร็จแล้ว
+  notStarted: ยังไม่เริ่มต้น
+inv:
+  validate: '§b§lตรวจสอบ'
+  cancel: '§c§lยกเลิก'
+  search: '§e§lค้นหา'
+  addObject: '§aเพิ่มวัตถุ'
+  confirm:
+    name: คุณแน่ใจไหม?
+    'yes': '§aยืนยัน'
+    'no': '§ยกเลิก'
+  create:
+    stageCreate: '§aสร้าง step ใหม่'
+    stageRemove: '§cลบ step'
+    findNPC: '§aค้นหา NPC'
+    bringBack: '§aนำ ไอเท่ม กลับมา'
+    findRegion: '§aค้นหา region'
+    killMobs: '§aฆ่า mobs'
+    mineBlocks: '§aทำลาย blocks'
+    placeBlocks: '§aวาง blocks'
+    talkChat: '§aเขียนแชท'
+    interact: '§aโต้ตอบกับ block'
+    fish: '§aจับปลา'
+    craft: '§aสร้างไอเท่ม'
+    bucket: '§aเติม buckets'
+    location: '§aไปยัง location'
+    playTime: '§eเวลาเล่น'
+    breedAnimals: ผสมพันธ์สัตว์
+    tameAnimals: '§สัตว์เลี้ยง'
+    NPCText: '§eแก้ไข dialog'
+    NPCSelect: '§eเลือก หรือสร้าง NPC'
+    hideClues: ซ่อน particles และ holograms
+    editMobsKill: '§eแก้ไข mobs เพื่อฆ่า'
+    mobsKillFromAFar: ต้องฆ่าด้วย rojectile
+    editBlocksMine: '§eแก้ไข blocks ที่จะทำลาย'
+    preventBlockPlace: ป้องกันไม่ให้ผู้เล่นทำลาย blocks ของตัวเอง
+    editBlocksPlace: '§eแก้ไขบล็อกที่จะวาง'
+    editMessageType: '§eแก้ไขข้อความที่จะเขียน'
+    cancelMessage: ยกเลิกการส่ง
+    ignoreCase: ไม่สนใจ case ของข้อความ
+    selectItems: '§eแก้ไข ไอเท่ม ที่ต้องการ'
+    selectItemsMessage: แก้ไขข้อความคำถาม
+    selectRegion: '§7เลือก region'
+    toggleRegionExit: เมื่อออก
+    stageStartMsg: '§eแก้ไขข้อความเริ่มต้น'
+    selectBlockLocation: '§eเลือกตำแหน่ง block'
+    selectBlockMaterial: '§eเลือก block material'
+    leftClick: ต้องคลิกซ้าย
+    editFishes: '§eแก้ไขปลาที่จะจับ'
+    editItem: '§แก้ไข ไอเท่ม ที่จะคราฟ'
+    editBucketType: '§แก้ไข type ของ bucket ที่จะเติม'
+    editBucketAmount: '§แก้ไขจำนวน buckets ที่จะเติม'
+    editLocation: '§eแก้ไข location'
+    editRadius: '§แก้ไขระยะทางจาก location'
+    currentRadius: '§eระยะทางปัจจุบัน: §6 {0}'
+    changeTicksRequired: '§eเปลี่ยน ticks ที่ต้องการของ ผู้เล่น'
+  stages:
+    name: สร้าง stages
+    nextPage: '§eหน้าต่อไป'
+    laterPage: '§eหน้าที่แล้ว'
+    endingItem: '§eแก้ไขรางวัลตอนจบ'
+    descriptionTextItem: '§แก้ไขคำอธิบาย'
+    regularPage: '§astages ปรกติ'
+    branchesPage: '§dBranch stages'
+    previousBranch: '§eกลับไปที่ branch ก่อนหน้า'
+    newBranch: '§eไปที่ branch ใหม่'
+    validationRequirements: '§eข้อกำหนดในการตรวจสอบความถูกต้อง'
+    validationRequirementsLore: ข้อกำหนดทั้งหมดจะต้องตรงกับผู้เล่นที่พยายามเล่นจนจบ stage หากไม่เช่นนั้น stage จะไม่เสร็จสมบูรณ์
+  details:
+    hologramLaunch: '§eEdit "launch" ไอเท่ม โฮโลแกรม'
+    hologramLaunchLore: โฮโลแกรมแสดงเหนือหัวของ Starter NPC เมื่อผู้เล่นสามารถเริ่มภารกิจได้
+    hologramLaunchNo: '§eEdit "ไม่สามารถ launch" ไอเท่ม โฮโลแกรม ได้'
+    hologramLaunchNoLore: โฮโลแกรมแสดงเหนือหัวของ Starter NPC เมื่อผู้เล่นไม่สามารถเริ่มภารกิจได้
+    customConfirmMessage: '§eแก้ไข message ยืนยันเควส'
+    customConfirmMessageLore: Message ปรากฏใน Confirmation GUI เมื่อผู้เล่นกำลังจะเริ่มภารกิจ
+    customDescription: '§eแก้ไขคำอธิบายภารกิจ'
+    customDescriptionLore: คำอธิบายที่แสดงด้านล่างชื่อของภารกิจใน GUI
+    name: รายละเอียดภารกิจสุดท้าย
+    multipleTime:
+      itemName: สลับการทำซ้ำได้
+      itemLore: สามารถทำภารกิจได้หลายครั้งหรือไม่?
+    cancellable: ยกเลิกได้โดยผู้เล่น
+    cancellableLore: อนุญาตให้ผู้เล่นยกเลิกภารกิจผ่านเมนูภารกิจ
+    startableFromGUI: เริ่มได้จาก GUI
+    startableFromGUILore: อนุญาตให้ผู้เล่นเริ่มภารกิจจากเมนูเควส
+    scoreboardItem: เปิดใช้งาน สกอร์บอร์ด
+    scoreboardItemLore: หากปิดใช้งานภารกิจจะไม่ถูกติดตามผ่าน สกอร์บอร์ด
+    hideItem: ซ่อนเมนูและ dynmap
+    hideItemLore: หากเปิดใช้งานเควสจะไม่แสดงบน dynmap หรือในเมนูเควส
+    hideNoRequirementsItem: ซ่อนเมื่อไม่เป็นไปตามข้อกำหนด
+    hideNoRequirementsItemLore: หากเปิดใช้งาน ภารจะไม่แสดงในเมนูภารกิจ เมื่อไม่ตรงตามข้อกำหนด
+    bypassLimit: อย่านับขีดจำกัด ของภารกิจ
+    bypassLimitLore: หากเปิดใช้งาน ภารกิจจะเริ่มได้ แม้ว่าผู้เล่นจะทำภารกิจเริ่มต้น ถึงจำนวนสูงสุดแล้ว
+    questName: '§a§lแก้ไขชื่อภารกิจ'
+    questNameLore: ต้องตั้งชื่อ เพื่อสร้างภารกิจให้เสร็จสมบูรณ์
+    setItemsRewards: '§eแก้ไขรางวัล ไอเท่ม'
+    setXPRewards: '§eแก้ไขรางวัล exp'
+    setCheckpointReward: '§eแก้ไขรางวัล checkpoint'
+    setPermReward: '§eแก้ไข permissions'
+    setMoneyReward: '§eแก้ไข เงินรางวัล'
+    selectStarterNPC: '§e§lเลือก NPC starter'
+    selectStarterNPCLore: การคลิกที่ NPC ที่เลือก จะเป็นการเริ่มภารกิจ
+    createQuestName: '§lสร้างภารกิจ'
+    createQuestLore: คุณต้องกำหนดชื่อภารกิจ
+    editQuestName: '§lแก้ไขเควส'
+    endMessage: '§eแก้ไขข้อความตอนจบ'
+    endMessageLore: ข้อความที่จะส่งไปยังผู้เล่นเมื่อสิ้นสุดภารกิจ
+    startDialog: '§แก้ไข dialog ตอนเริ่ม'
+    startDialogLore: Dialog ที่จะแสดงขึ้นมาก่อนที่เควสจะเริ่ม เมื่อผู้เล่นคลิกที่ Starter NPC
+    editRequirements: '§eแก้ไขข้อกำหนด'
+    editRequirementsLore: ข้อกำหนดทุกข้อต้อง apply กับผู้เล่นก่อน จึงจะเริ่มภารกิจได้
+    startRewards: '§6เริ่มรางวัล'
+    startRewardsLore: ดำเนินการเมื่อภารกิจเริ่มต้นขึ้น
+    hologramText: '§eข้อความHologram'
+    hologramTextLore: ข้อความ hologram ที่แสดงบนหัวของ Starter NPC
+    timer: '§bเริ่มจับเวลาใหม่'
+    timerLore: เวลาก่อนที่ผู้เล่นจะสามารถเริ่มภารกิจได้อีกครั้ง
+    requirements: '{0} ข้อกำหนด(s)'
+    rewards: '{0} รางวัล(s)'
+    actions: '{0} ดำเนินการ หรือ action(s)'
+    rewardsLore: ดำเนินการเมื่อภารกิจสิ้นสุดลง
+    customMaterial: '§eแก้ไข material ไอเท่มเควส'
+    customMaterialLore: ตัวแทนไอเทมของเควสนี้ในเมนูเควส
+    failOnDeath: ล้มเหลวเมื่อเสียชีวิต
+    failOnDeathLore: ภารกิจจะถูกยกเลิกเมื่อผู้เล่นเสียชีวิตหรือไม่?
+    questPool: '§eQuest Pool'
+    questPoolLore: แนบเควสนี้กับ quest pool
+    keepDatas: เก็บรักษาข้อมูลผู้เล่น
+    keepDatasLore: |-
+      บังคับให้ปลั๊กอินรักษาข้อมูลของผู้เล่นแม้ว่าจะมีการแก้ไข stages แล้วก็ตาม
+      §c§lWARNING §c- การเปิดใช้งานตัวเลือกนี้อาจทำให้ข้อมูลผู้เล่นของคุณเสียหาย
+    loreReset: '§e§lความก้าวหน้าของผู้เล่นทั้งหมดจะถูกรีเซ็ต'
+    optionValue: '§8Value: §7{0}'
+    defaultValue: '§8(default value ค่าเริ่มต้น)'
+    requiredParameter: '§7parameterที่จำเป็น'
+  itemsSelect:
+    name: แก้ไขไอเท่ม
+    none: |-
+      §aย้าย ไอเท่ม มาที่นี่
+      หรือคลิก เพื่อเปิดตัวแก้ไข ไอเท่ม
+  itemSelect:
+    name: เลือก ไอเท่ม
+  npcCreate:
+    name: สร้าง NPC
+    setName: '§eแก้ไขชื่อ NPC'
+    setSkin: '§eแก้ไข สกิน NPC'
+    setType: '§eแก้ไข type ของ NPC'
+    move:
+      itemName: '§eย้าย'
+      itemLore: '§เปลี่ยนตำแหน่ง NPC'
+    moveItem: '§a§lตรวจสอบ place'
+  npcSelect:
+    name: เลือกหรือสร้าง?
+    selectStageNPC: '§eเลือก NPC ที่มีอยู่เดิม'
+    createStageNPC: '§eสร้าง NPC'
+  entityType:
+    name: เลือก entity type
+  chooseQuest:
+    name: เควสไหน?
+  mobs:
+    name: เลือก mobs
+    none: '§aคลิกเพื่อเพิ่ม mob'
+    clickLore: |-
+      §a§left-click§aเพื่อแก้ไขจำนวนเงิน
+      §a§l§nShift§a§l + คลิกซ้าย a เพื่อแก้ไขชื่อม็อบ
+      §c§คลิกขวา c เพื่อลบ
+  mobSelect:
+    name: เลือก mob type
+    bukkitEntityType: '§eเลือก entity type'
+    mythicMob: '§6เลือก Mythic Mob'
+    epicBoss: '§6เลือก Epic Boss'
+    boss: '§6เลือก a Boss'
+  stageEnding:
+    locationTeleport: '§eแก้ไข teleport location'
+    command: '§eแก้ไข executed command'
+  requirements:
+    name: ข้อกำหนด
+  rewards:
+    name: รางวัล
+    commands: 'คำสั่ง: {0}'
+    teleportation: |-
+      §aเลือก:
+      X: {0}
+      Y: {1}
+      Z: {2}
+      World: {3}
+  checkpointActions:
+    name: การกระทำ Checkpoint
+  listAllQuests:
+    name: ภารกิจ
+  listPlayerQuests:
+    name: '{0}''s ภารกิจ'
+  listQuests:
+    notStarted: ยังไม่เริ่มเควส
+    finished: ภารกิจเสร็จสิ้นแล้ว
+    inProgress: ภารกิจกำลังดำเนินการ
+    loreCancel: '§c§oคลิกเพื่อยกเลิกภารกิจ'
+    loreStart: คลิกเพื่อเริ่มภารกิจ
+    loreStartUnavailable: notc§oคุณมีคุณสมบัติไม่ตรงตามข้อกำหนดในการเริ่มภารกิจ
+    canRedo: '§3§คุณสามารถเริ่มภารกิจนี้ใหม่ได้!'
+  itemCreator:
+    name: สร้างไอเท่ม
+    itemType: '§b type ไอเท่ม'
+    itemFlags: สลับ ไอเท่ม flags
+    itemName: '§bชื่อไอเท่ม'
+    itemLore: '§b lore ไอเท่ม'
+    isQuestItem: '§bไอเท่มภารกิจ:'
+  command:
+    name: Command
+    value: '§eCommand'
+    console: คอนโซล
+    delay: '§bดีเลย์'
+  chooseAccount:
+    name: account อะไร?
+  listBook:
+    questName: ชื่อ
+    questStarter: เริ่มต้น
+    questRewards: รางวัล
+    questMultiple: หลายครั้ง
+    requirements: ข้อกำหนด
+    questStages: ขั้นตอน
+    noQuests: ไม่เคยสร้างภารกิจมาก่อน
+  commandsList:
+    name: Command list
+    value: '§eCommand: {0}'
+    console: '§eConsole: {0}'
+  block:
+    name: เลือก block
+    material: '§eMaterial: {0}'
+    blockData: '§dBlockdata (advanced)'
+  blocksList:
+    name: เลือก blocks
+    addBlock: '§aคลิกเพื่อเพิ่ม block.'
+  blockAction:
+    name: เลือกการดำเนินการ block
+    location: '§eเลือก location ที่แม่นยำ'
+    material: '§eเลือก block material'
+  buckets:
+    name: ชนิด Bucket
+  permission:
+    name: เลือก permission
+    perm: '§aPermission'
+    world: '§aWorld'
+    worldGlobal: '§b§lGlobal'
+    remove: ลบ permission
+    removeLore: '§7Permission จะถูกปิด\n§7ให้แทนที่'
+  permissionList:
+    name: Permissions list
+    removed: '§eเอาออก: §6{0}'
+    world: '§eWorld: §6{0}'
+  classesRequired.name: Classes ที่จำเป็น
+  classesList.name: Classes list
+  factionsRequired.name: Factions ที่จำเป็น
+  factionsList.name: Factions list
+  poolsManage:
+    name: Quest Pools
+    itemName: '§aPool #{0}'
+    create: '§aสร้าง pool กลุ่มภารกิจ'
+  poolCreation:
+    name: การสร้างเควสพูล
+    hologramText: '§ePool custom hologram'
+    maxQuests: '§aเควสสูงสุด'
+    time: '§bตั้งเวลาระหว่างเควส'
+    redoAllowed: อนุญาตให้ทำซ้ำ
+  poolsList.name: Quest pools
+  itemComparisons:
+    itemName: ชื่อไอเทม
+    itemNameLore: เปรียบเทียบชื่อไอเทม
+    itemLore: คำอธิบายไอเทม
+    itemLoreLore: เปรียบเทียบคำอธิบายไอเทม
+    enchants: ตีบวกอาวุธ
+    enchantsLore: เปรียบเทียบไอเทมตีบวก
+    repairCost: ค่าซ่อมแซม
+    repairCostLore: เปรียบเทียบค่าซ่อมกับชุดเกราะและดาบ
+scoreboard:
+  name: '§6§lQเควส'
+  noLaunched: '§cไม่มีภารกิจอยู่ในระหว่างดำเนินการ'
+  noLaunchedName: '§c§lกำลังโหลด'
+  noLaunchedDescription: '§c§oกำลังโหลด'
+  textBetwteenBranch: '§e หรือ'
+  stage:
+    region: '§eค้นหา region §6{0}'
+    npc: '§eคุยกับ NPC §6{0}'
+    items: '§eส่ง ไอเท่ม ให้ §6{0}§e:'
+    mobs: '§eฆ่า §6{0}'
+    mine: '§eขุด {0}'
+    placeBlocks: '§eวาง {0}'
+    chat: '§eเขียน §6{0}'
+    interact: '§eคลิก block ที่ §6{0}'
+    interactMaterial: '§eคลิกที่ §6{0}§e block'
+    fish: '§eปลา §6{0}'
+    craft: '§eสร้าง §6{0}'
+    bucket: '§eเติม §6{0}'
+    location: '§eไปที่ §6{0}§e, §6{1}§e, §6{2}§e ใน §6{3}'
+    playTime: '§eเล่น §6{0} game ticks'
+    breed: ผสมพันธ์ §6{0}
+    tame: ทำให้เชื่อง §6{0}
+indication:
+  startQuest: '§7คุณต้องการเริ่มภารกิจ {0} หรือไม่?'
+  closeInventory: '§7คุณแน่ใจหรือไม่ว่าต้องการปิด GUI?'
+  cancelQuest: '§7คุณแน่ใจหรือไม่ว่าต้องการยกเลิกภารกิจ {0}'
+  removeQuest: '§7คุณแน่ใจหรือไม่ว่าต้องการลบภารกิจ {0}'
+misc:
+  format:
+    prefix: '§6<§e§lภารกิจ§r§6> §r'
+    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+    offText: '§r§e{0}'
+  time:
+    days: '{0} วัน'
+    hours: '{0} ชั่วโมง'
+    minutes: '{0} นาที'
+  stageType:
+    region: ค้นหา region
+    npc: ค้นหา NPC
+    items: นำ ไอเท่ม กลับมา
+    mobs: ฆ่า mobs
+    mine: ทำลาย blocks
+    placeBlocks: วาง blocks
+    chat: เขียนในแชท
+    interact: โต้ตอบกับบล็อก
+    Fish: จับปลา
+    Craft: สร้างไอเท่ม
+    Bucket: เติม bucket
+    location: ค้นหา location
+    playTime: เวลาเล่น
+    breedAnimals: ผสมพันธ์สัตว์
+    tameAnimals: สัตว์เลี้ยง
+  comparison:
+    equals: เท่ากับ {0}
+    different: แตกต่างจาก {0}
+    less: น้อยกว่า {0} อย่างเคร่งครัด
+    lessOrEquals: น้อยกว่า {0}
+    greater: มากกว่า {0} อย่างเคร่งครัด
+    greaterOrEquals: มากกว่า {0}
+  requirement:
+    class: '§bClass (es) ที่จำเป็น'
+    faction: '§bFaction(s) ที่จำเป็น'
+    jobLevel: '§bJob เลเวล ที่จำเป็น'
+    combatLevel: '§bCombat เลเวล ที่จำเป็น'
+    experienceLevel: '§bEXP เลเวล ที่จำเป็น'
+    permissions: '§3Permission(s) ที่จำเป็น'
+    scoreboard: '§dScore ที่จำเป็น'
+    region: '§dRegion ที่จำเป็น'
+    placeholder: '§bPlaceholder value ที่จำเป็น'
+    quest: '§aภารกิจ ที่จำเป็น'
+    mcMMOSkillLevel: '§dSkill เลเวล ที่จำเป็น'
+    money: '§dเงิน ที่จำเป็น'
+  bucket:
+    water: ถังน้ำ
+    lava: ถังลาวา
+    milk: ถังนม
+  questItemLore: '§e§oภารกิจไอเท่ม'
+  hologramText: '§8§lภารกิจ NPC'
+  poolHologramText: '§eภารกิจใหม่มาแล้ว!'
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  entityType: '§eประเภท Entity : {0}'
+  entityTypeAny: สิ่งมีชีวิตตัวไหนก็ได้
+  enabled: เปิดการใช้งาน
+  disabled: ปิดการใช้งาน
+  unknown: ไม่ทราบ
+  notSet: '§cไม่ได้ตั้งค่า'
+  unused: ไม่ได้ใช้
+  used: '§a§lใช้แล้ว'
+  remove: '§7คลิ๊กเมาท์กลางเพื่อลบ'
+  or: หรือ
+  amount: '§eจำนวนt: {0}'
+  items: ไอเท่ม
+  expPoints: ค่าประสบการณ์
+  'yes': 'ใช่'
+  'no': 'ไม่'
+  and: และ

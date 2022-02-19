@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.18.6-SNAPSHOT</version>
+		<version>0.19.0</version>
 	</parent>
 
 	<build>
@@ -31,12 +31,20 @@
 				<configuration>
 					<relocations>
 						<relocation>
-							<pattern>org.bstats.bukkit</pattern>
-							<shadedPattern>fr.skytasul.quests.utils</shadedPattern>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>fr.mrmicky.fastboard</pattern>
 							<shadedPattern>fr.skytasul.quests.scoreboards</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.tchristofferson.configupdater</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>de.jeff_media.updatechecker</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
@@ -54,32 +62,59 @@
 
 	<repositories>
 		<repository>
-			<id>citizens</id>
-			<url>http://repo.citizensnpcs.co/</url>
-		</repository>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
 			<id>placeholderapi</id>
-			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
+		<repository>
+			<id>dynmap</id>
+			<url>https://repo.mikeprimm.com/</url>
+		</repository>
+		<repository>
+			<id>sk89q-repo</id>
+			<url>https://maven.enginehub.org/repo/</url>
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.org/repository/maven-public/</url>
 		</repository>
 		<repository>
-			<id>dynmap</id>
-			<url>http://repo.mikeprimm.com/</url>
+			<id>mineacademy-repo</id>
+			<url>https://bitbucket.org/kangarko/libraries/raw/master</url>
 		</repository>
 		<repository>
-			<id>sk89q</id>
-			<url>http://maven.sk89q.com/repo/</url>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
+		<repository>
+			<id>maven-central</id>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+		</repository>
+		<!-- <repository> <id>songoda</id> <url>https://repo.songoda.com/repository/public/</url> 
+			</repository> <repository> <id>teamvk-repo</id> <url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url> 
+			</repository> -->
 		<repository>
 			<id>lumine</id>
-			<url>http://mvn.lumine.io/repository/maven-releases</url>
+			<url>https://mvn.lumine.io/repository/maven-public/</url>
+			<releases>
+				<updatePolicy>interval:10080</updatePolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>interval:10080</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>citizens</id>
+			<url>http://repo.citizensnpcs.co/</url> <!-- really slow repo -->
+			<releases>
+				<updatePolicy>interval:10080</updatePolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>interval:10080</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jeff-media-public</id>
+			<url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
 		</repository>
 	</repositories>
 
@@ -87,14 +122,26 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.16.4-R0.1-SNAPSHOT</version>
+			<version>1.18-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizens-main</artifactId>
-			<version>2.0.27-SNAPSHOT</version>
+			<version>2.0.29-SNAPSHOT</version>
 			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mcmonkey</groupId>
+			<artifactId>sentinel</artifactId>
+			<version>2.4.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.znetworkw.znpcservers</groupId>
+			<artifactId>znpcservers</artifactId>
+			<version>3.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -106,20 +153,32 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.9</version>
+			<version>2.10.11</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
 			<artifactId>holographicdisplays-api</artifactId>
-			<version>2.4.4</version>
+			<version>2.4.9</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>me.filoghost.holographicdisplays</groupId>
+			<artifactId>holographicdisplays-api</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-bukkit</artifactId>
-			<version>7.0.2</version>
+			<version>7.0.6</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.java.truevfs</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>fr.skytasul</groupId>
@@ -128,25 +187,66 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.lumine.xikage</groupId>
-			<artifactId>MythicMobs</artifactId>
-			<version>4.9.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.7</version>
+			<version>2.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>fr.mrmicky</groupId>
-			<artifactId>FastBoard</artifactId>
-			<version>1.1.0</version>
+			<artifactId>fastboard</artifactId>
+			<version>1.2.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.tchristofferson</groupId>
+			<artifactId>ConfigUpdater</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>io.lumine.xikage</groupId>
+			<artifactId>MythicMobs</artifactId>
+			<version>4.12.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mineacademy.plugin</groupId>
+			<artifactId>Boss-API</artifactId>
+			<version>3.8.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.promcteam</groupId>
+			<artifactId>proskillapi</artifactId>
+			<version>1.1.7.0.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.BlueMap-Minecraft</groupId>
+			<artifactId>BlueMapAPI</artifactId>
+			<version>v1.7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.jeff_media</groupId>
+			<artifactId>SpigotUpdateChecker</artifactId>
+			<version>1.3.2</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<!-- Local JARs -->
+		<dependency>
+			<groupId>com.vk2gpz.tokenenchant</groupId>
+			<artifactId>TokenEnchantAPI</artifactId>
+			<version>18.15.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.songoda</groupId>
+			<artifactId>ultimatetimber</artifactId>
+			<version>2.2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap</artifactId>
@@ -174,7 +274,7 @@
 		<dependency>
 			<groupId>com.gamingmesh</groupId>
 			<artifactId>jobs</artifactId>
-			<version>1.0</version>
+			<version>5.0.0.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -196,15 +296,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.suxy</groupId>
-			<artifactId>boss</artifactId>
-			<version>1.0</version>
+			<groupId>com.zrips</groupId>
+			<artifactId>cmi</artifactId>
+			<version>9.0.2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.zrips</groupId>
-			<artifactId>cmi-api</artifactId>
-			<version>1.0</version>
+			<artifactId>cmilib</artifactId>
+			<version>1.0.4.1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

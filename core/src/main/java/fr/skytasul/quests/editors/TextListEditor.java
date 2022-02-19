@@ -3,9 +3,9 @@ package fr.skytasul.quests.editors;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -24,24 +24,30 @@ public class TextListEditor extends Editor{
 		this.run = end;
 		this.texts = texts;
 	}
+	
+	@Override
+	protected void begin() {
+		super.begin();
+		Lang.ENTER_EDITOR_LIST.send(p);
+	}
 
+	@Override
 	public boolean chat(String coloredMessage, String strippedMessage){
 		String[] args = strippedMessage.split(" ");
 		String msg = "";
 		boolean hasMsg = false;
-		String cmd = ChatColor.stripColor(args[0]);
+		Command cmd;
 		try{
-			Command.valueOf(cmd.toUpperCase());
+			cmd = Command.valueOf(args[0].toUpperCase());
 		}catch (IllegalArgumentException ex){
 			Utils.sendMessage(p, Lang.COMMAND_DOESNT_EXIST_NOSLASH.toString());
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(args, 1, " ");
+			msg = Utils.buildFromArray(coloredMessage.split(" "), 1, " ");
 			hasMsg = true;
 		}
-		Command comd = Command.valueOf(cmd.toUpperCase());
-		switch (comd){
+		switch (cmd) {
 		
 		case ADD:
 			if (!hasMsg){
@@ -68,11 +74,10 @@ public class TextListEditor extends Editor{
 			break;
 
 		case LIST:
-			StringBuilder stb = new StringBuilder("§6§lList : §r§e(separator : \"§6§l|§r§e\")\n");
-			for (String s : texts){
-				stb.append("§r§a" + s + " §6§l| ");
-			}
-			p.sendMessage(stb.toString());
+			p.sendMessage(texts
+					.stream()
+					.map(text -> "§7- §r" + text)
+					.collect(Collectors.joining("\n", "§6§lList:\n", "")));
 			break;
 
 		case HELP:

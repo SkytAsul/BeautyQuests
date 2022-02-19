@@ -15,7 +15,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
 import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -24,6 +27,14 @@ import fr.skytasul.quests.utils.nms.NMS;
 public abstract class Editor implements Listener{
 
 	private static Map<Player, Editor> players = new HashMap<>();
+	private static BQBossBar bar = null;
+
+	static {
+		if (QuestsAPI.hasBossBarManager()) {
+			bar = QuestsAPI.getBossBarManager().buildBossBar("§6Quests Editor", "YELLOW", "SOLID");
+			bar.setProgress(0);
+		}
+	}
 	
 	protected final Player p;
 	protected final Runnable cancel;
@@ -34,6 +45,7 @@ public abstract class Editor implements Listener{
 	}
 	
 	protected void begin() {
+		DebugUtils.logMessage(p.getName() + " has entered editor " + getClass().getName() + ".");
 		Inventories.closeWithoutExit(p);
 		if (NMS.getMCVersion() > 11){
 			p.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
@@ -41,11 +53,15 @@ public abstract class Editor implements Listener{
 			Lang.ENTER_EDITOR_TITLE.send(p);
 			Lang.ENTER_EDITOR_SUB.send(p);
 		}
+		if (bar != null) bar.addPlayer(p);
 	}
 
-	protected void end() {}
+	protected void end() {
+		DebugUtils.logMessage(p.getName() + " has left the editor.");
+		if (bar != null) bar.removePlayer(p);
+	}
 	
-	protected void cancel() {
+	protected final void cancel() {
 		leave(p);
 		cancel.run();
 	}
@@ -61,12 +77,11 @@ public abstract class Editor implements Listener{
 		if (edit == null) {
 			begin();
 			Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
-			
 			players.put(p, this);
-		}else {
-			Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
+			return (T) this;
 		}
-		return (T) this;
+		Utils.sendMessage(p, Lang.ALREADY_EDITOR.toString());
+		return null;
 	}
 	
 	/**
@@ -81,11 +96,10 @@ public abstract class Editor implements Listener{
 	
 	private final void callChat(String rawText){
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
-		//rawText = ChatColor.stripColor(rawText); // remove default colors
 		DebugUtils.logMessage(p.getName() + " entered \"" + rawText + "\" (" + rawText.length() + " characters) in an editor. (name: " + getClass().getName() + ")");
-		String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawText);
+		String coloredMessage = ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', rawText));
 		String strippedMessage = ChatColor.stripColor(rawText);
-		if (cancel != null && strippedMessage.equalsIgnoreCase("cancel")) {
+		if (cancel != null && strippedMessage.equalsIgnoreCase(cancelWord())) {
 			cancel();
 		}else if (!chat(coloredMessage, strippedMessage)) {
 			Lang.CHAT_EDITOR.send(p);
@@ -96,7 +110,7 @@ public abstract class Editor implements Listener{
 		return null;
 	}
 	
-	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onChat(AsyncPlayerChatEvent e){
 		if (e.getPlayer() != p) return;
 		e.setCancelled(true);
@@ -122,13 +136,13 @@ public abstract class Editor implements Listener{
 	public static void leave(Player player){
 		if (!hasEditor(player))
 			return;
-		Editor editor = (Editor) players.remove(player);
+		Editor editor = players.remove(player);
 		HandlerList.unregisterAll(editor);
 		editor.end();
 	}
 
 	public static void leaveAll(){
-		players.keySet().forEach(Editor::leave);
+		players.keySet().iterator().forEachRemaining(Editor::leave);
 		players.clear();
 	}
 

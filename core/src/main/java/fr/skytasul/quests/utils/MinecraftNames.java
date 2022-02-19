@@ -18,7 +18,9 @@ import com.google.gson.GsonBuilder;
 import fr.skytasul.quests.BeautyQuests;
 
 public class MinecraftNames {
-
+	
+	public static final String LANG_DOWNLOAD_URL = "https://github.com/InventivetalentDev/minecraft-assets/raw/%version%/assets/minecraft/lang/%language%.json";
+	
 	private static Map<String, Object> map;
 	
 	private static Map<EntityType, String> cachedEntities = new HashMap<>();
@@ -105,5 +107,5 @@ public class MinecraftNames {
 	public static String defaultFormat(String value){
 		return WordUtils.capitalize(value.toLowerCase().replace('_', ' '));
 	}
-	
+
 }

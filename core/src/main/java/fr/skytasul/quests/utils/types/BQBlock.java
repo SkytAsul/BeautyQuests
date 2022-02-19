@@ -2,44 +2,67 @@ package fr.skytasul.quests.utils.types;
 
 import org.bukkit.block.Block;
 
+import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
-public class BQBlock {
+public abstract class BQBlock {
 	
-	private static final String BLOCKDATA_HEADER = "blockdata:";
+	public static final String BLOCKDATA_HEADER = "blockdata:";
+	public static final String TAG_HEADER = "tag:";
 	
-	private final XMaterial material;
-	private final Object blockData;
+	private XMaterial cachedMaterial;
 	
-	public BQBlock(XMaterial material) {
-		this.material = material;
-		this.blockData = null;
+	public abstract String getAsString();
+	
+	public abstract boolean applies(Block block);
+	
+	public abstract XMaterial retrieveMaterial();
+	
+	public final XMaterial getMaterial() {
+		if (cachedMaterial == null) cachedMaterial = retrieveMaterial();
+		return cachedMaterial;
 	}
 	
-	public BQBlock(Object blockData) {
-		this.blockData = blockData;
-		this.material = null;
+	public String getName() {
+		return MinecraftNames.getMaterialName(getMaterial());
 	}
 	
-	public XMaterial getMaterial() {
-		return material != null ? material : XMaterial.matchXMaterial(Post1_13.blockDataGetMaterial(blockData));
-	}
-	
-	public boolean applies(Block block) {
-		if (material != null) return XBlock.isType(block, material);
-		return Post1_13.blockDataMatches(blockData, block);
-	}
-	
-	public String getAsString() {
-		if (material != null) return material.name();
-		return BLOCKDATA_HEADER + Post1_13.blockDataAsString(blockData);
+	@Override
+	public String toString() {
+		return "BQBlock{" + getAsString() + "}";
 	}
 	
 	public static BQBlock fromString(String string) {
-		if (string.startsWith(BLOCKDATA_HEADER)) return new BQBlock(Post1_13.createBlockData(string.substring(BLOCKDATA_HEADER.length())));
-		return new BQBlock(XMaterial.valueOf(string));
+		if (string.startsWith(BLOCKDATA_HEADER)) return new Post1_13.BQBlockData(string.substring(BLOCKDATA_HEADER.length()));
+		if (string.startsWith(TAG_HEADER)) return new Post1_13.BQBlockTag(string.substring(TAG_HEADER.length()));
+		return new BQBlockMaterial(XMaterial.valueOf(string));
+	}
+	
+	public static class BQBlockMaterial extends BQBlock {
+		
+		private final XMaterial material;
+		
+		public BQBlockMaterial(XMaterial material) {
+			this.material = material;
+		}
+		
+		@Override
+		public XMaterial retrieveMaterial() {
+			return material;
+		}
+		
+		@Override
+		public boolean applies(Block block) {
+			return XBlock.isType(block, material);
+		}
+		
+		@Override
+		public String getAsString() {
+			return material.name();
+		}
+		
 	}
 	
 }

@@ -28,4 +28,9 @@ public class OptionDescription extends QuestOptionString {
 		return Lang.customDescriptionLore.toString();
 	}
 	
+	@Override
+	public boolean isMultiline() {
+		return true;
+	}
+	
 }

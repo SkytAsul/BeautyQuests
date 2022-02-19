@@ -1,6 +1,8 @@
 package fr.skytasul.quests.gui.quests;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -23,22 +25,33 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class PlayerListGUI implements CustomInventory {
 
+	private static final String UNSELECTED_PREFIX = "§7○ ";
+	private static final String SELECTED_PREFIX = "§b§l● ";
+	
 	private Inventory inv;
 	private Player open;
 	private PlayerAccount acc;
+	private boolean hide;
 	
 	private int page = 0;
 	private Category cat = Category.NONE;
 	private List<Quest> quests;
 	
-	public PlayerListGUI(PlayerAccount acc){
-		this.acc = acc;
+	public PlayerListGUI(PlayerAccount acc) {
+		this(acc, true);
 	}
 	
+	public PlayerListGUI(PlayerAccount acc, boolean hide) {
+		this.acc = acc;
+		this.hide = hide;
+	}
+	
+	@Override
 	public Inventory open(Player p) {
 		open = p;
 		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
@@ -46,11 +59,16 @@ public class PlayerListGUI implements CustomInventory {
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		
-		setBarItem(1, ItemUtils.item(XMaterial.WRITTEN_BOOK, "§7" + Lang.finisheds.toString()));
-		setBarItem(2, ItemUtils.item(XMaterial.BOOK, "§7" + Lang.inProgress.toString()));
-		setBarItem(3, ItemUtils.item(XMaterial.WRITABLE_BOOK, "§7" + Lang.notStarteds.toString()));
-		
-		setCategory(Category.IN_PROGRESS);
+		for (Category enabledCat : QuestsConfiguration.getMenuConfig().getEnabledTabs()) {
+			setBarItem(enabledCat.slot, enabledCat.item);
+		}
+
+		if (Category.IN_PROGRESS.isEnabled()) {
+			setCategory(Category.IN_PROGRESS);
+			if (quests.isEmpty() && QuestsConfiguration.getMenuConfig().isNotStartedTabOpenedWhenEmpty() && Category.NOT_STARTED.isEnabled()) setCategory(Category.NOT_STARTED);
+		}else if (Category.NOT_STARTED.isEnabled()) {
+			setCategory(Category.NOT_STARTED);
+		}else setCategory(Category.FINISHED);
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -63,10 +81,10 @@ public class PlayerListGUI implements CustomInventory {
 	
 	private void setCategory(Category category){
 		if (cat == category) return;
-		if (cat != Category.NONE) toggleCategoryEnchanted();
+		if (cat != Category.NONE) toggleCategorySelected();
 		cat = category;
 		page = 0;
-		toggleCategoryEnchanted();
+		toggleCategorySelected();
 		setItems();
 		
 		DyeColor color = cat == Category.FINISHED ? DyeColor.GREEN: (cat == Category.IN_PROGRESS ? DyeColor.YELLOW : DyeColor.RED);
@@ -78,31 +96,46 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			setQuests(QuestsAPI.getQuestsFinished(acc));
+			setQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				String[] lore = null;
+				List<String> lore = new ArrayList<>(4);
 				if (qu.isRepeatable()){
 					if (qu.testTimer(acc, false)) {
-						lore = new String[]{Lang.canRedo.toString()};
+						lore.add(Lang.canRedo.toString());
 					}else {
-						lore = new String[] { Lang.timeWait.format(qu.getTimeLeft(acc)) };
+						lore.add(Lang.timeWait.format(qu.getTimeLeft(acc)));
 					}
+					lore.add(null);
+					lore.add(Lang.timesFinished.format(acc.getQuestDatas(qu).getTimesFinished()));
+				}
+				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
+					if (!lore.isEmpty()) lore.add(null);
+					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
 				}
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
 			break;
 		
 		case IN_PROGRESS:
-			setQuests(QuestsAPI.getQuestsStarteds(acc));
+			setQuests(QuestsAPI.getQuests().getQuestsStarted(acc));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					String desc = qu.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.MENU);
-					item = createQuestItem(qu, QuestsConfiguration.allowPlayerCancelQuest() && qu.isCancellable() ? new String[] { desc, null, Lang.cancelLore.toString() } : new String[] { desc });
+					String desc = qu.getBranchesManager().getDescriptionLine(acc, Source.MENU);
+					List<String> lore = new ArrayList<>(4);
+					if (desc != null && !desc.isEmpty()) lore.add(desc);
+					boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
+					boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
+					if (cancellable || hasDialogs) {
+						if (!lore.isEmpty()) lore.add(null);
+						if (cancellable) lore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
+						if (hasDialogs) lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
+					}
+					item = createQuestItem(qu, lore);
 				}catch (Exception ex) {
 					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
 					BeautyQuests.getInstance().getLogger().severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier());
@@ -113,14 +146,16 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		case NOT_STARTED:
-			setQuests(QuestsAPI.getQuestsUnstarted(acc, true, true));
+			setQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				String[] lore;
+				List<String> lore = new ArrayList<>(5);
+				lore.addAll(QuestsConfiguration.getQuestDescription().formatDescription(qu, acc.getPlayer()));
 				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
-					lore = new String[] { qu.getDescription(), "", qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString() };
-				}else lore = new String[] { qu.getDescription() };
+					lore.add("");
+					lore.add(qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString());
+				}
 				setMainItem(i - page * 35, createQuestItem(qu, lore));
 			}
 			break;
@@ -143,26 +178,27 @@ public class PlayerListGUI implements CustomInventory {
 		return slot;
 	}
 	
-	private ItemStack createQuestItem(Quest qu, String... lore){
-		return ItemUtils.item(qu.getQuestMaterial(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
+	private ItemStack createQuestItem(Quest qu, List<String> lore) {
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
 	}
 	
-	private void toggleCategoryEnchanted(){
+	private void toggleCategorySelected() {
 		ItemStack is = inv.getItem(cat.ordinal() * 9 + 8);
 		ItemMeta im = is.getItemMeta();
 		String name = im.getDisplayName();
 		if (!im.hasEnchant(Enchantment.DURABILITY)) {
 			im.addEnchant(Enchantment.DURABILITY, 0, true);
-			name = "§b§l" + name.substring(2);
+			name = SELECTED_PREFIX + name.substring(UNSELECTED_PREFIX.length());
 		}else{
 			im.removeEnchant(Enchantment.DURABILITY);
-			name = "§7" + name.substring(4);
+			name = UNSELECTED_PREFIX + name.substring(SELECTED_PREFIX.length());
 		}
 		im.setDisplayName(name);
 		is.setItemMeta(im);
 	}
 
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		PlayerListGUI thiz = this;
 		switch (slot % 9){
@@ -182,7 +218,8 @@ public class PlayerListGUI implements CustomInventory {
 			case 1:
 			case 2:
 			case 3:
-				setCategory(Category.values()[barSlot]);
+				Category category = Category.values()[barSlot];
+				if (category.isEnabled()) setCategory(category);
 				break;
 				
 			}
@@ -192,25 +229,34 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		default:
-			if (QuestsConfiguration.allowPlayerCancelQuest() && cat == Category.IN_PROGRESS) {
-				int id = (int) (slot - (Math.floor(slot * 1D / 9D)*2) + page*35);
-				Quest qu = quests.get(id);
-				if (!qu.isCancellable()) break;
-				Inventories.create(p, new ConfirmGUI(() -> {
-					qu.cancelPlayer(acc);
-				}, () -> {
-					p.openInventory(inv);
-					Inventories.put(p, thiz, inv);
-				}, Lang.INDICATION_CANCEL.format(qu.getName())));
-			}else if (cat == Category.NOT_STARTED) {
-				int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
-				Quest qu = quests.get(id);
+			int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
+			Quest qu = quests.get(id);
+			if (cat == Category.NOT_STARTED) {
 				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
 				if (!acc.isCurrent()) break;
 				Player target = acc.getPlayer();
 				if (qu.isLauncheable(target, acc, true)) {
 					p.closeInventory();
-					qu.attemptStart(target);
+					qu.attemptStart(target, null);
+				}
+			}else {
+				if (click.isRightClick()) {
+					if (acc.getQuestDatas(qu).hasFlowDialogs()) {
+						Utils.playPluginSound(p, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+						new DialogHistoryGUI(acc, qu, () -> {
+							Inventories.put(p, thiz, inv);
+							p.openInventory(inv);
+						}).create(p);
+					}
+				}else if (click.isLeftClick()) {
+					if (QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && cat == Category.IN_PROGRESS && qu.isCancellable()) {
+						Inventories.create(p, new ConfirmGUI(() -> {
+							qu.cancelPlayer(acc);
+						}, () -> {
+							p.openInventory(inv);
+							Inventories.put(p, thiz, inv);
+						}, Lang.INDICATION_CANCEL.format(qu.getName())));
+					}
 				}
 			}
 			break;
@@ -219,12 +265,48 @@ public class PlayerListGUI implements CustomInventory {
 		return true;
 	}
 	
+	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
 		return CloseBehavior.REMOVE;
 	}
 
-	enum Category{
-		NONE, FINISHED, IN_PROGRESS, NOT_STARTED;
+	public enum Category {
+		NONE,
+		FINISHED(
+				1,
+				XMaterial.WRITTEN_BOOK,
+				Lang.finisheds.toString()),
+		IN_PROGRESS(
+				2,
+				XMaterial.BOOK,
+				Lang.inProgress.toString()),
+		NOT_STARTED(
+				3,
+				XMaterial.WRITABLE_BOOK,
+				Lang.notStarteds.toString());
+
+		private int slot;
+		private ItemStack item;
+		
+		private Category() {}
+		
+		private Category(int slot, XMaterial material, String name) {
+			this.slot = slot;
+			this.item = ItemUtils.item(material, UNSELECTED_PREFIX + name);
+		}
+		
+		public boolean isEnabled() {
+			return QuestsConfiguration.getMenuConfig().getEnabledTabs().contains(this);
+		}
+		
+		public static Category fromString(String name) {
+			try {
+				Category cat = Category.valueOf(name.toUpperCase());
+				if (cat != NONE) return cat;
+			}catch (IllegalArgumentException ex) {}
+			return null;
+		}
+		
 	}
 	
 }

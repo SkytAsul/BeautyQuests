@@ -10,13 +10,15 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Utils;
 
 public class PlayerAccount {
 
 	public final AbstractAccount abstractAcc;
-	Map<Integer, PlayerQuestDatas> datas = new HashMap<>();
-	int index;
+	protected final Map<Integer, PlayerQuestDatas> questDatas = new HashMap<>();
+	protected final Map<Integer, PlayerPoolDatas> poolDatas = new HashMap<>();
+	protected final int index;
 	
 	public PlayerAccount(AbstractAccount account, int index) {
 		this.abstractAcc = account;
@@ -45,35 +47,89 @@ public class PlayerAccount {
 	}
 	
 	public boolean hasQuestDatas(Quest quest) {
-		return datas.containsKey(quest.getID());
+		return questDatas.containsKey(quest.getID());
+	}
+	
+	public PlayerQuestDatas getQuestDatasIfPresent(Quest quest) {
+		return questDatas.get(quest.getID());
 	}
 
 	public PlayerQuestDatas getQuestDatas(Quest quest) {
-		PlayerQuestDatas questDatas = datas.get(quest.getID());
-		if (questDatas == null) {
-			questDatas = PlayersManager.manager.createPlayerQuestDatas(this, quest);
-			datas.put(quest.getID(), questDatas);
+		PlayerQuestDatas datas = questDatas.get(quest.getID());
+		if (datas == null) {
+			datas = PlayersManager.manager.createPlayerQuestDatas(this, quest);
+			questDatas.put(quest.getID(), datas);
 		}
-		return questDatas;
+		return datas;
 	}
 
 	public PlayerQuestDatas removeQuestDatas(Quest quest) {
-		PlayerQuestDatas removed = datas.remove(quest.getID());
-		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, quest, removed);
+		return removeQuestDatas(quest.getID());
+	}
+	
+	public PlayerQuestDatas removeQuestDatas(int id) {
+		PlayerQuestDatas removed = questDatas.remove(id);
+		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, id, removed);
 		return removed;
 	}
 	
+	protected PlayerQuestDatas removeQuestDatasSilently(int id) {
+		return questDatas.remove(id);
+	}
+	
 	public Collection<PlayerQuestDatas> getQuestsDatas() {
-		return datas.values();
+		return questDatas.values();
+	}
+	
+	public boolean hasPoolDatas(QuestPool pool) {
+		return poolDatas.containsKey(pool.getID());
+	}
+	
+	public PlayerPoolDatas getPoolDatas(QuestPool pool) {
+		PlayerPoolDatas datas = poolDatas.get(pool.getID());
+		if (datas == null) {
+			datas = PlayersManager.manager.createPlayerPoolDatas(this, pool);
+			poolDatas.put(pool.getID(), datas);
+		}
+		return datas;
+	}
+	
+	public PlayerPoolDatas removePoolDatas(QuestPool pool) {
+		return removePoolDatas(pool.getID());
+	}
+	
+	public PlayerPoolDatas removePoolDatas(int id) {
+		PlayerPoolDatas removed = poolDatas.remove(id);
+		if (removed != null) PlayersManager.manager.playerPoolDataRemoved(this, id, removed);
+		return removed;
+	}
+	
+	public Collection<PlayerPoolDatas> getPoolDatas() {
+		return poolDatas.values();
 	}
 
+	@Override
 	public boolean equals(Object arg0) {
 		if (arg0 == this) return true;
 		if (arg0.getClass() != this.getClass()) return false;
 		PlayerAccount otherAccount = (PlayerAccount) arg0;
 		if (!abstractAcc.equals(otherAccount.abstractAcc)) return false;
-		if (!datas.equals(otherAccount.datas)) return false;
 		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 1;
+		
+		hash = hash * 31 + index;
+		hash = hash * 31 + abstractAcc.hashCode();
+		
+		return hash;
+	}
+	
+	public String getName() {
+		Player p = getPlayer();
+		return p == null ? debugName() : p.getName();
 	}
 	
 	public String debugName() {
@@ -82,7 +138,8 @@ public class PlayerAccount {
 
 	public void serialize(ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
-		config.set("quests", Utils.serializeList(datas.values(), PlayerQuestDatas::serialize));
+		config.set("quests", questDatas.isEmpty() ? null : Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
+		config.set("pools", poolDatas.isEmpty() ? null : Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));
 	}
 	
 }

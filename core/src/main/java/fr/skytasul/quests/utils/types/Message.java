@@ -3,7 +3,15 @@ package fr.skytasul.quests.utils.types;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.entity.Player;
+
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Message implements Cloneable {
 	public String text;
@@ -17,9 +25,44 @@ public class Message implements Cloneable {
 	}
 	
 	public int getWaitTime() {
-		return wait == -1 ? QuestsConfiguration.getDialogsDefaultTime() : wait;
+		return wait == -1 ? QuestsConfiguration.getDialogsConfig().getDefaultTime() : wait;
 	}
 
+	public void sendMessage(Player p, String npc, int id, int size) {
+		String sent = formatMessage(p, npc, id, size);
+		if (QuestsConfiguration.getDialogsConfig().sendInActionBar()) {
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
+		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
+		
+		if (!"none".equals(sound)) {
+			String sentSound = sound;
+			if (sentSound == null) {
+				if (sender == Sender.PLAYER) {
+					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultPlayerSound();
+				}else if (sender == Sender.NPC) {
+					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultNPCSound();
+				}
+			}
+			if (sentSound != null) p.playSound(p.getLocation(), sentSound, 1, 1);
+		}
+	}
+
+	public String formatMessage(Player p, String npc, int id, int size) {
+		String sent = null;
+		switch (sender) {
+		case PLAYER:
+			sent = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), text, id + 1, size), true);
+			break;
+		case NPC:
+			sent = Utils.finalFormat(p, Lang.NpcText.format(npc, text, id + 1, size), true);
+			break;
+		case NOSENDER:
+			sent = Utils.finalFormat(p, Utils.format(text, id + 1, size), true);
+			break;
+		}
+		return sent;
+	}
+	
 	@Override
 	public Message clone() {
 		Message clone = new Message(text, sender);
@@ -44,7 +87,7 @@ public class Message implements Cloneable {
 		return msg;
 	}
 
-	public static enum Sender{
+	public enum Sender {
 		PLAYER, NPC, NOSENDER;
 		
 		public static Sender fromString(String string){

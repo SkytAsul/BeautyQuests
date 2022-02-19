@@ -1,25 +1,24 @@
- package fr.skytasul.quests.utils;
+package fr.skytasul.quests.utils;
 
-	import java.text.DateFormat;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -28,12 +27,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.util.Consumer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -43,6 +42,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -51,6 +51,10 @@ import io.netty.buffer.Unpooled;
  * @author SkytAsul
  */
 public class Utils{
+	
+	public static Optional<String> getFilenameExtension(String filename) {
+		return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
+	}
 	
 	public static void openBook(Player p, ItemStack book){
 		int slot = p.getInventory().getHeldItemSlot();
@@ -66,15 +70,20 @@ public class Utils{
 	}
 	
 	
-	public static void spawnFirework(Location lc) {
-		if (!QuestsConfiguration.doFireworks()) return;
-		runSync(() -> {
-			Firework f = (Firework) lc.getWorld().spawnEntity(lc, EntityType.FIREWORK);
-			f.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
-			FireworkMeta fm = f.getFireworkMeta();
-			fm.addEffect(FireworkEffect.builder().with(Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
-			fm.setPower(1);
-			f.setFireworkMeta(fm);
+	public static void spawnFirework(Location lc, FireworkMeta meta) {
+		if (!QuestsConfiguration.doFireworks() || meta == null) return;
+		runOrSync(() -> {
+			Consumer<Firework> fwConsumer = fw -> {
+				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
+				fw.setFireworkMeta(meta);
+			};
+			if (NMS.getMCVersion() >= 12) {
+				lc.getWorld().spawn(lc, Firework.class, fwConsumer);
+				// much better to use the built-in since 1.12 method to do operations on entity
+				// before it is sent to the players, as it will not create flickering
+			}else {
+				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
+			}
 		});
 	}
 	
@@ -82,12 +91,11 @@ public class Utils{
 		List<String> msg = new ArrayList<>();
 		for (AbstractReward rew : rewards) {
 			try {
-				String tmp = rew.give(p);
-				if (tmp != null) msg.add(tmp);
-			}catch (Throwable e) {
+				List<String> messages = rew.give(p);
+				if (messages != null) msg.addAll(messages);
+			}catch (Exception e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
 				e.printStackTrace();
-				continue;
 			}
 		}
 		return msg;
@@ -98,6 +106,33 @@ public class Utils{
 		int j = i / 60;
 		i = i % 60;
 		return i < 10 ? j + ":0" + i : j + ":" + i;
+	}
+	
+	public static String millisToHumanString(long time) {
+		StringBuilder sb = new StringBuilder();
+		
+		long weeks = time / 604_800_000;
+		if (weeks != 0) sb.append(Lang.TimeWeeks.format(weeks));
+		time -= weeks * 604_800_000;
+		
+		long days = time / 86_400_000;
+		if (sb.length() != 0) sb.append(' ');
+		if (days != 0) sb.append(Lang.TimeDays.format(days));
+		time -= days * 86_400_000;
+		
+		long hours = time / 3_600_000;
+		if (sb.length() != 0) sb.append(' ');
+		if (hours != 0) sb.append(Lang.TimeHours.format(hours));
+		time -= hours * 3_600_000;
+		
+		long minutes = time / 60_000;
+		if (sb.length() != 0) sb.append(' ');
+		if (minutes != 0) sb.append(Lang.TimeMinutes.format(minutes));
+		time -= minutes * 60_000;
+		
+		if (sb.length() == 0) sb.append(Lang.TimeLessMinute.toString());
+		
+		return sb.toString();
 	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
@@ -110,26 +145,26 @@ public class Utils{
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, QuestsConfiguration.getPrefix() + format(msg, replace), false);
+		IsendMessage(sender, QuestsConfiguration.getPrefix() + msg, false, replace);
 	}
 	
 	public static void sendMessageWP(CommandSender sender, String msg, Object... replace){
 		if (StringUtils.isEmpty(msg)) return;
-		IsendMessage(sender, "§6" + format(msg, replace), false);
+		IsendMessage(sender, "§6" + msg, false, replace);
 	}
 	
-	public static String finalFormat(CommandSender sender, String text, boolean playerName){
-		if (DependenciesManager.papi && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);	
-		if (playerName) text = text.replace("{PLAYER}", sender.getName());
-		return text;
+	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
+		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
+		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+		return format(text, replace);
 	}
 	
-	public static void IsendMessage(CommandSender sender, String text, boolean playerName){
-		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName), "{nl}"));
+	public static void IsendMessage(CommandSender sender, String text, boolean playerName, Object... replace) {
+		sender.sendMessage(StringUtils.splitByWholeSeparator(finalFormat(sender, text, playerName, replace), "{nl}"));
 	}
 	
-	public static void sendOffMessage(Player p, String msg){
-		IsendMessage(p, Lang.OffText.format(msg), true);
+	public static void sendOffMessage(Player p, String msg, Object... replace) {
+		if (msg != null && !msg.isEmpty()) IsendMessage(p, Lang.OffText.format(msg, replace), true);
 	}
 	
 	public static String itemsToFormattedString(String[] items){
@@ -139,7 +174,7 @@ public class Utils{
 	public static String itemsToFormattedString(String[] items, String separator){
 		if (items.length == 0) return "";
 		if (items.length == 1) return items[0];
-		if (items.length == 2) return items[0] + " " + separator + Lang.And.toString() + " " + ChatColor.getLastColors(items[0]) + items[1];
+		if (items.length == 2) return items[0] + " " + separator + Lang.And.toString() + " " + ChatUtils.getLastColors(null, items[0]) + items[1];
 		StringBuilder stb = new StringBuilder("§e" + items[0] + ", ");
 		for (int i = 1; i < items.length - 1; i++){
 			stb.append(items[i] + ((i == items.length - 2) ? "" : ", "));
@@ -150,99 +185,30 @@ public class Utils{
 
 	public static String locationToString(Location lc){
 		if (lc == null) return null;
-		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName());
+		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld() == null ? Lang.Unknown.toString() : lc.getWorld().getName());
 	}
 	
 	public static Location upLocationForEntity(LivingEntity en, double value) {
 		return en.getLocation().add(0, QuestsConfiguration.getHologramsHeight() + NMS.getNMS().entityNameplateHeight(en) + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
 	}
 	
-	public static void removeItems(Inventory inv, ItemStack i){
-		if (i.getAmount() <= 0) return;
-		ItemStack[] items = inv.getContents();
-		for (int slot = 0; slot < items.length; slot++){
-			ItemStack item = items[slot];
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == i.getAmount()) {
-					inv.setItem(slot, new ItemStack(Material.AIR));
-                    return;
-                }
-				if (item.getAmount() > i.getAmount()) {
-					item.setAmount(item.getAmount() - i.getAmount());
-					return;
-				}else if (item.getAmount() < i.getAmount()) {
-					i.setAmount(i.getAmount() - item.getAmount());
-					inv.setItem(slot, new ItemStack(Material.AIR));
-				}
-			}
-		}
-	}
-
-	public static boolean containsItems(Inventory inv, ItemStack i, int amount){
-		for(ItemStack item : inv.getContents()) {
-			if (item == null) continue;
-			if (isSimilar(item, i)){
-				if (item.getAmount() == amount) {
-					return true;
-                }
-				if (item.getAmount() > amount) {
-					return true;
-				}else if (item.getAmount() < amount) {
-					amount -= item.getAmount();
-				}
-			}
-		}
-		return false;
-	}
-	
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
         if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
-            ItemMeta item1Meta = item1.getItemMeta();
-            ItemMeta item2Meta = item2.getItemMeta();
-
-			try {
-				return NMS.getNMS().equalsWithoutNBT(item1Meta, item2Meta);
+            try {
+				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
 			}catch (ReflectiveOperationException ex) {
+				BeautyQuests.logger.severe("An error occurred while attempting to compare items using NMS");
 				ex.printStackTrace();
 			}
-
-			/*if (item1Meta.hasDisplayName() != item2Meta.hasDisplayName()) return false;
-			if (item1Meta.hasDisplayName()) {
-			    if (!item1Meta.getDisplayName().equals(item2Meta.getDisplayName())) return false;
-			}
-			
-			if (item1Meta.hasLore() != item2Meta.hasLore()) return false;
-			if (item1Meta.hasLore()) {
-			    if (item1Meta.getLore().size() != item2Meta.getLore().size()) return false;
-			    for (int index = 0; index < item1Meta.getLore().size(); index++) {
-			        if (!item1Meta.getLore().get(index).equals(item2Meta.getLore().get(index))) return false;
-			    }
-			}
-			
-			if (item1Meta.hasEnchants() != item2Meta.hasEnchants()) return false;
-			if (item1Meta.hasEnchants()) {
-			    if (item1Meta.getEnchants().size() != item2Meta.getEnchants().size()) return false;
-			    for (Entry<Enchantment, Integer> enchantInfo : item1Meta.getEnchants().entrySet()) {
-			        if (item1Meta.getEnchantLevel(enchantInfo.getKey()) != item2Meta.getEnchantLevel(enchantInfo.getKey())) return false;
-			    }
-			}
-			if (item1Meta.getItemFlags().size() != item2Meta.getItemFlags().size()) return false;
-			for (ItemFlag flag : item1Meta.getItemFlags()) {
-			    if (!item2Meta.hasItemFlag(flag)) return false;
-			}*/
-
-            return true;
         }
         return false;
     }
 	
-	public static void giveItem(Player p, ItemStack is){
-		if (p.getInventory().firstEmpty() == -1){
-			p.getWorld().dropItem(p.getLocation(), is);
+	public static void giveItems(Player p, List<ItemStack> items) {
+		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new));
+		if (!leftover.isEmpty()) {
+			leftover.values().forEach(item -> p.getWorld().dropItem(p.getLocation(), item));
 			Lang.ITEM_DROPPED.send(p);
-		}else {
-			p.getInventory().addItem(is);
 		}
 	}
 	
@@ -257,7 +223,7 @@ public class Utils{
 	}
 	
 	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
-		if (value == null) return Collections.EMPTY_LIST;
+		if (value == null) return Collections.emptyList();
 		List<T> list = new ArrayList<>();
 		for (Entry<T, E> entry : map.entrySet()) {
 			if (value.equals(entry.getValue())) {
@@ -266,20 +232,52 @@ public class Utils{
 		}
 		return list;
 	}
+	
+	public static String format(String msg, Supplier<Object>... replace) {
+		if (replace != null && replace.length != 0) {
+			for (int i = 0; i < replace.length; i++) {
+				Supplier<Object> supplier = replace[i];
+				msg = format(msg, i, supplier);
+			}
+		}
+		return msg;
+	}
 
 	public static String format(String msg, Object... replace){
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
-				msg = format(msg, i, (replace[i] != null) ? replace[i].toString() : "null");
+				Object replacement = replace[i];
+				if (replacement instanceof Supplier) {
+					msg = format(msg, i, (Supplier<Object>) replacement);
+				}else {
+					msg = format(msg, i, () -> replacement);
+				}
 			}
 		}
 		return msg;
 	}
 	
-	public static String format(String msg, int i, String replace){
-		String tmp = new String(msg);
-		tmp = tmp.replace("{" + i + "}", replace);
-		return tmp;
+	private static final Map<Integer, Pattern> REPLACEMENT_PATTERNS = new HashMap<>();
+	private static final Pattern RESET_PATTERN = Pattern.compile("§[rR]");
+	
+	public static String format(String msg, int i, Supplier<Object> replace) {
+		Pattern pattern = REPLACEMENT_PATTERNS.computeIfAbsent(i, __ -> Pattern.compile("\\{" + i + "\\}"));
+		Matcher matcher = pattern.matcher(msg);
+		StringBuilder output = new StringBuilder(msg.length());
+		int lastAppend = 0;
+		String colors = "";
+		String replacement = null;
+		while (matcher.find()) {
+			String substring = msg.substring(lastAppend, matcher.start());
+			colors = ChatUtils.getLastColors(colors, substring);
+			output.append(substring);
+			if (replacement == null) replacement = Objects.toString(replace.get());
+			Matcher replMatcher = RESET_PATTERN.matcher(replacement);
+			output.append(replMatcher.replaceAll("§r" + colors));
+			lastAppend = matcher.end();
+		}
+		output.append(msg, lastAppend, msg.length());
+		return output.toString();
 	}
 	
 	public static String buildFromArray(Object[] array, int start, String insert){
@@ -318,116 +316,7 @@ public class Utils{
 		return 0;
 	}
 	
-	/**
-	 * Breaks a raw string up into a series of lines. Words are wrapped using
-	 * spaces as decimeters and the newline character is respected.
-	 *
-	 * @param rawString The raw string to break.
-	 * @param lineLength The length of a line of text.
-	 * @return An array of word-wrapped lines.
-	 */
-	public static List<String> wordWrap(String rawString, int lineLength) {
-		// A null string is a single line
-		if (rawString == null) {
-			return Arrays.asList("");
-		}
-		
-		rawString = rawString.replace("{nl}", "\n");
-		
-		// A string shorter than the lineWidth is a single line
-		if (rawString.length() <= lineLength && !rawString.contains("\n")) {
-			return Arrays.asList(rawString);
-		}
-		
-		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
-		StringBuilder word = new StringBuilder();
-		StringBuilder line = new StringBuilder();
-		String lastColors = "";
-		String colors = "";
-		//boolean colorsSkip = true;
-		List<String> lines = new LinkedList<String>();
-		
-		for (int i = 0; i < rawChars.length; i++) {
-			char c = rawChars[i];
-			
-			// skip chat color modifiers
-			if (c == ChatColor.COLOR_CHAR) {
-				String color = ChatColor.getByChar(rawChars[i + 1]).toString();
-				word.append(color);
-				colors = ChatColor.getLastColors(colors + color);
-				i++; // Eat the next character as we have already processed it
-				//colorsSkip = true;
-				continue;
-			}
-			
-			if (c == ' ' || c == '\n') {
-				if (line.length() == 0 && word.length() > lineLength) { // special case: extremely long word begins a line
-					//System.out.println("long word : " + word);
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						lines.add(partialWord);
-					}
-				}else if (line.length() + 1 + word.length() == lineLength) { // Line exactly the correct length...newline
-					//System.out.println("good length");
-					if (line.length() > 0) {
-						line.append(' ');
-					}
-					line.append(word);
-					lines.add(line.toString());
-					line = new StringBuilder();
-					line.append(colors);
-				}else if (line.length() + word.length() >= lineLength) { // Line too long...break the line
-					//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
-					for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-						lines.add(line.toString());
-						//System.out.println("BREAK " + line.toString() + " | add : " + partialWord + " | colors : " + lastColors);
-						line = new StringBuilder(partialWord);
-						/*if (colorsSkip) {
-							colorsSkip = false;
-						}else {*/
-							line.insert(0, lastColors);
-						//}
-					}
-				}else {
-					if (line.length() > 0) {
-						line.append(' ');
-					}
-					line.append(word);
-					lastColors = colors;
-				}
-				word = new StringBuilder();
-				
-				if (c == '\n') { // Newline forces the line to flush
-					lines.add(line.toString());
-					line = new StringBuilder();
-					line.append(lastColors);
-				}
-				//colorsSkip = false;
-			}else {
-				word.append(c);
-			}
-		}
-		
-		if (line.length() > 0) { // Only add the last line if there is anything to add
-			lines.add(line.toString());
-		}
-		
-		// Iterate over the wrapped lines, applying the last color from one line to the beginning of the next
-		/*if (lines.get(0).length() == 0 || lines.get(0).charAt(0) != ChatColor.COLOR_CHAR) {
-			lines.set(0, ChatColor.WHITE + lines.get(0));
-		}*/
-		/*for (int i = 1; i < lines.size(); i++) {
-			final String pLine = lines.get(i - 1);
-			final String subLine = lines.get(i);
-			
-			//String color = ChatColor.getByChar(pLine.charAt(pLine.lastIndexOf(ChatColor.COLOR_CHAR) + 1));
-			String color = ChatColor.getLastColors(pLine);
-			if (subLine.length() == 0 || subLine.charAt(0) != ChatColor.COLOR_CHAR) {
-				lines.set(i, color + subLine);
-			}
-		}*/
-		
-		return lines;
-	}
+	
 	
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {
@@ -512,11 +401,15 @@ public class Utils{
 	}
 	
 	public static void playPluginSound(Player p, String sound, float volume){
+		playPluginSound(p, sound, volume, 1);
+	}
+	
+	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
-			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
-			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, 1);
+			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, pitch);
+		}catch (Exception ex) {
+			if (NMS.getMCVersion() > 8) p.playSound(p.getLocation(), sound, volume, pitch);
 		}
 	}
 	
@@ -524,7 +417,7 @@ public class Utils{
 		if (!QuestsConfiguration.playSounds()) return;
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
-		}catch (Throwable ex){
+		}catch (Exception ex) {
 			if (NMS.getMCVersion() > 8) lc.getWorld().playSound(lc, sound, volume, 1);
 		}
 	}

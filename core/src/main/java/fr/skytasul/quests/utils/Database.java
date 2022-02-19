@@ -13,6 +13,7 @@ import fr.skytasul.quests.BeautyQuests;
 
 public class Database {
 
+	private ConfigurationSection config;
 	private Properties properties;
 	private String host, database;
 	private int port;
@@ -20,6 +21,7 @@ public class Database {
 	private Connection connection;
 
 	public Database(ConfigurationSection config) {
+		this.config = config;
 		this.host = config.getString("host");
 		this.database = config.getString("database");
 		this.port = config.getInt("port");
@@ -36,16 +38,21 @@ public class Database {
 	public String getDatabase() {
 		return database;
 	}
+	
+	public ConfigurationSection getConfig() {
+		return config;
+	}
 
 	public boolean openConnection() {
 		if (!isClosed()) return false;
 
-		try {
+		// it seems no longer useful to load the Driver manually
+		/*try {
 			Class.forName("com.mysql.jdbc.Driver");
 		}catch (ClassNotFoundException e) {
 			BeautyQuests.logger.severe("Database driver not found.");
 			return false;
-		}
+		}*/
 
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), properties);

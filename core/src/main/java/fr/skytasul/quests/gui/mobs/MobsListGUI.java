@@ -63,33 +63,45 @@ public class MobsListGUI implements CustomInventory{
 			run.accept(mobs);
 			return true;
 		}
-		if (click.isRightClick()){
-			mobs.remove(slot);
-			inv.setItem(slot, none.clone());
-			return true;
-		}
-		new PagedGUI<MobFactory<?>>(Lang.INVENTORY_MOBSELECT.toString(), DyeColor.LIME, MobFactory.factories) {
-			public ItemStack getItemStack(MobFactory<?> object) {
-				return object.getFactoryItem();
-			}
-
-			@SuppressWarnings ("rawtypes")
-			public void click(MobFactory<?> existing, ItemStack item, ClickType clickType) {
-				existing.itemClick(p, (obj) -> {
-					if (obj == null) {
+		Entry<Mob<?>, Integer> mobEntry = mobs.get(slot);
+		if (mobEntry == null) {
+			new PagedGUI<MobFactory<?>>(Lang.INVENTORY_MOBSELECT.toString(), DyeColor.LIME, MobFactory.factories) {
+				public ItemStack getItemStack(MobFactory<?> object) {
+					return object.getFactoryItem();
+				}
+				
+				@SuppressWarnings ("rawtypes")
+				public void click(MobFactory<?> existing, ItemStack item, ClickType clickType) {
+					existing.itemClick(p, (obj) -> {
 						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
-						return;
-					}
-					Lang.MOB_AMOUNT.send(p);
-					new TextEditor<>(p, () -> Inventories.put(p, openLastInv(p), MobsListGUI.this.inv), amount -> {
-						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
+						if (obj == null) return;
 						Mob<?> mob = new Mob(existing, obj);
-						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(amount));
-						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, amount));
-					}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
-				});
+						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(1));
+						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, 1));
+					});
+				}
+			}.create(p);
+		}else {
+			if (click == ClickType.SHIFT_LEFT) {
+				Lang.MOB_NAME.send(p);
+				new TextEditor<>(p, () -> openLastInv(p), name -> {
+					mobEntry.getKey().setCustomName((String) name);
+					inv.setItem(slot, mobEntry.getKey().createItemStack(mobEntry.getValue()));
+					openLastInv(p);
+				}).passNullIntoEndConsumer().enter();
+			}else if (click == ClickType.LEFT) {
+				Lang.MOB_AMOUNT.send(p);
+				new TextEditor<>(p, () -> openLastInv(p), amount -> {
+					mobEntry.setValue(amount);
+					inv.setItem(slot, mobEntry.getKey().createItemStack(amount));
+					openLastInv(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			}else if (click.isRightClick()) {
+				mobs.remove(slot);
+				inv.setItem(slot, none.clone());
+				return true;
 			}
-		}.create(p);
+		}
 		return true;
 	}
 

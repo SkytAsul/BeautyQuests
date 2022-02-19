@@ -32,6 +32,7 @@ public class PermissionGUI implements CustomInventory {
 		take = existingPerm.take;
 	}
 
+	@Override
 	public Inventory open(Player p) {
 		Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_PERMISSION.toString());
 		
@@ -46,18 +47,17 @@ public class PermissionGUI implements CustomInventory {
 		return p.openInventory(inv).getTopInventory();
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
 		switch (slot) {
 		case 0:
 			Lang.CHOOSE_PERM_REWARD.send(p);
 			new TextEditor<String>(p, () -> p.openInventory(inv), x -> {
-				perm = x;
 				inv.getItem(4).setType(Material.DIAMOND);
-				p.openInventory(inv);
+				updatePerm(p, x, inv);
 			}, () -> {
-				perm = null;
 				inv.getItem(4).setType(Material.COAL);
-				p.openInventory(inv);
+				updatePerm(p, null, inv);
 			}).useStrippedMessage().enter();
 			break;
 		case 1:
@@ -77,6 +77,12 @@ public class PermissionGUI implements CustomInventory {
 			break;
 		}
 		return true;
+	}
+	
+	private void updatePerm(Player p, String perm, Inventory inv) {
+		this.perm = perm;
+		ItemUtils.lore(inv.getItem(0), perm == null ? Lang.NotSet.toString() : "§b" + perm);
+		p.openInventory(inv);
 	}
 
 	private void updateWorld(Player p, String name, Inventory inv){

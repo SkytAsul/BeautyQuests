@@ -34,11 +34,11 @@ public abstract class QuestOption<T> implements Cloneable {
 		return creator;
 	}
 	
-	public boolean hasCustomValue() {
+	public final boolean hasCustomValue() {
 		return !Objects.equals(this.value, creator.defaultValue);
 	}
 	
-	public T getValue() {
+	public final T getValue() {
 		return value;
 	}
 	
@@ -92,18 +92,32 @@ public abstract class QuestOption<T> implements Cloneable {
 		return true;
 	}
 	
-	public abstract ItemStack getItemStack();
+	public void updatedDependencies(OptionSet options, ItemStack item) {}
+	
+	public abstract ItemStack getItemStack(OptionSet options);
 	
 	public abstract void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click);
 	
+	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot) {
+		return true;
+	}
+	
 	public String formatValue(String valueString) {
-		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString).toString();
-		if (!hasCustomValue()) valueString += " " + Lang.defaultValue.toString();
-		return valueString;
+		return formatNullableValue(valueString, !hasCustomValue());
 	}
 	
 	public static String formatDescription(String description) {
 		return description == null ? null : "§8> §7" + description;
+	}
+	
+	public static String formatNullableValue(String valueString) {
+		return formatNullableValue(valueString, false);
+	}
+	
+	public static String formatNullableValue(String valueString, boolean defaultValue) {
+		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString);
+		if (defaultValue) valueString += " " + Lang.defaultValue.toString();
+		return valueString;
 	}
 	
 }

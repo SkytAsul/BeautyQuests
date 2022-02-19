@@ -4,15 +4,14 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
 
-import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.ScoreboardObjectiveParser;
-import fr.skytasul.quests.gui.creation.QuestObjectGUI;
+import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
 
 public class ScoreboardRequirement extends TargetNumberRequirement {
@@ -21,11 +20,11 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	private String objectiveName;
 
 	public ScoreboardRequirement() {
-		this(null, 0);
+		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public ScoreboardRequirement(String objectiveName, double target) {
-		super("scoreboardRequired", target);
+	public ScoreboardRequirement(String objectiveName, double target, ComparisonMethod comparison) {
+		super(target, comparison);
 		if (objectiveName != null) this.objectiveName = objectiveName;
 	}
 
@@ -51,22 +50,22 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { getValueLore(), "§8>Objective name: §7" + objectiveName, "", Lang.Remove.toString() };
+		return new String[] { getValueLore(), "§8>Objective name: §7" + objectiveName, "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
-	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(p);
-		new TextEditor<>(p, () -> {
-			if (objectiveName == null) gui.remove(this);
-			gui.reopen();
+	public void itemClick(QuestObjectClickEvent event) {
+		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(event.getPlayer());
+		new TextEditor<>(event.getPlayer(), () -> {
+			if (objectiveName == null) event.getGUI().remove(this);
+			event.reopenGUI();
 		}, obj -> {
 			this.objective = obj;
 			this.objectiveName = objective.getName();
-			super.itemClick(p, gui, clicked);
+			super.itemClick(event);
 		}, () -> {
-			gui.remove(this);
-			gui.reopen();
+			event.getGUI().remove(this);
+			event.reopenGUI();
 		}, new ScoreboardObjectiveParser()).enter();
 	}
 	
@@ -84,7 +83,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new ScoreboardRequirement(objectiveName, target);
+		return new ScoreboardRequirement(objectiveName, target, comparison);
 	}
 
 }
