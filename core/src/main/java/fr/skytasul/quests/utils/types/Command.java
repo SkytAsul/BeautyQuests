@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -24,10 +25,9 @@ public class Command {
 	public void execute(Player o){
 		Runnable run = () -> {
 			String formattedcmd = label.replace("{PLAYER}", o.getName());
-			if (console) {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), formattedcmd);
-			}else o.performCommand(formattedcmd);
-			DebugUtils.logMessage((console ? "Console" : o.getName()) + " just performed command " + formattedcmd);
+			CommandSender sender = console ? Bukkit.getConsoleSender() : o;
+			Bukkit.dispatchCommand(sender, formattedcmd);
+			DebugUtils.logMessage(sender.getName() + " performed command " + formattedcmd);
 		};
 		if (delay == 0 && Bukkit.isPrimaryThread()) {
 			run.run();

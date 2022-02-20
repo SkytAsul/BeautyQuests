@@ -25,7 +25,7 @@ public class TeleportationReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player p) {
-		p.teleport(teleportation);
+		Utils.runOrSync(() -> p.teleport(teleportation));
 		return null;
 	}
 

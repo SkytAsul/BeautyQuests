@@ -24,6 +24,7 @@ import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -131,7 +132,8 @@ public class ItemUtils {
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(null);
 		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		if (im instanceof Damageable || im.hasAttributeModifiers()) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
+		if (im.isUnbreakable()) im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		if (im.hasAttributeModifiers() || NMS.getMCVersion() <= 12 || im instanceof Damageable) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof KnowledgeBookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
 		im.setLore(null);
