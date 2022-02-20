@@ -133,8 +133,8 @@ public class ItemUtils {
 		im.setDisplayName(null);
 		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		if (im.isUnbreakable()) im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		if (im.hasAttributeModifiers() || NMS.getMCVersion() <= 12 || im instanceof Damageable) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		if (im instanceof BookMeta || im instanceof KnowledgeBookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+		if (NMS.getMCVersion() <= 12 || im.hasAttributeModifiers() || im instanceof Damageable) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta || (NMS.getMCVersion() >= 12 && im instanceof KnowledgeBookMeta)) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
 		im.setLore(null);
 		is.setItemMeta(im);
