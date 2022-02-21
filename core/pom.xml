@@ -89,9 +89,10 @@
 			<id>maven-central</id>
 			<url>https://oss.sonatype.org/content/groups/public</url>
 		</repository>
-		<!-- <repository> <id>songoda</id> <url>https://repo.songoda.com/repository/public/</url> 
-			</repository> <repository> <id>teamvk-repo</id> <url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url> 
-			</repository> -->
+        <repository>
+            <id>teamvk-repo</id>
+            <url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url>
+        </repository>
 		<repository>
 			<id>lumine</id>
 			<url>https://mvn.lumine.io/repository/maven-public/</url>
@@ -233,14 +234,14 @@
 			<version>1.3.2</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!-- Local JARs -->
 		<dependency>
 			<groupId>com.vk2gpz.tokenenchant</groupId>
 			<artifactId>TokenEnchantAPI</artifactId>
-			<version>18.15.2</version>
+			<version>18.37.1</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Local JARs -->
 		<dependency>
 			<groupId>com.songoda</groupId>
 			<artifactId>ultimatetimber</artifactId>

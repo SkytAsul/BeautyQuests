@@ -114,7 +114,7 @@ public class StageLocation extends AbstractStage implements Locatable {
 	
 	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
-		return new Object[] { lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld().getName() };
+		return new Object[] { lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorldName() };
 	}
 
 	@Override
