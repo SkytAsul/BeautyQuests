@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,13 +60,16 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
+import fr.skytasul.quests.utils.logger.ILoggerHandler;
+import fr.skytasul.quests.utils.logger.LoggerExpanded;
+import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 
 import de.jeff_media.updatechecker.UpdateChecker;
 
 public class BeautyQuests extends JavaPlugin {
 
-	public static QuestsLogger logger;
+	public static LoggerExpanded logger;
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
 	
@@ -99,22 +102,21 @@ public class BeautyQuests extends JavaPlugin {
 	
 	public DependenciesManager dependencies = new DependenciesManager();
 	
+	private LoggerHandler loggerHandler;
+	
 	/* ---------------------------------------------- */
 
 	@Override
 	public void onLoad(){
 		instance = this;
+		logger = new LoggerExpanded(getLogger());
 		try{
 			if (!getDataFolder().exists()) getDataFolder().mkdir();
-			logger = new QuestsLogger(this);
-			Field f = JavaPlugin.class.getDeclaredField("logger");
-			f.setAccessible(true);
-			f.set(this, logger);
-			System.out.println("New logger inserted: " + getLogger().getClass().getName());
+			loggerHandler = new LoggerHandler(this);
+			getLogger().addHandler(loggerHandler);
 		}catch (Throwable ex){
-			ex.printStackTrace();
+			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
 		}
-		if (logger == null || !logger.isEnabled()) System.out.println("Failed to insert new logger to BeautyQuests. Current logger: " + getLogger().getClass().getName());
 	}
 	
 	@Override
@@ -135,8 +137,7 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				dependencies.initializeCompatibilities();
 			}catch (Exception ex) {
-				logger.severe("Error when initializing compatibilities. Consider restarting.");
-				ex.printStackTrace();
+				logger.severe("Error when initializing compatibilities. Consider restarting.", ex);
 			}
 			
 			if (QuestsAPI.getNPCsManager() == null) {
@@ -164,23 +165,22 @@ public class BeautyQuests extends JavaPlugin {
 							saveAllConfig(false);
 						}
 					}catch (Throwable e) {
-						e.printStackTrace();
+						logger.severe("An error occurred while loading plugin datas.", e);
 					}
 				}
 			}.runTaskLater(this, QuestsAPI.getNPCsManager().getTimeToWaitForNPCs());
 			
 
 			// Start of non-essential systems
-			logger.launchFlushTimer();
+			if (loggerHandler != null) loggerHandler.launchFlushTimer();
 			launchMetrics(pluginVersion);
 			try {
 				launchUpdateChecker(pluginVersion);
 			}catch (ReflectiveOperationException e) {
-				logger.severe("An error occurred while checking updates.");
-				e.printStackTrace();
+				logger.severe("An error occurred while checking updates.", e);
 			}
 		}catch (LoadingException ex) {
-			if (ex.getCause() != null) ex.getCause().printStackTrace();
+			if (ex.getCause() != null) logger.severe("A fatal error occurred while loading plugin.", ex.getCause());
 			logger.severe(ex.loggerMessage);
 			logger.severe("This is a fatal error. Now disabling.");
 			disable = true;
@@ -198,17 +198,17 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				if (!disable) saveAllConfig(true);
 			}catch (Exception e) {
-				e.printStackTrace();
+				logger.severe("An error occurred while saving config.", e);
 			}
 			try {
 				dependencies.disableCompatibilities();
 			}catch (Exception e) {
-				e.printStackTrace();
+				logger.severe("An error occurred while disabling plugin integrations.", e);
 			}
 			
 			getServer().getScheduler().cancelTasks(this);
 		}finally {
-			if (logger != null) logger.close();
+			if (loggerHandler != null) loggerHandler.close();
 		}
 	}
 	
@@ -245,8 +245,7 @@ public class BeautyQuests extends JavaPlugin {
 						saveAllConfig(false);
 						if (QuestsConfiguration.saveCycleMessage) logger.info("Datas saved ~ periodic save");
 					}catch (Exception e) {
-						logger.severe("Error when saving!");
-						e.printStackTrace();
+						logger.severe("Error when saving!", e);
 					}
 				}
 			};
@@ -419,8 +418,9 @@ public class BeautyQuests extends JavaPlugin {
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
-				createFolderBackup("You are using a new version for the first time.");
-				createDataBackup("You are using a new version for the first time.");
+				logger.info("You are using a new version for the first time.");
+				createFolderBackup();
+				createDataBackup();
 			}
 		}else lastVersion = getDescription().getVersion();
 		data.options().header("Do not edit ANYTHING here.");
@@ -442,8 +442,8 @@ public class BeautyQuests extends JavaPlugin {
 			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
 			PlayersManager.manager.load();
 		}catch (Exception ex) {
-			createDataBackup("Error while loading player datas.");
-			ex.printStackTrace();
+			createDataBackup();
+			logger.severe("Error while loading player datas.", ex);
 		}
 		
 		QuestsAPI.getQuestsHandlers().forEach(handler -> {
@@ -504,8 +504,8 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				PlayersManager.manager.save();
 			}catch (Exception ex) {
-				createDataBackup("Error when saving player datas.");
-				ex.printStackTrace();
+				createDataBackup();
+				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
 		}
@@ -527,46 +527,43 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* ---------- Backups ---------- */
 	
-	public boolean createFolderBackup(String msg){
+	public boolean createFolderBackup() {
 		if (!QuestsConfiguration.backups) return false;
-		getLogger().info(msg + " Creating backup...");
+		logger.info("Creating quests backup...");
 		try {
 			File backupDir = backupDir();
 			backupDir.mkdir();
 			for (File file : saveFolder.listFiles()) {
 				Files.copy(file.toPath(), new File(backupDir, file.getName()).toPath());
 			}
-			getLogger().info("Quests backup created in " + backupDir.getName());
+			logger.info("Quests backup created in " + backupDir.getName());
 			return true;
 		}catch (Exception e) {
-			getLogger().severe("An error occured while creating the backup.");
-			e.printStackTrace();
+			logger.severe("An error occured while creating the backup.", e);
 			return false;
 		}
 	}
 	
-	public boolean createDataBackup(String msg){
+	public boolean createDataBackup() {
 		if (!QuestsConfiguration.backups) return false;
-		getLogger().info(msg + " Creating backup...");
+		logger.info("Creating data backup...");
 		try{
-			getLogger().info("Datas backup created in " + Files.copy(dataFile.toPath(), new File(backupDir(), "data.yml").toPath()).getParent().getFileName());
+			logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), new File(backupDir(), "data.yml").toPath()).getParent().getFileName());
 			return true;
 		}catch (Exception e) {
-			getLogger().severe("An error occured while creating the backup.");
-			e.printStackTrace();
+			logger.severe("An error occured while creating the backup.", e);
 			return false;
 		}
 	}
 
 	public boolean createQuestBackup(Path file, String msg) {
 		if (!QuestsConfiguration.backups) return false;
-		getLogger().info(msg + " Creating backup...");
+		logger.info("Creating single quest backup...");
 		try{
-			getLogger().info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
+			logger.info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
 			return true;
 		}catch (Exception e) {
-			getLogger().severe("An error occured while creating the backup.");
-			e.printStackTrace();
+			logger.severe("An error occured while creating the backup.", e);
 			return false;
 		}
 	}
@@ -642,6 +639,10 @@ public class BeautyQuests extends JavaPlugin {
 	
 	public QuestPoolsManager getPoolsManager() {
 		return pools;
+	}
+	
+	public ILoggerHandler getLoggerHandler() {
+		return loggerHandler == null ? ILoggerHandler.EMPTY_LOGGER : loggerHandler;
 	}
 
 

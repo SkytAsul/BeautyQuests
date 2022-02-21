@@ -43,7 +43,7 @@ public class QuestsManager implements Iterable<Quest> {
 						if (BeautyQuests.loadingFailure) plugin.createQuestBackup(path, "Error when loading quest.");
 					}else plugin.getLogger().severe("Quest from file " + file.getName() + " not activated");
 				}catch (Exception ex) {
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("An error occurred while loading quest file " + path.getFileName(), ex);
 				}
 			});
 		}
@@ -79,8 +79,7 @@ public class QuestsManager implements Iterable<Quest> {
 			try {
 				quest.unload();
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("An error ocurred when unloading quest " + quest.getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error ocurred when unloading quest " + quest.getID(), ex);
 			}
 		}
 	}

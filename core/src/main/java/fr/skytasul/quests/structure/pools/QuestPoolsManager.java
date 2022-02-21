@@ -37,8 +37,7 @@ public class QuestPoolsManager {
 					QuestPool pool = QuestPool.deserialize(id, config.getConfigurationSection(key));
 					pools.put(id, pool);
 				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An exception ocurred while loading quest pool " + key);
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("An exception ocurred while loading quest pool " + key, ex);
 					continue;
 				}
 			}

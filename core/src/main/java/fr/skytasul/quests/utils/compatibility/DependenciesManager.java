@@ -196,8 +196,7 @@ public class DependenciesManager implements Listener {
 			try {
 				if (initialize != null) initialize.run();
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
 			}
 		}

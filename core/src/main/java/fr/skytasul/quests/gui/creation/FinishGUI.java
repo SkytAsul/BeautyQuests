@@ -169,24 +169,13 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
-		try {
-			clicks.get(slot).click(p, current, click);
-		}catch (Exception ex) {
-			Lang.ERROR_OCCURED.send(p, "Finish GUI click slot #" + slot);
-			ex.printStackTrace();
-		}
+		clicks.get(slot).click(p, current, click);
 		return true;
 	}
 	
 	@Override
 	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot) {
-		try {
-			return clicks.get(slot).clickCursor(p, current, cursor);
-		}catch (Exception ex) {
-			Lang.ERROR_OCCURED.send(p, "Finish GUI click cursor slot #" + slot);
-			ex.printStackTrace();
-		}
-		return true;
+		return clicks.get(slot).clickCursor(p, current, cursor);
 	}
 
 	private void finish(){
@@ -237,8 +226,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				qu.saveToFile();
 			}catch (Exception e) {
 				Lang.ERROR_OCCURED.send(p, "initial quest save");
-				BeautyQuests.logger.severe("Error when trying to save quest");
-				e.printStackTrace();
+				BeautyQuests.logger.severe("Error when trying to save newly created quest.", e);
 			}
 			
 			if (keepPlayerDatas) {
@@ -285,7 +273,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			}catch (Exception ex) {
 				failure = true;
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred wheh creating branch from GUI.", ex);
 			}
 		}
 		return failure;

@@ -94,8 +94,7 @@ public class Utils{
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
 			}catch (Exception e) {
-				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName());
-				e.printStackTrace();
+				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName(), e);
 			}
 		}
 		return msg;
@@ -197,8 +196,7 @@ public class Utils{
             try {
 				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
 			}catch (ReflectiveOperationException ex) {
-				BeautyQuests.logger.severe("An error occurred while attempting to compare items using NMS");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while attempting to compare items using NMS", ex);
 			}
         }
         return false;

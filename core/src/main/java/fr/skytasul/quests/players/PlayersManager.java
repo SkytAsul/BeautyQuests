@@ -116,8 +116,7 @@ public abstract class PlayersManager {
 					});
 					return;
 				}catch (Exception ex) {
-					ex.printStackTrace();
-					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ". Doing " + i + " more attempt.");
+					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ". Doing " + i + " more attempt.", ex);
 				}
 			}
 			BeautyQuests.logger.severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");

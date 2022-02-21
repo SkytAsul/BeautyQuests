@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.editors.Editor;
@@ -145,10 +146,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 			DebugUtils.logMessage(sender.getName() + " invoked method \"" + internal.method.getName() + "\" from command: " + commandString);
 			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
 		}catch (Exception e) {
-			String errorType = e.getCause() == null ? e.getClass().getSimpleName() : e.getCause().getClass().getSimpleName();
-			DebugUtils.logMessage("An exception occured during command execution: " + errorType);
-			Lang.ERROR_OCCURED.send(sender, errorType);
-			e.printStackTrace();
+			Lang.ERROR_OCCURED.send(sender, e.getCause() == null ? e.getClass().getSimpleName() : e.getCause().getClass().getSimpleName());
+			BeautyQuests.logger.severe("An exception occured during command execution:", e);
 		}
 		
 		return false;

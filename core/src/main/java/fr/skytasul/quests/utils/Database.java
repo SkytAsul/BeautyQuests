@@ -58,8 +58,7 @@ public class Database {
 			connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.getDatabase(), properties);
 			DebugUtils.logMessage("Opened database connection.");
 		}catch (SQLException ex) {
-			BeautyQuests.logger.severe("An exception occurred when connecting to the database.");
-			ex.printStackTrace();
+			BeautyQuests.logger.severe("An exception occurred when connecting to the database.", ex);
 			return false;
 		}
 		return true;
@@ -80,8 +79,7 @@ public class Database {
 				connection.close();
 				DebugUtils.logMessage("Closed database connection.");
 			}catch (SQLException ex) {
-				BeautyQuests.logger.severe("An exception occurred when closing database connection.");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An exception occurred when closing database connection.", ex);
 			}
 			connection = null;
 		}

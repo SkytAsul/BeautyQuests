@@ -21,10 +21,10 @@ public abstract class NMS{
 	
 	private ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
 	private ReflectUtils craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
-
+	
 	private Field unhandledTags;
 	private Method equalsCommon;
-
+	
 	public NMS() {
 		if (!(this instanceof NullNMS)) {
 			try {
@@ -34,13 +34,13 @@ public abstract class NMS{
 				unhandledTags.setAccessible(true);
 				equalsCommon.setAccessible(true);
 			}catch (ReflectiveOperationException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 	}
-
+	
 	public abstract Object bookPacket(ByteBuf buf);
-
+	
 	public abstract Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt, Object paramData);
 	
 	public abstract double entityNameplateHeight(LivingEntity en); // can be remplaced by Entity.getHeight from 1.11
@@ -68,28 +68,28 @@ public abstract class NMS{
 	}
 	
 	public abstract void sendPacket(Player p, Object packet);
-    
-    public static NMS getNMS(){
-    	return nms;
-    }
-    
-    public static boolean isValid(){
-    	return versionValid;
-    }
-    
-    public static int getMCVersion(){
+	
+	public static NMS getNMS() {
+		return nms;
+	}
+	
+	public static boolean isValid() {
+		return versionValid;
+	}
+	
+	public static int getMCVersion() {
 		return versionMajor;
 	}
 	
 	public static int getNMSMinorVersion() {
 		return versionMinorNMS;
-    }
+	}
 	
 	public static String getVersionString() {
 		return versionString;
 	}
-    
-    private static boolean versionValid = false;
+	
+	private static boolean versionValid = false;
 	private static NMS nms;
 	private static int versionMajor;
 	private static int versionMinorNMS;
@@ -113,8 +113,7 @@ public abstract class NMS{
 		}catch (ClassNotFoundException ex) {
 			BeautyQuests.logger.warning("The Minecraft version " + version + " is not supported by BeautyQuests.");
 		}catch (Exception ex) {
-			ex.printStackTrace();
-			BeautyQuests.logger.warning("An error ocurred when loading Minecraft Server version " + version + " compatibilities.");
+			BeautyQuests.logger.warning("An error ocurred when loading Minecraft Server version " + version + " compatibilities.", ex);
 		}
 		if (!versionValid) {
 			nms = new NullNMS();

@@ -45,8 +45,7 @@ public class Mob<Data> implements Cloneable {
 			mobItem = XMaterial.mobItem(factory.getEntityType(data));
 		}catch (Exception ex) {
 			mobItem = XMaterial.SPONGE;
-			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data));
-			ex.printStackTrace();
+			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data), ex);
 		}
 		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
 		item.setAmount(Math.min(amount, 64));

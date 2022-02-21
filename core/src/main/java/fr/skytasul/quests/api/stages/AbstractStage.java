@@ -206,7 +206,7 @@ public abstract class AbstractStage implements Listener{
 		try{
 			return descriptionLine(acc, source);
 		}catch (Exception ex){
-			ex.printStackTrace();
+			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + debugName(), ex);
 			return "§a" + type.name;
 		}
 	}

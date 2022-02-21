@@ -85,9 +85,8 @@ public abstract class QuestObject implements Cloneable {
 					BeautyQuests.getInstance().getLogger().severe("The quest object for class " + String.valueOf(objectMap.get("class")) + " has not been deserialized.");
 				}else objects.add(object);
 			}catch (Exception e) {
-				BeautyQuests.getInstance().getLogger().severe("An exception occured while deserializing a quest object (class " + objectMap.get("class") + ").");
+				BeautyQuests.logger.severe("An exception occured while deserializing a quest object (class " + objectMap.get("class") + ").", e);
 				BeautyQuests.loadingFailure = true;
-				e.printStackTrace();
 			}
 		}
 		return objects;

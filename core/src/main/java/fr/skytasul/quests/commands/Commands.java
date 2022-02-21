@@ -434,11 +434,12 @@ public class Commands {
 		}
 		
 		boolean success = true;
-		if (!BeautyQuests.getInstance().createFolderBackup(cmd.sender.getName() + "'s manual command.")){
+		BeautyQuests.logger.info("Creating backup due to " + cmd.sender.getName() + "'s manual command.");
+		if (!BeautyQuests.getInstance().createFolderBackup()) {
 			Lang.BACKUP_QUESTS_FAILED.send(cmd.sender);
 			success = false;
 		}
-		if (!BeautyQuests.getInstance().createDataBackup(cmd.sender.getName() + "'s manual command.")){
+		if (!BeautyQuests.getInstance().createDataBackup()) {
 			Lang.BACKUP_PLAYERS_FAILED.send(cmd.sender);
 			success = false;
 		}
@@ -608,7 +609,8 @@ public class Commands {
 				Lang.COMMAND_TRANSLATION_NOT_FOUND.send(cmd.sender, lang, version);
 			}
 		}catch (IOException e) {
-			e.printStackTrace();
+			Lang.ERROR_OCCURED.send(cmd.sender, "IO Exception when downloading translation.");
+			BeautyQuests.logger.severe("An error occurred while downloading translation.", e);
 		}
 	}
 	

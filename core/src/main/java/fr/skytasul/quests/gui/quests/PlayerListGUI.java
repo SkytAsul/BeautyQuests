@@ -138,8 +138,7 @@ public class PlayerListGUI implements CustomInventory {
 					item = createQuestItem(qu, lore);
 				}catch (Exception ex) {
 					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
-					BeautyQuests.getInstance().getLogger().severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier());
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier(), ex);
 				}
 				setMainItem(i - page * 35, item);
 			}

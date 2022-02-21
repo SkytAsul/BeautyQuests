@@ -77,8 +77,7 @@ public class QuestsListener implements Listener{
 						timer.add(qu);
 					}else launcheable.add(qu);
 				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName());
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName(), ex);
 				}
 			}
 			
@@ -86,8 +85,7 @@ public class QuestsListener implements Listener{
 				try {
 					return pool.canGive(p, acc);
 				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName());
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName(), ex);
 					return false;
 				}
 			}).collect(Collectors.toSet());

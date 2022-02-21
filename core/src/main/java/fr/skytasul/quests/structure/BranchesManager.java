@@ -111,8 +111,7 @@ public class BranchesManager{
 				Map<String, Object> datas = branch.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Exception ex) {
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID(), ex);
 				BeautyQuests.savingFailure = true;
 			}
 		}
@@ -148,8 +147,7 @@ public class BranchesManager{
 					return null;
 				}
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when deserializing the branch " + i + " for the quest " + qu.getID(), ex);
 				BeautyQuests.loadingFailure = true;
 				return null;
 			}

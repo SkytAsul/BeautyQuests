@@ -210,7 +210,7 @@ public class QuestBranch {
 						if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
 					}catch (Exception e) {
 						Lang.ERROR_OCCURED.send(p, "giving async rewards");
-						e.printStackTrace();
+						BeautyQuests.logger.severe("An error occurred while giving stage async end rewards.", e);
 					}
 					// by using the try-catch, we ensure that "asyncReward#remove" is called
 					// otherwise, the player would be completely stuck
@@ -280,8 +280,7 @@ public class QuestBranch {
 				Map<String, Object> datas = stage.serialize();
 				if (datas != null) st.add(datas);
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getID(), ex);
 				BeautyQuests.savingFailure = true;
 				continue;
 			}
@@ -297,8 +296,7 @@ public class QuestBranch {
 					st.add(datas);
 				}
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getID(), ex);
 				BeautyQuests.savingFailure = true;
 				continue;
 			}
@@ -334,8 +332,7 @@ public class QuestBranch {
 				}
 				addRegularStage(st);
 			}catch (Exception ex){
-				BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID(), ex);
 				BeautyQuests.loadingFailure = true;
 				return false;
 			}
@@ -352,8 +349,7 @@ public class QuestBranch {
 					}
 					addEndStage(st, manager.getBranch((int) endMap.get("branchLinked")));
 				}catch (Exception ex){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID());
-					ex.printStackTrace();
+					BeautyQuests.logger.severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID(), ex);
 					BeautyQuests.loadingFailure = true;
 					return false;
 				}

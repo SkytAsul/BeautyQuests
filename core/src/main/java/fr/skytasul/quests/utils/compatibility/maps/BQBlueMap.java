@@ -39,8 +39,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 				
 				initializeQuests.run();
 			}catch (IOException e) {
-				BeautyQuests.logger.severe("An error occurred while loading BlueMap integration.");
-				e.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while loading BlueMap integration.", e);
 				QuestsAPI.unregisterQuestsHandler(this);
 			}
 		});

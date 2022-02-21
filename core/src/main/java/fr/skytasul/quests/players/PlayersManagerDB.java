@@ -375,8 +375,7 @@ public class PlayersManagerDB extends PlayersManager {
 				
 				amount++;
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName(), ex);
 				failed++;
 			}
 		}

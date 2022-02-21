@@ -336,7 +336,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				}else Utils.sendMessage(p, Lang.FINISHED_BASE.format(getName()) + (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
 			}catch (Exception ex) {
 				Lang.ERROR_OCCURED.send(p, "reward message");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while giving quest end rewards.", ex);
 			}
 			
 			Utils.runOrSync(() -> {
@@ -411,8 +411,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			try {
 				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
 			}catch (Exception ex) {
-				BeautyQuests.logger.warning("An exception occured when saving an option for quest " + id);
-				ex.printStackTrace();
+				BeautyQuests.logger.warning("An exception occured when saving an option for quest " + id, ex);
 			}
 		}
 		
@@ -427,8 +426,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			config.load(file);
 			return deserialize(file, config);
 		}catch (Exception e) {
-			BeautyQuests.logger.warning("Error when loading quests from data file.");
-			e.printStackTrace();
+			BeautyQuests.logger.warning("Error when loading quests from data file.", e);
 			return null;
 		}
 	}
@@ -452,9 +450,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 						option.load(map, key);
 						qu.addOption(option);
 					}catch (Exception ex) {
-						BeautyQuests.logger.warning("An exception occured when loading the option " + key + " for quest " + qu.id);
+						BeautyQuests.logger.warning("An exception occured when loading the option " + key + " for quest " + qu.id, ex);
 						BeautyQuests.loadingFailure = true;
-						ex.printStackTrace();
 					}
 					break;
 				}

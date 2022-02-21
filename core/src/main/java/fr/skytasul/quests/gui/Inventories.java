@@ -81,9 +81,8 @@ public class Inventories{
 			}
 		}catch (Exception ex) {
 			e.setCancelled(true);
-			ex.printStackTrace();
 			Lang.ERROR_OCCURED.send(p, ex.getMessage() + " in " + pair.getKey().getClass().getSimpleName());
-			BeautyQuests.logger.severe("An error occurred when " + p.getName() + " clicked in inventory " + pair.getKey().getClass().getSimpleName());
+			BeautyQuests.logger.severe("An error occurred when " + p.getName() + " clicked in inventory " + pair.getKey().getClass().getSimpleName() + " at slot " + e.getSlot(), ex);
 		}
 	}
 	

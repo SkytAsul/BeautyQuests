@@ -112,8 +112,7 @@ public class PlayersManagerYAML extends PlayersManager {
 					addAccount(acc);
 				}
 			}catch (Exception ex) {
-				BeautyQuests.getInstance().getLogger().severe("An error occured when loading player account " + entry.getKey());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occured when loading player account " + entry.getKey(), ex);
 			}
 		}
 		BeautyQuests.getInstance().getLogger().info("Total loaded accounts: " + loadedAccounts.size());
@@ -263,8 +262,7 @@ public class PlayersManagerYAML extends PlayersManager {
 					identifiersIndex.put(index, config.getString(path));
 					if (index >= lastAccountID) lastAccountID = index;
 				}catch (Exception ex) {
-					ex.printStackTrace();
-					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key));
+					BeautyQuests.logger.severe("An error occured while loading player account. Data: " + config.get(key), ex);
 				}
 			}
 		}
@@ -289,8 +287,7 @@ public class PlayersManagerYAML extends PlayersManager {
 			try {
 				savePlayerFile(acc);
 			}catch (Exception e) {
-				BeautyQuests.logger.severe("An error ocurred while trying to save " + acc.debugName() + " account file");
-				e.printStackTrace();
+				BeautyQuests.logger.severe("An error ocurred while trying to save " + acc.debugName() + " account file", e);
 			}
 		}
 	}
@@ -303,8 +300,7 @@ public class PlayersManagerYAML extends PlayersManager {
 			try {
 				savePlayerFile(acc);
 			}catch (IOException e) {
-				BeautyQuests.logger.warning("An error ocurred while saving player file " + acc.debugName());
-				e.printStackTrace();
+				BeautyQuests.logger.warning("An error ocurred while saving player file " + acc.debugName(), e);
 			}
 		});
 	}

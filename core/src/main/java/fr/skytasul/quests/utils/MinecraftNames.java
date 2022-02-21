@@ -61,8 +61,7 @@ public class MinecraftNames {
 				}
 			}
 		}catch (Exception e) {
-			BeautyQuests.logger.severe("Problem when loading Minecraft Translations.");
-			e.printStackTrace();
+			BeautyQuests.logger.severe("Problem when loading Minecraft Translations.", e);
 		}
 		return true;
 	}

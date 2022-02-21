@@ -58,8 +58,7 @@ public class RandomReward extends AbstractReward {
 				List<String> messages = reward.give(p);
 				if (messages != null) msg.addAll(messages);
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("Error when giving random reward " + reward.getName() + " to " + p.getName());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
 			}
 		}
 		

@@ -151,8 +151,7 @@ public class QuestsAPI {
 			try {
 				consumer.accept(handler);
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("An error occurred while updating quests handler.");
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while updating quests handler.", ex);
 			}
 		});
 	}
