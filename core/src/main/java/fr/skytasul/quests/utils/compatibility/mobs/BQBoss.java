@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.boss.api.Boss;
 import org.mineacademy.boss.api.event.BossDeathEvent;
+import org.mineacademy.boss.model.Boss;
 
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.gui.Inventories;
@@ -22,7 +22,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class BossAPI implements MobFactory<Boss> {
+public class BQBoss implements MobFactory<Boss> {
 
 	@Override
 	public String getID() {
@@ -75,7 +75,7 @@ public class BossAPI implements MobFactory<Boss> {
 	public List<String> getDescriptiveLore(Boss data) {
 		return Arrays.asList(
 				Lang.EntityType.format(MinecraftNames.getEntityName(data.getType())),
-				"§8Health: §7§l" + data.getSettings().getHealth());
+				"§8Health: §7§l" + data.getDefaultHealth());
 	}
 
 	@EventHandler

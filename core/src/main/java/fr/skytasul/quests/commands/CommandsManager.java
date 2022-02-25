@@ -197,7 +197,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter{
 	public static boolean hasPermission(CommandSender sender, String cmd, boolean message) {
 		if (cmd == null || cmd.isEmpty()) return true;
 		if (!sender.hasPermission(("beautyquests.command." + cmd))) {
-			Lang.PERMISSION_REQUIRED.sendWP(sender, "beautyquests.command." + cmd);
+			if (message) Lang.PERMISSION_REQUIRED.sendWP(sender, "beautyquests.command." + cmd);
 			return false;
 		}
 		return true;

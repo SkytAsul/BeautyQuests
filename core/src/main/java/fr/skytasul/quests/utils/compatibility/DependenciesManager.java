@@ -32,7 +32,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
-import fr.skytasul.quests.utils.compatibility.mobs.BossAPI;
+import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.compatibility.npcs.BQCitizens;
@@ -72,6 +72,17 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency cmi = new BQDependency("CMI", () -> {
 		if (BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
 	});
+	
+	public static final BQDependency boss = new BQDependency("Boss", () -> QuestsAPI.registerMobFactory(new BQBoss()), null, plugin -> {
+		try {
+			Class.forName("org.mineacademy.boss.model.Boss");
+		}catch (ClassNotFoundException ex) {
+			BeautyQuests.logger.warning("Your version of Boss (" + plugin.getDescription().getVersion() + ") is not compatible with BeautyQuests.");
+			return false;
+		}
+		return true;
+	});
+	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays"));
 	
@@ -87,7 +98,6 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency gps = new BQDependency("GPS", GPS::init);
 	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoSklillLevelRequired", McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
 	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
-	public static final BQDependency boss = new BQDependency("Boss", () -> QuestsAPI.registerMobFactory(new BossAPI()));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
 	
