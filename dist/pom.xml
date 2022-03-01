@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.19.1-SNAPSHOT</version>
+		<version>0.19.1</version>
 	</parent>
 	
 	<build>
@@ -131,6 +131,13 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>beautyquests-v1_18_R1</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>beautyquests-v1_18_R2</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
