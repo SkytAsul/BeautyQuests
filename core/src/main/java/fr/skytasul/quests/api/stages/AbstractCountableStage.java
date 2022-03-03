@@ -114,7 +114,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 				if (playerAmounts == null) {
-					BeautyQuests.logger.warning(p.getName() + " oesdoes not have object datas for stage " + debugName() + ". This is a bug!");
+					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + debugName() + ". This is a bug!");
 					return true;
 				}
 				if (playerAmounts.containsKey(id)) {
