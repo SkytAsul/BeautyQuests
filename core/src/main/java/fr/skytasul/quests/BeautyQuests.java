@@ -137,7 +137,7 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				dependencies.initializeCompatibilities();
 			}catch (Exception ex) {
-				logger.severe("Error when initializing compatibilities. Consider restarting.", ex);
+				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
 			
 			if (QuestsAPI.getNPCsManager() == null) {
@@ -169,7 +169,6 @@ public class BeautyQuests extends JavaPlugin {
 					}
 				}
 			}.runTaskLater(this, QuestsAPI.getNPCsManager().getTimeToWaitForNPCs());
-			
 
 			// Start of non-essential systems
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();
@@ -486,7 +485,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload) {
-			quests.unloadQuests();
+			if (quests != null) quests.unloadQuests();
 			
 			QuestsAPI.getQuestsHandlers().forEach(handler -> {
 				try {

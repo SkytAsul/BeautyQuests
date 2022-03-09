@@ -211,6 +211,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.lumine</groupId>
+			<artifactId>Mythic-Dist</artifactId>
+			<version>5.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.promcteam</groupId>
 			<artifactId>proskillapi</artifactId>
 			<version>1.1.7.0.3</version>

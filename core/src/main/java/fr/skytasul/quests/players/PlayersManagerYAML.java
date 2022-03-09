@@ -270,7 +270,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		
 		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
 			BeautyQuests.logger.warning(
-					"⚠ WARNING - " + identifiersIndex.size() + " are registered on this server."
+					"⚠ WARNING - " + identifiersIndex.size() + " players are registered on this server."
 					+ " It is recommended to switch to a SQL database setup in order to keep proper performances and scalability."
 					+ " In order to do that, setup your database credentials in config.yml (without enabling it) and run the command"
 					+ " /quests migrateDatas. Then follow steps on screen.");
