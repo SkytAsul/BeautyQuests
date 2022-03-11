@@ -116,6 +116,7 @@ public class QuestsAPI {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
+		DebugUtils.logMessage("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
 	}
 	
 	public static boolean hasBossBarManager() {
@@ -130,6 +131,7 @@ public class QuestsAPI {
 		Validate.notNull(newBossBarManager);
 		if (bossBarManager != null) BeautyQuests.logger.warning(newBossBarManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
 		bossBarManager = newBossBarManager;
+		DebugUtils.logMessage("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
 	}
 	
 	public static void registerQuestsHandler(QuestsHandler handler) {

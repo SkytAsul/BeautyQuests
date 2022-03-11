@@ -144,17 +144,13 @@ public class NPCStarter {
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
 		
-		
 		if (!hologramText.enabled && !hologramLaunch.enabled && !hologramLaunchNo.enabled && !hologramPool.enabled) return; // no hologram: no need to launch the update task
 		hologramsTask = new BukkitRunnable() {
 			@Override
 			public void run(){
 				LivingEntity en = null; // check if NPC is spawned and living
-				if (npc.isSpawned()){
-					try {
-						en = (LivingEntity) npc.getEntity();
-					}catch (ClassCastException ex) {}
-				}
+				if (npc.isSpawned() && npc.getEntity() instanceof LivingEntity)
+					en = (LivingEntity) npc.getEntity();
 				if (en == null){
 					if (!hologramsRemoved) removeHolograms(); // if the NPC is not living and holograms have not been already removed before
 					return;
