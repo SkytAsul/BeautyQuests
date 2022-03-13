@@ -617,25 +617,28 @@ public class Commands {
 	@Cmd (permission = "manage")
 	public void migrateDatas(CommandContext cmd) {
 		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
-			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");
+			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
 			return;
 		}
-		Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
-		cmd.sender.sendMessage("§aConnecting to the database.");
-		if (db.openConnection()) {
-			cmd.sender.sendMessage("§aConnection to database etablished.");
-		}else {
-			cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
-			db.closeConnection();
-			db = null;
-			return;
-		}
-		try {
-			cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
-		}catch (Exception e) {
-			e.printStackTrace();
-			cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
-		}
+		Utils.runAsync(() -> {
+			Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+			cmd.sender.sendMessage("§aConnecting to the database.");
+			if (db.openConnection()) {
+				cmd.sender.sendMessage("§aConnection to database etablished.");
+				Utils.runSync(() -> {
+					cmd.sender.sendMessage("§aStarting migration...");
+					try {
+						cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
+					}catch (Exception e) {
+						e.printStackTrace();
+						cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
+					}
+				});
+			}else {
+				cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
+				db.closeConnection();
+			}
+		});
 	}
 
 	@Cmd(permission = "help")

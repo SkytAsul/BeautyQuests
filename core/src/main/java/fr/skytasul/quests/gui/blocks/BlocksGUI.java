@@ -36,6 +36,7 @@ public class BlocksGUI implements CustomInventory {
 		return this;
 	}
 	
+	@Override
 	public Inventory open(Player p) {
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_BLOCKSLIST.toString());
 		
@@ -45,6 +46,7 @@ public class BlocksGUI implements CustomInventory {
 		return inv = p.openInventory(inv).getTopInventory();
 	}
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
 		if (slot == 8){
 			Inventories.closeAndExit(p);
@@ -56,12 +58,11 @@ public class BlocksGUI implements CustomInventory {
 			inv.setItem(slot, none);
 			return true;
 		}
-		SelectBlockGUI sm = Inventories.create(p, new SelectBlockGUI());
-		sm.run = (type, amount) -> {
+		new SelectBlockGUI(true, (type, amount) -> {
 			Inventories.put(p, openLastInv(p), inv);
 			setItem(inv, slot, type.getMaterial(), type.getAsString(), amount);
 			blocks.put(slot, new AbstractMap.SimpleEntry<>(type, amount));
-		};
+		}).create(p);
 		return true;
 	}
 	

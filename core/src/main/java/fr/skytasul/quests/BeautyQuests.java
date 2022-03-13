@@ -161,7 +161,11 @@ public class BeautyQuests extends JavaPlugin {
 
 						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
 							DebugUtils.logMessage("Migrating from " + lastVersion + " to " + pluginVersion);
-							for (Quest qu : quests) qu.saveToFile();
+							int updated = 0;
+							for (Quest qu : quests) {
+								if (qu.saveToFile()) updated++;
+							}
+							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
 							saveAllConfig(false);
 						}
 					}catch (Throwable e) {
@@ -293,7 +297,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void launchUpdateChecker(String pluginVersion) throws ReflectiveOperationException {
 		DebugUtils.logMessage("Starting Spigot updater");
 		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("_BUILD(.+)").matcher(pluginVersion);
+			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
 				UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
@@ -324,7 +328,7 @@ public class BeautyQuests extends JavaPlugin {
 				logger.info("Updated config.");
 			}
 			if (init && loadLang() == null) return;
-			ConfigUpdater.update(this, "config.yml", configFile);
+			ConfigUpdater.update(this, "config.yml", configFile, "database");
 			config.init();
 			
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");

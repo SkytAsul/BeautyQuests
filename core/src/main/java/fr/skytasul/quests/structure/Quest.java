@@ -1,6 +1,8 @@
 package fr.skytasul.quests.structure;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -395,15 +397,26 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}
 
-	public void saveToFile() throws Exception {
+	public boolean saveToFile() throws Exception {
 		if (!file.exists()) file.createNewFile();
 		YamlConfiguration fc = new YamlConfiguration();
 		
 		BeautyQuests.savingFailure = false;
 		save(fc);
-		DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
-		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file.toPath(), "Error when saving quest.");
-		fc.save(file);
+		if (BeautyQuests.savingFailure) {
+			BeautyQuests.logger.warning("An error occurred while saving quest " + id);
+			return false;
+		}
+		String questData = fc.saveToString();
+		String oldQuestDatas = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		if (questData.equals(oldQuestDatas)) {
+			DebugUtils.logMessage("Quest " + id + " was up-to-date.");
+			return false;
+		}else {
+			DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
+			Files.write(file.toPath(), questData.getBytes(StandardCharsets.UTF_8));
+			return true;
+		}
 	}
 	
 	private void save(ConfigurationSection section) throws Exception{

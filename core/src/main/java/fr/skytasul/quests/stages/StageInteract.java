@@ -16,26 +16,24 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitBlockClick;
-import fr.skytasul.quests.editors.checkers.MaterialParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.BQBlock;
 
 public class StageInteract extends AbstractStage {
 
 	private boolean left;
 	private Location lc;
-	private XMaterial material;
+	private BQBlock block;
 	
 	public StageInteract(QuestBranch branch, boolean leftClick, Location location) {
 		super(branch);
@@ -43,18 +41,18 @@ public class StageInteract extends AbstractStage {
 		this.lc = location.getBlock().getLocation();
 	}
 	
-	public StageInteract(QuestBranch branch, boolean leftClick, XMaterial material) {
+	public StageInteract(QuestBranch branch, boolean leftClick, BQBlock block) {
 		super(branch);
 		this.left = leftClick;
-		this.material = material;
+		this.block = block;
 	}
 
 	public Location getLocation(){
 		return lc;
 	}
 	
-	public XMaterial getMaterial() {
-		return material;
+	public BQBlock getBlockType() {
+		return block;
 	}
 
 	public boolean needLeftClick(){
@@ -69,7 +67,7 @@ public class StageInteract extends AbstractStage {
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (lc != null) {
 			if (!e.getClickedBlock().getLocation().equals(lc)) return;
-		}else if (!XBlock.isType(e.getClickedBlock(), material)) return;
+		}else if (!block.applies(e.getClickedBlock())) return;
 		
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
@@ -78,28 +76,38 @@ public class StageInteract extends AbstractStage {
 		}
 	}
 	
+	@Override
 	protected String descriptionLine(PlayerAccount acc, Source source){
-		return lc == null ? Lang.SCOREBOARD_INTERACT_MATERIAL.format(MinecraftNames.getMaterialName(material)) : Lang.SCOREBOARD_INTERACT.format(lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
+		return lc == null ? Lang.SCOREBOARD_INTERACT_MATERIAL.format(block.getName()) : Lang.SCOREBOARD_INTERACT.format(lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
 	}
 
+	@Override
 	protected void serialize(Map<String, Object> map){
 		map.put("leftClick", left);
 		if (lc == null) {
-			map.put("material", material.name());
+			map.put("block", block.getAsString());
 		}else map.put("location", lc.serialize());
 	}
 	
 	public static StageInteract deserialize(Map<String, Object> map, QuestBranch branch) {
 		if (map.containsKey("location")) {
 			return new StageInteract(branch, (boolean) map.get("leftClick"), Location.deserialize((Map<String, Object>) map.get("location")));
-		}else return new StageInteract(branch, (boolean) map.get("leftClick"), XMaterial.valueOf((String) map.get("material")));
+		}else {
+			BQBlock block;
+			if (map.containsKey("material")) {
+				block = new BQBlock.BQBlockMaterial(XMaterial.valueOf((String) map.get("material")));
+			}else {
+				block = BQBlock.fromString((String) map.get("block"));
+			}
+			return new StageInteract(branch, (boolean) map.get("leftClick"), block);
+		}
 	}
 
 	public static class Creator extends StageCreation<StageInteract> {
 		
 		private boolean leftClick = false;
 		private Location location;
-		private XMaterial material;
+		private BQBlock block;
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
@@ -128,18 +136,17 @@ public class StageInteract extends AbstractStage {
 			this.location = location;
 		}
 		
-		public void setMaterial(XMaterial material) {
-			if (this.material == null) {
+		public void setMaterial(BQBlock block) {
+			if (this.block == null) {
 				line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), (p, item) -> {
-					Lang.BLOCK_NAME.send(p);
-					new TextEditor<>(p, () -> reopenGUI(p, false), newMaterial -> {
-						setMaterial(newMaterial);
-						reopenGUI(p, false);
-					}, new MaterialParser(false, true)).enter();
+					new SelectBlockGUI(false, (newBlock, __) -> {
+						setMaterial(newBlock);
+						reopenGUI(p, true);
+					}).create(p);
 				});
 			}
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(material.name())));
-			this.material = material;
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(block.getName())));
+			this.block = block;
 		}
 		
 		@Override
@@ -153,11 +160,10 @@ public class StageInteract extends AbstractStage {
 					reopenGUI(p, true);
 				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
 			}, () -> {
-				Lang.BLOCK_NAME.send(p);
-				new TextEditor<>(p, cancel, material -> {
-					setMaterial(material);
+				new SelectBlockGUI(false, (newBlock, __) -> {
+					setMaterial(newBlock);
 					reopenGUI(p, true);
-				}, new MaterialParser(false, true)).enter();
+				}).create(p);
 			}).create(p);
 		}
 
@@ -166,7 +172,7 @@ public class StageInteract extends AbstractStage {
 			super.edit(stage);
 			if (stage.lc != null) {
 				setLocation(stage.getLocation());
-			}else setMaterial(stage.material);
+			}else setMaterial(stage.getBlockType());
 			setLeftClick(stage.needLeftClick());
 		}
 
@@ -174,7 +180,7 @@ public class StageInteract extends AbstractStage {
 		public StageInteract finishStage(QuestBranch branch) {
 			if (location != null) {
 				return new StageInteract(branch, leftClick, location);
-			}else return new StageInteract(branch, leftClick, material);
+			}else return new StageInteract(branch, leftClick, block);
 		}
 		
 		private class ChooseActionGUI implements CustomInventory {
