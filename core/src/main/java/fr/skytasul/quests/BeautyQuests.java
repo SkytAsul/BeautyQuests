@@ -328,18 +328,21 @@ public class BeautyQuests extends JavaPlugin {
 				logger.info("Updated config.");
 			}
 			if (init && loadLang() == null) return;
-			ConfigUpdater.update(this, "config.yml", configFile, "database");
+			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 			
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
-				db = new Database(dbConfig);
-				if (db.openConnection()) {
+				try {
+					db = new Database(dbConfig);
+					db.testConnection();
 					logger.info("Connection to database etablished.");
-				}else {
-					db.closeConnection();
-					db = null;
-					throw new LoadingException("Connection to database has failed.");
+				}catch (Exception ex) {
+					if (db != null) {
+						db.closeConnection();
+						db = null;
+					}
+					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
 			

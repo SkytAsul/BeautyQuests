@@ -1,5 +1,6 @@
 package fr.skytasul.quests.players;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +29,6 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
-import fr.skytasul.quests.utils.Database.BQStatement;
 import fr.skytasul.quests.utils.DebugUtils;
 
 public class PlayersManagerDB extends PlayersManager {
@@ -40,33 +40,33 @@ public class PlayersManagerDB extends PlayersManager {
 	private Database db;
 	
 	/* Accounts statements */
-	private BQStatement getAccounts;
-	private BQStatement insertAccount;
-	private BQStatement deleteAccount;
+	private String getAccounts;
+	private String insertAccount;
+	private String deleteAccount;
 
 	/* Quest datas statements */
-	private BQStatement insertQuestData;
-	private BQStatement removeQuestData;
-	private BQStatement getQuestsData;
-	private BQStatement getQuestAccountData;
+	private String insertQuestData;
+	private String removeQuestData;
+	private String getQuestsData;
+	private String getQuestAccountData;
 
-	private BQStatement removeExistingQuestDatas;
+	private String removeExistingQuestDatas;
 
-	private BQStatement updateFinished;
-	private BQStatement updateTimer;
-	private BQStatement updateBranch;
-	private BQStatement updateStage;
-	private BQStatement[] updateDatas = new BQStatement[5];
-	private BQStatement updateFlow;
+	private String updateFinished;
+	private String updateTimer;
+	private String updateBranch;
+	private String updateStage;
+	private String[] updateDatas = new String[5];
+	private String updateFlow;
 	
 	/* Pool datas statements */
-	private BQStatement insertPoolData;
-	private BQStatement removePoolData;
-	private BQStatement getPoolData;
-	private BQStatement getPoolAccountData;
+	private String insertPoolData;
+	private String removePoolData;
+	private String getPoolData;
+	private String getPoolAccountData;
 	
-	private BQStatement updatePoolLastGive;
-	private BQStatement updatePoolCompletedQuests;
+	private String updatePoolLastGive;
+	private String updatePoolCompletedQuests;
 
 	public PlayersManagerDB(Database db) {
 		this.db = db;
@@ -76,25 +76,27 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
-		try {
-			PreparedStatement statement = getQuestsData.getStatement();
-			statement.setInt(1, acc.index);
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				int questID = result.getInt("quest_id");
-				acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result));
+		try (Connection connection = db.getConnection()) {
+			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
+				statement.setInt(1, acc.index);
+				ResultSet result = statement.executeQuery();
+				while (result.next()) {
+					int questID = result.getInt("quest_id");
+					acc.questDatas.put(questID, new PlayerQuestDatasDB(acc, questID, result));
+				}
+				result.close();
 			}
-			result.close();
-			statement = getPoolData.getStatement();
-			statement.setInt(1, acc.index);
-			result = statement.executeQuery();
-			while (result.next()) {
-				int poolID = result.getInt("pool_id");
-				String completedQuests = result.getString("completed_quests");
-				if (StringUtils.isEmpty(completedQuests)) completedQuests = null;
-				acc.poolDatas.put(poolID, new PlayerPoolDatasDB(acc, poolID, result.getLong("last_give"), completedQuests == null ? new HashSet<>() : Arrays.stream(completedQuests.split(";")).map(Integer::parseInt).collect(Collectors.toSet())));
+			try (PreparedStatement statement = connection.prepareStatement(getPoolData)) {
+				statement.setInt(1, acc.index);
+				ResultSet result = statement.executeQuery();
+				while (result.next()) {
+					int poolID = result.getInt("pool_id");
+					String completedQuests = result.getString("completed_quests");
+					if (StringUtils.isEmpty(completedQuests)) completedQuests = null;
+					acc.poolDatas.put(poolID, new PlayerPoolDatasDB(acc, poolID, result.getLong("last_give"), completedQuests == null ? new HashSet<>() : Arrays.stream(completedQuests.split(";")).map(Integer::parseInt).collect(Collectors.toSet())));
+				}
+				result.close();
 			}
-			result.close();
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -102,41 +104,42 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	@Override
 	protected synchronized Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
-		try {
+		try (Connection connection = db.getConnection()) {
 			String uuid = player.getUniqueId().toString();
-			PreparedStatement statement = getAccounts.getStatement();
-			statement.setString(1, uuid);
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
-				if (abs.isCurrent()) {
-					PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
-					result.close();
-					try {
-						// in order to ensure that, if the player was previously connected to another server,
-						// its datas have been fully pushed to database, we wait for 0,4 seconds
-						long timeout = 400 - (System.currentTimeMillis() - joinTimestamp);
-						if (timeout > 0) wait(timeout);
-					}catch (InterruptedException e) {
-						e.printStackTrace();
-						Thread.currentThread().interrupt();
+			try (PreparedStatement statement = connection.prepareStatement(getAccounts)) {
+				statement.setString(1, uuid);
+				ResultSet result = statement.executeQuery();
+				while (result.next()) {
+					AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
+					if (abs.isCurrent()) {
+						PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
+						result.close();
+						try {
+							// in order to ensure that, if the player was previously connected to another server,
+							// its datas have been fully pushed to database, we wait for 0,4 seconds
+							long timeout = 400 - (System.currentTimeMillis() - joinTimestamp);
+							if (timeout > 0) wait(timeout);
+						}catch (InterruptedException e) {
+							e.printStackTrace();
+							Thread.currentThread().interrupt();
+						}
+						retrievePlayerDatas(account);
+						return new AbstractMap.SimpleEntry<>(account, false);
 					}
-					retrievePlayerDatas(account);
-					return new AbstractMap.SimpleEntry<>(account, false);
 				}
+				result.close();
 			}
-			result.close();
-
-			AbstractAccount absacc = super.createAbstractAccount(player);
-			statement = insertAccount.getStatement();
-			statement.setString(1, absacc.getIdentifier());
-			statement.setString(2, uuid);
-			statement.executeUpdate();
-			result = statement.getGeneratedKeys();
-			if (!result.next()) throw new SQLException("The plugin has not been able to create a player account.");
-			int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
-			result.close();
-			return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
+			try (PreparedStatement statement = connection.prepareStatement(insertAccount, PreparedStatement.RETURN_GENERATED_KEYS)) {
+				AbstractAccount absacc = super.createAbstractAccount(player);
+				statement.setString(1, absacc.getIdentifier());
+				statement.setString(2, uuid);
+				statement.executeUpdate();
+				ResultSet result = statement.getGeneratedKeys();
+				if (!result.next()) throw new SQLException("The plugin has not been able to create a player account.");
+				int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
+				result.close();
+				return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
+			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -145,8 +148,8 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	@Override
 	protected synchronized void removeAccount(PlayerAccount acc) {
-		try {
-			PreparedStatement statement = deleteAccount.getStatement();
+		try (Connection connection = db.getConnection();
+				PreparedStatement statement = connection.prepareStatement(deleteAccount)) {
 			statement.setInt(1, acc.index);
 			statement.executeUpdate();
 		}catch (SQLException ex) {
@@ -167,9 +170,9 @@ public class PlayersManagerDB extends PlayersManager {
 
 	@Override
 	public synchronized void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {
-		try {
+		try (Connection connection = db.getConnection();
+				PreparedStatement statement = connection.prepareStatement(removeQuestData)) {
 			((PlayerQuestDatasDB) datas).stop();
-			PreparedStatement statement = removeQuestData.getStatement();
 			statement.setInt(1, acc.index);
 			statement.setInt(2, id);
 			statement.executeUpdate();
@@ -185,8 +188,8 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	@Override
 	public synchronized void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {
-		try {
-			PreparedStatement statement = removePoolData.getStatement();
+		try (Connection connection = db.getConnection();
+				PreparedStatement statement = connection.prepareStatement(removePoolData)) {
 			statement.setInt(1, acc.index);
 			statement.setInt(2, id);
 			statement.executeUpdate();
@@ -198,12 +201,12 @@ public class PlayersManagerDB extends PlayersManager {
 	@Override
 	public synchronized int removeQuestDatas(Quest quest) {
 		int amount = 0;
-		try {
+		try (Connection connection = db.getConnection();
+				PreparedStatement statement = connection.prepareStatement(removeExistingQuestDatas)) {
 			for (PlayerAccount acc : PlayersManager.cachedAccounts.values()) {
 				PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getID());
 				if (datas != null) datas.stop();
 			}
-			PreparedStatement statement = removeExistingQuestDatas.getStatement();
 			statement.setInt(1, quest.getID());
 			amount += statement.executeUpdate();
 		}catch (SQLException e) {
@@ -214,8 +217,8 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	public synchronized boolean hasAccounts(Player p) {
-		try {
-			PreparedStatement statement = getAccounts.getStatement();
+		try (Connection connection = db.getConnection();
+				PreparedStatement statement = connection.prepareStatement(getAccounts)) {
 			statement.setString(1, p.getUniqueId().toString());
 			ResultSet result = statement.executeQuery();
 			boolean has = result.next();
@@ -232,16 +235,16 @@ public class PlayersManagerDB extends PlayersManager {
 		try {
 			createTables();
 
-			getAccounts = db.new BQStatement("SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?");
-			insertAccount = db.new BQStatement("INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)", true);
-			deleteAccount = db.new BQStatement("DELETE FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?");
+			getAccounts = "SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?";
+			insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)";
+			deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?";
 
-			insertQuestData = db.new BQStatement("INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)");
-			removeQuestData = db.new BQStatement("DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
-			getQuestsData = db.new BQStatement("SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?");
-			getQuestAccountData = db.new BQStatement("SELECT 1 FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?");
+			insertQuestData = "INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)";
+			removeQuestData = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?";
+			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?";
+			getQuestAccountData = "SELECT 1 FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?";
 
-			removeExistingQuestDatas = db.new BQStatement("DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?");
+			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?";
 			
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
@@ -252,20 +255,20 @@ public class PlayersManagerDB extends PlayersManager {
 			}
 			updateFlow = prepareDatasStatement("quest_flow");
 			
-			insertPoolData = db.new BQStatement("INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)");
-			removePoolData = db.new BQStatement("DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
-			getPoolData = db.new BQStatement("SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?");
-			getPoolAccountData = db.new BQStatement("SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?");
+			insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)";
+			removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
+			getPoolData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?";
+			getPoolAccountData = "SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
 			
-			updatePoolLastGive = db.new BQStatement("UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?");
-			updatePoolCompletedQuests = db.new BQStatement("UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?");
+			updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?";
+			updatePoolCompletedQuests = "UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?";
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private BQStatement prepareDatasStatement(String column) throws SQLException {
-		return db.new BQStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?");
+	private String prepareDatasStatement(String column) throws SQLException {
+		return "UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?";
 	}
 
 	@Override
@@ -274,7 +277,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	private void createTables() throws SQLException {
-		try (Statement statement = db.getConnection().createStatement()) {
+		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
 					+ " `id` int NOT NULL AUTO_INCREMENT ,"
 					+ " `identifier` text NOT NULL ,"
@@ -307,7 +310,7 @@ public class PlayersManagerDB extends PlayersManager {
 					+ ")");
 			
 			List<String> columns = new ArrayList<>(14);
-			try (ResultSet set = db.getConnection().getMetaData().getColumns(db.getDatabase(), null, QUESTS_DATAS_TABLE, null)) {
+			try (ResultSet set = connection.getMetaData().getColumns(db.getDatabase(), null, QUESTS_DATAS_TABLE, null)) {
 				while (set.next()) {
 					columns.add(set.getString("COLUMN_NAME").toLowerCase());
 				}
@@ -323,64 +326,72 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	public static synchronized String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
-		ResultSet result = db.getConnection().getMetaData().getTables(null, null, "%", null);
-		while (result.next()) {
-			String tableName = result.getString(3);
-			if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
-				result.close();
-				return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
+		try (Connection connection = db.getConnection()) {
+			ResultSet result = connection.getMetaData().getTables(null, null, "%", null);
+			while (result.next()) {
+				String tableName = result.getString(3);
+				if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
+					result.close();
+					return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
+				}
 			}
-		}
-		result.close();
-
-		PlayersManagerDB manager = new PlayersManagerDB(db);
-		manager.createTables();
-
-		PreparedStatement insertAccount = db.prepareStatement("INSERT INTO " + manager.ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
-		PreparedStatement insertQuestData =
-				db.prepareStatement("INSERT INTO " + manager.QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		PreparedStatement insertPoolData =
-				db.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
-		
-		int amount = 0, failed = 0;
-		yaml.loadAllAccounts();
-		for (PlayerAccount acc : yaml.loadedAccounts.values()) {
-			try {
-				insertAccount.setInt(1, acc.index);
-				insertAccount.setString(2, acc.abstractAcc.getIdentifier());
-				insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
-				insertAccount.executeUpdate();
-				
-				for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
-					insertQuestData.setInt(1, acc.index);
-					insertQuestData.setInt(2, entry.getKey());
-					insertQuestData.setInt(3, entry.getValue().getTimesFinished());
-					insertQuestData.setLong(4, entry.getValue().getTimer());
-					insertQuestData.setInt(5, entry.getValue().getBranch());
-					insertQuestData.setInt(6, entry.getValue().getStage());
-					for (int i = 0; i < 5; i++) {
-						Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
-						insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+			result.close();
+			
+			PlayersManagerDB manager = new PlayersManagerDB(db);
+			manager.createTables();
+			
+			PreparedStatement insertAccount =
+					connection.prepareStatement("INSERT INTO " + manager.ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
+			PreparedStatement insertQuestData =
+					connection.prepareStatement("INSERT INTO " + manager.QUESTS_DATAS_TABLE
+							+ " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement insertPoolData =
+					connection.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
+			
+			int amount = 0, failed = 0;
+			yaml.loadAllAccounts();
+			for (PlayerAccount acc : yaml.loadedAccounts.values()) {
+				try {
+					insertAccount.setInt(1, acc.index);
+					insertAccount.setString(2, acc.abstractAcc.getIdentifier());
+					insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
+					insertAccount.executeUpdate();
+					
+					for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
+						insertQuestData.setInt(1, acc.index);
+						insertQuestData.setInt(2, entry.getKey());
+						insertQuestData.setInt(3, entry.getValue().getTimesFinished());
+						insertQuestData.setLong(4, entry.getValue().getTimer());
+						insertQuestData.setInt(5, entry.getValue().getBranch());
+						insertQuestData.setInt(6, entry.getValue().getStage());
+						for (int i = 0; i < 5; i++) {
+							Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
+							insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
+						}
+						insertQuestData.executeUpdate();
 					}
-					insertQuestData.executeUpdate();
+					
+					for (Entry<Integer, PlayerPoolDatas> entry : acc.poolDatas.entrySet()) {
+						insertPoolData.setInt(1, acc.index);
+						insertPoolData.setInt(2, entry.getKey());
+						insertPoolData.setLong(3, entry.getValue().getLastGive());
+						insertPoolData.setString(4, getCompletedQuestsString(entry.getValue().getCompletedQuests()));
+						insertPoolData.executeUpdate();
+					}
+					
+					amount++;
+				}catch (Exception ex) {
+					BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName(), ex);
+					failed++;
 				}
-				
-				for (Entry<Integer, PlayerPoolDatas> entry : acc.poolDatas.entrySet()) {
-					insertPoolData.setInt(1, acc.index);
-					insertPoolData.setInt(2, entry.getKey());
-					insertPoolData.setLong(3, entry.getValue().getLastGive());
-					insertPoolData.setString(4, getCompletedQuestsString(entry.getValue().getCompletedQuests()));
-					insertPoolData.executeUpdate();
-				}
-				
-				amount++;
-			}catch (Exception ex) {
-				BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName(), ex);
-				failed++;
 			}
+			
+			insertAccount.close();
+			insertQuestData.close();
+			insertPoolData.close();
+			
+			return "§aMigration succeed! " + amount + " accounts migrated, " + failed + " accounts failed to migrate.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 		}
-
-		return "§aMigration succeed! " + amount + " accounts migrated, " + failed + " accounts failed to migrate.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 	}
 	
 	@Override
@@ -403,7 +414,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 		private static final int DATA_FLUSHING_TIME = 10;
 		
-		private Map<BQStatement, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
+		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private boolean disabled = false;
 
@@ -468,8 +479,8 @@ public class PlayersManagerDB extends PlayersManager {
 			super.resetQuestFlow();
 			setDataStatement(updateFlow, null, true);
 		}
-
-		private void setDataStatement(BQStatement dataStatement, Object data, boolean allowNull) {
+		
+		private void setDataStatement(String dataStatement, Object data, boolean allowNull) {
 			if (disabled) return;
 			try {
 				datasLock.lock();
@@ -483,43 +494,40 @@ public class PlayersManagerDB extends PlayersManager {
 						@Override
 						public void run() {
 							if (disabled) return;
+							Entry<BukkitRunnable, Object> entry = null;
+							datasLock.lock();
 							try {
-								Entry<BukkitRunnable, Object> entry = null;
-								datasLock.lock();
-								try {
-									if (!disabled) { // in case disabled while acquiring lock
-										entry = cachedDatas.remove(dataStatement);
-									}
-								}finally {
-									datasLock.unlock();
+								if (!disabled) { // in case disabled while acquiring lock
+									entry = cachedDatas.remove(dataStatement);
 								}
-								if (entry != null) {
-									synchronized (dataStatement) {
-										synchronized (getQuestAccountData) {
-											PreparedStatement statement = getQuestAccountData.getStatement();
-											statement.setInt(1, acc.index);
-											statement.setInt(2, questID);
-											if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-												synchronized (insertQuestData) {
-													PreparedStatement insertStatement = insertQuestData.getStatement();
-													insertStatement.setInt(1, acc.index);
-													insertStatement.setInt(2, questID);
-													insertStatement.executeUpdate();
-												}
+							}finally {
+								datasLock.unlock();
+							}
+							if (entry != null) {
+								try (Connection connection = db.getConnection()) {
+									try (PreparedStatement statement = connection.prepareStatement(getQuestAccountData)) {
+										statement.setInt(1, acc.index);
+										statement.setInt(2, questID);
+										if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+											try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData)) {
+												insertStatement.setInt(1, acc.index);
+												insertStatement.setInt(2, questID);
+												insertStatement.executeUpdate();
 											}
 										}
-										PreparedStatement statement = dataStatement.getStatement();
+									}
+									try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
 										statement.setObject(1, entry.getValue());
 										statement.setInt(2, acc.index);
 										statement.setInt(3, questID);
 										statement.executeUpdate();
+										if (entry.getValue() == null && !allowNull) {
+											BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
+										}
 									}
-									if (entry.getValue() == null && !allowNull) {
-										BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement.getStatementCommand() + "\" for account " + acc.index + " and quest " + questID);
-									}
+								}catch (SQLException e) {
+									e.printStackTrace();
 								}
-							}catch (SQLException e) {
-								e.printStackTrace();
 							}
 						}
 					};
@@ -580,30 +588,27 @@ public class PlayersManagerDB extends PlayersManager {
 			updateData(updatePoolCompletedQuests, getCompletedQuestsString(getCompletedQuests()));
 		}
 		
-		private void updateData(BQStatement dataStatement, Object data) {
-			synchronized (dataStatement) {
-				try {
-					synchronized (getPoolAccountData) {
-						PreparedStatement statement = getPoolAccountData.getStatement();
-						statement.setInt(1, acc.index);
-						statement.setInt(2, poolID);
-						if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-							synchronized (insertPoolData) {
-								PreparedStatement insertStatement = insertPoolData.getStatement();
-								insertStatement.setInt(1, acc.index);
-								insertStatement.setInt(2, poolID);
-								insertStatement.executeUpdate();
-							}
+		private void updateData(String dataStatement, Object data) {
+			try (Connection connection = db.getConnection()) {
+				try (PreparedStatement statement = connection.prepareStatement(getPoolAccountData)) {
+					statement.setInt(1, acc.index);
+					statement.setInt(2, poolID);
+					if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+						try (PreparedStatement insertStatement = connection.prepareStatement(insertPoolData)) {
+							insertStatement.setInt(1, acc.index);
+							insertStatement.setInt(2, poolID);
+							insertStatement.executeUpdate();
 						}
 					}
-					PreparedStatement statement = dataStatement.getStatement();
+				}
+				try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
 					statement.setObject(1, data);
 					statement.setInt(2, acc.index);
 					statement.setInt(3, poolID);
 					statement.executeUpdate();
-				}catch (SQLException e) {
-					e.printStackTrace();
 				}
+			}catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		

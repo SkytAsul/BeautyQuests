@@ -7,6 +7,9 @@ website: https://www.spigotmc.org/resources/beautyquests.39255/
 api-version: 1.13
 main: fr.skytasul.quests.BeautyQuests
 
+libraries:
+- org.mariadb.jdbc:mariadb-java-client:2.7.5
+
 softdepend:
 - WorldGuard
 - MythicMobs

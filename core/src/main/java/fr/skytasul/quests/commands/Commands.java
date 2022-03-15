@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -621,22 +622,26 @@ public class Commands {
 			return;
 		}
 		Utils.runAsync(() -> {
-			Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
 			cmd.sender.sendMessage("§aConnecting to the database.");
-			if (db.openConnection()) {
+			Database db = null;
+			try {
+				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+				db.testConnection();
 				cmd.sender.sendMessage("§aConnection to database etablished.");
+				final Database fdb = db;
 				Utils.runSync(() -> {
 					cmd.sender.sendMessage("§aStarting migration...");
 					try {
-						cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
-					}catch (Exception e) {
-						e.printStackTrace();
-						cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
+						cmd.sender.sendMessage(PlayersManagerDB.migrate(fdb, (PlayersManagerYAML) PlayersManager.manager));
+					}catch (Exception ex) {
+						cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted. " + ex.getMessage());
+						ex.printStackTrace();
 					}
 				});
-			}else {
-				cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
-				db.closeConnection();
+			}catch (SQLException ex) {
+				cmd.sender.sendMessage("§cConnection to database has failed. Aborting. " + ex.getMessage());
+				ex.printStackTrace();
+				if (db != null) db.closeConnection();
 			}
 		});
 	}
