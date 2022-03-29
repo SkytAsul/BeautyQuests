@@ -640,7 +640,7 @@ public class Commands {
 				});
 			}catch (SQLException ex) {
 				cmd.sender.sendMessage("§cConnection to database has failed. Aborting. " + ex.getMessage());
-				ex.printStackTrace();
+				BeautyQuests.logger.severe("An error occurred while connecting to the database for datas migration.", ex);
 				if (db != null) db.closeConnection();
 			}
 		});
