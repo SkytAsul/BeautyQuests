@@ -745,6 +745,7 @@ public enum Lang{
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),
+	BucketSnow("misc.bucket.snow"),
 	
 	ClickRight("misc.click.right"),
 	ClickLeft("misc.click.left"),

@@ -154,7 +154,7 @@ msg:
       edit: '§6/{0} edit : §eModifier une quête.'
       remove: '§6/{0} remove <id> : §eSupprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
       finishAll: '§6/{0} finishAll <joueur> : §eFinir toutes les quêtes d''un joueur.'
-      setStage: '§6/{0} setStage <player> <id> [nouvelle branche] [nouvelle étape]: §ePasser l''étape en cours/lancer une branche/lancer une étape pour une branche.'
+      setStage: '§6/{0} setStage <joueur> <id> [nouvelle branche] [nouvelle étape]: §ePasser l''étape en cours/lancer une branche/lancer une étape pour une branche.'
       startDialog: '§6/{0} startDialog <joueur> <id de quête>: §eDémarre le dialogue en attente pour une étape "NPC" ou le dialogue de début d''une quête.'
       resetPlayer: '§6/{0} resetPlayer <joueur> : §eSupprimer les données d''un joueur.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <joueur> [id] : §eSupprimer les données d''une seule quête pour un joueur.'
@@ -736,6 +736,7 @@ misc:
     water: Seau d'eau
     lava: Seau de lave
     milk: Seau de lait
+    snow: Seau de neige
   click:
     right: Clic droit
     left: Clic gauche

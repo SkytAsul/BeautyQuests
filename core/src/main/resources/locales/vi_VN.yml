@@ -27,6 +27,7 @@ msg:
   questItem:
     drop: '§cBạn không thể làm rớt vật phẩm nhiệm vụ!'
     craft: '§cBạn không thể dùng vật phẩm nhiệm vụ để chế tạo!'
+    eat: '§cBạn không thể ăn vật phẩm nhiệm vụ!'
   stageMobs:
     noMobs: '§cGiai đoạn này không cần giết quái nào.'
     listMobs: '§aBạn phải giết {0}.'
@@ -34,7 +35,7 @@ msg:
   writeRegionName: '§aViết tên của khu vực cần thiết cho giai đoạn tiếp theo:'
   writeXPGain: '§aViết số điểm kinh nghiệm mà người chơi sẽ nhận được: (Giá trị cuối cùng: {0})'
   writeMobAmount: '§aViết số lượng mob cần tiêu diệt:'
-  writeMobName: '§aViết tên của mobs mà bạn muốn giết'
+  writeMobName: '§aViết tên của mobs phải giết'
   writeChatMessage: '§aViết tin nhắn bắt buộc: (Thêm "{SLASH}" ngay từ đầu nếu bạn muốn một lệnh.)'
   writeMessage: '§aViết tin nhắn sẽ gửi đến người chơi'
   writeStartMessage: '§aViết thông báo sẽ gửi khi bắt đầu nhiệm vụ, "null" nếu bạn muốn là 1 thông báo bình thường hoặc "none" nếu bạn không muốn'
@@ -50,7 +51,7 @@ msg:
   writeQuestTimer: '§aViết thời gian cần thiết (tính bằng phút) trước khi bạn có thể khởi động lại nhiệm vụ: (Viết "null" nếu bạn muốn bộ đếm thời gian mặc định.) '
   writeConfirmMessage: '§aViết thông báo xác nhận được hiển thị khi một người chơi để bắt đầu nhiệm vụ: (Viết "null" nếu bạn muốn thông báo mặc định.)'
   writeQuestDescription: '§aViết mô tả về nhiệm vụ, hiển thị trong gui nhận nhiệm vụ.'
-  writeQuestMaterial: '§aViết tài liệu của vật phẩm nhiệm vụ.'
+  writeQuestMaterial: '§aViết vật liệu của item nhiệm vụ.'
   requirements:
     quest: '§cBạn chưa hoàn thành nhiệm vụ §e{0}§c!'
     level: '§cCấp độ bạn phải ở {0}!'
@@ -267,6 +268,7 @@ inv:
     editMobsKill: '§eChỉnh sửa mobs bị tiêu diệt'
     selectItems: '§eChỉnh sửa yêu cầu vật phẩm'
     selectRegion: '§7Chọn khu vực region'
+    toggleRegionExit: Khi kết thúc nhiệm vụ
     stageStartMsg: '§eChỉnh sửa thông báo khi bắt đầu'
     editLocation: '§eChỉnh sửa địa điểm'
     changeEntityType: '§eThay đổi loại quái'

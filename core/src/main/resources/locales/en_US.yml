@@ -777,6 +777,7 @@ misc:
     water: Water bucket
     lava: Lava bucket
     milk: Milk bucket
+    snow: Snow bucket
   click:
     right: Right click
     left: Left click
