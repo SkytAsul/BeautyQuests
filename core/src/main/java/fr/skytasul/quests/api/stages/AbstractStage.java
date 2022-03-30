@@ -24,7 +24,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.structure.BranchesManager;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
@@ -147,7 +146,6 @@ public abstract class AbstractStage implements Listener{
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
-	 * @see BranchesManager#next(Player)
 	 */
 	protected final void finishStage(Player p) {
 		branch.finishStage(p, this);
@@ -156,7 +154,7 @@ public abstract class AbstractStage implements Listener{
 	/**
 	 * Called internally to test if a player has the stage started
 	 * @param p Player to test
-	 * @see BranchesManager#hasStageLaunched(PlayerAccount, AbstractStage)
+	 * @see QuestBranch#hasStageLaunched(PlayerAccount, AbstractStage)
 	 */
 	protected final boolean hasStarted(Player p){
 		return branch.hasStageLaunched(PlayersManager.getPlayerAccount(p), this);

@@ -52,9 +52,7 @@ public class QuestsAPI {
 	
 	/**
 	 * Register new stage type into the plugin
-	 * @param type StageType object
-	 * @param item ItemStack shown in stages GUI when choosing stage type
-	 * @param runnables Instance of special runnables
+	 * @param creator StageType instance
 	 */
 	public static <T extends AbstractStage> void registerStage(StageType<T> creator) {
 		stages.add(creator);
