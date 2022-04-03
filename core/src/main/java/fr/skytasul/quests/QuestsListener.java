@@ -41,6 +41,7 @@ import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -107,7 +108,8 @@ public class QuestsListener implements Listener{
 				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
 				gui.create(p);
 			}else if (!startablePools.isEmpty()) {
-				startablePools.iterator().next().give(p);
+				QuestPool pool = startablePools.iterator().next();
+				DebugUtils.logMessage("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
 			}else {
 				if (!timer.isEmpty()) {
 					timer.get(0).testTimer(acc, true);

@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import com.google.common.collect.Sets;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.structure.QuestDescription;
@@ -155,6 +156,7 @@ public class QuestsConfiguration {
 		}else if (config.isString("item")) {
 			item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
 		}else item = XMaterial.BOOK.parseItem();
+		item = ItemUtils.clearVisibleAttributes(item);
 		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
 		if (pageItem == null) pageItem = XMaterial.ARROW;
 		startParticleDistance = config.getInt("startParticleDistance");

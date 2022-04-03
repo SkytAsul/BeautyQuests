@@ -1,6 +1,7 @@
 package fr.skytasul.quests.structure.pools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -173,29 +174,33 @@ public class QuestPool implements Comparable<QuestPool> {
 			for (AbstractRequirement requirement : requirements) {
 				if (!requirement.test(p)) {
 					requirement.sendReason(p);
-					return null;
+					if (started.isEmpty()) return null;
+					break;
 				}
 			}
 			
-			List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
-			if (notDoneQuests.isEmpty()) { // all quests completed
-				if (!redoAllowed) {
+			List<Quest> notCompleted = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
+			if (notCompleted.isEmpty()) { // all quests completed
+				notCompleted = replenishQuests(datas);
+				if (notCompleted.isEmpty()) {
+					//System.out.println("QuestPool.give() not completed empty");
 					if (started.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
 					break;
 				}
-				notDoneQuests = quests.stream().filter(Quest::isRepeatable).collect(Collectors.toList());
-				if (notDoneQuests.isEmpty()) {
-					if (started.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
-					break;
-				}
-				datas.setCompletedQuests(quests.stream().filter(quest -> !quest.isRepeatable()).map(Quest::getID).collect(Collectors.toSet()));
 			}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) {
+				//System.out.println("QuestPool.give() max");
 				if (started.isEmpty()) return Lang.POOL_MAX_QUESTS.format(maxQuests);
 				break;
 			}
 			
-			List<Quest> available = notDoneQuests.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
+			List<Quest> notStarted = notCompleted.stream().filter(quest -> !quest.hasStarted(acc)).collect(Collectors.toList());
+			//System.out.println("QuestPool.give() not completed " + notCompleted.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(" ")));
+			if (notStarted.isEmpty()) notStarted = replenishQuests(datas);
+			//System.out.println("QuestPool.give() not started " + notStarted.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(" ")));
+			
+			List<Quest> available = notStarted.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
 			if (available.isEmpty()) {
+				//System.out.println("QuestPool.give() no available");
 				if (started.isEmpty()) return Lang.POOL_NO_AVAILABLE.toString();
 				break;
 			}else {
@@ -204,6 +209,7 @@ public class QuestPool implements Comparable<QuestPool> {
 					quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
 					datas.setTempStartQuest(quest);
 				}
+				started.add(quest);
 				quest.attemptStart(p, () -> {
 					datas.setLastGive(System.currentTimeMillis());
 					datas.setTempStartQuest(null);
@@ -211,6 +217,22 @@ public class QuestPool implements Comparable<QuestPool> {
 			}
 		}
 		return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
+	}
+	
+	List<Quest> replenishQuests(PlayerPoolDatas datas) {
+		if (!redoAllowed) return Collections.emptyList();
+		List<Quest> notDoneQuests = quests.stream()
+				.filter(Quest::isRepeatable)
+				.filter(quest -> !quest.hasStarted(datas.getAccount()))
+				.collect(Collectors.toList());
+		if (!notDoneQuests.isEmpty()) {
+			datas.setCompletedQuests(quests
+					.stream()
+					.filter(quest -> !notDoneQuests.contains(quest))
+					.map(Quest::getID)
+					.collect(Collectors.toSet()));
+		}
+		return notDoneQuests;
 	}
 	
 	void unload() {
