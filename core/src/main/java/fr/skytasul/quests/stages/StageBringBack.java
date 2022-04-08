@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
@@ -107,23 +106,30 @@ public class StageBringBack extends StageNPC{
 	protected void initDialogRunner() {
 		super.initDialogRunner();
 		
+		getNPC().addStartablePredicate((p, acc) -> {
+			return canUpdate(p, false) && checkItems(p, false);
+		}, this);
+		
 		dialogRunner.addTest(p -> {
-			if (branch.isRegularStage(this)) return true;
-			
-			boolean canUpdate = canUpdate(p, true);
-			if (!canUpdate || !checkItems(p, false)) { // if player do not have items
-				for (AbstractStage stage : branch.getEndingStages().keySet()) {
-					if (stage instanceof StageBringBack) { // if other ending stage is bring back
-						StageBringBack other = (StageBringBack) stage;
-						if (other.getNPC() == getNPC() && other.checkItems(p, false)) return false; // if same NPC and can start: don't cancel event and stop there
-					}
-				}
+			if (getNPC().canGiveSomething(p)) {
+				// if the NPC can offer something else to the player
+				// AND the stage cannot complete right now,
+				// the click will not be handled by this stage
+				// to let the plugin handle the NPC event (and give
+				// another quest/complete something else to the player).
+				if (!canUpdate(p, true) || !checkItems(p, false)) return false;
 			}
 			return true;
 		});
 		dialogRunner.addTestCancelling(p -> checkItems(p, true));
 		
 		dialogRunner.addEndAction(this::removeItems);
+	}
+	
+	@Override
+	public void unload() {
+		super.unload();
+		if (getNPC() != null) getNPC().removeStartablePredicate(this);
 	}
 	
 	@Override

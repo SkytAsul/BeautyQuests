@@ -98,7 +98,7 @@ public abstract class QuestObject implements Cloneable {
 		String id = (String) map.get("id");
 		if (id != null) creator = registry.getByID(id);
 		
-		if (creator == null) {
+		if (creator == null && map.containsKey("class")) {
 			String className = (String) map.get("class");
 			try {
 				creator = registry.getByClass(Class.forName(className));

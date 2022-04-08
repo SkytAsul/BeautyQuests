@@ -38,7 +38,6 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -58,68 +57,65 @@ public class QuestsListener implements Listener{
 		
 		if (Inventories.isInSystem(p)) return;
 		
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		if (starter != null) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-			if (acc == null) return;
-			
-			Set<Quest> quests = starter.getQuests();
-			quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toSet());
-			if (quests.isEmpty() && starter.getPools().isEmpty()) return;
-			
-			List<Quest> launcheable = new ArrayList<>();
-			List<Quest> requirements = new ArrayList<>();
-			List<Quest> timer = new ArrayList<>();
-			for (Quest qu : quests) {
-				try {
-					if (!qu.testRequirements(p, acc, false)) {
-						requirements.add(qu);
-					}else if (!qu.testTimer(acc, false)) {
-						timer.add(qu);
-					}else launcheable.add(qu);
-				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName(), ex);
-				}
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (acc == null) return;
+		
+		Set<Quest> quests = npc.getQuests();
+		quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toSet());
+		if (quests.isEmpty() && npc.getPools().isEmpty()) return;
+		
+		List<Quest> launcheable = new ArrayList<>();
+		List<Quest> requirements = new ArrayList<>();
+		List<Quest> timer = new ArrayList<>();
+		for (Quest qu : quests) {
+			try {
+				if (!qu.testRequirements(p, acc, false)) {
+					requirements.add(qu);
+				}else if (!qu.testTimer(acc, false)) {
+					timer.add(qu);
+				}else launcheable.add(qu);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName(), ex);
 			}
-			
-			Set<QuestPool> startablePools = starter.getPools().stream().filter(pool -> {
-				try {
-					return pool.canGive(p, acc);
-				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName(), ex);
-					return false;
-				}
-			}).collect(Collectors.toSet());
-			
-			e.setCancelled(true);
-			if (!launcheable.isEmpty()) {
-				for (Quest quest : launcheable) {
-					if (quest.isInDialog(p)) {
-						quest.clickNPC(p);
-						return;
-					}
-				}
-				ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
-					if (quest == null) return;
+		}
+		
+		Set<QuestPool> startablePools = npc.getPools().stream().filter(pool -> {
+			try {
+				return pool.canGive(p, acc);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName(), ex);
+				return false;
+			}
+		}).collect(Collectors.toSet());
+		
+		e.setCancelled(true);
+		if (!launcheable.isEmpty()) {
+			for (Quest quest : launcheable) {
+				if (quest.isInDialog(p)) {
 					quest.clickNPC(p);
-				});
-				gui.setValidate(__ -> {
-					new PlayerListGUI(acc).create(p);
-				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
-				gui.create(p);
-			}else if (!startablePools.isEmpty()) {
-				QuestPool pool = startablePools.iterator().next();
-				DebugUtils.logMessage("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
-			}else {
-				if (!timer.isEmpty()) {
-					timer.get(0).testTimer(acc, true);
-				}else if (!requirements.isEmpty()) {
-					requirements.get(0).testRequirements(p, acc, true);
-				}else {
-					Utils.sendMessage(p, starter.getPools().iterator().next().give(p));
+					return;
 				}
-				e.setCancelled(false);
 			}
+			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
+				if (quest == null) return;
+				quest.clickNPC(p);
+			});
+			gui.setValidate(__ -> {
+				new PlayerListGUI(acc).create(p);
+			}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
+			gui.create(p);
+		}else if (!startablePools.isEmpty()) {
+			QuestPool pool = startablePools.iterator().next();
+			DebugUtils.logMessage("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
+		}else {
+			if (!timer.isEmpty()) {
+				timer.get(0).testTimer(acc, true);
+			}else if (!requirements.isEmpty()) {
+				requirements.get(0).testRequirements(p, acc, true);
+			}else {
+				Utils.sendMessage(p, npc.getPools().iterator().next().give(p));
+			}
+			e.setCancelled(false);
 		}
 	}
 	

@@ -87,11 +87,7 @@ public class QuestsManager implements Iterable<Quest> {
 	public void removeQuest(Quest quest) {
 		quests.remove(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
-			BQNPC value = quest.getOptionValueOrDef(OptionStarterNPC.class);
-			NPCStarter starter = plugin.getNPCs().get(value);
-			if (starter == null) {
-				plugin.getLogger().warning("NPC Starter not registered for quest " + quest.getID() + ". NPC: " + (value == null ? "not set" : value.getId()));
-			}else starter.removeQuest(quest);
+			quest.getOption(OptionStarterNPC.class).getValue().removeQuest(quest);
 		}
 	}
 	
@@ -100,9 +96,7 @@ public class QuestsManager implements Iterable<Quest> {
 		quests.add(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
 			BQNPC npc = quest.getOptionValueOrDef(OptionStarterNPC.class);
-			if (npc != null) {
-				plugin.getNPCs().computeIfAbsent(npc, NPCStarter::new).addQuest(quest);
-			}
+			if (npc != null) npc.addQuest(quest);
 		}
 		quest.load();
 	}

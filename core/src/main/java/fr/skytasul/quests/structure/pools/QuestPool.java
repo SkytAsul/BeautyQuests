@@ -19,7 +19,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerPoolDatas;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -38,7 +37,7 @@ public class QuestPool implements Comparable<QuestPool> {
 	private final boolean avoidDuplicates;
 	private final List<AbstractRequirement> requirements;
 	
-	NPCStarter starter;
+	BQNPC npc;
 	List<Quest> quests = new ArrayList<>();
 	
 	QuestPool(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
@@ -53,14 +52,9 @@ public class QuestPool implements Comparable<QuestPool> {
 		this.requirements = requirements;
 		
 		if (npcID >= 0) {
-			BQNPC npc = QuestsAPI.getNPCsManager().getById(npcID);
+			npc = QuestsAPI.getNPCsManager().getById(npcID);
 			if (npc != null) {
-				starter = BeautyQuests.getInstance().getNPCs().get(npc);
-				if (starter == null) {
-					starter = new NPCStarter(npc);
-					BeautyQuests.getInstance().getNPCs().put(npc, starter);
-				}
-				starter.addPool(this);
+				npc.addPool(this);
 				return;
 			}
 		}
@@ -118,7 +112,8 @@ public class QuestPool implements Comparable<QuestPool> {
 	
 	public ItemStack getItemStack(String action) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
-				Lang.poolItemNPC.format(npcID + " (" + (starter == null ? "unknown" : starter.getNPC().getName()) + ")"),
+				Lang.poolItemNPC.format(npcID + " (" + (npc == null ? "unknown" : npc.getName())
+						+ ")"),
 				Lang.poolItemMaxQuests.format(maxQuests),
 				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
 				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),
@@ -236,11 +231,11 @@ public class QuestPool implements Comparable<QuestPool> {
 	}
 	
 	void unload() {
-		if (starter != null) starter.removePool(this);
+		if (npc != null) npc.removePool(this);
 	}
 	
 	public void unloadStarter() {
-		starter = null;
+		npc = null;
 	}
 	
 	public void save(ConfigurationSection config) {

@@ -23,7 +23,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -187,8 +186,24 @@ public class Utils{
 		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld() == null ? Lang.Unknown.toString() : lc.getWorld().getName());
 	}
 	
+	private static boolean cachedScoreboardPresent = false;
+	private static long cachedScoreboardPresenceExp = 0;
 	public static Location upLocationForEntity(LivingEntity en, double value) {
-		return en.getLocation().add(0, QuestsConfiguration.getHologramsHeight() + NMS.getNMS().entityNameplateHeight(en) + value + (en.getType() != EntityType.PLAYER || Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) == null ? 0.0 : 0.24), 0);
+		double height = value;
+		height += QuestsConfiguration.getHologramsHeight();
+		height += NMS.getNMS().entityNameplateHeight(en);
+		if (en instanceof Player) {
+			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {
+				cachedScoreboardPresenceExp = System.currentTimeMillis() + 60_000;
+				cachedScoreboardPresent = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) != null;
+				// as a new Objective object is allocated each time we check this,
+				// it is better to cache the boolean for memory consumption.
+				// scoreboards are not intended to change frequently, therefore it is
+				// not a problem to cache this value for a minute.
+			}
+			if (cachedScoreboardPresent) height += 0.24;
+		}
+		return en.getLocation().add(0, height, 0);
 	}
 	
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {

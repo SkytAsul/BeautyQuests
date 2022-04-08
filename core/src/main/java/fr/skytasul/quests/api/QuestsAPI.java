@@ -1,8 +1,6 @@
 package fr.skytasul.quests.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,14 +9,12 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -28,10 +24,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.NPCStarter;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -154,24 +146,6 @@ public class QuestsAPI {
 				BeautyQuests.logger.severe("An error occurred while updating quests handler.", ex);
 			}
 		});
-	}
-
-	public static List<Quest> getQuestsAssigneds(BQNPC npc) {
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		return starter == null ? Collections.emptyList() : new ArrayList<>(starter.getQuests());
-	}
-	
-	public static boolean isQuestStarter(BQNPC npc) {
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		return starter != null && !starter.getQuests().isEmpty();
-	}
-
-	public static boolean hasQuestStarted(Player p, BQNPC npc) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		for (Quest qu : getQuestsAssigneds(npc)){
-			if (qu.hasStarted(acc)) return true;
-		}
-		return false;
 	}
 	
 	public static QuestsManager getQuests() {

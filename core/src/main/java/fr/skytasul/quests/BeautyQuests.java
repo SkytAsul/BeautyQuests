@@ -35,7 +35,6 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
@@ -51,7 +50,6 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
-import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
@@ -88,7 +86,6 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* --------- Datas --------- */
 
-	private Map<BQNPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
 	private QuestsManager quests;
 	private QuestPoolsManager pools;
@@ -517,15 +514,14 @@ public class BeautyQuests extends JavaPlugin {
 		}
 		
 		if (unload){
+			QuestsAPI.getNPCsManager().unload();
 			resetDatas();
 		}
 	}
 	
 	private void resetDatas(){
-		npcs.values().forEach(NPCStarter::removeHolograms);
 		quests = null;
 		pools = null;
-		npcs.clear();
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
 		loaded = false;
@@ -621,10 +617,6 @@ public class BeautyQuests extends JavaPlugin {
 	
 	public QuestsConfiguration getConfiguration() {
 		return config;
-	}
-
-	public Map<BQNPC, NPCStarter> getNPCs() {
-		return npcs;
 	}
 	
 	public FileConfiguration getDataFile(){

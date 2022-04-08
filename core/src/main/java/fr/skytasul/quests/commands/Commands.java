@@ -70,8 +70,8 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, () -> {}, npc -> {
 			if (npc == null) return;
-			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+			if (!npc.getQuests().isEmpty()) {
+				Inventories.create(cmd.player, new ChooseQuestGUI(npc.getQuests(), quest -> {
 					if (quest == null) return;
 					Inventories.create(cmd.player, new StagesGUI(null)).edit(quest);
 				}));
@@ -97,8 +97,8 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
 		new SelectNPC(cmd.player, () -> {}, npc -> {
 			if (npc == null) return;
-			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+			if (!npc.getQuests().isEmpty()) {
+				Inventories.create(cmd.player, new ChooseQuestGUI(npc.getQuests(), quest -> {
 					if (quest == null) return;
 					remove(cmd.sender, quest);
 				}));

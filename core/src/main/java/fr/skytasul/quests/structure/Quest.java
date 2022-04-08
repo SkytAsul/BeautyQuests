@@ -52,7 +52,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public boolean asyncEnd = false;
 	public List<Player> asyncStart = null;
 	
-	List<Player> launcheable = new ArrayList<>();
+	private List<Player> launcheable = new ArrayList<>();
 	private List<Player> particles = new ArrayList<>();
 	
 	public Quest(int id) {
@@ -69,7 +69,11 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
-	void updateLauncheable(LivingEntity en) {
+	public List<Player> getLauncheable() {
+		return launcheable;
+	}
+	
+	public void updateLauncheable(LivingEntity en) {
 		if (QuestsConfiguration.showStartParticles()) {
 			if (launcheable.isEmpty()) return;
 			particles.clear();
@@ -236,7 +240,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				return false;
 			}
 		}
-		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(getOption(OptionStarterNPC.class).getValue()).size() == 1));
+		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);

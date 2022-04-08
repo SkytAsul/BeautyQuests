@@ -75,7 +75,7 @@ public class BQCitizens extends BQNPCsManager {
 		return new BQCitizensNPC(npc);
 	}
 	
-	public static class BQCitizensNPC implements BQNPC {
+	public static class BQCitizensNPC extends BQNPC {
 		
 		private NPC npc;
 		
