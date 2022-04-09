@@ -29,7 +29,7 @@ import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 
-public class QuestsAPI {
+public final class QuestsAPI {
 	
 	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
 	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
@@ -41,6 +41,8 @@ public class QuestsAPI {
 	private static BQBossBarManager bossBarManager = null;
 	
 	private static final Set<QuestsHandler> handlers = new HashSet<>();
+	
+	private QuestsAPI() {}
 	
 	/**
 	 * Register new stage type into the plugin

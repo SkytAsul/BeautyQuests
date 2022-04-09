@@ -278,12 +278,16 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	@Override
-	public void save() {
+	public synchronized void save() {
 		DebugUtils.logMessage("Saving " + loadedAccounts.size() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
 		BeautyQuests.getInstance().getDataFile().set("players", identifiersIndex);
 
-		for (PlayerAccount acc : loadedAccounts.values()) {
+		// as the save can take a few seconds and MAY be done asynchronously,
+		// it is possible that the "loadedAccounts" map is being edited concurrently.
+		// therefore, we create a new list to avoid this issue.
+		ArrayList<PlayerAccount> accountToSave = new ArrayList<>(loadedAccounts.values());
+		for (PlayerAccount acc : accountToSave) {
 			try {
 				savePlayerFile(acc);
 			}catch (Exception e) {

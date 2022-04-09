@@ -82,7 +82,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	private YamlConfiguration data;
 	private File dataFile;
-	public static File saveFolder;
+	private File saveFolder;
 	
 	/* --------- Datas --------- */
 
@@ -119,6 +119,8 @@ public class BeautyQuests extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		try {
+			logger.info("--------- BeautyQuests ---------");
+			
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
 
@@ -501,6 +503,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 		
 		if (loaded) {
+			long time = System.currentTimeMillis();
 			data.set("lastID", quests.getLastID());
 			data.set("version", getDescription().getVersion());
 			
@@ -511,6 +514,7 @@ public class BeautyQuests extends JavaPlugin {
 				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
+			DebugUtils.logMessage("Saved datas (" + (((double) System.currentTimeMillis() - time) / 1000D) + "s)!");
 		}
 		
 		if (unload){

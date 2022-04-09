@@ -56,7 +56,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	private List<Player> particles = new ArrayList<>();
 	
 	public Quest(int id) {
-		this(id, new File(BeautyQuests.saveFolder, id + ".yml"));
+		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
 	
 	public Quest(int id, File file) {
