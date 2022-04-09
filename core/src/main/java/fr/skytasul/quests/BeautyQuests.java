@@ -251,7 +251,7 @@ public class BeautyQuests extends JavaPlugin {
 					}
 				}
 			};
-			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimer(this, cycle, cycle).getTaskId());
+			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimerAsynchronously(this, cycle, cycle).getTaskId());
 		}
 	}
 	
