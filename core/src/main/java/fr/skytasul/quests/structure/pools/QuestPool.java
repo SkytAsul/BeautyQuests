@@ -146,7 +146,14 @@ public class QuestPool implements Comparable<QuestPool> {
 		
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
 		
-		if (!requirements.stream().allMatch(x -> x.test(p))) return false;
+		for (AbstractRequirement requirement : requirements) {
+			try {
+				if (!requirement.test(p)) return false;
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("Cannot test requirement " + requirement.getClass().getSimpleName() + " in pool " + id + " for player " + p.getName(), ex);
+				return false;
+			}
+		}
 		
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;
 		if (notDoneQuests.isEmpty()) { // all quests completed
@@ -167,11 +174,14 @@ public class QuestPool implements Comparable<QuestPool> {
 		List<Quest> started = new ArrayList<>(questsPerLaunch);
 		for (int i = 0; i < questsPerLaunch; i++) {
 			for (AbstractRequirement requirement : requirements) {
-				if (!requirement.test(p)) {
+				try {
+					if (requirement.test(p)) continue;
 					requirement.sendReason(p);
-					if (started.isEmpty()) return null;
-					break;
+				}catch (Exception ex) {
+					BeautyQuests.logger.severe("Cannot test requirement " + requirement.getClass().getSimpleName() + " in pool " + id + " for player " + p.getName(), ex);
 				}
+				if (started.isEmpty()) return null;
+				break;
 			}
 			
 			List<Quest> notCompleted = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;

@@ -119,7 +119,7 @@ public class BeautyQuests extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		try {
-			logger.info("--------- BeautyQuests ---------");
+			logger.info("------------ BeautyQuests ------------");
 			
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);

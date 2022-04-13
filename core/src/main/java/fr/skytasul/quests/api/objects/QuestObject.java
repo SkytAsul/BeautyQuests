@@ -45,6 +45,10 @@ public abstract class QuestObject implements Cloneable {
 		return getCreator().id;
 	}
 	
+	public String debugName() {
+		return getClass().getSimpleName() + (quest == null ? ", unknown quest" : (", quest " + quest.getID()));
+	}
+	
 	@Override
 	public abstract QuestObject clone();
 	
