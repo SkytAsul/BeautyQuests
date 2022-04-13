@@ -47,6 +47,8 @@ msg:
   writeEndMsg: '§aWrite the message that will be sent at the end of the quest,
     "null" if you want the default one or "none" if you want none. You can use "{0}" which
     will be replaced with the rewards obtained.'
+  writeEndSound: '§aWrite the sound name that will be played to the player at the end of
+    the quest, "null" if you want the default one or "none" if you want none:'
   writeDescriptionText: '§aWrite the text which describes the goal of the stage:'
   writeStageText: '§aWrite the text that will be sent to the player at the beginning
     of the step:'
@@ -455,6 +457,8 @@ inv:
     editQuestName: §lEdit quest
     endMessage: §eEdit end message
     endMessageLore: Message which will be sent to the player at the end of the quest.
+    endSound: §eEdit end sound
+    endSoundLore: Sound which will be played at the end of the quest.
     startMessage: §eEdit start message
     startMessageLore: Message which will be sent to the player at the beginning of the quest.
     startDialog: §eEdit start dialog

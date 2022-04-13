@@ -419,6 +419,7 @@ public class Utils{
 	
 	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
 		if (!QuestsConfiguration.playSounds()) return;
+		if ("none".equals(sound)) return;
 		try {
 			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, pitch);
 		}catch (Exception ex) {

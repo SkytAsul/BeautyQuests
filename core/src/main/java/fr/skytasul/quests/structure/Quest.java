@@ -356,7 +356,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class));
-				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
+				Utils.playPluginSound(p, getOptionValueOrDef(OptionEndSound.class), 1);
 				
 				QuestsAPI.propagateQuestsHandlers(handler -> handler.questFinish(acc, p, this));
 				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, Quest.this));
