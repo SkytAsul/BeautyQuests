@@ -178,7 +178,7 @@ public class BeautyQuests extends JavaPlugin {
 			launchMetrics(pluginVersion);
 			try {
 				launchUpdateChecker(pluginVersion);
-			}catch (ReflectiveOperationException e) {
+			}catch (Exception e) {
 				logger.severe("An error occurred while checking updates.", e);
 			}
 		}catch (LoadingException ex) {
@@ -293,7 +293,7 @@ public class BeautyQuests extends JavaPlugin {
 		DebugUtils.logMessage("Started bStats metrics");
 	}
 	
-	private void launchUpdateChecker(String pluginVersion) throws ReflectiveOperationException {
+	private void launchUpdateChecker(String pluginVersion) {
 		DebugUtils.logMessage("Starting Spigot updater");
 		if (pluginVersion.contains("_")) {
 			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
@@ -304,7 +304,8 @@ public class BeautyQuests extends JavaPlugin {
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
 						.setNotifyOpsOnJoin(false)
 						.setUsedVersion(build)
-						.setNameFreeVersion("(dev builds)").checkNow();
+						.setNameFreeVersion("(dev builds)")
+						.checkNow();
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
 			}
