@@ -34,7 +34,8 @@ public class SelectBlockGUI implements CustomInventory{
 	
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
-	public BiConsumer<BQBlock, Integer> run;
+	private boolean allowAmount;
+	private BiConsumer<BQBlock, Integer> run;
 	
 	public Inventory inv;
 	
@@ -42,6 +43,11 @@ public class SelectBlockGUI implements CustomInventory{
 	private String blockData = null;
 	private String tag = null;
 	private int amount = 1;
+	
+	public SelectBlockGUI(boolean allowAmount, BiConsumer<BQBlock, Integer> run) {
+		this.allowAmount = allowAmount;
+		this.run = run;
+	}
 	
 	public String name() {
 		return Lang.INVENTORY_BLOCK.toString();
@@ -56,7 +62,7 @@ public class SelectBlockGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, name());
 		
-		inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+		if (allowAmount) inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
 		if (NMS.getMCVersion() >= 13) inv.setItem(DATA_SLOT, item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(), Lang.NotSet.toString()));
 		if (NMS.getMCVersion() >= 13) inv.setItem(TAG_SLOT, item(XMaterial.FILLED_MAP, Lang.blockTag.toString(), QuestOption.formatDescription(Lang.blockTagLore.toString()), "", Lang.NotSet.toString()));
 		inv.setItem(8, done.clone());
@@ -149,7 +155,8 @@ public class SelectBlockGUI implements CustomInventory{
 		case TAG_SLOT:
 			Lang.BLOCK_TAGS.send(p, String.join(", ", NMS.getNMS().getAvailableBlockTags()));
 			new TextEditor<>(p, () -> openLastInv(p), obj -> {
-				if (Bukkit.getTag("blocks", NamespacedKey.fromString((String) obj), Material.class) == null) {
+				NamespacedKey key = NamespacedKey.fromString((String) obj);
+				if (key == null || Bukkit.getTag("blocks", key, Material.class) == null) {
 					Lang.INVALID_BLOCK_TAG.send(p, obj);
 				}else {
 					tag = (String) obj;

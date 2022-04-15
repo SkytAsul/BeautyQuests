@@ -78,7 +78,7 @@ public class DialogRunner {
 			if (status != null && status.task != null) return TestResult.DENY;
 		}
 		
-		if (p.isSneaking() && dialog.isSkippable() && test(p) == TestResult.ALLOW) {
+		if (p.isSneaking() && dialog != null && dialog.isSkippable() && test(p) == TestResult.ALLOW) {
 			Lang.DIALOG_SKIPPED.sendWP(p);
 			removePlayer(p);
 			end(p);

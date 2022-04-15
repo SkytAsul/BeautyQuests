@@ -35,7 +35,6 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
@@ -51,7 +50,6 @@ import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
-import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
@@ -84,11 +82,10 @@ public class BeautyQuests extends JavaPlugin {
 
 	private YamlConfiguration data;
 	private File dataFile;
-	public static File saveFolder;
+	private File saveFolder;
 	
 	/* --------- Datas --------- */
 
-	private Map<BQNPC, NPCStarter> npcs = new HashMap<>();
 	private ScoreboardManager scoreboards;
 	private QuestsManager quests;
 	private QuestPoolsManager pools;
@@ -122,6 +119,8 @@ public class BeautyQuests extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		try {
+			logger.info("------------ BeautyQuests ------------");
+			
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
 
@@ -137,7 +136,7 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				dependencies.initializeCompatibilities();
 			}catch (Exception ex) {
-				logger.severe("Error when initializing compatibilities. Consider restarting.", ex);
+				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
 			
 			if (QuestsAPI.getNPCsManager() == null) {
@@ -161,7 +160,11 @@ public class BeautyQuests extends JavaPlugin {
 
 						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
 							DebugUtils.logMessage("Migrating from " + lastVersion + " to " + pluginVersion);
-							for (Quest qu : quests) qu.saveToFile();
+							int updated = 0;
+							for (Quest qu : quests) {
+								if (qu.saveToFile()) updated++;
+							}
+							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
 							saveAllConfig(false);
 						}
 					}catch (Throwable e) {
@@ -169,7 +172,6 @@ public class BeautyQuests extends JavaPlugin {
 					}
 				}
 			}.runTaskLater(this, QuestsAPI.getNPCsManager().getTimeToWaitForNPCs());
-			
 
 			// Start of non-essential systems
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();
@@ -249,7 +251,7 @@ public class BeautyQuests extends JavaPlugin {
 					}
 				}
 			};
-			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimer(this, cycle, cycle).getTaskId());
+			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimerAsynchronously(this, cycle, cycle).getTaskId());
 		}
 	}
 	
@@ -294,7 +296,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void launchUpdateChecker(String pluginVersion) throws ReflectiveOperationException {
 		DebugUtils.logMessage("Starting Spigot updater");
 		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("_BUILD(.+)").matcher(pluginVersion);
+			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
 				UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
@@ -330,13 +332,16 @@ public class BeautyQuests extends JavaPlugin {
 			
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
-				db = new Database(dbConfig);
-				if (db.openConnection()) {
+				try {
+					db = new Database(dbConfig);
+					db.testConnection();
 					logger.info("Connection to database etablished.");
-				}else {
-					db.closeConnection();
-					db = null;
-					throw new LoadingException("Connection to database has failed.");
+				}catch (Exception ex) {
+					if (db != null) {
+						db.closeConnection();
+						db = null;
+					}
+					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
 			
@@ -486,7 +491,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload) {
-			quests.unloadQuests();
+			if (quests != null) quests.unloadQuests();
 			
 			QuestsAPI.getQuestsHandlers().forEach(handler -> {
 				try {
@@ -498,6 +503,7 @@ public class BeautyQuests extends JavaPlugin {
 		}
 		
 		if (loaded) {
+			long time = System.currentTimeMillis();
 			data.set("lastID", quests.getLastID());
 			data.set("version", getDescription().getVersion());
 			
@@ -508,18 +514,18 @@ public class BeautyQuests extends JavaPlugin {
 				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
+			DebugUtils.logMessage("Saved datas (" + (((double) System.currentTimeMillis() - time) / 1000D) + "s)!");
 		}
 		
 		if (unload){
+			QuestsAPI.getNPCsManager().unload();
 			resetDatas();
 		}
 	}
 	
 	private void resetDatas(){
-		npcs.values().forEach(NPCStarter::removeHolograms);
 		quests = null;
 		pools = null;
-		npcs.clear();
 		if (db != null) db.closeConnection();
 		//HandlerList.unregisterAll(this);
 		loaded = false;
@@ -615,10 +621,6 @@ public class BeautyQuests extends JavaPlugin {
 	
 	public QuestsConfiguration getConfiguration() {
 		return config;
-	}
-
-	public Map<BQNPC, NPCStarter> getNPCs() {
-		return npcs;
 	}
 	
 	public FileConfiguration getDataFile(){

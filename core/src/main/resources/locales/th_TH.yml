@@ -11,6 +11,7 @@ msg:
     cancelling: '§cกระบวนการสร้างเควสถูกยกเลิก.'
     editCancelling: '§cการแก้ไขเควส ถูกยกเลิก.'
     invalidID: '§cภารกิจ id {0} ไม่มีอยู่จริง.'
+    invalidPoolID: '§cThe pool {0} does not exist.'
     alreadyStarted: '§cคุณเริ่มภารกิจเรียบร้อยแล้ว!'
   quests:
     maxLaunched: '§cไม่สามารถรับได้มากกว่า {0} quest(s) ในเวลาเดียวกัน...'
@@ -26,6 +27,7 @@ msg:
   questItem:
     drop: '§cคุณไม่สามารถทิ้ง ไอเท่ม เควสนี้ได้!'
     craft: '§cไอเท่มเควสชิ้นนี้ไม่สามารถคราฟได้!'
+    eat: '§cผู้เล่นไม่สามารถกินของชิ้นนี้ได้!'
   stageMobs:
     noMobs: '§cสเตจนี้ไม่จำเป็นต้องฆ่า mobs.'
     listMobs: '§aคุณต้องฆ่า {0}.'
@@ -35,7 +37,9 @@ msg:
   writeMobAmount: '§aกำหนดจำนวน mobs ที่ต้องฆ่า:'
   writeMobName: '§aเขียนชื่อที่กำหนดเองของ mob ที่จะฆ่า:'
   writeChatMessage: '§aเขียนข้อความ: (Add "{SLASH}" หากคุณต้องการให้ใช้ command ในการเริ่มต้น.)'
-  writeEndMessage: "§aเขียนข้อความที่ต้องการส่ง เมื่อจบภารกิจ หรือจบสเตจ:\n"
+  writeMessage: '§aเขียนข้อความเพื่อส่งให้ผู้เล่น'
+  writeStartMessage: "§aWrite the message that will be sent at the beginning of the quest, \"null\" if you want the default one or \"none\" if you want none:\n"
+  writeEndMsg: "§aWrite the message that will be sent at the end of the quest, \"null\" if you want the default one or \"none\" if you want none. You can use \"{0}\" which will be replaced with the rewards obtained.\n"
   writeDescriptionText: '§aเขียนข้อความ เพื่ออธิบายเป้าหมายของสเตจ:'
   writeStageText: '§aเขียนข้อความ  ที่จะส่งไปให้ผู้เล่น เมื่อเริ่ม step:'
   moveToTeleportPoint: '§aไปยังจุด teleport ที่ต้องการ .'
@@ -73,11 +77,22 @@ msg:
   commandsDisabled: ตอนนี้คุณไม่ได้รับอนุญาตให้ใช้ commands!
   indexOutOfBounds: '§หมายเลข {0} อยู่นอกขอบเขต! ต้องอยู่ระหว่าง {1} ถึง {2}'
   invalidBlockData: '§blockdata {0} ไม่ถูกต้อง หรือเข้ากันไม่ได้กับ block {1}'
+  invalidBlockTag: '§cแท็กบล็อกไม่พร้อมใช้งาน {0}'
   bringBackObjects: พาฉันกลับมาที่ {0}
   inventoryFull: '§cช่องเก็บ ไอเท่ม ของคุณเต็ม, ไอเทมหล่นลงพื้น.'
   playerNeverConnected: '§cไม่สามารถค้นหาข้อมูลเกี่ยวกับผู้เล่นนี้ได้ {0}'
   playerNotOnline: '§cผู้เล่น {0} offline.'
+  playerDataNotFound: "§cข้อมูลของผู้เล่น {0} ไม่พบ\n"
+  versionRequired: 'Version required: §l{0}'
+  restartServer: '§7รีสตาร์ทเซิร์ฟเวอร์ของคุณเพื่อดูการแก้ไข'
+  dialogs:
+    skipped: '§8§o Dialog skipped.'
   command:
+    downloadTranslations:
+      syntax: '§cคุณต้องระบุภาษาที่จะดาวน์โหลด ตัวอย่าง: "/quests downloadTranslations en_US"'
+      notFound: "§cLanguage {0} ไม่พบสำหรับรุ่น {1}\n"
+      exists: '§cไฟล์ {0} มีอยู่แล้ว ผนวก "จริง" ต่อท้ายคำสั่งของคุณเพื่อเขียนทับ (/quests downloadแปล <lang> จริง)'
+      downloaded: 'ดาวน์โหลด §aLanguage {0} แล้ว! §7ตอนนี้คุณต้องแก้ไขไฟล์ "/plugins/BeautyQuests/config.yml" เพื่อเปลี่ยนค่าของ §ominecraftTranslationsFile§7 ด้วย {0} จากนั้นรีสตาร์ทเซิร์ฟเวอร์'
     checkpoint:
       noCheckpoint: '§cไม่พบ checkpoint สำหรับภารกิจ {0}'
       questNotStarted: '§cคุณไม่ได้ทำภารกิจนี้.'
@@ -87,6 +102,11 @@ msg:
       next: "§a stage ถูกข้าม.\n"
       nextUnavailable: '§ตัวเลือก "ข้าม" ไม่สามารถใช้ได้เมื่อผู้เล่นอยู่ในจุดสิ้นสุด branch.'
       set: '§aStage {0} เริ่ม.'
+    startDialog:
+      impossible: "§cImpossible to start the dialog now.\n"
+      noDialog: '§cThe player has no pending dialog.'
+      alreadyIn: '§cผู้เล่นกำลังเล่นกล่องโต้ตอบอยู่แล้ว'
+      success: '§aเริ่มกล่องโต้ตอบสำหรับผู้เล่น {0} ในภารกิจ {1}!'
     playerNeeded: '§cคุณต้องเป็นผู้เล่น เพื่อดำเนินการ command นี้!'
     incorrectSyntax: '§csyntax ไม่ถูกต้อง.'
     noPermission: '§c permissions ของคุณใช้ command นี้ไม่ได้! (Required: {0})'
@@ -100,11 +120,13 @@ msg:
     leaveAll: '§คุณบังคับให้สิ้นสุด {0} เควส) ข้อผิดพลาด: {1}'
     resetPlayer:
       player: '§6ข้อมูลทั้งหมดเกี่ยวกับภารกิจของคุณ {0} รายการได้ถูกลบโดย {1}.'
+      remover: '§6{0} ข้อมูลภารกิจ (และ {2} กลุ่ม) ของ {1} ถูกลบแล้ว'
     resetPlayerQuest:
       player: '§6ข้อมูลทั้งหมดเกี่ยวกับภารกิจ {0} ถูกลบโดย {1}'
       remover: '§6 {0} ข้อมูลภารกิจของ {1} ถูกลบไปแล้ว'
     resetQuest: '§6ลบข้อมูลของภารกิจสำหรับ  {0} players.'
     startQuest: '§6คุณบังคับให้เริ่มภารกิจ {0} (UUID ของผู้เล่น: {1})'
+    startQuestNoRequirements: '§cผู้เล่นไม่ตรงตามข้อกำหนดสำหรับภารกิจ {0}... ต่อท้าย "จริง" ที่ท้ายคำสั่งของคุณเพื่อข้ามการตรวจสอบข้อกำหนด'
     cancelQuest: '§6คุณได้ยกเลิกภารกิจ {0}.'
     cancelQuestUnavailable: '§ภารกิจ {0} ไม่สามารถยกเลิกได้'
     backupCreated: '§6คุณได้สร้างการสำรองข้อมูลของ ภารกิจ และข้อมูลผู้เล่นทั้งหมดเรียบร้อยแล้ว'
@@ -112,6 +134,9 @@ msg:
     backupQuestsFailed: '§การสร้างข้อมูลสำรองสำหรับเควสทั้งหมดล้มเหลว'
     adminModeEntered: '§คุณได้เข้าสู่โหมดผู้ดูแลระบบ'
     adminModeLeft: '§คุณออกจากโหมดผู้ดูแลระบบแล้ว'
+    resetPlayerPool:
+      timer: "§aคุณได้รีเซ็ต {0} ตัวจับเวลาพูลของ {1}\n"
+      full: '§คุณได้รีเซ็ต {0} ข้อมูลพูลของ {1}'
     scoreboard:
       lineSet: '§6คุณแก้ไข line เรียบร้อยแล้ว {0}'
       lineReset: '§6คุณรีเซ็ต line สำเร็จแล้ว {0}'
@@ -120,6 +145,9 @@ msg:
       resetAll: '§6คุณรีเซ็ต สกอร์บอร์ด ของผู้เล่นสำเร็จแล้ว {0}'
       hidden: '§6ป้ายบอกคะแนนของผู้เล่น {0} ถูกซ่อนไว้'
       shown: '§6ป้ายบอกคะแนนของผู้เล่น {0} มีการแสดง.'
+      own:
+        hidden: '§6ป้ายของคุณถูกซ่อนอยู่ในขณะนี้'
+        shown: '§6ป้ายของคุณจะปรากฏขึ้นอีกครั้ง'
     help:
       header: '§6§lBeautyQuests — Help'
       create: '§6/{0} create: §eสร้างภารกิจ'
@@ -127,12 +155,14 @@ msg:
       remove: '§6/{0} remove <id>: §eลบเควสด้วย id ที่ระบุหรือคลิกที่ NPC เมื่อไม่ได้กำหนดไว้'
       finishAll: '§6/{0} finishAll <player>: §eจบภารกิจทั้งหมดของผู้เล่น'
       setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eข้ามขั้นตอน stage/start the branch/set a stage สำหรับ branch.'
+      startDialog: '§6/{0} startDialog <player> <quest id>: §eเริ่มกล่องโต้ตอบที่รอดำเนินการสำหรับด่าน NPC หรือกล่องโต้ตอบเริ่มต้นสำหรับภารกิจ'
       resetPlayer: '§6/{0} resetPlayer <player>: §eลบข้อมูลทั้งหมดเกี่ยวกับผู้เล่น'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <player> [id]: §eลบข้อมูลของภารกิจให้ผู้เล่น'
       seePlayer: '§6/{0} seePlayer <player>: §eดูข้อมูลเกี่ยวกับผู้เล่น'
       reload: '§6/{0} reload: §eSบันทึกและโหลดการกำหนดค่าและไฟล์ทั้งหมดซ้ำ. (§cdeprecated§e)'
       start: '§6/{0} start <player> [id]: §eบังคับให้เริ่มเควส'
       setItem: '§6/{0} setItem <talk|launch>: §eบันทึก hologram ไอเท่ม'
+      setFirework: '§6/{0} setFirework: §eแก้ไขจุดสิ้นสุดของดอกไม้ไฟเริ่มต้น'
       adminMode: '§6/{0} adminMode: §eสลับโหมดผู้ดูแลระบบ (มีประโยชน์สำหรับการแสดงข้อความบันทึกเล็กน้อย)'
       version: '§6/{0} version: §eดูเวอร์ชันปลั๊กอินปัจจุบัน'
       save: '§6/{0} save: §eทำการบันทึกปลั๊กอินด้วยตนเอง'
@@ -185,12 +215,6 @@ msg:
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
-      player: เพิ่ม §aMessage "{0}" สำหรับผู้เล่นแล้ว.
-      npc: เพิ่ม §aMessage "{0}" สำหรับ NPC แล้ว
-      noSender: '§aMessage "{0}" ถูกเพิ่มโดยไม่มีผู้ส่ง'
-      messageRemoved: '§aMessage "{0}" ถูกลบออก'
-      edited: ข้อความ "{0}" ได้ถูกแก้ไขแล้ว
-      soundAdded: เพิ่ม§aSound "{0}" สำหรับ message "{1}"
       cleared: '§a {0} ข้อความที่ถูกลบ'
       help:
         header: '§6§lBeautyQuests — Dialog editor help'
@@ -216,8 +240,6 @@ msg:
     epicBossDoesntExist: '§c Epic Boss ตัวนี้ไม่มีอยู่จริง'
     textList:
       syntax: '§cCorrect syntax: '
-      added: เพิ่ม §aText "{0}" แล้ว
-      removed: '§aText "{0}" ถูกลบออก'
       help:
         header: '§6§lBeautyQuests — List editor help'
         add: '§6add <message>: §eเพิ่มข้อความ'
@@ -225,12 +247,10 @@ msg:
         list: '§6list: §eดูข้อความที่เพิ่มทั้งหมด'
         close: '§6close: §eตรวจสอบข้อความที่เพิ่มเข้ามา'
     noSuchElement: '§ไม่มี element ดังกล่าว element ที่อนุญาต ได้แก่ §e {0}'
-    comparisonType: '§aตัวเลือก การเปรียบเทียบ type ที่คุณต้องการ among {0}. การเปรียบเทียบ ค่าเริ่มต้น คือ: §e§lมากกว่า หรือ เท่ากับ§r§a. Type §onull§r§a เพื่อใช้.'
     scoreboardObjectiveNotFound: '§cไม่ทราบวัตถุประสงค์ของ สกอร์บอร์ด'
     pool:
       hologramText: 'เขียนข้อความโฮโลแกรมที่กำหนดเองสำหรับพูลนี้ (หรือ "null" ถ้าคุณต้องการใช้ค่าเริ่มต้น)'
       maxQuests: 'เขียนจำนวนสูงสุดของ ภารกิจ ที่สามารถเรียกใช้งานได้จาก pool นี้'
-      time: 'เขียนจำนวนวันก่อนที่ผู้เล่นจะทำภารกิจใหม่ได้'
   writeCommandDelay: '§aเขียนการหน่วงเวลาคำสั่งที่ต้องการ ใน ticks.'
 advancement:
   finished: เสร็จแล้ว
@@ -429,7 +449,6 @@ inv:
     notStarted: ยังไม่เริ่มเควส
     finished: ภารกิจเสร็จสิ้นแล้ว
     inProgress: ภารกิจกำลังดำเนินการ
-    loreCancel: '§c§oคลิกเพื่อยกเลิกภารกิจ'
     loreStart: คลิกเพื่อเริ่มภารกิจ
     loreStartUnavailable: notc§oคุณมีคุณสมบัติไม่ตรงตามข้อกำหนดในการเริ่มภารกิจ
     canRedo: '§3§คุณสามารถเริ่มภารกิจนี้ใหม่ได้!'
@@ -527,7 +546,6 @@ scoreboard:
     craft: '§eสร้าง §6{0}'
     bucket: '§eเติม §6{0}'
     location: '§eไปที่ §6{0}§e, §6{1}§e, §6{2}§e ใน §6{3}'
-    playTime: '§eเล่น §6{0} game ticks'
     breed: ผสมพันธ์ §6{0}
     tame: ทำให้เชื่อง §6{0}
 indication:

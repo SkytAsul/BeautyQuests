@@ -65,7 +65,7 @@ public class BQServerNPCs extends BQNPCsManager {
 		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), e.isLeftClick() ? ClickType.LEFT : ClickType.RIGHT);
 	}
 	
-	public static class BQServerNPC implements BQNPC {
+	public static class BQServerNPC extends BQNPC {
 		
 		private final NPC npc;
 		

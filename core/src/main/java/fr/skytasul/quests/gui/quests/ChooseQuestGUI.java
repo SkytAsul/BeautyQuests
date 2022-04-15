@@ -1,7 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
@@ -28,7 +28,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 		return this;
 	}
 	
-	public ChooseQuestGUI(List<Quest> quests, Consumer<Quest> run){
+	public ChooseQuestGUI(Collection<Quest> quests, Consumer<Quest> run) {
 		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);
 		Validate.notNull(run, "Runnable cannot be null");
 		super.objects.sort(Comparator.naturalOrder());

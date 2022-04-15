@@ -28,6 +28,7 @@ public class ChatUtils {
 		test("§aHello §x§1§1§1§1§1§2the§lre, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2the§lre,", "§x§1§1§1§1§1§2§lit's me");
 		test("§aHello §x§1§1§1§1§1§2there, §lit's me, owo §ofellas §nowo", 26, 100, "§aHello §x§1§1§1§1§1§2there, §lit's me, owo", "§x§1§1§1§1§1§2§l§ofellas §nowo");
 		test("1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow §ostranger§x§B§B§E§E§D§D?", 40, 100, "1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow", "§x§B§B§E§E§D§D§l§ostranger§x§B§B§E§E§D§D?");
+		test("§aHello, thisisaverylongword and thisisa§lverylongword", 10, 25, "§aHello,", "§athisisaver", "§aylongword", "§aand");
 	}
 	
 	private static int testID = 0;
@@ -132,7 +133,7 @@ public class ChatUtils {
 						//System.out.println("linelength: " + lineLength + " | wordlength: " + wordLength);
 						lines.add(line.toString());
 						if (word.length() >= maxLineLength || word.length() >= criticalLineLength) {
-							//System.out.println("entire word too long. split");
+							//System.out.println("entire word too long. split: " + word.toString() + " length " + wordLength + " colors " + colorsWord);
 							lines.addAll(splitColoredString(word.toString(), wordLength, maxLineLength, criticalLineLength, colorsWord));
 							lineLength = 0;
 							line = new StringBuilder(maxLineLength);
@@ -219,11 +220,12 @@ public class ChatUtils {
 	
 	private static List<String> splitColoredString(String string, int stringLength, int maxLength, int criticalLength, String startColors) {
 		List<String> split = new ArrayList<>();
-		while (stringLength >= maxLength && string.length() >= criticalLength) {
+		while (stringLength >= maxLength || string.length() >= criticalLength) {
 			int colorIndex = string.indexOf('§');
-			if (colorIndex > maxLength) { // before color -> only text
-				split.add(string.substring(0, maxLength));
-				string = startColors + string.substring(maxLength);
+			if (colorIndex > maxLength || colorIndex == -1) { // before color -> only text
+				split.add(startColors + string.substring(0, maxLength));
+				string = string.substring(maxLength);
+				stringLength -= maxLength;
 			}else {
 				int length = 0;
 				int previousIndex = -2;
@@ -233,13 +235,30 @@ public class ChatUtils {
 					length += matcher.start() - previousIndex - 2;
 					if (length > maxLength || matcher.start() > criticalLength) {
 						split.add(string.substring(0, previousIndex));
-						string = colors + string.substring(previousIndex);
+						string = startColors + string.substring(previousIndex);
 						startColors = colors;
+						matcher = COLOR.matcher(string);
+						stringLength -= length;
+						length = 0;
+						previousIndex = -2;
+						continue;
 					}
 					colors = appendRawColorString(colors, matcher.group());
 					previousIndex = matcher.start();
-					stringLength -= length;
 				}
+				length += string.length() - (previousIndex + 2);
+				int truncated = 0;
+				if (length >= maxLength) {
+					truncated = maxLength + startColors.length();
+					split.add(string.substring(0, truncated));
+					string = startColors + string.substring(truncated);
+				}else if (string.length() >= criticalLength) {
+					truncated = criticalLength - startColors.length();
+					split.add(string.substring(0, truncated));
+					string = startColors + string.substring(truncated);
+				}
+				stringLength -= truncated;
+				startColors = colors;
 			}
 		}
 		split.add(string);

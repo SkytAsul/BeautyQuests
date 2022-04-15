@@ -30,7 +30,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.NPCStarter;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
@@ -178,6 +177,8 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	}
 	
 	protected void initDialogRunner() {
+		if (dialogRunner != null) throw new IllegalStateException("Dialog runner already initialized");
+		
 		dialogRunner = new DialogRunner(dialog, npc);
 		dialogRunner.addTest(super::hasStarted);
 		dialogRunner.addTestCancelling(p -> canUpdate(p, true));
@@ -212,20 +213,17 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 
 	private void cachePlayer(Player p) {
 		cached.add(p);
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		if (starter != null) starter.hideForPlayer(p, this);
+		if (npc != null) npc.hideForPlayer(p, this);
 	}
 	
 	private void uncachePlayer(Player p) {
 		cached.remove(p);
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		if (starter != null) starter.removeHiddenForPlayer(p, this);
+		if (npc != null) npc.removeHiddenForPlayer(p, this);
 	}
 	
 	private void uncacheAll() {
 		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		if (starter != null) cached.forEach(p -> starter.removeHiddenForPlayer(p, this));
+		if (npc != null) cached.forEach(p -> npc.removeHiddenForPlayer(p, this));
 	}
 	
 	@Override

@@ -26,7 +26,7 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 
 	private final Date launchDate = new Date();
 	
-	private File file;
+	private final File file;
 	private PrintWriter stream;
 	
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");

@@ -25,7 +25,7 @@ import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 
 /**
  * This class implements {@link Listener} to permit the implementation to have at least one {@link EventHandler}.
- * This event method will be used to fire {@link #callEvent(Object, Entity, Player)}.
+ * This event method will be used to fire the {@link #callEvent(Event, Object, Entity, Player)}.
  * 
  * @param <T> object which should represents a mob type from whatever plugin
  */

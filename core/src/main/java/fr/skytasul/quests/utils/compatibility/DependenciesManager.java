@@ -35,6 +35,7 @@ import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
+import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs5;
 import fr.skytasul.quests.utils.compatibility.npcs.BQCitizens;
 import fr.skytasul.quests.utils.compatibility.npcs.BQSentinel;
 import fr.skytasul.quests.utils.compatibility.npcs.BQServerNPCs;
@@ -83,13 +84,21 @@ public class DependenciesManager implements Listener {
 		return true;
 	});
 	
+	public static final BQDependency mm = new BQDependency("MythicMobs", () -> {
+		try {
+			Class.forName("io.lumine.xikage.mythicmobs.mobs.MythicMob");
+			QuestsAPI.registerMobFactory(new MythicMobs());
+		}catch (ClassNotFoundException ex) {
+			QuestsAPI.registerMobFactory(new MythicMobs5());
+		}
+	});
+	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays"));
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
 	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable(), null);
-	public static final BQDependency mm = new BQDependency("MythicMobs", () -> QuestsAPI.registerMobFactory(new MythicMobs()));
 	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.getRequirements().register(new RequirementCreator("jobLevelRequired", JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
 	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.getRequirements().register(new RequirementCreator("factionRequired", FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
 	public static final BQDependency acc = new BQDependency("AccountsHook");
@@ -205,7 +214,7 @@ public class DependenciesManager implements Listener {
 		void initialize() {
 			try {
 				if (initialize != null) initialize.run();
-			}catch (Exception ex) {
+			}catch (Throwable ex) {
 				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
 			}

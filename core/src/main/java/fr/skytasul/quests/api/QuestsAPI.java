@@ -1,8 +1,6 @@
 package fr.skytasul.quests.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,14 +9,12 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -28,16 +24,12 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.NPCStarter;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 
-public class QuestsAPI {
+public final class QuestsAPI {
 	
 	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
 	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
@@ -50,11 +42,11 @@ public class QuestsAPI {
 	
 	private static final Set<QuestsHandler> handlers = new HashSet<>();
 	
+	private QuestsAPI() {}
+	
 	/**
 	 * Register new stage type into the plugin
-	 * @param type StageType object
-	 * @param item ItemStack shown in stages GUI when choosing stage type
-	 * @param runnables Instance of special runnables
+	 * @param creator StageType instance
 	 */
 	public static <T extends AbstractStage> void registerStage(StageType<T> creator) {
 		stages.add(creator);
@@ -116,6 +108,7 @@ public class QuestsAPI {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
+		DebugUtils.logMessage("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
 	}
 	
 	public static boolean hasBossBarManager() {
@@ -130,6 +123,7 @@ public class QuestsAPI {
 		Validate.notNull(newBossBarManager);
 		if (bossBarManager != null) BeautyQuests.logger.warning(newBossBarManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
 		bossBarManager = newBossBarManager;
+		DebugUtils.logMessage("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
 	}
 	
 	public static void registerQuestsHandler(QuestsHandler handler) {
@@ -154,24 +148,6 @@ public class QuestsAPI {
 				BeautyQuests.logger.severe("An error occurred while updating quests handler.", ex);
 			}
 		});
-	}
-
-	public static List<Quest> getQuestsAssigneds(BQNPC npc) {
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		return starter == null ? Collections.emptyList() : new ArrayList<>(starter.getQuests());
-	}
-	
-	public static boolean isQuestStarter(BQNPC npc) {
-		NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(npc);
-		return starter != null && !starter.getQuests().isEmpty();
-	}
-
-	public static boolean hasQuestStarted(Player p, BQNPC npc) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		for (Quest qu : getQuestsAssigneds(npc)){
-			if (qu.hasStarted(acc)) return true;
-		}
-		return false;
 	}
 	
 	public static QuestsManager getQuests() {

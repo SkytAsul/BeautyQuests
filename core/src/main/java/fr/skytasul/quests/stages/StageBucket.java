@@ -89,8 +89,12 @@ public class StageBucket extends AbstractStage {
 		return new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
 	}
 
-	public static enum BucketType {
-		WATER(Lang.BucketWater, XMaterial.WATER_BUCKET), LAVA(Lang.BucketLava, XMaterial.LAVA_BUCKET), MILK(Lang.BucketMilk, XMaterial.MILK_BUCKET);
+	public enum BucketType {
+		WATER(Lang.BucketWater, XMaterial.WATER_BUCKET),
+		LAVA(Lang.BucketLava, XMaterial.LAVA_BUCKET),
+		MILK(Lang.BucketMilk, XMaterial.MILK_BUCKET),
+		SNOW(Lang.BucketSnow, XMaterial.POWDER_SNOW_BUCKET)
+		;
 
 		private Lang name;
 		private XMaterial type;
@@ -109,9 +113,9 @@ public class StageBucket extends AbstractStage {
 		}
 
 		public static BucketType fromMaterial(XMaterial type) {
-			if (type == XMaterial.WATER_BUCKET) return WATER;
-			if (type == XMaterial.LAVA_BUCKET) return LAVA;
-			if (type == XMaterial.MILK_BUCKET) return MILK;
+			for (BucketType bucket : values()) {
+				if (bucket.type == type) return bucket;
+			}
 			throw new IllegalArgumentException(type.name() + " does not correspond to any bucket type");
 		}
 	}

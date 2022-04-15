@@ -48,11 +48,15 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		String request = hook.onRequest(p, params);
 		if (comparison.isNumberOperation()) {
 			BigDecimal dec1 = new BigDecimal(value);
-			BigDecimal dec2 = new BigDecimal(request);
-			int signum = dec2.subtract(dec1).signum();
-			if (signum == 0) return comparison.isEqualOperation();
-			if (signum == 1) return comparison == ComparisonMethod.GREATER || comparison == ComparisonMethod.GREATER_OR_EQUAL;
-			if (signum == -1) return comparison == ComparisonMethod.LESS || comparison == ComparisonMethod.LESS_OR_EQUAL;
+			try {
+				BigDecimal dec2 = new BigDecimal(request);
+				int signum = dec2.subtract(dec1).signum();
+				if (signum == 0) return comparison.isEqualOperation();
+				if (signum == 1) return comparison == ComparisonMethod.GREATER || comparison == ComparisonMethod.GREATER_OR_EQUAL;
+				if (signum == -1) return comparison == ComparisonMethod.LESS || comparison == ComparisonMethod.LESS_OR_EQUAL;
+			}catch (NumberFormatException e) {
+				BeautyQuests.logger.severe("Cannot parse placeholder " + rawPlaceholder + " for player " + p.getName() + ": got " + request + ", which is not a number. (" + debugName() + ")");
+			}
 			return false;
 		}
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);

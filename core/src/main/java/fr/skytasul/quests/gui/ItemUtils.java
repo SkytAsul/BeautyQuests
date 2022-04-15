@@ -11,7 +11,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.KnowledgeBookMeta;
@@ -130,13 +129,19 @@ public class ItemUtils {
 	
 	public static ItemStack clearVisibleAttributes(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
+		
+		// remove name and lore
 		im.setDisplayName(null);
+		im.setLore(null);
+		
+		// add flags to hide various descriptions,
+		// depending on the item type/attributes/other things
 		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		if (im.isUnbreakable()) im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		if (NMS.getMCVersion() <= 12 || im.hasAttributeModifiers() || im instanceof Damageable) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		if (NMS.getMCVersion() >= 11 && im.isUnbreakable()) im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		if (is.getType().getMaxDurability() != 0 || (NMS.getMCVersion() > 12 && im.hasAttributeModifiers())) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta || (NMS.getMCVersion() >= 12 && im instanceof KnowledgeBookMeta)) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
-		im.setLore(null);
+		
 		is.setItemMeta(im);
 		return is;
 	}

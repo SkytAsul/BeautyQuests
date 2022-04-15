@@ -76,7 +76,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				invName = invName + " #" + edited.getID();
 				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
 			}
-			inv = Bukkit.createInventory(null, (int) Math.ceil(QuestOptionCreator.creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt() / 9D) * 9, invName);
+			inv = Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt() + 1) / 9D) * 9, invName);
 			
 			for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
 				QuestOption<?> option;
@@ -320,6 +320,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default quest options.");
 		
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("pool", 9, OptionQuestPool.class, OptionQuestPool::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("name", 10, OptionName.class, OptionName::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("description", 12, OptionDescription.class, OptionDescription::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("customItem", 13, OptionQuestItem.class, OptionQuestItem::new, QuestsConfiguration.getItemMaterial(), "customMaterial"));
@@ -338,7 +339,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("pool", 34, OptionQuestPool.class, OptionQuestPool::new, null));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endSound", 34, OptionEndSound.class, OptionEndSound::new, QuestsConfiguration.getFinishSound()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("firework", 35, OptionFirework.class, OptionFirework::new, QuestsConfiguration.getDefaultFirework()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));

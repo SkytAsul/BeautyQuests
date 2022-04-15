@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.structure.Quest;
 
 @Retention(RUNTIME)
@@ -40,7 +41,9 @@ public @interface Cmd {
 	 * <li> NPCSID : <i>list of all NPCs IDs</i>
 	 * <li> xxx|yyy|zzz : <i>available values, separated by a pipe (|)</i>
 	 * </ul>
-	 * In the case of PLAYERS QUESTSID and NPCSID, they will be directly replaced by an instance of {@link Player}/{@link Quest}/{@link NPC} when command executing (no need for String parsing)
+	 * In the case of PLAYERS QUESTSID and NPCSID, they will be directly replaced by
+	 * an instance of {@link Player} / {@link Quest} / {@link BQNPC} when command executing
+	 * (no need for String parsing)
 	 * @return String array of possibles arguments
 	 */
 	public String[] args() default {};

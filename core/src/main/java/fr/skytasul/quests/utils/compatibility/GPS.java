@@ -17,6 +17,7 @@ public class GPS {
 	
 	public static boolean launchCompass(Player p, Location location) {
 		if (api.gpsIsActive(p)) return false;
+		if (location == null) return false;
 		api.startCompass(p, location);
 		return true;
 	}

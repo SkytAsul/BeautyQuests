@@ -21,8 +21,8 @@ public class QuestObjectCreator<T extends QuestObject> {
 	 * @param item ItemStack shown in {@link QuestObjectGUI}
 	 * @param newObjectSupplier lambda returning an instance of this Object ({@link T}::new)
 	 */
-	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack is, Supplier<T> newObjectSupplier) {
-		this(id, clazz, is, newObjectSupplier, true);
+	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack item, Supplier<T> newObjectSupplier) {
+		this(id, clazz, item, newObjectSupplier, true);
 	}
 	
 	/**
@@ -33,10 +33,10 @@ public class QuestObjectCreator<T extends QuestObject> {
 	 * @param multiple can the object be present multiple times
 	 * @param allowedLocations if present, specifies where the object can be used. If no location specified, the
 	 */
-	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack is, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
+	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack item, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
 		this.id = id;
 		this.clazz = clazz;
-		this.item = is;
+		this.item = item;
 		this.newObjectSupplier = newObjectSupplier;
 		this.multiple = multiple;
 		this.allowedLocations = allowedLocations;

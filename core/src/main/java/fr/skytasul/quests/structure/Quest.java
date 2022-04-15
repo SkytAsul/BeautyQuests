@@ -1,6 +1,8 @@
 package fr.skytasul.quests.structure;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -50,11 +52,11 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public boolean asyncEnd = false;
 	public List<Player> asyncStart = null;
 	
-	List<Player> launcheable = new ArrayList<>();
+	private List<Player> launcheable = new ArrayList<>();
 	private List<Player> particles = new ArrayList<>();
 	
 	public Quest(int id) {
-		this(id, new File(BeautyQuests.saveFolder, id + ".yml"));
+		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
 	
 	public Quest(int id, File file) {
@@ -67,7 +69,11 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
-	void updateLauncheable(LivingEntity en) {
+	public List<Player> getLauncheable() {
+		return launcheable;
+	}
+	
+	public void updateLauncheable(LivingEntity en) {
 		if (QuestsConfiguration.showStartParticles()) {
 			if (launcheable.isEmpty()) return;
 			particles.clear();
@@ -228,13 +234,13 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
-		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && !getOptionValueOrDef(OptionBypassLimit.class)) {
+		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
 			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
 				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
 				return false;
 			}
 		}
-		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || QuestsAPI.getQuestsAssigneds(getOption(OptionStarterNPC.class).getValue()).size() == 1));
+		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {
 			if (!ar.test(p)) {
 				if (sendMessage) ar.sendReason(p);
@@ -350,7 +356,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
 				Utils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class));
-				Utils.playPluginSound(p, QuestsConfiguration.getFinishSound(), 1);
+				Utils.playPluginSound(p, getOptionValueOrDef(OptionEndSound.class), 1);
 				
 				QuestsAPI.propagateQuestsHandlers(handler -> handler.questFinish(acc, p, this));
 				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, Quest.this));
@@ -395,15 +401,26 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}
 
-	public void saveToFile() throws Exception {
+	public boolean saveToFile() throws Exception {
 		if (!file.exists()) file.createNewFile();
 		YamlConfiguration fc = new YamlConfiguration();
 		
 		BeautyQuests.savingFailure = false;
 		save(fc);
-		DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
-		if (BeautyQuests.savingFailure) BeautyQuests.getInstance().createQuestBackup(file.toPath(), "Error when saving quest.");
-		fc.save(file);
+		if (BeautyQuests.savingFailure) {
+			BeautyQuests.logger.warning("An error occurred while saving quest " + id);
+			return false;
+		}
+		String questData = fc.saveToString();
+		String oldQuestDatas = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		if (questData.equals(oldQuestDatas)) {
+			DebugUtils.logMessage("Quest " + id + " was up-to-date.");
+			return false;
+		}else {
+			DebugUtils.logMessage("Saving quest " + id + " into " + file.getPath());
+			Files.write(file.toPath(), questData.getBytes(StandardCharsets.UTF_8));
+			return true;
+		}
 	}
 	
 	private void save(ConfigurationSection section) throws Exception{

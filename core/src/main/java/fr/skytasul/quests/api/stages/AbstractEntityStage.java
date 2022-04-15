@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -36,24 +37,26 @@ public abstract class AbstractEntityStage extends AbstractStage {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (entity == null || type.equals(entity)) {
-				int amount = getPlayerAmount(acc);
-				if (amount <= 1) {
+				Integer playerAmount = getPlayerAmount(acc);
+				if (playerAmount == null) {
+					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + debugName() + ". This is a bug!");
+				}else if (playerAmount.intValue() <= 1) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", --amount);
+					updateObjective(acc, p, "amount", playerAmount.intValue() - 1);
 				}
 			}
 		}
 	}
 	
-	protected int getPlayerAmount(PlayerAccount acc) {
+	protected Integer getPlayerAmount(PlayerAccount acc) {
 		return getData(acc, "amount");
 	}
 	
 	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
-		datas.put("amount", amount);
 		super.initPlayerDatas(acc, datas);
+		datas.put("amount", amount);
 	}
 	
 	@Override
@@ -63,7 +66,10 @@ public abstract class AbstractEntityStage extends AbstractStage {
 	}
 	
 	protected String getMobsLeft(PlayerAccount acc) {
-		return Utils.getStringFromNameAndAmount(entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false);
+		Integer playerAmount = getPlayerAmount(acc);
+		if (playerAmount == null) return "§cerror: no datas";
+		
+		return Utils.getStringFromNameAndAmount(entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity), QuestsConfiguration.getItemAmountColor(), playerAmount, amount, false);
 	}
 	
 	@Override

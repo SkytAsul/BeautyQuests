@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -69,8 +70,8 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
 		new SelectNPC(cmd.player, () -> {}, npc -> {
 			if (npc == null) return;
-			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+			if (!npc.getQuests().isEmpty()) {
+				Inventories.create(cmd.player, new ChooseQuestGUI(npc.getQuests(), quest -> {
 					if (quest == null) return;
 					Inventories.create(cmd.player, new StagesGUI(null)).edit(quest);
 				}));
@@ -96,8 +97,8 @@ public class Commands {
 		Lang.CHOOSE_NPC_STARTER.send(cmd.sender);
 		new SelectNPC(cmd.player, () -> {}, npc -> {
 			if (npc == null) return;
-			if (QuestsAPI.isQuestStarter(npc)){
-				Inventories.create(cmd.player, new ChooseQuestGUI(QuestsAPI.getQuestsAssigneds(npc), quest -> {
+			if (!npc.getQuests().isEmpty()) {
+				Inventories.create(cmd.player, new ChooseQuestGUI(npc.getQuests(), quest -> {
 					if (quest == null) return;
 					remove(cmd.sender, quest);
 				}));
@@ -617,25 +618,32 @@ public class Commands {
 	@Cmd (permission = "manage")
 	public void migrateDatas(CommandContext cmd) {
 		if (!(PlayersManager.manager instanceof PlayersManagerYAML)) {
-			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a the DB system if you're already using the DB system.");
+			cmd.sender.sendMessage("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
 			return;
 		}
-		Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
-		cmd.sender.sendMessage("§aConnecting to the database.");
-		if (db.openConnection()) {
-			cmd.sender.sendMessage("§aConnection to database etablished.");
-		}else {
-			cmd.sender.sendMessage("§cConnection to database has failed. Aborting.");
-			db.closeConnection();
-			db = null;
-			return;
-		}
-		try {
-			cmd.sender.sendMessage(PlayersManagerDB.migrate(db, (PlayersManagerYAML) PlayersManager.manager));
-		}catch (Exception e) {
-			e.printStackTrace();
-			cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted.");
-		}
+		Utils.runAsync(() -> {
+			cmd.sender.sendMessage("§aConnecting to the database.");
+			Database db = null;
+			try {
+				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+				db.testConnection();
+				cmd.sender.sendMessage("§aConnection to database etablished.");
+				final Database fdb = db;
+				Utils.runSync(() -> {
+					cmd.sender.sendMessage("§aStarting migration...");
+					try {
+						cmd.sender.sendMessage(PlayersManagerDB.migrate(fdb, (PlayersManagerYAML) PlayersManager.manager));
+					}catch (Exception ex) {
+						cmd.sender.sendMessage("§cAn exception occured during migration. Process aborted. " + ex.getMessage());
+						ex.printStackTrace();
+					}
+				});
+			}catch (SQLException ex) {
+				cmd.sender.sendMessage("§cConnection to database has failed. Aborting. " + ex.getMessage());
+				BeautyQuests.logger.severe("An error occurred while connecting to the database for datas migration.", ex);
+				if (db != null) db.closeConnection();
+			}
+		});
 	}
 
 	@Cmd(permission = "help")

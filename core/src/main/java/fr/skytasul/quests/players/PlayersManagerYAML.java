@@ -270,7 +270,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		
 		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
 			BeautyQuests.logger.warning(
-					"⚠ WARNING - " + identifiersIndex.size() + " are registered on this server."
+					"⚠ WARNING - " + identifiersIndex.size() + " players are registered on this server."
 					+ " It is recommended to switch to a SQL database setup in order to keep proper performances and scalability."
 					+ " In order to do that, setup your database credentials in config.yml (without enabling it) and run the command"
 					+ " /quests migrateDatas. Then follow steps on screen.");
@@ -278,12 +278,16 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	@Override
-	public void save() {
+	public synchronized void save() {
 		DebugUtils.logMessage("Saving " + loadedAccounts.size() + " loaded accounts and " + identifiersIndex.size() + " identifiers.");
 
 		BeautyQuests.getInstance().getDataFile().set("players", identifiersIndex);
 
-		for (PlayerAccount acc : loadedAccounts.values()) {
+		// as the save can take a few seconds and MAY be done asynchronously,
+		// it is possible that the "loadedAccounts" map is being edited concurrently.
+		// therefore, we create a new list to avoid this issue.
+		ArrayList<PlayerAccount> accountToSave = new ArrayList<>(loadedAccounts.values());
+		for (PlayerAccount acc : accountToSave) {
 			try {
 				savePlayerFile(acc);
 			}catch (Exception e) {

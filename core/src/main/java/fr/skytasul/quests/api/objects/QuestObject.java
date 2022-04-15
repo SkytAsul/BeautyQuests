@@ -45,6 +45,10 @@ public abstract class QuestObject implements Cloneable {
 		return getCreator().id;
 	}
 	
+	public String debugName() {
+		return getClass().getSimpleName() + (quest == null ? ", unknown quest" : (", quest " + quest.getID()));
+	}
+	
 	@Override
 	public abstract QuestObject clone();
 	
@@ -98,7 +102,7 @@ public abstract class QuestObject implements Cloneable {
 		String id = (String) map.get("id");
 		if (id != null) creator = registry.getByID(id);
 		
-		if (creator == null) {
+		if (creator == null && map.containsKey("class")) {
 			String className = (String) map.get("class");
 			try {
 				creator = registry.getByClass(Class.forName(className));
