@@ -1,6 +1,9 @@
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?color=green)
 [![Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/badge/icon)](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
 [![Spiget Downloads](https://img.shields.io/spiget/downloads/39255)](https://www.spigotmc.org/resources/beautyquests.39255/)
+![bStats Servers](https://img.shields.io/bstats/servers/7460)
+![bStats Players](https://img.shields.io/bstats/players/7460)
 [![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
 
 # BeautyQuests
@@ -48,11 +51,12 @@ In *pom.xml*, add this to the `repositories` section:
   <url>https://repo.codemc.org/repository/maven-public</url>
 </repository>
 ```
-And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.17.4`, `0.18.0-SNAPSHOT`...)
+And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.19.2`, `0.19.3-SNAPSHOT`...)
 ```xml
 <dependency>
   <groupId>fr.skytasul</groupId>
   <artifactId>beautyquests-core</artifactId>
   <version>VERSION</version>
+  <scope>compile</scope>
 </dependency>
 ```
