@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.ParticleEffect;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class AdminMode {
 
@@ -23,12 +24,12 @@ public class AdminMode {
 	public static void toggle(CommandSender sender){
 		if (senders.add(sender)) {
 			Lang.ADMIN_MODE_ENTERED.send(sender);
-			if (sender instanceof Player)
+			if (sender instanceof Player && NMS.getMCVersion() >= 9)
 				enterParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}else {
 			senders.remove(sender);
 			Lang.ADMIN_MODE_LEFT.send(sender);
-			if (sender instanceof Player && senders.stream().anyMatch(Player.class::isInstance))
+			if (sender instanceof Player && NMS.getMCVersion() >= 9 && senders.stream().anyMatch(Player.class::isInstance))
 				leaveParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}
 	}
