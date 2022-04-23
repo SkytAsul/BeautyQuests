@@ -135,8 +135,12 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					int i = -1;
 					boolean noSplit = after.isEmpty();
 					if (!noSplit) {
-						i = Integer.parseInt(after.substring(1)) - 1;
-						if (i < 0) return "§cindex must be positive";
+						try {
+							i = Integer.parseInt(after.substring(1)) - 1;
+						}catch (NumberFormatException ex) {
+							i = -1;
+						}
+						if (i < 0) return "§cindex must be a positive integer";
 					}
 					
 					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
@@ -157,6 +161,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						return "§c" + ex.getMessage();
 					}
 				}catch (Exception ex) {
+					BeautyQuests.logger.warning("An error occurred while parsing palceholder " + identifier + " for " + p.getName(), ex);
 					return "§cinvalid placeholder";
 				}
 			}finally {
