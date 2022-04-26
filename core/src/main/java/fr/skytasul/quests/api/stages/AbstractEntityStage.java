@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.stages;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -60,9 +61,9 @@ public abstract class AbstractEntityStage extends AbstractStage {
 	}
 	
 	@Override
-	protected void serialize(Map<String, Object> map) {
-		map.put("entityType", entity == null ? "any" : entity.name());
-		map.put("amount", amount);
+	protected void serialize(ConfigurationSection section) {
+		section.set("entityType", entity == null ? "any" : entity.name());
+		section.set("amount", amount);
 	}
 	
 	protected String getMobsLeft(PlayerAccount acc) {

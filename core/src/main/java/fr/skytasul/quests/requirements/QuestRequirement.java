@@ -54,6 +54,12 @@ public class QuestRequirement extends AbstractRequirement {
 
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
+		if (QuestsAPI.getQuests().getQuests().isEmpty()) {
+			event.getGUI().remove(this);
+			event.reopenGUI();
+			return;
+		}
+		
 		new ChooseQuestGUI(QuestsAPI.getQuests().getQuests(), quest -> {
 			this.questId = quest.getID();
 			event.updateItemLore(getLore());

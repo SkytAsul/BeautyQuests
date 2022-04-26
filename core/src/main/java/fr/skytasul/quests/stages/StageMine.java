@@ -1,12 +1,11 @@
 package fr.skytasul.quests.stages;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -101,26 +100,16 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 	}
 
 	@Override
-	protected void serialize(Map<String, Object> map){
-		super.serialize(map);
-		if (placeCancelled) map.put("placeCancelled", placeCancelled);
+	protected void serialize(ConfigurationSection section) {
+		super.serialize(section);
+		if (placeCancelled) section.set("placeCancelled", placeCancelled);
 	}
 	
-	public static StageMine deserialize(Map<String, Object> map, QuestBranch branch) {
-		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
+	public static StageMine deserialize(ConfigurationSection section, QuestBranch branch) {
+		StageMine stage = new StageMine(branch, new HashMap<>());
+		stage.deserialize(section);
 
-		if (map.containsKey("blocks")) {
-			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("blocks");
-			for (int i = 0; i < list.size(); i++) {
-				Map<String, Object> blockData = list.get(i);
-				objects.put(i, new AbstractMap.SimpleEntry<>(new BQBlock.BQBlockMaterial(XMaterial.valueOf((String) blockData.get("type"))), (int) blockData.get("amount")));
-			}
-		}
-
-		StageMine stage = new StageMine(branch, objects);
-		stage.deserialize(map);
-
-		if (map.containsKey("placeCancelled")) stage.placeCancelled = (boolean) map.get("placeCancelled");
+		if (section.contains("placeCancelled")) stage.placeCancelled = section.getBoolean("placeCancelled");
 		return stage;
 	}
 

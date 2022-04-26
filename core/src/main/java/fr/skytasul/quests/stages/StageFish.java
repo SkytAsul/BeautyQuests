@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,14 +63,17 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 		return comparisons.isSimilar(object, (ItemStack) other);
 	}
 
+	@Override
 	protected String getName(ItemStack object) {
 		return ItemUtils.getName(object, true);
 	}
 
+	@Override
 	protected Object serialize(ItemStack object) {
 		return object.serialize();
 	}
 
+	@Override
 	protected ItemStack deserialize(Object object) {
 		return ItemStack.deserialize((Map<String, Object>) object);
 	}
@@ -80,30 +84,19 @@ public class StageFish extends AbstractCountableStage<ItemStack> {
 	}
 	
 	@Override
-	protected void serialize(Map<String, Object> map) {
-		super.serialize(map);
-		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
+	protected void serialize(ConfigurationSection section) {
+		super.serialize(section);
+		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 	
-	public static StageFish deserialize(Map<String, Object> map, QuestBranch branch) {
-		Map<Integer, Entry<ItemStack, Integer>> objects = new HashMap<>();
-
-		if (map.containsKey("items")) {
-			List<ItemStack> list = (List<ItemStack>) map.get("items");
-			for (int i = 0; i < list.size(); i++) {
-				ItemStack is = list.get(i);
-				is.setAmount(1);
-				objects.put(i, new AbstractMap.SimpleEntry<>(is, is.getAmount()));
-			}
-		}
-		
+	public static StageFish deserialize(ConfigurationSection section, QuestBranch branch) {
 		ItemComparisonMap comparisons;
-		if (map.containsKey("itemComparisons")) {
-			comparisons = new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons"));
+		if (section.contains("itemComparisons")) {
+			comparisons = new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false));
 		}else comparisons = new ItemComparisonMap();
 
-		StageFish stage = new StageFish(branch, objects, comparisons);
-		stage.deserialize(map);
+		StageFish stage = new StageFish(branch, new HashMap<>(), comparisons);
+		stage.deserialize(section);
 
 		return stage;
 	}

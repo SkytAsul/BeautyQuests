@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.Lang;
@@ -64,9 +66,7 @@ public class Dialog implements Cloneable {
 		return clone;
 	}
 	
-	public Map<String, Object> serialize(){
-		Map<String, Object> map = new HashMap<>();
-		
+	public void serialize(ConfigurationSection section){
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (int i = 0; i < messages.size(); i++) {
 			Map<String, Object> msgm = new HashMap<>();
@@ -74,24 +74,20 @@ public class Dialog implements Cloneable {
 			msgm.put("message", messages.get(i).serialize());
 			ls.add(msgm);
 		}
-		map.put("msgs", ls);
-		if (npcName != null) map.put("npcName", npcName);
-		if (skippable != null) map.put("skippable", skippable);
-		
-		return map;
+		section.set("msgs", ls);
+		if (npcName != null) section.set("npcName", npcName);
+		if (skippable != null) section.set("skippable", skippable);
 	}
 	
-	public static Dialog deserialize(Map<String, Object> map){
-		
+	public static Dialog deserialize(ConfigurationSection section) {
 		NumberedList<Message> tmpMessages = new NumberedList<>();
-		List<Map<String, Object>> serializedMessages = (List<Map<String, Object>>) map.get("msgs");
-		for (Map<String, Object> msg : serializedMessages) {
+		for (Map<?, ?> msg : section.getMapList("msgs")) {
 			int id = (int) msg.get("id");
 			tmpMessages.set(id, Message.deserialize((Map<String, Object>) msg.get("message")));
 		}
 		Dialog di = new Dialog(tmpMessages.toList());
-		if (map.containsKey("npcName")) di.npcName = (String) map.get("npcName");
-		if (map.containsKey("skippable")) di.skippable = (Boolean) map.get("skippable");
+		if (section.contains("npcName")) di.npcName = section.getString("npcName");
+		if (section.contains("skippable")) di.skippable = section.getBoolean("skippable");
 		
 		return di;
 	}

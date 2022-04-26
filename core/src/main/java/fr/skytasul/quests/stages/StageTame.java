@@ -1,7 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -34,9 +33,9 @@ public class StageTame extends AbstractEntityStage {
 		return Lang.SCOREBOARD_TAME.format(getMobsLeft(acc));
 	}
 	
-	public static StageTame deserialize(Map<String, Object> map, QuestBranch branch) {
-		String type = (String) map.get("entityType");
-		return new StageTame(branch, "any".equals(type) ? null : EntityType.valueOf(type), (int) map.get("amount"));
+	public static StageTame deserialize(ConfigurationSection section, QuestBranch branch) {
+		String type = section.getString("entityType");
+		return new StageTame(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
 	
 	public static class Creator extends AbstractEntityStage.AbstractCreator<StageTame> {

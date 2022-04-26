@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -237,14 +238,6 @@ public abstract class AbstractStage implements Listener{
 		return stageDatas == null ? null : (T) stageDatas.get(dataKey);
 	}
 
-	@Deprecated // for migration only, TODO remove
-	protected void setData(PlayerAccount acc, String dataKey, Object dataValue) {
-		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
-		if (datas == null) datas = new HashMap<>();
-		datas.put(dataKey, dataValue);
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-	}
-
 	/**
 	 * Called when the stage has to be unloaded
 	 */
@@ -276,25 +269,31 @@ public abstract class AbstractStage implements Listener{
 		}
 	}
 	
-	protected abstract void serialize(Map<String, Object> map);
+	/**
+	 * @deprecated for removal, {@link #serialize(ConfigurationSection)} should be used instead.
+	 */
+	@Deprecated
+	protected void serialize(Map<String, Object> map) {}
 	
-	public final Map<String, Object> serialize(){
+	protected void serialize(ConfigurationSection section) {
 		Map<String, Object> map = new HashMap<>();
-		
-		if (branch.isRegularStage(this)) map.put("order", branch.getID(this));
-		map.put("stageType", type.id);
-		map.put("customText", customText);
-		if (startMessage != null) map.put("text", startMessage);
-		
-		if (!rewards.isEmpty()) map.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
-		if (!validationRequirements.isEmpty()) map.put("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
-		
 		serialize(map);
-		return map;
+		map.forEach(section::set);
 	}
 	
-	public static AbstractStage deserialize(Map<String, Object> map, QuestBranch branch) throws ReflectiveOperationException{
-		String typeID = (String) map.get("stageType");
+	public final void save(ConfigurationSection section) {
+		serialize(section);
+		
+		section.set("stageType", type.id);
+		section.set("customText", customText);
+		if (startMessage != null) section.set("text", startMessage);
+		
+		if (!rewards.isEmpty()) section.set("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
+		if (!validationRequirements.isEmpty()) section.set("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
+	}
+	
+	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {
+		String typeID = section.getString("stageType");
 		
 		Optional<StageType<?>> stageTypeOptional = QuestsAPI.stages.stream().filter(type -> type.id.equals(typeID)).findAny();
 		if (!stageTypeOptional.isPresent()) {
@@ -308,11 +307,11 @@ public abstract class AbstractStage implements Listener{
 			return null;
 		}
 
-		AbstractStage st = stageType.deserializationSupplier.supply(map, branch);
-		if (map.containsKey("text")) st.startMessage = (String) map.get("text");
-		if (map.containsKey("customText")) st.customText = (String) map.get("customText");
-		if (map.containsKey("rewards")) st.setRewards(QuestObject.deserializeList((List<Map<?, ?>>) map.get("rewards"), AbstractReward::deserialize));
-		if (map.containsKey("requirements")) st.setValidationRequirements(QuestObject.deserializeList((List<Map<?, ?>>) map.get("requirements"), AbstractRequirement::deserialize));
+		AbstractStage st = stageType.loader.supply(section, branch);
+		if (section.contains("text")) st.startMessage = section.getString("text");
+		if (section.contains("customText")) st.customText = section.getString("customText");
+		if (section.contains("rewards")) st.setRewards(QuestObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize));
+		if (section.contains("requirements")) st.setValidationRequirements(QuestObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize));
 		
 		return st;
 	}

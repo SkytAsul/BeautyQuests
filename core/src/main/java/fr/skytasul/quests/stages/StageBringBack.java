@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -133,22 +134,22 @@ public class StageBringBack extends StageNPC{
 	}
 	
 	@Override
-	public void serialize(Map<String, Object> map) {
-		super.serialize(map);
-		map.put("items", items);
-		if (customMessage != null) map.put("customMessage", customMessage);
-		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
+	public void serialize(ConfigurationSection section) {
+		super.serialize(section);
+		section.set("items", items);
+		if (customMessage != null) section.set("customMessage", customMessage);
+		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 	
-	public static StageBringBack deserialize(Map<String, Object> map, QuestBranch branch) {
-		ItemStack[] items = ((List<ItemStack>) map.get("items")).toArray(new ItemStack[0]);
-		String customMessage = (String) map.getOrDefault("customMessage", null);
+	public static StageBringBack deserialize(ConfigurationSection section, QuestBranch branch) {
+		ItemStack[] items = section.getList("items").toArray(new ItemStack[0]);
+		String customMessage = section.getString("customMessage", null);
 		ItemComparisonMap comparisons;
-		if (map.containsKey("itemComparisons")) {
-			comparisons = new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons"));
+		if (section.contains("itemComparisons")) {
+			comparisons = new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false));
 		}else comparisons = new ItemComparisonMap();
 		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
-		st.loadDatas(map);
+		st.loadDatas(section);
 		return st;
 	}
 

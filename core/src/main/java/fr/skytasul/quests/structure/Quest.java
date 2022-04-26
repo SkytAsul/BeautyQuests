@@ -414,8 +414,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			}
 		}
 		
+		manager.save(section.createSection("manager"));
 		section.set("id", id);
-		section.set("manager", manager.serialize());
 	}
 	
 

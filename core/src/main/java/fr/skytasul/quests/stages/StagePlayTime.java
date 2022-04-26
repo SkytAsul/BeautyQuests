@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -107,12 +108,12 @@ public class StagePlayTime extends AbstractStage {
 	}
 
 	@Override
-	protected void serialize(Map<String, Object> map) {
-		map.put("playTicks", playTicks);
+	protected void serialize(ConfigurationSection section) {
+		section.set("playTicks", playTicks);
 	}
 	
-	public static StagePlayTime deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StagePlayTime(branch, Utils.parseLong(map.get("playTicks")));
+	public static StagePlayTime deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StagePlayTime(branch, section.getLong("playTicks"));
 	}
 	
 	public static class Creator extends StageCreation<StagePlayTime> {

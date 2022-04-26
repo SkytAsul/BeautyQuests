@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,6 +34,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		super(branch, blocks);
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_PLACE.format(super.descriptionLine(acc, source));
 	}
@@ -53,24 +55,24 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 		return super.objectApplies(object, other);
 	}
 	
+	@Override
 	protected String getName(BQBlock object) {
 		return MinecraftNames.getMaterialName(object.getMaterial());
 	}
 
+	@Override
 	protected Object serialize(BQBlock object) {
 		return object.getAsString();
 	}
 
+	@Override
 	protected BQBlock deserialize(Object object) {
 		return BQBlock.fromString((String) object);
 	}
 	
-	public static StagePlaceBlocks deserialize(Map<String, Object> map, QuestBranch branch) {
-		Map<Integer, Entry<BQBlock, Integer>> objects = new HashMap<>();
-
-		StagePlaceBlocks stage = new StagePlaceBlocks(branch, objects);
-		stage.deserialize(map);
-		
+	public static StagePlaceBlocks deserialize(ConfigurationSection section, QuestBranch branch) {
+		StagePlaceBlocks stage = new StagePlaceBlocks(branch, new HashMap<>());
+		stage.deserialize(section);
 		return stage;
 	}
 
@@ -82,6 +84,7 @@ public class StagePlaceBlocks extends AbstractCountableStage<BQBlock> {
 			super(line, ending);
 			
 			line.setItem(7, ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString()), new StageRunnable() {
+				@Override
 				public void run(Player p, ItemStack item) {
 					BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
 					blocksGUI.setBlocksFromMap(blocks);

@@ -1,11 +1,10 @@
 package fr.skytasul.quests.stages;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -52,14 +51,17 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		}
 	}
 	
+	@Override
 	protected boolean objectApplies(Mob<?> object, Object other) {
 		return object.applies(other);
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_MOBS.format(super.descriptionLine(acc, source));
 	}
 	
+	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
@@ -72,37 +74,32 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		return object.clone();
 	}
 	
+	@Override
 	protected String getName(Mob<?> object) {
 		return object.getName();
 	}
 
+	@Override
 	protected Object serialize(Mob<?> object) {
 		return object.serialize();
 	}
 
+	@Override
 	protected Mob<?> deserialize(Object object) {
 		return Mob.deserialize((Map<String, Object>) object);
 	}
 
-	protected void serialize(Map<String, Object> map){
-		super.serialize(map);
-		if (shoot) map.put("shoot", true);
+	@Override
+	protected void serialize(ConfigurationSection section) {
+		super.serialize(section);
+		if (shoot) section.set("shoot", true);
 	}
 	
-	public static StageMobs deserialize(Map<String, Object> map, QuestBranch branch) {
-		Map<Integer, Entry<Mob<?>, Integer>> objects = new HashMap<>();
-		if (map.containsKey("mobs")) {
-			List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("mobs");
-			for (int i = 0; i < list.size(); i++) {
-				Map<String, Object> serializedMob = list.get(i);
-				Mob<?> mob = Mob.deserialize(serializedMob);
-				objects.put(i, new AbstractMap.SimpleEntry<>(mob, (int) serializedMob.get("amount")));
-			}
-		}
-		StageMobs stage = new StageMobs(branch, objects);
-		stage.deserialize(map);
+	public static StageMobs deserialize(ConfigurationSection section, QuestBranch branch) {
+		StageMobs stage = new StageMobs(branch, new HashMap<>());
+		stage.deserialize(section);
 
-		if (map.containsKey("shoot")) stage.shoot = (boolean) map.get("shoot");
+		if (section.contains("shoot")) stage.shoot = section.getBoolean("shoot");
 		return stage;
 	}
 

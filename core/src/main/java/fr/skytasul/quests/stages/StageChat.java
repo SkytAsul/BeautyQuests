@@ -1,8 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -40,10 +39,12 @@ public class StageChat extends AbstractStage{
 		this.ignoreCase = ignoreCase;
 	}
 
+	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Lang.SCOREBOARD_CHAT.format(text);
 	}
 	
+	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{text};
 	}
@@ -81,16 +82,17 @@ public class StageChat extends AbstractStage{
 	}
 
 	
-	public void serialize(Map<String, Object> map){
+	@Override
+	public void serialize(ConfigurationSection section) {
 		Validate.notNull(text, "Text cannot be null");
-		map.put("writeText", text);
-		if (!cancel) map.put("cancel", false);
-		if (ignoreCase) map.put("ignoreCase", true);
-		if (!placeholders) map.put("placeholders", false);
+		section.set("writeText", text);
+		if (!cancel) section.set("cancel", false);
+		if (ignoreCase) section.set("ignoreCase", true);
+		if (!placeholders) section.set("placeholders", false);
 	}
 	
-	public static StageChat deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageChat(branch, (String) map.get("writeText"), map.containsKey("cancel") ? (boolean) map.get("cancel") : true, map.containsKey("ignoreCase") ? (boolean) map.get("ignoreCase") : false, (boolean) map.getOrDefault("placeholders", true));
+	public static StageChat deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StageChat(branch, section.getString("writeText"), section.getBoolean("cancel", true), section.getBoolean("ignoreCase", false), section.getBoolean("placeholders", true));
 	}
 
 	public static class Creator extends StageCreation<StageChat> {

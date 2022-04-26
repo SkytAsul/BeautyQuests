@@ -97,6 +97,10 @@ public class QuestPool implements Comparable<QuestPool> {
 		return requirements;
 	}
 	
+	public List<Quest> getQuests() {
+		return quests;
+	}
+	
 	public void addQuest(Quest quest) {
 		quests.add(quest);
 	}
