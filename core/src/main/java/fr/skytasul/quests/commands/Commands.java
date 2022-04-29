@@ -26,7 +26,7 @@ import fr.skytasul.quests.api.stages.Dialogable;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.creation.stages.StagesGUI;
+import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
@@ -56,15 +56,25 @@ import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class Commands {
 	
-	@Cmd(permission = "create", player = true, noEditorInventory = true)
+	@Cmd (permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){
-		Inventories.create(cmd.player, new StagesGUI(null));
+		QuestCreationSession session = new QuestCreationSession();
+		if (cmd.args.length == 1) {
+			Integer id = Utils.parseInt(cmd.sender, cmd.get(0));
+			if (id == null) return;
+			if (QuestsAPI.getQuests().getQuest(id) != null) {
+				Utils.sendMessage(cmd.sender, "Invalid quest ID: another quest exists with ID {0}", id);
+				return;
+			}
+			session.setCustomID(id);
+		}
+		session.openMainGUI(cmd.player);
 	}
 	
 	@Cmd (permission = "edit", args = "QUESTSID", player = true, noEditorInventory = true)
 	public void edit(CommandContext cmd){
 		if (cmd.args.length >= 1) {
-			Inventories.create(cmd.player, new StagesGUI(null)).edit((Quest) cmd.args[0]);
+			new QuestCreationSession(cmd.get(0)).openMainGUI(cmd.player);
 			return;
 		}
 		Lang.CHOOSE_NPC_STARTER.send(cmd.player);
@@ -73,7 +83,7 @@ public class Commands {
 			if (!npc.getQuests().isEmpty()) {
 				Inventories.create(cmd.player, new ChooseQuestGUI(npc.getQuests(), quest -> {
 					if (quest == null) return;
-					Inventories.create(cmd.player, new StagesGUI(null)).edit(quest);
+					new QuestCreationSession(quest).openMainGUI(cmd.player);
 				}));
 			}else {
 				Lang.NPC_NOT_QUEST.send(cmd.player);

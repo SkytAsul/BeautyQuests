@@ -51,6 +51,16 @@ public class QuestsManager implements Iterable<Quest> {
 		}
 	}
 	
+	public int getFreeQuestID() {
+		int id = getLastID();
+		
+		if (quests.stream().noneMatch(quest -> quest.getID() == id)) return id;
+		
+		BeautyQuests.logger.warning("Quest id " + id + " already taken, this should not happen.");
+		incrementLastID();
+		return getFreeQuestID();
+	}
+	
 	public int getLastID() {
 		return lastID.get();
 	}
