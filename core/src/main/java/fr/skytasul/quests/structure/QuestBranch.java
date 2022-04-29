@@ -289,7 +289,8 @@ public class QuestBranch {
 			try{
 				ConfigurationSection stageSection = endSection.createSection(Integer.toString(i++));
 				en.getKey().save(stageSection);
-				stageSection.set("branchLinked", manager.getID(en.getValue()));
+				QuestBranch branchLinked = en.getValue();
+				if (branchLinked != null) stageSection.set("branchLinked", branchLinked.getID());
 			}catch (Exception ex){
 				BeautyQuests.logger.severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getID(), ex);
 				BeautyQuests.savingFailure = true;
@@ -362,7 +363,8 @@ public class QuestBranch {
 						BeautyQuests.loadingFailure = true;
 						return false;
 					}
-					addEndStage(st, manager.getBranch(stage.getInt("branchLinked")));
+					QuestBranch branchLinked = stage.contains("branchLinked") ? manager.getBranch(stage.getInt("branchLinked")) : null;
+					addEndStage(st, branchLinked);
 				}catch (Exception ex){
 					BeautyQuests.logger.severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID(), ex);
 					BeautyQuests.loadingFailure = true;

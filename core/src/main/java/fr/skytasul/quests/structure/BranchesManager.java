@@ -1,6 +1,7 @@
 package fr.skytasul.quests.structure;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,8 @@ public class BranchesManager{
 		for (Entry<Integer, QuestBranch> en : branches.entrySet()){
 			if (en.getValue() == branch) return en.getKey();
 		}
-		return 666;
+		BeautyQuests.logger.severe("Trying to get the ID of a branch not in manager of quest " + quest.getID());
+		return -1;
 	}
 	
 	public List<QuestBranch> getBranches() {
@@ -141,24 +143,32 @@ public class BranchesManager{
 			branchesSection = section.getConfigurationSection("branches");
 		}
 
+		// it is needed to first add all branches to branches manager
+		// in order for branching stages to be able to access all branches
+		// during QuestBranch#load, no matter in which order those branches are loaded
+		Map<QuestBranch, ConfigurationSection> tmpBranches = new HashMap<>();
 		for (String key : branchesSection.getKeys(false)) {
 			try {
 				int id = Integer.parseInt(key);
-				try {
-					QuestBranch branch = new QuestBranch(bm);
-					bm.branches.put(id, branch);
-					if (!branch.load(branchesSection.getConfigurationSection(key))) {
-						BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + id + " for the quest " + qu.getID() + " (false return)");
-						BeautyQuests.loadingFailure = true;
-						return null;
-					}
-				}catch (Exception ex) {
-					BeautyQuests.logger.severe("Error when deserializing the branch " + id + " for the quest " + qu.getID(), ex);
+				QuestBranch branch = new QuestBranch(bm);
+				bm.branches.put(id, branch);
+				tmpBranches.put(branch, branchesSection.getConfigurationSection(key));
+			}catch (NumberFormatException ex) {
+				BeautyQuests.logger.severe("Cannot parse branch ID " + key + " for quest " + qu.getID());
+				BeautyQuests.loadingFailure = true;
+				return null;
+			}
+		}
+		
+		for (QuestBranch branch : tmpBranches.keySet()) {
+			try {
+				if (!branch.load(tmpBranches.get(branch))) {
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + branch.getID() + " for the quest " + qu.getID() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
-			}catch (NumberFormatException ex) {
-				BeautyQuests.logger.severe("Cannot parse branch ID " + key + " for quest " + qu.getID());
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("Error when deserializing the branch " + branch.getID() + " for the quest " + qu.getID(), ex);
 				BeautyQuests.loadingFailure = true;
 				return null;
 			}
