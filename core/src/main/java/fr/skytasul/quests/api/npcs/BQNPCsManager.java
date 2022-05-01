@@ -17,7 +17,7 @@ import fr.skytasul.quests.api.events.BQNPCClickEvent;
 
 public abstract class BQNPCsManager implements Listener {
 	
-	private final Map<Integer, BQNPC> npcs = new HashMap<>();
+	protected final Map<Integer, BQNPC> npcs = new HashMap<>();
 	
 	public abstract int getTimeToWaitForNPCs();
 	
