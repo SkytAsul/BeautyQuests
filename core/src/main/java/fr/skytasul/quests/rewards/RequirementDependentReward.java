@@ -23,6 +23,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -39,6 +40,20 @@ public class RequirementDependentReward extends AbstractReward {
 	public RequirementDependentReward(List<AbstractRequirement> requirements, List<AbstractReward> rewards) {
 		this.requirements = requirements;
 		this.rewards = rewards;
+	}
+	
+	@Override
+	public void attach(Quest quest) {
+		super.attach(quest);
+		requirements.forEach(req -> req.attach(quest));
+		rewards.forEach(rew -> rew.attach(quest));
+	}
+	
+	@Override
+	public void detach() {
+		super.detach();
+		requirements.forEach(AbstractRequirement::detach);
+		rewards.forEach(AbstractReward::detach);
 	}
 	
 	@Override
