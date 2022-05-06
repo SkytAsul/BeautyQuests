@@ -40,6 +40,7 @@ msg:
   writeMessage: '§a输入发送给玩家的消息'
   writeStartMessage: '§a输入在开始任务时发送给玩家的消息，输入“null”则发送默认消息，输入“none”则不发送消息：'
   writeEndMsg: '§a输入任务结束时发送的消息，输入“null” 则发送默认消息，输入“none”则不发送。你可以使用 "{0}"显示获得的奖励。'
+  writeEndSound: '§a输入在任务结束时播放给玩家的音效名，输入“null”则使用默认音效，输入“none”则不播放音效：'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
   moveToTeleportPoint: 前往指定的传送点.
@@ -424,6 +425,8 @@ inv:
     editQuestName: '§l编辑任务'
     endMessage: '§a编辑任务结束消息'
     endMessageLore: 将在任务结束时发送给玩家的消息。
+    endSound: '§e编辑结束音效'
+    endSoundLore: 在任务结束时播放的音效。
     startMessage: '§e编辑开始消息'
     startMessageLore: 任务开始时发送给玩家的消息。
     startDialog: '§e编辑任务开场白'
@@ -735,6 +738,7 @@ misc:
     water: 水桶
     lava: 岩浆桶
     milk: 牛奶桶
+    snow: 雪桶
   click:
     right: 右击
     left: 左击

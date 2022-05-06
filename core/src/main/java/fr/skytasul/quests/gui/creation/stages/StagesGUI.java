@@ -318,6 +318,8 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
 	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.STICK, Lang.stageInteract.toString());
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
+	private static final ItemStack stageMelt = ItemUtils.item(XMaterial.FURNACE, Lang.stageMelt.toString());
+	private static final ItemStack stageEnchant = ItemUtils.item(XMaterial.ENCHANTING_TABLE, Lang.stageEnchant.toString());
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
@@ -337,6 +339,8 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType<>("CHAT", StageChat.class, Lang.Chat.name(), StageChat::deserialize, stageChat, StageChat.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("INTERACT", StageInteract.class, Lang.Interact.name(), StageInteract::deserialize, stageInteract, StageInteract.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("FISH", StageFish.class, Lang.Fish.name(), StageFish::deserialize, stageFish, StageFish.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("MELT", StageMelt.class, Lang.Melt.name(), StageMelt::deserialize, stageMelt, StageMelt.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("ENCHANT", StageEnchant.class, Lang.Enchant.name(), StageEnchant::deserialize, stageEnchant, StageEnchant.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("CRAFT", StageCraft.class, Lang.Craft.name(), StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));

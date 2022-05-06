@@ -40,6 +40,7 @@ msg:
   writeMessage: '§aÉcrivez le message qui sera envoyé au joueur'
   writeStartMessage: '§aÉcrivez le message qui sera envoyé au début de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas :'
   writeEndMsg: '§aÉcrivez le message qui sera envoyé à la fin de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas. Vous pouvez utiliser "{0}" qui sera remplacé par les récompenses obtenues.'
+  writeEndSound: '§aÉcrivez le nom du son qui sera joué au joueur à la fin de la quête, "null" si vous voulez le son par défaut ou "none" si vous n''en voulez pas :'
   writeDescriptionText: '§aEcrivez le texte qui décrira le but de l''étape :'
   writeStageText: '§aEcrivez le texte qui sera transmis au joueur au début de l''étape :'
   moveToTeleportPoint: '§aAllez au lieu de téléportation désiré.'
@@ -322,6 +323,8 @@ inv:
     talkChat: '§aEcrire dans le chat'
     interact: '§aCliquez sur un bloc'
     fish: '§aPêcher'
+    melt: '§6Cuire des items'
+    enchant: '§dEnchanter des items'
     craft: '§aFabriquer un objet'
     bucket: '§aRemplir des seaux'
     location: '§aAller à un endroit'
@@ -352,6 +355,8 @@ inv:
     selectBlockMaterial: '§eSélectionner le type de block'
     leftClick: Clic gauche nécessaire
     editFishes: '§eModifier les poissons nécessaires'
+    editItemsToMelt: '§eModifier les items à cuire'
+    editItemsToEnchant: '§eModifier les items à enchanter'
     editItem: '§eEditer l''objet à fabriquer'
     editBucketType: '§eModifier le type de seau à remplir'
     editBucketAmount: '§eModifier la quantité de seaux à remplir'
@@ -424,6 +429,8 @@ inv:
     editQuestName: '§lModifier la quête'
     endMessage: '§eModifier le message de fin'
     endMessageLore: Message qui sera envoyé au joueur à la fin de la quête.
+    endSound: '§eModifier le son de fin'
+    endSoundLore: Son qui sera joué à la fin de la quête.
     startMessage: '§eModifier le message de départ'
     startMessageLore: Message qui sera envoyé au joueur au début de la quête.
     startDialog: '§eModifier le dialogue de début'
@@ -659,6 +666,8 @@ scoreboard:
     interact: '§eCliquez sur le bloc à §6{0}'
     interactMaterial: '§eCliquez sur un bloc §6{0}§e'
     fish: '§ePêchez §6{0}'
+    melt: '§eCuis §6{0}'
+    enchant: '§eEnchante §6{0}'
     craft: '§eFabriquez §6{0}'
     bucket: '§eRemplissez §6{0}'
     location: '§eAllez à §6{0}§e, §6{1}§e, §6{2}§e dans §6{3}'
@@ -704,6 +713,8 @@ misc:
     chat: Parler dans le chat
     interact: Intéragir avec un bloc
     Fish: Pêcher
+    Melt: Cuire des items
+    Enchant: Enchanter des items
     Craft: Fabriquer un objet
     Bucket: Remplir un seau
     location: Trouver un endroit

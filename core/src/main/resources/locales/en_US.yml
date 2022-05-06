@@ -355,6 +355,8 @@ inv:
     talkChat: §aWrite in chat
     interact: §aInteract with block
     fish: §aCatch fishes
+    melt: §6Melt items
+    enchant: §dEnchant items
     craft: §aCraft item
     bucket: §aFill buckets
     location: §aGo to location
@@ -385,6 +387,8 @@ inv:
     selectBlockMaterial: §eSelect block material
     leftClick: Click must be left-click
     editFishes: §eEdit fishes to catch
+    editItemsToMelt: §eEdit items to melt
+    editItemsToEnchant: §eEdit items to enchant
     editItem: §eEdit item to craft
     editBucketType: §eEdit type of bucket to fill
     editBucketAmount: §eEdit amount of buckets to fill
@@ -700,6 +704,8 @@ scoreboard:
     interact: §eClick on the block at §6{0}
     interactMaterial: §eClick on a §6{0}§e block
     fish: §eFish §6{0}
+    melt: §eMelt §6{0}
+    enchant: §eEnchant §6{0}
     craft: §eCraft §6{0}
     bucket: §eFill §6{0}
     location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
@@ -749,6 +755,8 @@ misc:
     chat: Write in chat
     interact: Interact with block
     Fish: Catch fishes
+    Melt: Melt items
+    Enchant: Enchant items
     Craft: Craft item
     Bucket: Fill bucket
     location: Find location
