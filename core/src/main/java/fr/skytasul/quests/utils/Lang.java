@@ -559,6 +559,7 @@ public enum Lang{
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
 	commandConsole("inv.command.console"),
+	commandParse("inv.command.parse"),
 	commandDelay("inv.command.delay"),
 	
 	INVENTORY_COMMANDS_LIST("inv.commandsList.name"),

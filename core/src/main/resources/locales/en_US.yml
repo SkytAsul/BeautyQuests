@@ -589,6 +589,7 @@ inv:
     name: Command
     value: §eCommand
     console: Console
+    parse: Parse placeholders
     delay: §bDelay
   chooseAccount:
     name: What account?
