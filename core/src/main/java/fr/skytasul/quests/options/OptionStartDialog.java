@@ -1,6 +1,7 @@
 package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -28,12 +29,14 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	
 	@Override
 	public Object save() {
-		return getValue().serialize();
+		MemoryConfiguration section = new MemoryConfiguration();
+		getValue().serialize(section);
+		return section;
 	}
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(Dialog.deserialize(Utils.mapFromConfigurationSection(config.getConfigurationSection(key))));
+		setValue(Dialog.deserialize(config.getConfigurationSection(key)));
 	}
 	
 	@Override

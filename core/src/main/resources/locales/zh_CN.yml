@@ -40,6 +40,7 @@ msg:
   writeMessage: '§a输入发送给玩家的消息'
   writeStartMessage: '§a输入在开始任务时发送给玩家的消息，输入“null”则发送默认消息，输入“none”则不发送消息：'
   writeEndMsg: '§a输入任务结束时发送的消息，输入“null” 则发送默认消息，输入“none”则不发送。你可以使用 "{0}"显示获得的奖励。'
+  writeEndSound: '§a输入在任务结束时播放给玩家的音效名，输入“null”则使用默认音效，输入“none”则不播放音效：'
   writeDescriptionText: '任务阶段目标描述.'
   writeStageText: '任务开始时发送的消息.'
   moveToTeleportPoint: 前往指定的传送点.
@@ -322,6 +323,8 @@ inv:
     talkChat: '§a在聊天框内输入'
     interact: '§a点击方块'
     fish: '§a钓鱼'
+    melt: '§熔炼物品'
+    enchant: '§附魔物品'
     craft: '§a合成物品'
     bucket: '§a装满桶'
     location: 前往指定位置
@@ -352,6 +355,8 @@ inv:
     selectBlockMaterial: '§e选择方块材料'
     leftClick: 必须左击
     editFishes: '§e编辑所需的鱼'
+    editItemsToMelt: '§e编辑要熔炼的物品'
+    editItemsToEnchant: '§e编辑要附魔的物品'
     editItem: '§e编辑要合成的物品'
     editBucketType: '§e编辑要装满的桶类型'
     editBucketAmount: '§e编辑要装满的桶数量'
@@ -424,6 +429,8 @@ inv:
     editQuestName: '§l编辑任务'
     endMessage: '§a编辑任务结束消息'
     endMessageLore: 将在任务结束时发送给玩家的消息。
+    endSound: '§e编辑结束音效'
+    endSoundLore: 在任务结束时播放的音效。
     startMessage: '§e编辑开始消息'
     startMessageLore: 任务开始时发送给玩家的消息。
     startDialog: '§e编辑任务开场白'
@@ -658,6 +665,8 @@ scoreboard:
     interact: '§e点击在§6{0}的方块'
     interactMaterial: '§e点击§6{0}§e方块'
     fish: '§e钓鱼 §6{0}'
+    melt: '§e熔炼 §6{0}'
+    enchant: '§e附魔 §6{0}'
     craft: '§e合成 §6{0}'
     bucket: '§e装满 §6{0}'
     location: '§e前往位于 §6{3}的坐标§6{0}§e, §6{1}§e, §6{2}§e '
@@ -703,6 +712,8 @@ misc:
     chat: 在聊天框内说话
     interact: 与方块交互
     Fish: 钓鱼
+    Melt: 熔炼物品
+    Enchant: 附魔物品
     Craft: 合成物品
     Bucket: 装满桶
     location: 寻找地点
@@ -735,6 +746,7 @@ misc:
     water: 水桶
     lava: 岩浆桶
     milk: 牛奶桶
+    snow: 雪桶
   click:
     right: 右击
     left: 左击

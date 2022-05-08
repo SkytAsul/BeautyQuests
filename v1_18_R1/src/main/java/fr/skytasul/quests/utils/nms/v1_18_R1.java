@@ -4,16 +4,12 @@ import java.util.List;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import fr.skytasul.quests.utils.ParticleEffect;
-
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -30,13 +26,6 @@ public class v1_18_R1 extends NMS{
 	@Override
 	public Object bookPacket(ByteBuf buf){
 		return new ClientboundOpenBookPacket(InteractionHand.MAIN_HAND);
-	}
-
-	@Override
-	public Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2,
-			float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt,
-			Object paramData) {
-		return new ClientboundLevelParticlesPacket(CraftParticle.toNMS(effect.getBukkitParticle(), paramData), paramBoolean, paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramFloat5, paramFloat6, paramFloat7, paramInt);
 	}
 	
 	@Override

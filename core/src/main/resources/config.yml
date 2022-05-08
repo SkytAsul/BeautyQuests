@@ -78,6 +78,8 @@ dialogs:
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
+  # Maximum distance the player can be from the NPC for the dialog to continue. 0 to disable.
+  maxDistance: 15
   # Default dialog sound when players are speaking
   defaultPlayerSound: 'none'
   # Default dialog sound when NPCs are speaking

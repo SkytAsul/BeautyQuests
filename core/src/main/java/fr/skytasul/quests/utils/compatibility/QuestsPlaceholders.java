@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -99,7 +100,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	
 	@Override
 	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started_ordered", "started_ordered_X", "advancement_ID", "advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
+		return Arrays.asList("total_amount", "player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "started", "started_ordered", "started_ordered_X", "advancement_ID", "advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
 	}
 	
 	@Override
@@ -113,6 +114,22 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		if (identifier.equals("player_finished_amount")) return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
 		if (identifier.equals("player_finished_total_amount")) return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
 		if (identifier.equals("started_id_list")) return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
+		
+		if (identifier.equals("started")) {
+			return acc.getQuestsDatas()
+					.stream()
+					.filter(PlayerQuestDatas::hasStarted)
+					.map(PlayerQuestDatas::getQuest)
+					.filter(Objects::nonNull)
+					.filter(Quest::isScoreboardEnabled)
+					.map(quest -> {
+						String desc = quest.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+						return inlineFormat
+								.replace("{questName}", quest.getName())
+								.replace("{questDescription}", desc);
+					})
+					.collect(Collectors.joining("\n"));
+		}
 		
 		if (identifier.startsWith("started_ordered")) {
 			String after = identifier.substring(15);
@@ -135,8 +152,12 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					int i = -1;
 					boolean noSplit = after.isEmpty();
 					if (!noSplit) {
-						i = Integer.parseInt(after.substring(1)) - 1;
-						if (i < 0) return "§cindex must be positive";
+						try {
+							i = Integer.parseInt(after.substring(1)) - 1;
+						}catch (NumberFormatException ex) {
+							i = -1;
+						}
+						if (i < 0) return "§cindex must be a positive integer";
 					}
 					
 					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
@@ -157,6 +178,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						return "§c" + ex.getMessage();
 					}
 				}catch (Exception ex) {
+					BeautyQuests.logger.warning("An error occurred while parsing palceholder " + identifier + " for " + p.getName(), ex);
 					return "§cinvalid placeholder";
 				}
 			}finally {

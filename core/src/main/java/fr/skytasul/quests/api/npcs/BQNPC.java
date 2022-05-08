@@ -31,7 +31,7 @@ import fr.skytasul.quests.utils.Utils;
 
 public abstract class BQNPC {
 	
-	private Set<Quest> quests = new TreeSet<>();
+	private Map<Quest, List<Player>> quests = new TreeMap<>();
 	private Set<QuestPool> pools = new TreeSet<>();
 	
 	private List<Entry<Player, Object>> hiddenTickets = new ArrayList<>();
@@ -94,7 +94,7 @@ public abstract class BQNPC {
 					return;
 				}
 				
-				for (Quest quest : quests) quest.getLauncheable().clear();
+				quests.values().forEach(List::clear);
 				
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
@@ -103,16 +103,17 @@ public abstract class BQNPC {
 					if (acc == null) continue;
 					if (lc.distanceSquared(p.getLocation()) > QuestsConfiguration.getStartParticleDistanceSquared()) continue;
 					playersInRadius.add(p);
-					try {
-						for (Quest quest : quests) {
-							if (quest.isLauncheable(p, acc, false)) {
-								quest.getLauncheable().add(p);
-								break;
-							}
+					for (Entry<Quest, List<Player>> quest : quests.entrySet()) {
+						if (quest.getKey().isLauncheable(p, acc, false)) {
+							quest.getValue().add(p);
+							break;
 						}
-					}catch (NullPointerException ex) {}
+					}
 				}
-				for (Quest quest : quests) quest.updateLauncheable(en);
+				
+				if (QuestsConfiguration.showStartParticles()) {
+					quests.forEach((quest, players) -> QuestsConfiguration.getParticleStart().send(en, players));
+				}
 				
 				if (hologramPool.canAppear) {
 					for (Player p : playersInRadius) {
@@ -138,9 +139,9 @@ public abstract class BQNPC {
 						PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 						boolean launchYes = false;
 						boolean launchNo = false;
-						for (Quest qu : quests) {
-							if (!qu.hasStarted(acc)) {
-								boolean pLauncheable = qu.getLauncheable().contains(player);
+						for (Entry<Quest, List<Player>> qu : quests.entrySet()) {
+							if (!qu.getKey().hasStarted(acc)) {
+								boolean pLauncheable = qu.getValue().contains(player);
 								if (hologramLaunch.enabled && pLauncheable) {
 									launchYes = true;
 									break; // launcheable take priority over not launcheable
@@ -187,7 +188,7 @@ public abstract class BQNPC {
 	}
 	
 	public Set<Quest> getQuests() {
-		return quests;
+		return quests.keySet();
 	}
 	
 	public Hologram getHologramText() {
@@ -203,7 +204,8 @@ public abstract class BQNPC {
 	}
 	
 	public void addQuest(Quest quest) {
-		if (!quests.add(quest)) return;
+		if (quests.containsKey(quest)) return;
+		quests.put(quest, new ArrayList<>());
 		if (hologramText.enabled && quest.hasOption(OptionHologramText.class)) hologramText.setText(quest.getOption(OptionHologramText.class).getValue());
 		if (hologramLaunch.enabled && quest.hasOption(OptionHologramLaunch.class)) hologramLaunch.setItem(quest.getOption(OptionHologramLaunch.class).getValue());
 		if (hologramLaunchNo.enabled && quest.hasOption(OptionHologramLaunchNo.class)) hologramLaunchNo.setItem(quest.getOption(OptionHologramLaunchNo.class).getValue());
@@ -213,7 +215,7 @@ public abstract class BQNPC {
 	}
 	
 	public boolean removeQuest(Quest quest) {
-		boolean b = quests.remove(quest);
+		boolean b = quests.remove(quest) == null;
 		removeStartablePredicate(quest);
 		updatedObjects();
 		if (quests.isEmpty()) {
@@ -225,7 +227,7 @@ public abstract class BQNPC {
 	
 	public boolean hasQuestStarted(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		return quests.stream().anyMatch(quest -> quest.hasStarted(acc));
+		return quests.keySet().stream().anyMatch(quest -> quest.hasStarted(acc));
 	}
 	
 	public Set<QuestPool> getPools() {
@@ -312,7 +314,7 @@ public abstract class BQNPC {
 	
 	public void delete(String cause) {
 		DebugUtils.logMessage("Removing NPC Starter " + getId());
-		for (Quest qu : quests) {
+		for (Quest qu : quests.keySet()) {
 			BeautyQuests.logger.warning("Starter NPC #" + getId() + " has been removed from quest " + qu.getID() + ". Reason: " + cause);
 			qu.removeOption(OptionStarterNPC.class);
 		}

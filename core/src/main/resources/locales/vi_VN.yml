@@ -82,7 +82,11 @@ msg:
   inventoryFull: '§cTúi đồ của bạn đã đầy, vật phẩm đã bị rơi xuống sàn.'
   playerNeverConnected: '§cKhông thể tìm thấy thông tin về người chơi {0}.'
   playerNotOnline: '§cNgười chơi {0} đang ngoại tuyến.'
+  playerDataNotFound: '§aDữ liệu người chơi {0} không tồn tại'
   versionRequired: 'Phiên bản yêu cầu: §l{0}'
+  restartServer: '§7Khởi động lại máy chủ để thấy sửa đổi'
+  dialogs:
+    skipped: '§8§oLời thoại được bỏ qua'
   command:
     downloadTranslations:
       syntax: '§cBạn cần phải tải file ngôn ngữ. Ví dụ: "/quests downloadTranslations vi_VN"'
@@ -98,6 +102,11 @@ msg:
       next: '§aGiai đoạn đã bị bỏ qua.'
       nextUnavailable: '§cTùy chọn "skip" không khả dụng khi người chơi ở phần cuối của một nhánh.'
       set: '§aGiai đoạn {0} được khởi chạy.'
+    startDialog:
+      impossible: '§cKhông thể bắt đầu lời thoại trong lúc này'
+      noDialog: '§cNgười chơi không có lời thoại nào đang chờ'
+      alreadyIn: '§cNgười chơi đang có cuộc hội thoại'
+      success: '§aBắt đầu cuộc hội thoại cho người chơi {0} ở nhiệm vụ {1}'
     playerNeeded: '§cBạn phải là người chơi để thực hiện lệnh này!'
     incorrectSyntax: '§cCú pháp không chính xác.'
     noPermission: '§cBạn không có đủ quyền để thực hiện lệnh này! (Cần thiết: {0})'

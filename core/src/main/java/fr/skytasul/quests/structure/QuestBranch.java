@@ -7,9 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -269,41 +271,31 @@ public class QuestBranch {
 		endStages.clear();
 	}
 	
-	public Map<String, Object> serialize(){
-		Map<String, Object> map = new LinkedHashMap<>();
-		
-		map.put("order", manager.getID(this));
-		
-		List<Map<String, Object>> st = new ArrayList<>();
-		for (AbstractStage stage : regularStages){
-			try{
-				Map<String, Object> datas = stage.serialize();
-				if (datas != null) st.add(datas);
-			}catch (Exception ex){
+	public void save(ConfigurationSection section) {
+		ConfigurationSection stagesSection = section.createSection("stages");
+		int id = 0;
+		for (AbstractStage stage : regularStages) {
+			try {
+				stage.save(stagesSection.createSection(Integer.toString(id++)));
+			}catch (Exception ex) {
 				BeautyQuests.logger.severe("Error when serializing the stage " + stage.getID() + " for the quest " + getQuest().getID(), ex);
 				BeautyQuests.savingFailure = true;
-				continue;
 			}
 		}
-		map.put("stages", st);
 		
-		st = new ArrayList<>();
+		int i = 0;
+		ConfigurationSection endSection = section.createSection("endingStages");
 		for (Entry<AbstractStage, QuestBranch> en : endStages.entrySet()){
 			try{
-				Map<String, Object> datas = en.getKey().serialize();
-				if (datas != null){
-					datas.put("branchLinked", manager.getID(en.getValue()));
-					st.add(datas);
-				}
+				ConfigurationSection stageSection = endSection.createSection(Integer.toString(i++));
+				en.getKey().save(stageSection);
+				QuestBranch branchLinked = en.getValue();
+				if (branchLinked != null) stageSection.set("branchLinked", branchLinked.getID());
 			}catch (Exception ex){
 				BeautyQuests.logger.severe("Error when serializing the ending stage " + en.getKey().getID() + " for the quest " + getQuest().getID(), ex);
 				BeautyQuests.savingFailure = true;
-				continue;
 			}
 		}
-		map.put("endingStages", st);
-		
-		return map;
 	}
 	
 	@Override
@@ -311,43 +303,68 @@ public class QuestBranch {
 		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + "}";
 	}
 	
-	public boolean load(Map<String, Object> map){
-		List<Map<String, Object>> stages = (List<Map<String, Object>>) map.get("stages");
-		stages.sort((x, y) -> {
-			int xid = (int) x.get("order");
-			int yid = (int) y.get("order");
-			if (xid < yid) return -1;
-			if (xid > yid) return 1;
-			BeautyQuests.logger.warning("Two stages with same order in quest " + manager.getQuest().getID());
-			return 0;
-		});
+	public boolean load(ConfigurationSection section) {
+		ConfigurationSection stagesSection;
+		if (section.isList("stages")) { // migration on 0.19.3: TODO remove
+			List<Map<?, ?>> stages = section.getMapList("stages");
+			section.set("stages", null);
+			stagesSection = section.createSection("stages");
+			stages.stream()
+					.sorted((x, y) -> {
+						int xid = (Integer) x.get("order");
+						int yid = (Integer) y.get("order");
+						if (xid < yid) return -1;
+						if (xid > yid) return 1;
+						throw new IllegalArgumentException("Two stages with same order " + xid);
+					}).forEach(branch -> {
+						int order = (Integer) branch.remove("order");
+						stagesSection.createSection(Integer.toString(order), branch);
+					});
+		}else {
+			stagesSection = section.getConfigurationSection("stages");
+		}
 		
-		for (int i = 0; i < stages.size(); i++){
+		for (int id : stagesSection.getKeys(false).stream().map(Integer::parseInt).sorted().collect(Collectors.toSet())) {
 			try{
-				AbstractStage st = AbstractStage.deserialize(stages.get(i), this);
+				AbstractStage st = AbstractStage.deserialize(stagesSection.getConfigurationSection(Integer.toString(id)), this);
 				if (st == null){
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID() + " (stage null)");
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the stage " + id + " for the quest " + manager.getQuest().getID() + " (stage null)");
 					BeautyQuests.loadingFailure = true;
 					return false;
 				}
 				addRegularStage(st);
 			}catch (Exception ex){
-				BeautyQuests.logger.severe("Error when deserializing the stage " + i + " for the quest " + manager.getQuest().getID(), ex);
+				BeautyQuests.logger.severe("Error when deserializing the stage " + id + " for the quest " + manager.getQuest().getID(), ex);
 				BeautyQuests.loadingFailure = true;
 				return false;
 			}
 		}
 		
-		if (map.containsKey("endingStages")){
-			for (Map<String, Object> endMap : (List<Map<String, Object>>) map.get("endingStages")){
+		ConfigurationSection endingStagesSection = null;
+		if (section.isList("endingStages")) { // migration on 0.19.3: TODO remove
+			List<Map<?, ?>> endingStages = section.getMapList("endingStages");
+			section.set("endingStages", null);
+			endingStagesSection = section.createSection("endingStages");
+			int i = 0;
+			for (Map<?, ?> stage : endingStages) {
+				endingStagesSection.createSection(Integer.toString(i++), stage);
+			}
+		}else if (section.contains("endingStages")) {
+			endingStagesSection = section.getConfigurationSection("endingStages");
+		}
+		
+		if (endingStagesSection != null) {
+			for (String key : endingStagesSection.getKeys(false)) {
 				try{
-					AbstractStage st = AbstractStage.deserialize(endMap, this);
+					ConfigurationSection stage = endingStagesSection.getConfigurationSection(key);
+					AbstractStage st = AbstractStage.deserialize(stage, this);
 					if (st == null){
 						BeautyQuests.getInstance().getLogger().severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID() + " (stage null)");
 						BeautyQuests.loadingFailure = true;
 						return false;
 					}
-					addEndStage(st, manager.getBranch((int) endMap.get("branchLinked")));
+					QuestBranch branchLinked = stage.contains("branchLinked") ? manager.getBranch(stage.getInt("branchLinked")) : null;
+					addEndStage(st, branchLinked);
 				}catch (Exception ex){
 					BeautyQuests.logger.severe("Error when deserializing an ending stage for the quest " + manager.getQuest().getID(), ex);
 					BeautyQuests.loadingFailure = true;

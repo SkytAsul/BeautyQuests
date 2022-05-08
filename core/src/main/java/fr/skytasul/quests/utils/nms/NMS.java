@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ReflectUtils;
 
 import io.netty.buffer.ByteBuf;
@@ -40,8 +39,6 @@ public abstract class NMS{
 	}
 	
 	public abstract Object bookPacket(ByteBuf buf);
-	
-	public abstract Object worldParticlePacket(ParticleEffect effect, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, int paramInt, Object paramData);
 	
 	public abstract double entityNameplateHeight(LivingEntity en); // can be remplaced by Entity.getHeight from 1.11
 	

@@ -10,12 +10,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
 
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.CitizensReloadEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -60,6 +62,22 @@ public class BQCitizens extends BQNPCsManager {
 	public void onNPCRemove(NPCRemoveEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
 		super.removeEvent(e.getNPC().getId());
+	}
+	
+	@EventHandler
+	public void onCitizensReload(CitizensReloadEvent e) {
+		BeautyQuests.logger.warning("Citizens has been reloaded whereas it is highly not recommended for plugins compatibilities. Unexpected behaviors may happen.");
+		npcs.forEach((id, npc) -> {
+			if (npc instanceof BQCitizensNPC) {
+				BQCitizensNPC bqnpc = (BQCitizensNPC) npc;
+				NPC cnpc = CitizensAPI.getNPCRegistry().getById(id);
+				if (cnpc == null) {
+					BeautyQuests.logger.warning("Unable to find NPC with ID " + id + " after a Citizens reload.");
+				}else {
+					bqnpc.npc = cnpc;
+				}
+			}
+		});
 	}
 	
 	@Override

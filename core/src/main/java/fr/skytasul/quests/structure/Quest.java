@@ -11,7 +11,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -52,9 +51,6 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	public boolean asyncEnd = false;
 	public List<Player> asyncStart = null;
 	
-	private List<Player> launcheable = new ArrayList<>();
-	private List<Player> particles = new ArrayList<>();
-	
 	public Quest(int id) {
 		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
@@ -67,19 +63,6 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	
 	public void load() {
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
-	}
-	
-	public List<Player> getLauncheable() {
-		return launcheable;
-	}
-	
-	public void updateLauncheable(LivingEntity en) {
-		if (QuestsConfiguration.showStartParticles()) {
-			if (launcheable.isEmpty()) return;
-			particles.clear();
-			particles.addAll(launcheable);
-			QuestsConfiguration.getParticleStart().send(en, particles);
-		}
 	}
 	
 	@Override
@@ -304,7 +287,6 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
-		launcheable.remove(p);
 		acc.getQuestDatas(this).setTimer(0);
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
@@ -432,8 +414,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			}
 		}
 		
+		manager.save(section.createSection("manager"));
 		section.set("id", id);
-		section.set("manager", manager.serialize());
 	}
 	
 

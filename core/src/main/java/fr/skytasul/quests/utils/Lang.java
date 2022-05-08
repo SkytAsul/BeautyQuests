@@ -41,6 +41,7 @@ public enum Lang{
 	QUEST_FAILED("msg.quests.failed"),
 	
 	DIALOG_SKIPPED("msg.dialogs.skipped"),
+	DIALOG_TOO_FAR("msg.dialogs.tooFar"), // 0: npc name
 	
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
 	POOL_ALL_COMPLETED("msg.pools.allCompleted"),
@@ -346,6 +347,8 @@ public enum Lang{
 	stageChat("inv.create.talkChat"),
 	stageInteract("inv.create.interact"),
 	stageFish("inv.create.fish"),
+	stageMelt("inv.create.melt"),
+	stageEnchant("inv.create.enchant"),
 	stageCraft("inv.create.craft"),
 	stageBucket("inv.create.bucket"),
 	stageLocation("inv.create.location"),
@@ -376,6 +379,8 @@ public enum Lang{
 	blockMaterial("inv.create.selectBlockMaterial"),
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
+	editItemsToMelt("inv.create.editItemsToMelt"),
+	editItemsToEnchant("inv.create.editItemsToEnchant"),
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
 	editBucketAmount("inv.create.editBucketAmount"),
@@ -555,6 +560,7 @@ public enum Lang{
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
 	commandConsole("inv.command.console"),
+	commandParse("inv.command.parse"),
 	commandDelay("inv.command.delay"),
 	
 	INVENTORY_COMMANDS_LIST("inv.commandsList.name"),
@@ -672,6 +678,8 @@ public enum Lang{
 	SCOREBOARD_INTERACT("scoreboard.stage.interact"),
 	SCOREBOARD_INTERACT_MATERIAL("scoreboard.stage.interactMaterial"),
 	SCOREBOARD_FISH("scoreboard.stage.fish"),
+	SCOREBOARD_MELT("scoreboard.stage.melt"),
+	SCOREBOARD_ENCHANT("scoreboard.stage.enchant"),
 	SCOREBOARD_CRAFT("scoreboard.stage.craft"),
 	SCOREBOARD_BUCKET("scoreboard.stage.bucket"),
 	SCOREBOARD_BREED("scoreboard.stage.breed"), // 0: animals to breed
@@ -716,6 +724,8 @@ public enum Lang{
 	Chat("misc.stageType.chat"),
 	Interact("misc.stageType.interact"),
 	Fish("misc.stageType.Fish"),
+	Melt("misc.stageType.Melt"),
+	Enchant("misc.stageType.Enchant"),
 	Craft("misc.stageType.Craft"),
 	Bucket("misc.stageType.Bucket"),
 	Location("misc.stageType.location"),

@@ -1,10 +1,9 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -87,14 +86,14 @@ public class StageArea extends AbstractStage{
 	}
 	
 	@Override
-	public void serialize(Map<String, Object> map){
-		map.put("region", region.getId());
-		map.put("world", world.getName());
-		map.put("exit", exit);
+	public void serialize(ConfigurationSection section) {
+		section.set("region", region.getId());
+		section.set("world", world.getName());
+		section.set("exit", exit);
 	}
 	
-	public static StageArea deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageArea(branch, (String) map.get("region"), (String) map.get("world"), (boolean) map.getOrDefault("exit", Boolean.FALSE));
+	public static StageArea deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StageArea(branch, section.getString("region"), section.getString("world"), section.getBoolean("exit", false));
 	}
 
 	public static class Creator extends StageCreation<StageArea> {

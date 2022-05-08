@@ -19,10 +19,9 @@ import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.stages.*;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -43,17 +42,19 @@ public class StagesGUI implements CustomInventory {
 	
 	private List<Line> lines = new ArrayList<>();
 	
-	private Quest edit;
-	private boolean stagesEdited = false;
-
-	private FinishGUI finish = null;
-	private StagesGUI previousBranch;
+	private final QuestCreationSession session;
+	private final StagesGUI previousBranch;
 
 	public Inventory inv;
 	int page;
 	private boolean stop = false;
 
-	public StagesGUI(StagesGUI previousBranch){
+	public StagesGUI(QuestCreationSession session) {
+		this(session, null);
+	}
+	
+	public StagesGUI(QuestCreationSession session, StagesGUI previousBranch) {
+		this.session = session;
 		this.previousBranch = previousBranch;
 	}
 	
@@ -73,6 +74,11 @@ public class StagesGUI implements CustomInventory {
 			inv.setItem(SLOT_FINISH, isEmpty() ? notDone : ItemUtils.itemDone);
 			inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel : ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
 			refresh();
+			
+			if (session.isEdition() && this == session.getMainGUI()) {
+				editBranch(session.getQuestEdited().getBranchesManager().getBranch(0));
+				inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
+			}
 		}
 
 		if (p != null) inv = p.openInventory(inv).getTopInventory();
@@ -180,7 +186,7 @@ public class StagesGUI implements CustomInventory {
 		}
 		
 		if (branches){
-			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(this));
+			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(session, this));
 			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.create(p, creation.getLeadingBranch()));
 		}
 		
@@ -226,23 +232,17 @@ public class StagesGUI implements CustomInventory {
 					refresh();
 				}
 			}else if (slot == 52) {
-				if (previousBranch == null){ // main inventory = directly finish if not empty
-					if (isEmpty()) {
-						Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
-					}else {
-						finish(p);
-					}
-				}else { // branch inventory = get the main inventory to finish
-					StagesGUI branch = previousBranch;
-					while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
-					branch.finish(p);
+				if (isEmpty() && previousBranch == null) {
+					Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+				}else {
+					session.openFinishGUI(p);
 				}
 			}else if (slot == 53) {
 				if (previousBranch == null){ // main inventory = cancel button
 					stop = true;
 					p.closeInventory();
 					if (!isEmpty()) {
-						if (edit == null) {
+						if (!session.isEdition()) {
 							Lang.QUEST_CANCEL.send(p);
 						}else Lang.QUEST_EDIT_CANCEL.send(p);
 					}
@@ -251,9 +251,7 @@ public class StagesGUI implements CustomInventory {
 				}
 			}
 		}else {
-			StagesGUI branch = this;
-			while (branch.previousBranch != null) branch = branch.previousBranch; // get the very first branch
-			branch.stagesEdited = true;
+			session.setStagesEdited();
 			Line line = getLine((slot - slot % 9)/9 +5*page);
 			line.click(slot - (line.getLine() - page * 5) * 9, p, current, click);
 		}
@@ -275,15 +273,6 @@ public class StagesGUI implements CustomInventory {
 		}
 	}
 
-	private void finish(Player p){
-		if (finish == null){
-			finish = Inventories.create(p, edit != null ? new FinishGUI(this, edit, stagesEdited) : new FinishGUI(this));
-		}else {
-			Inventories.create(p, finish);
-			if (edit != null && stagesEdited) finish.setStagesEdited(false);
-		}
-	}
-
 	@SuppressWarnings ("rawtypes")
 	public List<StageCreation> getStageCreations() {
 		List<StageCreation> stages = new LinkedList<>();
@@ -292,12 +281,6 @@ public class StagesGUI implements CustomInventory {
 			if (isActiveLine(line)) stages.add(line.creation);
 		}
 		return stages;
-	}
-
-	public void edit(Quest quest){
-		edit = quest;
-		editBranch(quest.getBranchesManager().getBranch(0));
-		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 	}
 	
 	private void editBranch(QuestBranch branch){
@@ -314,7 +297,7 @@ public class StagesGUI implements CustomInventory {
 			Line line = getLine(i);
 			@SuppressWarnings ("rawtypes")
 			StageCreation creation = runClick(line, en.getKey().getType(), true);
-			StagesGUI gui = new StagesGUI(this);
+			StagesGUI gui = new StagesGUI(session, this);
 			gui.open(null); // init other GUI
 			creation.setLeadingBranch(gui);
 			if (en.getValue() != null) gui.editBranch(en.getValue());
@@ -335,6 +318,8 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
 	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.STICK, Lang.stageInteract.toString());
 	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
+	private static final ItemStack stageMelt = ItemUtils.item(XMaterial.FURNACE, Lang.stageMelt.toString());
+	private static final ItemStack stageEnchant = ItemUtils.item(XMaterial.ENCHANTING_TABLE, Lang.stageEnchant.toString());
 	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
 	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
 	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
@@ -354,6 +339,8 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.registerStage(new StageType<>("CHAT", StageChat.class, Lang.Chat.name(), StageChat::deserialize, stageChat, StageChat.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("INTERACT", StageInteract.class, Lang.Interact.name(), StageInteract::deserialize, stageInteract, StageInteract.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("FISH", StageFish.class, Lang.Fish.name(), StageFish::deserialize, stageFish, StageFish.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("MELT", StageMelt.class, Lang.Melt.name(), StageMelt::deserialize, stageMelt, StageMelt.Creator::new));
+		QuestsAPI.registerStage(new StageType<>("ENCHANT", StageEnchant.class, Lang.Enchant.name(), StageEnchant::deserialize, stageEnchant, StageEnchant.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("CRAFT", StageCraft.class, Lang.Craft.name(), StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));

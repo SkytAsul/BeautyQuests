@@ -1,9 +1,11 @@
 package fr.skytasul.quests.players;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,17 +16,21 @@ import fr.skytasul.quests.utils.nms.NMS;
 
 public class AdminMode {
 
-	private static final List<CommandSender> senders = new ArrayList<>();
+	private static final Set<CommandSender> senders = new HashSet<>();
+	
+	private static ParticleEffect enterParticle = new ParticleEffect(Particle.FLAME, null, null);
+	private static ParticleEffect leaveParticle = new ParticleEffect(Particle.SMOKE_NORMAL, null, null);
 	
 	public static void toggle(CommandSender sender){
-		if (senders.contains(sender)){
+		if (senders.add(sender)) {
+			Lang.ADMIN_MODE_ENTERED.send(sender);
+			if (sender instanceof Player && NMS.getMCVersion() >= 9)
+				enterParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
+		}else {
 			senders.remove(sender);
 			Lang.ADMIN_MODE_LEFT.send(sender);
-			if (sender instanceof Player && NMS.isValid() && senders.stream().anyMatch((x) -> x instanceof Player)) ParticleEffect.SMOKE_NORMAL.display(1, 1, 1, 0.1, 15, ((Player) sender).getEyeLocation(), getAdminPlayers());
-		}else {
-			senders.add(sender);
-			Lang.ADMIN_MODE_ENTERED.send(sender);
-			if (sender instanceof Player && NMS.isValid()) ParticleEffect.FLAME.display(1, 1, 1, 0.1, 15, ((Player) sender).getEyeLocation(), getAdminPlayers());
+			if (sender instanceof Player && NMS.getMCVersion() >= 9 && senders.stream().anyMatch(Player.class::isInstance))
+				leaveParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}
 	}
 	
@@ -35,12 +41,12 @@ public class AdminMode {
 		}
 	}
 	
-	public static List<CommandSender> getAdminSenders(){
+	public static Set<CommandSender> getAdminSenders() {
 		return senders;
 	}
 	
 	public static List<Player> getAdminPlayers(){
-		return senders.stream().filter((send) -> send instanceof Player).map((player) -> (Player) player).collect(Collectors.toList());
+		return senders.stream().filter(Player.class::isInstance).map(Player.class::cast).collect(Collectors.toList());
 	}
 	
 }

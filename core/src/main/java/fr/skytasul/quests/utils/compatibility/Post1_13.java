@@ -11,7 +11,6 @@ import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
-import fr.skytasul.quests.utils.ParticleEffect.OrdinaryColor;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
@@ -25,7 +24,11 @@ public class Post1_13 {
 		return mat.isBlock();
 	}
 	
-	public static Object getDustColor(OrdinaryColor color, int size){
+	public static Class<?> getDustOptionClass() {
+		return Particle.DustOptions.class;
+	}
+	
+	public static Object getDustColor(Color color, int size) {
 		return new Particle.DustOptions(Color.fromBGR(color.getBlue(), color.getGreen(), color.getRed()), size);
 	}
 	

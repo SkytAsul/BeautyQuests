@@ -3,6 +3,7 @@ package fr.skytasul.quests.stages;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -80,13 +81,13 @@ public class StageBucket extends AbstractStage {
 	}
 
 	@Override
-	protected void serialize(Map<String, Object> map) {
-		map.put("bucket", bucket.name());
-		map.put("amount", amount);
+	protected void serialize(ConfigurationSection section) {
+		section.set("bucket", bucket.name());
+		section.set("amount", amount);
 	}
 
-	public static StageBucket deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageBucket(branch, BucketType.valueOf((String) map.get("bucket")), (int) map.get("amount"));
+	public static StageBucket deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StageBucket(branch, BucketType.valueOf(section.getString("bucket")), section.getInt("amount"));
 	}
 
 	public enum BucketType {

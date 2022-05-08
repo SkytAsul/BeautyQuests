@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -142,18 +144,6 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		return true;
 	}
 
-	@Deprecated
-	protected void migrateDatas(PlayerAccount acc, Map<T, Integer> oldObjects) {
-		Map<Integer, Integer> amounts = new HashMap<>();
-		for (int i = 0; i < objects.size(); i++) {
-			Entry<T, Integer> object = objects.get(i);
-			if (oldObjects.containsKey(object.getKey())) {
-				amounts.put(i, oldObjects.get(object.getKey()));
-			}
-		}
-		setData(acc, "remaining", amounts);
-	}
-
 	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
@@ -211,26 +201,48 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	protected abstract T deserialize(Object object);
 
+	/**
+	 * @deprecated for removal, {@link #serialize(ConfigurationSection)} should be used instead.
+	 */
 	@Override
-	protected void serialize(Map<String, Object> map) {
-		Map<Integer, Map<String, Object>> serializedObjects = new HashMap<>(objects.size());
+	@Deprecated
+	protected void serialize(Map<String, Object> map) {}
+	
+	@Override
+	protected void serialize(ConfigurationSection section) {
+		ConfigurationSection objectsSection = section.createSection("objects");
 		for (Entry<Integer, Entry<T, Integer>> obj : objects.entrySet()) {
-			Map<String, Object> serializedObject = new HashMap<>(2);
-			serializedObject.put("object", serialize(obj.getValue().getKey()));
-			serializedObject.put("amount", obj.getValue().getValue());
-			serializedObjects.put(obj.getKey(), serializedObject);
+			ConfigurationSection objectSection = objectsSection.createSection(Integer.toString(obj.getKey()));
+			objectSection.set("amount", obj.getValue().getValue());
+			objectSection.set("object", serialize(obj.getValue().getKey()));
 		}
-		map.put("objects", serializedObjects);
+		Map<String, Object> serialized = new HashMap<>();
+		serialize(serialized);
+		serialized.forEach(section::set);
+	}
+	
+	/**
+	 * @deprecated for removal, {@link #deserialize(ConfigurationSection)} should be used instead.
+	 */
+	@Deprecated
+	protected void deserialize(Map<String, Object> serializedDatas) {
+		MemoryConfiguration configuration = new MemoryConfiguration();
+		serializedDatas.forEach(configuration::set);
+		deserialize(configuration);
 	}
 
-	protected void deserialize(Map<String, Object> serializedDatas) {
-		Map<Integer, Map<String, Object>> serializedObjects = (Map<Integer, Map<String, Object>>) serializedDatas.get("objects");
-		if (serializedObjects != null) {
-			for (Entry<Integer, Map<String, Object>> obj : serializedObjects.entrySet()) {
-				objects.put(obj.getKey(), new AbstractMap.SimpleEntry<>(deserialize(obj.getValue().get("object")), (int) obj.getValue().get("amount")));
+	protected void deserialize(ConfigurationSection section) {
+		ConfigurationSection objectsSection = section.getConfigurationSection("objects");
+		if (objectsSection != null) {
+			for (String key : objectsSection.getKeys(false)) {
+				ConfigurationSection object = objectsSection.getConfigurationSection(key);
+				Object serialized = object.get("object");
+				if (serialized instanceof ConfigurationSection) serialized = ((ConfigurationSection) serialized).getValues(false);
+				objects.put(Integer.parseInt(key), new AbstractMap.SimpleEntry<>(deserialize(serialized), object.getInt("amount")));
 			}
 		}
-		if (objects.isEmpty()) BeautyQuests.logger.warning("A " + getClass().getSimpleName() + " stage in the quest ID " + branch.getQuest().getID() + " have no content.");
+		
+		if (objects.isEmpty()) BeautyQuests.logger.warning("Stage with no content: " + debugName());
 		calculateSize();
 	}
 

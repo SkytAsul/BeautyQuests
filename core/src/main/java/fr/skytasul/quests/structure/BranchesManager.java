@@ -1,7 +1,7 @@
 package fr.skytasul.quests.structure;
 
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,8 @@ public class BranchesManager{
 		for (Entry<Integer, QuestBranch> en : branches.entrySet()){
 			if (en.getValue() == branch) return en.getKey();
 		}
-		return 666;
+		BeautyQuests.logger.severe("Trying to get the ID of a branch not in manager of quest " + quest.getID());
+		return -1;
 	}
 	
 	public List<QuestBranch> getBranches() {
@@ -102,22 +103,16 @@ public class BranchesManager{
 		branches.clear();
 	}
 	
-	public Map<String, Object> serialize(){
-		Map<String, Object> map = new LinkedHashMap<>();
-		
-		List<Map<String, Object>> st = new ArrayList<>();
-		for (QuestBranch branch : branches.values()){
-			try{
-				Map<String, Object> datas = branch.serialize();
-				if (datas != null) st.add(datas);
+	public void save(ConfigurationSection section) {
+		ConfigurationSection branchesSection = section.createSection("branches");
+		branches.forEach((id, branch) -> {
+			try {
+				branch.save(branchesSection.createSection(Integer.toString(id)));
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("Error when serializing the branch " + getID(branch) + " for the quest " + quest.getID(), ex);
+				BeautyQuests.logger.severe("Error when serializing the branch " + id + " for the quest " + quest.getID(), ex);
 				BeautyQuests.savingFailure = true;
 			}
-		}
-		map.put("branches", st);
-		
-		return map;
+		});
 	}
 	
 	@Override
@@ -125,29 +120,55 @@ public class BranchesManager{
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 	
-	public static BranchesManager deserialize(ConfigurationSection config, Quest qu) {
+	public static BranchesManager deserialize(ConfigurationSection section, Quest qu) {
 		BranchesManager bm = new BranchesManager(qu);
 		
-		List<Map<?, ?>> branches = config.getMapList("branches");
-		branches.sort((x, y) -> {
-			int xid = (Integer) x.get("order");
-			int yid = (Integer) y.get("order");
-			if (xid < yid) return -1;
-			if (xid > yid) return 1;
-			BeautyQuests.logger.warning("Two branches with same order in quest " + qu.getID());
-			return 0;
-		});
-		branches.forEach((x) -> bm.addBranch(new QuestBranch(bm)));
+		ConfigurationSection branchesSection;
+		if (section.isList("branches")) { // migration on 0.19.3: TODO remove
+			List<Map<?, ?>> branches = section.getMapList("branches");
+			section.set("branches", null);
+			branchesSection = section.createSection("branches");
+			branches.stream()
+					.sorted((x, y) -> {
+						int xid = (Integer) x.get("order");
+						int yid = (Integer) y.get("order");
+						if (xid < yid) return -1;
+						if (xid > yid) return 1;
+						throw new IllegalArgumentException("Two branches with same order " + xid);
+					}).forEach(branch -> {
+						int order = (Integer) branch.remove("order");
+						branchesSection.createSection(Integer.toString(order), branch);
+					});
+		}else {
+			branchesSection = section.getConfigurationSection("branches");
+		}
 
-		for (int i = 0; i < branches.size(); i++) {
-			try{
-				if (!bm.getBranch(i).load((Map<String, Object>) branches.get(i))) {
-					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + i + " for the quest " + qu.getID() + " (false return)");
+		// it is needed to first add all branches to branches manager
+		// in order for branching stages to be able to access all branches
+		// during QuestBranch#load, no matter in which order those branches are loaded
+		Map<QuestBranch, ConfigurationSection> tmpBranches = new HashMap<>();
+		for (String key : branchesSection.getKeys(false)) {
+			try {
+				int id = Integer.parseInt(key);
+				QuestBranch branch = new QuestBranch(bm);
+				bm.branches.put(id, branch);
+				tmpBranches.put(branch, branchesSection.getConfigurationSection(key));
+			}catch (NumberFormatException ex) {
+				BeautyQuests.logger.severe("Cannot parse branch ID " + key + " for quest " + qu.getID());
+				BeautyQuests.loadingFailure = true;
+				return null;
+			}
+		}
+		
+		for (QuestBranch branch : tmpBranches.keySet()) {
+			try {
+				if (!branch.load(tmpBranches.get(branch))) {
+					BeautyQuests.getInstance().getLogger().severe("Error when deserializing the branch " + branch.getID() + " for the quest " + qu.getID() + " (false return)");
 					BeautyQuests.loadingFailure = true;
 					return null;
 				}
-			}catch (Exception ex){
-				BeautyQuests.logger.severe("Error when deserializing the branch " + i + " for the quest " + qu.getID(), ex);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("Error when deserializing the branch " + branch.getID() + " for the quest " + qu.getID(), ex);
 				BeautyQuests.loadingFailure = true;
 				return null;
 			}

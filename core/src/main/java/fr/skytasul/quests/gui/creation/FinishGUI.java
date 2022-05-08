@@ -39,7 +39,7 @@ import fr.skytasul.quests.utils.nms.NMS;
 
 public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomInventory {
 
-	private final StagesGUI stages;
+	private final QuestCreationSession session;
 
 	/* Temporary quest datas */
 	private Map<Integer, Item> clicks = new HashMap<>();
@@ -48,23 +48,12 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	public Inventory inv;
 	private Player p;
 
-	private boolean editing = false;
-	private boolean stagesEdited = false;
-	private boolean keepPlayerDatas = true;
-	private Quest edited;
+	private Boolean keepPlayerDatas = null;
 	
 	private UpdatableItem done;
 	
-	public FinishGUI(StagesGUI gui){
-		stages = gui;
-	}
-	
-	public FinishGUI(StagesGUI gui, Quest edited, boolean stagesEdited){
-		stages = gui;
-		this.edited = edited;
-		this.stagesEdited = stagesEdited;
-		this.keepPlayerDatas = true;
-		editing = true;
+	public FinishGUI(QuestCreationSession session) {
+		this.session = session;
 	}
 
 	@Override
@@ -72,16 +61,16 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		this.p = p;
 		if (inv == null){
 			String invName = Lang.INVENTORY_DETAILS.toString();
-			if (editing){
-				invName = invName + " #" + edited.getID();
+			if (session.isEdition()) {
+				invName = invName + " #" + session.getQuestEdited().getID();
 				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
 			}
 			inv = Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt() + 1) / 9D) * 9, invName);
 			
 			for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
 				QuestOption<?> option;
-				if (edited != null && edited.hasOption(creator.optionClass)) {
-					option = edited.getOption(creator.optionClass).clone();
+				if (session.isEdition() && session.getQuestEdited().hasOption(creator.optionClass)) {
+					option = session.getQuestEdited().getOption(creator.optionClass).clone();
 				}else {
 					option = creator.optionSupplier.get();
 				}
@@ -118,7 +107,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			clicks.put(pageSlot, new Item(pageSlot) {
 				@Override
 				public void click(Player p, ItemStack item, ClickType click) {
-					Inventories.create(p, stages);
+					session.openMainGUI(p);
 				}
 			});
 			inv.setItem(pageSlot, ItemUtils.itemLaterPage);
@@ -128,9 +117,9 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 				public void update() {
 					boolean enabled = getOption(OptionName.class).getValue() != null;
 					XMaterial type = enabled ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
-					String itemName = (enabled ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString() + (editing ? Lang.edit : Lang.create).toString();
+					String itemName = (enabled ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString() + (session.isEdition() ? Lang.edit : Lang.create).toString();
 					String itemLore = QuestOption.formatDescription(Lang.createLore.toString()) + (enabled ? " §a✔" : " §c✖");
-					String[] lore = keepPlayerDatas ? new String[] { itemLore } : new String[] { itemLore, "", Lang.resetLore.toString() };
+					String[] lore = Boolean.TRUE.equals(keepPlayerDatas) ? new String[] { itemLore } : new String[] { itemLore, "", Lang.resetLore.toString() };
 					
 					ItemStack item = inv.getItem(slot);
 					
@@ -154,8 +143,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			clicks.put(done.slot, done);
 			getWrapper(OptionName.class).dependent.add(done);
 			
-			if (stagesEdited) setStagesEdited(true);
 		}
+		if (session.areStagesEdited() && keepPlayerDatas == null) setStagesEdited();
 
 		inv = p.openInventory(inv).getTopInventory();
 		return inv;
@@ -179,22 +168,27 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	}
 
 	private void finish(){
+		boolean keepPlayerDatas = Boolean.TRUE.equals(this.keepPlayerDatas);
 		Quest qu;
-		if (editing){
-			edited.remove(false, false);
-			qu = new Quest(edited.getID(), edited.getFile());
+		if (session.isEdition()) {
+			session.getQuestEdited().remove(false, false);
+			qu = new Quest(session.getQuestEdited().getID(), session.getQuestEdited().getFile());
 		}else {
-			int id = QuestsAPI.getQuests().getLastID() + 1;
-			if (QuestsAPI.getQuests().getQuests().stream().anyMatch(x -> x.getID() == id)) {
-				QuestsAPI.getQuests().incrementLastID();
-				BeautyQuests.logger.warning("Quest id " + id + " already taken, this should not happen.");
-				finish();
-				return;
+			int id = -1;
+			if (session.hasCustomID()) {
+				if (QuestsAPI.getQuests().getQuests().stream().anyMatch(x -> x.getID() == session.getCustomID())) {
+					BeautyQuests.logger.warning("Cannot create quest with custom ID " + session.getCustomID() + " because another quest with this ID already exists.");
+				}else {
+					id = session.getCustomID();
+					BeautyQuests.logger.warning("A quest will be created with custom ID " + id + ".");
+				}
 			}
+			if (id == -1)
+				id = QuestsAPI.getQuests().getFreeQuestID();
 			qu = new Quest(id);
 		}
 		
-		if (stagesEdited) {
+		if (session.areStagesEdited()) {
 			if (keepPlayerDatas) {
 				BeautyQuests.logger.warning("Players quests datas will be kept for quest #" + qu.getID() + " - this may cause datas issues.");
 			}else PlayersManager.manager.removeQuestDatas(qu);
@@ -206,19 +200,19 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
-		boolean failure = loadBranch(mainBranch, stages);
+		boolean failure = loadBranch(mainBranch, session.getMainGUI());
 
-		QuestCreateEvent event = new QuestCreateEvent(p, qu, editing);
+		QuestCreateEvent event = new QuestCreateEvent(p, qu, session.isEdition());
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()){
 			qu.remove(false, true);
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
 			QuestsAPI.getQuests().addQuest(qu);
-			Utils.sendMessage(p, ((!editing) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
+			Utils.sendMessage(p, ((!session.isEdition()) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
 			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
-			if (editing) {
+			if (session.isEdition()) {
 				BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
 				if (failure) BeautyQuests.getInstance().createQuestBackup(qu.getFile().toPath(), "Error occurred while editing");
 			}
@@ -246,8 +240,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			}
 			
 			QuestsAPI.propagateQuestsHandlers(handler -> {
-				if (editing)
-					handler.questEdit(qu, edited, keepPlayerDatas);
+				if (session.isEdition())
+					handler.questEdit(qu, session.getQuestEdited(), keepPlayerDatas);
 				else handler.questCreate(qu);
 			});
 		}
@@ -279,9 +273,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		return failure;
 	}
 
-	public void setStagesEdited(boolean force) {
-		if (!force && stagesEdited) return;
-		stagesEdited = true;
+	private void setStagesEdited() {
 		keepPlayerDatas = false;
 		int resetSlot = QuestOptionCreator.calculateSlot(6);
 		inv.setItem(resetSlot, ItemUtils.itemSwitch(Lang.keepDatas.toString(), false, QuestOption.formatDescription(Lang.keepDatasLore.toString())));
@@ -300,7 +292,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	abstract class Item {
 		protected final int slot;
 		
-		public Item(int slot) {
+		protected Item(int slot) {
 			this.slot = slot;
 		}
 		
@@ -312,7 +304,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 	}
 	
 	abstract class UpdatableItem extends Item implements Updatable {
-		public UpdatableItem(int slot) {
+		protected UpdatableItem(int slot) {
 			super(slot);
 		}
 	}

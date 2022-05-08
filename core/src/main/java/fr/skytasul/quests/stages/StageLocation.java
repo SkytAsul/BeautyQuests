@@ -1,9 +1,9 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -118,14 +118,14 @@ public class StageLocation extends AbstractStage implements Locatable {
 	}
 
 	@Override
-	protected void serialize(Map<String, Object> map){
-		map.put("location", lc.serialize());
-		map.put("radius", radius);
-		if (!gps) map.put("gps", false);
+	protected void serialize(ConfigurationSection section) {
+		section.set("location", lc.serialize());
+		section.set("radius", radius);
+		if (!gps) section.set("gps", false);
 	}
 
-	public static StageLocation deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageLocation(branch, BQLocation.deserialize((Map<String, Object>) map.get("location")), (int) map.get("radius"), (boolean) map.getOrDefault("gps", true));
+	public static StageLocation deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StageLocation(branch, BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)), section.getInt("radius"), section.getBoolean("gps", true));
 	}
 	
 	public static class Creator extends StageCreation<StageLocation> {

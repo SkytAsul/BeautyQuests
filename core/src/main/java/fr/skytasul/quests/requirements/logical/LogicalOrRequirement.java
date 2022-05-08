@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
@@ -24,6 +25,18 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	public LogicalOrRequirement(List<AbstractRequirement> requirements) {
 		this.requirements = requirements;
+	}
+	
+	@Override
+	public void attach(Quest quest) {
+		super.attach(quest);
+		requirements.forEach(req -> req.attach(quest));
+	}
+	
+	@Override
+	public void detach() {
+		super.detach();
+		requirements.forEach(AbstractRequirement::detach);
 	}
 	
 	@Override

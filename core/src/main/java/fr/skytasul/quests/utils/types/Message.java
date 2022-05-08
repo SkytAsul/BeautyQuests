@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class Message implements Cloneable {
@@ -31,7 +34,25 @@ public class Message implements Cloneable {
 	public void sendMessage(Player p, String npc, int id, int size) {
 		String sent = formatMessage(p, npc, id, size);
 		if (QuestsConfiguration.getDialogsConfig().sendInActionBar()) {
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(sent.replace("{nl}", " ")));
+			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+			if (getWaitTime() > 60) {
+				new BukkitRunnable() {
+					int time = 40;
+					
+					@Override
+					public void run() {
+						if (!p.isOnline()) {
+							cancel();
+							return;
+						}
+						
+						time += 40;
+						if (time > getWaitTime()) cancel();
+						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+					}
+				}.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 40, 40);
+			}
 		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
 		
 		if (!"none".equals(sound)) {

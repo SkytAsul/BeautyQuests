@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -130,14 +131,14 @@ public class StageCraft extends AbstractStage {
 	}
 	
 	@Override
-	protected void serialize(Map<String, Object> map){
-		map.put("result", result.serialize());
+	protected void serialize(ConfigurationSection section) {
+		section.set("result", result.serialize());
 		
-		if (!comparisons.getNotDefault().isEmpty()) map.put("itemComparisons", comparisons.getNotDefault());
+		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 	
-	public static StageCraft deserialize(Map<String, Object> map, QuestBranch branch) {
-		return new StageCraft(branch, ItemStack.deserialize((Map<String, Object>) map.get("result")), map.containsKey("itemComparisons") ? new ItemComparisonMap((Map<String, Boolean>) map.get("itemComparisons")) : new ItemComparisonMap());
+	public static StageCraft deserialize(ConfigurationSection section, QuestBranch branch) {
+		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false)) : new ItemComparisonMap());
 	}
 	
 	public static int getMaxCraftAmount(CraftingInventory inv) {

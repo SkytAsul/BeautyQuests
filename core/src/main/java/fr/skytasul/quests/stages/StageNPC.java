@@ -2,9 +2,9 @@ package fr.skytasul.quests.stages;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -120,15 +120,6 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		}
 	}
 	
-	public void setDialog(Object obj){
-		if (obj == null) return;
-		if (obj instanceof Dialog){
-			this.dialog = (Dialog) obj;
-		}else {
-			setDialog(Dialog.deserialize((Map<String, Object>) obj));
-		}
-	}
-	
 	public void setDialog(Dialog dialog){
 		this.dialog = dialog;
 	}
@@ -240,8 +231,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cachePlayer(p);
-			Location location = npc.getLocation();
-			if (QuestsConfiguration.handleGPS() && location != null) GPS.launchCompass(p, location);
+			if (QuestsConfiguration.handleGPS() && npc != null) GPS.launchCompass(p, npc.getLocation());
 		}
 	}
 	
@@ -273,24 +263,24 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		}
 	}
 
-	protected void loadDatas(Map<String, Object> map) {
-		setDialog(map.get("msg"));
-		if (map.containsKey("npcID")) {
-			setNPC((int) map.get("npcID"));
+	protected void loadDatas(ConfigurationSection section) {
+		if (section.contains("msg")) setDialog(Dialog.deserialize(section.getConfigurationSection("msg")));
+		if (section.contains("npcID")) {
+			setNPC(section.getInt("npcID"));
 		}else BeautyQuests.logger.warning("No NPC specified for " + debugName());
-		if (map.containsKey("hid")) hide = (boolean) map.get("hid");
+		if (section.contains("hid")) hide = section.getBoolean("hid");
 	}
 	
 	@Override
-	public void serialize(Map<String, Object> map){
-		map.put("npcID", npcID);
-		if (dialog != null) map.put("msg", dialog.serialize());
-		if (hide) map.put("hid", true);
+	public void serialize(ConfigurationSection section) {
+		section.set("npcID", npcID);
+		if (dialog != null) dialog.serialize(section.createSection("msg"));
+		if (hide) section.set("hid", true);
 	}
 	
-	public static StageNPC deserialize(Map<String, Object> map, QuestBranch branch) {
+	public static StageNPC deserialize(ConfigurationSection section, QuestBranch branch) {
 		StageNPC st = new StageNPC(branch);
-		st.loadDatas(map);
+		st.loadDatas(section);
 		return st;
 	}
 

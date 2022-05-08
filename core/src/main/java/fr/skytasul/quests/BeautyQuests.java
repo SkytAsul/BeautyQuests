@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -178,7 +179,7 @@ public class BeautyQuests extends JavaPlugin {
 			launchMetrics(pluginVersion);
 			try {
 				launchUpdateChecker(pluginVersion);
-			}catch (ReflectiveOperationException e) {
+			}catch (Exception e) {
 				logger.severe("An error occurred while checking updates.", e);
 			}
 		}catch (LoadingException ex) {
@@ -293,7 +294,7 @@ public class BeautyQuests extends JavaPlugin {
 		DebugUtils.logMessage("Started bStats metrics");
 	}
 	
-	private void launchUpdateChecker(String pluginVersion) throws ReflectiveOperationException {
+	private void launchUpdateChecker(String pluginVersion) {
 		DebugUtils.logMessage("Starting Spigot updater");
 		if (pluginVersion.contains("_")) {
 			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
@@ -304,7 +305,8 @@ public class BeautyQuests extends JavaPlugin {
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
 						.setNotifyOpsOnJoin(false)
 						.setUsedVersion(build)
-						.setNameFreeVersion("(dev builds)").checkNow();
+						.setNameFreeVersion("(dev builds)")
+						.checkNow();
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
 			}
@@ -423,7 +425,7 @@ public class BeautyQuests extends JavaPlugin {
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
-				logger.info("You are using a new version for the first time.");
+				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
 				createFolderBackup();
 				createDataBackup();
 			}
@@ -536,13 +538,17 @@ public class BeautyQuests extends JavaPlugin {
 	public boolean createFolderBackup() {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating quests backup...");
-		try {
-			File backupDir = backupDir();
-			backupDir.mkdir();
-			for (File file : saveFolder.listFiles()) {
-				Files.copy(file.toPath(), new File(backupDir, file.getName()).toPath());
-			}
-			logger.info("Quests backup created in " + backupDir.getName());
+		Path backupDir = backupDir();
+		Path saveFolderPath = saveFolder.toPath();
+		try (Stream<Path> stream = Files.walk(saveFolderPath)) {
+			stream.forEach(path -> {
+				try {
+					Files.copy(path, backupDir.resolve(saveFolderPath.relativize(path)));
+				}catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			});
+			logger.info("Quests backup created in " + backupDir.getFileName().toString());
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -554,7 +560,7 @@ public class BeautyQuests extends JavaPlugin {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating data backup...");
 		try{
-			logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), new File(backupDir(), "data.yml").toPath()).getParent().getFileName());
+			logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), backupDir().resolve("data.yml")).getParent().getFileName());
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -575,10 +581,9 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
-	private File backupDir(){
-		File f = new File(getDataFolder(), "backup-" + format.format(new Date()));
-		if (!f.exists()) f.mkdir();
-		return f;
+	
+	private Path backupDir() {
+		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
 	}
 	
 	public void performReload(CommandSender sender){

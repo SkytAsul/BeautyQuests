@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,8 +25,6 @@ import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
-import fr.skytasul.quests.utils.ParticleEffect.OrdinaryColor;
-import fr.skytasul.quests.utils.ParticleEffect.Particle;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Accounts;
@@ -55,9 +54,9 @@ public class QuestsConfiguration {
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
-	private static ParticleEffect.Particle particleStart;
-	private static ParticleEffect.Particle particleTalk;
-	private static ParticleEffect.Particle particleNext;
+	private static ParticleEffect particleStart;
+	private static ParticleEffect particleTalk;
+	private static ParticleEffect particleNext;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean questConfirmGUI = false;
@@ -200,16 +199,15 @@ public class QuestsConfiguration {
 				descSources.add(Source.valueOf(s));
 			}catch (IllegalArgumentException ex){
 				BeautyQuests.logger.warning("Loading of description splitted sources failed : source " + s + " does not exist");
-				continue;
 			}
 		}
 		
 		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
-		if (NMS.isValid()) {
-			particleStart = loadParticles(config, "start", new Particle(ParticleEffect.REDSTONE, ParticleShape.POINT, new OrdinaryColor(Color.YELLOW)));
-			particleTalk = loadParticles(config, "talk", new Particle(ParticleEffect.VILLAGER_HAPPY, ParticleShape.BAR, null));
-			particleNext = loadParticles(config, "next", new Particle(ParticleEffect.SMOKE_NORMAL, ParticleShape.SPOT, null));
+		if (NMS.getMCVersion() >= 9) {
+			particleStart = loadParticles(config, "start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
+			particleTalk = loadParticles(config, "talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
+			particleNext = loadParticles(config, "next", new ParticleEffect(Particle.SMOKE_NORMAL, ParticleShape.SPOT, null));
 		}
 
 		holoLaunchItem = loadHologram("launchItem");
@@ -226,15 +224,15 @@ public class QuestsConfiguration {
 		}
 	}
 	
-	private Particle loadParticles(FileConfiguration config, String name, Particle defaultParticle) {
-		Particle particle = null;
+	private ParticleEffect loadParticles(FileConfiguration config, String name, ParticleEffect defaultParticle) {
+		ParticleEffect particle = null;
 		if (config.getBoolean(name + ".enabled")) {
 			try{
-				particle = Particle.deserialize(config.getConfigurationSection(name).getValues(false));
+				particle = ParticleEffect.deserialize(config.getConfigurationSection(name));
 			}catch (Exception ex){
-				BeautyQuests.logger.warning("Loading of " + name + " particles failed: Invalid particle, color or shape.");
-				particle = defaultParticle;
+				BeautyQuests.logger.warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
 			}
+			if (particle == null) particle = defaultParticle;
 			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
 		}
 		return particle;
@@ -371,7 +369,7 @@ public class QuestsConfiguration {
 		return particleStart != null;
 	}
 	
-	public static ParticleEffect.Particle getParticleStart(){
+	public static ParticleEffect getParticleStart() {
 		return particleStart;
 	}
 	
@@ -379,7 +377,7 @@ public class QuestsConfiguration {
 		return particleTalk != null;
 	}
 	
-	public static ParticleEffect.Particle getParticleTalk(){
+	public static ParticleEffect getParticleTalk() {
 		return particleTalk;
 	}
 	
@@ -387,7 +385,7 @@ public class QuestsConfiguration {
 		return particleNext != null;
 	}
 	
-	public static ParticleEffect.Particle getParticleNext(){
+	public static ParticleEffect getParticleNext() {
 		return particleNext;
 	}
 	
@@ -492,6 +490,7 @@ public class QuestsConfiguration {
 		private boolean defaultSkippable = true;
 		private boolean disableClick = false;
 		private boolean history = true;
+		private int maxDistance = 15, maxDistanceSquared = 15 * 15;
 		
 		private String defaultPlayerSound = null;
 		private String defaultNPCSound = null;
@@ -519,6 +518,8 @@ public class QuestsConfiguration {
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
 			history = config.getBoolean("history");
+			maxDistance = config.getInt("maxDistance");
+			maxDistanceSquared = maxDistance <= 0 ? 0 : (maxDistance * maxDistance);
 			
 			defaultPlayerSound = config.getString("defaultPlayerSound");
 			defaultNPCSound = config.getString("defaultNPCSound");
@@ -542,6 +543,14 @@ public class QuestsConfiguration {
 		
 		public boolean isHistoryEnabled() {
 			return history;
+		}
+		
+		public int getMaxDistance() {
+			return maxDistance;
+		}
+		
+		public int getMaxDistanceSquared() {
+			return maxDistanceSquared;
 		}
 		
 		public String getDefaultPlayerSound() {

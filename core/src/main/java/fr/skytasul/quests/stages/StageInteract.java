@@ -1,9 +1,8 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -82,24 +81,24 @@ public class StageInteract extends AbstractStage {
 	}
 
 	@Override
-	protected void serialize(Map<String, Object> map){
-		map.put("leftClick", left);
+	protected void serialize(ConfigurationSection section) {
+		section.set("leftClick", left);
 		if (lc == null) {
-			map.put("block", block.getAsString());
-		}else map.put("location", lc.serialize());
+			section.set("block", block.getAsString());
+		}else section.set("location", lc.serialize());
 	}
 	
-	public static StageInteract deserialize(Map<String, Object> map, QuestBranch branch) {
-		if (map.containsKey("location")) {
-			return new StageInteract(branch, (boolean) map.get("leftClick"), Location.deserialize((Map<String, Object>) map.get("location")));
+	public static StageInteract deserialize(ConfigurationSection section, QuestBranch branch) {
+		if (section.contains("location")) {
+			return new StageInteract(branch, section.getBoolean("leftClick"), Location.deserialize(section.getConfigurationSection("location").getValues(false)));
 		}else {
 			BQBlock block;
-			if (map.containsKey("material")) {
-				block = new BQBlock.BQBlockMaterial(XMaterial.valueOf((String) map.get("material")));
+			if (section.contains("material")) {
+				block = new BQBlock.BQBlockMaterial(XMaterial.valueOf(section.getString("material")));
 			}else {
-				block = BQBlock.fromString((String) map.get("block"));
+				block = BQBlock.fromString(section.getString("block"));
 			}
-			return new StageInteract(branch, (boolean) map.get("leftClick"), block);
+			return new StageInteract(branch, section.getBoolean("leftClick"), block);
 		}
 	}
 
