@@ -41,6 +41,7 @@ public enum Lang{
 	QUEST_FAILED("msg.quests.failed"),
 	
 	DIALOG_SKIPPED("msg.dialogs.skipped"),
+	DIALOG_TOO_FAR("msg.dialogs.tooFar"), // 0: npc name
 	
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
 	POOL_ALL_COMPLETED("msg.pools.allCompleted"),

@@ -490,6 +490,7 @@ public class QuestsConfiguration {
 		private boolean defaultSkippable = true;
 		private boolean disableClick = false;
 		private boolean history = true;
+		private int maxDistance = 15, maxDistanceSquared = 15 * 15;
 		
 		private String defaultPlayerSound = null;
 		private String defaultNPCSound = null;
@@ -517,6 +518,8 @@ public class QuestsConfiguration {
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
 			history = config.getBoolean("history");
+			maxDistance = config.getInt("maxDistance");
+			maxDistanceSquared = maxDistance <= 0 ? 0 : (maxDistance * maxDistance);
 			
 			defaultPlayerSound = config.getString("defaultPlayerSound");
 			defaultNPCSound = config.getString("defaultNPCSound");
@@ -540,6 +543,14 @@ public class QuestsConfiguration {
 		
 		public boolean isHistoryEnabled() {
 			return history;
+		}
+		
+		public int getMaxDistance() {
+			return maxDistance;
+		}
+		
+		public int getMaxDistanceSquared() {
+			return maxDistanceSquared;
 		}
 		
 		public String getDefaultPlayerSound() {

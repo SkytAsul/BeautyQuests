@@ -56,6 +56,18 @@ public class DialogRunner {
 		return TestResult.ALLOW;
 	}
 	
+	/**
+	 * Tests if the player is close enough to the NPC for the dialog to continue.
+	 * <p>
+	 * This is <i>not</i> tested on player click, only for automatic messages with durations.
+	 * @param p Player to check the distance from the NPC
+	 * @return <code>true</code> if the player is close enough to the NPC or if the distance feature is disabled, <code>false</code> otherwise.
+	 */
+	public boolean canContinue(Player p) {
+		if (npc == null || QuestsConfiguration.getDialogsConfig().getMaxDistance() == 0) return true;
+		return p.getLocation().distanceSquared(npc.getLocation()) <= QuestsConfiguration.getDialogsConfig().getMaxDistanceSquared();
+	}
+	
 	private void end(Player p) {
 		if (test(p) != TestResult.ALLOW) {
 			BeautyQuests.logger.warning("Dialog predicates not completed for NPC " + npc.getId()
@@ -114,7 +126,13 @@ public class DialogRunner {
 				if (message.getWaitTime() != 0) {
 					status.task = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 						status.task = null;
-						handleNext(p);
+						// we test if the player is within the authorized distance from the NPC
+						if (canContinue(p)) {
+							handleNext(p);
+						}else {
+							Lang.DIALOG_TOO_FAR.send(p, dialog.getNPCName(npc));
+							removePlayer(p);
+						}
 					}, message.getWaitTime());
 				}
 			}

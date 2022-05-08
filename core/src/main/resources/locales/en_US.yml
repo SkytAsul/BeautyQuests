@@ -103,6 +103,7 @@ msg:
   restartServer: '§7Restart your server to see the modifications.'
   dialogs:
     skipped: '§8§o Dialog skipped.'
+    tooFar: '§7§oYou are too far away from {0}...'
   command:
     downloadTranslations:
       syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
