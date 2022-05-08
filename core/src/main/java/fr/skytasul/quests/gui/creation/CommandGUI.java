@@ -64,8 +64,9 @@ public class CommandGUI implements CustomInventory {
 			this.console = cmd.console;
 			this.parse = cmd.parse;
 			this.delay = cmd.delay;
-			if (inv != null && console) ItemUtils.set(inv.getItem(1), true);
-			if (inv != null) inv.getItem(4).setType(Material.DIAMOND);
+			if (inv != null && console) ItemUtils.set(inv.getItem(SLOT_CONSOLE), true);
+			if (inv != null && parse) ItemUtils.set(inv.getItem(SLOT_PARSE), true);
+			if (inv != null) inv.getItem(SLOT_FINISH).setType(Material.DIAMOND);
 		}
 		return this;
 	}
@@ -77,7 +78,7 @@ public class CommandGUI implements CustomInventory {
 			Lang.COMMAND.send(p);
 			new TextEditor<String>(p, () -> p.openInventory(inv), cmd -> {
 				this.cmd = cmd;
-				inv.getItem(4).setType(Material.DIAMOND);
+				inv.getItem(SLOT_FINISH).setType(Material.DIAMOND);
 				p.openInventory(inv);
 			}, () -> p.openInventory(inv), null).useStrippedMessage().enter();
 			break;

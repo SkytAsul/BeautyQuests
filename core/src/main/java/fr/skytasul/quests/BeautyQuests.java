@@ -425,7 +425,7 @@ public class BeautyQuests extends JavaPlugin {
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
-				logger.info("You are using a new version for the first time.");
+				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
 				createFolderBackup();
 				createDataBackup();
 			}

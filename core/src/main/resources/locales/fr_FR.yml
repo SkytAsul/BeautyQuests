@@ -88,6 +88,7 @@ msg:
   restartServer: '§7Redémarrez votre serveur pour voir les modifications.'
   dialogs:
     skipped: '§8§o Le dialogue a été passé.'
+    tooFar: '§7§oVous êtes trop loin de {0}...'
   command:
     downloadTranslations:
       syntax: '§cVous devez spécifier une langue à télécharger. Exemple: "/quests downloadTranslations fr_FR".'
@@ -554,6 +555,7 @@ inv:
     name: Commande
     value: '§eCommande'
     console: Console
+    parse: Remplacer les placeholders
     delay: '§bDélai'
   chooseAccount:
     name: Quel compte ?
