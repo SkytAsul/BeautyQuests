@@ -93,7 +93,11 @@ public class StageCraft extends AbstractStage {
 
 						recipeAmount = maxCraftable;
 						break;
+					
 					default:
+						cursor = e.getCursor();
+						if (cursor != null && !cursor.isSimilar(item)) recipeAmount = 0;
+						break;
 				}
 
 				// No use continuing if we haven't actually crafted a thing
