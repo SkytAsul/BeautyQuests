@@ -57,11 +57,6 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	}
 	
 	@Override
-	public boolean remove(QuestObject object) {
-		return super.remove((T) object);
-	}
-	
-	@Override
 	protected void removed(T object) {
 		if (!object.getCreator().multiple) creators.add(object.getCreator());
 	}

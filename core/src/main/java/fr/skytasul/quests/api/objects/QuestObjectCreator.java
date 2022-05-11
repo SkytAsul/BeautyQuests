@@ -4,14 +4,12 @@ import java.util.function.Supplier;
 
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 
-public class QuestObjectCreator<T extends QuestObject> {
+public class QuestObjectCreator<T extends QuestObject> extends SerializableCreator<T> {
 	
-	public final String id;
-	public final Class<? extends T> clazz;
 	public final ItemStack item;
-	public final Supplier<T> newObjectSupplier;
 	public final boolean multiple;
 	private QuestObjectLocation[] allowedLocations;
 	
@@ -34,10 +32,8 @@ public class QuestObjectCreator<T extends QuestObject> {
 	 * @param allowedLocations if present, specifies where the object can be used. If no location specified, the
 	 */
 	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack item, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
-		this.id = id;
-		this.clazz = clazz;
+		super(id, clazz, newObjectSupplier);
 		this.item = item;
-		this.newObjectSupplier = newObjectSupplier;
 		this.multiple = multiple;
 		this.allowedLocations = allowedLocations;
 	}

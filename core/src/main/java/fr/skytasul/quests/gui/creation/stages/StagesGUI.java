@@ -311,7 +311,6 @@ public class StagesGUI implements CustomInventory {
 
 	private static final ItemStack stageNPC = ItemUtils.item(XMaterial.OAK_SIGN, Lang.stageNPC.toString());
 	private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageBring.toString());
-	private static final ItemStack stageArea = ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString());
 	private static final ItemStack stageMobs = ItemUtils.item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString());
 	private static final ItemStack stageMine = ItemUtils.item(XMaterial.WOODEN_PICKAXE, Lang.stageMine.toString());
 	private static final ItemStack stagePlace = ItemUtils.item(XMaterial.OAK_STAIRS, Lang.stagePlace.toString());
@@ -330,7 +329,6 @@ public class StagesGUI implements CustomInventory {
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
 
-		QuestsAPI.registerStage(new StageType<StageArea>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize, stageArea, StageArea.Creator::new, "WorldGuard"));
 		QuestsAPI.registerStage(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(), StageNPC::deserialize, stageNPC, StageNPC.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(), StageBringBack::deserialize, stageItems, StageBringBack.Creator::new));
 		QuestsAPI.registerStage(new StageType<>("MOBS", StageMobs.class, Lang.Mobs.name(), StageMobs::deserialize, stageMobs, StageMobs.Creator::new));

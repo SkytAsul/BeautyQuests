@@ -12,12 +12,12 @@ import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 public class QuestObjectClickEvent {
 	
 	private final Player player;
-	private final QuestObjectGUI<? extends QuestObject> gui;
+	private final QuestObjectGUI gui;
 	private final ItemStack item;
 	private final ClickType click;
 	private final boolean creation;
 	
-	public QuestObjectClickEvent(Player player, QuestObjectGUI<? extends QuestObject> gui, ItemStack item, ClickType click, boolean creation) {
+	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation) {
 		this.player = player;
 		this.gui = gui;
 		this.item = item;
@@ -29,7 +29,7 @@ public class QuestObjectClickEvent {
 		return player;
 	}
 	
-	public QuestObjectGUI<? extends QuestObject> getGUI() {
+	public QuestObjectGUI getGUI() {
 		return gui;
 	}
 	

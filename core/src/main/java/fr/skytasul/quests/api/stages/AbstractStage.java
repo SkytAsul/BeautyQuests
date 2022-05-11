@@ -43,9 +43,7 @@ public abstract class AbstractStage implements Listener{
 	
 	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
-		
-		this.type = QuestsAPI.stages.stream().filter(type -> type.clazz == getClass()).findAny()
-				.orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
+		this.type = QuestsAPI.getStageType(getClass());
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}

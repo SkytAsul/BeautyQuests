@@ -53,6 +53,11 @@ public final class QuestsAPI {
 		DebugUtils.logMessage("Stage registered (" + creator.name + ", " + (stages.size() - 1) + ")");
 	}
 	
+	public static <T extends AbstractStage> StageType<T> getStageType(Class<T> stageClass){
+		return (StageType<T>) stages.stream().filter(type -> type.clazz == stageClass).findAny()
+				.orElseThrow(() -> new IllegalArgumentException(stageClass.getName() + "has not been registered as a stage type via the API."));
+	}
+	
 	/**
 	 * Register new mob factory
 	 * @param factory MobFactory instance
