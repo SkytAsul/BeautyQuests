@@ -49,7 +49,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	}
 	
 	public ItemStack getItemStack() {
-		return ItemUtils.lore(getCreator().item.clone(), getLore());
+		return ItemUtils.lore(getCreator().getItem().clone(), getLore());
 	}
 	
 	public abstract void itemClick(QuestObjectClickEvent event);

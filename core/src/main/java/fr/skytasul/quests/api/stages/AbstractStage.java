@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -41,6 +43,8 @@ public abstract class AbstractStage implements Listener{
 	private String customText = null;
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
+	
+	private List<StageOption> options = new ArrayList<>();
 	
 	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
@@ -78,6 +82,14 @@ public abstract class AbstractStage implements Listener{
 	public void setValidationRequirements(List<AbstractRequirement> validationRequirements) {
 		this.validationRequirements = validationRequirements;
 		validationRequirements.forEach(requirement -> requirement.attach(branch.getQuest()));
+	}
+	
+	public List<StageOption> getOptions() {
+		return options;
+	}
+	
+	public void setOptions(List<StageOption> options) {
+		this.options = options;
 	}
 
 	public String getCustomText(){
@@ -143,6 +155,18 @@ public abstract class AbstractStage implements Listener{
 		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID() + "(" + type.id + ")";
 	}
 
+	private void propagateStageHandlers(Consumer<StageHandler> consumer) {
+		Consumer<StageHandler> newConsumer = handler -> {
+			try {
+				consumer.accept(handler);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An error occurred while updating stage handler.", ex);
+			}
+		};
+		QuestsAPI.getQuestsHandlers().forEach(newConsumer);
+		options.forEach(newConsumer);
+	}
+	
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
@@ -169,7 +193,7 @@ public abstract class AbstractStage implements Listener{
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageStart(acc, this));
+		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 	}
 	
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
@@ -180,7 +204,7 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void end(PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageEnd(acc, this));
+		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 	}
 	
 	/**
@@ -188,7 +212,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just joined
 	 */
 	public void joins(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, p, this));
+		propagateStageHandlers(handler -> handler.stageJoin(acc, p, this));
 	}
 	
 	/**
@@ -196,7 +220,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just left
 	 */
 	public void leaves(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, p, this));
+		propagateStageHandlers(handler -> handler.stageLeave(acc, p, this));
 	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){

@@ -11,16 +11,16 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 	protected final List<C> creators = new ArrayList<>();
 
 	public void register(C creator) {
-		if (creators.stream().anyMatch(x -> x.id.equals(creator.id)))
-			throw new IllegalStateException("A creator with the same id " + creator.id + " has been registered.");
+		if (creators.stream().anyMatch(x -> x.getID().equals(creator.getID())))
+			throw new IllegalStateException("A creator with the same id " + creator.getID() + " has been registered.");
 		creators.add(creator);
-		DebugUtils.logMessage("Quest object registered (id: " + creator.id + ", class: " + creator.clazz.getName() + ")");
+		DebugUtils.logMessage("Quest object registered (id: " + creator.getID() + ", class: " + creator.getSerializableClass().getName() + ")");
 	}
 
 	public SerializableCreator<T> getByClass(Class<?> clazz) {
 		return creators
 				.stream()
-				.filter(creator -> creator.clazz.equals(clazz))
+				.filter(creator -> creator.getSerializableClass().equals(clazz))
 				.findAny()
 				.orElse(null);
 	}
@@ -28,7 +28,7 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 	public SerializableCreator<T> getByID(String id) {
 		return creators
 				.stream()
-				.filter(creator -> creator.id.equals(id))
+				.filter(creator -> creator.getID().equals(id))
 				.findAny()
 				.orElse(null);
 	}

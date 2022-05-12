@@ -42,13 +42,11 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	public QuestObjectGUI(String name, QuestObjectLocation objectLocation, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
 		super(name, DyeColor.CYAN, (List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toList()));
 		this.name = name;
-		this.creators = creators.stream().filter(creator -> creator.isAllowed(objectLocation) && (creator.multiple || !objects.stream().anyMatch(object -> object.getCreator() == creator))).collect(Collectors.toList());
+		this.creators = creators.stream()
+				.filter(creator -> creator.isAllowed(objectLocation))
+				.filter(creator -> creator.canBeMultiple() || objects.stream().noneMatch(object -> object.getCreator() == creator))
+				.collect(Collectors.toList());
 		this.end = end;
-	}
-
-	@Deprecated
-	public void reopen(Player p) {
-		super.reopen();
 	}
 	
 	@Override
@@ -58,7 +56,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	
 	@Override
 	protected void removed(T object) {
-		if (!object.getCreator().multiple) creators.add(object.getCreator());
+		if (!object.getCreator().canBeMultiple()) creators.add(object.getCreator());
 	}
 	
 	@Override
@@ -67,13 +65,13 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 			
 			@Override
 			public ItemStack getItemStack(QuestObjectCreator<T> object) {
-				return object.item;
+				return object.getItem();
 			}
 			
 			@Override
 			public void click(QuestObjectCreator<T> existing, ItemStack item, ClickType clickType) {
-				T object = existing.newObjectSupplier.get();
-				if (!existing.multiple) creators.remove(existing);
+				T object = existing.newObject();
+				if (!existing.canBeMultiple()) creators.remove(existing);
 				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true));
 			}
 			

@@ -9,8 +9,8 @@ import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 
 public class QuestObjectCreator<T extends QuestObject> extends SerializableCreator<T> {
 	
-	public final ItemStack item;
-	public final boolean multiple;
+	private final ItemStack item;
+	private final boolean multiple;
 	private QuestObjectLocation[] allowedLocations;
 	
 	/**
@@ -36,6 +36,14 @@ public class QuestObjectCreator<T extends QuestObject> extends SerializableCreat
 		this.item = item;
 		this.multiple = multiple;
 		this.allowedLocations = allowedLocations;
+	}
+	
+	public ItemStack getItem() {
+		return item;
+	}
+	
+	public boolean canBeMultiple() {
+		return multiple;
 	}
 	
 	public boolean isAllowed(QuestObjectLocation location) {

@@ -31,7 +31,7 @@ public abstract class SerializableObject {
 	}
 
 	public String getName() {
-		return getCreator().id;
+		return getCreator().getID();
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class SerializableObject {
 	}
 	
 	public final void serialize(ConfigurationSection section) {
-		section.set("id", creator.id);
+		section.set("id", creator.getID());
 		save(section);
 	}
 
@@ -85,7 +85,7 @@ public abstract class SerializableObject {
 			BeautyQuests.logger.severe("Cannot find object creator with id: " + id);
 			return null;
 		}
-		T reward = creator.newObjectSupplier.get();
+		T reward = creator.newObject();
 		reward.load(section);
 		return reward;
 	}
