@@ -1,8 +1,8 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -51,13 +51,13 @@ public class MessageReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("text", text);
+	protected void save(ConfigurationSection section) {
+		section.set("text", text);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		text = (String) savedDatas.get("text");
+	protected void load(ConfigurationSection section) {
+		text = section.getString("text");
 	}
 	
 }

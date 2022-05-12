@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +23,12 @@ public class ItemComparisonMap implements Cloneable {
 	
 	public ItemComparisonMap(Map<String, Boolean> notDefault) {
 		setNotDefaultComparisons(notDefault);
+	}
+	
+	public void setNotDefaultComparisons(ConfigurationSection section) {
+		Map<String, Boolean> map = new HashMap<>();
+		section.getKeys(false).forEach(key -> notDefault.put(key, section.getBoolean(key)));
+		setNotDefaultComparisons(map);
 	}
 	
 	public void setNotDefaultComparisons(Map<String, Boolean> comparisons) {

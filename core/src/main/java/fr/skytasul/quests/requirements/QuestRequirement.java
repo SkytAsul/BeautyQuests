@@ -1,7 +1,6 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
@@ -82,13 +81,13 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("questID", questId);
+	protected void save(ConfigurationSection section) {
+		section.set("questID", questId);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		questId = (int) savedDatas.get("questID");
+	protected void load(ConfigurationSection section) {
+		questId = section.getInt("questID");
 	}
 	
 }

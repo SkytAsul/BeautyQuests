@@ -1,8 +1,8 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -62,13 +62,13 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("delay", delay);
+	protected void save(ConfigurationSection section) {
+		section.set("delay", delay);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		delay = (int) savedDatas.get("delay");
+	protected void load(ConfigurationSection section) {
+		delay = section.getInt("delay");
 	}
 	
 }

@@ -2,24 +2,23 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class RandomReward extends AbstractReward {
 	
@@ -117,16 +116,16 @@ public class RandomReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
-		datas.put("min", min);
-		datas.put("max", max);
+	protected void save(ConfigurationSection section) {
+		section.set("rewards", SerializableObject.serializeList(rewards));
+		section.set("min", min);
+		section.set("max", max);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		rewards = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("rewards"), AbstractReward::deserialize);
-		setMinMax((int) savedDatas.get("min"), (int) savedDatas.get("max"));
+	protected void load(ConfigurationSection section) {
+		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
+		setMinMax(section.getInt("min"), section.getInt("max"));
 	}
 	
 }

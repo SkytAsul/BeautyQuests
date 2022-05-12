@@ -1,8 +1,7 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -13,8 +12,6 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class RegionRequirement extends AbstractRequirement {
@@ -28,8 +25,6 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	public RegionRequirement(String worldName, String regionName) {
-		if (!DependenciesManager.wg.isEnabled()) throw new MissingDependencyException("WorldGuard");
-		
 		this.worldName = worldName;
 		setRegionName(regionName);
 	}
@@ -86,15 +81,15 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("world", worldName);
-		datas.put("region", regionName);
+	protected void save(ConfigurationSection section) {
+		section.set("world", worldName);
+		section.set("region", regionName);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		worldName = (String) savedDatas.get("world");
-		setRegionName((String) savedDatas.get("region"));
+	protected void load(ConfigurationSection section) {
+		worldName = section.getString("world");
+		setRegionName(section.getString("region"));
 	}
 	
 }

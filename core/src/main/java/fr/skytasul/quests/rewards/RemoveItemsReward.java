@@ -3,8 +3,8 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -80,15 +80,15 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
-		if (!comparisons.getNotDefault().isEmpty()) datas.put("comparisons", comparisons.getNotDefault());
+	protected void save(ConfigurationSection section) {
+		section.set("items", Utils.serializeList(items, ItemStack::serialize));
+		if (!comparisons.getNotDefault().isEmpty()) section.createSection("comparisons", comparisons.getNotDefault());
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
-		if (savedDatas.containsKey("comparisons")) comparisons.setNotDefaultComparisons((Map<String, Boolean>) savedDatas.get("comparisons"));
+	protected void load(ConfigurationSection section){
+		items.addAll(Utils.deserializeList(section.getMapList("items"), ItemStack::deserialize));
+		if (section.contains("comparisons")) comparisons.setNotDefaultComparisons(section.getConfigurationSection("comparisons"));
 	}
 
 }

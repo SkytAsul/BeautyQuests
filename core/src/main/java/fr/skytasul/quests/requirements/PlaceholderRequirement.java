@@ -1,8 +1,8 @@
 package fr.skytasul.quests.requirements;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -13,8 +13,6 @@ import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
@@ -36,7 +34,6 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 	
 	public PlaceholderRequirement(String placeholder, String value, ComparisonMethod comparison) {
-		if (!DependenciesManager.papi.isEnabled()) throw new MissingDependencyException("PlaceholderAPI");
 		if (placeholder != null) setPlaceholder(placeholder);
 		this.value = value;
 		this.comparison = comparison;
@@ -104,19 +101,19 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("placeholder", rawPlaceholder);
-		datas.put("value", value);
-		datas.put("comparison", comparison.name());
-		datas.put("parseValue", parseValue);
+	protected void save(ConfigurationSection section) {
+		section.set("placeholder", rawPlaceholder);
+		section.set("value", value);
+		section.set("comparison", comparison.name());
+		section.set("parseValue", parseValue);
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		setPlaceholder((String) savedDatas.get("placeholder"));
-		this.value = (String) savedDatas.get("value");
-		if (savedDatas.containsKey("comparison")) this.comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
-		if (savedDatas.containsKey("parseValue")) this.parseValue = (boolean) savedDatas.get("parseValue");
+	protected void load(ConfigurationSection section){
+		setPlaceholder(section.getString("placeholder"));
+		this.value = section.getString("value");
+		if (section.contains("comparison")) this.comparison = ComparisonMethod.valueOf(section.getString("comparison"));
+		if (section.contains("parseValue")) this.parseValue = section.getBoolean("parseValue");
 	}
 
 	@Override

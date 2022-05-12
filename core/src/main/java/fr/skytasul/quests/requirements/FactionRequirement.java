@@ -2,10 +2,11 @@ package fr.skytasul.quests.requirements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -23,9 +24,7 @@ import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Factions;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class FactionRequirement extends AbstractRequirement {
 
@@ -36,7 +35,6 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 	
 	public FactionRequirement(List<Faction> factions) {
-		if (!DependenciesManager.fac.isEnabled()) throw new MissingDependencyException("Factions");
 		this.factions = factions;
 	}
 	
@@ -104,17 +102,13 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		List<String> ls = new ArrayList<>();
-		for (Faction fac : factions) {
-			ls.add(fac.getId());
-		}
-		datas.put("factions", factions);
+	protected void save(ConfigurationSection section) {
+		section.set("factions", factions.stream().map(Faction::getId).collect(Collectors.toList()));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		for (String s : (List<String>) savedDatas.get("factions")) {
+	protected void load(ConfigurationSection section) {
+		for (String s : section.getStringList("factions")) {
 			if (!FactionColl.get().containsId(s)) {
 				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists.");
 				continue;

@@ -1,8 +1,8 @@
 package fr.skytasul.quests.api.requirements;
 
 import java.text.NumberFormat;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -10,7 +10,6 @@ import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public abstract class TargetNumberRequirement extends AbstractRequirement {
 
@@ -58,15 +57,15 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	public abstract void sendHelpString(Player p);
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("comparison", comparison.name());
-		datas.put("target", target);
+	protected void save(ConfigurationSection section) {
+		section.set("comparison", comparison.name());
+		section.set("target", target);
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		if (savedDatas.containsKey("comparison")) comparison = ComparisonMethod.valueOf((String) savedDatas.get("comparison"));
-		target = Utils.parseDouble(savedDatas.get("target"));
+	protected void load(ConfigurationSection section) {
+		if (section.contains("comparison")) comparison = ComparisonMethod.valueOf(section.getString("comparison"));
+		target = section.getDouble("target");
 	}
 	
 	@Override

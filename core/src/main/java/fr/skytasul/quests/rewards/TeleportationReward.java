@@ -1,9 +1,9 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -53,13 +53,13 @@ public class TeleportationReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("tp", teleportation.serialize());
+	protected void save(ConfigurationSection section) {
+		section.set("tp", teleportation.serialize());
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		teleportation = Location.deserialize((Map<String, Object>) savedDatas.get("tp"));
+	protected void load(ConfigurationSection section) {
+		teleportation = Location.deserialize(section.getConfigurationSection("tp").getValues(false));
 	}
 	
 }

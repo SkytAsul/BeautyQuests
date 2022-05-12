@@ -2,8 +2,8 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.QuestsConfiguration;
@@ -64,13 +64,13 @@ public class XPReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("xp", exp);
+	protected void save(ConfigurationSection section) {
+		section.set("xp", exp);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		exp = (int) savedDatas.get("xp");
+	protected void load(ConfigurationSection section) {
+		exp = section.getInt("xp");
 	}
 	
 }

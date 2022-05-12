@@ -353,11 +353,11 @@ public class Utils{
 		return ls;
 	}
 	
-	public static <T> List<T> deserializeList(List<Map<String, Object>> serialized, Function<Map<String, Object>, T> deserialize){
+	public static <T> List<T> deserializeList(List<Map<?, ?>> serialized, Function<Map<String, Object>, T> deserialize) {
 		List<T> ls = new ArrayList<>();
 		if (serialized != null) {
-			for (Map<String, Object> map : serialized) {
-				ls.add(deserialize.apply(map));
+			for (Map<?, ?> map : serialized) {
+				ls.add(deserialize.apply((Map<String, Object>) map));
 			}
 		}
 		return ls;

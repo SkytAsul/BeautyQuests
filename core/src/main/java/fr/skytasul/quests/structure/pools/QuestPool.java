@@ -13,8 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
-import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerPoolDatas;
@@ -260,11 +260,11 @@ public class QuestPool implements Comparable<QuestPool> {
 		config.set("timeDiff", timeDiff);
 		config.set("npcID", npcID);
 		config.set("avoidDuplicates", avoidDuplicates);
-		if (!requirements.isEmpty()) config.set("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
+		if (!requirements.isEmpty()) config.set("requirements", SerializableObject.serializeList(requirements));
 	}
 	
 	public static QuestPool deserialize(int id, ConfigurationSection config) {
-		List<AbstractRequirement> requirements = QuestObject.deserializeList(config.getMapList("requirements"), AbstractRequirement::deserialize);
+		List<AbstractRequirement> requirements = SerializableObject.deserializeList(config.getMapList("requirements"), AbstractRequirement::deserialize);
 		return new QuestPool(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
 	}
 	

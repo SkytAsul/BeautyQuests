@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 
 import fr.skytasul.quests.BeautyQuests;
 
@@ -33,27 +37,41 @@ public abstract class SerializableObject {
 	@Override
 	public abstract SerializableObject clone();
 
-	protected abstract void save(Map<String, Object> datas);
+	@Deprecated
+	protected void save(Map<String, Object> datas) {}
 
-	protected abstract void load(Map<String, Object> savedDatas);
-
-	public final Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<>();
-		
-		save(map);
-		map.put("id", creator.id);
-		
-		return map;
+	@Deprecated
+	protected void load(Map<String, Object> savedDatas) {}
+	
+	protected void save(ConfigurationSection section) {
+		Map<String, Object> datas = new HashMap<>();
+		save(datas);
+		datas.forEach(section::set);
+	}
+	
+	protected void load(ConfigurationSection section) {
+		load(section.getValues(false));
+	}
+	
+	public final void serialize(ConfigurationSection section) {
+		section.set("id", creator.id);
+		save(section);
 	}
 
 	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(Map<String, Object> map, SerializableRegistry<T, C> registry) {
+		MemoryConfiguration section = new MemoryConfiguration();
+		map.forEach(section::set);
+		return deserialize(section, registry);
+	}
+	
+	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(ConfigurationSection section, SerializableRegistry<T, C> registry) {
 		SerializableCreator<T> creator = null;
 		
-		String id = (String) map.get("id");
+		String id = section.getString("id");
 		if (id != null) creator = registry.getByID(id);
 		
-		if (creator == null && map.containsKey("class")) {
-			String className = (String) map.get("class");
+		if (creator == null && section.contains("class")) {
+			String className = section.getString("class");
 			try {
 				creator = registry.getByClass(Class.forName(className));
 			}catch (ClassNotFoundException e) {}
@@ -68,7 +86,7 @@ public abstract class SerializableObject {
 			return null;
 		}
 		T reward = creator.newObjectSupplier.get();
-		reward.load(map);
+		reward.load(section);
 		return reward;
 	}
 
@@ -87,6 +105,14 @@ public abstract class SerializableObject {
 			}
 		}
 		return objects;
+	}
+	
+	public static List<Map<String, Object>> serializeList(List<? extends SerializableObject> objects) {
+		return objects.stream().map(object -> {
+			MemoryConfiguration section = new MemoryConfiguration();
+			object.serialize(section);
+			return section.getValues(false);
+		}).collect(Collectors.toList());
 	}
 	
 }

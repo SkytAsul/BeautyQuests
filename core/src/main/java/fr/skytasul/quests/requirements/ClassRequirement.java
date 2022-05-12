@@ -2,10 +2,11 @@ package fr.skytasul.quests.requirements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -20,8 +21,6 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
 public class ClassRequirement extends AbstractRequirement {
@@ -33,7 +32,6 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	public ClassRequirement(List<RPGClass> classes) {
-		if (!DependenciesManager.skapi.isEnabled()) throw new MissingDependencyException("SkillAPI");
 		this.classes = classes;
 	}
 
@@ -108,19 +106,15 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		if (classes.isEmpty()) return;
-		List<String> ls = new ArrayList<>();
-		for (RPGClass cl : classes) {
-			ls.add(cl.getName());
-		}
-		datas.put("classes", ls);
+	protected void save(ConfigurationSection section) {
+		if (!classes.isEmpty())
+			section.set("classes", classes.stream().map(RPGClass::getName).collect(Collectors.toList()));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		if (!savedDatas.containsKey("classes")) return;
-		for (String s : (List<String>) savedDatas.get("classes")) {
+	protected void load(ConfigurationSection section) {
+		if (!section.contains("classes")) return;
+		for (String s : section.getStringList("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());
 			if (classe == null) {
 				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists.");

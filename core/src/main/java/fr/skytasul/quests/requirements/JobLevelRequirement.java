@@ -1,7 +1,6 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -10,9 +9,7 @@ import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.Jobs;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class JobLevelRequirement extends TargetNumberRequirement {
 
@@ -24,7 +21,6 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	
 	public JobLevelRequirement(String jobName, double target, ComparisonMethod comparison) {
 		super(target, comparison);
-		if (!DependenciesManager.jobs.isEnabled()) throw new MissingDependencyException("Jobs");
 		this.jobName = jobName;
 	}
 
@@ -77,16 +73,15 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		super.save(datas);
-		datas.put("jobName", jobName);
+	protected void save(ConfigurationSection section) {
+		super.save(section);
+		section.set("jobName", jobName);
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		super.load(savedDatas);
-		jobName = (String) savedDatas.get("jobName");
-		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
+	protected void load(ConfigurationSection section) {
+		super.load(section);
+		jobName = section.getString("jobName");
 	}
 	
 }

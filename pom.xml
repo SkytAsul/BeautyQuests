@@ -22,7 +22,7 @@
 	<repositories>
 		<repository>
 			<id>codemc-nms</id>
-			<url>https://repo.codemc.org/repository/nms/</url>
+			<url>https://repo.codemc.io/repository/nms/</url>
 		</repository>
 	</repositories>
 

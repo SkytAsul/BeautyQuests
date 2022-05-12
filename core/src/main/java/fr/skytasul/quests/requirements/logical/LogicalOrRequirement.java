@@ -2,18 +2,17 @@ package fr.skytasul.quests.requirements.logical;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class LogicalOrRequirement extends AbstractRequirement {
 	
@@ -64,13 +63,13 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
+	protected void save(ConfigurationSection section) {
+		section.set("requirements", SerializableObject.serializeList(requirements));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		requirements = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("requirements"), AbstractRequirement::deserialize);
+	protected void load(ConfigurationSection section) {
+		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
 	}
 	
 }

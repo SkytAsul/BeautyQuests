@@ -21,6 +21,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -286,8 +287,8 @@ public abstract class AbstractStage implements Listener{
 		section.set("customText", customText);
 		if (startMessage != null) section.set("text", startMessage);
 		
-		if (!rewards.isEmpty()) section.set("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
-		if (!validationRequirements.isEmpty()) section.set("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
+		if (!rewards.isEmpty()) section.set("rewards", SerializableObject.serializeList(rewards));
+		if (!validationRequirements.isEmpty()) section.set("requirements", SerializableObject.serializeList(validationRequirements));
 	}
 	
 	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {

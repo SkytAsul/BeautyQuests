@@ -2,8 +2,8 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -11,20 +11,15 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class MoneyReward extends AbstractReward {
 
 	public double money = 0;
 	
-	public MoneyReward(){
-		if (!DependenciesManager.vault.isEnabled()) throw new MissingDependencyException("Vault");
-	}
+	public MoneyReward() {}
 	
 	public MoneyReward(double money) {
-		this();
 		this.money = money;
 	}
 
@@ -65,13 +60,13 @@ public class MoneyReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("money", money);
+	protected void save(ConfigurationSection section) {
+		section.set("money", money);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		money = (double) savedDatas.get("money");
+	protected void load(ConfigurationSection section) {
+		money = section.getDouble("money");
 	}
 	
 }

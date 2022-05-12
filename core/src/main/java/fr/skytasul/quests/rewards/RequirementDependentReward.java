@@ -2,11 +2,11 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
@@ -14,12 +14,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -139,15 +139,15 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("requirements", Utils.serializeList(requirements, AbstractRequirement::serialize));
-		datas.put("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
+	protected void save(ConfigurationSection section) {
+		section.set("requirements", SerializableObject.serializeList(requirements));
+		section.set("rewards", SerializableObject.serializeList(rewards));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		requirements = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("requirements"), AbstractRequirement::deserialize);
-		rewards = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("rewards"), AbstractReward::deserialize);
+	protected void load(ConfigurationSection section) {
+		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
+		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
 	}
 	
 }
