@@ -10,7 +10,10 @@ import fr.skytasul.quests.api.stages.StageHandler;
 public abstract class StageOption<T extends AbstractStage> extends SerializableObject implements StageHandler {
 	
 	protected StageOption(Class<T> stageClass) {
-		super(QuestsAPI.getStageType(stageClass).getOptionsRegistry());
+		super(QuestsAPI.getStages()
+				.getType(stageClass)
+				.orElseThrow(() -> new IllegalArgumentException(stageClass.getName() + "has not been registered as a stage type via the API."))
+				.getOptionsRegistry());
 	}
 	
 	protected StageOption(SerializableCreator<StageOption<T>> creator) {

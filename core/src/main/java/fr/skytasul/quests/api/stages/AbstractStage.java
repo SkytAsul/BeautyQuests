@@ -32,7 +32,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
 
-public abstract class AbstractStage implements Listener{
+public abstract class AbstractStage implements Listener {
 	
 	private final StageType<?> type;
 	protected boolean asyncEnd = false;
@@ -48,7 +48,7 @@ public abstract class AbstractStage implements Listener{
 	
 	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
-		this.type = QuestsAPI.getStageType(getClass());
+		this.type = QuestsAPI.getStages().getType(getClass()).orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
@@ -151,8 +151,9 @@ public abstract class AbstractStage implements Listener{
 		return true;
 	}
 	
-	public String debugName() {
-		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID() + "(" + type.id + ")";
+	@Override
+	public String toString() {
+		return "stage " + getID() + "(" + type.id + ") of quest " + branch.getQuest().getID() + ", branch " + branch.getID();
 	}
 
 	private void propagateStageHandlers(Consumer<StageHandler> consumer) {
@@ -228,7 +229,7 @@ public abstract class AbstractStage implements Listener{
 		try{
 			return descriptionLine(acc, source);
 		}catch (Exception ex){
-			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + debugName(), ex);
+			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + toString(), ex);
 			return "§a" + type.name;
 		}
 	}
@@ -250,7 +251,7 @@ public abstract class AbstractStage implements Listener{
 	
 	public void updateObjective(PlayerAccount acc, Player p, String dataKey, Object dataValue) {
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
-		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
+		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + toString());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
 		branch.getBranchesManager().objectiveUpdated(p, acc);
@@ -265,7 +266,7 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageUnload(this));
+		propagateStageHandlers(handler -> handler.stageUnload(this));
         HandlerList.unregisterAll(this);
 		rewards.forEach(AbstractReward::detach);
 		validationRequirements.forEach(AbstractRequirement::detach);
@@ -275,7 +276,7 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage loads
 	 */
 	public void load() {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLoad(this));
+		propagateStageHandlers(handler -> handler.stageLoad(this));
 	}
 	
 	@EventHandler
@@ -318,7 +319,7 @@ public abstract class AbstractStage implements Listener{
 	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {
 		String typeID = section.getString("stageType");
 		
-		Optional<StageType<?>> stageTypeOptional = QuestsAPI.stages.stream().filter(type -> type.id.equals(typeID)).findAny();
+		Optional<StageType<?>> stageTypeOptional = QuestsAPI.getStages().getType(typeID);
 		if (!stageTypeOptional.isPresent()) {
 			BeautyQuests.getInstance().getLogger().severe("Unknown stage type : " + typeID);
 			return null;

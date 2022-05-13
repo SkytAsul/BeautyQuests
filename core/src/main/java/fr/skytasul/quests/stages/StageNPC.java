@@ -114,7 +114,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		this.npcID = npcID;
 		if (npcID >= 0) this.npc = QuestsAPI.getNPCsManager().getById(npcID);
 		if (npc == null) {
-			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
+			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + toString());
 		}else {
 			initDialogRunner();
 		}
@@ -267,7 +267,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		if (section.contains("msg")) setDialog(Dialog.deserialize(section.getConfigurationSection("msg")));
 		if (section.contains("npcID")) {
 			setNPC(section.getInt("npcID"));
-		}else BeautyQuests.logger.warning("No NPC specified for " + debugName());
+		}else BeautyQuests.logger.warning("No NPC specified for " + toString());
 		if (section.contains("hid")) hide = section.getBoolean("hid");
 	}
 	

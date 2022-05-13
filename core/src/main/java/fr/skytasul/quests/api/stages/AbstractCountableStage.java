@@ -75,7 +75,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
 		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 		if (playerAmounts == null) {
-			BeautyQuests.logger.severe("The plugin has been unable to retrieve stage datas for account " + acc.debugName() + " on " + super.debugName());
+			BeautyQuests.logger.severe("The plugin has been unable to retrieve stage datas for account " + acc.debugName() + " on " + super.toString());
 			return new String[] { "§4§lerror" };
 		}
 		String[] elements = new String[playerAmounts.size()];
@@ -116,7 +116,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			if (objectApplies(entry.getValue().getKey(), object)) {
 				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
 				if (playerAmounts == null) {
-					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + debugName() + ". This is a bug!");
+					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
 					return true;
 				}
 				if (playerAmounts.containsKey(id)) {
@@ -133,7 +133,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 					if (barsEnabled) {
 						BossBar bar = bars.get(p);
 						if (bar == null) {
-							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + debugName() + ". This is a bug!");
+							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + toString() + ". This is a bug!");
 						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
 					}
 					updateObjective(acc, p, "remaining", playerAmounts);
@@ -167,7 +167,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		super.joins(acc, p);
 		Map<Integer, Integer> remainings = getPlayerRemainings(acc);
 		if (remainings == null) {
-			BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + debugName() + ". This is a bug!");
+			BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + toString() + ". This is a bug!");
 			return;
 		}
 		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
@@ -242,7 +242,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			}
 		}
 		
-		if (objects.isEmpty()) BeautyQuests.logger.warning("Stage with no content: " + debugName());
+		if (objects.isEmpty()) BeautyQuests.logger.warning("Stage with no content: " + toString());
 		calculateSize();
 	}
 
@@ -276,7 +276,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		public void update(int amount) {
 			if (amount >= 0 && amount <= cachedSize) {
 				bar.setProgress((double) (cachedSize - amount) / (double) cachedSize);
-			}else BeautyQuests.logger.warning("Amount of objects superior to max objects in " + debugName() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
+			}else BeautyQuests.logger.warning("Amount of objects superior to max objects in " + AbstractCountableStage.this.toString() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
 			bar.setTitle(Lang.MobsProgression.format(branch.getQuest().getName(), cachedSize - amount, cachedSize));
 			bar.addPlayer(p);
 			timer();

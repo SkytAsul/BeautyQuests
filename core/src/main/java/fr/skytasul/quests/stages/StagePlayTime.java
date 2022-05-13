@@ -75,7 +75,7 @@ public class StagePlayTime extends AbstractStage {
 			task.cancel();
 			updateObjective(acc, null, "remainingTime", getRemaining(acc));
 		}else {
-			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + debugName() + " for player " + acc.getName());
+			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + acc.getName());
 		}
 	}
 	

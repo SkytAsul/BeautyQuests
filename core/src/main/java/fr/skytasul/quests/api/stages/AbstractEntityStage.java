@@ -40,7 +40,7 @@ public abstract class AbstractEntityStage extends AbstractStage {
 			if (entity == null || type.equals(entity)) {
 				Integer playerAmount = getPlayerAmount(acc);
 				if (playerAmount == null) {
-					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + debugName() + ". This is a bug!");
+					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
 				}else if (playerAmount.intValue() <= 1) {
 					finishStage(p);
 				}else {

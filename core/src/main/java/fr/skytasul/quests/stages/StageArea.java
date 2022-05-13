@@ -59,7 +59,7 @@ public class StageArea extends AbstractStage{
 	@EventHandler
 	public void onRegionEntry(WorldGuardEntryEvent e) {
 		if (region == null) {
-			DebugUtils.printError("No region for " + debugName(), "area" + debugName(), 5);
+			DebugUtils.printError("No region for " + toString(), "area" + toString(), 5);
 			return;
 		}
 		if (e.getRegionsEntered().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {

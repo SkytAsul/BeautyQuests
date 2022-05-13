@@ -161,7 +161,7 @@ public class QuestBranch {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		if (datas.getBranch() != getID() || (datas.isInEndingStages() && isRegularStage(stage)) || (!datas.isInEndingStages() && datas.getStage() != stage.getID())) {
-			BeautyQuests.logger.warning("Trying to finish stage " + stage.debugName() + " for player " + p.getName() + ", but the player didn't have started it.");
+			BeautyQuests.logger.warning("Trying to finish stage " + stage.toString() + " for player " + p.getName() + ", but the player didn't have started it.");
 			return;
 		}
 		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + getID(stage) + " of quest " + getQuest().getID());

@@ -104,7 +104,7 @@ public class StagesGUI implements CustomInventory {
 		line.setItem(0, stageCreate.clone(), (p, item) -> {
 			line.setItem(0, null, null, true, false);
 			int i = 0;
-			for (StageType<?> creator : QuestsAPI.stages) {
+			for (StageType<?> creator : QuestsAPI.getStages()) {
 				if (creator.isValid()) {
 					line.setItem(++i, creator.item, (p1, item1) -> {
 						runClick(line, creator, branches).start(p1);
