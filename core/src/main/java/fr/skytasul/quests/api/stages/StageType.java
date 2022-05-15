@@ -15,15 +15,16 @@ import fr.skytasul.quests.structure.QuestBranch;
 
 public class StageType<T extends AbstractStage> {
 	
-	public final String id;
-	public final Class<T> clazz;
-	public final String name;
-	public final StageLoader<T> loader;
-	public final ItemStack item;
-	public final StageCreationSupplier<T> creationSupplier;
+	private final String id;
+	private final Class<T> clazz;
+	private final String name;
+	private final StageLoader<T> loader;
+	private final ItemStack item;
+	private final StageCreationSupplier<T> creationSupplier;
+	@Deprecated
 	public final String[] dependencies;
 	
-	private final SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry = new SerializableRegistry<>();
+	private final SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry;
 	
 	public StageType(String id, Class<T> clazz, String name, StageLoader<T> loader, ItemStack item, StageCreationSupplier<T> creationSupplier) {
 		this(id, clazz, name, loader, item, creationSupplier, new String[0]);
@@ -42,8 +43,35 @@ public class StageType<T extends AbstractStage> {
 		this.item = item;
 		this.loader = loader;
 		this.creationSupplier = creationSupplier;
+		
+		this.optionsRegistry = new SerializableRegistry<>("stage-options-" + id);
+		
 		this.dependencies = dependencies;
 		if (dependencies.length != 0) BeautyQuests.logger.warning("Nag author of the " + id + " stage type about its use of the deprecated \"dependencies\" feature.");
+	}
+	
+	public String getID() {
+		return id;
+	}
+	
+	public Class<T> getStageClass() {
+		return clazz;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public StageLoader<T> getLoader() {
+		return loader;
+	}
+	
+	public ItemStack getItem() {
+		return item;
+	}
+	
+	public StageCreationSupplier<T> getCreationSupplier() {
+		return creationSupplier;
 	}
 	
 	public SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> getOptionsRegistry() {

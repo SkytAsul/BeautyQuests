@@ -106,7 +106,7 @@ public class StagesGUI implements CustomInventory {
 			int i = 0;
 			for (StageType<?> creator : QuestsAPI.getStages()) {
 				if (creator.isValid()) {
-					line.setItem(++i, creator.item, (p1, item1) -> {
+					line.setItem(++i, creator.getItem(), (p1, item1) -> {
 						runClick(line, creator, branches).start(p1);
 					}, true, false);
 				}
@@ -129,13 +129,13 @@ public class StagesGUI implements CustomInventory {
 	
 	private StageCreation<?> runClick(Line line, StageType<?> creator, boolean branches) {
 		line.removeItems();
-		StageCreation<?> creation = creator.creationSupplier.supply(line, branches);
+		StageCreation<?> creation = creator.getCreationSupplier().supply(line, branches);
 		line.creation = creation;
 		
 		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 
 		int maxStages = branches ? 20 : 15;
-		ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(creator.name), getLineManageLore(line.getLine()));
+		ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(creator.getName()), getLineManageLore(line.getLine()));
 		line.setItem(0, manageItem, new StageRunnableClick() {
 			@Override
 			public void run(Player p, ItemStack item, ClickType click) {

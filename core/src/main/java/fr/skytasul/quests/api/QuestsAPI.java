@@ -32,8 +32,8 @@ import fr.skytasul.quests.utils.Lang;
 
 public final class QuestsAPI {
 	
-	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
-	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
+	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
+	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
 	private static final StageTypeRegistry stages = new StageTypeRegistry();
 	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	

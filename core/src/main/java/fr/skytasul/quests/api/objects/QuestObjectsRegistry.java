@@ -11,7 +11,8 @@ public class QuestObjectsRegistry<T extends QuestObject, C extends QuestObjectCr
 	
 	private final String inventoryName;
 	
-	public QuestObjectsRegistry(String inventoryName) {
+	public QuestObjectsRegistry(String id, String inventoryName) {
+		super(id);
 		this.inventoryName = inventoryName;
 	}
 	

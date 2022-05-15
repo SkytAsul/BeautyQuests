@@ -20,7 +20,7 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 	public void register(StageType<? extends AbstractStage> type) {
 		Validate.notNull(type);
 		types.add(type);
-		DebugUtils.logMessage("Stage registered (" + type.name + ", " + (types.size() - 1) + ")");
+		DebugUtils.logMessage("Stage registered (" + type.getName() + ", " + (types.size() - 1) + ")");
 	}
 	
 	public List<StageType<?>> getTypes() {
@@ -30,7 +30,7 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 	public <T extends AbstractStage> Optional<StageType<T>> getType(Class<T> stageClass) {
 		return types
 				.stream()
-				.filter(type -> type.clazz == stageClass)
+				.filter(type -> type.getStageClass() == stageClass)
 				.map(type -> (StageType<T>) type)
 				.findAny();
 	}
@@ -38,7 +38,7 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 	public Optional<StageType<?>> getType(String id) {
 		return types
 				.stream()
-				.filter(type -> type.id.equals(id))
+				.filter(type -> type.getID().equals(id))
 				.findAny();
 	}
 	

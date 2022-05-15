@@ -153,7 +153,7 @@ public abstract class AbstractStage implements Listener {
 	
 	@Override
 	public String toString() {
-		return "stage " + getID() + "(" + type.id + ") of quest " + branch.getQuest().getID() + ", branch " + branch.getID();
+		return "stage " + getID() + "(" + type.getID() + ") of quest " + branch.getQuest().getID() + ", branch " + branch.getID();
 	}
 
 	private void propagateStageHandlers(Consumer<StageHandler> consumer) {
@@ -230,7 +230,7 @@ public abstract class AbstractStage implements Listener {
 			return descriptionLine(acc, source);
 		}catch (Exception ex){
 			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + toString(), ex);
-			return "§a" + type.name;
+			return "§a" + type.getName();
 		}
 	}
 	
@@ -308,7 +308,7 @@ public abstract class AbstractStage implements Listener {
 	public final void save(ConfigurationSection section) {
 		serialize(section);
 		
-		section.set("stageType", type.id);
+		section.set("stageType", type.getID());
 		section.set("customText", customText);
 		if (startMessage != null) section.set("text", startMessage);
 		
@@ -331,7 +331,7 @@ public abstract class AbstractStage implements Listener {
 			return null;
 		}
 
-		AbstractStage st = stageType.loader.supply(section, branch);
+		AbstractStage st = stageType.getLoader().supply(section, branch);
 		if (section.contains("text")) st.startMessage = section.getString("text");
 		if (section.contains("customText")) st.customText = section.getString("customText");
 		if (section.contains("rewards")) st.setRewards(QuestObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize));

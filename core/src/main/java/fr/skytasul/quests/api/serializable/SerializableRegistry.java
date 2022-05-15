@@ -8,13 +8,22 @@ import fr.skytasul.quests.utils.DebugUtils;
 
 public class SerializableRegistry<T extends SerializableObject, C extends SerializableCreator<T>> implements Iterable<C> {
 	
+	protected final String id;
 	protected final List<C> creators = new ArrayList<>();
 
+	public SerializableRegistry(String id) {
+		this.id = id;
+	}
+	
+	public String getID() {
+		return id;
+	}
+	
 	public void register(C creator) {
 		if (creators.stream().anyMatch(x -> x.getID().equals(creator.getID())))
 			throw new IllegalStateException("A creator with the same id " + creator.getID() + " has been registered.");
 		creators.add(creator);
-		DebugUtils.logMessage("Quest object registered (id: " + creator.getID() + ", class: " + creator.getSerializableClass().getName() + ")");
+		DebugUtils.logMessage("Quest object registered in registry " + id + " (id: " + creator.getID() + ", class: " + creator.getSerializableClass().getName() + ")");
 	}
 
 	public SerializableCreator<T> getByClass(Class<?> clazz) {
