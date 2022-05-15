@@ -1,6 +1,7 @@
 package fr.skytasul.quests.utils.types;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.Validate;
@@ -10,7 +11,9 @@ import org.bukkit.World;
 import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 
-public class BQLocation extends Location {
+import fr.skytasul.quests.api.stages.types.Locatable;
+
+public class BQLocation extends Location implements Locatable.Located {
 	
 	private Pattern worldPattern;
 	
@@ -51,6 +54,11 @@ public class BQLocation extends Location {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public Location getLocation() {
+		return this;
+	}
+	
 	public boolean isWorld(World world) {
 		Validate.notNull(world);
 		if (super.getWorld() != null) return super.getWorld().equals(world);
@@ -71,11 +79,25 @@ public class BQLocation extends Location {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!super.equals(obj)) return false;
-		BQLocation other = (BQLocation) obj;
-		if (worldPattern == null) return other.worldPattern == null;
-		if (other.worldPattern == null) return false;
-		return worldPattern.pattern().equals(other.worldPattern.pattern());
+		if (!(obj instanceof Location)) return false;
+		
+		if (obj instanceof BQLocation) {
+			if (!super.equals(obj)) return false;
+			BQLocation other = (BQLocation) obj;
+			if (worldPattern == null) return other.worldPattern == null;
+			if (other.worldPattern == null) return false;
+			return worldPattern.pattern().equals(other.worldPattern.pattern());
+		}
+		
+		Location other = (Location) obj;
+		if (!Objects.equals(other.getWorld(), getWorld())) {
+			if (other.getWorld() == null) return false;
+			if (worldPattern == null) return false;
+			if (!worldPattern.matcher(other.getWorld().getName()).matches()) return false;
+			other = other.clone();
+			other.setWorld(null);
+		}
+		return super.equals(other);
 	}
 	
 	@Override

@@ -11,8 +11,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.Locatable;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -29,7 +29,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.BQLocation;
 
-public class StageLocation extends AbstractStage implements Locatable {
+public class StageLocation extends AbstractStage implements Locatable.PreciseLocatable {
 
 	private final BQLocation lc;
 	private final int radius;
@@ -48,7 +48,6 @@ public class StageLocation extends AbstractStage implements Locatable {
 		this.descMessage = Lang.SCOREBOARD_LOCATION.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorldName());
 	}
 	
-	@Override
 	public BQLocation getLocation() {
 		return lc;
 	}
@@ -56,6 +55,11 @@ public class StageLocation extends AbstractStage implements Locatable {
 	@Override
 	public boolean isShown() {
 		return isGPSEnabled();
+	}
+	
+	@Override
+	public Located getLocated() {
+		return lc;
 	}
 	
 	public int getRadius(){

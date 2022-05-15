@@ -21,14 +21,19 @@ public class ItemComparisonMap implements Cloneable {
 		this(new HashMap<>());
 	}
 	
+	public ItemComparisonMap(ConfigurationSection notDefault) {
+		setNotDefaultComparisons(notDefault);
+	}
+	
 	public ItemComparisonMap(Map<String, Boolean> notDefault) {
 		setNotDefaultComparisons(notDefault);
 	}
 	
 	public void setNotDefaultComparisons(ConfigurationSection section) {
-		Map<String, Boolean> map = new HashMap<>();
-		section.getKeys(false).forEach(key -> notDefault.put(key, section.getBoolean(key)));
-		setNotDefaultComparisons(map);
+		effective = new ArrayList<>();
+		for (ItemComparison comp : QuestsAPI.itemComparisons) {
+			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault())) effective.add(comp);
+		}
 	}
 	
 	public void setNotDefaultComparisons(Map<String, Boolean> comparisons) {

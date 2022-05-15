@@ -138,7 +138,7 @@ public class StageCraft extends AbstractStage {
 	}
 	
 	public static StageCraft deserialize(ConfigurationSection section, QuestBranch branch) {
-		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false)) : new ItemComparisonMap());
+		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
 	}
 	
 	public static int getMaxCraftAmount(CraftingInventory inv) {

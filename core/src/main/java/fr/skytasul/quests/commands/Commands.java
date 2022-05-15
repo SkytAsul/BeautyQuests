@@ -22,7 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.Dialogable;
+import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.editors.SelectNPC;
 import fr.skytasul.quests.gui.Inventories;

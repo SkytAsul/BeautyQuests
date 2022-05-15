@@ -17,6 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -29,7 +30,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-public abstract class BQNPC {
+public abstract class BQNPC implements Located.LocatedEntity {
 	
 	private Map<Quest, List<Player>> quests = new TreeMap<>();
 	private Set<QuestPool> pools = new TreeSet<>();
@@ -64,8 +65,10 @@ public abstract class BQNPC {
 	
 	public abstract boolean isSpawned();
 	
+	@Override
 	public abstract Entity getEntity();
 	
+	@Override
 	public abstract Location getLocation();
 	
 	public abstract void setSkin(String skin);

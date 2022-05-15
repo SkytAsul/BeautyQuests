@@ -1,7 +1,12 @@
 package fr.skytasul.quests.utils.types;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.bukkit.block.Block;
 
+import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XBlock;
 import fr.skytasul.quests.utils.XMaterial;
@@ -38,6 +43,28 @@ public abstract class BQBlock {
 		if (string.startsWith(BLOCKDATA_HEADER)) return new Post1_13.BQBlockData(string.substring(BLOCKDATA_HEADER.length()));
 		if (string.startsWith(TAG_HEADER)) return new Post1_13.BQBlockTag(string.substring(TAG_HEADER.length()));
 		return new BQBlockMaterial(XMaterial.valueOf(string));
+	}
+	
+	public static Collection<Locatable.Located> getNearbyBlocks(Locatable.MultipleLocatable.NearbyFetcher fetcher, Collection<BQBlock> types) {
+		List<Locatable.Located> blocks = new ArrayList<>();
+		int minX = (int) (fetcher.getCenter().getX() - fetcher.getMaxDistance());
+		int minY = (int) Math.max(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() - fetcher.getMaxDistance());
+		int minZ = (int) (fetcher.getCenter().getZ() - fetcher.getMaxDistance());
+		double maxX = fetcher.getCenter().getX() + fetcher.getMaxDistance();
+		double maxY = Math.min(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() + fetcher.getMaxDistance());
+		double maxZ = fetcher.getCenter().getZ() + fetcher.getMaxDistance();
+		for (int x = minX; x <= maxX; x++) {
+			for (int z = minZ; z <= maxZ; z++) {
+				for (int y = minY; y <= maxY; y++) {
+					Block blockAt = fetcher.getCenter().getWorld().getBlockAt(x, y, z);
+					if (types.stream().anyMatch(type -> type.applies(blockAt))) {
+						blocks.add(Locatable.Located.LocatedBlock.create(blockAt));
+						if (blocks.size() >= fetcher.getMaxAmount()) break;
+					}
+				}
+			}
+		}
+		return blocks;
 	}
 	
 	public static class BQBlockMaterial extends BQBlock {

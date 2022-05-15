@@ -10,15 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
-import fr.skytasul.quests.api.stages.AbstractCountableStage;
-import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -28,7 +26,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
-public class StageMine extends AbstractCountableStage<BQBlock> {
+public class StageMine extends AbstractCountableBlockStage {
 
 	private boolean placeCancelled;
 	
@@ -79,27 +77,6 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 	}
 	
 	@Override
-	protected boolean objectApplies(BQBlock object, Object other) {
-		if (other instanceof Block) return object.applies((Block) other);
-		return super.objectApplies(object, other);
-	}
-	
-	@Override
-	protected String getName(BQBlock object) {
-		return object.getName();
-	}
-
-	@Override
-	protected Object serialize(BQBlock object) {
-		return object.getAsString();
-	}
-
-	@Override
-	protected BQBlock deserialize(Object object) {
-		return BQBlock.fromString((String) object);
-	}
-
-	@Override
 	protected void serialize(ConfigurationSection section) {
 		super.serialize(section);
 		if (placeCancelled) section.set("placeCancelled", placeCancelled);
@@ -113,28 +90,19 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 		return stage;
 	}
 
-	public static class Creator extends StageCreation<StageMine> {
+	public static class Creator extends AbstractCountableBlockStage.AbstractCreator<StageMine> {
 		
-		private Map<Integer, Entry<BQBlock, Integer>> blocks;
 		private boolean prevent = false;
 		
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(7, ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString()), (p, item) -> {
-				BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
-				blocksGUI.setBlocksFromMap(blocks);
-				blocksGUI.run = obj -> {
-					setBlocks(obj);
-					reopenGUI(p, true);
-				};
-			});
 			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), (p, item) -> setPrevent(ItemUtils.toggle(item)));
 		}
 		
-		public void setBlocks(Map<Integer, Entry<BQBlock, Integer>> blocks) {
-			this.blocks = blocks;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(blocks.size() + " block(s)")));
+		@Override
+		protected ItemStack getBlocksItem() {
+			return ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString());
 		}
 		
 		public void setPrevent(boolean prevent) {
@@ -143,21 +111,10 @@ public class StageMine extends AbstractCountableStage<BQBlock> {
 				line.editItem(6, ItemUtils.set(line.getItem(6), prevent));
 			}
 		}
-		
-		@Override
-		public void start(Player p) {
-			super.start(p);
-			BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
-			blocksGUI.run = obj -> {
-				setBlocks(obj);
-				reopenGUI(p, true);
-			};
-		}
 
 		@Override
 		public void edit(StageMine stage) {
 			super.edit(stage);
-			setBlocks(stage.cloneObjects());
 			setPrevent(stage.isPlaceCancelled());
 		}
 		

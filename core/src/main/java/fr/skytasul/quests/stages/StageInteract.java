@@ -1,5 +1,8 @@
 package fr.skytasul.quests.stages;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.editors.WaitBlockClick;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -27,17 +31,18 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.BQLocation;
 
-public class StageInteract extends AbstractStage {
+public class StageInteract extends AbstractStage implements Locatable.MultipleLocatable, Locatable.PreciseLocatable {
 
 	private boolean left;
-	private Location lc;
+	private BQLocation lc;
 	private BQBlock block;
 	
-	public StageInteract(QuestBranch branch, boolean leftClick, Location location) {
+	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
 		super(branch);
 		this.left = leftClick;
-		this.lc = location.getBlock().getLocation();
+		this.lc = new BQLocation(location.getBlock().getLocation());
 	}
 	
 	public StageInteract(QuestBranch branch, boolean leftClick, BQBlock block) {
@@ -46,7 +51,7 @@ public class StageInteract extends AbstractStage {
 		this.block = block;
 	}
 
-	public Location getLocation(){
+	public BQLocation getLocation() {
 		return lc;
 	}
 	
@@ -58,6 +63,18 @@ public class StageInteract extends AbstractStage {
 		return left;
 	}
 	
+	@Override
+	public Located getLocated() {
+		return lc;
+	}
+	
+	@Override
+	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (block == null) return null;
+		
+		return BQBlock.getNearbyBlocks(fetcher, Collections.singleton(block));
+	}
+	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
@@ -65,7 +82,7 @@ public class StageInteract extends AbstractStage {
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (lc != null) {
-			if (!e.getClickedBlock().getLocation().equals(lc)) return;
+			if (!lc.equals(e.getClickedBlock().getLocation())) return;
 		}else if (!block.applies(e.getClickedBlock())) return;
 		
 		Player p = e.getPlayer();
@@ -90,7 +107,7 @@ public class StageInteract extends AbstractStage {
 	
 	public static StageInteract deserialize(ConfigurationSection section, QuestBranch branch) {
 		if (section.contains("location")) {
-			return new StageInteract(branch, section.getBoolean("leftClick"), Location.deserialize(section.getConfigurationSection("location").getValues(false)));
+			return new StageInteract(branch, section.getBoolean("leftClick"), BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
 		}else {
 			BQBlock block;
 			if (section.contains("material")) {
@@ -178,7 +195,7 @@ public class StageInteract extends AbstractStage {
 		@Override
 		public StageInteract finishStage(QuestBranch branch) {
 			if (location != null) {
-				return new StageInteract(branch, leftClick, location);
+				return new StageInteract(branch, leftClick, new BQLocation(location));
 			}else return new StageInteract(branch, leftClick, block);
 		}
 		

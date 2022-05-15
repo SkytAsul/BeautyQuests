@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.stages;
+package fr.skytasul.quests.api.stages.types;
 
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.types.Dialog;

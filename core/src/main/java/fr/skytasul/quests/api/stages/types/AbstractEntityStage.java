@@ -1,7 +1,13 @@
-package fr.skytasul.quests.api.stages;
+package fr.skytasul.quests.api.stages.types;
 
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -9,6 +15,8 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,7 +31,7 @@ import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public abstract class AbstractEntityStage extends AbstractStage {
+public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable {
 	
 	protected EntityType entity;
 	protected int amount;
@@ -76,6 +84,24 @@ public abstract class AbstractEntityStage extends AbstractStage {
 	@Override
 	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
 		return new Supplier[] { () -> getMobsLeft(acc) };
+	}
+	
+	@Override
+	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		double distanceSquared = fetcher.getMaxDistance() * fetcher.getMaxDistance();
+		return fetcher.getCenter().getWorld()
+				.getEntitiesByClass(entity.getEntityClass())
+				.stream()
+				.map(x -> {
+					double ds = x.getLocation().distanceSquared(fetcher.getCenter());
+					if (ds > distanceSquared) return null;
+					return new AbstractMap.SimpleEntry<>(x, ds);
+				})
+				.filter(Objects::nonNull)
+				.sorted(Comparator.comparing(Entry::getValue))
+				.limit(fetcher.getMaxAmount())
+				.map(entry -> Located.LocatedEntity.create(entry.getKey()))
+				.collect(Collectors.toList());
 	}
 	
 	public abstract static class AbstractCreator<T extends AbstractEntityStage> extends StageCreation<T> {

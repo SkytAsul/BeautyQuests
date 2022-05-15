@@ -22,9 +22,9 @@ import fr.skytasul.quests.api.events.BQNPCClickEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.Dialogable;
-import fr.skytasul.quests.api.stages.Locatable;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Dialogable;
+import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -39,7 +39,7 @@ import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.DialogRunner;
 
-public class StageNPC extends AbstractStage implements Locatable, Dialogable {
+public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
 	
 	private BQNPC npc;
 	private int npcID;
@@ -148,15 +148,15 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	}
 	
 	@Override
-	public Location getLocation() {
-		return npc != null && npc.isSpawned() ? npc.getLocation() : null;
-	}
-	
-	@Override
 	public boolean isShown() {
 		return !hide;
 	}
 
+	@Override
+	public Located getLocated() {
+		return npc;
+	}
+	
 	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_NPC.toString(), descriptionFormat(acc, source));

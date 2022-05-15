@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.stages.AbstractItemStage;
+import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;

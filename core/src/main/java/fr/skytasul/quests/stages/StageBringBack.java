@@ -146,7 +146,7 @@ public class StageBringBack extends StageNPC{
 		String customMessage = section.getString("customMessage", null);
 		ItemComparisonMap comparisons;
 		if (section.contains("itemComparisons")) {
-			comparisons = new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false));
+			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));
 		}else comparisons = new ItemComparisonMap();
 		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
 		st.loadDatas(section);
