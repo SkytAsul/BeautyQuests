@@ -1,5 +1,9 @@
 package fr.skytasul.quests.api.objects;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +43,24 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	
 	@Override
 	public abstract QuestObject clone();
+	
+	@Deprecated
+	protected void save(Map<String, Object> datas) {}
+	
+	@Deprecated
+	protected void load(Map<String, Object> savedDatas) {}
+	
+	@Override
+	public void save(ConfigurationSection section) {
+		Map<String, Object> datas = new HashMap<>();
+		save(datas);
+		datas.forEach(section::set);
+	}
+	
+	@Override
+	public void load(ConfigurationSection section) {
+		load(section.getValues(false));
+	}
 	
 	public String getDescription(Player p) { // will maybe eventually be abstract (and therefore needs to be implemented)
 		return null;

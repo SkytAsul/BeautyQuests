@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.serializable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -36,22 +35,10 @@ public abstract class SerializableObject {
 
 	@Override
 	public abstract SerializableObject clone();
-
-	@Deprecated
-	protected void save(Map<String, Object> datas) {}
-
-	@Deprecated
-	protected void load(Map<String, Object> savedDatas) {}
 	
-	protected void save(ConfigurationSection section) {
-		Map<String, Object> datas = new HashMap<>();
-		save(datas);
-		datas.forEach(section::set);
-	}
+	public abstract void save(ConfigurationSection section);
 	
-	protected void load(ConfigurationSection section) {
-		load(section.getValues(false));
-	}
+	public abstract void load(ConfigurationSection section);
 	
 	public final void serialize(ConfigurationSection section) {
 		section.set("id", creator.getID());

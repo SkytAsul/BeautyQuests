@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -44,7 +46,7 @@ public abstract class AbstractStage implements Listener {
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
 	
-	private List<StageOption> options = new ArrayList<>();
+	private List<StageOption> options;
 	
 	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
@@ -314,6 +316,8 @@ public abstract class AbstractStage implements Listener {
 		
 		if (!rewards.isEmpty()) section.set("rewards", SerializableObject.serializeList(rewards));
 		if (!validationRequirements.isEmpty()) section.set("requirements", SerializableObject.serializeList(validationRequirements));
+		
+		options.stream().filter(StageOption::shouldSave).forEach(option -> option.save(section.createSection("options." + option.getCreator().getID())));
 	}
 	
 	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {
@@ -336,6 +340,19 @@ public abstract class AbstractStage implements Listener {
 		if (section.contains("customText")) st.customText = section.getString("customText");
 		if (section.contains("rewards")) st.setRewards(QuestObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize));
 		if (section.contains("requirements")) st.setValidationRequirements(QuestObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize));
+		
+		st.options = stageType.getOptionsRegistry().getCreators().stream().map(SerializableCreator::newObject).collect(Collectors.toList());
+		if (section.contains("options")) {
+			ConfigurationSection optionsSection = section.getConfigurationSection("options");
+			optionsSection.getKeys(false).forEach(optionID -> {
+				st.options
+					.stream()
+					.filter(option -> option.getCreator().getID().equals(optionID))
+					.findAny()
+					.ifPresent(option -> option.load(optionsSection.getConfigurationSection(optionID)));
+			});
+			
+		}
 		
 		return st;
 	}

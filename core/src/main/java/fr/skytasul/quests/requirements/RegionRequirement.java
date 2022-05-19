@@ -81,13 +81,13 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("world", worldName);
 		section.set("region", regionName);
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		worldName = section.getString("world");
 		setRegionName(section.getString("region"));
 	}

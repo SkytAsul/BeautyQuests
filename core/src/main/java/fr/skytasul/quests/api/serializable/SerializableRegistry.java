@@ -26,7 +26,7 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 		DebugUtils.logMessage("Quest object registered in registry " + id + " (id: " + creator.getID() + ", class: " + creator.getSerializableClass().getName() + ")");
 	}
 
-	public SerializableCreator<T> getByClass(Class<?> clazz) {
+	public C getByClass(Class<?> clazz) {
 		return creators
 				.stream()
 				.filter(creator -> creator.getSerializableClass().equals(clazz))
@@ -34,7 +34,7 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 				.orElse(null);
 	}
 
-	public SerializableCreator<T> getByID(String id) {
+	public C getByID(String id) {
 		return creators
 				.stream()
 				.filter(creator -> creator.getID().equals(id))

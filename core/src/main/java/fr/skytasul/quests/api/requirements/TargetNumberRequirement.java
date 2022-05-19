@@ -57,13 +57,13 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	public abstract void sendHelpString(Player p);
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("comparison", comparison.name());
 		section.set("target", target);
 	}
 
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		if (section.contains("comparison")) comparison = ComparisonMethod.valueOf(section.getString("comparison"));
 		target = section.getDouble("target");
 	}

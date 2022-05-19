@@ -62,12 +62,12 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("delay", delay);
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		delay = section.getInt("delay");
 	}
 	

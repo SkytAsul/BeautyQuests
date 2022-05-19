@@ -58,12 +58,12 @@ public class ItemReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("items", Utils.serializeList(items, ItemStack::serialize));
 	}
 
 	@Override
-	protected void load(ConfigurationSection section){
+	public void load(ConfigurationSection section){
 		items.addAll(Utils.deserializeList(section.getMapList("items"), ItemStack::deserialize));
 	}
 

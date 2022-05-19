@@ -106,13 +106,13 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		if (!classes.isEmpty())
 			section.set("classes", classes.stream().map(RPGClass::getName).collect(Collectors.toList()));
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		if (!section.contains("classes")) return;
 		for (String s : section.getStringList("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());

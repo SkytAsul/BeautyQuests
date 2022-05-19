@@ -139,13 +139,13 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("requirements", SerializableObject.serializeList(requirements));
 		section.set("rewards", SerializableObject.serializeList(rewards));
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
 		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
 	}

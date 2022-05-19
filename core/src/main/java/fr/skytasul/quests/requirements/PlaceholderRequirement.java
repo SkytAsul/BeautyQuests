@@ -101,7 +101,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("placeholder", rawPlaceholder);
 		section.set("value", value);
 		section.set("comparison", comparison.name());
@@ -109,7 +109,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	protected void load(ConfigurationSection section){
+	public void load(ConfigurationSection section){
 		setPlaceholder(section.getString("placeholder"));
 		this.value = section.getString("value");
 		if (section.contains("comparison")) this.comparison = ComparisonMethod.valueOf(section.getString("comparison"));

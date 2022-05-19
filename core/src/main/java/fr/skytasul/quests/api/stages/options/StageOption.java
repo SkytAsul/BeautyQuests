@@ -25,8 +25,8 @@ public abstract class StageOption<T extends AbstractStage> extends SerializableO
 	@Override
 	public abstract StageOption<T> clone();
 	
-	public abstract boolean shouldSave();
-	
 	public abstract void startEdition(StageCreation<T> creation);
+	
+	public abstract boolean shouldSave();
 	
 }

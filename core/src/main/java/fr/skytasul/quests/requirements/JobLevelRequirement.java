@@ -73,13 +73,13 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("jobName", jobName);
 	}
 
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		super.load(section);
 		jobName = section.getString("jobName");
 	}

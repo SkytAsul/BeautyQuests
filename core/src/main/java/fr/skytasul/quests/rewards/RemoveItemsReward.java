@@ -80,13 +80,13 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("items", Utils.serializeList(items, ItemStack::serialize));
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("comparisons", comparisons.getNotDefault());
 	}
 
 	@Override
-	protected void load(ConfigurationSection section){
+	public void load(ConfigurationSection section){
 		items.addAll(Utils.deserializeList(section.getMapList("items"), ItemStack::deserialize));
 		if (section.contains("comparisons")) comparisons.setNotDefaultComparisons(section.getConfigurationSection("comparisons"));
 	}

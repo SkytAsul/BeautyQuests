@@ -69,13 +69,13 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("objective", objectiveName);
 	}
 
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		super.load(section);
 		setObjectiveName(section.getString("objective"));
 	}

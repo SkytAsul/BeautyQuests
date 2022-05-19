@@ -70,12 +70,12 @@ public class CheckpointReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("actions", SerializableObject.serializeList(actions));
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		actions = SerializableObject.deserializeList(section.getMapList("actions"), AbstractReward::deserialize);
 	}
 	

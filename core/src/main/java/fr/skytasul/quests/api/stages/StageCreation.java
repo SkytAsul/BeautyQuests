@@ -68,6 +68,10 @@ public abstract class StageCreation<T extends AbstractStage> {
 		});
 	}
 	
+	public StageType<T> getType() {
+		return type;
+	}
+	
 	public Line getLine() {
 		return line;
 	}

@@ -66,13 +66,13 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("skillName", skillName);
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		super.load(section);
 		skillName = section.getString("skillName");
 	}

@@ -88,13 +88,13 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
 		if (message != null) section.set("message", message);
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		permissions = section.getStringList("permissions").stream().map(Permission::fromString).collect(Collectors.toList());
 		if (section.contains("message")) message = section.getString("message");
 	}

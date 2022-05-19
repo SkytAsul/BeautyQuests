@@ -102,12 +102,12 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(ConfigurationSection section) {
+	public void save(ConfigurationSection section) {
 		section.set("factions", factions.stream().map(Faction::getId).collect(Collectors.toList()));
 	}
 	
 	@Override
-	protected void load(ConfigurationSection section) {
+	public void load(ConfigurationSection section) {
 		for (String s : section.getStringList("factions")) {
 			if (!FactionColl.get().containsId(s)) {
 				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists.");
