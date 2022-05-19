@@ -12,6 +12,10 @@ public interface Locatable {
 		return true;
 	}
 	
+	default boolean canBeFetchedAsynchronously() {
+		return true;
+	}
+	
 	interface PreciseLocatable extends Locatable {
 		
 		Located getLocated();
@@ -29,6 +33,38 @@ public interface Locatable {
 			double getMaxDistance();
 			
 			int getMaxAmount();
+			
+			static NearbyFetcher create(Location location, double maxDistance, int maxAmount) {
+				return new NearbyFetcherImpl(location, maxDistance, maxAmount);
+			}
+			
+			class NearbyFetcherImpl implements NearbyFetcher {
+				private Location center;
+				private double maxDistance;
+				private int maxAmount;
+				
+				public NearbyFetcherImpl(Location center, double maxDistance, int maxAmount) {
+					this.center = center;
+					this.maxDistance = maxDistance;
+					this.maxAmount = maxAmount;
+				}
+				
+				@Override
+				public Location getCenter() {
+					return center;
+				}
+				
+				@Override
+				public double getMaxDistance() {
+					return maxDistance;
+				}
+				
+				@Override
+				public int getMaxAmount() {
+					return maxAmount;
+				}
+				
+			}
 			
 		}
 		
@@ -53,6 +89,19 @@ public interface Locatable {
 			public Location getLocation() {
 				return location;
 			}
+			
+			@Override
+			public int hashCode() {
+				return location.hashCode();
+			}
+			
+			@Override
+			public boolean equals(Object obj) {
+				if (!(obj instanceof LocatedImpl)) return false;
+				LocatedImpl other = (LocatedImpl) obj;
+				return other.location.equals(location);
+			}
+			
 		}
 		
 		interface LocatedEntity extends Located {
@@ -80,6 +129,19 @@ public interface Locatable {
 				public Entity getEntity() {
 					return entity;
 				}
+				
+				@Override
+				public int hashCode() {
+					return entity.hashCode();
+				}
+				
+				@Override
+				public boolean equals(Object obj) {
+					if (!(obj instanceof LocatedEntityImpl)) return false;
+					LocatedEntityImpl other = (LocatedEntityImpl) obj;
+					return other.entity.equals(entity);
+				}
+				
 			}
 			
 		}

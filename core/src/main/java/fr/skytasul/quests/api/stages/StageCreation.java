@@ -167,7 +167,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		setStartMessage(stage.getStartMessage());
 		setCustomDescription(stage.getCustomText());
 		
-		options = stage.getOptions().stream().map(StageOption::clone).collect(Collectors.toList());
+		options = stage.getOptions().stream().map(StageOption::clone).map(x -> (StageOption<T>) x).collect(Collectors.toList());
 		options.forEach(option -> option.startEdition(this));
 	}
 

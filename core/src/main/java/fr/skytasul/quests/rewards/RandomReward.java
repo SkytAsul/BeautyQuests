@@ -31,7 +31,8 @@ public class RandomReward extends AbstractReward {
 	
 	public RandomReward(List<AbstractReward> rewards, int min, int max) {
 		this.rewards = rewards;
-		setMinMax(min, max);
+		this.min = min;
+		this.max = max;
 	}
 	
 	public void setMinMax(int min, int max) {
@@ -39,7 +40,7 @@ public class RandomReward extends AbstractReward {
 		this.max = Math.max(min, max);
 		
 		if (max > rewards.size())
-			BeautyQuests.logger.warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ")");
+			BeautyQuests.logger.warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ") in " + debugName());
 	}
 	
 	@Override
