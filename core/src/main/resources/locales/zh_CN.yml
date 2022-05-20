@@ -88,6 +88,7 @@ msg:
   restartServer: '§7重启服务器查看修改。'
   dialogs:
     skipped: '§8§o已跳过对话。'
+    tooFar: '§7§o你离{0}太远了...'
   command:
     downloadTranslations:
       syntax: '§c你必须指定要下载的语言。例如："/quests downloadTranslations en_US"。'
@@ -553,6 +554,7 @@ inv:
     name: '§8指令'
     value: '§b指令'
     console: 控制台
+    parse: 解析占位符
     delay: '§b延迟'
   chooseAccount:
     name: '§5选择哪一个帐号?'

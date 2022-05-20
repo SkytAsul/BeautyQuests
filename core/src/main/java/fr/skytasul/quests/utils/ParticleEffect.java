@@ -44,32 +44,34 @@ public class ParticleEffect {
 		return type.particle.name() + " in shape " + shape.name() + (type.colored ? " with color \"R" + (type.particle != Particle.NOTE ? color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") + "\"" : "");
 	}
 	
-	public void send(LivingEntity en, List<Player> p) {
-		if (p.isEmpty()) return;
-		
-		Location lc = en.getEyeLocation();
+	public void send(LivingEntity entity, List<Player> players) {
+		send(entity.getLocation(), NMS.getNMS().entityNameplateHeight(entity), players);
+	}
+	
+	public void send(Location bottom, double height, List<Player> players) {
+		if (players.isEmpty()) return;
 		switch (shape) {
 		case POINT:
-			sendParticle(lc.add(0, 1, 0), p, 0.01, 0.01, 0.01, 2);
+			sendParticle(bottom.add(0, height + 0.7, 0), players, 0.01, 0.01, 0.01, 2);
 			break;
 		case NEAR:
-			sendParticle(lc.add(random.nextDouble() * 1.2 - 0.6, random.nextDouble() * 2 - en.getEyeHeight(), random.nextDouble() * 1.2 - 0.6), p, 0.1, 0.1, 0.1, 1);
+			sendParticle(bottom.add(0, height / 2, 0), players, 0.45, height / 2 + 0.1, 0.45, 1);
 			break;
 		case BAR:
-			sendParticle(lc.add(0, 1, 0), p, 0.01, 0.15, 0.01, 3);
+			sendParticle(bottom.add(0, height + 0.7, 0), players, 0.01, 0.15, 0.01, 3);
 			break;
 		case EXCLAMATION:
-			sendParticle(lc.add(0, 0.9, 0), p, 0, 0, 0, 1); //		POINT
-			sendParticle(lc.add(0, 0.7, 0), p, 0, 0.2, 0, 4); //				BAR
+			sendParticle(bottom.add(0, height + 0.7, 0), players, 0, 0, 0, 1); //	POINT
+			sendParticle(bottom.add(0, 0.65, 0), players, 0, 0.2, 0, 5); //	BAR
 			break;
 		case SPOT:
-			sendParticle(lc.add(0, 0.2, 0), p, 0.2, 0.4, 0.2, 15);
+			sendParticle(bottom.add(0, height, 0), players, 0.2, 0.4, 0.2, 15);
 			break;
 		}
 	}
 	
-	public void sendParticle(Location lc, List<Player> p, double offX, double offY, double offZ, int amount) {
-		double extra = 0.01;
+	public void sendParticle(Location lc, List<Player> players, double offX, double offY, double offZ, int amount) {
+		double extra = 0.001;
 		Object data = null;
 		if (type.particle == Particle.NOTE) {
 			offX = random.nextInt(24) / 24D; // this offset contains the note number
@@ -85,7 +87,10 @@ public class ParticleEffect {
 			amount = 0; // amount must be 0 for colors to be enabled
 			extra = 1; // the extra field controls the brightness
 		}
-		lc.getWorld().spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
+		
+		for (Player p : players) {
+			p.spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
+		}
 	}
 	
 	public static ParticleEffect deserialize(ConfigurationSection data) {
