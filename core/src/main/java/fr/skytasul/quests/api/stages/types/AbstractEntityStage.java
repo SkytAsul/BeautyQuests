@@ -87,6 +87,11 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
+	public boolean canBeFetchedAsynchronously() {
+		return false;
+	}
+	
+	@Override
 	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		double distanceSquared = fetcher.getMaxDistance() * fetcher.getMaxDistance();
 		return fetcher.getCenter().getWorld()

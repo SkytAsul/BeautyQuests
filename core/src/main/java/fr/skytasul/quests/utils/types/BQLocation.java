@@ -56,7 +56,7 @@ public class BQLocation extends Location implements Locatable.Located {
 	
 	@Override
 	public Location getLocation() {
-		return this;
+		return new Location(getWorld(), getX(), getY(), getZ());
 	}
 	
 	public boolean isWorld(World world) {
@@ -80,24 +80,28 @@ public class BQLocation extends Location implements Locatable.Located {
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Location)) return false;
+		Location other = (Location) obj;
+		
+		if (Double.doubleToLongBits(this.getX()) != Double.doubleToLongBits(other.getX())) return false;
+        if (Double.doubleToLongBits(this.getY()) != Double.doubleToLongBits(other.getY())) return false;
+        if (Double.doubleToLongBits(this.getZ()) != Double.doubleToLongBits(other.getZ())) return false;
+        if (Float.floatToIntBits(this.getPitch()) != Float.floatToIntBits(other.getPitch())) return false;
+        if (Float.floatToIntBits(this.getYaw()) != Float.floatToIntBits(other.getYaw())) return false;
 		
 		if (obj instanceof BQLocation) {
-			if (!super.equals(obj)) return false;
-			BQLocation other = (BQLocation) obj;
-			if (worldPattern == null) return other.worldPattern == null;
-			if (other.worldPattern == null) return false;
-			return worldPattern.pattern().equals(other.worldPattern.pattern());
+			BQLocation otherBQ = (BQLocation) obj;
+			if (worldPattern == null) return otherBQ.worldPattern == null;
+			if (otherBQ.worldPattern == null) return false;
+			return worldPattern.pattern().equals(otherBQ.worldPattern.pattern());
 		}
 		
-		Location other = (Location) obj;
 		if (!Objects.equals(other.getWorld(), getWorld())) {
 			if (other.getWorld() == null) return false;
 			if (worldPattern == null) return false;
-			if (!worldPattern.matcher(other.getWorld().getName()).matches()) return false;
-			other = other.clone();
-			other.setWorld(null);
+			return worldPattern.matcher(other.getWorld().getName()).matches();
 		}
-		return super.equals(other);
+		
+		return true;
 	}
 	
 	@Override

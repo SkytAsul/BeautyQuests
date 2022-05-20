@@ -35,20 +35,27 @@ import fr.skytasul.quests.utils.types.BQLocation;
 
 public class StageInteract extends AbstractStage implements Locatable.MultipleLocatable, Locatable.PreciseLocatable {
 
-	private boolean left;
-	private BQLocation lc;
-	private BQBlock block;
+	private final boolean left;
+	private final BQLocation lc;
+	private final Located.LocatedBlock locatedBlock;
+	private final BQBlock block;
 	
 	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
 		super(branch);
 		this.left = leftClick;
 		this.lc = new BQLocation(location.getBlock().getLocation());
+		this.locatedBlock = Located.LocatedBlock.create(lc);
+		
+		this.block = null;
 	}
 	
 	public StageInteract(QuestBranch branch, boolean leftClick, BQBlock block) {
 		super(branch);
 		this.left = leftClick;
 		this.block = block;
+		
+		this.lc = null;
+		this.locatedBlock = null;
 	}
 
 	public BQLocation getLocation() {
@@ -65,7 +72,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	
 	@Override
 	public Located getLocated() {
-		return lc;
+		return locatedBlock;
 	}
 	
 	@Override

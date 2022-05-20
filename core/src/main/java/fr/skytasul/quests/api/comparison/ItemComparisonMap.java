@@ -30,6 +30,8 @@ public class ItemComparisonMap implements Cloneable {
 	}
 	
 	public void setNotDefaultComparisons(ConfigurationSection section) {
+		this.notDefault = (Map) section.getValues(false);
+		
 		effective = new ArrayList<>();
 		for (ItemComparison comp : QuestsAPI.itemComparisons) {
 			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault())) effective.add(comp);

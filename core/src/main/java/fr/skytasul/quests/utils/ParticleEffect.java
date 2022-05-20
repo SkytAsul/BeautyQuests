@@ -7,7 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.compatibility.Post1_13;
@@ -44,7 +44,7 @@ public class ParticleEffect {
 		return type.particle.name() + " in shape " + shape.name() + (type.colored ? " with color \"R" + (type.particle != Particle.NOTE ? color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") + "\"" : "");
 	}
 	
-	public void send(LivingEntity entity, List<Player> players) {
+	public void send(Entity entity, List<Player> players) {
 		send(entity.getLocation(), NMS.getNMS().entityNameplateHeight(entity), players);
 	}
 	

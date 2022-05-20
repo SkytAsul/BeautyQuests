@@ -51,7 +51,7 @@ public abstract class BQBlock {
 		int minY = (int) Math.max(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() - fetcher.getMaxDistance());
 		int minZ = (int) (fetcher.getCenter().getZ() - fetcher.getMaxDistance());
 		double maxX = fetcher.getCenter().getX() + fetcher.getMaxDistance();
-		double maxY = Math.min(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() + fetcher.getMaxDistance());
+		double maxY = Math.min(fetcher.getCenter().getWorld().getMaxHeight(), fetcher.getCenter().getY() + fetcher.getMaxDistance());
 		double maxZ = fetcher.getCenter().getZ() + fetcher.getMaxDistance();
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
