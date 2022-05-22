@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.particles;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,19 +7,16 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.ColorParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
@@ -36,7 +33,7 @@ public class ParticleEffectGUI implements CustomInventory {
 	private static final int SLOT_CANCEL = 7;
 	private static final int SLOT_FINISH = 8;
 	
-	private static final List<Particle> PARTICLES = Arrays.stream(Particle.values()).filter(particle -> {
+	static final List<Particle> PARTICLES = Arrays.stream(Particle.values()).filter(particle -> {
 		if (particle.getDataType() == Void.class) return true;
 		if (NMS.getMCVersion() >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
 		return false;
@@ -72,7 +69,7 @@ public class ParticleEffectGUI implements CustomInventory {
 			
 			inv.setItem(SLOT_SHAPE, ItemUtils.item(XMaterial.FIREWORK_STAR, Lang.particle_shape.toString(), Lang.optionValue.format(shape)));
 			inv.setItem(SLOT_PARTICLE, ItemUtils.item(XMaterial.PAPER, Lang.particle_type.toString(), Lang.optionValue.format(particle)));
-			if (canHaveColor(particle)) setColorItem();
+			if (ParticleEffect.canHaveColor(particle)) setColorItem();
 			
 			inv.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
 			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
@@ -98,36 +95,22 @@ public class ParticleEffectGUI implements CustomInventory {
 			break;
 		
 		case SLOT_PARTICLE:
-			new PagedGUI<Particle>(Lang.INVENTORY_PARTICLE_LIST.toString(), DyeColor.MAGENTA, PARTICLES) {
-				
-				@Override
-				public ItemStack getItemStack(Particle object) {
-					String[] lore = canHaveColor(object) ? new String[] { QuestOption.formatDescription(Lang.particle_colored.toString()) } : new String[0];
-					return ItemUtils.item(XMaterial.PAPER, "§e" + object.name(), lore);
-				}
-				
-				@Override
-				public void click(Particle existing, ItemStack item, ClickType clickType) {
+			new ParticleListGUI(existing -> {
+				if (existing != null) {
 					particle = existing;
 					ItemUtils.lore(current, Lang.optionValue.format(particle));
-					if (canHaveColor(existing)) {
+					if (ParticleEffect.canHaveColor(existing)) {
 						setColorItem();
 					}else {
 						inv.setItem(SLOT_COLOR, null);
 					}
-					ParticleEffectGUI.this.create(p);
 				}
-				
-				@Override
-				public CloseBehavior onClose(Player p, Inventory inv) {
-					Utils.runSync(() -> ParticleEffectGUI.this.create(p));
-					return CloseBehavior.REMOVE;
-				}
-			}.create(p);
+				ParticleEffectGUI.this.create(p);
+			}).create(p);
 			break;
 		
 		case SLOT_COLOR:
-			if (canHaveColor(particle)) {
+			if (ParticleEffect.canHaveColor(particle)) {
 				Runnable reopen = () -> open(p);
 				Lang.COLOR_EDITOR.send(p);
 				new TextEditor<>(p, reopen, newColor -> {
@@ -147,11 +130,6 @@ public class ParticleEffectGUI implements CustomInventory {
 			break;
 		}
 		return true;
-	}
-	
-	private boolean canHaveColor(Particle particle) {
-		if (NMS.getMCVersion() >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
-		return particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
 	}
 	
 	private void setColorItem() {

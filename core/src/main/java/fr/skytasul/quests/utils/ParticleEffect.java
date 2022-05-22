@@ -27,7 +27,6 @@ public class ParticleEffect {
 	
 	public ParticleEffect(Particle bukkitType, ParticleShape shape, Color color) {
 		Validate.notNull(bukkitType);
-		Validate.notNull(shape);
 		this.type = new ParticleType(bukkitType);
 		this.shape = shape;
 		this.color = color;
@@ -62,7 +61,7 @@ public class ParticleEffect {
 	
 	@Override
 	public String toString() {
-		return type.particle.name() + " in shape " + shape.name() + (type.colored ? " with color " + (type.particle != Particle.NOTE ? "R" + color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") : "");
+		return type.particle.name() + (shape == null ? "" : " in shape " + shape.name()) + (type.colored ? " with color " + (type.particle != Particle.NOTE ? "R" + color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") : "");
 	}
 	
 	public void send(Entity entity, List<Player> players) {
@@ -121,12 +120,17 @@ public class ParticleEffect {
 		section.set("particleShape", shape.name());
 		if (color != null) section.set("particleColor", color.serialize());
 	}
-	
+
 	public static ParticleEffect deserialize(ConfigurationSection data) {
 		return new ParticleEffect(
 				Particle.valueOf(data.getString("particleEffect").toUpperCase()),
 				ParticleShape.valueOf(data.getString("particleShape").toUpperCase()),
 				data.contains("particleColor") ? Color.deserialize(data.getConfigurationSection("particleColor").getValues(false)) : null);
+	}
+	
+	public static boolean canHaveColor(Particle particle) {
+		if (NMS.getMCVersion() >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
+		return particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
 	}
 	
 	public enum ParticleShape {

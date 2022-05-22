@@ -34,19 +34,29 @@ public interface Locatable {
 			
 			int getMaxAmount();
 			
+			default Class<? extends Located> getTargetClass() {
+				return Located.class;
+			}
+			
 			static NearbyFetcher create(Location location, double maxDistance, int maxAmount) {
-				return new NearbyFetcherImpl(location, maxDistance, maxAmount);
+				return new NearbyFetcherImpl(location, maxDistance, maxAmount, Located.class);
+			}
+			
+			static NearbyFetcher create(Location location, double maxDistance, int maxAmount, Class<? extends Located> targetClass) {
+				return new NearbyFetcherImpl(location, maxDistance, maxAmount, targetClass);
 			}
 			
 			class NearbyFetcherImpl implements NearbyFetcher {
 				private Location center;
 				private double maxDistance;
 				private int maxAmount;
+				private Class<? extends Located> targetClass;
 				
-				public NearbyFetcherImpl(Location center, double maxDistance, int maxAmount) {
+				public NearbyFetcherImpl(Location center, double maxDistance, int maxAmount, Class<? extends Located> targetClass) {
 					this.center = center;
 					this.maxDistance = maxDistance;
 					this.maxAmount = maxAmount;
+					this.targetClass = targetClass;
 				}
 				
 				@Override
@@ -62,6 +72,11 @@ public interface Locatable {
 				@Override
 				public int getMaxAmount() {
 					return maxAmount;
+				}
+				
+				@Override
+				public Class<? extends Located> getTargetClass() {
+					return targetClass;
 				}
 				
 			}

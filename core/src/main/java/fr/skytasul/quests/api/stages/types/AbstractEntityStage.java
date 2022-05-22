@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.stages.types;
 
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -93,6 +94,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	
 	@Override
 	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (!fetcher.getTargetClass().isAssignableFrom(Located.LocatedEntity.class)) return Collections.emptyList();
 		double distanceSquared = fetcher.getMaxDistance() * fetcher.getMaxDistance();
 		return fetcher.getCenter().getWorld()
 				.getEntitiesByClass(entity.getEntityClass())
