@@ -1,16 +1,11 @@
 package fr.skytasul.quests.utils;
 
-import java.util.function.Supplier;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-
+import fr.skytasul.quests.api.Locale;
 
 /**
  * Stores all string paths and methods to format and send them to players.
  */
-public enum Lang{
+public enum Lang implements Locale {
 	
 	/* Formats (must be first to be used after) */
 	Prefix("misc.format.prefix"),
@@ -100,6 +95,7 @@ public enum Lang{
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
 	NUMBER_INVALID("msg.number.invalid"),
+	NUMBER_NOT_IN_BOUNDS("msg.number.notInBounds"), // 0: min, 1: max
 	ERROR_OCCURED("msg.errorOccurred"),
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
@@ -235,6 +231,9 @@ public enum Lang{
 	TITLE_FADEIN("msg.editor.title.fadeIn"),
 	TITLE_STAY("msg.editor.title.stay"),
 	TITLE_FADEOUT("msg.editor.title.fadeOut"),
+	
+	COLOR_EDITOR("msg.editor.color"),
+	INVALID_COLOR("msg.editor.invalidColor"),
 	
 	FIREWORK_INVALID("msg.editor.firework.invalid", ErrorPrefix),
 	FIREWORK_INVALID_HAND("msg.editor.firework.invalidHand", ErrorPrefix),
@@ -652,6 +651,14 @@ public enum Lang{
 	title_stay("inv.editTitle.stay"),
 	title_fadeOut("inv.editTitle.fadeOut"),
 	
+	INVENTORY_PARTICLE_EFFECT("inv.particleEffect.name"),
+	particle_shape("inv.particleEffect.shape"),
+	particle_type("inv.particleEffect.type"),
+	particle_color("inv.particleEffect.color"),
+	
+	INVENTORY_PARTICLE_LIST("inv.particleList.name"),
+	particle_colored("inv.particleList.colored"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -806,45 +813,24 @@ public enum Lang{
 		this.prefix = prefix;
 	}
 	
+	@Override
 	public String getPath(){
 		return path;
 	}
 	
-	private void setValue(String value){
+	@Override
+	public void setValue(String value) {
 		this.value = value;
 	}
 	
 	@Override
-	public String toString(){
+	public String getValue() {
 		return prefix == null ? value : (prefix.toString() + value);
 	}
 	
-	public String format(Object... replace){
-		return Utils.format(toString(), replace);
+	@Override
+	public String toString() {
+		return getValue();
 	}
-	
-	public String format(Supplier<Object>... replace) {
-		return Utils.format(toString(), replace);
-	}
-	
-	public void send(CommandSender sender, Object... args){
-		Utils.sendMessage(sender, toString(), args);
-	}
-	
-	public void sendWP(CommandSender p, Object... args){
-		Utils.sendMessageWP(p, toString(), args);
-	}
-
-
-	public static void loadStrings(YamlConfiguration defaultConfig, YamlConfiguration config) {
-		for (Lang l : values()){
-			String value = config.getString(l.path, null);
-			if (value == null) value = defaultConfig.getString(l.path, null);
-			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-			l.setValue(ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
-		}
-	}
-	
-	
 	
 }

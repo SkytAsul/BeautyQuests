@@ -2,9 +2,6 @@ package fr.skytasul.quests;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,9 +28,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.base.Charsets;
 import com.tchristofferson.configupdater.ConfigUpdater;
 
+import fr.skytasul.quests.api.Locale;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
 import fr.skytasul.quests.commands.Commands;
@@ -328,7 +325,7 @@ public class BeautyQuests extends JavaPlugin {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
 			}
-			if (init && loadLang() == null) return;
+			if (init) loadLang();
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 			
@@ -365,47 +362,10 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT", "vi_VN" }) {
-				File file = new File(getDataFolder(), "locales/" + language + ".yml");
-				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
-			}
-
-			long lastMillis = System.currentTimeMillis();
 			loadedLanguage = config.getConfig().getString("lang", "en_US");
-			String language = "locales/" + loadedLanguage + ".yml";
-			File file = new File(getDataFolder(), language);
-			InputStream res = getResource(language);
-			boolean created = false;
-			if (!file.exists()){
-				logger.warning("Language file " + language + " does not exist. Using default english strings.");
-				file.createNewFile();
-				res = getResource("locales/en_US.yml");
-				created = true;
-			}
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-			boolean changes = false;
-			if (res != null){ // if it's a local resource
-				YamlConfiguration def = YamlConfiguration.loadConfiguration(new InputStreamReader(res, StandardCharsets.UTF_8));
-				for (String key : def.getKeys(true)){ // get all keys in resource
-					if (!def.isConfigurationSection(key)){ // if not a block
-						if (!conf.contains(key)){ // if string does not exist in the file
-							conf.set(key, def.get(key)); // copy string
-							if (!created) DebugUtils.logMessage("String copied from source file to " + language + ". Key: " + key);
-							changes = true;
-						}
-					}
-				}
-			}
-			Lang.loadStrings(YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("locales/en_US.yml"), Charsets.UTF_8)), conf);
-
-			if (changes) {
-				getLogger().info("Copied new strings into " + language + " language file.");
-				conf.save(file); // if there has been changes before, save the edited file
-			}
-			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
-			return conf;
-		} catch(Exception e) {
-			throw new LoadingException("Couldn't create language file.", e);
+			return Locale.loadLang(this, Lang.values(), loadedLanguage, "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT", "vi_VN");
+		}catch (Exception ex) {
+			throw new LoadingException("Couldn't load language file.", ex);
 		}
 	}
 	
@@ -657,7 +617,7 @@ public class BeautyQuests extends JavaPlugin {
 		return instance;
 	}
 	
-	class LoadingException extends Exception {
+	public static class LoadingException extends Exception {
 		private static final long serialVersionUID = -2811265488885752109L;
 
 		private String loggerMessage;
@@ -670,6 +630,11 @@ public class BeautyQuests extends JavaPlugin {
 			super(cause);
 			this.loggerMessage = loggerMessage;
 		}
+		
+		public String getLoggerMessage() {
+			return loggerMessage;
+		}
+		
 	}
 	
 }

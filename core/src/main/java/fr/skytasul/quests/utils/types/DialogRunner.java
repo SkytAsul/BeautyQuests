@@ -213,7 +213,7 @@ public class DialogRunner {
 	}
 	
 	public void unload() {
-		players.values().forEach(PlayerStatus::cancel);
+		if (!players.isEmpty()) players.values().forEach(PlayerStatus::cancel);
 		players.clear();
 		handlePlayerChanges();
 	}

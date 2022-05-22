@@ -136,7 +136,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		
 		public void setEntity(EntityType entity) {
 			this.entity = entity;
-			line.editItem(6, ItemUtils.lore(line.getItem(6), entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(entity == null ? Lang.EntityTypeAny.toString() : entity.name())));
 		}
 		
 		public void setAmount(int amount) {
