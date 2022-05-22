@@ -15,6 +15,8 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 	private Class<T> numberType;
 	private boolean positive;
 	private boolean noZero;
+	private BigDecimal min;
+	private BigDecimal max;
 	
 	public NumberParser(Class<T> numberType, boolean positive) {
 		this(numberType, positive, false);
@@ -26,6 +28,13 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 		this.noZero = noZero;
 	}
 	
+	public NumberParser(Class<T> numberType, T min, T max) {
+		this.numberType = numberType;
+		this.min = new BigDecimal(min.doubleValue());
+		this.max = new BigDecimal(max.doubleValue());
+	}
+	
+	@Override
 	public T parse(Player p, String msg) {
 		try{
 			String tname = numberType != Integer.class ? numberType.getSimpleName() : "Int";
@@ -37,6 +46,13 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 					return null;
 				}else if (noZero && compare == 0) {
 					Lang.NUMBER_ZERO.send(p);
+					return null;
+				}
+			}
+			if (min != null || max != null) {
+				BigDecimal bd = new BigDecimal(msg);
+				if ((min != null && bd.compareTo(min) < 0) || (max != null && bd.compareTo(max) > 0)) {
+					Lang.NUMBER_NOT_IN_BOUNDS.send(p, min, max);
 					return null;
 				}
 			}

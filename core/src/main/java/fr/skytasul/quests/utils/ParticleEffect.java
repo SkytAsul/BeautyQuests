@@ -3,6 +3,7 @@ package fr.skytasul.quests.utils;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -17,31 +18,51 @@ public class ParticleEffect {
 	
 	private static Random random = new Random();
 	
-	private ParticleType type;
-	private ParticleShape shape;
+	private final ParticleType type;
+	private final ParticleShape shape;
+	private final Color color;
 	
-	private Color color;
-	private double[] colors;
-	private Object dustColor;
+	private final double[] colors;
+	private final Object dustColor;
 	
 	public ParticleEffect(Particle bukkitType, ParticleShape shape, Color color) {
+		Validate.notNull(bukkitType);
+		Validate.notNull(shape);
 		this.type = new ParticleType(bukkitType);
 		this.shape = shape;
 		this.color = color;
 		
 		if (type.dustColored) {
 			dustColor = Post1_13.getDustColor(color, 1);
+			colors = null;
 		}else if (type.colored && bukkitType != Particle.NOTE) {
+			dustColor = null;
 			colors = new double[3];
 			colors[0] = color.getRed() == 0 ? Float.MIN_NORMAL : color.getRed() / 255D;
 			colors[1] = color.getGreen() / 255D;
 			colors[2] = color.getBlue() / 255D;
+		}else {
+			dustColor = null;
+			colors = null;
+			color = null;
 		}
+	}
+	
+	public Particle getParticle() {
+		return type.particle;
+	}
+	
+	public ParticleShape getShape() {
+		return shape;
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 	
 	@Override
 	public String toString() {
-		return type.particle.name() + " in shape " + shape.name() + (type.colored ? " with color \"R" + (type.particle != Particle.NOTE ? color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") + "\"" : "");
+		return type.particle.name() + " in shape " + shape.name() + (type.colored ? " with color " + (type.particle != Particle.NOTE ? "R" + color.getRed() + " G" + color.getGreen() + " B" + color.getBlue() : "random") : "");
 	}
 	
 	public void send(Entity entity, List<Player> players) {
@@ -77,6 +98,8 @@ public class ParticleEffect {
 			offX = random.nextInt(24) / 24D; // this offset contains the note number
 			offY = 0;
 			offZ = 0;
+			amount = 0; // amount must be 0 for note color to be enabled
+			extra = 1; // speed must be to 1 for the same reason
 		}else if (dustColor != null) {
 			data = dustColor;
 		}else if (colors != null) {
@@ -93,11 +116,17 @@ public class ParticleEffect {
 		}
 	}
 	
+	public void serialize(ConfigurationSection section) {
+		section.set("particleEffect", type.particle.name());
+		section.set("particleShape", shape.name());
+		if (color != null) section.set("particleColor", color.serialize());
+	}
+	
 	public static ParticleEffect deserialize(ConfigurationSection data) {
 		return new ParticleEffect(
 				Particle.valueOf(data.getString("particleEffect").toUpperCase()),
 				ParticleShape.valueOf(data.getString("particleShape").toUpperCase()),
-				Color.deserialize(data.getConfigurationSection("particleColor").getValues(false)));
+				data.contains("particleColor") ? Color.deserialize(data.getConfigurationSection("particleColor").getValues(false)) : null);
 	}
 	
 	public enum ParticleShape {
