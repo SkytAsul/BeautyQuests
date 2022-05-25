@@ -94,7 +94,7 @@ public interface Locatable {
 		}
 		
 		class LocatedImpl implements Located {
-			private Location location;
+			protected Location location;
 			
 			public LocatedImpl(Location location) {
 				this.location = location;
@@ -102,7 +102,7 @@ public interface Locatable {
 			
 			@Override
 			public Location getLocation() {
-				return location;
+				return location.clone();
 			}
 			
 			@Override
@@ -178,6 +178,11 @@ public interface Locatable {
 			class LocatedBlockImpl extends LocatedImpl implements LocatedBlock {
 				public LocatedBlockImpl(Location location) {
 					super(location);
+				}
+				
+				@Override
+				public Block getBlock() {
+					return location.getBlock();
 				}
 			}
 			
