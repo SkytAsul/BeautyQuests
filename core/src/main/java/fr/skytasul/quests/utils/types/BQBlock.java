@@ -92,7 +92,7 @@ public abstract class BQBlock {
 		
 		@Override
 		public boolean applies(Block block) {
-			return XBlock.isType(block, material);
+			return XBlock.isSimilar(block, material);
 		}
 		
 		@Override

@@ -326,25 +326,27 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stagePlayTime = ItemUtils.item(XMaterial.CLOCK, Lang.stagePlayTime.toString());
 	private static final ItemStack stageBreed = ItemUtils.item(XMaterial.WHEAT, Lang.stageBreedAnimals.toString());
 	private static final ItemStack stageTame = ItemUtils.item(XMaterial.CARROT, Lang.stageTameAnimals.toString());
+	private static final ItemStack stageDeath = ItemUtils.item(XMaterial.SKELETON_SKULL, Lang.stageDeath.toString());
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
 
-		QuestsAPI.registerStage(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(), StageNPC::deserialize, stageNPC, StageNPC.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(), StageBringBack::deserialize, stageItems, StageBringBack.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("MOBS", StageMobs.class, Lang.Mobs.name(), StageMobs::deserialize, stageMobs, StageMobs.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("MINE", StageMine.class, Lang.Mine.name(), StageMine::deserialize, stageMine, StageMine.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name(), StagePlaceBlocks::deserialize, stagePlace, StagePlaceBlocks.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("CHAT", StageChat.class, Lang.Chat.name(), StageChat::deserialize, stageChat, StageChat.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("INTERACT", StageInteract.class, Lang.Interact.name(), StageInteract::deserialize, stageInteract, StageInteract.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("FISH", StageFish.class, Lang.Fish.name(), StageFish::deserialize, stageFish, StageFish.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("MELT", StageMelt.class, Lang.Melt.name(), StageMelt::deserialize, stageMelt, StageMelt.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("ENCHANT", StageEnchant.class, Lang.Enchant.name(), StageEnchant::deserialize, stageEnchant, StageEnchant.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("CRAFT", StageCraft.class, Lang.Craft.name(), StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name(), StagePlayTime::deserialize, stagePlayTime, StagePlayTime.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("BREED", StageBreed.class, Lang.Breed.name(), StageBreed::deserialize, stageBreed, StageBreed.Creator::new));
-		QuestsAPI.registerStage(new StageType<>("TAME", StageTame.class, Lang.Tame.name(), StageTame::deserialize, stageTame, StageTame.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(), StageNPC::deserialize, stageNPC, StageNPC.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(), StageBringBack::deserialize, stageItems, StageBringBack.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("MOBS", StageMobs.class, Lang.Mobs.name(), StageMobs::deserialize, stageMobs, StageMobs.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("MINE", StageMine.class, Lang.Mine.name(), StageMine::deserialize, stageMine, StageMine.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name(), StagePlaceBlocks::deserialize, stagePlace, StagePlaceBlocks.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("CHAT", StageChat.class, Lang.Chat.name(), StageChat::deserialize, stageChat, StageChat.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("INTERACT", StageInteract.class, Lang.Interact.name(), StageInteract::deserialize, stageInteract, StageInteract.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("FISH", StageFish.class, Lang.Fish.name(), StageFish::deserialize, stageFish, StageFish.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("MELT", StageMelt.class, Lang.Melt.name(), StageMelt::deserialize, stageMelt, StageMelt.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("ENCHANT", StageEnchant.class, Lang.Enchant.name(), StageEnchant::deserialize, stageEnchant, StageEnchant.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("CRAFT", StageCraft.class, Lang.Craft.name(), StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name(), StagePlayTime::deserialize, stagePlayTime, StagePlayTime.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("BREED", StageBreed.class, Lang.Breed.name(), StageBreed::deserialize, stageBreed, StageBreed.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("TAME", StageTame.class, Lang.Tame.name(), StageTame::deserialize, stageTame, StageTame.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("DEATH", StageDeath.class, Lang.Death.name(), StageDeath::deserialize, stageDeath, StageDeath.Creator::new));
 	}
 }

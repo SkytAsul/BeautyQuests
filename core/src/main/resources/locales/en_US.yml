@@ -367,6 +367,7 @@ inv:
     playTime: §ePlay time
     breedAnimals: §aBreed animals
     tameAnimals: §aTame animals
+    death: §cDie
     NPCText: §eEdit dialog
     dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
@@ -405,6 +406,10 @@ inv:
       location:
         worldPattern: '§aSet world name pattern §d(ADVANCED)'
         worldPatternLore: 'If you want the stage to be completed for any world matching a specific pattern, enter a regex (regular expression) here.'
+      death:
+        causes: '§aSet death causes §d(ADVANCED)'
+        anyCause: Any death cause
+        setCauses: '{0} death cause(s)'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -698,6 +703,10 @@ inv:
   particleList:
     name: Particles list
     colored: Colored particle
+  damageCause:
+    name: Damage cause
+  damageCausesList:
+    name: Damage causes list
     
 scoreboard:
   name: §6§lQuests
@@ -725,6 +734,7 @@ scoreboard:
     playTimeFormatted: §ePlay §6{0}
     breed: §eBreed §6{0}
     tame: §eTame §6{0}
+    die: §cDie
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -776,6 +786,7 @@ misc:
     playTime: Play time
     breedAnimals: Breed animals
     tameAnimals: Tame animals
+    die: Die
   comparison:
     equals: equal to {0}
     different: different to {0}

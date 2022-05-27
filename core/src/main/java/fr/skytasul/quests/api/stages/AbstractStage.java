@@ -175,7 +175,7 @@ public abstract class AbstractStage implements Listener {
 	 * @param p Player who finish the stage
 	 */
 	protected final void finishStage(Player p) {
-		branch.finishStage(p, this);
+		Utils.runSync(() -> branch.finishStage(p, this));
 	}
 	
 	/**

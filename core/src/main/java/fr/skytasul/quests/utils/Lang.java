@@ -354,6 +354,7 @@ public enum Lang implements Locale {
 	stagePlayTime("inv.create.playTime"),
 	stageBreedAnimals("inv.create.breedAnimals"),
 	stageTameAnimals("inv.create.tameAnimals"),
+	stageDeath("inv.create.death"),
 	stageText("inv.create.NPCText"),
 	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
@@ -383,13 +384,18 @@ public enum Lang implements Locale {
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
 	editBucketAmount("inv.create.editBucketAmount"),
+	changeTicksRequired("inv.create.changeTicksRequired"),
+	changeEntityType("inv.create.changeEntityType"),
+	
 	stageLocationLocation("inv.create.editLocation"),
 	stageLocationRadius("inv.create.editRadius"),
 	stageLocationCurrentRadius("inv.create.currentRadius"), // 0: radius
 	stageLocationWorldPattern("inv.create.stage.location.worldPattern"),
 	stageLocationWorldPatternLore("inv.create.stage.location.worldPatternLore"),
-	changeTicksRequired("inv.create.changeTicksRequired"),
-	changeEntityType("inv.create.changeEntityType"),
+
+	stageDeathCauses("inv.create.stage.death.causes"),
+	stageDeathCauseAny("inv.create.stage.death.anyCause"),
+	stageDeathCausesSet("inv.create.stage.death.setCauses"), // 0: causes amount
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -659,6 +665,10 @@ public enum Lang implements Locale {
 	INVENTORY_PARTICLE_LIST("inv.particleList.name"),
 	particle_colored("inv.particleList.colored"),
 	
+	INVENTORY_DAMAGE_CAUSE("inv.damageCause.name"),
+	
+	INVENTORY_DAMAGE_CAUSES_LIST("inv.damageCausesList.name"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -693,6 +703,7 @@ public enum Lang implements Locale {
 	SCOREBOARD_TAME("scoreboard.stage.tame"), // 0: animals to breed
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
 	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTimeFormatted"), // 0: remaining time
+	SCOREBOARD_DIE("scoreboard.stage.die"),
 	
 	/* Indications */
 	
@@ -739,6 +750,7 @@ public enum Lang implements Locale {
 	PlayTime("misc.stageType.playTime"),
 	Breed("misc.stageType.breedAnimals"),
 	Tame("misc.stageType.tameAnimals"),
+	Death("misc.stageType.die"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),
