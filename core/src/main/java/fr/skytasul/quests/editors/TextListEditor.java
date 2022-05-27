@@ -76,7 +76,7 @@ public class TextListEditor extends Editor{
 		case LIST:
 			StringJoiner joiner = new StringJoiner("\n", "§6§lList:\n", "");
 			for (int i = 0; i < texts.size(); i++) {
-				joiner.add("§7" + i + "- §r" + texts.get(i));
+				joiner.add("§6" + i + ": §r" + texts.get(i));
 			}
 			p.sendMessage(joiner.toString());
 			break;

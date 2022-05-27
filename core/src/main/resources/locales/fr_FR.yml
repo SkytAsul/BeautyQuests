@@ -74,6 +74,7 @@ msg:
     negative: '§cTu dois entrer un nombre positif !'
     zero: '§cTu dois entrer un nombre autre que 0 !'
     invalid: '§c{0} n''est pas un nombre valide.'
+    notInBounds: '§cLa valeur doit être comprise entre {0} et {1}.'
   errorOccurred: '§cUne erreur est survenue, prévenez un administrateur ! §4§lCode d''erreur : {0}'
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
@@ -290,6 +291,8 @@ msg:
       fadeIn: 'Écrivez la durée du fondu d''entrée, en ticks (20 ticks = 1 seconde).'
       stay: 'Écrivez la durée où le titre reste affiché, en ticks (20 ticks = 1 seconde).'
       fadeOut: 'Écrivez la durée du fondu de sortie, en ticks (20 ticks = 1 seconde).'
+    color: 'Entrez une couleur au format hexadécimal (#XXXXX) ou RVB (ROUGE VERT BLEU).'
+    invalidColor: 'La couleur que vous avez saisie n''est pas valide. Elle doit être hexadécimale ou RVB.'
     firework:
       invalid: 'Cet objet n''est pas un feu d''artifice valide.'
       invalidHand: 'Vous devez tenir un feu d''artifice dans votre main principale.'
@@ -332,6 +335,7 @@ inv:
     playTime: '§eTemps de jeu'
     breedAnimals: '§aFaire reproduire des animaux'
     tameAnimals: '§aApprivoiser des animaux'
+    death: '§cMourir'
     NPCText: '§eModifier le dialogue'
     dialogLines: '{0} lignes'
     NPCSelect: '§eChoisir ou créer un NPC'
@@ -370,6 +374,10 @@ inv:
       location:
         worldPattern: '§aModifier le motif de nom de monde §d(AVANCÉ)'
         worldPatternLore: 'Si vous voulez que l''étape soit terminée pour un monde correspondant à un motif spécifique, entrez ici une regex (expression régulière).'
+      death:
+        causes: '§aDéfinir les causes de la mort §d(AVANCED)'
+        anyCause: Toute cause de mort
+        setCauses: '{0} cause(s) de mort'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -650,6 +658,18 @@ inv:
     fadeIn: '§aDurée du fondu d''entrée'
     stay: '§bDurée statique'
     fadeOut: '§aDurée du fondu de sortie'
+  particleEffect:
+    name: Créer un effet de particules
+    shape: '§dForme de l''effet'
+    type: '§eType de particules'
+    color: '§bCouleur des particules'
+  particleList:
+    name: Liste des particules
+    colored: Particule colorée
+  damageCause:
+    name: Cause de dégât
+  damageCausesList:
+    name: Liste des causes de dégât
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -676,6 +696,7 @@ scoreboard:
     playTimeFormatted: '§eJoue §6{0}'
     breed: '§eFaites se reproduire §6{0}'
     tame: '§eApprivoisez §6{0}'
+    die: '§cMourez'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -723,6 +744,7 @@ misc:
     playTime: Temps de jeu
     breedAnimals: Faire reproduire des animaux
     tameAnimals: Apprivoiser des animaux
+    die: Mourir
   comparison:
     equals: égal à {0}
     different: différent de {0}
