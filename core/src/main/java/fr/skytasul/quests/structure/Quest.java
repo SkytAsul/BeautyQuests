@@ -298,10 +298,12 @@ public class Quest implements Comparable<Quest>, OptionSet {
 			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 			if (asyncStart != null) asyncStart.remove(p);
-			manager.startPlayer(acc);
-			QuestsAPI.propagateQuestsHandlers(handler -> handler.questStart(acc, p, this));
 			
-			Utils.runOrSync(() -> Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this)));
+			Utils.runOrSync(() -> {
+				manager.startPlayer(acc);
+				QuestsAPI.propagateQuestsHandlers(handler -> handler.questStart(acc, p, this));
+				Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, Quest.this));
+			});
 		};
 		if (asyncStart != null){
 			asyncStart.add(p);
