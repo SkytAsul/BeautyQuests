@@ -60,7 +60,7 @@ public class Post1_13 {
 		
 		@Override
 		public String getAsString() {
-			return BQBlock.BLOCKDATA_HEADER + data.getAsString();
+			return BQBlock.BLOCKDATA_HEADER + data.getAsString(true);
 		}
 		
 	}
