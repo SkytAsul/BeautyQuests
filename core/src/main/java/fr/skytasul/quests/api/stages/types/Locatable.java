@@ -1,5 +1,9 @@
 package fr.skytasul.quests.api.stages.types;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collection;
 
 import org.bukkit.Location;
@@ -85,9 +89,17 @@ public interface Locatable {
 		
 	}
 	
+	@Retention (RetentionPolicy.RUNTIME)
+	@Target (ElementType.TYPE)
+	@interface LocatableType {
+		LocatedType[] types() default { LocatedType.ENTITY, LocatedType.BLOCK, LocatedType.OTHER };
+	}
+	
 	interface Located {
 		
 		Location getLocation();
+		
+		LocatedType getType();
 		
 		static Located create(Location location) {
 			return new LocatedImpl(location);
@@ -103,6 +115,11 @@ public interface Locatable {
 			@Override
 			public Location getLocation() {
 				return location.clone();
+			}
+			
+			@Override
+			public LocatedType getType() {
+				return LocatedType.OTHER;
 			}
 			
 			@Override
@@ -127,6 +144,11 @@ public interface Locatable {
 			default Location getLocation() {
 				Entity entity = getEntity();
 				return entity == null ? null : entity.getLocation();
+			}
+			
+			@Override
+			default LocatedType getType() {
+				return LocatedType.ENTITY;
 			}
 			
 			static LocatedEntity create(Entity entity) {
@@ -167,6 +189,11 @@ public interface Locatable {
 				return getLocation().getBlock();
 			}
 			
+			@Override
+			default LocatedType getType() {
+				return LocatedType.BLOCK;
+			}
+			
 			static LocatedBlock create(Block block) {
 				return new LocatedBlockImpl(block.getLocation());
 			}
@@ -184,10 +211,23 @@ public interface Locatable {
 				public Block getBlock() {
 					return location.getBlock();
 				}
+				
+				@Override
+				public LocatedType getType() {
+					// As LocatedBlockImpl inherits getType()
+					// from both LocatedBlock AND LocatedImpl,
+					// we redefine the method correctly.
+					return LocatedType.BLOCK;
+				}
+				
 			}
 			
 		}
 		
+	}
+	
+	enum LocatedType {
+		BLOCK, ENTITY, OTHER;
 	}
 	
 }

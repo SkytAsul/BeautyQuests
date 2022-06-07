@@ -12,6 +12,7 @@ import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 
 import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 
 public class BQLocation extends Location implements Locatable.Located {
 	
@@ -57,6 +58,11 @@ public class BQLocation extends Location implements Locatable.Located {
 	@Override
 	public Location getLocation() {
 		return new Location(getWorld(), getX(), getY(), getZ());
+	}
+	
+	@Override
+	public LocatedType getType() {
+		return LocatedType.OTHER;
 	}
 	
 	public boolean isWorld(World world) {
