@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.19.6</version>
+		<version>0.19.7</version>
 	</parent>
 
 	<properties>
