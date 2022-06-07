@@ -14,21 +14,22 @@ public class ChatUtils {
 	
 	// For testing purposes
 	public static void main(String[] args) {
-		test("Hello there, it's me", 12, 15, "Hello there,", "it's me");
-		test("§aHello there, it's me", 12, 15, "§aHello there,", "§ait's me");
-		test("§aHello §cthere, it's me", 12, 16, "§aHello §cthere,", "§cit's me");
-		test("§aHello §cthere, it's me", 13, 17, "§aHello §cthere,", "§cit's me");
-		test("§aHello §lthere, it's me", 12, 16, "§aHello §lthere,", "§a§lit's me");
-		test("§aHello §c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme");
-		test("§aHello §c§a§o§c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme");
-		test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2there,", "§x§1§1§1§1§1§2it's me");
-		test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 14, "§aHello there,", "it's me");
-		test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 12, "§aHello", "§athere,", "it's me");
-		test("§aHello §x§1§1§1§1§1§2§lthere, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2§lthere,", "§x§1§1§1§1§1§2§lit's me");
-		test("§aHello §x§1§1§1§1§1§2the§lre, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2the§lre,", "§x§1§1§1§1§1§2§lit's me");
-		test("§aHello §x§1§1§1§1§1§2there, §lit's me, owo §ofellas §nowo", 26, 100, "§aHello §x§1§1§1§1§1§2there, §lit's me, owo", "§x§1§1§1§1§1§2§l§ofellas §nowo");
-		test("1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow §ostranger§x§B§B§E§E§D§D?", 40, 100, "1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow", "§x§B§B§E§E§D§D§l§ostranger§x§B§B§E§E§D§D?");
-		test("§aHello, thisisaverylongword and thisisa§lverylongword", 10, 25, "§aHello,", "§athisisaver", "§aylongword", "§aand");
+		//test("Hello there, it's me", 12, 15, "Hello there,", "it's me");
+		//test("§aHello there, it's me", 12, 15, "§aHello there,", "§ait's me");
+		//test("§aHello §cthere, it's me", 12, 16, "§aHello §cthere,", "§cit's me");
+		//test("§aHello §cthere, it's me", 13, 17, "§aHello §cthere,", "§cit's me");
+		//test("§aHello §lthere, it's me", 12, 16, "§aHello §lthere,", "§a§lit's me");
+		//test("§aHello §c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme");
+		//test("§aHello §c§a§o§c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme");
+		//test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2there,", "§x§1§1§1§1§1§2it's me");
+		//test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 14, "§aHello there,", "it's me");
+		//test("§aHello §x§1§1§1§1§1§2there, it's me", 12, 12, "§aHello", "§athere,", "it's me");
+		//test("§aHello §x§1§1§1§1§1§2§lthere, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2§lthere,", "§x§1§1§1§1§1§2§lit's me");
+		//test("§aHello §x§1§1§1§1§1§2the§lre, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2the§lre,", "§x§1§1§1§1§1§2§lit's me");
+		//test("§aHello §x§1§1§1§1§1§2there, §lit's me, owo §ofellas §nowo", 26, 100, "§aHello §x§1§1§1§1§1§2there, §lit's me, owo", "§x§1§1§1§1§1§2§l§ofellas §nowo");
+		//test("1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow §ostranger§x§B§B§E§E§D§D?", 40, 100, "1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow", "§x§B§B§E§E§D§D§l§ostranger§x§B§B§E§E§D§D?");
+		//test("§aHello, thisisaverylongword and thisisa§lverylongword", 10, 25, "§aHello,", "§athisisaver", "§aylongword", "§aand");
+		//test("§bVery_much_§along_word_§dwith_colors_§cinside_and_useless_words_after", 20, 50);
 	}
 	
 	private static int testID = 0;
@@ -80,107 +81,113 @@ public class ChatUtils {
 			return Arrays.asList(rawString);
 		}
 		
-		char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
-		StringBuilder word = new StringBuilder();
-		StringBuilder line = new StringBuilder(maxLineLength);
-		String colorsWord = "";
-		String colors = "";
-		boolean first = false;
-		List<String> lines = new LinkedList<>();
-		int wordLength = 0;
-		int lineLength = 0;
-		
-		for (int i = 0; i < rawChars.length; i++) {
-			char c = rawChars[i];
+		try {
+			char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
+			StringBuilder word = new StringBuilder();
+			StringBuilder line = new StringBuilder(maxLineLength);
+			String colorsWord = "";
+			String colors = "";
+			boolean first = false;
+			List<String> lines = new LinkedList<>();
+			int wordLength = 0;
+			int lineLength = 0;
 			
-			// skip chat color modifiers
-			if (c == ChatColor.COLOR_CHAR) {
-				Matcher matcher = START_WITH_COLORS.matcher(rawString.substring(i));
-				if (matcher.find()) {
-					String rawColors = matcher.group();
-					String oldColors = colors;
-					colors = appendRawColorString(colors, rawColors);
-					String toAdd = getColorDifference(oldColors, colors);
-					//System.out.println("new colors: " + colors + " | to add: " + toAdd);
-					
-					if (colors.length() >= criticalLineLength) { // weird case : the formatting and word is longer than a line
-						colors = "";
+			for (int i = 0; i < rawChars.length; i++) {
+				char c = rawChars[i];
+				
+				// skip chat color modifiers
+				if (c == ChatColor.COLOR_CHAR) {
+					Matcher matcher = START_WITH_COLORS.matcher(rawString.substring(i));
+					if (matcher.find()) {
+						String rawColors = matcher.group();
+						String oldColors = colors;
+						colors = appendRawColorString(colors, rawColors);
+						String toAdd = getColorDifference(oldColors, colors);
+						//System.out.println("new colors: " + colors + " | to add: " + toAdd);
+						
+						if (colors.length() >= criticalLineLength) { // weird case : the formatting and word is longer than a line
+							colors = "";
+						}else {
+							word.append(toAdd);
+						}
+						i += rawColors.length() - 1; // eat all color characters minus 1 (first § already processed)
 					}else {
-						word.append(toAdd);
+						word.append(c); // unknown color code: we copy it
 					}
-					i += rawColors.length() - 1; // eat all color characters minus 1 (first § already processed)
-				}else {
-					word.append(c); // unknown color code: we copy it
-				}
-			}else if (c == ' ' || c == '\n') {
-				if (lineLength == 0 && (wordLength > maxLineLength || word.length() > criticalLineLength)) { // special case: extremely long word begins a line
-					//System.out.println("long word : " + word);
-					lines.addAll(splitColoredString(word.toString(), wordLength, maxLineLength, criticalLineLength, colorsWord));
-				}else {
-					int totalLength = (lineLength == 0 ? 0 : lineLength + 1) + wordLength;
-					int totalLengthC = (lineLength == 0 ? 0 : line.length() + 1) + word.length();
-					//System.out.println("so far: " + line.toString() + " | " + word.toString() + " | total length " + totalLength + " | total COMPLETE " + totalLengthC);
-					if ((totalLength == maxLineLength && totalLengthC <= criticalLineLength) || (totalLengthC == criticalLineLength && totalLength <= maxLineLength)) { // Line exactly the correct length...newline
-						if (lineLength > 0) line.append(' ');
-						line.append(word);
+				}else if (c == ' ' || c == '\n') {
+					if (lineLength == 0 && (wordLength > maxLineLength || word.length() > criticalLineLength)) { // special case: extremely long word begins a line
+						//System.out.println("long word : " + word);
+						lines.addAll(splitColoredWord(word.toString(), wordLength, maxLineLength, criticalLineLength, colorsWord));
+					}else {
+						int totalLength = (lineLength == 0 ? 0 : lineLength + 1) + wordLength;
+						int totalLengthC = (lineLength == 0 ? 0 : line.length() + 1) + word.length();
+						//System.out.println("so far: " + line.toString() + " | " + word.toString() + " | total length " + totalLength + " | total COMPLETE " + totalLengthC);
+						if ((totalLength == maxLineLength && totalLengthC <= criticalLineLength) || (totalLengthC == criticalLineLength && totalLength <= maxLineLength)) { // Line exactly the correct length...newline
+							if (lineLength > 0) line.append(' ');
+							line.append(word);
+							lines.add(line.toString());
+							//System.out.println("append exact " + line.toString());
+							line = new StringBuilder(maxLineLength);
+							lineLength = 0;
+							first = true;
+						}else if (totalLength > maxLineLength || totalLengthC > criticalLineLength) { // Line too long...break the line
+							//System.out.println("too long " + line.toString() + " | plus : " + word.toString() + " | linelength: " + lineLength + " | wordlength: " + wordLength);
+							lines.add(line.toString());
+							if (word.length() >= maxLineLength || word.length() >= criticalLineLength) {
+								//System.out.println("entire word too long. split: " + word.toString() + " length " + wordLength + " colors " + colorsWord);
+								lines.addAll(splitColoredWord(colorsWord + word.toString(), wordLength, maxLineLength, criticalLineLength, colorsWord));
+								lineLength = 0;
+								//System.out.println("lines: " + lines);
+								line = new StringBuilder(maxLineLength);
+							}else {
+								int textIndex = getFirstTextIndex(word.toString());
+								line = new StringBuilder(maxLineLength); // start the line with the word
+								line.append(word.substring(textIndex));
+								lineLength = wordLength;
+								line.insert(0, appendRawColorString(colorsWord, word.substring(0, textIndex)));
+								//System.out.println("line: " + line.toString());
+							}
+						}else {
+							if (line.length() > 0) {
+								if (!first) {
+									line.append(' ');
+									lineLength++;
+								}
+							}
+							first = false;
+							line.append(word);
+							lineLength += wordLength;
+							//System.out.println("append word " + word);
+						}
+					}
+					colorsWord = colors;
+					word = lineLength == 0 ? new StringBuilder(colors) : new StringBuilder();
+					wordLength = 0;
+					
+					if (c == '\n') { // Newline forces the line to flush
+						////System.out.println(lastColors.replace('§', '&') + " LINE " + line.toString());
 						lines.add(line.toString());
-						//System.out.println("append exact " + line.toString());
 						line = new StringBuilder(maxLineLength);
 						lineLength = 0;
+						word.append(colors);
 						first = true;
-					}else if (totalLength > maxLineLength || totalLengthC > criticalLineLength) { // Line too long...break the line
-						//System.out.println("too long " + line.toString() + " | plus : " + word.toString());
-						//System.out.println("linelength: " + lineLength + " | wordlength: " + wordLength);
-						lines.add(line.toString());
-						if (word.length() >= maxLineLength || word.length() >= criticalLineLength) {
-							//System.out.println("entire word too long. split: " + word.toString() + " length " + wordLength + " colors " + colorsWord);
-							lines.addAll(splitColoredString(word.toString(), wordLength, maxLineLength, criticalLineLength, colorsWord));
-							lineLength = 0;
-							line = new StringBuilder(maxLineLength);
-						}else {
-							int textIndex = getFirstTextIndex(word.toString());
-							line = new StringBuilder(maxLineLength); // start the line with the word
-							line.append(word.substring(textIndex));
-							lineLength = wordLength;
-							line.insert(0, appendRawColorString(colorsWord, word.substring(0, textIndex)));
-							//System.out.println("line: " + line.toString());
-						}
-					}else {
-						if (line.length() > 0) {
-							if (!first) {
-								line.append(' ');
-								lineLength++;
-							}
-						}
-						first = false;
-						line.append(word);
-						lineLength += wordLength;
-						//System.out.println("append word " + word);
 					}
+				}else {
+					word.append(c);
+					wordLength++;
 				}
-				colorsWord = colors;
-				word = lineLength == 0 ? new StringBuilder(colors) : new StringBuilder();
-				wordLength = 0;
-				
-				if (c == '\n') { // Newline forces the line to flush
-					//System.out.println(lastColors.replace('§', '&') + " LINE " + line.toString());
-					lines.add(line.toString());
-					line = new StringBuilder(maxLineLength);
-					lineLength = 0;
-					word.append(colors);
-					first = true;
-				}
-			}else {
-				word.append(c);
-				wordLength++;
 			}
+			
+			if (line.length() > 0) { // Only add the last line if there is anything to add
+				lines.add(line.toString());
+			}
+			
+			return lines;
+		}catch (Exception ex) {
+			new RuntimeException("An exception occurred while trying to split the string " + rawString + " with max length " + maxLineLength + " and critical length " + criticalLineLength, ex).printStackTrace();
+			rawString = "§4ERROR " + rawString;
+			return Arrays.asList(rawString.split("(?<=\\G.{4})"));
 		}
-		
-		if (line.length() > 0) { // Only add the last line if there is anything to add
-			lines.add(line.toString());
-		}
-		
-		return lines;
 	}
 	
 	public static String appendRawColorString(String original, String appended) {
@@ -218,23 +225,32 @@ public class ChatUtils {
 		return newColors.startsWith(oldColors) ? newColors.substring(oldColors.length()) : newColors;
 	}
 	
-	private static List<String> splitColoredString(String string, int stringLength, int maxLength, int criticalLength, String startColors) {
+	private static List<String> splitColoredWord(String string, int stringLength, int maxLength, int criticalLength, String startColors) {
+		final String original = string;
+		int loops = 0;
 		List<String> split = new ArrayList<>();
 		while (stringLength >= maxLength || string.length() >= criticalLength) {
+			if (loops++ > 1000) throw new RuntimeException("Failed to split a colored string: " + original);
+			//System.out.println("Colored string too long: " + string + " | length " + stringLength + " | COMPLETE " + string.length());
 			int colorIndex = string.indexOf('§');
 			if (colorIndex > maxLength || colorIndex == -1) { // before color -> only text
 				split.add(startColors + string.substring(0, maxLength));
+				//System.out.println("Colors too long: " + split + " | color index " + colorIndex);
 				string = string.substring(maxLength);
 				stringLength -= maxLength;
 			}else {
 				int length = 0;
 				int previousIndex = -2;
 				String colors = startColors;
+				//System.out.println("Matching " + string);
 				Matcher matcher = COLOR.matcher(string);
 				while (matcher.find()) {
+					if (loops++ > 1000) throw new RuntimeException("Failed to split a colored string: " + original);
 					length += matcher.start() - previousIndex - 2;
+					//System.out.println("Matched " + matcher.group() + " | Length " + length);
 					if (length > maxLength || matcher.start() > criticalLength) {
 						split.add(string.substring(0, previousIndex));
+						//System.out.println("Added part: " + split);
 						string = startColors + string.substring(previousIndex);
 						startColors = colors;
 						matcher = COLOR.matcher(string);
@@ -250,11 +266,14 @@ public class ChatUtils {
 				int truncated = 0;
 				if (length >= maxLength) {
 					truncated = maxLength + startColors.length();
+					if (string.charAt(truncated - 1) == '§') truncated--;
 					split.add(string.substring(0, truncated));
+					//System.out.println("Truncated with length: " + split);
 					string = startColors + string.substring(truncated);
 				}else if (string.length() >= criticalLength) {
 					truncated = criticalLength - startColors.length();
 					split.add(string.substring(0, truncated));
+					//System.out.println("Truncated with critical length: " + split);
 					string = startColors + string.substring(truncated);
 				}
 				stringLength -= truncated;

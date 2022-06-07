@@ -240,7 +240,7 @@ public class PlayerListGUI implements CustomInventory {
 				}
 			}else {
 				if (click.isRightClick()) {
-					if (acc.getQuestDatas(qu).hasFlowDialogs()) {
+					if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 						Utils.playPluginSound(p, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
 						new DialogHistoryGUI(acc, qu, () -> {
 							Inventories.put(p, thiz, inv);
