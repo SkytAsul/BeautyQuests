@@ -94,7 +94,16 @@ public class DependenciesManager implements Listener {
 	});
 	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
-	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays"));
+	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
+		if (!plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays")) return false;
+		try {
+			Class.forName("me.filoghost.holographicdisplays.api.HolographicDisplaysAPI");
+			return true;
+		}catch (ClassNotFoundException ex) {
+			BeautyQuests.logger.warning("Your version of HolographicDisplays is unsupported. Please make sure you are running the LATEST dev build of HolographicDisplays.");
+			return false;
+		}
+	});
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
