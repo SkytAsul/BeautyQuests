@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.AbstractHolograms;
 
-import me.filoghost.holographicdisplays.api.beta.HolographicDisplaysAPI;
-import me.filoghost.holographicdisplays.api.beta.hologram.Hologram;
-import me.filoghost.holographicdisplays.api.beta.hologram.VisibilitySettings;
-import me.filoghost.holographicdisplays.api.beta.hologram.VisibilitySettings.Visibility;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings.Visibility;
 
 public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 

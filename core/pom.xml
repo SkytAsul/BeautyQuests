@@ -129,14 +129,14 @@
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizens-main</artifactId>
-			<version>2.0.29-SNAPSHOT</version>
+			<version>2.0.30-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mcmonkey</groupId>
 			<artifactId>sentinel</artifactId>
-			<version>2.5.0-SNAPSHOT</version>
+			<version>2.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
