@@ -28,6 +28,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
 
 import fr.skytasul.quests.api.Locale;
@@ -60,8 +62,6 @@ import fr.skytasul.quests.utils.logger.ILoggerHandler;
 import fr.skytasul.quests.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
-
-import de.jeff_media.updatechecker.UpdateChecker;
 
 public class BeautyQuests extends JavaPlugin {
 
@@ -293,26 +293,29 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private void launchUpdateChecker(String pluginVersion) {
 		DebugUtils.logMessage("Starting Spigot updater");
+		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
 			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
-				UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+				checker = new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
 						.setUserAgent("")
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
-						.setNotifyOpsOnJoin(false)
 						.setUsedVersion(build)
-						.setNameFreeVersion("(dev builds)")
-						.checkNow();
+						.setNameFreeVersion("(dev builds)");
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
+				return;
 			}
 		}else {
-			UpdateChecker.init(this, 39255)
-					.setDownloadLink(39255)
-					.setNotifyOpsOnJoin(false)
-					.checkNow();
+			checker = new UpdateChecker(this, UpdateCheckSource.SPIGOT, "39255")
+					.setDownloadLink(39255);
 		}
+		checker
+				.setDonationLink("https://paypal.me/SkytAsul")
+				.setSupportLink("https://discord.gg/H8fXrkD")
+				.setNotifyOpsOnJoin(false)
+				.checkNow();
 	}
 	
 	/* ---------- YAML ---------- */
