@@ -35,6 +35,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.rewards.MessageReward;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -258,6 +259,16 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().removePlayer(p);
 		}
+	}
+	
+	public String getDescriptionLine(PlayerAccount acc, Source source) {
+		if (!acc.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
+		if (asyncStart != null && acc.isCurrent() && asyncStart.contains(acc.getPlayer())) return "§7x";
+		PlayerQuestDatas datas = acc.getQuestDatas(this);
+		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
+		QuestBranch branch = manager.getBranch(datas.getBranch());
+		if (branch == null) throw new IllegalStateException("Account is in branch " + datas.getBranch() + " in quest " + id + ", which does not actually exist");
+		return branch.getDescriptionLine(acc, source);
 	}
 
 	public void attemptStart(Player p, Runnable atStart) {

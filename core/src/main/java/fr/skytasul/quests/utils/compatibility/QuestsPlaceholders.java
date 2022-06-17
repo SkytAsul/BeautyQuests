@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -123,7 +123,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					.filter(Objects::nonNull)
 					.filter(Quest::isScoreboardEnabled)
 					.map(quest -> {
-						String desc = quest.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+						String desc = quest.getDescriptionLine(acc, Source.PLACEHOLDER);
 						return inlineFormat
 								.replace("{questName}", quest.getName())
 								.replace("{questDescription}", desc);
@@ -163,7 +163,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
 					
 					Quest quest = data.left.get(0);
-					String desc = quest.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+					String desc = quest.getDescriptionLine(acc, Source.PLACEHOLDER);
 					String format = noSplit ? inlineFormat : splitFormat;
 					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
 					
@@ -194,7 +194,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (rawId == -1) {
 					if (qu.hasStarted(acc)) {
-						return qu.getBranchesManager().getDescriptionLine(acc, Source.PLACEHOLDER);
+						return qu.getDescriptionLine(acc, Source.PLACEHOLDER);
 					}
 					if (qu.hasFinished(acc)) return Lang.Finished.toString();
 					return Lang.Not_Started.toString();
