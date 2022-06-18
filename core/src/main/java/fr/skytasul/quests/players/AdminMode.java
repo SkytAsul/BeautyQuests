@@ -18,8 +18,15 @@ public class AdminMode {
 
 	private static final Set<CommandSender> senders = new HashSet<>();
 	
-	private static ParticleEffect enterParticle = new ParticleEffect(Particle.FLAME, null, null);
-	private static ParticleEffect leaveParticle = new ParticleEffect(Particle.SMOKE_NORMAL, null, null);
+	private static ParticleEffect enterParticle;
+	private static ParticleEffect leaveParticle;
+	
+	static {
+		if (NMS.getMCVersion() >= 9) {
+			enterParticle = new ParticleEffect(Particle.FLAME, null, null);
+			leaveParticle = new ParticleEffect(Particle.SMOKE_NORMAL, null, null);
+		}
+	}
 	
 	public static void toggle(CommandSender sender){
 		if (senders.add(sender)) {
