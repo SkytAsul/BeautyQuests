@@ -287,17 +287,26 @@ public interface Locatable {
 	 * 			<code>false</code> otherwise.
 	 */
 	static boolean hasLocatedTypes(Class<? extends Locatable> clazz, LocatedType... types) {
-		LocatableType annotation = clazz.getDeclaredAnnotation(Locatable.LocatableType.class);
-		if (annotation == null) {
+		Set<LocatedType> toTest = new HashSet<>(Arrays.asList(types));
+		boolean foundAnnotation = false;
+		
+		Class<?> superclass = clazz;
+		do {
+			LocatableType annotation = superclass.getDeclaredAnnotation(Locatable.LocatableType.class);
+			if (annotation != null) {
+				foundAnnotation = true;
+				for (Locatable.LocatedType locatedType : annotation.types()) {
+					toTest.remove(locatedType);
+					if (toTest.isEmpty()) return true;
+				}
+			}
+		}while ((superclass = superclass.getSuperclass()) != null);
+		
+		if (!foundAnnotation) {
 			DebugUtils.logMessage("Class " + clazz.getName() + " does not have the @LocatableType annotation.");
 			return true;
 		}
 		
-		Set<LocatedType> toTest = new HashSet<>(Arrays.asList(types));
-		for (Locatable.LocatedType locatedType : annotation.types()) {
-			toTest.remove(locatedType);
-			if (toTest.isEmpty()) return true;
-		}
 		return false;
 	}
 	
