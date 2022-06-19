@@ -13,6 +13,8 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -29,6 +31,7 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.BQLocation;
 
+@LocatableType (types = LocatedType.OTHER)
 public class StageLocation extends AbstractStage implements Locatable.PreciseLocatable {
 
 	private final BQLocation lc;

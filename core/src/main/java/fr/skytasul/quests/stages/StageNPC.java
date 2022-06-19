@@ -25,6 +25,8 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -39,6 +41,7 @@ import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.DialogRunner;
 
+@LocatableType (types = LocatedType.ENTITY)
 public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
 	
 	private BQNPC npc;

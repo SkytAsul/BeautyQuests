@@ -66,7 +66,7 @@ public class CheckpointReward extends AbstractReward {
 			actions = rewards;
 			event.updateItemLore(getLore());
 			event.reopenGUI();
-		}, actions).create(event.getPlayer());
+		}, actions, null).create(event.getPlayer());
 	}
 	
 	@Override

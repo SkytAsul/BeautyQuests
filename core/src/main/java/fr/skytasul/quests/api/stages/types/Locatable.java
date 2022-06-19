@@ -14,6 +14,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import fr.skytasul.quests.utils.DebugUtils;
+
 /**
  * This interface indicates that an object can provide some locations on demand.
  * <p>
@@ -286,7 +288,10 @@ public interface Locatable {
 	 */
 	static boolean hasLocatedTypes(Class<? extends Locatable> clazz, LocatedType... types) {
 		LocatableType annotation = clazz.getDeclaredAnnotation(Locatable.LocatableType.class);
-		if (annotation == null) return true;
+		if (annotation == null) {
+			DebugUtils.logMessage("Class " + clazz.getName() + " does not have the @LocatableType annotation.");
+			return true;
+		}
 		
 		Set<LocatedType> toTest = new HashSet<>(Arrays.asList(types));
 		for (Locatable.LocatedType locatedType : annotation.types()) {

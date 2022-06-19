@@ -74,6 +74,7 @@ public abstract class BQBlock {
 					Block blockAt = fetcher.getCenter().getWorld().getBlockAt(x, y, z);
 					if (types.stream().anyMatch(type -> type.applies(blockAt))) {
 						found = Locatable.Located.LocatedBlock.create(blockAt);
+						y++;
 						return true;
 					}
 				}

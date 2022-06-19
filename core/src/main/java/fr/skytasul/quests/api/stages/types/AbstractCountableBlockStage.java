@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
@@ -18,6 +20,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
 
+@LocatableType (types = LocatedType.BLOCK)
 public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> implements Locatable.MultipleLocatable {
 	
 	protected AbstractCountableBlockStage(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> objects) {
