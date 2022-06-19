@@ -1,14 +1,13 @@
 package fr.skytasul.quests.api.stages.types;
 
 import java.util.AbstractMap;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -93,8 +92,8 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
-	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
-		if (!fetcher.getTargetClass().isAssignableFrom(Located.LocatedEntity.class)) return Collections.emptyList();
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
 		double distanceSquared = fetcher.getMaxDistance() * fetcher.getMaxDistance();
 		return fetcher.getCenter().getWorld()
 				.getEntitiesByClass(entity.getEntityClass())
@@ -106,9 +105,8 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 				})
 				.filter(Objects::nonNull)
 				.sorted(Comparator.comparing(Entry::getValue))
-				.limit(fetcher.getMaxAmount())
-				.map(entry -> Located.LocatedEntity.create(entry.getKey()))
-				.collect(Collectors.toList());
+				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
+				.spliterator();
 	}
 	
 	public abstract static class AbstractCreator<T extends AbstractEntityStage> extends StageCreation<T> {

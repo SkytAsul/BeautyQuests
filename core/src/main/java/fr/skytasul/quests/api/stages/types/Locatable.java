@@ -4,31 +4,70 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Spliterator;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
+/**
+ * This interface indicates that an object can provide some locations on demand.
+ * <p>
+ * Valid subinterfaces are {@link PreciseLocatable} and {@link MultipleLocatable}.
+ * A class must not directly implement this interface but one of those.
+ * <p>
+ * Classes implementing one of the subinterfaces are also supposed to have the
+ * {@link LocatedType} annotation to indicate which types of located objects can be
+ * retrieved. If no annotation is attached, it will be assumed that all kinds of
+ * located objects can be retrieved.
+ */
 public interface Locatable {
 	
-	default boolean isShown() {
+	/**
+	 * If no indication should be displayed to the <code>player</code>,
+	 * then this method should return <code>false</code>.
+	 * 
+	 * @param player Player to test for indications
+	 * @return	<code>true</code> if location indications should be displayed
+	 * 			to the player, <code>false</code> otherwise.
+	 */
+	default boolean isShown(Player player) {
 		return true;
 	}
 	
+	/**
+	 * Indicates if the Located instances gotten from {@link PreciseLocatable#getLocated()}
+	 * and {@link MultipleLocatable#getNearbyLocated(fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable.NearbyFetcher)}
+	 * can be safely retrieved from an asynchronous thread.
+	 * 
+	 * @return	<code>true</code> <b>only if</b> the Located fetch operations can
+	 * 			be done asynchronously, <code>false</code> otherwise.
+	 */
 	default boolean canBeFetchedAsynchronously() {
 		return true;
 	}
 	
+	/**
+	 * This interface indicates that an object can provide a unique and precise location,
+	 * no matter the player.
+	 */
 	interface PreciseLocatable extends Locatable {
 		
 		Located getLocated();
 		
 	}
 	
+	/**
+	 * This interface indicates that an object can provide multiple locations depending on
+	 * factors such as a center and a maximum distance, detailed in {@link NearbyFetcher}.
+	 */
 	interface MultipleLocatable extends Locatable {
 		
-		Collection<Located> getNearbyLocated(NearbyFetcher fetcher);
+		Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher);
 		
 		interface NearbyFetcher {
 			
@@ -36,31 +75,27 @@ public interface Locatable {
 			
 			double getMaxDistance();
 			
-			int getMaxAmount();
-			
-			default Class<? extends Located> getTargetClass() {
-				return Located.class;
+			default boolean isTargeting(LocatedType type) {
+				return true;
 			}
 			
-			static NearbyFetcher create(Location location, double maxDistance, int maxAmount) {
-				return new NearbyFetcherImpl(location, maxDistance, maxAmount, Located.class);
+			static NearbyFetcher create(Location location, double maxDistance) {
+				return new NearbyFetcherImpl(location, maxDistance, null);
 			}
 			
-			static NearbyFetcher create(Location location, double maxDistance, int maxAmount, Class<? extends Located> targetClass) {
-				return new NearbyFetcherImpl(location, maxDistance, maxAmount, targetClass);
+			static NearbyFetcher create(Location location, double maxDistance, LocatedType targetType) {
+				return new NearbyFetcherImpl(location, maxDistance, targetType);
 			}
 			
 			class NearbyFetcherImpl implements NearbyFetcher {
 				private Location center;
 				private double maxDistance;
-				private int maxAmount;
-				private Class<? extends Located> targetClass;
+				private LocatedType targetType;
 				
-				public NearbyFetcherImpl(Location center, double maxDistance, int maxAmount, Class<? extends Located> targetClass) {
+				public NearbyFetcherImpl(Location center, double maxDistance, LocatedType targetType) {
 					this.center = center;
 					this.maxDistance = maxDistance;
-					this.maxAmount = maxAmount;
-					this.targetClass = targetClass;
+					this.targetType = targetType;
 				}
 				
 				@Override
@@ -74,13 +109,8 @@ public interface Locatable {
 				}
 				
 				@Override
-				public int getMaxAmount() {
-					return maxAmount;
-				}
-				
-				@Override
-				public Class<? extends Located> getTargetClass() {
-					return targetClass;
+				public boolean isTargeting(LocatedType type) {
+					return targetType == null || targetType == type;
 				}
 				
 			}
@@ -89,9 +119,18 @@ public interface Locatable {
 		
 	}
 	
+	/**
+	 * This annotation indicates which types of {@link Located} objects can be retrieved from the attached class.
+	 * <p>
+	 * It should only be attached to {@link Locatable} implementing classes.
+	 */
 	@Retention (RetentionPolicy.RUNTIME)
 	@Target (ElementType.TYPE)
 	@interface LocatableType {
+		/**
+		 * @return	an array of {@link LocatedType} that can be retrieved
+		 * 			from the class attached to this annotation.
+		 */
 		LocatedType[] types() default { LocatedType.ENTITY, LocatedType.BLOCK, LocatedType.OTHER };
 	}
 	
@@ -228,6 +267,33 @@ public interface Locatable {
 	
 	enum LocatedType {
 		BLOCK, ENTITY, OTHER;
+	}
+	
+	/**
+	 * Allows to check if some {@link LocatedType}s can be retrieved from a {@link Locatable} class.
+	 * <p>
+	 * If the Class <code>clazz</code> does not have a {@link LocatableType} annotation attached,
+	 * then this will return <code>true</code> as it is assumed that it can retrieve all kinds of
+	 * located types.
+	 * 
+	 * @param clazz	Class implementing the {@link Locatable} interface for which the <code>types</code>
+	 * 				will get tested.
+	 * @param types	Array of {@link LocatedType}s that must be checked they can be retrieved from
+	 * 				the <code>clazz</code>.
+	 * @return	<code>true</code> if the <code>clazz</code> can retrieve all passed <code>types</code>
+	 * 			<b>OR</b> if the clazz does not have a {@link LocatableType} annotation attached,
+	 * 			<code>false</code> otherwise.
+	 */
+	static boolean hasLocatedTypes(Class<? extends Locatable> clazz, LocatedType... types) {
+		LocatableType annotation = clazz.getDeclaredAnnotation(Locatable.LocatableType.class);
+		if (annotation == null) return true;
+		
+		Set<LocatedType> toTest = new HashSet<>(Arrays.asList(types));
+		for (Locatable.LocatedType locatedType : annotation.types()) {
+			toTest.remove(locatedType);
+			if (toTest.isEmpty()) return true;
+		}
+		return false;
 	}
 	
 }

@@ -1,7 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Spliterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -76,7 +76,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	}
 	
 	@Override
-	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		if (block == null) return null;
 		
 		return BQBlock.getNearbyBlocks(fetcher, Collections.singleton(block));

@@ -53,7 +53,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	}
 	
 	@Override
-	public boolean isShown() {
+	public boolean isShown(Player player) {
 		return isGPSEnabled();
 	}
 	

@@ -81,7 +81,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 				
 				if (QuestsConfiguration.showTalkParticles()) {
 					if (tmp.isEmpty()) return;
-					QuestsConfiguration.getParticleTalk().send((LivingEntity) en, tmp);
+					QuestsConfiguration.getParticleTalk().send(en, tmp);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);
@@ -148,7 +148,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 	
 	@Override
-	public boolean isShown() {
+	public boolean isShown(Player player) {
 		return !hide;
 	}
 

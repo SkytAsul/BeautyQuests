@@ -1,8 +1,8 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Spliterator;
 import java.util.stream.Collectors;
 
 import org.bukkit.block.Block;
@@ -46,7 +46,7 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 	}
 	
 	@Override
-	public Collection<Located> getNearbyLocated(NearbyFetcher fetcher) {
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		return BQBlock.getNearbyBlocks(fetcher, objects.values().stream().map(Entry::getKey).collect(Collectors.toList()));
 	}
 	
