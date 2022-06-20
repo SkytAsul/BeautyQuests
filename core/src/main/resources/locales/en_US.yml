@@ -308,6 +308,7 @@ msg:
         remove: '§6remove <id>: §eRemove a text.'
         list: '§6list: §eView all added texts.'
         close: '§6close: §eValidate the added texts.'
+    availableElements: 'Available elements: §e{0}'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
     invalidPattern: '§cInvalid regex pattern §4{0}§c.'
     comparisonTypeDefault: '§aChoose the comparison type you want among {0}. Default comparison is: §e§l{1}§r§a. Type §onull§r§a to use it.'
@@ -323,6 +324,7 @@ msg:
       fadeIn: 'Write the "fade-in" duration, in ticks (20 ticks = 1 second).'
       stay: 'Write the "stay" duration, in ticks (20 ticks = 1 second).'
       fadeOut: 'Write the "fade-out" duration, in ticks (20 ticks = 1 second).'
+    colorNamed: 'Enter the name of a color.'
     color: 'Enter a color in the hexadecimal format (#XXXXX) or RGB format (RED GRE BLU).'
     invalidColor: 'The color you entered is invalid. It must be either hexadecimal or RGB.'
     firework:

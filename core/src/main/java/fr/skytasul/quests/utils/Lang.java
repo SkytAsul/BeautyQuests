@@ -214,7 +214,8 @@ public enum Lang implements Locale {
 	
 	GAME_TICKS("msg.editor.typeGameTicks"),
 	
-	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
+	AVAILABLE_ELEMENTS("msg.editor.availableElements"), // 0: available elements
+	NO_SUCH_ELEMENT("msg.editor.noSuchElement", EditorPrefix), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
 	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
@@ -226,14 +227,15 @@ public enum Lang implements Locale {
 	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch", EditorPrefix),
 	POOL_TIME("msg.editor.pool.timeMsg", EditorPrefix),
 	
-	TITLE_TITLE("msg.editor.title.title"),
-	TITLE_SUBTITLE("msg.editor.title.subtitle"),
-	TITLE_FADEIN("msg.editor.title.fadeIn"),
-	TITLE_STAY("msg.editor.title.stay"),
-	TITLE_FADEOUT("msg.editor.title.fadeOut"),
+	TITLE_TITLE("msg.editor.title.title", EditorPrefix),
+	TITLE_SUBTITLE("msg.editor.title.subtitle", EditorPrefix),
+	TITLE_FADEIN("msg.editor.title.fadeIn", EditorPrefix),
+	TITLE_STAY("msg.editor.title.stay", EditorPrefix),
+	TITLE_FADEOUT("msg.editor.title.fadeOut", EditorPrefix),
 	
-	COLOR_EDITOR("msg.editor.color"),
-	INVALID_COLOR("msg.editor.invalidColor"),
+	COLOR_NAMED_EDITOR("msg.editor.colorNamed", EditorPrefix),
+	COLOR_EDITOR("msg.editor.color", EditorPrefix),
+	INVALID_COLOR("msg.editor.invalidColor", ErrorPrefix),
 	
 	FIREWORK_INVALID("msg.editor.firework.invalid", ErrorPrefix),
 	FIREWORK_INVALID_HAND("msg.editor.firework.invalidHand", ErrorPrefix),

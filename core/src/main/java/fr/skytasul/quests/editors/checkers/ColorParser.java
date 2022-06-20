@@ -3,6 +3,7 @@ package fr.skytasul.quests.editors.checkers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
@@ -34,8 +35,16 @@ public class ColorParser implements AbstractParser<Color> {
 				green = Integer.parseInt(rgbMatcher.group(2));
 				blue = Integer.parseInt(rgbMatcher.group(3));
 			}else {
-				Lang.INVALID_COLOR.send(p);
-				return null;
+				try {
+					// just in case the user has entered a named color
+					java.awt.Color awtColor = ChatColor.valueOf(msg.toUpperCase().replace(' ', '_')).asBungee().getColor();
+					red = awtColor.getRed();
+					green = awtColor.getGreen();
+					blue = awtColor.getBlue();
+				}catch (IllegalArgumentException ex) {
+					Lang.INVALID_COLOR.send(p);
+					return null;
+				}
 			}
 		}
 		return Color.fromRGB(red, green, blue);

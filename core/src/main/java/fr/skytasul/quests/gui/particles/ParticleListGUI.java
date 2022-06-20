@@ -27,8 +27,9 @@ public class ParticleListGUI extends PagedGUI<Particle> {
 	
 	@Override
 	public ItemStack getItemStack(Particle object) {
-		String[] lore = ParticleEffect.canHaveColor(object) ? new String[] { QuestOption.formatDescription(Lang.particle_colored.toString()) } : new String[0];
-		return ItemUtils.item(XMaterial.PAPER, "§e" + object.name(), lore);
+		boolean colorable = ParticleEffect.canHaveColor(object);
+		String[] lore = colorable ? new String[] { QuestOption.formatDescription(Lang.particle_colored.toString()) } : new String[0];
+		return ItemUtils.item(colorable ? XMaterial.MAP : XMaterial.PAPER, "§e" + object.name(), lore);
 	}
 	
 	@Override
