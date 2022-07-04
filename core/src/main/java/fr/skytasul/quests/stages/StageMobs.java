@@ -10,8 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import fr.skytasul.quests.api.mobs.Mob;
-import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -124,7 +124,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 		
 		public void setMobs(Map<Integer, Entry<Mob<?>, Integer>> mobs) {
 			this.mobs = mobs;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(mobs.size() + " mob(s)")));
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(Lang.AmountMobs.format(mobs.size()))));
 		}
 		
 		public void setShoot(boolean shoot) {

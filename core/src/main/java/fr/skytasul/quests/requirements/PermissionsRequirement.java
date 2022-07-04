@@ -48,7 +48,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + permissions.size() + " permission(s)", "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
+		return new String[] { "§8> §7" + Lang.AmountPermissions.format(permissions.size()), "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override

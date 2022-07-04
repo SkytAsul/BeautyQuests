@@ -201,7 +201,7 @@ public class StageCraft extends AbstractStage {
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(COMPARISONS_SLOT, ItemUtils.lore(line.getItem(COMPARISONS_SLOT), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
+			line.editItem(COMPARISONS_SLOT, ItemUtils.lore(line.getItem(COMPARISONS_SLOT), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
 		}
 
 		@Override

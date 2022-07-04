@@ -50,7 +50,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().messages.size() + " line(s)" };
+		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + Lang.AmountDialogLines.format(getValue().messages.size()) };
 	}
 	
 	@Override

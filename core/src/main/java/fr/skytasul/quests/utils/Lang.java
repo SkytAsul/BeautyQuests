@@ -787,6 +787,12 @@ public enum Lang implements Locale {
 	ClickShiftLeft("misc.click.shift-left"),
 	ClickMiddle("misc.click.middle"),
 	
+	AmountItems("misc.amounts.items"), // 0: amount
+	AmountComparisons("misc.amounts.comparisons"), // 0: amount
+	AmountDialogLines("misc.amounts.dialogLines"), // 0: amount
+	AmountPermissions("misc.amounts.permissions"), // 0: amount
+	AmountMobs("misc.amounts.mobs"), // 0: amount
+	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
 	MobsProgression("misc.mobsProgression"),

@@ -55,8 +55,8 @@ public class RemoveItemsReward extends AbstractReward {
 	@Override
 	public String[] getLore() {
 		return new String[] {
-				"§7" + items.size() + " " + Lang.Item.toString(),
-				"§7" + comparisons.getEffective().size() + " comparison(s)",
+				"§7" + Lang.AmountItems.format(items.size()),
+				"§7" + Lang.AmountComparisons.format(comparisons.getEffective().size()),
 				"",
 				"§7" + Lang.ClickLeft.toString() + " > " + Lang.stageItems.toString(),
 				"§7" + Lang.ClickRight.toString() + " > " + Lang.stageItemsComparison.toString(),

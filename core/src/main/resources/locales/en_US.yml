@@ -822,6 +822,12 @@ misc:
     shift-right: Shift-right click
     shift-left: Shift-left click
     middle: Middle click
+  amounts:
+    items: '{0} item(s)'
+    comparisons: '{0} comparaison(s)'
+    dialogLines: '{0} line(s)'
+    permissions: '{0} permission(s)'
+    mobs: '{0} mob(s)'
   ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC

@@ -276,6 +276,7 @@ msg:
         remove: '§6remove <id> : §eSupprimer un texte.'
         list: '§6list: §eVoir tout les textes.'
         close: '§6close: §eValider les textes.'
+    availableElements: 'Éléments disponibles : §e{0}'
     noSuchElement: '§cIl n''y a pas d’élément correspondant. Les éléments permis sont : §e{0}'
     invalidPattern: '§cRegex invalide: §4{0}§c.'
     comparisonTypeDefault: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§l{1}§r§a. Tapez §onull§r§a pour l''utiliser.'
@@ -291,6 +292,7 @@ msg:
       fadeIn: 'Écrivez la durée du fondu d''entrée, en ticks (20 ticks = 1 seconde).'
       stay: 'Écrivez la durée où le titre reste affiché, en ticks (20 ticks = 1 seconde).'
       fadeOut: 'Écrivez la durée du fondu de sortie, en ticks (20 ticks = 1 seconde).'
+    colorNamed: 'Saisissez le nom de la couleur :'
     color: 'Entrez une couleur au format hexadécimal (#XXXXX) ou RVB (ROUGE VERT BLEU).'
     invalidColor: 'La couleur que vous avez saisie n''est pas valide. Elle doit être hexadécimale ou RVB.'
     firework:
@@ -778,6 +780,12 @@ misc:
     shift-right: Maj + clic-droit
     shift-left: Maj + clic-gauche
     middle: Clic central
+  amounts:
+    items: '{0} item(s)'
+    comparisons: '{0} comparaison(s)'
+    dialogLines: '{0} ligne(s)'
+    permissions: '{0} permission(s)'
+    mobs: '{0} mob(s)'
   ticks: '{0} ticks'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'

@@ -195,8 +195,8 @@ public class BeautyQuests extends JavaPlugin {
 				Editor.leaveAll();
 				Inventories.closeAll();
 				stopSaveCycle();
-			}catch (Exception ex) {
-				logger.severe("An exception occurred while disabling editing systems.", ex);
+			}catch (Throwable ex) {
+				logger.severe("An error occurred while disabling editing systems.", ex);
 			}
 			
 			try {

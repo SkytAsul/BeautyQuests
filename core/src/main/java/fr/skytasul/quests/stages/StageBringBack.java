@@ -188,7 +188,7 @@ public class StageBringBack extends StageNPC{
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(this.items.size() + " item(s)")));
+			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(Lang.AmountItems.format(this.items.size()))));
 		}
 		
 		public void setMessage(String message) {
@@ -198,7 +198,7 @@ public class StageBringBack extends StageNPC{
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
+			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
 		}
 		
 		@Override
