@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.editors.Editor;
@@ -55,6 +56,13 @@ import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class Commands {
+	
+	@Cmd (permission = "create", args = "NPCSID", min = 1, hide = true)
+	public void testNPC(CommandContext cmd) {
+		BQNPC npc = cmd.get(0);
+		Utils.sendMessage(cmd.sender, npc.toString());
+		npc.toggleDebug();
+	}
 	
 	@Cmd (permission = "create", player = true, noEditorInventory = true)
 	public void create(CommandContext cmd){

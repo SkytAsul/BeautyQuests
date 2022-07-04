@@ -41,6 +41,7 @@ public abstract class BQNPC implements Located.LocatedEntity {
 	private BukkitTask launcheableTask;
 	
 	/* Holograms */
+	private boolean debug = false;
 	private BukkitTask hologramsTask;
 	private boolean hologramsRemoved = true;
 	private Hologram hologramText = new Hologram(false, QuestsAPI.hasHologramsManager() && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
@@ -177,7 +178,7 @@ public abstract class BQNPC implements Located.LocatedEntity {
 				if (isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
 				if (en == null) {
-					if (!hologramsRemoved) removeHolograms(); // if the NPC is not living and holograms have not been already removed before
+					if (!hologramsRemoved) removeHolograms(false); // if the NPC is not living and holograms have not been already removed before
 					return;
 				}
 				hologramsRemoved = false;
@@ -240,7 +241,6 @@ public abstract class BQNPC implements Located.LocatedEntity {
 	public void addPool(QuestPool pool) {
 		if (!pools.add(pool)) return;
 		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
-		hologramPool.visible = true;
 		addStartablePredicate(pool::canGive, pool);
 		updatedObjects();
 	}
@@ -249,10 +249,7 @@ public abstract class BQNPC implements Located.LocatedEntity {
 		boolean b = pools.remove(pool);
 		removeStartablePredicate(pool);
 		updatedObjects();
-		if (pools.isEmpty()) {
-			hologramPool.visible = false;
-			hologramPool.delete();
-		}
+		if (pools.isEmpty()) hologramPool.delete();
 		return b;
 	}
 	
@@ -283,13 +280,13 @@ public abstract class BQNPC implements Located.LocatedEntity {
 		return startable.values().stream().anyMatch(predicate -> predicate.test(p, acc));
 	}
 	
-	private void removeHolograms() {
+	private void removeHolograms(boolean cancelRefresh) {
 		hologramText.delete();
 		hologramLaunch.delete();
 		hologramLaunchNo.delete();
 		hologramPool.delete();
 		hologramsRemoved = true;
-		if (hologramsTask != null) {
+		if (cancelRefresh && hologramsTask != null) {
 			hologramsTask.cancel();
 			hologramsTask = null;
 		}
@@ -301,14 +298,14 @@ public abstract class BQNPC implements Located.LocatedEntity {
 	
 	private void updatedObjects() {
 		if (isEmpty()) {
-			removeHolograms();
+			removeHolograms(true);
 		}else if (holograms && hologramsTask == null) {
 			hologramsTask = startHologramsTask();
 		}
 	}
 	
 	public void unload() {
-		removeHolograms();
+		removeHolograms(true);
 		if (launcheableTask != null) {
 			launcheableTask.cancel();
 			launcheableTask = null;
@@ -327,6 +324,28 @@ public abstract class BQNPC implements Located.LocatedEntity {
 			pool.unloadStarter();
 		}
 		unload();
+	}
+	
+	public void toggleDebug() {
+		if (debug)
+			debug = false;
+		else debug = true;
+	}
+	
+	@Override
+	public String toString() {
+		String npcInfo = "NPC #" + getId() + ", " + quests.size() + " quests, " + pools.size() + " pools";
+		String hologramsInfo;
+		if (!holograms) {
+			hologramsInfo = "no holograms";
+		}else if (hologramsRemoved) {
+			hologramsInfo = "holograms removed";
+		}else {
+			hologramsInfo = "holograms:";
+			hologramsInfo += "\n- text=" + hologramText.toString();
+			hologramsInfo += "\n- launch=" + hologramLaunch.toString();
+		}
+		return npcInfo + " " + hologramsInfo;
 	}
 	
 	public class Hologram {
@@ -352,9 +371,12 @@ public abstract class BQNPC implements Located.LocatedEntity {
 		
 		public void refresh(LivingEntity en) {
 			Location lc = Utils.upLocationForEntity(en, getYAdd());
+			if (debug) System.out.println("refreshing " + toString() + " (hologram null: " + (hologram == null) + ")");
 			if (hologram == null) {
 				create(lc);
-			}else hologram.teleport(lc);
+			}else {
+				hologram.teleport(lc);
+			}
 		}
 		
 		public double getYAdd() {
@@ -393,10 +415,19 @@ public abstract class BQNPC implements Located.LocatedEntity {
 		}
 		
 		public void delete() {
+			if (debug) System.out.println("deleting " + toString());
 			if (hologram == null) return;
 			hologram.delete();
 			hologram = null;
 		}
+		
+		@Override
+		public String toString() {
+			if (!enabled) return "disabled";
+			if (!canAppear) return "cannot appear";
+			return (visible ? "visible" : "invisible") + " by default, " + (item == null ? "" : item.getType().name() + ", ") + (text == null ? "no text" : "text=" + text);
+		}
+		
 	}
 	
 }

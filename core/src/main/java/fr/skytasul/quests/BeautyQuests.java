@@ -191,9 +191,13 @@ public class BeautyQuests extends JavaPlugin {
 	@Override
 	public void onDisable(){
 		try {
-			Editor.leaveAll();
-			Inventories.closeAll();
-			stopSaveCycle();
+			try {
+				Editor.leaveAll();
+				Inventories.closeAll();
+				stopSaveCycle();
+			}catch (Exception ex) {
+				logger.severe("An exception occurred while disabling editing systems.", ex);
+			}
 			
 			try {
 				if (!disable) saveAllConfig(true);
