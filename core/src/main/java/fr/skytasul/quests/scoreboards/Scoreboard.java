@@ -291,7 +291,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					text = shown == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", shown.getName());
 				}
 				if (text.contains("{questDescription}")) {
-					text = shown == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", shown.getBranchesManager().getDescriptionLine(acc, Source.SCOREBOARD));
+					text = shown == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", shown.getDescriptionLine(acc, Source.SCOREBOARD));
 				}
 				text = Utils.finalFormat(p, text, true);
 				if (text.equals(lastValue)) return false;

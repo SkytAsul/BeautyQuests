@@ -125,7 +125,7 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					String desc = qu.getBranchesManager().getDescriptionLine(acc, Source.MENU);
+					String desc = qu.getDescriptionLine(acc, Source.MENU);
 					List<String> lore = new ArrayList<>(4);
 					if (desc != null && !desc.isEmpty()) lore.add(desc);
 					boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
