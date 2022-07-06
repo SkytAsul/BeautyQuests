@@ -541,7 +541,12 @@ public class BeautyQuests extends JavaPlugin {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating data backup...");
 		try{
-			logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), backupDir().resolve("data.yml")).getParent().getFileName());
+			Path target = backupDir().resolve("data.yml");
+			if (Files.exists(target)) {
+				logger.warning("File " + target.toString() + " already exist. This should not happen.");
+			}else {
+				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
+			}
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -553,7 +558,12 @@ public class BeautyQuests extends JavaPlugin {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating single quest backup...");
 		try{
-			logger.info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
+			Path target = Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml");
+			if (Files.exists(target)) {
+				logger.warning("File " + target.toString() + " already exist. This should not happen.");
+			}else {
+				logger.info("Quest backup created at " + Files.copy(file, target).getFileName());
+			}
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);

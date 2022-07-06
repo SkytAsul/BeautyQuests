@@ -304,7 +304,7 @@ public abstract class AbstractStage implements Listener {
 	protected void serialize(ConfigurationSection section) {
 		Map<String, Object> map = new HashMap<>();
 		serialize(map);
-		map.forEach(section::set);
+		Utils.setConfigurationSectionContent(section, map);
 	}
 	
 	public final void save(ConfigurationSection section) {

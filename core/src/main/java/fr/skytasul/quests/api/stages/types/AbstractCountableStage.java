@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -219,7 +218,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		}
 		Map<String, Object> serialized = new HashMap<>();
 		serialize(serialized);
-		serialized.forEach(section::set);
+		Utils.setConfigurationSectionContent(section, serialized);
 	}
 	
 	/**
@@ -227,9 +226,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	 */
 	@Deprecated
 	protected void deserialize(Map<String, Object> serializedDatas) {
-		MemoryConfiguration configuration = new MemoryConfiguration();
-		serializedDatas.forEach(configuration::set);
-		deserialize(configuration);
+		deserialize(Utils.createConfigurationSection(serializedDatas));
 	}
 
 	protected void deserialize(ConfigurationSection section) {

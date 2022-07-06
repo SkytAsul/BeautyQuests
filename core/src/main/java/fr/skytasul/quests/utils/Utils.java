@@ -24,6 +24,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
@@ -372,6 +373,22 @@ public class Utils{
 			}else map.put(entry.getKey(), entry.getValue());
 		}
 		return map;
+	}
+	
+	public static ConfigurationSection createConfigurationSection(Map<String, Object> content) {
+		MemoryConfiguration section = new MemoryConfiguration();
+		setConfigurationSectionContent(section, content);
+		return section;
+	}
+
+	public static void setConfigurationSectionContent(ConfigurationSection section, Map<String, Object> content) {
+		content.forEach((key, value) -> {
+			if (value instanceof Map) {
+				section.createSection(key, (Map<?, ?>) value);
+			}else {
+				section.set(key, value);
+			}
+		});
 	}
 	
 	public static List<ItemStack> combineItems(List<ItemStack> items) {

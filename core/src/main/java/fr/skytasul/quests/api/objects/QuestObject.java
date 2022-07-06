@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 
 public abstract class QuestObject extends SerializableObject implements Cloneable {
 	
@@ -54,7 +55,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	public void save(ConfigurationSection section) {
 		Map<String, Object> datas = new HashMap<>();
 		save(datas);
-		datas.forEach(section::set);
+		Utils.setConfigurationSectionContent(section, datas);
 	}
 	
 	@Override

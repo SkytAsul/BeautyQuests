@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.utils.Utils;
 
 public abstract class SerializableObject {
 	
@@ -46,9 +47,7 @@ public abstract class SerializableObject {
 	}
 
 	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(Map<String, Object> map, SerializableRegistry<T, C> registry) {
-		MemoryConfiguration section = new MemoryConfiguration();
-		map.forEach(section::set);
-		return deserialize(section, registry);
+		return deserialize(Utils.createConfigurationSection(map), registry);
 	}
 	
 	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(ConfigurationSection section, SerializableRegistry<T, C> registry) {
