@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -44,6 +45,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.Paper;
 
 public class QuestsListener implements Listener{
 	
@@ -196,6 +198,11 @@ public class QuestsListener implements Listener{
 			e.setCancelled(true);
 			Lang.QUEST_ITEM_EAT.send(e.getPlayer());
 		}
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onDeath(PlayerDeathEvent e) {
+		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)

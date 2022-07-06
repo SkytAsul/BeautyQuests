@@ -30,7 +30,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemUtils {
 	
 	private static final int LORE_LINE_LENGTH = 40;
-	private static final int LORE_LINE_LENGTH_CRITICAL = 100;
+	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
 	
 	/**
 	 * Create an ItemStack instance from a generic XMaterial

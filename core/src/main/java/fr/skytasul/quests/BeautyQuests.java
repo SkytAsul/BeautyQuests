@@ -68,6 +68,7 @@ public class BeautyQuests extends JavaPlugin {
 	public static LoggerExpanded logger;
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
+	private boolean isPaper;
 	
 	/* --------- Storage --------- */
 	
@@ -118,6 +119,8 @@ public class BeautyQuests extends JavaPlugin {
 	public void onEnable(){
 		try {
 			logger.info("------------ BeautyQuests ------------");
+			
+			checkPaper();
 			
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
@@ -217,6 +220,17 @@ public class BeautyQuests extends JavaPlugin {
 	}
 	
 	/* ---------- Various init ---------- */
+	
+	private void checkPaper() {
+		try {
+			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
+			DebugUtils.logMessage("Paper detected.");
+		}catch (ClassNotFoundException ex) {
+			isPaper = false;
+			logger.warning("You are not running the Paper software.\n"
+					+ "It is highly recommended to use it for extended features and more stability.");
+		}
+	}
 
 	private void registerCommands(){
 		CommandsManager questCommand = new CommandsManager((sender) -> {
@@ -617,6 +631,10 @@ public class BeautyQuests extends JavaPlugin {
 	
 	public ILoggerHandler getLoggerHandler() {
 		return loggerHandler == null ? ILoggerHandler.EMPTY_LOGGER : loggerHandler;
+	}
+	
+	public boolean isRunningPaper() {
+		return isPaper;
 	}
 
 
