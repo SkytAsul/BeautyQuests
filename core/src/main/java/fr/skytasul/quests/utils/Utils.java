@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -31,7 +32,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.util.Consumer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -77,7 +77,7 @@ public class Utils{
 				fw.setFireworkMeta(meta);
 			};
 			if (NMS.getMCVersion() >= 12) {
-				lc.getWorld().spawn(lc, Firework.class, fwConsumer);
+				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
 				// much better to use the built-in since 1.12 method to do operations on entity
 				// before it is sent to the players, as it will not create flickering
 			}else {

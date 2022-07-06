@@ -33,6 +33,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.BQLocation;
 
@@ -89,7 +90,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
-		if (e.getHand() != EquipmentSlot.HAND) return;
+		if (NMS.getMCVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) return;
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
