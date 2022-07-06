@@ -70,7 +70,7 @@ public class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack skull(String name, String skull, String... lore) {
-		ItemStack is = XMaterial.playerSkullItem();
+		ItemStack is = XMaterial.PLAYER_HEAD.parseItem();
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		if (skull != null) im.setOwner(skull);
 		is.setItemMeta(applyMeta(im, name, lore));

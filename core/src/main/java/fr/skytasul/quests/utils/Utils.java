@@ -24,6 +24,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -482,6 +483,23 @@ public class Utils{
 			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
 		}
 		return false;
+	}
+
+	public static XMaterial mobItem(EntityType type) {
+		if (type == null) return XMaterial.SPONGE;
+		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
+		if (material.isPresent()) return material.get();
+		if (type == EntityType.WITHER) return XMaterial.WITHER_SKELETON_SKULL;
+		if (type == EntityType.IRON_GOLEM) return XMaterial.IRON_BLOCK;
+		if (type == EntityType.SNOWMAN) return XMaterial.SNOW_BLOCK;
+		if (type == EntityType.MUSHROOM_COW) return XMaterial.MOOSHROOM_SPAWN_EGG;
+		if (type == EntityType.GIANT) return XMaterial.ZOMBIE_SPAWN_EGG;
+		if (type == EntityType.ARMOR_STAND) return XMaterial.ARMOR_STAND;
+		if (type == EntityType.PLAYER) return XMaterial.PLAYER_HEAD;
+		if (type == EntityType.ENDER_DRAGON) return XMaterial.DRAGON_HEAD;
+		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN")) return XMaterial.ZOMBIFIED_PIGLIN_SPAWN_EGG;
+		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
+		return XMaterial.SPONGE;
 	}
 	
 }

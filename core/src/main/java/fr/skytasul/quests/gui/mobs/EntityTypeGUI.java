@@ -17,6 +17,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class EntityTypeGUI extends PagedGUI<EntityType>{
@@ -26,7 +27,7 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 		for (EntityType en : EntityType.values()){
 			if (!en.isAlive()) continue;
 			if (en == EntityType.PLAYER) continue;
-			XMaterial mat = XMaterial.mobItem(en);
+			XMaterial mat = Utils.mobItem(en);
 			if (mat == null) continue;
 			entities.put(en, ItemUtils.item(mat, en.getName()));
 		}

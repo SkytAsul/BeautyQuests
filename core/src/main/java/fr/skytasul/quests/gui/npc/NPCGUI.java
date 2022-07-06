@@ -70,7 +70,7 @@ public class NPCGUI implements CustomInventory{
 		this.en = type;
 		if (en == EntityType.PLAYER) {
 			inv.setItem(5, ItemUtils.skull(Lang.type.toString(), null, Lang.optionValue.format("player")));
-		}else inv.setItem(5, ItemUtils.item(XMaterial.mobItem(en), Lang.type.toString(), Lang.optionValue.format(en.getName())));
+		}else inv.setItem(5, ItemUtils.item(Utils.mobItem(en), Lang.type.toString(), Lang.optionValue.format(en.getName())));
 	}
 	
 	private void setSkin(String skin) {

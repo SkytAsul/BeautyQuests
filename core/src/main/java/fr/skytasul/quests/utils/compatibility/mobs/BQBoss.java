@@ -20,6 +20,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class BQBoss implements MobFactory<Boss> {
@@ -40,7 +41,7 @@ public class BQBoss implements MobFactory<Boss> {
 		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses(), null, x -> x.getName()) {
 			@Override
 			public ItemStack getItemStack(Boss object) {
-				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
+				return ItemUtils.item(Utils.mobItem(object.getType()), object.getName());
 			}
 
 			@Override

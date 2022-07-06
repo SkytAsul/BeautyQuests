@@ -46,7 +46,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
 				try {
-					mobItem = XMaterial.mobItem(getEntityType(object));
+					mobItem = Utils.mobItem(getEntityType(object));
 				}catch (Exception ex) {
 					mobItem = XMaterial.SPONGE;
 					BeautyQuests.logger.warning("Unknow entity type for MythicMob " + object.getInternalName(), ex);
