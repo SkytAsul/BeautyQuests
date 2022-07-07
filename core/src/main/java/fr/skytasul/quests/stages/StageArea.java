@@ -2,16 +2,22 @@ package fr.skytasul.quests.stages;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -25,11 +31,17 @@ import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
 
-public class StageArea extends AbstractStage{
+@LocatableType (types = LocatedType.OTHER)
+public class StageArea extends AbstractStage implements Locatable.PreciseLocatable {
+	
+	private static final long REFRESH_CENTER = 60 * 1000L;
 	
 	private final ProtectedRegion region;
 	private final boolean exit;
 	private final World world;
+	
+	private Locatable.Located center = null;
+	private long lastCenter = 0;
 	
 	public StageArea(QuestBranch branch, String regionName, String worldName, boolean exit) {
 		super(branch);
@@ -75,6 +87,24 @@ public class StageArea extends AbstractStage{
 	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
 		return new String[]{region.getId()};
+	}
+
+	@Override
+	public Located getLocated() {
+		if (region instanceof GlobalProtectedRegion) return null;
+		
+		if (System.currentTimeMillis() - lastCenter > REFRESH_CENTER) {
+			Location centerLoc = BukkitAdapter.adapt(world,
+						region.getMaximumPoint()
+						.subtract(region.getMinimumPoint())
+						.divide(2)
+						.add(region.getMinimumPoint())) // midpoint
+					.add(0.5, 0.5, 0.5);
+			
+			center = Locatable.Located.create(centerLoc);
+			lastCenter = System.currentTimeMillis();
+		}
+		return center;
 	}
 	
 	public ProtectedRegion getRegion(){
