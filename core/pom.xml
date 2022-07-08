@@ -223,7 +223,7 @@
 		<dependency>
 			<groupId>io.lumine</groupId>
 			<artifactId>Mythic-Dist</artifactId>
-			<version>5.0.1</version>
+			<version>5.0.4</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

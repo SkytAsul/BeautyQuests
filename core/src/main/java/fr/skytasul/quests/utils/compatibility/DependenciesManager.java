@@ -86,10 +86,10 @@ public class DependenciesManager implements Listener {
 	
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> {
 		try {
-			Class.forName("io.lumine.xikage.mythicmobs.mobs.MythicMob");
-			QuestsAPI.registerMobFactory(new MythicMobs());
-		}catch (ClassNotFoundException ex) {
+			Class.forName("io.lumine.mythic.api.MythicPlugin");
 			QuestsAPI.registerMobFactory(new MythicMobs5());
+		}catch (ClassNotFoundException ex) {
+			QuestsAPI.registerMobFactory(new MythicMobs());
 		}
 	});
 	
