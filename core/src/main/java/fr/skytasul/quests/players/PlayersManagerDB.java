@@ -56,7 +56,7 @@ public class PlayersManagerDB extends PlayersManager {
 	private String updateTimer;
 	private String updateBranch;
 	private String updateStage;
-	private String[] updateDatas = new String[5];
+	private String updateDatas;
 	private String updateFlow;
 	
 	/* Pool datas statements */
@@ -157,12 +157,6 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 	}
 
-	private static Map<String, Object> extractStageDatas(ResultSet result, int index) throws SQLException {
-		String json = result.getString("stage_" + index + "_datas");
-		if (json == null) return null;
-		return CustomizedObjectTypeAdapter.GSON.fromJson(json, Map.class);
-	}
-
 	@Override
 	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
 		return new PlayerQuestDatasDB(acc, quest.getID());
@@ -250,9 +244,7 @@ public class PlayersManagerDB extends PlayersManager {
 			updateTimer = prepareDatasStatement("timer");
 			updateBranch = prepareDatasStatement("current_branch");
 			updateStage = prepareDatasStatement("current_stage");
-			for (int i = 0; i < 5; i++) {
-				updateDatas[i] = prepareDatasStatement("stage_" + i + "_datas");
-			}
+			updateDatas = prepareDatasStatement("additional_datas");
 			updateFlow = prepareDatasStatement("quest_flow");
 			
 			insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)";
@@ -292,11 +284,7 @@ public class PlayersManagerDB extends PlayersManager {
 					" `timer` bigint(20) DEFAULT NULL," +
 					" `current_branch` tinyint(4) DEFAULT NULL," +
 					" `current_stage` tinyint(4) DEFAULT NULL," +
-					" `stage_0_datas` longtext DEFAULT NULL," +
-					" `stage_1_datas` longtext DEFAULT NULL," +
-					" `stage_2_datas` longtext DEFAULT NULL," +
-					" `stage_3_datas` longtext DEFAULT NULL," +
-					" `stage_4_datas` longtext DEFAULT NULL," +
+					" `additional_datas` longtext DEFAULT NULL," +
 					" `quest_flow` VARCHAR(8000) DEFAULT NULL," +
 					" PRIMARY KEY (`id`)" +
 					")");
@@ -317,9 +305,43 @@ public class PlayersManagerDB extends PlayersManager {
 			}
 			if (columns.isEmpty()) {
 				BeautyQuests.logger.severe("Cannot check integrity of SQL table " + QUESTS_DATAS_TABLE);
-			}else if (!columns.contains("quest_flow")) {
-				statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
-				BeautyQuests.logger.info("Updated database with quest_flow column.");
+			}else {
+				if (!columns.contains("quest_flow")) {
+					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
+							+ " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
+					BeautyQuests.logger.info("Updated database with quest_flow column.");
+				}
+				if (!columns.contains("additional_datas")) {
+					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
+							+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
+					BeautyQuests.logger.info("Updated database with additional_datas column.");
+					
+					BeautyQuests.logger.info("Migrating old datas...");
+					PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
+					ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
+					while (result.next()) {
+						Map<String, String> datas = new HashMap<>();
+						for (int i = 0; i < 5; i++) {
+							String stageDatas = result.getString("stage_" + i + "_datas");
+							if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, stageDatas);
+						}
+						
+						if (datas.isEmpty()) continue;
+						migration.setString(1, CustomizedObjectTypeAdapter.serializeNullable(datas));
+						migration.setInt(2, result.getInt("id"));
+						migration.addBatch();
+					}
+					int migrated = migration.executeBatch().length;
+					BeautyQuests.logger.info("Migrated " + migrated + " quest datas.");
+					
+					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
+							+ "	DROP COLUMN `stage_0_datas`,"
+							+ "	DROP COLUMN `stage_1_datas`,"
+							+ "	DROP COLUMN `stage_2_datas`,"
+							+ "	DROP COLUMN `stage_3_datas`,"
+							+ "	DROP COLUMN `stage_4_datas`;");
+					BeautyQuests.logger.info("Updated database by deleting old stage_[0::4]_datas columns.");
+				}
 			}
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
 		}
@@ -430,11 +452,7 @@ public class PlayersManagerDB extends PlayersManager {
 					result.getInt("finished"),
 					result.getInt("current_branch"),
 					result.getInt("current_stage"),
-					extractStageDatas(result, 0),
-					extractStageDatas(result, 1),
-					extractStageDatas(result, 2),
-					extractStageDatas(result, 3),
-					extractStageDatas(result, 4),
+					CustomizedObjectTypeAdapter.deserializeNullable(result.getString("additional_datas"), Map.class),
 					result.getString("quest_flow"));
 		}
 		
@@ -461,11 +479,12 @@ public class PlayersManagerDB extends PlayersManager {
 			super.setStage(stage);
 			setDataStatement(updateStage, stage, false);
 		}
-
+		
 		@Override
-		public void setStageDatas(int stage, Map<String, Object> stageDatas) {
-			super.setStageDatas(stage, stageDatas);
-			setDataStatement(updateDatas[stage], stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas), true);
+		public <T> T setAdditionalData(String key, T value) {
+			T additionalData = super.setAdditionalData(key, value);
+			setDataStatement(updateDatas, super.additionalDatas.isEmpty() ? null : CustomizedObjectTypeAdapter.serializeNullable(super.additionalDatas), true);
+			return additionalData;
 		}
 		
 		@Override
