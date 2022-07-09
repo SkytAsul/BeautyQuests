@@ -117,7 +117,7 @@ public class PlayerQuestDatas {
 	}
 	
 	public <T> T setAdditionalData(String key, T value) {
-		return (T) additionalDatas.put(key, value);
+		return (T) (value == null ? additionalDatas.remove(key) : additionalDatas.put(key, value));
 	}
 
 	public Map<String, Object> getStageDatas(int stage) {
@@ -126,6 +126,14 @@ public class PlayerQuestDatas {
 	
 	public void setStageDatas(int stage, Map<String, Object> datas) {
 		setAdditionalData("stage" + stage, datas);
+	}
+	
+	public long getStartingTime() {
+		return getAdditionalData("starting_time");
+	}
+	
+	public void setStartingTime(long time) {
+		setAdditionalData("starting_time", time == 0 ? null : time);
 	}
 	
 	public String getQuestFlow() {

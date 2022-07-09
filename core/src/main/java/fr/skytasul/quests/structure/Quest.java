@@ -344,6 +344,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				manager.remove(acc);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
+				questDatas.setStartingTime(0);
 				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();

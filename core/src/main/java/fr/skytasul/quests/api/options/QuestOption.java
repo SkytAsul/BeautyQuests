@@ -2,11 +2,16 @@ package fr.skytasul.quests.api.options;
 
 import java.util.Objects;
 
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
@@ -68,11 +73,21 @@ public abstract class QuestOption<T> implements Cloneable {
 	}
 	
 	public void attach(Quest quest) {
+		Validate.notNull(quest, "Attached quest cannot be null");
+		if (this.attachedQuest != null) throw new IllegalStateException("This option is already attached to " + attachedQuest.getID());
 		this.attachedQuest = quest;
+		
+		if (this instanceof Listener) {
+			Bukkit.getPluginManager().registerEvents((Listener) this, BeautyQuests.getInstance());
+		}
 	}
 	
 	public void detach() {
 		this.attachedQuest = null;
+		
+		if (this instanceof Listener) {
+			HandlerList.unregisterAll((Listener) this);
+		}
 	}
 	
 	public abstract Object save();

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -24,7 +23,6 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	
 	@Override
 	public void attach(Quest quest) {
-		Validate.notNull(quest, "Attached quest cannot be null");
 		super.attach(quest);
 		attachObjects();
 	}

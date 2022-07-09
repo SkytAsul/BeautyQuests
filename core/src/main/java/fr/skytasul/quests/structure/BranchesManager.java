@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
+import fr.skytasul.quests.players.PlayerQuestDatas;
 
 public class BranchesManager{
 
@@ -76,7 +77,9 @@ public class BranchesManager{
 	}
 
 	public void startPlayer(PlayerAccount acc){
-		acc.getQuestDatas(getQuest()).resetQuestFlow();
+		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		datas.resetQuestFlow();
+		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);
 	}
 	
