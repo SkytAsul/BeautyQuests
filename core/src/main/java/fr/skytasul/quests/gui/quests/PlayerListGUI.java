@@ -1,6 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,7 +23,6 @@ import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -100,16 +99,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> lore = new ArrayList<>(4);
-				if (qu.isRepeatable()){
-					if (qu.testTimer(acc, false)) {
-						lore.add(Lang.canRedo.toString());
-					}else {
-						lore.add(Lang.timeWait.format(qu.getTimeLeft(acc)));
-					}
-					lore.add(null);
-					lore.add(Lang.timesFinished.format(acc.getQuestDatas(qu).getTimesFinished()));
-				}
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
 				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -125,9 +115,8 @@ public class PlayerListGUI implements CustomInventory {
 				Quest qu = quests.get(i);
 				ItemStack item;
 				try {
-					String desc = qu.getDescriptionLine(acc, Source.MENU);
-					List<String> lore = new ArrayList<>(4);
-					if (desc != null && !desc.isEmpty()) lore.add(desc);
+					List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
+					
 					boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
 					boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
 					if (cancellable || hasDialogs) {
@@ -149,13 +138,7 @@ public class PlayerListGUI implements CustomInventory {
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);
-				List<String> lore = new ArrayList<>(5);
-				lore.addAll(QuestsConfiguration.getQuestDescription().formatDescription(qu, acc.getPlayer()));
-				if (qu.getOptionValueOrDef(OptionStartable.class) && acc.isCurrent()) {
-					lore.add("");
-					lore.add(qu.isLauncheable(acc.getPlayer(), acc, false) ? Lang.startLore.toString() : Lang.startImpossibleLore.toString());
-				}
-				setMainItem(i - page * 35, createQuestItem(qu, lore));
+				setMainItem(i - page * 35, createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription()));
 			}
 			break;
 

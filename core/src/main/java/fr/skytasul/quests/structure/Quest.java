@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -25,10 +26,13 @@ import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -40,13 +44,14 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-public class Quest implements Comparable<Quest>, OptionSet {
+public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProvider {
 	
 	private final int id;
 	private final File file;
 	private BranchesManager manager;
 	
 	private List<QuestOption<?>> options = new ArrayList<>();
+	private List<QuestDescriptionProvider> descriptions = new ArrayList<>();
 	
 	private boolean removed = false;
 	public boolean asyncEnd = false;
@@ -60,10 +65,15 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		this.id = id;
 		this.file = file;
 		this.manager = new BranchesManager(this);
+		this.descriptions.add(this);
 	}
 	
 	public void load() {
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
+	}
+	
+	public List<QuestDescriptionProvider> getDescriptions() {
+		return descriptions;
 	}
 	
 	@Override
@@ -271,6 +281,18 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return branch.getDescriptionLine(acc, source);
 	}
 
+	@Override
+	public List<String> provideDescription(QuestDescriptionContext context) {
+		if (!context.getPlayerAccount().isCurrent()) return null;
+		if (context.getCategory() != Category.IN_PROGRESS) return null;
+		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), Source.MENU));
+	}
+	
+	@Override
+	public double getDescriptionPriority() {
+		return 15;
+	}
+	
 	public void attemptStart(Player p, Runnable atStart) {
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {

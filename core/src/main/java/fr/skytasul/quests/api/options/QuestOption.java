@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
@@ -80,13 +81,22 @@ public abstract class QuestOption<T> implements Cloneable {
 		if (this instanceof Listener) {
 			Bukkit.getPluginManager().registerEvents((Listener) this, BeautyQuests.getInstance());
 		}
+		
+		if (this instanceof QuestDescriptionProvider) {
+			quest.getDescriptions().add((QuestDescriptionProvider) this);
+		}
 	}
 	
 	public void detach() {
+		Quest previous = this.attachedQuest;
 		this.attachedQuest = null;
 		
 		if (this instanceof Listener) {
 			HandlerList.unregisterAll((Listener) this);
+		}
+		
+		if (previous != null && this instanceof QuestDescriptionProvider) {
+			previous.getDescriptions().remove((QuestDescriptionProvider) this);
 		}
 	}
 	

@@ -109,6 +109,8 @@ public class Utils{
 	}
 	
 	public static String millisToHumanString(long time) {
+		if (time == 0) return "x";
+		
 		StringBuilder sb = new StringBuilder();
 		
 		long weeks = time / 604_800_000;
