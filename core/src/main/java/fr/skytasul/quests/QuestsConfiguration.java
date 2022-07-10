@@ -18,10 +18,10 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import com.google.common.collect.Sets;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;

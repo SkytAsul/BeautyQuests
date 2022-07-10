@@ -68,7 +68,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 	
 	@Override
 	public Iterator<QuestOption> iterator() {
-		return (Iterator<QuestOption>) options;
+		return (Iterator) options.iterator();
 	}
 	
 	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
