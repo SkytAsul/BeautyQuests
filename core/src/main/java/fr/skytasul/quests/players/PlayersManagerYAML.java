@@ -43,6 +43,10 @@ public class PlayersManagerYAML extends PlayersManager {
 	
 	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 	
+	public File getDirectory() {
+		return directory;
+	}
+	
 	@Override
 	protected Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
 		String identifier = super.getIdentifier(player);

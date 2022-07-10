@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -454,11 +455,12 @@ public class Commands {
 		
 		boolean success = true;
 		BeautyQuests.logger.info("Creating backup due to " + cmd.sender.getName() + "'s manual command.");
-		if (!BeautyQuests.getInstance().createFolderBackup()) {
+		Path backup = BeautyQuests.getInstance().backupDir();
+		if (!BeautyQuests.getInstance().createFolderBackup(backup)) {
 			Lang.BACKUP_QUESTS_FAILED.send(cmd.sender);
 			success = false;
 		}
-		if (!BeautyQuests.getInstance().createDataBackup()) {
+		if (!BeautyQuests.getInstance().createDataBackup(backup)) {
 			Lang.BACKUP_PLAYERS_FAILED.send(cmd.sender);
 			success = false;
 		}

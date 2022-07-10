@@ -83,6 +83,8 @@ public class BeautyQuests extends JavaPlugin {
 	private File dataFile;
 	private File saveFolder;
 	
+	private Path backupDir = null;
+	
 	/* --------- Datas --------- */
 
 	private ScoreboardManager scoreboards;
@@ -407,8 +409,9 @@ public class BeautyQuests extends JavaPlugin {
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
 				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
-				createFolderBackup();
-				createDataBackup();
+				backupDir = backupDir();
+				createFolderBackup(backupDir);
+				createDataBackup(backupDir);
 			}
 		}else lastVersion = getDescription().getVersion();
 		data.options().header("Do not edit ANYTHING here.");
@@ -428,9 +431,12 @@ public class BeautyQuests extends JavaPlugin {
 
 		try{
 			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			
+			if (db == null && backupDir != null) createPlayerDatasBackup(backupDir, (PlayersManagerYAML) PlayersManager.manager);
+			
 			PlayersManager.manager.load();
 		}catch (Exception ex) {
-			createDataBackup();
+			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
 		}
 		
@@ -493,7 +499,6 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				PlayersManager.manager.save();
 			}catch (Exception ex) {
-				createDataBackup();
 				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
@@ -516,13 +521,15 @@ public class BeautyQuests extends JavaPlugin {
 	
 	/* ---------- Backups ---------- */
 	
-	public boolean createFolderBackup() {
+	public boolean createFolderBackup(Path backup) {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating quests backup...");
-		Path backupDir = backupDir();
+		Path backupDir = backup.resolve("quests");
 		Path saveFolderPath = saveFolder.toPath();
 		try (Stream<Path> stream = Files.walk(saveFolderPath)) {
+			Files.createDirectories(backupDir);
 			stream.forEach(path -> {
+				if (path.equals(saveFolderPath)) return;
 				try {
 					Files.copy(path, backupDir.resolve(saveFolderPath.relativize(path)));
 				}catch (IOException ex) {
@@ -537,16 +544,40 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 	
-	public boolean createDataBackup() {
+	public boolean createDataBackup(Path backup) {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating data backup...");
 		try{
-			Path target = backupDir().resolve("data.yml");
+			Path target = backup.resolve("data.yml");
 			if (Files.exists(target)) {
 				logger.warning("File " + target.toString() + " already exist. This should not happen.");
 			}else {
 				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
 			}
+			return true;
+		}catch (Exception e) {
+			logger.severe("An error occured while creating the backup.", e);
+			return false;
+		}
+	}
+	
+	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
+		if (!QuestsConfiguration.backups) return false;
+		
+		logger.info("Creating player datas backup...");
+		Path backupDir = backup.resolve("players");
+		Path playersFolderPath = yamlManager.getDirectory().toPath();
+		try (Stream<Path> stream = Files.walk(playersFolderPath)) {
+			Files.createDirectories(backupDir);
+			stream.forEach(path -> {
+				if (path.equals(playersFolderPath)) return;
+				try {
+					Files.copy(path, backupDir.resolve(playersFolderPath.relativize(path)));
+				}catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			});
+			logger.info("Player datas backup created in " + backupDir.getFileName().toString());
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -573,7 +604,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
 	
-	private Path backupDir() {
+	public Path backupDir() {
 		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
 	}
 	
