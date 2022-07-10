@@ -227,7 +227,7 @@ public class Commands {
 					return;
 				}
 			}
-			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, branchID);
+			Lang.COMMAND_SETSTAGE_SET.send(cmd.sender, stageID);
 			if (currentBranch != null) {
 				if (datas.isInEndingStages()) {
 					for (AbstractStage stage : currentBranch.getEndingStages().keySet()) stage.end(acc);

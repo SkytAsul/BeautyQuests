@@ -306,12 +306,13 @@ public class PlayersManagerDB extends PlayersManager {
 			if (columns.isEmpty()) {
 				BeautyQuests.logger.severe("Cannot check integrity of SQL table " + QUESTS_DATAS_TABLE);
 			}else {
-				if (!columns.contains("quest_flow")) {
+				if (!columns.contains("quest_flow")) { // 0.19
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
 					BeautyQuests.logger.info("Updated database with quest_flow column.");
 				}
-				if (!columns.contains("additional_datas")) {
+				
+				if (!columns.contains("additional_datas")) { // 0.20
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
 					BeautyQuests.logger.info("Updated database with additional_datas column.");
@@ -320,10 +321,10 @@ public class PlayersManagerDB extends PlayersManager {
 					PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
 					ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
 					while (result.next()) {
-						Map<String, String> datas = new HashMap<>();
+						Map<String, Object> datas = new HashMap<>();
 						for (int i = 0; i < 5; i++) {
 							String stageDatas = result.getString("stage_" + i + "_datas");
-							if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, stageDatas);
+							if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, CustomizedObjectTypeAdapter.deserializeNullable(stageDatas, Map.class));
 						}
 						
 						if (datas.isEmpty()) continue;
@@ -341,6 +342,14 @@ public class PlayersManagerDB extends PlayersManager {
 							+ "	DROP COLUMN `stage_3_datas`,"
 							+ "	DROP COLUMN `stage_4_datas`;");
 					BeautyQuests.logger.info("Updated database by deleting old stage_[0::4]_datas columns.");
+					
+					int deletedDuplicates =
+							statement.executeUpdate("DELETE R1 FROM " + QUESTS_DATAS_TABLE + " R1"
+							+ " JOIN " + QUESTS_DATAS_TABLE + " R2"
+							+ " ON R1.account_id = R2.account_id"
+							+ " AND R1.quest_id = R2.quest_id"
+							+ " AND R1.id < R2.id;");
+					if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
 				}
 			}
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
@@ -438,6 +447,7 @@ public class PlayersManagerDB extends PlayersManager {
 		
 		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
+		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
 
 		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
@@ -523,6 +533,7 @@ public class PlayersManagerDB extends PlayersManager {
 								datasLock.unlock();
 							}
 							if (entry != null) {
+								dbLock.lock();
 								try (Connection connection = db.getConnection()) {
 									try (PreparedStatement statement = connection.prepareStatement(getQuestAccountData)) {
 										statement.setInt(1, acc.index);
@@ -532,6 +543,7 @@ public class PlayersManagerDB extends PlayersManager {
 												insertStatement.setInt(1, acc.index);
 												insertStatement.setInt(2, questID);
 												insertStatement.executeUpdate();
+												DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
 											}
 										}
 									}
@@ -546,6 +558,8 @@ public class PlayersManagerDB extends PlayersManager {
 									}
 								}catch (SQLException e) {
 									e.printStackTrace();
+								}finally {
+									dbLock.unlock();
 								}
 							}
 						}
