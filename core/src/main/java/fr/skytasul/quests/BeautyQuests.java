@@ -99,6 +99,7 @@ public class BeautyQuests extends JavaPlugin {
 	public static boolean loaded = false;
 	
 	public DependenciesManager dependencies = new DependenciesManager();
+	private CommandsManager command;
 	
 	private LoggerHandler loggerHandler;
 	
@@ -235,7 +236,7 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 	private void registerCommands(){
-		CommandsManager questCommand = new CommandsManager((sender) -> {
+		command = new CommandsManager((sender) -> {
 			if (!(sender instanceof Player)) return;
 			Player p = (Player) sender;
 			if (!p.hasPermission("beautyquests.command.listPlayer")){
@@ -250,9 +251,9 @@ public class BeautyQuests extends JavaPlugin {
 		});
 		PluginCommand cmd = getCommand("beautyquests");
 		cmd.setPermission("beautyquests.command");
-		cmd.setExecutor(questCommand);
-		cmd.setTabCompleter(questCommand);
-		questCommand.registerCommandsClass(new Commands());
+		cmd.setExecutor(command);
+		cmd.setTabCompleter(command);
+		command.registerCommandsClass(new Commands());
 	}
 	
 	private void launchSaveCycle(){
@@ -644,6 +645,10 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
+	}
+	
+	public CommandsManager getCommand() {
+		return command;
 	}
 	
 	public QuestsConfiguration getConfiguration() {
