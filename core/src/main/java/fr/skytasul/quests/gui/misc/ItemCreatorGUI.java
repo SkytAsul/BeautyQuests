@@ -82,7 +82,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			new TextEditor<>(p, () -> reopen(), obj -> {
 				type = obj;
 				reopen();
-			}, new MaterialParser(true, false)).enter();
+			}, MaterialParser.ITEM_PARSER).enter();
 			break;
 
 		case 1:

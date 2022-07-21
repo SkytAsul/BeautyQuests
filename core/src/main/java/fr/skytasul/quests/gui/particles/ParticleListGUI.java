@@ -21,7 +21,7 @@ public class ParticleListGUI extends PagedGUI<Particle> {
 	private Consumer<Particle> end;
 	
 	public ParticleListGUI(Consumer<Particle> end) {
-		super(Lang.INVENTORY_PARTICLE_LIST.toString(), DyeColor.MAGENTA, ParticleEffectGUI.PARTICLES);
+		super(Lang.INVENTORY_PARTICLE_LIST.toString(), DyeColor.MAGENTA, ParticleEffectGUI.PARTICLES, null, Particle::name);
 		this.end = end;
 	}
 	

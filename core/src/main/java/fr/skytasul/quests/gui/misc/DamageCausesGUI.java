@@ -58,7 +58,7 @@ public class DamageCausesGUI extends ListGUI<DamageCause> {
 	
 	@Override
 	public void createObject(Function<DamageCause, ItemStack> callback) {
-		new PagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS.keySet()) {
+		new PagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS.keySet(), null, DamageCause::name) {
 			
 			@Override
 			public ItemStack getItemStack(DamageCause object) {
@@ -70,7 +70,7 @@ public class DamageCausesGUI extends ListGUI<DamageCause> {
 				callback.apply(existing);
 			}
 			
-		}.create(p);
+		}.sortValues(DamageCause::name).create(p);
 	}
 	
 }

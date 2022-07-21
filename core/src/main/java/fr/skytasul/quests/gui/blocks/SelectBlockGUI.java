@@ -126,7 +126,7 @@ public class SelectBlockGUI implements CustomInventory{
 				resetTag();
 				updateTypeItem();
 				openLastInv(p);
-			}, new MaterialParser(false, true)).enter();
+			}, MaterialParser.BLOCK_PARSER).enter();
 			break;
 		
 		case DATA_SLOT:

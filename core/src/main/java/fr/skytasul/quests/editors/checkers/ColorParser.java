@@ -41,7 +41,7 @@ public class ColorParser implements AbstractParser<Color> {
 					red = awtColor.getRed();
 					green = awtColor.getGreen();
 					blue = awtColor.getBlue();
-				}catch (IllegalArgumentException ex) {
+				}catch (IllegalArgumentException | NullPointerException ex) {
 					Lang.INVALID_COLOR.send(p);
 					return null;
 				}

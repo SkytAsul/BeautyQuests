@@ -72,7 +72,7 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 				gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
 			}
 			gui.reopen(p);
-		}, new MaterialParser(false, false)).passNullIntoEndConsumer().enter();
+		}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().enter();
 	}
 	
 	@Override
