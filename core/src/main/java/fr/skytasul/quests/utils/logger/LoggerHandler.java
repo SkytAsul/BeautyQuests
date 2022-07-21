@@ -60,9 +60,13 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	
 	@Override
 	public void publish(LogRecord logRecord) {
+		log(logRecord, null);
+	}
+
+	private void log(LogRecord logRecord, String prefix) {
 		try {
 			if (logRecord != null) {
-				write("[" + (logRecord.getLevel() == null ? "NONE" : logRecord.getLevel().getName()) + "]: " + getFormatter().format(logRecord));
+				write(getFormatter().format(logRecord), prefix, logRecord.getLevel() == null ? "NONE" : logRecord.getLevel().getName());
 				if (logRecord.getThrown() != null) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -72,9 +76,9 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 					int index = errors.indexOf(throwable);
 					if (index == -1) {
 						index = errors.size();
-						write("[ERROR] new #" + index + ": " + throwable);
+						write("new #" + index + ": " + throwable, "ERROR", prefix);
 						errors.add(throwable);
-					}else write("[ERROR] existing #" + index);
+					}else write("existing #" + index, "ERROR", prefix);
 				}
 			}
 		}catch (Exception ex) {
@@ -83,10 +87,14 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	}
 	
 	@Override
-	public void write(String msg){
+	public synchronized void write(String msg, String... prefixes) {
 		if (!isEnabled()) return;
 		date.setTime(System.currentTimeMillis());
-		stream.println(format.format(date) + msg);
+		stream.print(format.format(date));
+		for (String prefix : prefixes) {
+			if (prefix != null && !prefix.isEmpty()) stream.print("[" + prefix + "] ");
+		}
+		stream.println(msg);
 		something = true;
 	}
 	
@@ -122,6 +130,32 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	@Override
 	public void flush() {
 		run.run();
+	}
+	
+	@Override
+	public Handler getSubhandler(String prefix) {
+		return new Subhandler(prefix);
+	}
+	
+	private class Subhandler extends Handler {
+		
+		private String prefix;
+		
+		private Subhandler(String prefix) {
+			this.prefix = prefix;
+		}
+		
+		@Override
+		public void publish(LogRecord logRecord) {
+			log(logRecord, prefix);
+		}
+		
+		@Override
+		public void flush() {}
+		
+		@Override
+		public void close() throws SecurityException {}
+		
 	}
 	
 }
