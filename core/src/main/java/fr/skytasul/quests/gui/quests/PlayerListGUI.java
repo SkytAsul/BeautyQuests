@@ -109,7 +109,7 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 		
 		case IN_PROGRESS:
-			setQuests(QuestsAPI.getQuests().getQuestsStarted(acc));
+			setQuests(QuestsAPI.getQuests().getQuestsStarted(acc, true, false));
 			for (int i = page * 35; i < quests.size(); i++){
 				if (i == (page + 1) * 35) break;
 				Quest qu = quests.get(i);

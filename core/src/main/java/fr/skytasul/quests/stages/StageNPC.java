@@ -184,7 +184,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void onClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
-		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
 		Player p = e.getPlayer();
 
 		e.setCancelled(dialogRunner.onClick(p).shouldCancel());

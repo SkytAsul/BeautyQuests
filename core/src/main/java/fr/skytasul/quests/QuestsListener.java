@@ -52,7 +52,7 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
-		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
 		
 		Player p = e.getPlayer();
 		BQNPC npc = e.getNPC();

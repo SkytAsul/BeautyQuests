@@ -1,6 +1,8 @@
 package fr.skytasul.quests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,7 +62,7 @@ public class QuestsConfiguration {
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean questConfirmGUI = false;
-	private static ClickType npcClick = ClickType.RIGHT;
+	private static Collection<ClickType> npcClicks = Arrays.asList(ClickType.RIGHT, ClickType.SHIFT_RIGHT);
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -166,9 +168,18 @@ public class QuestsConfiguration {
 		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		try {
-			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
+			if (config.isString("npcClick")) {
+				String click = config.getString("npcClick");
+				npcClicks = Arrays.asList(click.equals("ANY") ? ClickType.values() : new ClickType[] { ClickType.valueOf(click.toUpperCase()) });
+			}else {
+				npcClicks = config.getStringList("npcClick")
+						.stream()
+						.map(String::toUpperCase)
+						.map(ClickType::valueOf)
+						.collect(Collectors.toList());
+			}
 		}catch (IllegalArgumentException ex) {
-			BeautyQuests.logger.warning("Unknown click type " + config.getString("npcClick") + " for config entry \"npcClick\"");
+			BeautyQuests.logger.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 		}
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
@@ -305,8 +316,8 @@ public class QuestsConfiguration {
 		return progressBarTimeoutSeconds;
 	}
 	
-	public static ClickType getNPCClick() {
-		return npcClick;
+	public static Collection<ClickType> getNPCClicks() {
+		return npcClicks;
 	}
 	
 	public static boolean handleGPS(){
@@ -476,10 +487,14 @@ public class QuestsConfiguration {
 	}
 	
 	public enum ClickType {
-		RIGHT, LEFT, ANY;
+		RIGHT, SHIFT_RIGHT, LEFT, SHIFT_LEFT;
 		
-		public boolean applies(ClickType type) {
-			return (this == type) || (this == ANY) || (type == ANY);
+		public static ClickType of(boolean left, boolean shift) {
+			if (left) {
+				return shift ? SHIFT_LEFT : LEFT;
+			}else {
+				return shift ? SHIFT_RIGHT : RIGHT;
+			}
 		}
 	}
 	

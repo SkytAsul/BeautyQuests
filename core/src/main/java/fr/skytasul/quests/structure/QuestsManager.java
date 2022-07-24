@@ -122,15 +122,16 @@ public class QuestsManager implements Iterable<Quest> {
 	}
 	
 	public List<Quest> getQuestsStarted(PlayerAccount acc) {
-		return getQuestsStarted(acc, false);
+		return getQuestsStarted(acc, false, false);
 	}
 	
-	public List<Quest> getQuestsStarted(PlayerAccount acc, boolean withoutScoreboard) {
+	public List<Quest> getQuestsStarted(PlayerAccount acc, boolean hide, boolean withoutScoreboard) {
 		return acc.getQuestsDatas()
 				.stream()
 				.filter(PlayerQuestDatas::hasStarted)
 				.map(PlayerQuestDatas::getQuest)
 				.filter(Objects::nonNull)
+				.filter(quest -> !hide || !quest.isHidden())
 				.filter(quest -> !withoutScoreboard || quest.isScoreboardEnabled())
 				.collect(Collectors.toList());
 	}
