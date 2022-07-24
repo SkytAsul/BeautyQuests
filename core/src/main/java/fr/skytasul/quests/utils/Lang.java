@@ -307,7 +307,7 @@ public enum Lang implements Locale {
 	MYTHICMOB_LIST("msg.editor.mythicmobs.list"),
 	MYTHICMOB_NOT_EXISTS("msg.editor.mythicmobs.isntMythicMob"),
 	MYTHICMOB_DISABLED("msg.editor.mythicmobs.disabled"),
-	EPICBOSS_NOT_EXISTS("msg.editor.epicBossDoesntExist"),
+	ADVANCED_SPAWNERS_MOB("msg.editor.advancedSpawnersMob", EditorPrefix),
 	
 	TEXTLIST_SYNTAX("msg.editor.textList.syntax"),
 	TEXTLIST_TEXT_ADDED("msg.editor.textList.added"),
@@ -524,6 +524,7 @@ public enum Lang implements Locale {
 	mythicMob("inv.mobSelect.mythicMob"),
 	epicBoss("inv.mobSelect.epicBoss"),
 	boss("inv.mobSelect.boss"),
+	advancedSpawners("inv.mobSelect.advancedSpawners"),
 	
 	location("inv.stageEnding.locationTeleport"),
 	command("inv.stageEnding.command"),

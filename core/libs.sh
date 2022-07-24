@@ -24,6 +24,7 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMI.jar -DgroupId=com.zrips -DartifactId=cmi -Dversion=9.0.2.1 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMILib.jar -DgroupId=com.zrips -DartifactId=cmilib -Dversion=1.0.4.1 -Dpackaging=jar
 "$mavenPath" install:install-file -Dfile=$jarsPath/UltimateTimber.jar -DgroupId=com.songoda -DartifactId=ultimatetimber -Dversion=2.2.5 -Dpackaging=jar
+"$mavenPath" install:install-file -Dfile=$jarsPath/AdvancedSpawners-API.jar -DgroupId=gcspawners -DartifactId=gcspawners -Dversion=3.3.0 -Dpackaging=jar
 #"$mavenPath" install:install-file -Dfile=$jarsPath/MythicMobs.jar -DgroupId=io.lumine.xikage -DartifactId=MythicMobs -Dversion=4.12.0 -Dpackaging=jar
 #"$mavenPath" install:install-file -Dfile=$jarsPath/TokenEnchantAPI.jar -DgroupId=com.vk2gpz.tokenenchant -DartifactId=TokenEnchantAPI -Dversion=18.15.2 -Dpackaging=jar
 

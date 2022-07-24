@@ -32,6 +32,7 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
+import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
 import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
@@ -93,6 +94,8 @@ public class DependenciesManager implements Listener {
 		}
 	});
 	
+	public static final BQDependency advancedspawners = new BQDependency("AdvancedSpawners", () -> QuestsAPI.registerMobFactory(new BQAdvancedSpawners()));
+	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
 		if (!plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays")) return false;
@@ -129,7 +132,7 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, BlueMap, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod2, holod3, tokenEnchant, ultimateTimber, sentinel));
+		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, BlueMap, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod2, holod3, tokenEnchant, ultimateTimber, sentinel, advancedspawners));
 	}
 	
 	public List<BQDependency> getDependencies() {

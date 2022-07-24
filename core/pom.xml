@@ -256,6 +256,12 @@
 			<version>2.7.5</version>
 			<scope>provided</scope> <!-- this is added to runtime through Spigot libraries system -->
 		</dependency>
+		<dependency>
+			<groupId>gcspawners</groupId>
+			<artifactId>gcspawners</artifactId>
+			<version>3.3.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Local JARs -->
 		<dependency>

@@ -297,7 +297,7 @@ msg:
       list: '§aA list of all Mythic Mobs:'
       isntMythicMob: §cThis Mythic Mob doesn't exist.
       disabled: §cMythicMob is disabled.
-    epicBossDoesntExist: §cThis Epic Boss doesn't exist.
+    advancedSpawnersMob: 'Write the name of the custom spawner mob to kill:'
     textList:
       syntax: '§cCorrect syntax: '
       added: §aText "§7{0}§a" added.

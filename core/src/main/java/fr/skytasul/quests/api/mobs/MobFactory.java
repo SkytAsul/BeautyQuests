@@ -93,7 +93,6 @@ public abstract interface MobFactory<T> extends Listener {
 	 */
 	public default void callEvent(Event originalEvent, T pluginMob, Entity entity, Player player) {
 		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
-		Validate.notNull(entity, "Bukkit entity object cannot be null");
 		Validate.notNull(player, "Player cannot be null");
 		if (originalEvent != null) {
 			CompatMobDeathEvent existingCompat = eventsCache.getIfPresent(originalEvent);
