@@ -30,12 +30,13 @@ import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.ThrowingConsumer;
 
 public class PlayersManagerDB extends PlayersManager {
 
-	private final String ACCOUNTS_TABLE;
-	private final String QUESTS_DATAS_TABLE;
-	private final String POOLS_DATAS_TABLE;
+	public final String ACCOUNTS_TABLE;
+	public final String QUESTS_DATAS_TABLE;
+	public final String POOLS_DATAS_TABLE;
 
 	private Database db;
 	
@@ -75,6 +76,10 @@ public class PlayersManagerDB extends PlayersManager {
 		POOLS_DATAS_TABLE = db.getConfig().getString("tables.playerPools");
 	}
 
+	public Database getDatabase() {
+		return db;
+	}
+	
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
 		try (Connection connection = db.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
@@ -297,15 +302,7 @@ public class PlayersManagerDB extends PlayersManager {
 					+ "PRIMARY KEY (`id`)"
 					+ ")");
 			
-			List<String> columns = new ArrayList<>(14);
-			try (ResultSet set = connection.getMetaData().getColumns(db.getDatabase(), null, QUESTS_DATAS_TABLE, null)) {
-				while (set.next()) {
-					columns.add(set.getString("COLUMN_NAME").toLowerCase());
-				}
-			}
-			if (columns.isEmpty()) {
-				BeautyQuests.logger.severe("Cannot check integrity of SQL table " + QUESTS_DATAS_TABLE);
-			}else {
+			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
 				if (!columns.contains("quest_flow")) { // 0.19
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
@@ -315,7 +312,7 @@ public class PlayersManagerDB extends PlayersManager {
 				if (!columns.contains("additional_datas")) { // 0.20
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
-					BeautyQuests.logger.info("Updated database with additional_datas column.");
+					BeautyQuests.logger.info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
 					
 					BeautyQuests.logger.info("Migrating old datas...");
 					PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
@@ -351,11 +348,25 @@ public class PlayersManagerDB extends PlayersManager {
 							+ " AND R1.id < R2.id;");
 					if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
 				}
-			}
+			});
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
 		}
 	}
 
+	private void upgradeTable(Connection connection, String tableName, ThrowingConsumer<List<String>, SQLException> columnsConsumer) throws SQLException {
+		List<String> columns = new ArrayList<>(14);
+		try (ResultSet set = connection.getMetaData().getColumns(db.getDatabase(), null, tableName, null)) {
+			while (set.next()) {
+				columns.add(set.getString("COLUMN_NAME").toLowerCase());
+			}
+		}
+		if (columns.isEmpty()) {
+			BeautyQuests.logger.severe("Cannot check integrity of SQL table " + tableName);
+		}else {
+			columnsConsumer.accept(columns);
+		}
+	}
+	
 	public static synchronized String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
 		try (Connection connection = db.getConnection()) {
 			ResultSet result = connection.getMetaData().getTables(null, null, "%", null);

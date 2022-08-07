@@ -20,9 +20,9 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 

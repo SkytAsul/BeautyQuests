@@ -22,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -301,7 +302,9 @@ public class Commands {
 			}else acc.removePoolDatas(poolDatas.getPoolID());
 			pools++;
 		}
-		if (acc.isCurrent()) Lang.DATA_REMOVED.send(acc.getPlayer(), quests, cmd.sender.getName(), pools);
+		Player player = acc.getPlayer();
+		Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
+		if (acc.isCurrent()) Lang.DATA_REMOVED.send(player, quests, cmd.sender.getName(), pools);
 		Lang.DATA_REMOVED_INFO.send(cmd.sender, quests, target.getName(), pools);
 	}
 	

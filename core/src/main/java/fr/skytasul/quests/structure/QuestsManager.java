@@ -131,18 +131,21 @@ public class QuestsManager implements Iterable<Quest> {
 				.filter(PlayerQuestDatas::hasStarted)
 				.map(PlayerQuestDatas::getQuest)
 				.filter(Objects::nonNull)
+				.filter(quest -> !quest.isRemoved())
 				.filter(quest -> !hide || !quest.isHidden())
 				.filter(quest -> !withoutScoreboard || quest.isScoreboardEnabled())
 				.collect(Collectors.toList());
 	}
 	
 	public void updateQuestsStarted(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
+		for (Iterator<Quest> iterator = list.iterator(); iterator.hasNext();) {
+			Quest existing = iterator.next();
+			if (!existing.hasStarted(acc) || (withoutScoreboard && !existing.isScoreboardEnabled())) iterator.remove();
+		}
+		
 		for (Quest qu : quests) {
 			if (withoutScoreboard && !qu.isScoreboardEnabled()) continue;
-			boolean contains = list.contains(qu);
-			if (qu.hasStarted(acc)) {
-				if (!list.contains(qu)) list.add(qu);
-			}else if (contains) list.remove(qu);
+			if (!list.contains(qu) && qu.hasStarted(acc)) list.add(qu);
 		}
 	}
 	

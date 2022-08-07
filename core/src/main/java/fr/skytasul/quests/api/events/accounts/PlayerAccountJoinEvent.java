@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players.events;
+package fr.skytasul.quests.api.events.accounts;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -10,8 +10,7 @@ public class PlayerAccountJoinEvent extends PlayerAccountEvent {
 	private boolean firstJoin;
 
 	public PlayerAccountJoinEvent(Player who, PlayerAccount account, boolean firstJoin) {
-		super(who);
-		this.account = account;
+		super(who, account);
 		this.firstJoin = firstJoin;
 	}
 
@@ -19,6 +18,7 @@ public class PlayerAccountJoinEvent extends PlayerAccountEvent {
 		return firstJoin;
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
