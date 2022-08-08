@@ -96,7 +96,13 @@ public class StageCraft extends AbstractStage {
 					
 					default:
 						cursor = e.getCursor();
-						if (cursor != null && cursor.getType() != Material.AIR && !cursor.isSimilar(item)) recipeAmount = 0;
+						if (cursor != null && cursor.getType() != Material.AIR) {
+							if (cursor.isSimilar(item)) {
+								if (cursor.getAmount() + item.getAmount() > cursor.getMaxStackSize()) recipeAmount = 0;
+							}else {
+								recipeAmount = 0;
+							}
+						}
 						break;
 				}
 
