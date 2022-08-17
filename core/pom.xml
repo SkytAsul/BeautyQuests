@@ -256,12 +256,6 @@
 			<version>2.7.5</version>
 			<scope>provided</scope> <!-- this is added to runtime through Spigot libraries system -->
 		</dependency>
-		<dependency>
-			<groupId>gcspawners</groupId>
-			<artifactId>gcspawners</artifactId>
-			<version>3.3.0</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<!-- Local JARs -->
 		<dependency>
@@ -303,7 +297,7 @@
 		<dependency>
 			<groupId>com.gamingmesh</groupId>
 			<artifactId>jobs</artifactId>
-			<version>5.0.0.9</version>
+			<version>5.1.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -333,7 +327,13 @@
 		<dependency>
 			<groupId>com.zrips</groupId>
 			<artifactId>cmilib</artifactId>
-			<version>1.0.4.1</version>
+			<version>1.2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>gcspawners</groupId>
+			<artifactId>gcspawners</artifactId>
+			<version>3.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
