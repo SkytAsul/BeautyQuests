@@ -294,6 +294,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	public void attemptStart(Player p, Runnable atStart) {
+		if (!isLauncheable(p, PlayersManager.getPlayerAccount(p), true)) return;
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
 			new ConfirmGUI(() -> {
