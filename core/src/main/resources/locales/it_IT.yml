@@ -11,8 +11,10 @@ msg:
     cancelling: '§cProcesso di creazione della quest annullato.'
     editCancelling: Processo di modifica della quest annullato.
     invalidID: '§ cLa quest con id {0} non esiste.'
+    invalidPoolID: '§cLa piscina {0} Non esiste'
     alreadyStarted: '§cHai già iniziato la missione!'
   quests:
+    maxLaunched: '§cTu non puoi averne più di {0} quest(s) allo stesso momento...'
     nopStep: '§cQuesta missione non ha alcun obbiettivo.'
     updated: '§7Quest §e{0}§7 aggiornata.'
     checkpoint: '§7Checkpoint raggiunto!'
@@ -34,7 +36,6 @@ msg:
   writeMobAmount: '§aScrivi la quantità di mob da uccidere:'
   writeMobName: '§aScrivi il nome personalizzato del mob da uccidere:'
   writeChatMessage: '§aScrivi il messaggio richiesto: (Aggiungi "{SLASH}" all''inizio se vuoi usare un comando.)'
-  writeEndMessage: '§aScrivi il messaggio che verrà inviato alla fine della quest o alla fase:'
   writeDescriptionText: '§aScrivi il testo che descrive l''obiettivo della fase:'
   writeStageText: '§aScrivi il testo che verrà inviato al giocatore all''inizio della fase:'
   moveToTeleportPoint: '§aVai alla posizione di teletrasporto desiderata.'
@@ -54,7 +55,6 @@ msg:
     skill: '§cIl tuo livello per l''abilità §e{1}§c deve essere {0}!'
     combatLevel: '§cIl tuo livello di combattimento deve essere {0}!'
     money: '§cDevi avere {0}!'
-    wait: '§cDevi aspettare {0} minuto(i) prima di poter riavviare questa missione!'
   experience:
     edited: '§aHai cambiato l''esperienza guadagnata da {0} a {1} punti.'
   selectNPCToKill: '§aSeleziona il NPC da uccidere.'
@@ -99,7 +99,6 @@ msg:
     leaveAll: '§aHai forzato la fine della(e) quest {0}. Errori: {1}'
     resetPlayer:
       player: '§6Tutte le informazioni della(e) tua(e) {0} quest sono state/sono state eliminate da {1}.'
-      remover: '§6{0} informazioni della(e) quest di {1} sono state eliminate.'
     resetPlayerQuest:
       player: '§6Tutte le informazioni sulla missione {0} sono state eliminate da {1}.'
       remover: '§6{0} informazioni delle quest di {1} sono state eliminate.'
@@ -149,8 +148,6 @@ msg:
     already: '§cSei già nell''editor.'
     enter:
       title: '§6~ Modalità Editor ~'
-      subtitle: '§6Scrivi "/quests exitEditor" per forzare l''uscita.'
-    chat: '§6Sei attualmente in modalità Editor. Scrivi l''editor "/quests exitEditor" per forzare l''uscita dall''editor. (è altamente sconsigliato, considera l''uso di comandi come "close" o "cancel" per tornare alla finestra precedente.)'
     npc:
       enter: '§aClicca su un NPC o scrivi "cancel".'
       choseStarter: '§aScegli il NPC che avvia la missione.'
@@ -186,11 +183,6 @@ msg:
     dialog:
       syntax: '§cSintassi corretta: {0}{1} <messaggio>'
       syntaxRemove: '§cSintassi corretta: remove <id>'
-      player: '§aMessaggio "{0}" aggiunto per il giocatore.'
-      npc: '§aMessaggio "{0}" aggiunto per il NPC.'
-      noSender: '§aMessaggio "{0}" aggiunto senza un mittente.'
-      messageRemoved: '§aMessaggio "{0}" rimosso.'
-      soundAdded: '§aSuono "{0}" aggiunto per il messaggio "{1}".'
       cleared: '§a{0} ha rimosso il messaggio(i).'
       help:
         header: '§6§lBeautyQuests — Aiuto editor'
@@ -215,8 +207,6 @@ msg:
     epicBossDoesntExist: '§cQuesto Epic Boss non esiste.'
     textList:
       syntax: '§cSintassi corretta: '
-      added: '§aTesto "{0}" aggiunto.'
-      removed: '§aTesto "{0}" rimosso.'
       help:
         header: '§6§lBeautyQuests — Guida editor'
         add: '§6add <messaggio>: §eAggiungi un testo.'
@@ -224,12 +214,10 @@ msg:
         list: '§6list: §eVisualizza tutti i testi aggiunti.'
         close: '§6close: §eConvalida i testi aggiunti.'
     noSuchElement: '§cNon ci sono elementi del genere. Gli elementi consentiti sono: §e{0}'
-    comparisonType: '§aScegli il tipo di confronto che vuoi tra {0}. Il confronto predefinito è: §e§lmaggiore o uguale§r§a. Digita §onull§r§a per usarlo.'
     scoreboardObjectiveNotFound: '§cObiettivo scoreboard sconosciuto.'
     pool:
       hologramText: 'Scrivi il testo dell''hologram personalizzato per questo pool (o "null" se vuoi quello predefinito).'
       maxQuests: 'Scrivi la quantità massima di missioni lanciabili da questa pool.'
-      time: 'Scrivi il numero di giorni prima che i giocatori possano iniziare una nuova missione.'
   writeCommandDelay: '§aScrivi il ritardo del comando desiderato, in tick.'
 advancement:
   finished: Terminato
@@ -365,9 +353,7 @@ inv:
     notStarted: Missioni non iniziate
     finished: Missioni completate
     inProgress: Missioni in corso
-    loreCancel: '§c§oClicca per annullare la missione.'
     loreStartUnavailable: '§c§oNon hai i requisiti per iniziare la missione.'
-    timeToWait: '§3§o{0} minuto(i) prima di poter riavviare questa missione.'
     canRedo: '§3§oPuoi riavviare questa missione!'
   itemCreator:
     name: Crea oggetti
@@ -426,12 +412,6 @@ inv:
   poolsManage:
     name: Pools missione
     itemName: '§aPool #{0}'
-    itemDescription: |-
-      §8NPC: §7{0}
-      §8Missioni massime: §7{1}
-      §8Può rifare missioni completate: §7{2}
-      §8Tempo tra le missioni: §7{3}ms
-      §8Testo dell'hologram: §7{4}
     create: '§aCrea un pool di missioni'
   poolCreation:
     name: Creazione pool di missioni
@@ -460,7 +440,6 @@ scoreboard:
     craft: '§eCrafta §6{0}'
     bucket: '§eRiempi §6{0}'
     location: '§eVai a §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
-    playTime: '§eGioca §6{0} ticks di gioco'
 indication:
   startQuest: '§7Vuoi iniziare la missione {0}?'
   closeInventory: '§7Sei sicuro di voler chiudere la GUI?'

@@ -2,12 +2,12 @@
 msg:
   quest:
     finished:
-      base: '§aFelicitaciones! Has finalizado la misión§e{0}§a!'
-      obtain: '§aObtuviste {0}!'
-    started: '§aHas comenzado la misión §r§e{0}§o§6!'
-    created: '§aFelicitaciones! Tu has creado la misión §e{0}§a el cual incluye {1} rama(s)!'
-    edited: '§aFelicitaciones! Has editado la misión §e{0}§a el cual incluye ahora {1} rama(s)!'
-    createCancelled: '§cLa creación o edición a sido cancelada por otro plugin!'
+      base: '§a¡Felicitaciones! ¡Has finalizado la misión §e{0}§a!'
+      obtain: '§a¡Obtuviste {0}!'
+    started: '§a¡Has comenzado la misión §r§e{0}§o§6!'
+    created: '§a¡Felicitaciones! ¡Has creado la misión §e{0}§a el cual incluye {1} rama(s)!'
+    edited: '§a¡Felicitaciones! ¡Has editado la misión §e{0}§a el cual incluye ahora {1} rama(s)!'
+    createCancelled: '§c¡La creación o edición a sido cancelada por otro plugin!'
     cancelling: '§cProceso de creación de la misión cancelada.'
     editCancelling: '§cProceso de edición de misión cancelada.'
     invalidID: '§cLa misión con la id {0} no existe.'
@@ -27,6 +27,7 @@ msg:
   questItem:
     drop: '§c¡No puedes soltar un objeto de misión!'
     craft: '§c¡No puedes usar un objeto de misión para fabricar!'
+    eat: '§c¡No puedes comer un objeto de misión!'
   stageMobs:
     noMobs: '§cEsta etapa no necesita ningún mob para matar.'
     listMobs: '§aDebes matar {0}.'
@@ -39,6 +40,7 @@ msg:
   writeMessage: '§aEscribe el mensaje que se enviará al jugador'
   writeStartMessage: '§aEscribe el mensaje que será enviado al iniciar la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno'
   writeEndMsg: '§aEscribe el mensaje que se enviará al final de la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno. Puedes usar "{0}" que será reemplazado por las recompensas obtenidas.'
+  writeEndSound: '§aEscribe el nombre del sonido que se reproducirá al jugador al final de la misión, "null" si quieres el predeterminado o "none" si no quieres ninguno:'
   writeDescriptionText: '§aEscribe el texto que describe el objetivo de la etapa:'
   writeStageText: '§aEscribe el texto que será enviado al jugador al comienzo del paso:'
   moveToTeleportPoint: '§aIr a la ubicación de teletransporte deseada.'
@@ -72,6 +74,7 @@ msg:
     negative: '§cDebes introducir un número positivo!'
     zero: '§cDebes introducir un número distinto de 0!'
     invalid: '§c{0} no es un número válido.'
+    notInBounds: '§cTu número debe estar entre {0} y {1}.'
   errorOccurred: '§cHa ocurrido un error, ¡contacta con un administrador! §4§lError: {0}'
   commandsDisabled: '§cActualmente no tienes permisos para ejecutar comandos!'
   indexOutOfBounds: '§cEl número {0} está fuera de límites! Debe estar entre {1} y {2}.'
@@ -83,6 +86,10 @@ msg:
   playerNotOnline: '§cEl jugador {0} está desconectado.'
   playerDataNotFound: '§cDatas del jugador {0} no encontrados.'
   versionRequired: 'Versión requerida: §l{0}'
+  restartServer: '§7Reinicia tu servidor para ver las modificaciones.'
+  dialogs:
+    skipped: '§8§o Diálogo omitido.'
+    tooFar: '§7§oEstás demasiado lejos de {0}...'
   command:
     downloadTranslations:
       syntax: '§cDebes especificar un idioma para descargar. Ejemplo: "/quests downloadTranslations en_US".'
@@ -98,6 +105,11 @@ msg:
       next: '§aLa etapa ha sido omitida.'
       nextUnavailable: '§cLa opción "skip" no está disponible cuando el jugador está al final de una rama.'
       set: '§aFase {0} lanzada.'
+    startDialog:
+      impossible: '§cNo es posible iniciar el diálogo ahora.'
+      noDialog: '§cEl jugador no tiene un diálogo pendiente.'
+      alreadyIn: '§cEl jugador ya está reproduciendo un diálogo.'
+      success: '§aEmpezó el diálogo para el jugador {0} en la misión {1}!'
     playerNeeded: '§cDebes ser un jugador para ejecutar este comando!'
     incorrectSyntax: '§cSintaxis incorrecta.'
     noPermission: '§cNo tienes suficientes permisos para ejecutar este comando! (Requiere: {0})'
@@ -146,12 +158,14 @@ msg:
       remove: '§6/{0} remove <id>: §eElimina una misión con un id especificado o haz clic en el NPC cuando no se haya definido.'
       finishAll: '§6/{0} finishAll <player>: §eFinish all quests of a player.'
       setStage: '§6/{0} setStage <player> <id> [new branch] [new stage]: §eSkip the current stage/start the branch/set a stage for a branch.'
+      startDialog: '§6/{0} startDialog <player> <quest id>: §eComienza el diálogo pendiente para una etapa del NPC o el diálogo de inicio para una misión.'
       resetPlayer: '§6/{0} restablecido jugador <player>: §eElimina toda la información sobre un jugador.'
       resetPlayerQuest: '§6/{0} restablecida la Misión de Jugador <player> [id]: §eElimina información de una misión para un jugador.'
       seePlayer: '§6/{0} seePlayer <player>: §eVer la informacion sobre un jugador'
       reload: '§6/{0} reload: §eGuarda y recarga todas las configuraciones y archivos. (§cdeprecado§e)'
       start: '§6/{0} start <player> [id]: §eForzar el inicio de una mision'
       setItem: '§6/{0} setItem <talk|launch>: §eGuarda el elemento del holograma.'
+      setFirework: '§6/{0} setFirework: §eEdita el fuego artificial por defecto al finalizar.'
       adminMode: '§6/{0} adminMode: §eActiva el Modo de administración. (Útil para mostrar mensajes de poco registro.)'
       version: '§6/{0} version: §eVer la versión actual del plugin.'
       downloadTranslations: '§6/{0} descargaTraducciones <language>: §eDescargas un archivo de traducción de vaina'
@@ -168,6 +182,9 @@ msg:
     typeLocationRadius: '§aEscribe la distancia requerida de la ubicación:'
     typeGameTicks: '§aEscribe los ticks requeridos:'
     already: '§cYa estás en el editor.'
+    stage:
+      location:
+        typeWorldPattern: '§aEscribe una expresión para nombres de mundo:'
     enter:
       title: '§6~ Modo editor ~'
       subtitle: '§2♣§d§kii§a§lSkyblock§d§kii§2♣ §aEscribe "/quests exitEditor" para forzar la salida del editor.'
@@ -235,11 +252,15 @@ msg:
         close: '&6close: &eGuardas y validas los mensajes.'
         setTime: '§6setTime <id> <time>: §eEstablece el tiempo (en ticks) despues de que el siguiente mensaje aparezca automaticamente'
         npcName: '§6Nombre del npc [custom NPC name]: §eEstablecido (o restablecido a default) nombre personalizado del NPC en el diálogo'
+        skippable: '§6skippable [true|false]: §eEstablecer si el diálogo puede ser omitido o no.'
       timeSet: '§aTiempo ha sido editado para el mensaje {0}: ahora {1} ticks.'
       timeRemoved: '§aTiempo eliminado para el mensaje {0}.'
       npcName:
         set: '§aNombre de NPC establecido a §7{1}§a (era §7{0}§a)'
         unset: '§aNombre de NPC personalizado restablecido por defecto (§7{0}§a)'
+      skippable:
+        set: '§aEl estado del diálogo ignorable se modificó a §7{1}§a (era §7{0}§a)'
+        unset: '§aEl estado del diálogo ignorable se restableció al original (era §7{0}§a)'
     mythicmobs:
       list: '&aToda la lista de "Mythic Mobs":'
       isntMythicMob: '§cEste Mob Mítico no existe.'
@@ -255,7 +276,9 @@ msg:
         remove: '§6remove <id>: §eEliminar un texto.'
         list: '§6list: §eVer todos los textos añadidos'
         close: '§6close: §eValida los textos añadidos'
+    availableElements: 'Elementos disponibles: §e{0}'
     noSuchElement: '§cNo hay tal elemento. Los elementos permitidos son: §e{0}'
+    invalidPattern: '§cPatrón de expresión inválido §4{0}§c.'
     comparisonTypeDefault: '§aElige el tipo de comparación que quieres entre {0}. La comparación predeterminada es: §e§l{1}§r§a. Escribe §onull§r§a para usarlo.'
     scoreboardObjectiveNotFound: '§cObjetivo desconocido del marcador.'
     pool:
@@ -269,6 +292,14 @@ msg:
       fadeIn: 'Escriba la duración de "fade-in", en ticks (20 ticks = 1 segundo).'
       stay: 'Escriba la duración de la estancia, en ticks (20 ticks = 1 segundo).'
       fadeOut: 'Escriba la duración de "desvanecer", en ticks (20 ticks = 1 segundo).'
+    colorNamed: 'Introduzca el nombre de un color.'
+    color: 'Introduzca un color en formato hexadecimal (#XXXXX) o formato RGB (RED GRE BLU).'
+    invalidColor: 'El color introducido no es válido. Debe ser hexadecimal o RGB.'
+    firework:
+      invalid: 'Este objeto no es un fuego artificial válido.'
+      invalidHand: 'Debes sostener un fuego artificial en tu mano principal.'
+      edited: '¡El fuego artificial de la misión fue editado!'
+      removed: '¡El fuego artificial de la misión fue eliminado!'
   writeCommandDelay: '§aEscriba el retardo de comando deseado, en ticks.'
 advancement:
   finished: Finalizado
@@ -298,12 +329,15 @@ inv:
     talkChat: Escribe en el chat
     interact: Interactúa con el bloque
     fish: "Pesca peces\n"
+    melt: '§6Cocinar objetos'
+    enchant: '§dEncantar objetos'
     craft: Craftea items
     bucket: Llena cubetas 
     location: Dirígete a la localización 
     playTime: '§eTiempo de juego'
     breedAnimals: '§aReproducir Animales'
     tameAnimals: '§aDomesticar animales'
+    death: '§cMuerte'
     NPCText: '§eEditar dialogo'
     dialogLines: '{0} líneas'
     NPCSelect: '§eElegir o crear NPC'
@@ -328,6 +362,8 @@ inv:
     selectBlockMaterial: '§eSeleccionar material de bloque'
     leftClick: Haga clic izquierdo
     editFishes: '§eEditar peces para capturar'
+    editItemsToMelt: '§eEditar objetos para cocinar'
+    editItemsToEnchant: '§eEditar objetos para encantar'
     editItem: '§eEditar elemento a crear'
     editBucketType: '§eEditar tipo de cubo para rellenar'
     editBucketAmount: '§eEditar cantidad de cubos a rellenar'
@@ -336,6 +372,14 @@ inv:
     currentRadius: '§eDistancia actual: §6{0}'
     changeTicksRequired: '§eCambiar ticks reproducidos requeridos'
     changeEntityType: '§eCambiar tipo de entidad'
+    stage:
+      location:
+        worldPattern: '§aEstablecer un patrón del nombre del mundo §d(AVANZADO)'
+        worldPatternLore: 'Si desea que el escenario se complete para cualquier mundo que coincida con un patrón específico, ingrese aquí una expresión regular.'
+      death:
+        causes: '§aEstablecer causas de muerte §d(AVANZADO)'
+        anyCause: Cualquier causa de muerte
+        setCauses: '{0} causa(s) de muerte'
   stages:
     name: Crear etapas
     nextPage: '§eSiguiente página'
@@ -396,6 +440,8 @@ inv:
     editQuestName: '§lEditar misión'
     endMessage: '§eEditar mensaje final'
     endMessageLore: Mensaje que se enviará al jugador al final de la misión.
+    endSound: '§eEditar sonido final'
+    endSoundLore: Sonido que se reproducirá al final de la misión.
     startMessage: '§eEditar mensaje de inicio'
     startMessageLore: Mensaje que se enviará al jugador al comienzo de la misión.
     startDialog: '§eEditar diálogo de inicio'
@@ -404,6 +450,8 @@ inv:
     editRequirementsLore: Todos los requisitos deben aplicarse al jugador antes de que pueda comenzar la misión.
     startRewards: '§6Recompensas de inicio'
     startRewardsLore: Acciones realizadas cuando comienza la misión.
+    cancelRewards: '§cCancelar acciones'
+    cancelRewardsLore: Acciones realizadas cuando los jugadores cancelan esta misión.
     hologramText: '§eTexto del holograma'
     hologramTextLore: Texto mostrado en el holograma sobre la cabeza del NPC de inicio.
     timer: '§bReiniciar temporizador'
@@ -418,6 +466,9 @@ inv:
     failOnDeathLore: '¿Se cancelará la misión cuando el jugador muera?'
     questPool: '§eHerramienta de Misión'
     questPoolLore: Adjuntar esta misión a un grupo de misiones
+    firework: '§dFuego artificial de finalización'
+    fireworkLore: Fuegos artificiales lanzados cuando el jugador termine la misión
+    fireworkLoreDrop: Arrastra aquí tu fuego artificial personalizado
     keepDatas: Conservar datos de los jugadores
     keepDatasLore: |-
       Forzar el plugin para preservar los datos de los jugadores, aunque las etapas han sido editadas.
@@ -450,6 +501,8 @@ inv:
     name: Elija el tipo de entidad
   chooseQuest:
     name: '¿Qué misión?'
+    menu: '§aMenú de Misiones'
+    menuLore: Te lleva a tu Menú de Misiones.
   mobs:
     name: Seleccionar mobs
     none: '§aClic para añadir un Mob.'
@@ -482,6 +535,8 @@ inv:
       minMax: Editar mínimo y máximo
   checkpointActions:
     name: Acciones de puntos de control
+  cancelActions:
+    name: Cancelar acciones
   rewardsWithRequirements:
     name: Recompensas con requisitos
   listAllQuests:
@@ -510,6 +565,7 @@ inv:
     name: Comando
     value: '§eComando'
     console: Consola
+    parse: Analizar marcadores de posición (placeholders)
     delay: '§bRetraso'
   chooseAccount:
     name: '¿Qué cuenta?'
@@ -604,6 +660,18 @@ inv:
     fadeIn: '§aDuración del Fade-in'
     stay: '§bDuración'
     fadeOut: '§aDuración del Fade-out'
+  particleEffect:
+    name: Crear efecto de partículas
+    shape: '§dForma de partícula'
+    type: '§eTipo de partícula'
+    color: '§bColor de partícula'
+  particleList:
+    name: Lista de partículas
+    colored: Partícula de color
+  damageCause:
+    name: Causa de daño
+  damageCausesList:
+    name: Lista de causas de daño
 scoreboard:
   name: '§6§lMisión'
   noLaunched: '§cNo hay misiones en curso.'
@@ -622,11 +690,15 @@ scoreboard:
     interact: '§eClick en el bloque en §6{0}'
     interactMaterial: '§eHaz clic en un bloque §6{0}§e'
     fish: '§ePez §6{0}'
+    melt: '§eCocinar §6{0}'
+    enchant: '§eEncantar §6{0}'
     craft: '§eCraftear §6{0}'
     bucket: '§eRellenar §6{0}'
     location: '§eIr a §6{0}§e, §6{1}§e, §6{2}§e en §6{3}'
+    playTimeFormatted: '§eComenzar §6{0}'
     breed: '§eReproducir §6{0}'
     tame: '§eDomar §6{0}'
+    die: '§cMuerte'
 indication:
   startQuest: '§7Quieres iniciar la misión {0}?'
   closeInventory: '§7¿Estás seguro de que quieres cerrar la GUI?'
@@ -666,12 +738,15 @@ misc:
     chat: Escribir en el chat
     interact: Interactuar con el bloque
     Fish: Captura de peces
+    Melt: Cocinar objetos
+    Enchant: Encantar objetos
     Craft: Fabrica objetos
     Bucket: Rellenar cubo
     location: Buscar ubicación
     playTime: Tiempo de juego
     breedAnimals: Reproducir Animales
     tameAnimals: Domar animales
+    die: Morir
   comparison:
     equals: igual a {0}
     different: diferente a {0}
@@ -698,12 +773,19 @@ misc:
     water: Balde de agua
     lava: Balde de lava
     milk: Balde de leche
+    snow: Cubo de nieve
   click:
     right: Click derecho
     left: Clic izquierdo
     shift-right: Mayús-Clic derecho
     shift-left: Mayús-Clic izquierdo
     middle: Clic central
+  amounts:
+    items: '{0} objeto(s)'
+    comparisons: '{0} comparación(es)'
+    dialogLines: '{0} línea(s)'
+    permissions: '{0} permiso(s)'
+    mobs: '{0} mob(s)'
   ticks: '{0} ticks'
   questItemLore: '§e§oObjeto de la misión'
   hologramText: '§8§lNPC de la misión'
@@ -719,6 +801,7 @@ misc:
   used: '§a§lUsado'
   remove: '§7Click central para eliminar'
   removeRaw: Eliminar
+  reset: Reiniciar
   or: o
   amount: '§eCantidad: {0}'
   items: Objetos
