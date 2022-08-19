@@ -368,6 +368,8 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 			
+			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			
 			/*				static initialization				*/
 			if (init) {
 				StagesGUI.initialize(); // 			initializing default stage types
@@ -431,8 +433,6 @@ public class BeautyQuests extends JavaPlugin {
 		}
 
 		try{
-			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
-			
 			if (db == null && backupDir != null) createPlayerDatasBackup(backupDir, (PlayersManagerYAML) PlayersManager.manager);
 			
 			PlayersManager.manager.load();
@@ -516,6 +516,7 @@ public class BeautyQuests extends JavaPlugin {
 		quests = null;
 		pools = null;
 		if (db != null) db.closeConnection();
+		PlayersManager.manager = null;
 		//HandlerList.unregisterAll(this);
 		loaded = false;
 	}

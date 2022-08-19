@@ -16,13 +16,15 @@ public class QuestObjectClickEvent {
 	private final ItemStack item;
 	private final ClickType click;
 	private final boolean creation;
+	private final Object clickedObject;
 	
-	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation) {
+	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation, Object clickedObject) {
 		this.player = player;
 		this.gui = gui;
 		this.item = item;
 		this.click = click;
 		this.creation = creation;
+		this.clickedObject = clickedObject;
 	}
 	
 	public Player getPlayer() {
@@ -46,6 +48,11 @@ public class QuestObjectClickEvent {
 	}
 	
 	public void reopenGUI() {
+		gui.reopen();
+	}
+	
+	public void cancel() {
+		if (creation) gui.remove(clickedObject);
 		gui.reopen();
 	}
 	

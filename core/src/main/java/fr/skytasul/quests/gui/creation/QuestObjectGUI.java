@@ -72,7 +72,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 			public void click(QuestObjectCreator<T> existing, ItemStack item, ClickType clickType) {
 				T object = existing.newObject();
 				if (!existing.canBeMultiple()) creators.remove(existing);
-				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true));
+				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true, object));
 			}
 			
 			@Override
@@ -86,7 +86,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	
 	@Override
 	public void clickObject(QuestObject existing, ItemStack item, ClickType clickType) {
-		existing.itemClick(new QuestObjectClickEvent(p, this, item, clickType, false));
+		existing.itemClick(new QuestObjectClickEvent(p, this, item, clickType, false, existing));
 	}
 	
 	@Override

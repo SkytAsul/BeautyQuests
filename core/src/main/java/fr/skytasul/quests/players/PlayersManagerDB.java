@@ -23,6 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.data.SQLDataSaver;
+import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
@@ -38,10 +40,13 @@ public class PlayersManagerDB extends PlayersManager {
 	public final String QUESTS_DATAS_TABLE;
 	public final String POOLS_DATAS_TABLE;
 
-	private Database db;
+	private final Database db;
+	
+	private final Map<SavableData<?>, SQLDataSaver<?>> accountDatas = new HashMap<>();
+	private String getAccountDatas;
 	
 	/* Accounts statements */
-	private String getAccounts;
+	private String getAccountsIDs;
 	private String insertAccount;
 	private String deleteAccount;
 
@@ -80,6 +85,16 @@ public class PlayersManagerDB extends PlayersManager {
 		return db;
 	}
 	
+	@Override
+	public void addAccountData(SavableData<?> data) {
+		super.addAccountData(data);
+		accountDatas.put(data, new SQLDataSaver<>(data, "UPDATE " + ACCOUNTS_TABLE + " SET `" + data.getColumnName() + "` = ? WHERE `id` = ?"));
+		getAccountDatas = accountDatas.keySet()
+				.stream()
+				.map(x -> "`" + x.getColumnName() + "`")
+				.collect(Collectors.joining(", ", "SELECT ", " FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?"));
+	}
+	
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
 		try (Connection connection = db.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
@@ -102,6 +117,17 @@ public class PlayersManagerDB extends PlayersManager {
 				}
 				result.close();
 			}
+			if (getAccountDatas != null) {
+				try (PreparedStatement statement = connection.prepareStatement(getAccountDatas)) {
+					statement.setInt(1, acc.index);
+					ResultSet result = statement.executeQuery();
+					result.next();
+					for (SQLDataSaver<?> data : accountDatas.values()) {
+						acc.additionalDatas.put(data.getWrappedData(), data.getFromResultSet(result));
+					}
+					result.close();
+				}
+			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -111,13 +137,13 @@ public class PlayersManagerDB extends PlayersManager {
 	protected synchronized Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
 		try (Connection connection = db.getConnection()) {
 			String uuid = player.getUniqueId().toString();
-			try (PreparedStatement statement = connection.prepareStatement(getAccounts)) {
+			try (PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
 				statement.setString(1, uuid);
 				ResultSet result = statement.executeQuery();
 				while (result.next()) {
 					AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
 					if (abs.isCurrent()) {
-						PlayerAccount account = new PlayerAccount(abs, result.getInt("id"));
+						PlayerAccount account = new PlayerAccountDB(abs, result.getInt("id"));
 						result.close();
 						try {
 							// in order to ensure that, if the player was previously connected to another server,
@@ -143,7 +169,7 @@ public class PlayersManagerDB extends PlayersManager {
 				if (!result.next()) throw new SQLException("The plugin has not been able to create a player account.");
 				int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
 				result.close();
-				return new AbstractMap.SimpleEntry<>(new PlayerAccount(absacc, index), true);
+				return new AbstractMap.SimpleEntry<>(new PlayerAccountDB(absacc, index), true);
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -217,7 +243,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public synchronized boolean hasAccounts(Player p) {
 		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(getAccounts)) {
+				PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
 			statement.setString(1, p.getUniqueId().toString());
 			ResultSet result = statement.executeQuery();
 			boolean has = result.next();
@@ -231,10 +257,11 @@ public class PlayersManagerDB extends PlayersManager {
 
 	@Override
 	public void load() {
+		super.load();
 		try {
 			createTables();
 
-			getAccounts = "SELECT * FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?";
+			getAccountsIDs = "SELECT `id`, `identifier` FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?";
 			insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)";
 			deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?";
 
@@ -279,6 +306,7 @@ public class PlayersManagerDB extends PlayersManager {
 					+ " `id` int NOT NULL AUTO_INCREMENT ,"
 					+ " `identifier` text NOT NULL ,"
 					+ " `player_uuid` char(36) NOT NULL ,"
+					+ accountDatas.values().stream().map(data -> " " + data.getColumnDefinition() + " ,").collect(Collectors.joining())
 					+ " PRIMARY KEY (`id`)"
 					+ " )");
 			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
@@ -301,6 +329,7 @@ public class PlayersManagerDB extends PlayersManager {
 					+ "`completed_quests` varchar(1000) DEFAULT NULL, "
 					+ "PRIMARY KEY (`id`)"
 					+ ")");
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
 			
 			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
 				if (!columns.contains("quest_flow")) { // 0.19
@@ -349,7 +378,16 @@ public class PlayersManagerDB extends PlayersManager {
 					if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
 				}
 			});
-			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
+			
+			upgradeTable(connection, ACCOUNTS_TABLE, columns -> {
+				for (SQLDataSaver<?> data : accountDatas.values()) {
+					if (!columns.contains(data.getWrappedData().getColumnName().toLowerCase())) {
+						statement.execute("ALTER TABLE " + ACCOUNTS_TABLE
+								+ " ADD COLUMN " + data.getColumnDefinition());
+						BeautyQuests.logger.info("Updated database by adding the missing " + data.getWrappedData().getColumnName() + " column in the player accounts table.");
+					}
+				}
+			});
 		}
 	}
 
@@ -653,6 +691,29 @@ public class PlayersManagerDB extends PlayersManager {
 				}
 			}catch (SQLException e) {
 				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public class PlayerAccountDB extends PlayerAccount {
+		
+		public PlayerAccountDB(AbstractAccount account, int index) {
+			super(account, index);
+		}
+		
+		@Override
+		public <T> void setData(SavableData<T> data, T value) {
+			super.setData(data, value);
+			
+			SQLDataSaver<T> dataSaver = (SQLDataSaver<T>) accountDatas.get(data);
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(dataSaver.getUpdateStatement())) {
+				dataSaver.setInStatement(statement, 1, value);
+				statement.setInt(2, index);
+				statement.executeUpdate();
+			}catch (SQLException ex) {
+				BeautyQuests.logger.severe("An error occurred while saving account data " + data.getId() + " to database", ex);
 			}
 		}
 		

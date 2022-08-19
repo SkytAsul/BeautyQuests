@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -95,55 +96,55 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			setQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide));
-			for (int i = page * 35; i < quests.size(); i++){
-				if (i == (page + 1) * 35) break;
-				Quest qu = quests.get(i);
+			displayQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide), qu -> {
 				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
 				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
 				}
-				setMainItem(i - page * 35, createQuestItem(qu, lore));
-			}
+				return createQuestItem(qu, lore);
+			});
 			break;
 		
 		case IN_PROGRESS:
-			setQuests(QuestsAPI.getQuests().getQuestsStarted(acc, true, false));
-			for (int i = page * 35; i < quests.size(); i++){
-				if (i == (page + 1) * 35) break;
-				Quest qu = quests.get(i);
-				ItemStack item;
-				try {
-					List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
-					
-					boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
-					boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
-					if (cancellable || hasDialogs) {
-						if (!lore.isEmpty()) lore.add(null);
-						if (cancellable) lore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
-						if (hasDialogs) lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
-					}
-					item = createQuestItem(qu, lore);
-				}catch (Exception ex) {
-					item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
-					BeautyQuests.logger.severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier(), ex);
+			displayQuests(QuestsAPI.getQuests().getQuestsStarted(acc, true, false), qu -> {
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
+				
+				boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
+				boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
+				if (cancellable || hasDialogs) {
+					if (!lore.isEmpty()) lore.add(null);
+					if (cancellable) lore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
+					if (hasDialogs) lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
 				}
-				setMainItem(i - page * 35, item);
-			}
+				return createQuestItem(qu, lore);
+			});
 			break;
 			
 		case NOT_STARTED:
-			setQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()));
-			for (int i = page * 35; i < quests.size(); i++){
-				if (i == (page + 1) * 35) break;
-				Quest qu = quests.get(i);
-				setMainItem(i - page * 35, createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription()));
-			}
+			displayQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()), qu -> {
+				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription());
+			});
 			break;
 
 		default:
 			break;
+		}
+	}
+	
+	private void displayQuests(List<Quest> quests, Function<Quest, ItemStack> itemProvider) {
+		setQuests(quests);
+		for (int i = page * 35; i < quests.size(); i++) {
+			if (i == (page + 1) * 35) break;
+			Quest qu = quests.get(i);
+			ItemStack item;
+			try {
+				item = itemProvider.apply(qu);
+			}catch (Exception ex) {
+				item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
+				BeautyQuests.logger.severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier(), ex);
+			}
+			setMainItem(i - page * 35, item);
 		}
 	}
 	

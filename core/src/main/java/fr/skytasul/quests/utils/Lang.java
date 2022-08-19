@@ -15,6 +15,7 @@ public enum Lang implements Locale {
 	EditorPrefix("misc.format.editorPrefix"),
 	ErrorPrefix("misc.format.errorPrefix"),
 	SuccessPrefix("misc.format.successPrefix"),
+	RequirementNotMetPrefix("misc.format.requirementNotMetPrefix"),
 	
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),

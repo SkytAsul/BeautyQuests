@@ -764,6 +764,7 @@ misc:
     editorPrefix: §a
     errorPrefix: §4✖ §c
     successPrefix: §2✔ §a
+    requirementNotMetPrefix: §c
   time:
     weeks: '{0} weeks'
     days: '{0} days'
