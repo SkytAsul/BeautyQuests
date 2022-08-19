@@ -77,6 +77,10 @@ public interface Locatable {
 			
 			double getMaxDistance();
 			
+			default double getMaxDistanceSquared() {
+				return getMaxDistance() * getMaxDistance();
+			}
+			
 			default boolean isTargeting(LocatedType type) {
 				return true;
 			}
@@ -90,9 +94,9 @@ public interface Locatable {
 			}
 			
 			class NearbyFetcherImpl implements NearbyFetcher {
-				private Location center;
-				private double maxDistance;
-				private LocatedType targetType;
+				private final Location center;
+				private final double maxDistance;
+				private final LocatedType targetType;
 				
 				public NearbyFetcherImpl(Location center, double maxDistance, LocatedType targetType) {
 					this.center = center;

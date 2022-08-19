@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -66,6 +67,13 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 	@Override
 	public MythicMob fromValue(String value) {
 		return MythicBukkit.inst().getMobManager().getMythicMob(value).orElse(null);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
+		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId())
+				.map(mob -> mob.getType().equals(first))
+				.orElse(false);
 	}
 
 	@Override

@@ -97,13 +97,12 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
-		double distanceSquared = fetcher.getMaxDistance() * fetcher.getMaxDistance();
 		return fetcher.getCenter().getWorld()
 				.getEntitiesByClass(entity.getEntityClass())
 				.stream()
 				.map(x -> {
 					double ds = x.getLocation().distanceSquared(fetcher.getCenter());
-					if (ds > distanceSquared) return null;
+					if (ds > fetcher.getMaxDistanceSquared()) return null;
 					return new AbstractMap.SimpleEntry<>(x, ds);
 				})
 				.filter(Objects::nonNull)

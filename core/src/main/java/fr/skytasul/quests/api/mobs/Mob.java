@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
@@ -55,6 +56,10 @@ public class Mob<Data> implements Cloneable {
 	
 	public boolean applies(Object data) {
 		return factory.mobApplies(this.data, data);
+	}
+	
+	public boolean appliesEntity(Entity entity) {
+		return factory.bukkitMobApplies(data, entity);
 	}
 	
 	@Override

@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.mineacademy.boss.api.BossAPI;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 import org.mineacademy.boss.model.Boss;
 
@@ -55,6 +57,11 @@ public class BQBoss implements MobFactory<Boss> {
 	@Override
 	public Boss fromValue(String value) {
 		return org.mineacademy.boss.api.BossAPI.getBoss(value);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(Boss first, Entity entity) {
+		return BossAPI.getBoss(entity).getBoss().equals(first);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 
 import java.util.function.Consumer;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,11 @@ public class BQAdvancedSpawners implements MobFactory<String> {
 	@Override
 	public String getID() {
 		return "advanced-spawners";
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(String first, Entity entity) {
+		return false;
 	}
 	
 	@Override

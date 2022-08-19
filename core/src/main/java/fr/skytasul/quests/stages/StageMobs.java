@@ -1,8 +1,13 @@
 package fr.skytasul.quests.stages;
 
+import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,6 +17,9 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -24,7 +32,8 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 
-public class StageMobs extends AbstractCountableStage<Mob<?>> {
+@LocatableType (types = LocatedType.ENTITY)
+public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable {
 
 	private boolean shoot = false;
 	
@@ -93,6 +102,29 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> {
 	protected void serialize(ConfigurationSection section) {
 		super.serialize(section);
 		if (shoot) section.set("shoot", true);
+	}
+	
+	@Override
+	public boolean canBeFetchedAsynchronously() {
+		return false;
+	}
+	
+	@Override
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
+		return fetcher.getCenter().getWorld()
+				.getEntities()
+				.stream()
+				.filter(entity -> objects.values().stream().anyMatch(entry -> entry.getKey().appliesEntity(entity)))
+				.map(x -> {
+					double ds = x.getLocation().distanceSquared(fetcher.getCenter());
+					if (ds > fetcher.getMaxDistanceSquared()) return null;
+					return new AbstractMap.SimpleEntry<>(x, ds);
+				})
+				.filter(Objects::nonNull)
+				.sorted(Comparator.comparing(Entry::getValue))
+				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
+				.spliterator();
 	}
 	
 	public static StageMobs deserialize(ConfigurationSection section, QuestBranch branch) {
