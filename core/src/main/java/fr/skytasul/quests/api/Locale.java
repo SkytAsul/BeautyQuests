@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.function.Supplier;
 
 import org.bukkit.ChatColor;
@@ -49,12 +51,17 @@ public interface Locale {
 		}
 	}
 	
-	public static YamlConfiguration loadLang(Plugin plugin, Locale[] locales, String loadedLanguage, String... languages) throws IOException {
+	public static YamlConfiguration loadLang(Plugin plugin, Locale[] locales, String loadedLanguage) throws IOException, URISyntaxException {
 		long lastMillis = System.currentTimeMillis();
-		for (String language : languages) {
-			File file = new File(plugin.getDataFolder(), "locales/" + language + ".yml");
-			if (!file.exists()) plugin.saveResource("locales/" + language + ".yml", false);
-		}
+		
+		Utils.walkResources(plugin.getClass(), "/locales", 1, path -> {
+			String localeFileName = path.getFileName().toString();
+			if (!localeFileName.toLowerCase().endsWith(".yml")) return;
+			
+			if (!Files.exists(plugin.getDataFolder().toPath().resolve("locales").resolve(localeFileName))) {
+				plugin.saveResource("locales/" + localeFileName, false);
+			}
+		});
 		
 		String language = "locales/" + loadedLanguage + ".yml";
 		File file = new File(plugin.getDataFolder(), language);

@@ -1,5 +1,13 @@
 package fr.skytasul.quests.utils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -333,6 +342,25 @@ public class Utils{
 		return 0;
 	}
 	
+	public static void walkResources(Class<?> clazz, String path, int depth, Consumer<Path> consumer) throws URISyntaxException, IOException {
+		URI uri = clazz.getResource(path).toURI();
+		FileSystem fileSystem = null;
+		Path myPath;
+		try {
+			if (uri.getScheme().equals("jar")) {
+				fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+				myPath = fileSystem.getPath(path);
+			}else {
+				myPath = Paths.get(uri);
+			}
+			
+			try (Stream<Path> walker = Files.walk(myPath, depth)) {
+				walker.forEach(consumer);
+			}
+		}finally {
+			if (fileSystem != null) fileSystem.close();
+		}
+	}
 	
 	
 	public static void runOrSync(Runnable run) {

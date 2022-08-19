@@ -389,7 +389,7 @@ public class BeautyQuests extends JavaPlugin {
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
 			loadedLanguage = config.getConfig().getString("lang", "en_US");
-			return Locale.loadLang(this, Lang.values(), loadedLanguage, "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT", "vi_VN");
+			return Locale.loadLang(this, Lang.values(), loadedLanguage);
 		}catch (Exception ex) {
 			throw new LoadingException("Couldn't load language file.", ex);
 		}
