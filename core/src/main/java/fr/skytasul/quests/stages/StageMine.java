@@ -3,6 +3,8 @@ package fr.skytasul.quests.stages;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Spliterator;
+import java.util.stream.Collectors;
 
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +18,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -26,7 +31,8 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
-public class StageMine extends AbstractCountableBlockStage {
+@LocatableType (types = LocatedType.BLOCK)
+public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable {
 
 	private boolean placeCancelled;
 	
@@ -74,6 +80,11 @@ public class StageMine extends AbstractCountableBlockStage {
 				return;
 			}
 		}
+	}
+	
+	@Override
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		return BQBlock.getNearbyBlocks(fetcher, objects.values().stream().map(Entry::getKey).collect(Collectors.toList()));
 	}
 	
 	@Override

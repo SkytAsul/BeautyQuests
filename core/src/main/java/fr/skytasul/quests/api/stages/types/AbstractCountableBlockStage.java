@@ -2,16 +2,12 @@ package fr.skytasul.quests.api.stages.types;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Spliterator;
-import java.util.stream.Collectors;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
-import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
@@ -20,8 +16,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
 
-@LocatableType (types = LocatedType.BLOCK)
-public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> implements Locatable.MultipleLocatable {
+public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> {
 	
 	protected AbstractCountableBlockStage(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> objects) {
 		super(branch, objects);
@@ -46,11 +41,6 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 	@Override
 	protected BQBlock deserialize(Object object) {
 		return BQBlock.fromString((String) object);
-	}
-	
-	@Override
-	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
-		return BQBlock.getNearbyBlocks(fetcher, objects.values().stream().map(Entry::getKey).collect(Collectors.toList()));
 	}
 	
 	public abstract static class AbstractCreator<T extends AbstractCountableBlockStage> extends StageCreation<T> {
