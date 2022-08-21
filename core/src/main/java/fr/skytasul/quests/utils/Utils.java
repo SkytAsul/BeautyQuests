@@ -53,6 +53,8 @@ import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
 
+import net.md_5.bungee.api.ChatColor;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -167,6 +169,7 @@ public class Utils{
 	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
 		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
 		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+		text = ChatColor.translateAlternateColorCodes('&', text);
 		return format(text, replace);
 	}
 	
