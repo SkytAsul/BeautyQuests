@@ -110,7 +110,7 @@ public enum Lang implements Locale {
 	PLAYER_NOT_ONLINE("msg.playerNotOnline"),
 	PLAYER_DATA_NOT_FOUND("msg.playerDataNotFound"), // 0: player name
 	
-	VERSION_REQUIRED("msg.versionRequired"), // 0: version
+	VERSION_REQUIRED("msg.versionRequired", ErrorPrefix), // 0: version
 	
 	RESTART_SERVER("msg.restartServer"),
 	

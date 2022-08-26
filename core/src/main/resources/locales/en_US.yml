@@ -109,7 +109,7 @@ msg:
     downloadTranslations:
       syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
       notFound: '§cLanguage {0} not found for version {1}.'
-      exists: '§cThe file {0} already exists. Append "true" to your command to overwrite it. (/quests downloadTranslations <lang> true)'
+      exists: '§cThe file {0} already exists. Append "-overwrite" to your command to overwrite it. (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§aLanguage {0} has been downloaded! §7You must now edit the
         file "/plugins/BeautyQuests/config.yml" to change the value of §ominecraftTranslationsFile§7 with {0}, then restart the server.'
     checkpoint:

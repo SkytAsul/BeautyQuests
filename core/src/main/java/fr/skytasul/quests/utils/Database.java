@@ -14,7 +14,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 
 import fr.skytasul.quests.BeautyQuests;
 
-public class Database {
+public class Database implements Closeable {
 
 	private ConfigurationSection config;
 	private String databaseName;
@@ -77,7 +77,8 @@ public class Database {
 		return config;
 	}
 
-	public void closeConnection() {
+	@Override
+	public void close() {
 		if (source instanceof Closeable) {
 			try {
 				((Closeable) source).close();

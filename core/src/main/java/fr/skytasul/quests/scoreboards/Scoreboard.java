@@ -201,6 +201,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	private void updateBoard(boolean update, boolean time) {
+		if (board == null && !time) return;
 		List<String> linesStrings = new ArrayList<>(lines.size());
 		for (int i = 0; i < lines.size(); i++) {
 			Line line = lines.get(i);
@@ -218,7 +219,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				linesStrings.add("§c§lline error");
 			}
 		}
-		if (update) board.updateLines(linesStrings);
+		if (update && board != null) board.updateLines(linesStrings);
 	}
 	
 	public void setCustomLine(int id, String value){

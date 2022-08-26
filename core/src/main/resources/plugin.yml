@@ -36,11 +36,11 @@ softdepend:
 - Sentinel
 - AdvancedSpawners
 
-commands:
-  beautyquests:
-    description: Main command for quests
-    permission: beautyquests.command
-    aliases: [bquests, quests, beautyquests, bq, quest]
+#commands:
+#  beautyquests:
+#    description: Main command for quests
+#    permission: beautyquests.command
+#    aliases: [bquests, quests, beautyquests, bq, quest]
     
 permissions:
   beautyquests.*:

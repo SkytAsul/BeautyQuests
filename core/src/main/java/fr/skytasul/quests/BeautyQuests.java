@@ -20,7 +20,6 @@ import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +34,6 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 import fr.skytasul.quests.api.Locale;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
-import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
@@ -43,9 +41,7 @@ import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -130,13 +126,14 @@ public class BeautyQuests extends JavaPlugin {
 
 			saveDefaultConfig();
 			NMS.getMCVersion();
-			registerCommands();
 
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
 			loadConfigParameters(true);
 
+			registerCommands();
+			
 			try {
 				dependencies.initializeCompatibilities();
 			}catch (Exception ex) {
@@ -191,12 +188,23 @@ public class BeautyQuests extends JavaPlugin {
 			logger.severe("This is a fatal error. Now disabling.");
 			disable = true;
 			setEnabled(false);
+		}catch (Exception ex) {
+			logger.severe("An unexpected exception occurred while loading plugin.", ex);
+			logger.severe("This is a fatal error. Now disabling.");
+			disable = true;
+			setEnabled(false);
 		}
 	}
 	
 	@Override
 	public void onDisable(){
 		try {
+			try {
+				if (command != null) command.unload();
+			}catch (Throwable ex) {
+				logger.severe("An error occurred while disabling command manager.", ex);
+			}
+			
 			try {
 				Editor.leaveAll();
 				Inventories.closeAll();
@@ -236,24 +244,8 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 	private void registerCommands(){
-		command = new CommandsManager((sender) -> {
-			if (!(sender instanceof Player)) return;
-			Player p = (Player) sender;
-			if (!p.hasPermission("beautyquests.command.listPlayer")){
-				Lang.INCORRECT_SYNTAX.send(p);
-			}else {
-				PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-				if (acc == null) {
-					Lang.ERROR_OCCURED.send(p, "no account data");
-					logger.severe("Player " + p.getName() + " has got no account. This is a CRITICAL issue.");
-				}else Inventories.create(p, new PlayerListGUI(acc));
-			}
-		});
-		PluginCommand cmd = getCommand("beautyquests");
-		cmd.setPermission("beautyquests.command");
-		cmd.setExecutor(command);
-		cmd.setTabCompleter(command);
-		command.registerCommandsClass(new Commands());
+		command = new CommandsManager();
+		command.initializeCommands();
 	}
 	
 	private void launchSaveCycle(){
@@ -355,15 +347,12 @@ public class BeautyQuests extends JavaPlugin {
 			
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
-				try {
-					db = new Database(dbConfig);
-					db.testConnection();
+				db = null;
+				try (Database newDB = new Database(dbConfig)) {
+					newDB.testConnection();
 					logger.info("Connection to database etablished.");
+					db = newDB;
 				}catch (Exception ex) {
-					if (db != null) {
-						db.closeConnection();
-						db = null;
-					}
 					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
@@ -424,6 +413,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
 		dependencies.lockDependencies();
+		command.lockCommands();
 		
 		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
@@ -515,7 +505,11 @@ public class BeautyQuests extends JavaPlugin {
 	private void resetDatas(){
 		quests = null;
 		pools = null;
-		if (db != null) db.closeConnection();
+		try {
+			if (db != null) db.close();
+		}catch (Exception ex) {
+			logger.severe("An error occurred while closing database connection.", ex);
+		}
 		PlayersManager.manager = null;
 		//HandlerList.unregisterAll(this);
 		loaded = false;
