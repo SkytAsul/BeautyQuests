@@ -6,6 +6,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 
@@ -23,7 +24,7 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	@Override
 	public void questLoaded(Quest quest) {
 		if (!quest.hasOption(OptionStarterNPC.class)) return;
-		if (quest.isHidden()) {
+		if (quest.isHidden(VisibilityLocation.MAPS)) {
 			DebugUtils.logMessage("No marker created for quest " + quest.getID() + ": quest is hidden");
 			return;
 		}
@@ -38,7 +39,7 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	
 	@Override
 	public void questUnload(Quest quest) {
-		if (!quest.isHidden() && quest.hasOption(OptionStarterNPC.class)) removeMarker(quest);
+		if (!quest.isHidden(VisibilityLocation.MAPS) && quest.hasOption(OptionStarterNPC.class)) removeMarker(quest);
 	}
 	
 	protected abstract void initializeMarkers(Runnable initializeQuests);

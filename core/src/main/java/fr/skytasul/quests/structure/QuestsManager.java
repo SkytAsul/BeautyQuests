@@ -17,6 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.utils.Utils;
@@ -132,7 +133,7 @@ public class QuestsManager implements Iterable<Quest> {
 				.map(PlayerQuestDatas::getQuest)
 				.filter(Objects::nonNull)
 				.filter(quest -> !quest.isRemoved())
-				.filter(quest -> !hide || !quest.isHidden())
+				.filter(quest -> !hide || !quest.isHidden(VisibilityLocation.TAB_IN_PROGRESS))
 				.filter(quest -> !withoutScoreboard || quest.isScoreboardEnabled())
 				.collect(Collectors.toList());
 	}
@@ -159,7 +160,7 @@ public class QuestsManager implements Iterable<Quest> {
 	public List<Quest> getQuestsFinished(PlayerAccount acc, boolean hide) {
 		return quests
 				.stream()
-				.filter(quest -> !(hide && quest.isHidden()) && quest.hasFinished(acc))
+				.filter(quest -> !(hide && quest.isHidden(VisibilityLocation.TAB_FINISHED)) && quest.hasFinished(acc))
 				.collect(Collectors.toList());
 	}
 	
@@ -167,7 +168,7 @@ public class QuestsManager implements Iterable<Quest> {
 		return quests
 				.stream()
 				.filter(quest -> {
-					if (hide && quest.isHidden()) return false;
+					if (hide && quest.isHidden(VisibilityLocation.TAB_NOT_STARTED)) return false;
 					if (quest.hasStarted(acc)) return false;
 					if (!quest.hasFinished(acc)) return true;
 					return clickableAndRedoable && quest.isRepeatable() && quest.getOptionValueOrDef(OptionStartable.class) && quest.testTimer(acc, false);

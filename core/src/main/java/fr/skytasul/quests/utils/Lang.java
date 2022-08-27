@@ -421,8 +421,6 @@ public enum Lang implements Locale {
 	startableFromGUILore("inv.details.startableFromGUILore"),
 	scoreboard("inv.details.scoreboardItem"),
 	scoreboardLore("inv.details.scoreboardItemLore"),
-	hide("inv.details.hideItem"),
-	hideLore("inv.details.hideItemLore"),
 	hideNoRequirements("inv.details.hideNoRequirementsItem"),
 	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
@@ -487,6 +485,8 @@ public enum Lang implements Locale {
 	optionFirework("inv.details.firework"),
 	optionFireworkLore("inv.details.fireworkLore"),
 	optionFireworkDrop("inv.details.fireworkLoreDrop"),
+	optionVisibility("inv.details.visibility"),
+	optionVisibilityLore("inv.details.visibilityLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
@@ -622,8 +622,7 @@ public enum Lang implements Locale {
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
 	poolEdit("inv.poolsManage.edit"),
-	poolChoose(
-			"inv.poolsManage.choose"),
+	poolChoose("inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 	
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
@@ -672,6 +671,12 @@ public enum Lang implements Locale {
 	INVENTORY_DAMAGE_CAUSE("inv.damageCause.name"),
 	
 	INVENTORY_DAMAGE_CAUSES_LIST("inv.damageCausesList.name"),
+	
+	INVENTORY_VISIBILITY("inv.visibility.name"),
+	visibility_notStarted("inv.visibility.notStarted"),
+	visibility_inProgress("inv.visibility.inProgress"),
+	visibility_finished("inv.visibility.finished"),
+	visibility_maps("inv.visibility.maps"),
 	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),

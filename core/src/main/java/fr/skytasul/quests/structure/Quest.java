@@ -34,6 +34,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -163,8 +164,8 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return getOptionValueOrDef(OptionRepeatable.class);
 	}
 	
-	public boolean isHidden() {
-		return getOptionValueOrDef(OptionHide.class);
+	public boolean isHidden(VisibilityLocation location) {
+		return !getOptionValueOrDef(OptionVisibility.class).contains(location);
 	}
 	
 	public boolean isHiddenWhenRequirementsNotMet() {
