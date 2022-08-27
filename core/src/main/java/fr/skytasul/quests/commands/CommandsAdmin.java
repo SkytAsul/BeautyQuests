@@ -39,7 +39,9 @@ import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
 
+import revxrsal.commands.annotation.Flag;
 import revxrsal.commands.annotation.Optional;
+import revxrsal.commands.annotation.Range;
 import revxrsal.commands.annotation.SecretCommand;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Switch;
@@ -53,7 +55,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("create")
 	@CommandPermission (value = "beautyquests.command.create")
 	@OutsideEditor
-	public void create(Player player, @Optional Integer id) {
+	public void create(Player player, @Optional @Flag @Range (min = 0) Integer id) {
 		QuestCreationSession session = new QuestCreationSession();
 		if (id != null) {
 			if (QuestsAPI.getQuests().getQuest(id) != null)

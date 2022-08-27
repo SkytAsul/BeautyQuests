@@ -268,14 +268,14 @@
 			<scope>provided</scope> <!-- this is added to runtime through Spigot libraries system -->
 		</dependency>
 		<dependency>
-			<groupId>io.github.Revxrsal</groupId>
+			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>3.0.8</version>
+			<version>d72483065c</version>
 		</dependency>
 		<dependency>
-			<groupId>io.github.Revxrsal</groupId>
+			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>common</artifactId>
-			<version>3.0.8</version>
+			<version>d72483065c</version>
 		</dependency>
 
 		<!-- Local JARs -->

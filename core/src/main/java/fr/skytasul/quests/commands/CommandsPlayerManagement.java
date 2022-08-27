@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -31,6 +32,7 @@ import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.bukkit.BukkitCommandActor;
 import revxrsal.commands.bukkit.BukkitCommandPermission;
+import revxrsal.commands.bukkit.EntitySelector;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.exception.CommandErrorException;
@@ -44,31 +46,37 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	
 	@Subcommand ("finishAll")
 	@CommandPermission ("beautyquests.command.finish")
-	public void finishAll(BukkitCommandActor actor, Player player) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		int success = 0;
-		int errors = 0;
-		for (Quest q : QuestsAPI.getQuests().getQuestsStarted(acc)) {
-			try {
-				q.finish(player);
-				success++;
-			}catch (Throwable ex) {
-				ex.printStackTrace();
-				errors++;
+	public void finishAll(BukkitCommandActor actor, EntitySelector<Player> players) {
+		for (Player player : players) {
+			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			int success = 0;
+			int errors = 0;
+			for (Quest q : QuestsAPI.getQuests().getQuestsStarted(acc)) {
+				try {
+					q.finish(player);
+					success++;
+				}catch (Exception ex) {
+					BeautyQuests.logger.severe("An error occurred while finishing quest " + q.getID(), ex);
+					errors++;
+				}
 			}
+			Lang.LEAVE_ALL_RESULT.send(actor.getSender(), success, errors);
 		}
-		Lang.LEAVE_ALL_RESULT.send(actor.getSender(), success, errors);
 	}
 	
 	@Subcommand ("finish")
 	@CommandPermission ("beautyquests.command.finish")
-	public void finish(BukkitCommandActor actor, Player player, Quest quest) {
-		try {
-			quest.finish(player);
-			Lang.LEAVE_ALL_RESULT.send(actor.getSender(), 1, 0);
-		}catch (Throwable ex) {
-			ex.printStackTrace();
-			Lang.LEAVE_ALL_RESULT.send(actor.getSender(), 1, 1);
+	public void finish(BukkitCommandActor actor, EntitySelector<Player> players, Quest quest, @Switch boolean force) {
+		for (Player player : players) {
+			try {
+				if (force || quest.hasStarted(PlayersManager.getPlayerAccount(player))) {
+					quest.finish(player);
+					Lang.LEAVE_ALL_RESULT.send(actor.getSender(), 1, 0);
+				}
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An error occurred while finishing quest " + quest.getID(), ex);
+				Lang.LEAVE_ALL_RESULT.send(actor.getSender(), 1, 1);
+			}
 		}
 	}
 	
@@ -164,26 +172,28 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	
 	@Subcommand ("resetPlayer")
 	@CommandPermission ("beautyquests.command.resetPlayer")
-	public void resetPlayer(BukkitCommandActor actor, Player player) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		int quests = 0, pools = 0;
-		for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
-			Quest quest = questDatas.getQuest();
-			if (quest != null) {
-				quest.resetPlayer(acc);
-			}else acc.removeQuestDatas(questDatas.getQuestID());
-			quests++;
+	public void resetPlayer(BukkitCommandActor actor, EntitySelector<Player> players) {
+		for (Player player : players) {
+			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			int quests = 0, pools = 0;
+			for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
+				Quest quest = questDatas.getQuest();
+				if (quest != null) {
+					quest.resetPlayer(acc);
+				}else acc.removeQuestDatas(questDatas.getQuestID());
+				quests++;
+			}
+			for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
+				QuestPool pool = poolDatas.getPool();
+				if (pool != null) {
+					pool.resetPlayer(acc);
+				}else acc.removePoolDatas(poolDatas.getPoolID());
+				pools++;
+			}
+			Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
+			if (acc.isCurrent()) Lang.DATA_REMOVED.send(player, quests, actor.getName(), pools);
+			Lang.DATA_REMOVED_INFO.send(actor.getSender(), quests, player.getName(), pools);
 		}
-		for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
-			QuestPool pool = poolDatas.getPool();
-			if (pool != null) {
-				pool.resetPlayer(acc);
-			}else acc.removePoolDatas(poolDatas.getPoolID());
-			pools++;
-		}
-		Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
-		if (acc.isCurrent()) Lang.DATA_REMOVED.send(player, quests, actor.getName(), pools);
-		Lang.DATA_REMOVED_INFO.send(actor.getSender(), quests, player.getName(), pools);
 	}
 	
 	@Subcommand ("resetPlayerQuest")
@@ -237,21 +247,22 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	
 	@Subcommand ("start")
 	@CommandPermission ("beautyquests.command.start")
-	public void start(BukkitCommandActor actor, ExecutableCommand command, Player player, @Optional Quest quest, @CommandPermission ("beautyquests.command.start.other") @Switch boolean overrideRequirements) {
-		if (actor.isPlayer() && (actor.getAsPlayer() != player)) {
-			// the executor wants to start a quest for somebody else
-			if (!startOtherPermission.canExecute(actor))
+	public void start(BukkitCommandActor actor, ExecutableCommand command, EntitySelector<Player> players, @Optional Quest quest, @CommandPermission ("beautyquests.command.start.other") @Switch boolean overrideRequirements) {
+		if (actor.isPlayer() && !startOtherPermission.canExecute(actor)) {
+			if (players.isEmpty() || players.size() > 1 || (players.get(0) != actor.getAsPlayer()))
 				throw new NoPermissionException(command, startOtherPermission);
 		}
 		
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		
-		if (quest == null) {
-			new QuestsListGUI(obj -> {
-				start(actor.getSender(), player, acc, obj, overrideRequirements);
-			}, acc, false, true, false).create(actor.requirePlayer());
-		}else {
-			start(actor.getSender(), player, acc, quest, overrideRequirements);
+		for (Player player : players) {
+			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			
+			if (quest == null) {
+				new QuestsListGUI(obj -> {
+					start(actor.getSender(), player, acc, obj, overrideRequirements);
+				}, acc, false, true, false).create(actor.requirePlayer());
+			}else {
+				start(actor.getSender(), player, acc, quest, overrideRequirements);
+			}
 		}
 	}
 
@@ -266,21 +277,22 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	
 	@Subcommand ("cancel")
 	@CommandPermission ("beautyquests.command.cancel")
-	public void cancel(BukkitCommandActor actor, ExecutableCommand command, Player player, @Optional Quest quest) {
-		if (actor.isPlayer() && (actor.getAsPlayer() != player)) {
-			// the executor wants to start a quest for somebody else
-			if (!cancelOtherPermission.canExecute(actor))
+	public void cancel(BukkitCommandActor actor, ExecutableCommand command, EntitySelector<Player> players, @Optional Quest quest) {
+		if (actor.isPlayer() && !cancelOtherPermission.canExecute(actor)) {
+			if (players.isEmpty() || players.size() > 1 || (players.get(0) != actor.getAsPlayer()))
 				throw new NoPermissionException(command, cancelOtherPermission);
 		}
 		
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		
-		if (quest == null) {
-			new QuestsListGUI(obj -> {
-				cancel(actor.getSender(), player, acc, obj);
-			}, acc, true, false, false).create(actor.requirePlayer());
-		}else {
-			cancel(actor.getSender(), player, acc, quest);
+		for (Player player : players) {
+			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			
+			if (quest == null) {
+				new QuestsListGUI(obj -> {
+					cancel(actor.getSender(), player, acc, obj);
+				}, acc, true, false, false).create(actor.requirePlayer());
+			}else {
+				cancel(actor.getSender(), player, acc, quest);
+			}
 		}
 	}
 	
