@@ -443,8 +443,6 @@ inv:
     startableFromGUILore: Allows the player to start the quest from the Quests Menu.
     scoreboardItem: Enable scoreboard
     scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
-    hideItem: Hide menu and dynmap
-    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     hideNoRequirementsItem: Hide when requirements not met
     hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
@@ -501,6 +499,9 @@ inv:
     firework: §dEnding Firework
     fireworkLore: Firework launched when the player finishes the quest
     fireworkLoreDrop: Drop your custom firework here
+    visibility: §bQuest visibility
+    visibilityLore: Choose in which tabs of the menu will the quest be shown, and if
+      the quest is visible on dynamic maps.
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.
@@ -709,6 +710,12 @@ inv:
     name: Damage cause
   damageCausesList:
     name: Damage causes list
+  visibility:
+    name: Quest visibility
+    notStarted: '"Not started" menu tab'
+    inProgress: '"In progress" menu tab'
+    finished: '"Finished" menu tab'
+    maps: 'Maps (such as dynmap or BlueMap)'
     
 scoreboard:
   name: §6§lQuests
