@@ -41,7 +41,6 @@ import fr.skytasul.quests.utils.nms.NMS;
 
 import revxrsal.commands.annotation.Flag;
 import revxrsal.commands.annotation.Optional;
-import revxrsal.commands.annotation.Range;
 import revxrsal.commands.annotation.SecretCommand;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Switch;
@@ -55,9 +54,10 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("create")
 	@CommandPermission (value = "beautyquests.command.create")
 	@OutsideEditor
-	public void create(Player player, @Optional @Flag @Range (min = 0) Integer id) {
+	public void create(Player player, @Optional @Flag Integer id) {
 		QuestCreationSession session = new QuestCreationSession();
 		if (id != null) {
+			if (id.intValue() < 0) throw new CommandErrorException(Lang.NUMBER_NEGATIVE.toString());
 			if (QuestsAPI.getQuests().getQuest(id) != null)
 				throw new CommandErrorException("Invalid quest ID: another quest exists with ID {0}", id);
 			

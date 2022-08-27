@@ -94,7 +94,7 @@ msg:
     downloadTranslations:
       syntax: '§cVous devez spécifier une langue à télécharger. Exemple: "/quests downloadTranslations fr_FR".'
       notFound: '§cLangue {0} introuvable pour la version {1}.'
-      exists: '§cLe fichier {0} existe déjà. Ajoutez "true" à votre commande pour l''écraser. (/quests downloadTranslations <lang> true)'
+      exists: '§cLe fichier {0} existe déjà. Ajoutez "-overwrite" à votre commande pour l''écraser. (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§aLa langue {0} a été téléchargée ! §7Vous devez maintenant modifier le fichier "/plugins/BeautyQuests/config.yml" pour changer la valeur de §ominecraftTranslationsFile§7 avec {0}, puis redémarrer le serveur.'
     checkpoint:
       noCheckpoint: '§cAucun checkpoint trouvé pour la quête {0}.'
@@ -129,7 +129,7 @@ msg:
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
     resetQuest: '§6Les données de la quête ont été supprimées pour {0} joueurs.'
     startQuest: '§6Vous avez forcé le début de la quête {0} (UUID du joueur : {1}).'
-    startQuestNoRequirements: '§cLe joueur ne remplit pas les conditions pour la quête {0}... Ajoutez "true" à la fin de votre commande pour ne pas effectuer la vérification des conditions.'
+    startQuestNoRequirements: '§cLe joueur ne remplit pas les conditions pour la quête {0}... Ajoutez "-overrideRequirements" à la fin de votre commande pour ne pas effectuer la vérification des conditions.'
     cancelQuest: '§6Vous avez annulé la quête {0}.'
     cancelQuestUnavailable: '§cLa quête {0} ne peut être annulée.'
     backupCreated: '§6Vous avez créé une sauvegarde des quêtes et des données joueurs avec succès.'
@@ -265,7 +265,7 @@ msg:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
       disabled: '§cMythicMob est désactivé.'
-    epicBossDoesntExist: '§cCet EpicBoss n''existe pas.'
+    advancedSpawnersMob: 'Écrivez le nom du mob de AdvancedSpawners à tuer :'
     textList:
       syntax: '§cSyntaxe correcte : '
       added: '§aTexte "§7{0}§a" ajouté.'
@@ -411,8 +411,6 @@ inv:
     startableFromGUILore: Permet au joueur de commencer la quête depuis son menu de Quêtes.
     scoreboardItem: Activer le scoreboard
     scoreboardItemLore: Si désactivée, la quête ne sera pas affichée dans le scoreboard.
-    hideItem: Cacher la quête du menu et de la dynmap
-    hideItemLore: Si activé, la quête ne sera pas affichée sur la dynmap ni dans le menu de Quêtes.
     hideNoRequirementsItem: Masquer lorsque les conditions ne sont pas remplies
     hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
@@ -469,6 +467,8 @@ inv:
     firework: '§dFeu d''artifice de fin'
     fireworkLore: Feu d'artifice lancé lorsque le joueur termine la quête
     fireworkLoreDrop: Déposez votre feu d'artifice personnalisé ici
+    visibility: '§bVisibilité de la quête'
+    visibilityLore: Choisir dans quels onglets du menu seront affichés la quête et si la quête est visible sur les cartes dynamiques.
     keepDatas: Conserver les données des joueurs
     keepDatasLore: |-
       Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées.
@@ -672,6 +672,12 @@ inv:
     name: Cause de dégât
   damageCausesList:
     name: Liste des causes de dégât
+  visibility:
+    name: Visibilité de la quête
+    notStarted: 'Onglet du menu "Non commencées"'
+    inProgress: 'Onglet du menu "En cours"'
+    finished: 'Onglet du menu "Terminées"'
+    maps: 'Cartes (dynmap, BlueMap...)'
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'

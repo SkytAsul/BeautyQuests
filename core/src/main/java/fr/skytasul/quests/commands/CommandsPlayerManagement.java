@@ -288,15 +288,15 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
-					cancel(actor.getSender(), player, acc, obj);
+					cancel(actor.getSender(), acc, obj);
 				}, acc, true, false, false).create(actor.requirePlayer());
 			}else {
-				cancel(actor.getSender(), player, acc, quest);
+				cancel(actor.getSender(), acc, quest);
 			}
 		}
 	}
 	
-	private void cancel(CommandSender sender, Player player, PlayerAccount acc, Quest quest) {
+	private void cancel(CommandSender sender, PlayerAccount acc, Quest quest) {
 		if (!sender.hasPermission(cancelOtherPermission.getPermission()) && !quest.isCancellable()) {
 			Lang.CANCEL_QUEST_UNAVAILABLE.send(sender, quest.getName());
 			return;

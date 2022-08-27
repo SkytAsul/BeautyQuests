@@ -148,7 +148,7 @@ msg:
     resetQuest: §6Removed datas of the quest for {0} players.
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
     startQuestNoRequirements: '§cThe player does not meet the requirements for the quest {0}...
-      Append "true" at the end of your command to bypass the requirements check.'
+      Append "-overrideRequirements" at the end of your command to bypass the requirements check.'
     cancelQuest: §6You have cancelled the quest {0}.
     cancelQuestUnavailable: §cThe quest {0} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
