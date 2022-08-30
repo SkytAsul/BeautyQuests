@@ -89,7 +89,7 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 		
 		@Override
 		public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-			if (slot > 0 && slot < 4) {
+			if (slot >= 0 && slot < 4) {
 				locations.put(VisibilityLocation.values()[slot], ItemUtils.toggle(current));
 			}else if (slot == 4) {
 				setValue(locations.entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList()));

@@ -225,7 +225,8 @@ public class QuestPool implements Comparable<QuestPool> {
 				});
 			}
 		}
-		return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
+		//return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
+		return null;
 	}
 	
 	List<Quest> replenishQuests(PlayerPoolDatas datas) {

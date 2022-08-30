@@ -127,7 +127,7 @@ public class CommandsManager {
 	}
 	
 	public void lockCommands() {
-		if (locked) throw new IllegalStateException("Commands manager already locked.");
+		if (locked) return;
 		locked = true;
 		handler.registerBrigadier();
 		if (handler.isBrigadierSupported()) DebugUtils.logMessage("Brigadier supported!");

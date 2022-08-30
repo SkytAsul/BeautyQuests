@@ -186,7 +186,7 @@ public abstract class BQNPC implements Located.LocatedEntity {
 				if (hologramText.canAppear && hologramText.visible) hologramText.refresh(en);
 				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
-				if (hologramPool.canAppear && hologramPool.visible) hologramPool.refresh(en);
+				if (hologramPool.canAppear) hologramPool.refresh(en);
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
@@ -344,6 +344,8 @@ public abstract class BQNPC implements Located.LocatedEntity {
 			hologramsInfo = "holograms:";
 			hologramsInfo += "\n- text=" + hologramText.toString();
 			hologramsInfo += "\n- launch=" + hologramLaunch.toString();
+			hologramsInfo += "\n- launchNo=" + hologramLaunchNo.toString();
+			hologramsInfo += "\n- pool=" + hologramPool.toString();
 		}
 		return npcInfo + " " + hologramsInfo;
 	}
