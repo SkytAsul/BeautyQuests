@@ -77,7 +77,7 @@ public class StageChat extends AbstractStage{
 		if (placeholders) message = Utils.finalFormat(p, message, true);
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text))) return false;
 		if (!hasStarted(p)) return false;
-		if (canUpdate(p)) Utils.runSync(() -> finishStage(p));
+		if (canUpdate(p)) finishStage(p);
 		return true;
 	}
 

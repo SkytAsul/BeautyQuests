@@ -29,7 +29,8 @@ public class QuestObjectCreator<T extends QuestObject> extends SerializableCreat
 	 * @param item ItemStack shown in {@link QuestObjectGUI}
 	 * @param newObjectSupplier lambda returning an instance of this Object ({@link T}::new)
 	 * @param multiple can the object be present multiple times
-	 * @param allowedLocations if present, specifies where the object can be used. If no location specified, the
+	 * @param allowedLocations if present, specifies where the object can be used.
+	 * If no location is specified, then all locations are accepted.
 	 */
 	public QuestObjectCreator(String id, Class<? extends T> clazz, ItemStack item, Supplier<T> newObjectSupplier, boolean multiple, QuestObjectLocation... allowedLocations) {
 		super(id, clazz, newObjectSupplier);

@@ -26,6 +26,16 @@ public class StageType<T extends AbstractStage> {
 	
 	private final SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry;
 	
+	/**
+	 * Creates a stage type.
+	 * 
+	 * @param id unique string id for this stage
+	 * @param clazz class of this stage
+	 * @param name proper name of this stage
+	 * @param loader function which instanciates and loads values of a previously saved stage
+	 * @param item item representing this stage in the Stages GUI
+	 * @param creationSupplier function creating a stage creation context
+	 */
 	public StageType(String id, Class<T> clazz, String name, StageLoader<T> loader, ItemStack item, StageCreationSupplier<T> creationSupplier) {
 		this(id, clazz, name, loader, item, creationSupplier, new String[0]);
 	}

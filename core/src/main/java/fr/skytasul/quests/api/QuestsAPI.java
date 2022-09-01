@@ -30,12 +30,16 @@ import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 
+/**
+ * This class contains most of the useful accessors to fetch data from BeautyQuests
+ * and methods to implement custom behaviors.
+ */
 public final class QuestsAPI {
 	
 	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
 	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
 	private static final StageTypeRegistry stages = new StageTypeRegistry();
-	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
+	private static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
 	private static BQNPCsManager npcsManager = null;
 	private static AbstractHolograms<?> hologramsManager = null;
@@ -76,7 +80,12 @@ public final class QuestsAPI {
 		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
 	}
 	
+	public static List<ItemComparison> getItemComparisons() {
+		return itemComparisons;
+	}
+	
 	public static void registerItemComparison(ItemComparison comparison) {
+		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())), "This item comparison was already registerd");
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}

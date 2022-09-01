@@ -14,7 +14,7 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 	private List<StageType<?>> types = new LinkedList<>();
 	
 	/**
-	 * Register new stage type into the plugin
+	 * Registers new stage type into the plugin.
 	 * @param type StageType instance
 	 */
 	public void register(StageType<? extends AbstractStage> type) {

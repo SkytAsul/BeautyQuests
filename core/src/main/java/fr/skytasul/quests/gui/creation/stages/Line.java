@@ -74,9 +74,16 @@ public class Line {
 	 * @param newItem the new item inserted
 	 */
 	public void editItem(int slot, ItemStack newItem){
+		editItem(slot, newItem, false);
+	}
+	
+	public void editItem(int slot, ItemStack newItem, boolean refresh) {
 		Pair<ItemStack, StageRunnable> last = items.get(slot);
 		if (last == null) return;
-		items.set(slot, new Pair<ItemStack, StageRunnable>(newItem, last.getValue()));
+		items.set(slot, new Pair<>(newItem, last.getValue()));
+		if (refresh) {
+			setItems(activePage);
+		}
 	}
 	
 	/**

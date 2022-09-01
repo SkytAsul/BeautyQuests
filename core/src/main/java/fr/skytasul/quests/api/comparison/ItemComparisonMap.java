@@ -33,7 +33,7 @@ public class ItemComparisonMap implements Cloneable {
 		this.notDefault = (Map) section.getValues(false);
 		
 		effective = new ArrayList<>();
-		for (ItemComparison comp : QuestsAPI.itemComparisons) {
+		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
 			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault())) effective.add(comp);
 		}
 	}
@@ -42,7 +42,7 @@ public class ItemComparisonMap implements Cloneable {
 		this.notDefault = comparisons;
 		
 		effective = new ArrayList<>();
-		for (ItemComparison comp : QuestsAPI.itemComparisons) {
+		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
 			Boolean bool = notDefault.get(comp.getID());
 			if (Boolean.FALSE.equals(bool)) continue;
 			if (!comp.isEnabledByDefault() && !Boolean.TRUE.equals(bool)) continue;

@@ -6,6 +6,13 @@ import java.util.List;
 
 import fr.skytasul.quests.utils.DebugUtils;
 
+/**
+ * This class is a registry for types of objects that can be serialized
+ * into Spigot configuration system.
+ * 
+ * @param <T> type of serializable object
+ * @param <C> type of the creator associated with the serializable objects
+ */
 public class SerializableRegistry<T extends SerializableObject, C extends SerializableCreator<T>> implements Iterable<C> {
 	
 	protected final String id;
@@ -19,6 +26,10 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 		return id;
 	}
 	
+	/**
+	 * Registers a new type of serializable object.
+	 * @param creator object that will be used to instanciate objects of type <code>&lt;T&gt;</code>
+	 */
 	public void register(C creator) {
 		if (creators.stream().anyMatch(x -> x.getID().equals(creator.getID())))
 			throw new IllegalStateException("A creator with the same id " + creator.getID() + " has been registered.");

@@ -43,7 +43,7 @@ public interface Locatable {
 	
 	/**
 	 * Indicates if the Located instances gotten from {@link PreciseLocatable#getLocated()}
-	 * and {@link MultipleLocatable#getNearbyLocated(fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable.NearbyFetcher)}
+	 * and {@link MultipleLocatable#getNearbyLocated(MultipleLocatable.NearbyFetcher)}
 	 * can be safely retrieved from an asynchronous thread.
 	 * 
 	 * @return	<code>true</code> <b>only if</b> the Located fetch operations can
@@ -59,6 +59,13 @@ public interface Locatable {
 	 */
 	interface PreciseLocatable extends Locatable {
 		
+		/**
+		 * Gets the uniquely located object.
+		 * <p>
+		 * The result should be consistent, which means that calling it twice without
+		 * having something else changed in the game state would return the same value.
+		 * @return the located object
+		 */
 		Located getLocated();
 		
 	}
@@ -69,8 +76,18 @@ public interface Locatable {
 	 */
 	interface MultipleLocatable extends Locatable {
 		
+		/**
+		 * Gets a {@link Spliterator} of all targets in the region specified by
+		 * the {@link NearbyFetcher} parameter.
+		 * @param fetcher describes the region from where the targets must be found
+		 * @return a Spliterator which allows iterating through the targets
+		 */
 		Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher);
 		
+		/**
+		 * This POJO contains informations on the region from where
+		 * the {@link MultipleLocatable} object has to find its targets.
+		 */
 		interface NearbyFetcher {
 			
 			Location getCenter();
@@ -140,6 +157,9 @@ public interface Locatable {
 		LocatedType[] types() default { LocatedType.ENTITY, LocatedType.BLOCK, LocatedType.OTHER };
 	}
 	
+	/**
+	 * Represents something that is locatable on a world.
+	 */
 	interface Located {
 		
 		Location getLocation();
