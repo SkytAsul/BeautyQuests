@@ -61,15 +61,11 @@ public class QuestRequirement extends AbstractRequirement {
 		
 		new ChooseQuestGUI(QuestsAPI.getQuests().getQuests(), quest -> {
 			this.questId = quest.getID();
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}) {
 			@Override
 			public fr.skytasul.quests.gui.CustomInventory.CloseBehavior onClose(Player p, org.bukkit.inventory.Inventory inv) {
-				Utils.runSync(() -> {
-					event.getGUI().remove(QuestRequirement.this);
-					event.reopenGUI();
-				});
+				Utils.runSync(event::remove);
 				return CloseBehavior.NOTHING;
 			}
 		}.create(event.getPlayer());

@@ -129,7 +129,6 @@ public class RequirementDependentReward extends AbstractReward {
 					}, rewards).create(p);
 					break;
 				case 4:
-					event.updateItemLore(getLore());
 					event.reopenGUI();
 					break;
 				}

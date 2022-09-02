@@ -93,7 +93,6 @@ public class ClassRequirement extends AbstractRequirement {
 			@Override
 			public void finish(List<RPGClass> objects) {
 				classes = objects;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}
 			

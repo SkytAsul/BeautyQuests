@@ -36,12 +36,8 @@ public class WaitReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.REWARD_EDITOR_WAIT.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (delay == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			delay = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}

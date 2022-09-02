@@ -54,6 +54,10 @@ public class ItemComparisonMap implements Cloneable {
 		return notDefault;
 	}
 	
+	public boolean isDefault() {
+		return notDefault.isEmpty();
+	}
+	
 	public List<ItemComparison> getEffective() {
 		return effective;
 	}

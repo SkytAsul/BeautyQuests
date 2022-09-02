@@ -124,10 +124,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(event.getPlayer());
-		new TextEditor<String>(event.getPlayer(), () -> {
-			if (rawPlaceholder == null) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, id -> {
+		new TextEditor<String>(event.getPlayer(), event::cancel, id -> {
 			setPlaceholder(id);
 			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(event.getPlayer(), id);
 			new TextEditor<String>(event.getPlayer(), () -> {
@@ -140,11 +137,9 @@ public class PlaceholderRequirement extends AbstractRequirement {
 					Lang.COMPARISON_TYPE.send(event.getPlayer(), ComparisonMethod.getComparisonParser().getNames(), ComparisonMethod.EQUALS.name().toLowerCase());
 					new TextEditor<>(event.getPlayer(), null, comp -> {
 						this.comparison = comp == null ? ComparisonMethod.EQUALS : comp;
-						event.updateItemLore(getLore());
 						event.reopenGUI();
 					}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().enter();
 				}catch (NumberFormatException __) {
-					event.updateItemLore(getLore());
 					event.reopenGUI();
 				}
 			}).enter();

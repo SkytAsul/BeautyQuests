@@ -47,7 +47,6 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	public void itemClick(QuestObjectClickEvent event) {
 		QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
 			this.requirements = requirements;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, requirements).create(event.getPlayer());
 	}

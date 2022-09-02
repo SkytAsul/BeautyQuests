@@ -8,12 +8,11 @@ import java.util.function.Function;
 
 import org.bukkit.DyeColor;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.gui.templates.PagedGUI;
+import fr.skytasul.quests.gui.templates.StaticPagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
@@ -58,19 +57,7 @@ public class DamageCausesGUI extends ListGUI<DamageCause> {
 	
 	@Override
 	public void createObject(Function<DamageCause, ItemStack> callback) {
-		new PagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS.keySet(), null, DamageCause::name) {
-			
-			@Override
-			public ItemStack getItemStack(DamageCause object) {
-				return MAPPED_ITEMS.get(object);
-			}
-			
-			@Override
-			public void click(DamageCause existing, ItemStack item, ClickType clickType) {
-				callback.apply(existing);
-			}
-			
-		}.sortValues(DamageCause::name).create(p);
+		new StaticPagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS, cause -> callback.apply(cause), DamageCause::name).create(p);
 	}
 	
 }

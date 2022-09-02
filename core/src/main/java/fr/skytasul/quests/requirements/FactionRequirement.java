@@ -89,7 +89,6 @@ public class FactionRequirement extends AbstractRequirement {
 			@Override
 			public void finish(List<Faction> objects) {
 				factions = objects;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}
 			

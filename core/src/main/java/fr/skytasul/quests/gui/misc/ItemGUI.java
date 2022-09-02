@@ -26,6 +26,7 @@ public class ItemGUI implements CustomInventory {
 		this.cancel = cancel;
 	}
 	
+	@Override
 	public Inventory open(Player p){
 		Inventory inv = Bukkit.createInventory(null, InventoryType.DROPPER, Lang.INVENTORY_ITEM.toString());
 		
@@ -39,6 +40,7 @@ public class ItemGUI implements CustomInventory {
 		return p.openInventory(inv).getTopInventory();
 	}
 
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot != 4) return true;
 		new ItemCreatorGUI((obj) -> {
@@ -47,7 +49,9 @@ public class ItemGUI implements CustomInventory {
 		return true;
 	}
 	
+	@Override
 	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
+		if (slot != 4) return true;
 		p.setItemOnCursor(null);
 		end.accept(cursor);
 		return false;

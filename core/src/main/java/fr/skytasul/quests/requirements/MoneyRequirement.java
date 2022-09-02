@@ -54,12 +54,8 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_MONEY_REQUIRED.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (money == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			this.money = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, new NumberParser<>(Double.class, true, true)).enter();
 	}

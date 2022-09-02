@@ -52,8 +52,7 @@ public class ItemReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new ItemsGUI(items -> {
 			this.items = items;
-			event.updateItemLore(getLore());
-			event.getGUI().reopen();
+			event.reopenGUI();
 		}, items).create(event.getPlayer());
 	}
 	

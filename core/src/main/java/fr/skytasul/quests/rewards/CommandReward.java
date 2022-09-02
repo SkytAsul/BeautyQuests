@@ -75,7 +75,6 @@ public class CommandReward extends AbstractReward {
 			@Override
 			public void finish(List<Command> objects) {
 				commands = objects;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}
 			

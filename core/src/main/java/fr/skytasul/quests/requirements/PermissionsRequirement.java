@@ -74,7 +74,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
 				new TextEditor<String>(p, event::reopenGUI, obj -> {
 					message = obj;
-					event.updateItemLore(getLore());
 					event.reopenGUI();
 				}).passNullIntoEndConsumer().enter();
 			}

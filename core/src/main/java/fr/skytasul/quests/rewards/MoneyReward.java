@@ -49,12 +49,8 @@ public class MoneyReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_MONEY_REWARD.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (money == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			money = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, new NumberParser<>(Double.class, false, true)).enter();
 	}

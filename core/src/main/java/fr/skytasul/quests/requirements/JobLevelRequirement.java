@@ -62,12 +62,8 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_JOB_REQUIRED.send(event.getPlayer());
-		new TextEditor<String>(event.getPlayer(), () -> {
-			if (jobName == null) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<String>(event.getPlayer(), event::cancel, obj -> {
 			jobName = obj;
-			event.updateItemLore(getLore());
 			super.itemClick(event);
 		}).useStrippedMessage().enter();
 	}

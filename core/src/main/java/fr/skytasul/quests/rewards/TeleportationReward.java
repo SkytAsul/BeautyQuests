@@ -42,12 +42,8 @@ public class TeleportationReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.MOVE_TELEPORT_POINT.send(event.getPlayer());
-		new WaitClick(event.getPlayer(), () -> {
-			if (teleportation == null) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, NPCGUI.validMove.clone(), () -> {
+		new WaitClick(event.getPlayer(), event::cancel, NPCGUI.validMove.clone(), () -> {
 			teleportation = event.getPlayer().getLocation();
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}).enter();
 	}

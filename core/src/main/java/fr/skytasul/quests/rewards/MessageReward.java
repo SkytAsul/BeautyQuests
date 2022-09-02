@@ -40,12 +40,8 @@ public class MessageReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.WRITE_MESSAGE.send(event.getPlayer());
-		new TextEditor<String>(event.getPlayer(), () -> {
-			if (text == null) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<String>(event.getPlayer(), event::cancel, obj -> {
 			this.text = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}).enter();
 	}

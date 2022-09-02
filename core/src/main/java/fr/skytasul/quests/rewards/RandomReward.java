@@ -100,7 +100,6 @@ public class RandomReward extends AbstractReward {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {
 			QuestsAPI.getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
 				this.rewards = rewards;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}, rewards).create(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
@@ -109,7 +108,6 @@ public class RandomReward extends AbstractReward {
 				Lang.REWARD_EDITOR_RANDOM_MAX.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopenGUI, max -> {
 					setMinMax(min, max == null ? min : max);
-					event.updateItemLore(getLore());
 					event.reopenGUI();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).passNullIntoEndConsumer().enter();
 			}, NumberParser.INTEGER_PARSER_POSITIVE).enter();

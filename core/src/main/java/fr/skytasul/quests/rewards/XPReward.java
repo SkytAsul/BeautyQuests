@@ -52,13 +52,9 @@ public class XPReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Utils.sendMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (exp == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			Utils.sendMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
 			exp = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}

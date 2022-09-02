@@ -79,13 +79,9 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 			Lang.COMPARISON_TYPE.send(event.getPlayer(), ComparisonMethod.getComparisonParser().getNames(), ComparisonMethod.GREATER_OR_EQUAL.name().toLowerCase());
 			new TextEditor<>(event.getPlayer(), null, comp -> {
 				this.comparison = comp == null ? ComparisonMethod.GREATER_OR_EQUAL : comp;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().enter();
-		}, () -> {
-			event.getGUI().remove(this);
-			event.reopenGUI();
-		}, new NumberParser<>(numberClass(), true)).enter();
+		}, event::remove, new NumberParser<>(numberClass(), true)).enter();
 	}
 
 }

@@ -54,12 +54,11 @@ public class RegionRequirement extends AbstractRequirement {
 			if (region != null) {
 				this.worldName = p.getWorld().getName();
 				this.regionName = region.getId();
-				event.updateItemLore(getLore());
+				event.reopenGUI();
 			}else {
 				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
-				event.getGUI().remove(this);
+				event.remove();
 			}
-			event.reopenGUI();
 		}).useStrippedMessage().enter();
 	}
 	

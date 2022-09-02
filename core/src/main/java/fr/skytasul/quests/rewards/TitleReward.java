@@ -30,9 +30,11 @@ public class TitleReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new TitleGUI(newTitle -> {
 			if (newTitle == null) {
-				if (title == null) event.getGUI().remove(this);
-			}else title = newTitle;
-			event.updateItemLore(getLore());
+				event.cancel();
+				return;
+			}
+			
+			title = newTitle;
 			event.reopenGUI();
 		}).edit(title).create(event.getPlayer());
 	}

@@ -106,7 +106,7 @@ public class ParticleEffectGUI implements CustomInventory {
 					}
 				}
 				ParticleEffectGUI.this.create(p);
-			}).create(p);
+			}).allowCancel().create(p);
 			break;
 		
 		case SLOT_COLOR:

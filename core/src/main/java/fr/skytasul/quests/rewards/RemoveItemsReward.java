@@ -68,14 +68,10 @@ public class RemoveItemsReward extends AbstractReward {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {
 			new ItemsGUI(items -> {
 				this.items = items;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}, items).create(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
-			new ItemComparisonGUI(comparisons, () -> {
-				event.updateItemLore(getLore());
-				event.reopenGUI();
-			}).create(event.getPlayer());
+			new ItemComparisonGUI(comparisons, event::reopenGUI).create(event.getPlayer());
 		}
 	}
 	

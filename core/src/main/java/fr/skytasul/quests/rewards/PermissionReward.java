@@ -47,7 +47,6 @@ public class PermissionReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new PermissionListGUI(permissions, permissions -> {
 			PermissionReward.this.permissions = permissions;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}).create(event.getPlayer());
 	}

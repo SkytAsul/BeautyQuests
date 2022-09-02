@@ -1,7 +1,5 @@
 package fr.skytasul.quests.api.objects;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +14,9 @@ public class QuestObjectClickEvent {
 	private final ItemStack item;
 	private final ClickType click;
 	private final boolean creation;
-	private final Object clickedObject;
+	private final QuestObject clickedObject;
 	
-	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation, Object clickedObject) {
+	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation, QuestObject clickedObject) {
 		this.player = player;
 		this.gui = gui;
 		this.item = item;
@@ -48,6 +46,7 @@ public class QuestObjectClickEvent {
 	}
 	
 	public void reopenGUI() {
+		updateItemLore();
 		gui.reopen();
 	}
 	
@@ -56,12 +55,13 @@ public class QuestObjectClickEvent {
 		gui.reopen();
 	}
 	
-	public void updateItemLore(String... lore) {
-		ItemUtils.lore(item, lore);
+	public void remove() {
+		gui.remove(clickedObject);
+		gui.reopen();
 	}
 	
-	public void updateItemLore(List<String> lore) {
-		ItemUtils.lore(item, lore);
+	public void updateItemLore() {
+		ItemUtils.lore(item, clickedObject.getLore());
 	}
 	
 }
