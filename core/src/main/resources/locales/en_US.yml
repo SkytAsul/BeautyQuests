@@ -716,6 +716,8 @@ inv:
     inProgress: '"In progress" menu tab'
     finished: '"Finished" menu tab'
     maps: 'Maps (such as dynmap or BlueMap)'
+  equipmentSlots:
+    name: Equipment slots
     
 scoreboard:
   name: §6§lQuests
@@ -819,6 +821,7 @@ misc:
     quest: §aQuest required
     mcMMOSkillLevel: §dSkill level required
     money: §dMoney required
+    equipment: §eEquipment required
   bucket:
     water: Water bucket
     lava: Lava bucket

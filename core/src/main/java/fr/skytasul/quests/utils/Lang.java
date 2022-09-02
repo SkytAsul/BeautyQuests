@@ -678,6 +678,8 @@ public enum Lang implements Locale {
 	visibility_finished("inv.visibility.finished"),
 	visibility_maps("inv.visibility.maps"),
 	
+	INVENTORY_EQUIPMENT_SLOTS("inv.equipmentSlots.name"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -782,6 +784,7 @@ public enum Lang implements Locale {
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
+	REquipment("misc.requirement.equipment"),
 	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),

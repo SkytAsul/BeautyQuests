@@ -22,6 +22,7 @@ import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
+import fr.skytasul.quests.requirements.EquipmentRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
@@ -32,6 +33,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 
@@ -117,6 +119,8 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.getRequirements().register(new RequirementCreator("levelRequired", LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("permissionRequired", PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("scoreboardRequired", ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
+		if (NMS.getMCVersion() >= 9)
+			QuestsAPI.getRequirements().register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class, ItemUtils.item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()), EquipmentRequirement::new));
 	}
 
 }
