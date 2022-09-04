@@ -1,17 +1,12 @@
 package fr.skytasul.quests.api.mobs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
@@ -28,6 +23,14 @@ public class Mob<D> implements Cloneable {
 		this.data = data;
 	}
 	
+	public MobFactory<D> getFactory() {
+		return factory;
+	}
+	
+	public D getData() {
+		return data;
+	}
+	
 	public String getName() {
 		return customName == null ? factory.getName(data) : customName;
 	}
@@ -36,22 +39,13 @@ public class Mob<D> implements Cloneable {
 		this.customName = customName;
 	}
 
-	public ItemStack createItemStack(int amount) {
-		List<String> lore = new ArrayList<>();
-		lore.add(Lang.Amount.format(amount));
-		lore.addAll(factory.getDescriptiveLore(data));
-		lore.add("");
-		lore.add(Lang.click.toString());
-		XMaterial mobItem;
+	public XMaterial getMobItem() {
 		try {
-			mobItem = Utils.mobItem(factory.getEntityType(data));
+			return Utils.mobItem(factory.getEntityType(data));
 		}catch (Exception ex) {
-			mobItem = XMaterial.SPONGE;
 			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data), ex);
+			return XMaterial.SPONGE;
 		}
-		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
-		item.setAmount(Math.min(amount, 64));
-		return item;
 	}
 	
 	public boolean applies(Object data) {

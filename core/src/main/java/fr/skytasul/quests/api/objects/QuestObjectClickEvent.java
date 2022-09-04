@@ -60,6 +60,11 @@ public class QuestObjectClickEvent {
 		gui.reopen();
 	}
 	
+	@Deprecated
+	public void updateItemLore(String... lore) {
+		ItemUtils.lore(item, lore);
+	}
+	
 	public void updateItemLore() {
 		ItemUtils.lore(item, clickedObject.getLore());
 	}

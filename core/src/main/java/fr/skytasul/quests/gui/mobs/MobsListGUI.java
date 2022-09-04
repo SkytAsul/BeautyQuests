@@ -1,7 +1,9 @@
 package fr.skytasul.quests.gui.mobs;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -51,7 +53,7 @@ public class MobsListGUI implements CustomInventory{
 			int id = entry.getKey();
 			Entry<Mob<?>, Integer> mobEntry = entry.getValue();
 			mobs.put(id, mobEntry);
-			inv.setItem(id, mobEntry.getKey().createItemStack(mobEntry.getValue()));
+			inv.setItem(id, createItemStack(mobEntry.getKey(), mobEntry.getValue()));
 		}
 	}
 	
@@ -66,7 +68,7 @@ public class MobsListGUI implements CustomInventory{
 		if (mobEntry == null) {
 			new MobSelectionGUI(mob -> {
 				if (mob != null) {
-					inv.setItem(slot, mob.createItemStack(1));
+					inv.setItem(slot, createItemStack(mob, 1));
 					mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, 1));
 				}
 				Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
@@ -76,14 +78,14 @@ public class MobsListGUI implements CustomInventory{
 				Lang.MOB_NAME.send(p);
 				new TextEditor<>(p, () -> openLastInv(p), name -> {
 					mobEntry.getKey().setCustomName((String) name);
-					inv.setItem(slot, mobEntry.getKey().createItemStack(mobEntry.getValue()));
+					inv.setItem(slot, createItemStack(mobEntry.getKey(), mobEntry.getValue()));
 					openLastInv(p);
 				}).passNullIntoEndConsumer().enter();
 			}else if (click == ClickType.LEFT) {
 				Lang.MOB_AMOUNT.send(p);
 				new TextEditor<>(p, () -> openLastInv(p), amount -> {
 					mobEntry.setValue(amount);
-					inv.setItem(slot, mobEntry.getKey().createItemStack(amount));
+					inv.setItem(slot, createItemStack(mobEntry.getKey(), amount));
 					openLastInv(p);
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			}else if (click.isRightClick()) {
@@ -93,6 +95,17 @@ public class MobsListGUI implements CustomInventory{
 			}
 		}
 		return true;
+	}
+	
+	private ItemStack createItemStack(Mob mob, int amount) {
+		List<String> lore = new ArrayList<>();
+		lore.add(Lang.Amount.format(amount));
+		lore.addAll(mob.getFactory().getDescriptiveLore(mob.getData()));
+		lore.add("");
+		lore.add(Lang.click.toString());
+		ItemStack item = ItemUtils.item(mob.getMobItem(), mob.getName(), lore);
+		item.setAmount(Math.min(amount, 64));
+		return item;
 	}
 
 	@Override

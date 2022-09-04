@@ -10,10 +10,12 @@ import java.util.stream.Collectors;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -60,12 +62,18 @@ public class StageDealDamage extends AbstractStage {
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Player)) return;
+		Player player;
+		if (event.getDamager() instanceof Projectile) {
+			ProjectileSource projectileShooter = ((Projectile) event.getDamager()).getShooter();
+			if (!(projectileShooter instanceof Player)) return;
+			player = (Player) projectileShooter;
+		}else if (event.getDamager() instanceof Player) {
+			player = (Player) event.getDamager();
+		}else return;
 		
 		if (targetMobs != null && !targetMobs.isEmpty()
 				&& targetMobs.stream().noneMatch(mob -> mob.appliesEntity(event.getEntity()))) return;
 		
-		Player player = (Player) event.getDamager();
 		PlayerAccount account = PlayersManager.getPlayerAccount(player);
 		
 		if (!branch.hasStageLaunched(account, this)) return;
@@ -133,7 +141,7 @@ public class StageDealDamage extends AbstractStage {
 					
 					@Override
 					public ItemStack getObjectItemStack(Mob object) {
-						return object.createItemStack(1);
+						return ItemUtils.item(object.getMobItem(), object.getName(), Lang.RemoveMid.toString());
 					}
 					
 					@Override

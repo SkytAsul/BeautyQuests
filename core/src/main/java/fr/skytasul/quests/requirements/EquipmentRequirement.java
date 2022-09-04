@@ -49,6 +49,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public String[] getLore() {
+		if (slot == null) return null;
 		return new String[] {
 				QuestOption.formatNullableValue(slot.name() + " > " + MinecraftNames.getMaterialName(item)),
 				"",
