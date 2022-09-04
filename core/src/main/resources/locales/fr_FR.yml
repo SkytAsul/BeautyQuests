@@ -178,6 +178,7 @@ msg:
     blockData: '§aÉcrivez la blockdata (blockdatas disponibles : {0}) :'
     blockTag: '§aÉcrivez le tag de bloc (tagsdisponibles: §7{0}§a):'
     typeBucketAmount: '§aÉcrivez la quantité de seaux à remplir :'
+    typeDamageAmount: 'Écrivez le nombre de dégâts que le joueur doit infliger :'
     goToLocation: '§aAllez à l''emplacement souhaité pour l''étape.'
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
     typeGameTicks: '§aEcrivez la quantité de ticks requis :'
@@ -338,6 +339,7 @@ inv:
     breedAnimals: '§aFaire reproduire des animaux'
     tameAnimals: '§aApprivoiser des animaux'
     death: '§cMourir'
+    dealDamage: '§cInfliger des dégâts à des mobs'
     NPCText: '§eModifier le dialogue'
     dialogLines: '{0} lignes'
     NPCSelect: '§eChoisir ou créer un NPC'
@@ -380,6 +382,9 @@ inv:
         causes: '§aDéfinir les causes de la mort §d(AVANCED)'
         anyCause: Toute cause de mort
         setCauses: '{0} cause(s) de mort'
+      dealDamage:
+        damage: '§eDégâts à infliger'
+        targetMobs: '§cMobs à heurter'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -678,6 +683,8 @@ inv:
     inProgress: 'Onglet du menu "En cours"'
     finished: 'Onglet du menu "Terminées"'
     maps: 'Cartes (dynmap, BlueMap...)'
+  equipmentSlots:
+    name: Emplacements d'équipement
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -705,6 +712,9 @@ scoreboard:
     breed: '§eFaites se reproduire §6{0}'
     tame: '§eApprivoisez §6{0}'
     die: '§cMourez'
+    dealDamage:
+      any: '§cInflige {0} dégâts'
+      mobs: '§cInflige {0} dégâts à {1}'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -753,6 +763,7 @@ misc:
     breedAnimals: Faire reproduire des animaux
     tameAnimals: Apprivoiser des animaux
     die: Mourir
+    dealDamage: Infliger des dégâts
   comparison:
     equals: égal à {0}
     different: différent de {0}
@@ -775,6 +786,7 @@ misc:
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
     money: '§dMonnaie requise'
+    equipment: '§eÉquipement requis'
   bucket:
     water: Seau d'eau
     lava: Seau de lave
