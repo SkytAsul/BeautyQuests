@@ -57,7 +57,7 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			this.money = obj;
 			event.reopenGUI();
-		}, new NumberParser<>(Double.class, true, true)).enter();
+		}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).enter();
 	}
 
 	@Override

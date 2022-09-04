@@ -208,6 +208,7 @@ public enum Lang implements Locale {
 	BLOCK_TAGS("msg.editor.blockTag"), // 0: available block tags
 	
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
+	DAMAGE_AMOUNT("msg.editor.typeDamageAmount", EditorPrefix),
 	
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
@@ -358,6 +359,7 @@ public enum Lang implements Locale {
 	stageBreedAnimals("inv.create.breedAnimals"),
 	stageTameAnimals("inv.create.tameAnimals"),
 	stageDeath("inv.create.death"),
+	stageDealDamage("inv.create.dealDamage"),
 	stageText("inv.create.NPCText"),
 	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
@@ -399,6 +401,9 @@ public enum Lang implements Locale {
 	stageDeathCauses("inv.create.stage.death.causes"),
 	stageDeathCauseAny("inv.create.stage.death.anyCause"),
 	stageDeathCausesSet("inv.create.stage.death.setCauses"), // 0: causes amount
+	
+	stageDealDamageValue("inv.create.stage.dealDamage.damage"),
+	stageDealDamageMobs("inv.create.stage.dealDamage.targetMobs"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -715,6 +720,8 @@ public enum Lang implements Locale {
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
 	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTimeFormatted"), // 0: remaining time
 	SCOREBOARD_DIE("scoreboard.stage.die"),
+	SCOREBOARD_DEAL_DAMAGE_ANY("scoreboard.stage.dealDamage.any"), // 0: damage
+	SCOREBOARD_DEAL_DAMAGE_MOBS("scoreboard.stage.dealDamage.mobs"), // 0: damage, 1: mobs
 	
 	/* Indications */
 	
@@ -762,6 +769,7 @@ public enum Lang implements Locale {
 	Breed("misc.stageType.breedAnimals"),
 	Tame("misc.stageType.tameAnimals"),
 	Death("misc.stageType.die"),
+	DealDamage("misc.stageType.dealDamage"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),

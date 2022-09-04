@@ -204,6 +204,7 @@ msg:
     blockData: '§aWrite the blockdata (available blockdatas: §7{0}§a):'
     blockTag: '§aWrite the block tag (available tags: §7{0}§a):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
+    typeDamageAmount: 'Write the amount of damage player have to deal:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
     typeGameTicks: '§aWrite the required game ticks:'
@@ -370,6 +371,7 @@ inv:
     breedAnimals: §aBreed animals
     tameAnimals: §aTame animals
     death: §cDie
+    dealDamage: §cDeal damage to mobs
     NPCText: §eEdit dialog
     dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
@@ -412,6 +414,9 @@ inv:
         causes: '§aSet death causes §d(ADVANCED)'
         anyCause: Any death cause
         setCauses: '{0} death cause(s)'
+      dealDamage:
+        damage: '§eDamage to deal'
+        targetMobs: '§cMobs to damage'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -746,6 +751,9 @@ scoreboard:
     breed: §eBreed §6{0}
     tame: §eTame §6{0}
     die: §cDie
+    dealDamage:
+      any: §cDeal {0} damage
+      mobs: §cDeal {0} damage to {1}
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -799,6 +807,7 @@ misc:
     breedAnimals: Breed animals
     tameAnimals: Tame animals
     die: Die
+    dealDamage: Deal damage
   comparison:
     equals: equal to {0}
     different: different to {0}

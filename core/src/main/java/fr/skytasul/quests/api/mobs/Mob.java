@@ -15,13 +15,13 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class Mob<Data> implements Cloneable {
+public class Mob<D> implements Cloneable {
 
-	protected final MobFactory<Data> factory;
-	protected final Data data;
+	protected final MobFactory<D> factory;
+	protected final D data;
 	protected String customName;
 
-	public Mob(MobFactory<Data> factory, Data data) {
+	public Mob(MobFactory<D> factory, D data) {
 		Validate.notNull(factory, "Mob factory cannot be null");
 		Validate.notNull(data, "Mob data cannot be null");
 		this.factory = factory;
@@ -81,9 +81,9 @@ public class Mob<Data> implements Cloneable {
 	}
 
 	@Override
-	public Mob<Data> clone(){
+	public Mob<D> clone() {
 		try {
-			return (Mob<Data>) super.clone();
+			return (Mob<D>) super.clone();
 		}catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;

@@ -327,6 +327,7 @@ public class StagesGUI implements CustomInventory {
 	private static final ItemStack stageBreed = ItemUtils.item(XMaterial.WHEAT, Lang.stageBreedAnimals.toString());
 	private static final ItemStack stageTame = ItemUtils.item(XMaterial.CARROT, Lang.stageTameAnimals.toString());
 	private static final ItemStack stageDeath = ItemUtils.item(XMaterial.SKELETON_SKULL, Lang.stageDeath.toString());
+	private static final ItemStack stageDealDamage = ItemUtils.item(XMaterial.REDSTONE, Lang.stageDealDamage.toString());
 
 	public static void initialize(){
 		DebugUtils.logMessage("Initlializing default stage types.");
@@ -348,5 +349,6 @@ public class StagesGUI implements CustomInventory {
 		QuestsAPI.getStages().register(new StageType<>("BREED", StageBreed.class, Lang.Breed.name(), StageBreed::deserialize, stageBreed, StageBreed.Creator::new));
 		QuestsAPI.getStages().register(new StageType<>("TAME", StageTame.class, Lang.Tame.name(), StageTame::deserialize, stageTame, StageTame.Creator::new));
 		QuestsAPI.getStages().register(new StageType<>("DEATH", StageDeath.class, Lang.Death.name(), StageDeath::deserialize, stageDeath, StageDeath.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("DEAL_DAMAGE", StageDealDamage.class, Lang.DealDamage.name(), StageDealDamage::deserialize, stageDealDamage, StageDealDamage.Creator::new));
 	}
 }

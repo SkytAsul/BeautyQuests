@@ -11,6 +11,7 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 	public static final NumberParser<Integer> INTEGER_PARSER = new NumberParser<>(Integer.class, false, false);
 	public static final NumberParser<Integer> INTEGER_PARSER_POSITIVE = new NumberParser<>(Integer.class, true, false);
 	public static final NumberParser<Integer> INTEGER_PARSER_STRICT_POSITIVE = new NumberParser<>(Integer.class, true, true);
+	public static final NumberParser<Double> DOUBLE_PARSER_STRICT_POSITIVE = new NumberParser<>(Double.class, true, true);
 	
 	private Class<T> numberType;
 	private boolean positive;
