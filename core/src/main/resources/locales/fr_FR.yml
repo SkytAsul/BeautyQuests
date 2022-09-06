@@ -340,6 +340,7 @@ inv:
     tameAnimals: '§aApprivoiser des animaux'
     death: '§cMourir'
     dealDamage: '§cInfliger des dégâts à des mobs'
+    eatDrink: '§aManger ou boire de la nourriture ou des potions'
     NPCText: '§eModifier le dialogue'
     dialogLines: '{0} lignes'
     NPCSelect: '§eChoisir ou créer un NPC'
@@ -385,6 +386,8 @@ inv:
       dealDamage:
         damage: '§eDégâts à infliger'
         targetMobs: '§cMobs à heurter'
+      eatDrink:
+        items: '§eModifier les objets à manger ou à boire'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -715,6 +718,7 @@ scoreboard:
     dealDamage:
       any: '§cInflige {0} dégâts'
       mobs: '§cInflige {0} dégâts à {1}'
+    eatDrink: '§eConsomme §6{0}'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -764,6 +768,7 @@ misc:
     tameAnimals: Apprivoiser des animaux
     die: Mourir
     dealDamage: Infliger des dégâts
+    eatDrink: Manger ou boire
   comparison:
     equals: égal à {0}
     different: différent de {0}

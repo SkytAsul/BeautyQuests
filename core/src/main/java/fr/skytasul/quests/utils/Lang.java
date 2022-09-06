@@ -360,6 +360,7 @@ public enum Lang implements Locale {
 	stageTameAnimals("inv.create.tameAnimals"),
 	stageDeath("inv.create.death"),
 	stageDealDamage("inv.create.dealDamage"),
+	stageEatDrink("inv.create.eatDrink"),
 	stageText("inv.create.NPCText"),
 	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
@@ -404,6 +405,8 @@ public enum Lang implements Locale {
 	
 	stageDealDamageValue("inv.create.stage.dealDamage.damage"),
 	stageDealDamageMobs("inv.create.stage.dealDamage.targetMobs"),
+	
+	stageEatDrinkItems("inv.create.stage.eatDrink.items"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -722,6 +725,7 @@ public enum Lang implements Locale {
 	SCOREBOARD_DIE("scoreboard.stage.die"),
 	SCOREBOARD_DEAL_DAMAGE_ANY("scoreboard.stage.dealDamage.any"), // 0: damage
 	SCOREBOARD_DEAL_DAMAGE_MOBS("scoreboard.stage.dealDamage.mobs"), // 0: damage, 1: mobs
+	SCOREBOARD_EAT_DRINK("scoreboard.stage.eatDrink"), // 0: items
 	
 	/* Indications */
 	
@@ -770,6 +774,7 @@ public enum Lang implements Locale {
 	Tame("misc.stageType.tameAnimals"),
 	Death("misc.stageType.die"),
 	DealDamage("misc.stageType.dealDamage"),
+	EatDrink("misc.stageType.eatDrink"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),

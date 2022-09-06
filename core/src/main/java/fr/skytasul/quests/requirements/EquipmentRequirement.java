@@ -20,7 +20,6 @@ import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.misc.ItemGUI;
 import fr.skytasul.quests.gui.templates.StaticPagedGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class EquipmentRequirement extends AbstractRequirement {
@@ -51,7 +50,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 	public String[] getLore() {
 		if (slot == null) return null;
 		return new String[] {
-				QuestOption.formatNullableValue(slot.name() + " > " + MinecraftNames.getMaterialName(item)),
+				QuestOption.formatNullableValue(slot.name() + " > " + ItemUtils.getName(item)),
 				"",
 				Lang.RemoveMid.toString() };
 	}

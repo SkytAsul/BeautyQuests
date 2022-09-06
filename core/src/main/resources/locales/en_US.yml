@@ -372,6 +372,7 @@ inv:
     tameAnimals: §aTame animals
     death: §cDie
     dealDamage: §cDeal damage to mobs
+    eatDrink: §aEat or drink food or potions
     NPCText: §eEdit dialog
     dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
@@ -417,6 +418,8 @@ inv:
       dealDamage:
         damage: '§eDamage to deal'
         targetMobs: '§cMobs to damage'
+      eatDrink:
+        items: '§eEdit items to eat or drink'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -754,6 +757,7 @@ scoreboard:
     dealDamage:
       any: §cDeal {0} damage
       mobs: §cDeal {0} damage to {1}
+    eatDrink: §eConsume §6{0}
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -808,6 +812,7 @@ misc:
     tameAnimals: Tame animals
     die: Die
     dealDamage: Deal damage
+    eatDrink: Eat or drink
   comparison:
     equals: equal to {0}
     different: different to {0}
