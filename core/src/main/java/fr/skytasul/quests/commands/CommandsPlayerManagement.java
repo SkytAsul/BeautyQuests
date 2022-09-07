@@ -190,6 +190,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				}else acc.removePoolDatas(poolDatas.getPoolID());
 				pools++;
 			}
+			acc.resetDatas();
 			Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
 			if (acc.isCurrent()) Lang.DATA_REMOVED.send(player, quests, actor.getName(), pools);
 			Lang.DATA_REMOVED_INFO.send(actor.getSender(), quests, player.getName(), pools);

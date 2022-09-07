@@ -62,6 +62,7 @@ public class SQLDataSaver<T> {
 	private final SQLType<T> sqlType;
 	private final String updateStatement;
 	private final String columnDefinition;
+	private final String defaultValueString;
 	
 	public SQLDataSaver(SavableData<T> wrappedData, String updateStatement) {
 		this.wrappedData = wrappedData;
@@ -79,7 +80,8 @@ public class SQLDataSaver<T> {
 			}
 		}
 		
-		columnDefinition = String.format("`%s` %s%s DEFAULT %s", wrappedData.getColumnName(), sqlType.sqlTypeName, length, Objects.toString(wrappedData.getDefaultValue()));
+		defaultValueString = Objects.toString(wrappedData.getDefaultValue());
+		columnDefinition = String.format("`%s` %s%s DEFAULT %s", wrappedData.getColumnName(), sqlType.sqlTypeName, length, defaultValueString);
 	}
 	
 	public SavableData<T> getWrappedData() {
@@ -92,6 +94,10 @@ public class SQLDataSaver<T> {
 	
 	public String getColumnDefinition() {
 		return columnDefinition;
+	}
+	
+	public String getDefaultValueString() {
+		return defaultValueString;
 	}
 	
 	public void setInStatement(PreparedStatement statement, int index, T value) throws SQLException {

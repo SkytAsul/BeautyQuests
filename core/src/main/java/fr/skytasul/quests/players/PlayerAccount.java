@@ -126,6 +126,10 @@ public class PlayerAccount {
 		additionalDatas.put(data, value);
 	}
 	
+	public void resetDatas() {
+		additionalDatas.clear();
+	}
+	
 	@Override
 	public boolean equals(Object arg0) {
 		if (arg0 == this) return true;

@@ -44,6 +44,7 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	private final Map<SavableData<?>, SQLDataSaver<?>> accountDatas = new HashMap<>();
 	private String getAccountDatas;
+	private String resetAccountDatas;
 	
 	/* Accounts statements */
 	private String getAccountsIDs;
@@ -93,6 +94,10 @@ public class PlayersManagerDB extends PlayersManager {
 				.stream()
 				.map(x -> "`" + x.getColumnName() + "`")
 				.collect(Collectors.joining(", ", "SELECT ", " FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?"));
+		resetAccountDatas = accountDatas.values()
+				.stream()
+				.map(x -> "`" + x.getWrappedData().getColumnName() + "` = " + x.getDefaultValueString())
+				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE `id` = ?"));
 	}
 	
 	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
@@ -714,6 +719,21 @@ public class PlayersManagerDB extends PlayersManager {
 				statement.executeUpdate();
 			}catch (SQLException ex) {
 				BeautyQuests.logger.severe("An error occurred while saving account data " + data.getId() + " to database", ex);
+			}
+		}
+		
+		@Override
+		public void resetDatas() {
+			super.resetDatas();
+			
+			if (resetAccountDatas != null) {
+				try (Connection connection = db.getConnection();
+						PreparedStatement statement = connection.prepareStatement(resetAccountDatas)) {
+					statement.setInt(1, index);
+					statement.executeUpdate();
+				}catch (SQLException ex) {
+					BeautyQuests.logger.severe("An error occurred while resetting account " + index + " datas from database", ex);
+				}
 			}
 		}
 		

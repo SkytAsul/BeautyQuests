@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.data;
 import java.util.Objects;
 import java.util.OptionalInt;
 
-public class SavableData<T> {
+public final class SavableData<T> {
 	
 	private final String id;
 	private final Class<T> dataType;
