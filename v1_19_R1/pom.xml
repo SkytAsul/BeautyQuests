@@ -17,11 +17,19 @@
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-core</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -29,6 +37,11 @@
 			<version>1.19.2-R0.1-SNAPSHOT</version>
 			<classifier>remapped-mojang</classifier>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Revxrsal.Lamp</groupId>
+			<artifactId>paper-internal-dont-use</artifactId>
+			<version>d72483065c</version>
 		</dependency>
 	</dependencies>
 
@@ -64,6 +77,27 @@
 							<srgIn>org.spigotmc:minecraft-server:1.19.2-R0.1-SNAPSHOT:csrg:maps-spigot</srgIn>
 							<remappedDependencies>org.spigotmc:spigot:1.19.2-R0.1-SNAPSHOT:jar:remapped-obf</remappedDependencies>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<relocations>
+						<relocation>
+							<pattern>revxrsal.commands</pattern>
+							<shadedPattern>fr.skytasul.quests.commands.revxrsal</shadedPattern>
+						</relocation>
+					</relocations>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

@@ -180,7 +180,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	protected void createBar(Player p, int amount) {
-		if (barsEnabled) bars.put(p, new BossBar(p, amount));
+		if (barsEnabled) {
+			if (bars.containsKey(p)) {
+				BeautyQuests.logger.warning("Trying to create an already existing bossbar for player " + p.getName());
+				return;
+			}
+			bars.put(p, new BossBar(p, amount));
+		}
 	}
 
 	protected void removeBar(Player p) {

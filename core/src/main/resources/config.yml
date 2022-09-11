@@ -24,6 +24,7 @@ database:
   username: "unknown"
   password: "unknown"
   ssl: false
+  forceMysql: false
   tables:
     playerAccounts: "player_accounts"
     playerQuests: "player_quests"
