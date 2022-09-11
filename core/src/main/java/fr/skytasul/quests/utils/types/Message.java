@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -31,13 +32,15 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getDialogsConfig().getDefaultTime() : wait;
 	}
 
-	public void sendMessage(Player p, String npc, int id, int size) {
+	public BukkitTask sendMessage(Player p, String npc, int id, int size) {
+		BukkitTask task = null;
+		
 		String sent = formatMessage(p, npc, id, size);
 		if (QuestsConfiguration.getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
-				new BukkitRunnable() {
+				task = new BukkitRunnable() {
 					int time = 40;
 					
 					@Override
@@ -56,18 +59,25 @@ public class Message implements Cloneable {
 		}else p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
 		
 		if (!"none".equals(sound)) {
-			String sentSound = sound;
-			if (sentSound == null) {
-				if (sender == Sender.PLAYER) {
-					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultPlayerSound();
-				}else if (sender == Sender.NPC) {
-					sentSound = QuestsConfiguration.getDialogsConfig().getDefaultNPCSound();
-				}
-			}
+			String sentSound = getSound();
 			if (sentSound != null) p.playSound(p.getLocation(), sentSound, 1, 1);
 		}
+		
+		return task;
 	}
 
+	private String getSound() {
+		String sentSound = sound;
+		if (sentSound == null) {
+			if (sender == Sender.PLAYER) {
+				sentSound = QuestsConfiguration.getDialogsConfig().getDefaultPlayerSound();
+			}else if (sender == Sender.NPC) {
+				sentSound = QuestsConfiguration.getDialogsConfig().getDefaultNPCSound();
+			}
+		}
+		return sentSound;
+	}
+	
 	public String formatMessage(Player p, String npc, int id, int size) {
 		String sent = null;
 		switch (sender) {
@@ -82,6 +92,12 @@ public class Message implements Cloneable {
 			break;
 		}
 		return sent;
+	}
+	
+	public void finished(Player p, boolean endOfDialog) {
+		if (endOfDialog) return;
+		String sentSound = getSound();
+		if (sentSound != null) p.stopSound(sentSound);
 	}
 	
 	@Override
