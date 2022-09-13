@@ -268,7 +268,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void start(CommandSender sender, Player player, PlayerAccount acc, Quest quest, boolean overrideRequirements) {
-		if (!overrideRequirements && !quest.isLauncheable(player, acc, true)) {
+		if (!overrideRequirements && !(quest.isLauncheable(player, acc, true) && quest.testTimer(acc, true))) {
 			Lang.START_QUEST_NO_REQUIREMENT.send(sender, quest.getName());
 			return;
 		}
