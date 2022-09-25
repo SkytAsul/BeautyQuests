@@ -164,6 +164,7 @@ public abstract class PlayersManager {
 	
 	public static PlayerAccount getPlayerAccount(Player p) {
 		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
+		if (!p.isOnline()) BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
 		
 		return cachedAccounts.get(p);
 	}
