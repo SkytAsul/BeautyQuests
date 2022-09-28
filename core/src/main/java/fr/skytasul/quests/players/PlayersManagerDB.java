@@ -33,6 +33,7 @@ import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.ThrowingConsumer;
+import fr.skytasul.quests.utils.Utils;
 
 public class PlayersManagerDB extends PlayersManager {
 
@@ -292,7 +293,7 @@ public class PlayersManagerDB extends PlayersManager {
 			updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?";
 			updatePoolCompletedQuests = "UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?";
 		}catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -343,44 +344,15 @@ public class PlayersManagerDB extends PlayersManager {
 					BeautyQuests.logger.info("Updated database with quest_flow column.");
 				}
 				
-				if (!columns.contains("additional_datas")) { // 0.20
-					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
-							+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
-					BeautyQuests.logger.info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
-					
-					BeautyQuests.logger.info("Migrating old datas...");
-					PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
-					ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
-					while (result.next()) {
-						Map<String, Object> datas = new HashMap<>();
-						for (int i = 0; i < 5; i++) {
-							String stageDatas = result.getString("stage_" + i + "_datas");
-							if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, CustomizedObjectTypeAdapter.deserializeNullable(stageDatas, Map.class));
-						}
-						
-						if (datas.isEmpty()) continue;
-						migration.setString(1, CustomizedObjectTypeAdapter.serializeNullable(datas));
-						migration.setInt(2, result.getInt("id"));
-						migration.addBatch();
+				if (!columns.contains("additional_datas") || columns.contains("stage_0_datas")) { // 0.20
+					// tests for stage_0_datas: it's in the case the server crashed/stopped during the migration process.
+					if (!columns.contains("additional_datas")) {
+						statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
+								+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
+						BeautyQuests.logger.info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
 					}
-					int migrated = migration.executeBatch().length;
-					BeautyQuests.logger.info("Migrated " + migrated + " quest datas.");
 					
-					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
-							+ "	DROP COLUMN `stage_0_datas`,"
-							+ "	DROP COLUMN `stage_1_datas`,"
-							+ "	DROP COLUMN `stage_2_datas`,"
-							+ "	DROP COLUMN `stage_3_datas`,"
-							+ "	DROP COLUMN `stage_4_datas`;");
-					BeautyQuests.logger.info("Updated database by deleting old stage_[0::4]_datas columns.");
-					
-					int deletedDuplicates =
-							statement.executeUpdate("DELETE R1 FROM " + QUESTS_DATAS_TABLE + " R1"
-							+ " JOIN " + QUESTS_DATAS_TABLE + " R2"
-							+ " ON R1.account_id = R2.account_id"
-							+ " AND R1.quest_id = R2.quest_id"
-							+ " AND R1.id < R2.id;");
-					if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
+					Utils.runAsync(this::migrateOldQuestDatas);
 				}
 			});
 			
@@ -407,6 +379,57 @@ public class PlayersManagerDB extends PlayersManager {
 			BeautyQuests.logger.severe("Cannot check integrity of SQL table " + tableName);
 		}else {
 			columnsConsumer.accept(columns);
+		}
+	}
+	
+	private void migrateOldQuestDatas() {
+		BeautyQuests.logger.info("---- CAUTION ----\n"
+				+ "BeautyQuests will now migrate old quest datas in database to the newest format.\n"
+				+ "This may take a LONG time. Players should NOT enter the server during this time, "
+				+ "or serious data loss can occur.");
+		
+		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
+			
+			int deletedDuplicates =
+					statement.executeUpdate("DELETE R1 FROM " + QUESTS_DATAS_TABLE + " R1"
+							+ " JOIN " + QUESTS_DATAS_TABLE + " R2"
+							+ " ON R1.account_id = R2.account_id"
+							+ " AND R1.quest_id = R2.quest_id"
+							+ " AND R1.id < R2.id;");
+			if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
+			
+			int batchCount = 0;
+			PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
+			ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
+			while (result.next()) {
+				Map<String, Object> datas = new HashMap<>();
+				for (int i = 0; i < 5; i++) {
+					String stageDatas = result.getString("stage_" + i + "_datas");
+					if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, CustomizedObjectTypeAdapter.deserializeNullable(stageDatas, Map.class));
+				}
+				
+				if (datas.isEmpty()) continue;
+				migration.setString(1, CustomizedObjectTypeAdapter.serializeNullable(datas));
+				migration.setInt(2, result.getInt("id"));
+				migration.addBatch();
+				batchCount++;
+			}
+			BeautyQuests.logger.info("Migrating " + batchCount + "quest datas...");
+			int migrated = migration.executeBatch().length;
+			BeautyQuests.logger.info("Migrated " + migrated + " quest datas.");
+			
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
+					+ " DROP COLUMN `stage_0_datas`,"
+					+ " DROP COLUMN `stage_1_datas`,"
+					+ " DROP COLUMN `stage_2_datas`,"
+					+ " DROP COLUMN `stage_3_datas`,"
+					+ " DROP COLUMN `stage_4_datas`;");
+			BeautyQuests.logger.info("Updated database by deleting old stage_[0::4]_datas columns.");
+			BeautyQuests.logger.info("---- CAUTION ----\n"
+					+ "The data migration succeeded. Players can now safely connect.");
+		}catch (SQLException ex) {
+			BeautyQuests.logger.severe("---- CAUTION ----\n"
+					+ "The plugin failed to migrate old quest datas in database.", ex);
 		}
 	}
 	
