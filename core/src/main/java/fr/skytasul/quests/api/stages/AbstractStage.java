@@ -283,6 +283,7 @@ public abstract class AbstractStage implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerAccountJoinEvent e) {
+		if (e.isFirstJoin()) return;
 		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
 			joins(e.getPlayerAccount(), e.getPlayer());
 		}
