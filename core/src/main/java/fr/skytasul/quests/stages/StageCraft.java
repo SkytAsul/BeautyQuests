@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.SmithItemEvent;
 import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
@@ -49,10 +52,8 @@ public class StageCraft extends AbstractStage {
 		return result;
 	}
 
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onCraft(CraftItemEvent e){
-		Player p = (Player) e.getView().getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		ItemStack item = e.getRecipe().getResult();
 		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
 			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
@@ -61,6 +62,32 @@ public class StageCraft extends AbstractStage {
 			}
 		}
 		
+		onCraftClick(e, item, getMaxCraftAmount(e.getInventory()));
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onSmith(SmithItemEvent event) {
+		onCraftClick(event, event.getCurrentItem(), event.getCurrentItem().getAmount());
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onFurnaceExtract(FurnaceExtractEvent event) {
+		Player p = event.getPlayer();
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		
+		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && branch.hasStageLaunched(acc, this) && canUpdate(p, true)) {
+			int amount = getPlayerAmount(acc) - event.getItemAmount();
+			if (amount <= 0) {
+				finishStage(p);
+			}else {
+				updateObjective(acc, p, "amount", amount);
+			}
+		}
+	}
+	
+	public void onCraftClick(InventoryClickEvent e, ItemStack item, int maxCraftable) {
+		Player p = (Player) e.getView().getPlayer();
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (comparisons.isSimilar(result, item)) {
 				
@@ -83,7 +110,6 @@ public class StageCraft extends AbstractStage {
 					case SHIFT_LEFT:
 						if (recipeAmount == 0) break;
 
-						int maxCraftable = getMaxCraftAmount(e.getInventory());
 						int capacity = fits(item, e.getView().getBottomInventory());
 
 						// If we can't fit everything, increase "space" to include the items dropped by crafting
