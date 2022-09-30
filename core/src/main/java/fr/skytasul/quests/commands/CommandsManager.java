@@ -22,7 +22,7 @@ import fr.skytasul.quests.utils.Lang;
 
 import revxrsal.commands.autocomplete.SuggestionProvider;
 import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.core.BukkitHandler;
+import revxrsal.commands.bukkit.BukkitCommandHandler;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.exception.CommandErrorException;
@@ -33,11 +33,11 @@ public class CommandsManager {
 	
 	private static String[] COMMAND_ALIASES = { "quests", "quest", "bq", "beautyquests", "bquests" };
 	
-	private BukkitHandler handler;
+	private BukkitCommandHandler handler;
 	private boolean locked = false;
 	
 	public CommandsManager() {
-		handler = new BukkitHandler(BeautyQuests.getInstance());
+		handler = BukkitCommandHandler.create(BeautyQuests.getInstance());
 		handler.setMessagePrefix(QuestsConfiguration.getPrefix());
 		handler.failOnTooManyArguments();
 		
@@ -102,9 +102,13 @@ public class CommandsManager {
 		handler.registerContextResolver(Scoreboard.class, context -> {
 			return BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(context.getResolvedArgument(Player.class));
 		});
+		
+		handler.registerCondition((actor, command, arguments) -> {
+			DebugUtils.logMessage(actor.getName() + " executed command: " + command.getPath().toRealString() + " " + String.join(" ", arguments));
+		});
 	}
 	
-	public BukkitHandler getHandler() {
+	public BukkitCommandHandler getHandler() {
 		return handler;
 	}
 	
