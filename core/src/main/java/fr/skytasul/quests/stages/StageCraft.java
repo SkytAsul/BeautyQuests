@@ -8,17 +8,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.SmithItemEvent;
-import org.bukkit.inventory.ComplexRecipe;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.events.BQCraftEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -51,24 +47,6 @@ public class StageCraft extends AbstractStage {
 	public ItemStack getItem(){
 		return result;
 	}
-
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onCraft(CraftItemEvent e){
-		ItemStack item = e.getRecipe().getResult();
-		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
-			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
-			if (key.equals("minecraft:suspicious_stew")) {
-				item = XMaterial.SUSPICIOUS_STEW.parseItem();
-			}
-		}
-		
-		onCraftClick(e, item, getMaxCraftAmount(e.getInventory()));
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onSmith(SmithItemEvent event) {
-		onCraftClick(event, event.getCurrentItem(), event.getCurrentItem().getAmount());
-	}
 	
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
@@ -85,24 +63,26 @@ public class StageCraft extends AbstractStage {
 		}
 	}
 	
-	public void onCraftClick(InventoryClickEvent e, ItemStack item, int maxCraftable) {
-		Player p = (Player) e.getView().getPlayer();
+	@EventHandler
+	public void onCraft(BQCraftEvent event) {
+		Player p = event.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
+			ItemStack item = event.getResult();
 			if (comparisons.isSimilar(result, item)) {
 				
 				int recipeAmount = item.getAmount();
 
-				switch (e.getClick()) {
+				switch (event.getClickEvent().getClick()) {
 					case NUMBER_KEY:
 						// If hotbar slot selected is full, crafting fails (vanilla behavior, even when items match)
-						if (e.getWhoClicked().getInventory().getItem(e.getHotbarButton()) != null) recipeAmount = 0;
+						if (p.getInventory().getItem(event.getClickEvent().getHotbarButton()) != null) recipeAmount = 0;
 						break;
 
 					case DROP:
 					case CONTROL_DROP:
 						// If we are holding items, craft-via-drop fails (vanilla behavior)
-						ItemStack cursor = e.getCursor();
+						ItemStack cursor = event.getClickEvent().getCursor();
 						if (cursor != null && cursor.getType() != Material.AIR) recipeAmount = 0;
 						break;
 
@@ -110,18 +90,17 @@ public class StageCraft extends AbstractStage {
 					case SHIFT_LEFT:
 						if (recipeAmount == 0) break;
 
-						int capacity = fits(item, e.getView().getBottomInventory());
+						int capacity = fits(item, p.getInventory());
 
 						// If we can't fit everything, increase "space" to include the items dropped by crafting
 						// (Think: Uncrafting 8 iron blocks into 1 slot)
-						if (capacity < maxCraftable)
-							maxCraftable = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
-
-						recipeAmount = maxCraftable;
+						if (capacity < event.getMaxCraftable()) {
+							recipeAmount = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
+						}else recipeAmount = event.getMaxCraftable();
 						break;
 					
 					default:
-						cursor = e.getCursor();
+						cursor = event.getClickEvent().getCursor();
 						if (cursor != null && cursor.getType() != Material.AIR) {
 							if (cursor.isSimilar(item)) {
 								if (cursor.getAmount() + item.getAmount() > cursor.getMaxStackSize()) recipeAmount = 0;
@@ -175,19 +154,6 @@ public class StageCraft extends AbstractStage {
 	
 	public static StageCraft deserialize(ConfigurationSection section, QuestBranch branch) {
 		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
-	}
-	
-	public static int getMaxCraftAmount(CraftingInventory inv) {
-		if (inv.getResult() == null) return 0;
-
-		int resultCount = inv.getResult().getAmount();
-		int materialCount = Integer.MAX_VALUE;
-
-		for (ItemStack is : inv.getMatrix())
-			if (is != null && is.getAmount() < materialCount)
-				materialCount = is.getAmount();
-
-		return resultCount * materialCount;
 	}
 
 	public static int fits(ItemStack stack, Inventory inv) {

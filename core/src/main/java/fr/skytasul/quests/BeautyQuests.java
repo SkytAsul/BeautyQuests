@@ -53,6 +53,7 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.logger.ILoggerHandler;
 import fr.skytasul.quests.utils.logger.LoggerExpanded;
@@ -156,6 +157,8 @@ public class BeautyQuests extends JavaPlugin {
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
 						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
+						if (NMS.getMCVersion() >= 16)
+							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
 						
 						launchSaveCycle();
 

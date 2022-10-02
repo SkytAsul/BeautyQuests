@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,10 +24,12 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.BQCraftEvent;
 import fr.skytasul.quests.api.events.BQNPCClickEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
@@ -210,6 +213,30 @@ public class QuestsListener implements Listener{
 		if (e.isCancelled()) return;
 		if (e.getPlayer() == null) return;
 		Bukkit.getPluginManager().callEvent(new BQBlockBreakEvent(e.getPlayer(), Arrays.asList(e.getBlock())));
+	}
+
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onCraftMonitor(CraftItemEvent e){
+		if (e.getInventory().getResult() == null) return;
+
+		int resultCount = e.getInventory().getResult().getAmount();
+		int materialCount = Integer.MAX_VALUE;
+
+		for (ItemStack is : e.getInventory().getMatrix())
+			if (is != null && is.getAmount() < materialCount)
+				materialCount = is.getAmount();
+
+		int maxCraftAmount = resultCount * materialCount;
+		
+		ItemStack item = e.getRecipe().getResult();
+		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
+			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
+			if (key.equals("minecraft:suspicious_stew")) {
+				item = XMaterial.SUSPICIOUS_STEW.parseItem();
+			}
+		}
+		
+		Bukkit.getPluginManager().callEvent(new BQCraftEvent(e, item, maxCraftAmount));
 	}
 	
 }
