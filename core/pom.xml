@@ -20,6 +20,7 @@
 				<includes>
 					<include>*.yml</include>
 					<include>locales/*.yml</include>
+					<include>*.properties</include>
 				</includes>
 			</resource>
 		</resources>
@@ -143,12 +144,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.29</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>1.19.2-R0.1-SNAPSHOT</version>
@@ -269,12 +264,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>2.7.5</version>
-			<scope>provided</scope> <!-- this is added to runtime through Spigot libraries system -->
-		</dependency>
-		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>d72483065c</version>
@@ -283,6 +272,11 @@
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>common</artifactId>
 			<version>d72483065c</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>4.0.3</version> <!-- For Java 8 compatibility -->
 		</dependency>
 
 		<!-- Local JARs -->

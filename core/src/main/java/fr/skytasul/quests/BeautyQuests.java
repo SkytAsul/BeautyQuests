@@ -348,11 +348,12 @@ public class BeautyQuests extends JavaPlugin {
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = null;
-				try (Database newDB = new Database(dbConfig)) {
-					newDB.testConnection();
+				try {
+					db = new Database(dbConfig);
+					db.testConnection();
 					logger.info("Connection to database etablished.");
-					db = newDB;
 				}catch (Exception ex) {
+					db = null;
 					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
@@ -548,6 +549,7 @@ public class BeautyQuests extends JavaPlugin {
 			if (Files.exists(target)) {
 				logger.warning("File " + target.toString() + " already exist. This should not happen.");
 			}else {
+				Files.createDirectories(backup);
 				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
 			}
 			return true;
