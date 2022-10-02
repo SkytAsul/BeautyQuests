@@ -16,6 +16,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
@@ -91,12 +92,19 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
 		if (NMS.getMCVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) return;
+		
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		
 		if (lc != null) {
 			if (!lc.equals(e.getClickedBlock().getLocation())) return;
-		}else if (!block.applies(e.getClickedBlock())) return;
+		}else if (block != null) {
+			if (!block.applies(e.getClickedBlock())) return;
+		}else {
+			BeautyQuests.logger.warning("No block nor location set for " + toString());
+			return;
+		}
 		
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
