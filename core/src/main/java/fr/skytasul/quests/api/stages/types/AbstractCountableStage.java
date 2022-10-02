@@ -50,8 +50,11 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		return map;
 	}
 
-	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc) {
-		return getData(acc, "remaining");
+	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc, boolean warnNull) {
+		Map<Integer, Integer> remaining = getData(acc, "remaining");
+		if (warnNull && remaining == null)
+			BeautyQuests.logger.severe("Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString());
+		return remaining;
 	}
 
 	protected void calculateSize() {
@@ -73,11 +76,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
-		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-		if (playerAmounts == null) {
-			BeautyQuests.logger.severe("The plugin has been unable to retrieve stage datas for account " + acc.debugName() + " on " + super.toString());
-			return new String[] { "§4§lerror" };
-		}
+		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc, true);
+		if (playerAmounts == null) return new String[] { "§4§lerror" };
 		String[] elements = new String[playerAmounts.size()];
 		int i = 0;
 		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
@@ -114,11 +114,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
 			int id = entry.getKey();
 			if (objectApplies(entry.getValue().getKey(), object)) {
-				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc);
-				if (playerAmounts == null) {
-					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
-					return true;
-				}
+				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc, true);
+				if (playerAmounts == null) return true;
 				if (playerAmounts.containsKey(id)) {
 					int playerAmount = playerAmounts.get(id);
 					if (playerAmount <= amount) {
@@ -165,11 +162,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	@Override
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
-		Map<Integer, Integer> remainings = getPlayerRemainings(acc);
-		if (remainings == null) {
-			BeautyQuests.logger.severe(p.getName() + " does not have remaining datas for stage " + toString() + ". This is a bug!");
-			return;
-		}
+		Map<Integer, Integer> remainings = getPlayerRemainings(acc, true);
+		if (remainings == null) return;
 		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
 	}
 	

@@ -154,6 +154,11 @@ public class PlayerAccount {
 		return p == null ? debugName() : p.getName();
 	}
 	
+	public String getNameAndID() {
+		Player p = getPlayer();
+		return p == null ? debugName() : p.getName() + " (# " + index + ")";
+	}
+	
 	public String debugName() {
 		return abstractAcc.getIdentifier() + " (#" + index + ")";
 	}

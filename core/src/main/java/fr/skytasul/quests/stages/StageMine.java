@@ -73,7 +73,8 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (!branch.hasStageLaunched(acc, this)) return;
-		Map<Integer, Integer> playerBlocks = getPlayerRemainings(acc);
+		Map<Integer, Integer> playerBlocks = getPlayerRemainings(acc, true);
+		if (playerBlocks == null) return;
 		for (Integer id : playerBlocks.keySet()) {
 			if (objectApplies(super.objects.get(id).getKey(), e.getBlock())) {
 				e.getBlock().setMetadata("playerInStage", new FixedMetadataValue(BeautyQuests.getInstance(), p.getName()));
