@@ -186,6 +186,7 @@ public class DependenciesManager implements Listener {
 		private final Predicate<Plugin> isValid;
 		private boolean enabled = false;
 		private boolean forceDisable = false;
+		private boolean initialized = false;
 		
 		public BQDependency(String pluginName) {
 			this(pluginName, null);
@@ -226,6 +227,7 @@ public class DependenciesManager implements Listener {
 		void initialize() {
 			try {
 				if (initialize != null) initialize.run();
+				initialized = true;
 			}catch (Throwable ex) {
 				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
@@ -236,7 +238,8 @@ public class DependenciesManager implements Listener {
 			forceDisable = true;
 			if (enabled) {
 				enabled = false;
-				if (disable != null) disable.run();
+				if (disable != null && initialized) disable.run();
+				initialized = false;
 			}
 		}
 		
