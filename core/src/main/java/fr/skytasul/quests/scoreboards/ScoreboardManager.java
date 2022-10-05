@@ -30,6 +30,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 
 	private final File file;
 	private Map<Player, Scoreboard> scoreboards;
+	private Map<Player, Boolean> forceHiddenState;
 	
 	// Parameters
 	private final List<ScoreboardLine> lines = new ArrayList<>();
@@ -78,13 +79,22 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 	
 	public void removePlayerScoreboard(Player p){
-		if (scoreboards.containsKey(p)) scoreboards.remove(p).cancel();
+		Scoreboard scoreboard = scoreboards.remove(p);
+		if (scoreboard != null) {
+			scoreboard.cancel();
+			forceHiddenState.put(p, scoreboard.isForceHidden());
+		}
 	}
 	
 	public void create(Player p){
 		if (!QuestsConfiguration.showScoreboards()) return;
 		removePlayerScoreboard(p);
-		scoreboards.put(p, new Scoreboard(p, this));
+		
+		Scoreboard scoreboard = new Scoreboard(p, this);
+		scoreboards.put(p, scoreboard);
+		
+		Boolean forceHidden = forceHiddenState.remove(p);
+		if (forceHidden != null && forceHidden.booleanValue()) scoreboard.hide(true);
 	}
 	
 	@Override
@@ -120,6 +130,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
 		
 		scoreboards = new HashMap<>();
+		forceHiddenState = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
 	
@@ -130,6 +141,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards deleted.");
 		scoreboards.clear();
 		scoreboards = null;
+		forceHiddenState.clear();
+		forceHiddenState = null;
 	}
 	
 	@EventHandler
