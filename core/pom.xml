@@ -51,6 +51,10 @@
 							<pattern>revxrsal.commands</pattern>
 							<shadedPattern>fr.skytasul.quests.commands.revxrsal</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.zaxxer.hikari</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.hikari</shadedPattern>
+						</relocation>
 					</relocations>
 				</configuration>
 				<executions>

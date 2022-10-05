@@ -49,7 +49,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
 		super(branch);
 		this.left = leftClick;
-		this.lc = new BQLocation(location.getBlock().getLocation());
+		this.lc = new BQLocation(location.getWorldName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
 		this.locatedBlock = Located.LocatedBlock.create(lc);
 		
 		this.block = null;
