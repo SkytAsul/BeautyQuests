@@ -42,10 +42,16 @@ public class Inventories{
 	 */
 	public static <T extends CustomInventory> T create(Player p, T inv) {
 		closeWithoutExit(p);
-		Inventory tinv = inv.open(p);
-		if (tinv == null) return inv;
-		put(p, inv, tinv);
-		return inv;
+		try {
+			Inventory tinv = inv.open(p);
+			if (tinv == null) return inv;
+			put(p, inv, tinv);
+			return inv;
+		}catch (Throwable ex) {
+			BeautyQuests.logger.severe("Cannot open inventory " + inv.getClass().getSimpleName() + " to player " + p.getName(), ex);
+			closeAndExit(p);
+			return null;
+		}
 	}
 	
 	public static void onClick(InventoryClickEvent e) {
