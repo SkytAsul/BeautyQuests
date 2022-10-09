@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -504,7 +505,7 @@ public class PlayersManagerDB extends PlayersManager {
 	
 	@Override
 	public void unloadAccount(PlayerAccount acc) {
-		saveAccount(acc, true);
+		Utils.runAsync(() -> saveAccount(acc, true));
 	}
 
 	public void saveAccount(PlayerAccount acc, boolean stop) {
@@ -520,6 +521,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	public class PlayerQuestDatasDB extends PlayerQuestDatas {
 
+		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
 		
 		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
@@ -610,33 +612,43 @@ public class PlayersManagerDB extends PlayersManager {
 								datasLock.unlock();
 							}
 							if (entry != null) {
-								dbLock.lock();
-								try (Connection connection = db.getConnection()) {
-									try (PreparedStatement statement = connection.prepareStatement(getQuestAccountData)) {
-										statement.setInt(1, acc.index);
-										statement.setInt(2, questID);
-										if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-											try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData)) {
-												insertStatement.setInt(1, acc.index);
-												insertStatement.setInt(2, questID);
-												insertStatement.executeUpdate();
-												DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
+								try {
+									if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
+										try (Connection connection = db.getConnection()) {
+											try (PreparedStatement statement = connection.prepareStatement(getQuestAccountData)) {
+												statement.setInt(1, acc.index);
+												statement.setInt(2, questID);
+												if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
+													try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData)) {
+														insertStatement.setInt(1, acc.index);
+														insertStatement.setInt(2, questID);
+														insertStatement.setQueryTimeout(DATA_QUERY_TIMEOUT);
+														insertStatement.executeUpdate();
+														DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
+													}
+												}
 											}
+											try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
+												statement.setObject(1, entry.getValue());
+												statement.setInt(2, acc.index);
+												statement.setInt(3, questID);
+												statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
+												statement.executeUpdate();
+												if (entry.getValue() == null && !allowNull) {
+													BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
+												}
+											}
+										}catch (SQLException ex) {
+											BeautyQuests.logger.severe("An error occurred while updating a player's quest datas.", ex);
+										}finally {
+											dbLock.unlock();
 										}
+									}else {
+										BeautyQuests.logger.severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
 									}
-									try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
-										statement.setObject(1, entry.getValue());
-										statement.setInt(2, acc.index);
-										statement.setInt(3, questID);
-										statement.executeUpdate();
-										if (entry.getValue() == null && !allowNull) {
-											BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
-										}
-									}
-								}catch (SQLException e) {
-									e.printStackTrace();
-								}finally {
-									dbLock.unlock();
+								}catch (InterruptedException ex) {
+									BeautyQuests.logger.severe("Interrupted database locking.", ex);
+									Thread.currentThread().interrupt();
 								}
 							}
 						}
@@ -650,18 +662,23 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 		
 		protected void flushAll(boolean stop) {
-			datasLock.lock();
-			cachedDatas.values()
-				.stream()
-				.map(Entry::getKey)
-				.collect(Collectors.toList()) // to prevent ConcurrentModificationException
-				.forEach(run -> {
-					run.run();
-					run.cancel();
-				});
-			if (!cachedDatas.isEmpty()) BeautyQuests.logger.warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
-			if (stop) disabled = true;
-			datasLock.unlock();
+			try {
+				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2, TimeUnit.SECONDS)) {
+					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
+							.forEach(run -> {
+								run.cancel();
+								run.run();
+							});
+					if (!cachedDatas.isEmpty()) BeautyQuests.logger.warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
+					if (stop) disabled = true;
+					datasLock.unlock();
+				}else {
+					BeautyQuests.logger.severe("Cannot acquire database lock to save all datas of quest " + questID + ", player " + acc.getNameAndID());
+				}
+			}catch (InterruptedException ex) {
+				BeautyQuests.logger.severe("Interrupted database locking.", ex);
+				Thread.currentThread().interrupt();
+			}
 		}
 		
 		protected void stop() {
@@ -717,8 +734,8 @@ public class PlayersManagerDB extends PlayersManager {
 					statement.setInt(3, poolID);
 					statement.executeUpdate();
 				}
-			}catch (SQLException e) {
-				e.printStackTrace();
+			}catch (SQLException ex) {
+				BeautyQuests.logger.severe("An error occurred while updating a player's pool datas.", ex);
 			}
 		}
 		
