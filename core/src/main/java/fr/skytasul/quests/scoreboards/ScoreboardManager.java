@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -30,7 +31,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 
 	private final File file;
 	private Map<Player, Scoreboard> scoreboards;
-	private Map<Player, Boolean> forceHiddenState;
+	private Map<UUID, Boolean> forceHiddenState;
 	
 	// Parameters
 	private final List<ScoreboardLine> lines = new ArrayList<>();
@@ -82,7 +83,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		Scoreboard scoreboard = scoreboards.remove(p);
 		if (scoreboard != null) {
 			scoreboard.cancel();
-			forceHiddenState.put(p, scoreboard.isForceHidden());
+			forceHiddenState.put(p.getUniqueId(), scoreboard.isForceHidden());
 		}
 	}
 	
@@ -93,7 +94,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		Scoreboard scoreboard = new Scoreboard(p, this);
 		scoreboards.put(p, scoreboard);
 		
-		Boolean forceHidden = forceHiddenState.remove(p);
+		Boolean forceHidden = forceHiddenState.remove(p.getUniqueId());
 		if (forceHidden != null && forceHidden.booleanValue()) scoreboard.hide(true);
 	}
 	
