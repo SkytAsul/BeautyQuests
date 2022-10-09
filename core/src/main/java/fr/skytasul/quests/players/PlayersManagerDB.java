@@ -57,7 +57,6 @@ public class PlayersManagerDB extends PlayersManager {
 	private String insertQuestData;
 	private String removeQuestData;
 	private String getQuestsData;
-	private String getQuestAccountData;
 
 	private String removeExistingQuestDatas;
 
@@ -275,7 +274,6 @@ public class PlayersManagerDB extends PlayersManager {
 			insertQuestData = "INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)";
 			removeQuestData = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?";
 			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?";
-			getQuestAccountData = "SELECT 1 FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?";
 
 			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?";
 			
@@ -299,7 +297,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	private String prepareDatasStatement(String column) throws SQLException {
-		return "UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `account_id` = ? AND `quest_id` = ?";
+		return "UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `id` = ?";
 	}
 
 	@Override
@@ -528,6 +526,7 @@ public class PlayersManagerDB extends PlayersManager {
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
+		private int dbId = -1;
 
 		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
 			super(acc, questID);
@@ -543,6 +542,7 @@ public class PlayersManagerDB extends PlayersManager {
 					result.getInt("current_stage"),
 					CustomizedObjectTypeAdapter.deserializeNullable(result.getString("additional_datas"), Map.class),
 					result.getString("quest_flow"));
+			this.dbId = result.getInt("id");
 		}
 		
 		@Override
@@ -615,23 +615,10 @@ public class PlayersManagerDB extends PlayersManager {
 								try {
 									if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
 										try (Connection connection = db.getConnection()) {
-											try (PreparedStatement statement = connection.prepareStatement(getQuestAccountData)) {
-												statement.setInt(1, acc.index);
-												statement.setInt(2, questID);
-												if (!statement.executeQuery().next()) { // if result set empty => need to insert data then update
-													try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData)) {
-														insertStatement.setInt(1, acc.index);
-														insertStatement.setInt(2, questID);
-														insertStatement.setQueryTimeout(DATA_QUERY_TIMEOUT);
-														insertStatement.executeUpdate();
-														DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
-													}
-												}
-											}
+											if (dbId == -1) createDataRow(connection);
 											try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
 												statement.setObject(1, entry.getValue());
-												statement.setInt(2, acc.index);
-												statement.setInt(3, questID);
+												statement.setInt(2, dbId);
 												statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
 												statement.executeUpdate();
 												if (entry.getValue() == null && !allowNull) {
@@ -663,7 +650,7 @@ public class PlayersManagerDB extends PlayersManager {
 		
 		protected void flushAll(boolean stop) {
 			try {
-				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2, TimeUnit.SECONDS)) {
+				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
 					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
 							.forEach(run -> {
 								run.cancel();
@@ -690,6 +677,20 @@ public class PlayersManagerDB extends PlayersManager {
 				.forEach(BukkitRunnable::cancel);
 			cachedDatas.clear();
 			datasLock.unlock();
+		}
+		
+		private void createDataRow(Connection connection) throws SQLException {
+			DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
+			try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData, Statement.RETURN_GENERATED_KEYS)) {
+				insertStatement.setInt(1, acc.index);
+				insertStatement.setInt(2, questID);
+				insertStatement.setQueryTimeout(DATA_QUERY_TIMEOUT);
+				insertStatement.executeUpdate();
+				ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+				generatedKeys.next();
+				dbId = generatedKeys.getInt(1);
+				DebugUtils.logMessage("Created row " + dbId + " for quest " + questID + ", account " + acc.index);
+			}
 		}
 		
 	}
