@@ -13,7 +13,7 @@ public interface Dialogable {
 	BQNPC getNPC();
 	
 	default boolean hasDialog() {
-		return getDialog() != null;
+		return getNPC() != null && getDialog() != null && !getDialog().messages.isEmpty();
 	}
 	
 }

@@ -128,11 +128,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 	
 	@Override
-	public boolean hasDialog(){
-		return dialog != null && !dialog.messages.isEmpty();
-	}
-	
-	@Override
 	public Dialog getDialog(){
 		return dialog;
 	}
