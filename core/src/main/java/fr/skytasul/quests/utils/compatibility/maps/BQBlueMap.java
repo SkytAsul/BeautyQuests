@@ -60,6 +60,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 					POIMarker marker = POIMarker.toBuilder()
 							.label(quest.getName())
 							.icon(QuestsConfiguration.dynmapMarkerIcon(), 0, 0)
+							.position(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ())
 							.build();
 					set.getMarkers().put("qu_" + quest.getID() + "_" + i++, marker);
 					map.getMarkerSets().putIfAbsent(MARKERSET_ID, set);
