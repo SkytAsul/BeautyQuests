@@ -32,6 +32,7 @@ softdepend:
 - BlueMap
 - Sentinel
 - AdvancedSpawners
+- DecentHolograms
 
 #commands:
 #  beautyquests:

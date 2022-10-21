@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -107,6 +105,7 @@ public class DependenciesManager implements Listener {
 			return false;
 		}
 	});
+	public static final BQDependency decentholograms = new BQDependency("DecentHolograms", () -> QuestsAPI.setHologramsManager(new BQDecentHolograms()));
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
@@ -132,7 +131,16 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, BlueMap, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod2, holod3, tokenEnchant, ultimateTimber, sentinel, advancedspawners));
+		dependencies = new ArrayList<>(Arrays.asList(
+				/*par, eboss, */
+				znpcs, citizens, // npcs
+				wg, gps, tokenEnchant, ultimateTimber, sentinel, // other
+				mm, boss, advancedspawners, // mobs
+				vault, papi, acc, // hooks
+				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
+				dyn, BlueMap, // maps
+				cmi, holod2, holod3, decentholograms // holograms
+				));
 	}
 	
 	public List<BQDependency> getDependencies() {

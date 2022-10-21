@@ -427,7 +427,10 @@ public abstract class BQNPC implements Located.LocatedEntity {
 		public String toString() {
 			if (!enabled) return "disabled";
 			if (!canAppear) return "cannot appear";
-			return (visible ? "visible" : "invisible") + " by default, " + (item == null ? "" : item.getType().name() + ", ") + (text == null ? "no text" : "text=" + text);
+			return (visible ? "visible" : "invisible") + " by default, "
+					+ (item == null ? "" : item.getType().name() + ", ")
+					+ (text == null ? "no text" : "text=" + text) + ", "
+					+ (hologram == null ? " not spawned" : "spawned");
 		}
 		
 	}
