@@ -195,6 +195,7 @@ public class DependenciesManager implements Listener {
 		private boolean enabled = false;
 		private boolean forceDisable = false;
 		private boolean initialized = false;
+		private Plugin foundPlugin;
 		
 		public BQDependency(String pluginName) {
 			this(pluginName, null);
@@ -229,6 +230,7 @@ public class DependenciesManager implements Listener {
 			if (isValid != null && !isValid.test(plugin)) return false;
 			DebugUtils.logMessage("Hooked into " + pluginNames + " v" + plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
 			enabled = true;
+			foundPlugin = plugin;
 			return true;
 		}
 		
@@ -255,6 +257,13 @@ public class DependenciesManager implements Listener {
 			return enabled;
 		}
 		
+		public Plugin getFoundPlugin() {
+			if (!enabled)
+				throw new IllegalStateException(
+						"The dependency " + pluginNames + " is not enabled");
+			return foundPlugin;
+		}
+
 	}
 	
 }

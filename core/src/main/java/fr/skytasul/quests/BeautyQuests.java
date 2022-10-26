@@ -9,12 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
@@ -26,11 +28,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
-
 import fr.skytasul.quests.api.Locale;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
@@ -303,6 +303,14 @@ public class BeautyQuests extends JavaPlugin {
 			if (size > 10) return "10 - 50";
 			if (size > 5) return "5 - 10";
 			return "0 - 5";
+		}));
+		metrics.addCustomChart(new AdvancedPie("hooks", () -> { // replace with bar chart when bStats add them back
+			return dependencies.getDependencies()
+				.stream()
+				.filter(dep -> dep.isEnabled())
+				.map(dep -> dep.getFoundPlugin().getName())
+				.distinct()
+				.collect(Collectors.toMap(Function.identity(), __ -> 1));
 		}));
 		DebugUtils.logMessage("Started bStats metrics");
 	}
