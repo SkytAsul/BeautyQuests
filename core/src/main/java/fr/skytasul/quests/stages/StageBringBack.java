@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.editors.TextEditor;
@@ -68,8 +66,14 @@ public class StageBringBack extends StageNPC{
 			}
 		}
 		if (done) return true;
-		if (msg) Lang.NpcText.sendWP(p, npcName(), Utils.format(getMessage(), line), 1, 1);
+		if (msg) sendNeedMessage(p);
 		return false;
+	}
+
+	public void sendNeedMessage(Player p) {
+		String message = getMessage();
+		if (message != null && !message.isEmpty())
+			Lang.NpcText.sendWP(p, npcName(), Utils.format(message, line), 1, 1);
 	}
 	
 	public void removeItems(Player p){
@@ -100,7 +104,8 @@ public class StageBringBack extends StageNPC{
 	@Override
 	public void start(PlayerAccount acc) {
 		super.start(acc);
-		if (acc.isCurrent() && sendStartMessage()) Lang.NpcText.sendWP(acc.getPlayer(), npcName(), Lang.NEED_OBJECTS.format(line), 1, 1);
+		if (acc.isCurrent() && sendStartMessage())
+			sendNeedMessage(acc.getPlayer());
 	}
 	
 	@Override
@@ -206,7 +211,7 @@ public class StageBringBack extends StageNPC{
 			new ItemsGUI(items -> {
 				setItems(items);
 				super.start(p);
-			}, Collections.EMPTY_LIST).create(p);
+			}, Collections.emptyList()).create(p);
 		}
 
 		@Override
