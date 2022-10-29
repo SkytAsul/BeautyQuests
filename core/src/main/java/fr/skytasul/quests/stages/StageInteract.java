@@ -2,9 +2,9 @@ package fr.skytasul.quests.stages;
 
 import java.util.Collections;
 import java.util.Spliterator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -43,14 +42,14 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 
 	private final boolean left;
 	private final BQLocation lc;
-	private final Located.LocatedBlock locatedBlock;
 	private final BQBlock block;
 	
+	private Located.LocatedBlock locatedBlock;
+
 	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
 		super(branch);
 		this.left = leftClick;
 		this.lc = new BQLocation(location.getWorldName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-		this.locatedBlock = Located.LocatedBlock.create(lc);
 		
 		this.block = null;
 	}
@@ -61,7 +60,6 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		this.block = block;
 		
 		this.lc = null;
-		this.locatedBlock = null;
 	}
 
 	public BQLocation getLocation() {
@@ -78,6 +76,13 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	
 	@Override
 	public Located getLocated() {
+		if (lc == null)
+			return null;
+		if (locatedBlock == null) {
+			Block realBlock = lc.getMatchingBlock();
+			if (realBlock != null)
+				locatedBlock = Located.LocatedBlock.create(realBlock);
+		}
 		return locatedBlock;
 	}
 	

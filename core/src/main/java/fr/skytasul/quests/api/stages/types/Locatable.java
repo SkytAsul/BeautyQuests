@@ -8,12 +8,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Spliterator;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
+import fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable;
 import fr.skytasul.quests.utils.DebugUtils;
 
 /**
@@ -254,21 +253,28 @@ public interface Locatable {
 				return getLocation().getBlock();
 			}
 			
+			default Block getBlockNullable() {
+				Location location = getLocation();
+				if (location == null || location.getWorld() == null)
+					return null;
+				return location.getBlock();
+			}
+
 			@Override
 			default LocatedType getType() {
 				return LocatedType.BLOCK;
 			}
 			
 			static LocatedBlock create(Block block) {
-				return new LocatedBlockImpl(block.getLocation());
+				return new LocatedBlockImpl(block);
 			}
 			
 			static LocatedBlock create(Location location) {
-				return new LocatedBlockImpl(location);
+				return new LocatedBlockLocationImpl(location);
 			}
 			
-			class LocatedBlockImpl extends LocatedImpl implements LocatedBlock {
-				public LocatedBlockImpl(Location location) {
+			class LocatedBlockLocationImpl extends LocatedImpl implements LocatedBlock {
+				public LocatedBlockLocationImpl(Location location) {
 					super(location);
 				}
 				
@@ -287,6 +293,31 @@ public interface Locatable {
 				
 			}
 			
+			class LocatedBlockImpl implements LocatedBlock {
+
+				private Block block;
+
+				public LocatedBlockImpl(Block block) {
+					this.block = block;
+				}
+
+				@Override
+				public Location getLocation() {
+					return block.getLocation();
+				}
+
+				@Override
+				public Block getBlock() {
+					return block;
+				}
+
+				@Override
+				public Block getBlockNullable() {
+					return getBlock();
+				}
+
+			}
+
 		}
 		
 	}

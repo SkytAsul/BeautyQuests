@@ -3,14 +3,14 @@ package fr.skytasul.quests.utils.types;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
-
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 
@@ -73,6 +73,18 @@ public class BQLocation extends Location implements Locatable.Located {
 	
 	public String getWorldName() {
 		return getWorld() == null ? worldPattern.pattern() : getWorld().getName();
+	}
+
+	@Nullable
+	public Block getMatchingBlock() {
+		if (super.getWorld() != null) return super.getBlock();
+		if (worldPattern == null) return null;
+		return Bukkit.getWorlds()
+					.stream()
+					.filter(world -> worldPattern.matcher(world.getName()).matches())
+					.findFirst()
+					.map(world -> world.getBlockAt(getBlockX(), getBlockY(), getBlockZ()))
+					.orElse(null);
 	}
 	
 	@Override
