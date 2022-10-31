@@ -1,45 +1,28 @@
 package fr.skytasul.quests.editors.checkers;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.bukkit.entity.Player;
-
-import fr.skytasul.quests.utils.Lang;
-
-public class EnumParser<T extends Enum<T>> implements AbstractParser<T> {
+public class EnumParser<T extends Enum<T>> extends CollectionParser<T> {
 
 	private static final Pattern FORMAT = Pattern.compile("[ _]");
 	
-	private Map<String, T> names;
-	private String namesString;
-
 	public EnumParser(Class<T> enumClass) {
-		try {
-			T[] values = (T[]) enumClass.getDeclaredMethod("values").invoke(null);
-			names = new HashMap<>(values.length + 1, 1);
-			for (T value : values) {
-				names.put(proceed(value.name()), value);
-			}
-			namesString = String.join(", ", names.keySet());
-		}catch (ReflectiveOperationException ex) {
-			ex.printStackTrace();
-		}
+		super(Arrays.asList(enumClass.getEnumConstants()), constant -> processConstantName(constant.name()));
 	}
-
+	
+	public EnumParser(Class<T> enumClass, Predicate<T> filter) {
+		super(Arrays.stream(enumClass.getEnumConstants()).filter(filter).collect(Collectors.toList()), constant -> processConstantName(constant.name()));
+	}
+	
 	@Override
-	public T parse(Player p, String msg) throws Throwable {
-		T obj = names.get(proceed(msg));
-		if (obj == null) Lang.NO_SUCH_ELEMENT.send(p, namesString);
-		return obj;
+	protected String processName(String msg) {
+		return processConstantName(msg);
 	}
-
-	public String getNames() {
-		return namesString;
-	}
-
-	private String proceed(String key) {
+	
+	static String processConstantName(String key) {
 		return FORMAT.matcher(key.toLowerCase()).replaceAll("");
 	}
 

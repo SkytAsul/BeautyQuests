@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -18,18 +20,21 @@ import org.bukkit.event.Listener;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableCreator;
+import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
 
-public abstract class AbstractStage implements Listener{
+public abstract class AbstractStage implements Listener {
 	
 	private final StageType<?> type;
 	protected boolean asyncEnd = false;
@@ -41,11 +46,11 @@ public abstract class AbstractStage implements Listener{
 	private List<AbstractReward> rewards = new ArrayList<>();
 	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
 	
+	private List<StageOption> options;
+	
 	protected AbstractStage(QuestBranch branch) {
 		this.branch = branch;
-		
-		this.type = QuestsAPI.stages.stream().filter(type -> type.clazz == getClass()).findAny()
-				.orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
+		this.type = QuestsAPI.getStages().getType(getClass()).orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
@@ -79,6 +84,14 @@ public abstract class AbstractStage implements Listener{
 	public void setValidationRequirements(List<AbstractRequirement> validationRequirements) {
 		this.validationRequirements = validationRequirements;
 		validationRequirements.forEach(requirement -> requirement.attach(branch.getQuest()));
+	}
+	
+	public List<StageOption> getOptions() {
+		return options;
+	}
+	
+	public void setOptions(List<StageOption> options) {
+		this.options = options;
 	}
 
 	public String getCustomText(){
@@ -140,16 +153,29 @@ public abstract class AbstractStage implements Listener{
 		return true;
 	}
 	
-	public String debugName() {
-		return "quest " + branch.getQuest().getID() + ", branch " + branch.getID() + ", stage " + getID() + "(" + type.id + ")";
+	@Override
+	public String toString() {
+		return "stage " + getID() + "(" + type.getID() + ") of quest " + branch.getQuest().getID() + ", branch " + branch.getID();
 	}
 
+	private void propagateStageHandlers(Consumer<StageHandler> consumer) {
+		Consumer<StageHandler> newConsumer = handler -> {
+			try {
+				consumer.accept(handler);
+			}catch (Exception ex) {
+				BeautyQuests.logger.severe("An error occurred while updating stage handler.", ex);
+			}
+		};
+		QuestsAPI.getQuestsHandlers().forEach(newConsumer);
+		options.forEach(newConsumer);
+	}
+	
 	/**
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
 	 */
 	protected final void finishStage(Player p) {
-		branch.finishStage(p, this);
+		Utils.runSync(() -> branch.finishStage(p, this));
 	}
 	
 	/**
@@ -170,7 +196,7 @@ public abstract class AbstractStage implements Listener{
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageStart(acc, this));
+		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 	}
 	
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
@@ -181,7 +207,7 @@ public abstract class AbstractStage implements Listener{
 	 */
 	public void end(PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageEnd(acc, this));
+		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 	}
 	
 	/**
@@ -189,7 +215,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just joined
 	 */
 	public void joins(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageJoin(acc, p, this));
+		propagateStageHandlers(handler -> handler.stageJoin(acc, p, this));
 	}
 	
 	/**
@@ -197,7 +223,7 @@ public abstract class AbstractStage implements Listener{
 	 * @param acc PlayerAccount which just left
 	 */
 	public void leaves(PlayerAccount acc, Player p) {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLeave(acc, p, this));
+		propagateStageHandlers(handler -> handler.stageLeave(acc, p, this));
 	}
 	
 	public final String getDescriptionLine(PlayerAccount acc, Source source){
@@ -205,8 +231,8 @@ public abstract class AbstractStage implements Listener{
 		try{
 			return descriptionLine(acc, source);
 		}catch (Exception ex){
-			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + debugName(), ex);
-			return "§a" + type.name;
+			BeautyQuests.logger.severe("An error occurred while getting the description line for player " + acc.getName() + " in " + toString(), ex);
+			return "§a" + type.getName();
 		}
 	}
 	
@@ -227,7 +253,7 @@ public abstract class AbstractStage implements Listener{
 	
 	public void updateObjective(PlayerAccount acc, Player p, String dataKey, Object dataValue) {
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
-		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + debugName());
+		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + toString());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), datas);
 		branch.getBranchesManager().objectiveUpdated(p, acc);
@@ -242,7 +268,7 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageUnload(this));
+		propagateStageHandlers(handler -> handler.stageUnload(this));
         HandlerList.unregisterAll(this);
 		rewards.forEach(AbstractReward::detach);
 		validationRequirements.forEach(AbstractRequirement::detach);
@@ -252,11 +278,12 @@ public abstract class AbstractStage implements Listener{
 	 * Called when the stage loads
 	 */
 	public void load() {
-		QuestsAPI.propagateQuestsHandlers(handler -> handler.stageLoad(this));
+		propagateStageHandlers(handler -> handler.stageLoad(this));
 	}
 	
 	@EventHandler
 	public void onJoin(PlayerAccountJoinEvent e) {
+		if (e.isFirstJoin()) return;
 		if (branch.hasStageLaunched(e.getPlayerAccount(), this)) {
 			joins(e.getPlayerAccount(), e.getPlayer());
 		}
@@ -278,24 +305,26 @@ public abstract class AbstractStage implements Listener{
 	protected void serialize(ConfigurationSection section) {
 		Map<String, Object> map = new HashMap<>();
 		serialize(map);
-		map.forEach(section::set);
+		Utils.setConfigurationSectionContent(section, map);
 	}
 	
 	public final void save(ConfigurationSection section) {
 		serialize(section);
 		
-		section.set("stageType", type.id);
+		section.set("stageType", type.getID());
 		section.set("customText", customText);
 		if (startMessage != null) section.set("text", startMessage);
 		
-		if (!rewards.isEmpty()) section.set("rewards", Utils.serializeList(rewards, AbstractReward::serialize));
-		if (!validationRequirements.isEmpty()) section.set("requirements", Utils.serializeList(validationRequirements, AbstractRequirement::serialize));
+		if (!rewards.isEmpty()) section.set("rewards", SerializableObject.serializeList(rewards));
+		if (!validationRequirements.isEmpty()) section.set("requirements", SerializableObject.serializeList(validationRequirements));
+		
+		options.stream().filter(StageOption::shouldSave).forEach(option -> option.save(section.createSection("options." + option.getCreator().getID())));
 	}
 	
 	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {
 		String typeID = section.getString("stageType");
 		
-		Optional<StageType<?>> stageTypeOptional = QuestsAPI.stages.stream().filter(type -> type.id.equals(typeID)).findAny();
+		Optional<StageType<?>> stageTypeOptional = QuestsAPI.getStages().getType(typeID);
 		if (!stageTypeOptional.isPresent()) {
 			BeautyQuests.getInstance().getLogger().severe("Unknown stage type : " + typeID);
 			return null;
@@ -307,11 +336,24 @@ public abstract class AbstractStage implements Listener{
 			return null;
 		}
 
-		AbstractStage st = stageType.loader.supply(section, branch);
+		AbstractStage st = stageType.getLoader().supply(section, branch);
 		if (section.contains("text")) st.startMessage = section.getString("text");
 		if (section.contains("customText")) st.customText = section.getString("customText");
 		if (section.contains("rewards")) st.setRewards(QuestObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize));
 		if (section.contains("requirements")) st.setValidationRequirements(QuestObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize));
+		
+		st.options = stageType.getOptionsRegistry().getCreators().stream().map(SerializableCreator::newObject).collect(Collectors.toList());
+		if (section.contains("options")) {
+			ConfigurationSection optionsSection = section.getConfigurationSection("options");
+			optionsSection.getKeys(false).forEach(optionID -> {
+				st.options
+					.stream()
+					.filter(option -> option.getCreator().getID().equals(optionID))
+					.findAny()
+					.ifPresent(option -> option.load(optionsSection.getConfigurationSection(optionID)));
+			});
+			
+		}
 		
 		return st;
 	}

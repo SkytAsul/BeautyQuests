@@ -15,10 +15,22 @@ import com.google.gson.stream.JsonWriter;
 
 public class CustomizedObjectTypeAdapter extends TypeAdapter<Object> {
 
-	private static final CustomizedObjectTypeAdapter adapter = new CustomizedObjectTypeAdapter();
-	public static final GsonBuilder GSON_BUILDER = new GsonBuilder().registerTypeAdapter(Map.class, adapter).registerTypeAdapter(List.class, adapter);
-	public static final Gson GSON = GSON_BUILDER.create();
+	public static final CustomizedObjectTypeAdapter CUSTOM_ADAPTER = new CustomizedObjectTypeAdapter();
+	public static final Gson GSON = new GsonBuilder()
+			.registerTypeAdapter(Map.class, CUSTOM_ADAPTER)
+			.registerTypeAdapter(List.class, CUSTOM_ADAPTER)
+			.create();
 
+	public static <T> T deserializeNullable(String json, Class<T> classOfT) {
+		if (json == null) return null;
+		return GSON.fromJson(json, classOfT);
+	}
+	
+	public static String serializeNullable(Object object) {
+		if (object == null) return null;
+		return GSON.toJson(object);
+	}
+	
 	private final TypeAdapter<Object> delegate = new Gson().getAdapter(Object.class);
 
 	@Override

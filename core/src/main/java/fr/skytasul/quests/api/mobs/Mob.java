@@ -1,29 +1,34 @@
 package fr.skytasul.quests.api.mobs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Entity;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public class Mob<Data> implements Cloneable {
+public class Mob<D> implements Cloneable {
 
-	protected final MobFactory<Data> factory;
-	protected final Data data;
+	protected final MobFactory<D> factory;
+	protected final D data;
 	protected String customName;
 
-	public Mob(MobFactory<Data> factory, Data data) {
+	public Mob(MobFactory<D> factory, D data) {
 		Validate.notNull(factory, "Mob factory cannot be null");
 		Validate.notNull(data, "Mob data cannot be null");
 		this.factory = factory;
 		this.data = data;
+	}
+	
+	public MobFactory<D> getFactory() {
+		return factory;
+	}
+	
+	public D getData() {
+		return data;
 	}
 	
 	public String getName() {
@@ -34,26 +39,21 @@ public class Mob<Data> implements Cloneable {
 		this.customName = customName;
 	}
 
-	public ItemStack createItemStack(int amount) {
-		List<String> lore = new ArrayList<>();
-		lore.add(Lang.Amount.format(amount));
-		lore.addAll(factory.getDescriptiveLore(data));
-		lore.add("");
-		lore.add(Lang.click.toString());
-		XMaterial mobItem;
+	public XMaterial getMobItem() {
 		try {
-			mobItem = XMaterial.mobItem(factory.getEntityType(data));
+			return Utils.mobItem(factory.getEntityType(data));
 		}catch (Exception ex) {
-			mobItem = XMaterial.SPONGE;
 			BeautyQuests.logger.warning("Unknow entity type for mob " + factory.getName(data), ex);
+			return XMaterial.SPONGE;
 		}
-		ItemStack item = ItemUtils.item(mobItem, getName(), lore);
-		item.setAmount(Math.min(amount, 64));
-		return item;
 	}
 	
 	public boolean applies(Object data) {
 		return factory.mobApplies(this.data, data);
+	}
+	
+	public boolean appliesEntity(Entity entity) {
+		return factory.bukkitMobApplies(data, entity);
 	}
 	
 	@Override
@@ -75,9 +75,9 @@ public class Mob<Data> implements Cloneable {
 	}
 
 	@Override
-	public Mob<Data> clone(){
+	public Mob<D> clone() {
 		try {
-			return (Mob<Data>) super.clone();
+			return (Mob<D>) super.clone();
 		}catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;

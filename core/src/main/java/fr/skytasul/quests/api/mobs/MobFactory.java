@@ -84,6 +84,11 @@ public abstract interface MobFactory<T> extends Listener {
 		return Objects.equals(first, other);
 	}
 	
+	public default boolean bukkitMobApplies(T first, Entity entity) { // TODO abstract
+		BeautyQuests.logger.warning("The mob factory " + getID() + " has not been updated. Nag its author about it!");
+		return false;
+	}
+	
 	/**
 	 * Has to be called when a mob corresponding to this factory has been killed
 	 * @param originalEvent original event
@@ -93,7 +98,6 @@ public abstract interface MobFactory<T> extends Listener {
 	 */
 	public default void callEvent(Event originalEvent, T pluginMob, Entity entity, Player player) {
 		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
-		Validate.notNull(entity, "Bukkit entity object cannot be null");
 		Validate.notNull(player, "Player cannot be null");
 		if (originalEvent != null) {
 			CompatMobDeathEvent existingCompat = eventsCache.getIfPresent(originalEvent);

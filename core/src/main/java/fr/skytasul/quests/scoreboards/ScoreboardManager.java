@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -20,9 +21,9 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
 
@@ -30,6 +31,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 
 	private final File file;
 	private Map<Player, Scoreboard> scoreboards;
+	private Map<UUID, Boolean> forceHiddenState;
 	
 	// Parameters
 	private final List<ScoreboardLine> lines = new ArrayList<>();
@@ -78,13 +80,22 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 	
 	public void removePlayerScoreboard(Player p){
-		if (scoreboards.containsKey(p)) scoreboards.remove(p).cancel();
+		Scoreboard scoreboard = scoreboards.remove(p);
+		if (scoreboard != null) {
+			scoreboard.cancel();
+			forceHiddenState.put(p.getUniqueId(), scoreboard.isForceHidden());
+		}
 	}
 	
 	public void create(Player p){
 		if (!QuestsConfiguration.showScoreboards()) return;
 		removePlayerScoreboard(p);
-		scoreboards.put(p, new Scoreboard(p, this));
+		
+		Scoreboard scoreboard = new Scoreboard(p, this);
+		scoreboards.put(p, scoreboard);
+		
+		Boolean forceHidden = forceHiddenState.remove(p.getUniqueId());
+		if (forceHidden != null && forceHidden.booleanValue()) scoreboard.hide(true);
 	}
 	
 	@Override
@@ -120,6 +131,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
 		
 		scoreboards = new HashMap<>();
+		forceHiddenState = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
 	
@@ -130,6 +142,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards deleted.");
 		scoreboards.clear();
 		scoreboards = null;
+		forceHiddenState.clear();
+		forceHiddenState = null;
 	}
 	
 	@EventHandler

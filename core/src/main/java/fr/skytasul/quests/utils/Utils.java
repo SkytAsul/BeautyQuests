@@ -1,5 +1,13 @@
 package fr.skytasul.quests.utils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,10 +19,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -23,6 +33,8 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,7 +43,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.util.Consumer;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -41,6 +52,8 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
+
+import net.md_5.bungee.api.ChatColor;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -77,7 +90,7 @@ public class Utils{
 				fw.setFireworkMeta(meta);
 			};
 			if (NMS.getMCVersion() >= 12) {
-				lc.getWorld().spawn(lc, Firework.class, fwConsumer);
+				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
 				// much better to use the built-in since 1.12 method to do operations on entity
 				// before it is sent to the players, as it will not create flickering
 			}else {
@@ -107,6 +120,8 @@ public class Utils{
 	}
 	
 	public static String millisToHumanString(long time) {
+		if (time == 0) return "x";
+		
 		StringBuilder sb = new StringBuilder();
 		
 		long weeks = time / 604_800_000;
@@ -154,6 +169,7 @@ public class Utils{
 	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
 		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
 		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+		text = ChatColor.translateAlternateColorCodes('&', text);
 		return format(text, replace);
 	}
 	
@@ -329,6 +345,25 @@ public class Utils{
 		return 0;
 	}
 	
+	public static void walkResources(Class<?> clazz, String path, int depth, Consumer<Path> consumer) throws URISyntaxException, IOException {
+		URI uri = clazz.getResource(path).toURI();
+		FileSystem fileSystem = null;
+		Path myPath;
+		try {
+			if (uri.getScheme().equals("jar")) {
+				fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+				myPath = fileSystem.getPath(path);
+			}else {
+				myPath = Paths.get(uri);
+			}
+			
+			try (Stream<Path> walker = Files.walk(myPath, depth)) {
+				walker.forEach(consumer);
+			}
+		}finally {
+			if (fileSystem != null) fileSystem.close();
+		}
+	}
 	
 	
 	public static void runOrSync(Runnable run) {
@@ -353,11 +388,11 @@ public class Utils{
 		return ls;
 	}
 	
-	public static <T> List<T> deserializeList(List<Map<String, Object>> serialized, Function<Map<String, Object>, T> deserialize){
+	public static <T> List<T> deserializeList(List<Map<?, ?>> serialized, Function<Map<String, Object>, T> deserialize) {
 		List<T> ls = new ArrayList<>();
 		if (serialized != null) {
-			for (Map<String, Object> map : serialized) {
-				ls.add(deserialize.apply(map));
+			for (Map<?, ?> map : serialized) {
+				ls.add(deserialize.apply((Map<String, Object>) map));
 			}
 		}
 		return ls;
@@ -371,6 +406,22 @@ public class Utils{
 			}else map.put(entry.getKey(), entry.getValue());
 		}
 		return map;
+	}
+	
+	public static ConfigurationSection createConfigurationSection(Map<String, Object> content) {
+		MemoryConfiguration section = new MemoryConfiguration();
+		setConfigurationSectionContent(section, content);
+		return section;
+	}
+
+	public static void setConfigurationSectionContent(ConfigurationSection section, Map<String, Object> content) {
+		content.forEach((key, value) -> {
+			if (value instanceof Map) {
+				section.createSection(key, (Map<?, ?>) value);
+			}else {
+				section.set(key, value);
+			}
+		});
 	}
 	
 	public static List<ItemStack> combineItems(List<ItemStack> items) {
@@ -482,6 +533,23 @@ public class Utils{
 			if (meta.hasLore() && meta.getLore().contains(lore)) return true;
 		}
 		return false;
+	}
+
+	public static XMaterial mobItem(EntityType type) {
+		if (type == null) return XMaterial.SPONGE;
+		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
+		if (material.isPresent()) return material.get();
+		if (type == EntityType.WITHER) return XMaterial.WITHER_SKELETON_SKULL;
+		if (type == EntityType.IRON_GOLEM) return XMaterial.IRON_BLOCK;
+		if (type == EntityType.SNOWMAN) return XMaterial.SNOW_BLOCK;
+		if (type == EntityType.MUSHROOM_COW) return XMaterial.MOOSHROOM_SPAWN_EGG;
+		if (type == EntityType.GIANT) return XMaterial.ZOMBIE_SPAWN_EGG;
+		if (type == EntityType.ARMOR_STAND) return XMaterial.ARMOR_STAND;
+		if (type == EntityType.PLAYER) return XMaterial.PLAYER_HEAD;
+		if (type == EntityType.ENDER_DRAGON) return XMaterial.DRAGON_HEAD;
+		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN")) return XMaterial.ZOMBIFIED_PIGLIN_SPAWN_EGG;
+		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
+		return XMaterial.SPONGE;
 	}
 	
 }

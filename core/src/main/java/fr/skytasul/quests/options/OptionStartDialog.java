@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.stages.Dialogable;
+import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
@@ -50,7 +50,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().messages.size() + " line(s)" };
+		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + Lang.AmountDialogLines.format(getValue().messages.size()) };
 	}
 	
 	@Override

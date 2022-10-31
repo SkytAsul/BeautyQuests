@@ -1,5 +1,6 @@
 package fr.skytasul.quests.utils.nms;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -30,8 +31,8 @@ public class NullNMS extends NMS {
 	}
 
 	@Override
-	public double entityNameplateHeight(LivingEntity en){
-		return en.getEyeHeight() + 1;
+	public double entityNameplateHeight(Entity en){
+		return en instanceof LivingEntity ? ((LivingEntity) en).getEyeHeight() + 1 : 1;
 	}
 
 	public Object getIChatBaseComponent(String text){

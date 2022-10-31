@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,6 +36,11 @@ public class BukkitEntityFactory implements MobFactory<EntityType> {
 	@Override
 	public void itemClick(Player p, Consumer<EntityType> run) {
 		new EntityTypeGUI(run, x -> x != null).create(p);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(EntityType first, Entity entity) {
+		return entity.getType() == first;
 	}
 
 	@Override

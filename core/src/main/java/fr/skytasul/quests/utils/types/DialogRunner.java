@@ -154,10 +154,12 @@ public class DialogRunner {
 		if (dialog.messages.isEmpty()) return true;
 		
 		int id = ++status.lastId;
-		if (id == dialog.messages.size()) {
-			// dialog ended correctly
-			return true;
-		}
+		boolean endOfDialog = id == dialog.messages.size();
+		
+		if (status.runningMsg != null) status.runningMsg.finished(p, endOfDialog);
+		if (status.runningMsgTask != null) status.runningMsgTask.cancel();
+		
+		if (endOfDialog) return true;
 		
 		Message msg = dialog.messages.get(id);
 		if (msg == null) {
@@ -165,9 +167,11 @@ public class DialogRunner {
 			return true;
 		}
 		
+		status.runningMsg = msg;
 		DialogSendMessageEvent event = new DialogSendMessageEvent(dialog, msg, npc, p);
 		Bukkit.getPluginManager().callEvent(event);
-		if (!event.isCancelled()) msg.sendMessage(p, dialog.getNPCName(npc), id, dialog.messages.size());
+		if (!event.isCancelled())
+			status.runningMsgTask = msg.sendMessage(p, dialog.getNPCName(npc), id, dialog.messages.size());
 		
 		return false;
 	}
@@ -213,7 +217,7 @@ public class DialogRunner {
 	}
 	
 	public void unload() {
-		players.values().forEach(PlayerStatus::cancel);
+		if (!players.isEmpty()) players.values().forEach(PlayerStatus::cancel);
 		players.clear();
 		handlePlayerChanges();
 	}
@@ -221,6 +225,8 @@ public class DialogRunner {
 	class PlayerStatus {
 		int lastId = -1;
 		BukkitTask task = null;
+		BukkitTask runningMsgTask = null;
+		Message runningMsg = null;
 		
 		void cancel() {
 			if (task != null) {

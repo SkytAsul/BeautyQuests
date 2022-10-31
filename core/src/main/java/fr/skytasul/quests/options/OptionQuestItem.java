@@ -64,8 +64,15 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 				setValue(obj.parseItem());
 			}
 			gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
+			ItemStack setItem = gui.inv.getItem(slot);
+			if (setItem == null || setItem.getType() == Material.AIR) {
+				// means that the material cannot be treated as an inventory item (ex: fire)
+				resetValue();
+				Lang.INVALID_ITEM_TYPE.send(p);
+				gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
+			}
 			gui.reopen(p);
-		}, new MaterialParser(false, false)).passNullIntoEndConsumer().enter();
+		}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().enter();
 	}
 	
 	@Override

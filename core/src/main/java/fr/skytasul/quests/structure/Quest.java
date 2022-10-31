@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -25,11 +26,15 @@ import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -40,13 +45,14 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-public class Quest implements Comparable<Quest>, OptionSet {
+public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProvider {
 	
 	private final int id;
 	private final File file;
 	private BranchesManager manager;
 	
 	private List<QuestOption<?>> options = new ArrayList<>();
+	private List<QuestDescriptionProvider> descriptions = new ArrayList<>();
 	
 	private boolean removed = false;
 	public boolean asyncEnd = false;
@@ -60,15 +66,20 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		this.id = id;
 		this.file = file;
 		this.manager = new BranchesManager(this);
+		this.descriptions.add(this);
 	}
 	
 	public void load() {
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
+	public List<QuestDescriptionProvider> getDescriptions() {
+		return descriptions;
+	}
+	
 	@Override
 	public Iterator<QuestOption> iterator() {
-		return (Iterator<QuestOption>) options;
+		return (Iterator) options.iterator();
 	}
 	
 	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
@@ -153,8 +164,8 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return getOptionValueOrDef(OptionRepeatable.class);
 	}
 	
-	public boolean isHidden() {
-		return getOptionValueOrDef(OptionHide.class);
+	public boolean isHidden(VisibilityLocation location) {
+		return !getOptionValueOrDef(OptionVisibility.class).contains(location);
 	}
 	
 	public boolean isHiddenWhenRequirementsNotMet() {
@@ -215,13 +226,27 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
 	}
+
+	public int getMaxLaunchedQuestByPermission(PlayerAccount acc){
+        int max = 0;
+        for (PermissionAttachmentInfo next : acc.getPlayer().getEffectivePermissions()) {
+            if (next.getPermission().contains("beautyquests.start")) {
+                if(max < Integer.parseInt(next.getPermission().replaceAll("beautyquests\\.start\\.", ""))){
+                    max = Integer.parseInt(next.getPermission().replaceAll("beautyquests\\.start\\.", ""));
+                }
+            }
+        }
+        return max;
+    }
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
 			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
-				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
-				return false;
+				if(QuestAPI.getQuests().getStartedSize(acc) >= getMaxLaunchedQuestByPermission(acc)){
+					if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
+					return false;
+				}
 			}
 		}
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
@@ -271,7 +296,20 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return branch.getDescriptionLine(acc, source);
 	}
 
+	@Override
+	public List<String> provideDescription(QuestDescriptionContext context) {
+		if (!context.getPlayerAccount().isCurrent()) return null;
+		if (context.getCategory() != Category.IN_PROGRESS) return null;
+		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), Source.MENU));
+	}
+	
+	@Override
+	public double getDescriptionPriority() {
+		return 15;
+	}
+	
 	public void attemptStart(Player p, Runnable atStart) {
+		if (!isLauncheable(p, PlayersManager.getPlayerAccount(p), true)) return;
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
 			new ConfirmGUI(() -> {
@@ -344,6 +382,7 @@ public class Quest implements Comparable<Quest>, OptionSet {
 				manager.remove(acc);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
+				questDatas.setStartingTime(0);
 				if (hasOption(OptionQuestPool.class)) getOptionValueOrDef(OptionQuestPool.class).questCompleted(acc, Quest.this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();

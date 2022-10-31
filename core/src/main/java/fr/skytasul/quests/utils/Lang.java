@@ -1,16 +1,11 @@
 package fr.skytasul.quests.utils;
 
-import java.util.function.Supplier;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-
+import fr.skytasul.quests.api.Locale;
 
 /**
  * Stores all string paths and methods to format and send them to players.
  */
-public enum Lang{
+public enum Lang implements Locale {
 	
 	/* Formats (must be first to be used after) */
 	Prefix("misc.format.prefix"),
@@ -20,6 +15,7 @@ public enum Lang{
 	EditorPrefix("misc.format.editorPrefix"),
 	ErrorPrefix("misc.format.errorPrefix"),
 	SuccessPrefix("misc.format.successPrefix"),
+	RequirementNotMetPrefix("misc.format.requirementNotMetPrefix"),
 	
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),
@@ -100,6 +96,7 @@ public enum Lang{
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
 	NUMBER_INVALID("msg.number.invalid"),
+	NUMBER_NOT_IN_BOUNDS("msg.number.notInBounds"), // 0: min, 1: max
 	ERROR_OCCURED("msg.errorOccurred"),
 	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
@@ -113,7 +110,7 @@ public enum Lang{
 	PLAYER_NOT_ONLINE("msg.playerNotOnline"),
 	PLAYER_DATA_NOT_FOUND("msg.playerDataNotFound"), // 0: player name
 	
-	VERSION_REQUIRED("msg.versionRequired"), // 0: version
+	VERSION_REQUIRED("msg.versionRequired", ErrorPrefix), // 0: version
 	
 	RESTART_SERVER("msg.restartServer"),
 	
@@ -211,6 +208,7 @@ public enum Lang{
 	BLOCK_TAGS("msg.editor.blockTag"), // 0: available block tags
 	
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
+	DAMAGE_AMOUNT("msg.editor.typeDamageAmount", EditorPrefix),
 	
 	LOCATION_GO("msg.editor.goToLocation"),
 	LOCATION_RADIUS("msg.editor.typeLocationRadius"),
@@ -218,7 +216,8 @@ public enum Lang{
 	
 	GAME_TICKS("msg.editor.typeGameTicks"),
 	
-	NO_SUCH_ELEMENT("msg.editor.noSuchElement"), // 0: available elements
+	AVAILABLE_ELEMENTS("msg.editor.availableElements"), // 0: available elements
+	NO_SUCH_ELEMENT("msg.editor.noSuchElement", EditorPrefix), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
 	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
@@ -230,11 +229,15 @@ public enum Lang{
 	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch", EditorPrefix),
 	POOL_TIME("msg.editor.pool.timeMsg", EditorPrefix),
 	
-	TITLE_TITLE("msg.editor.title.title"),
-	TITLE_SUBTITLE("msg.editor.title.subtitle"),
-	TITLE_FADEIN("msg.editor.title.fadeIn"),
-	TITLE_STAY("msg.editor.title.stay"),
-	TITLE_FADEOUT("msg.editor.title.fadeOut"),
+	TITLE_TITLE("msg.editor.title.title", EditorPrefix),
+	TITLE_SUBTITLE("msg.editor.title.subtitle", EditorPrefix),
+	TITLE_FADEIN("msg.editor.title.fadeIn", EditorPrefix),
+	TITLE_STAY("msg.editor.title.stay", EditorPrefix),
+	TITLE_FADEOUT("msg.editor.title.fadeOut", EditorPrefix),
+	
+	COLOR_NAMED_EDITOR("msg.editor.colorNamed", EditorPrefix),
+	COLOR_EDITOR("msg.editor.color", EditorPrefix),
+	INVALID_COLOR("msg.editor.invalidColor", ErrorPrefix),
 	
 	FIREWORK_INVALID("msg.editor.firework.invalid", ErrorPrefix),
 	FIREWORK_INVALID_HAND("msg.editor.firework.invalidHand", ErrorPrefix),
@@ -306,7 +309,7 @@ public enum Lang{
 	MYTHICMOB_LIST("msg.editor.mythicmobs.list"),
 	MYTHICMOB_NOT_EXISTS("msg.editor.mythicmobs.isntMythicMob"),
 	MYTHICMOB_DISABLED("msg.editor.mythicmobs.disabled"),
-	EPICBOSS_NOT_EXISTS("msg.editor.epicBossDoesntExist"),
+	ADVANCED_SPAWNERS_MOB("msg.editor.advancedSpawnersMob", EditorPrefix),
 	
 	TEXTLIST_SYNTAX("msg.editor.textList.syntax"),
 	TEXTLIST_TEXT_ADDED("msg.editor.textList.added"),
@@ -355,6 +358,9 @@ public enum Lang{
 	stagePlayTime("inv.create.playTime"),
 	stageBreedAnimals("inv.create.breedAnimals"),
 	stageTameAnimals("inv.create.tameAnimals"),
+	stageDeath("inv.create.death"),
+	stageDealDamage("inv.create.dealDamage"),
+	stageEatDrink("inv.create.eatDrink"),
 	stageText("inv.create.NPCText"),
 	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
@@ -384,13 +390,23 @@ public enum Lang{
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
 	editBucketAmount("inv.create.editBucketAmount"),
+	changeTicksRequired("inv.create.changeTicksRequired"),
+	changeEntityType("inv.create.changeEntityType"),
+	
 	stageLocationLocation("inv.create.editLocation"),
 	stageLocationRadius("inv.create.editRadius"),
 	stageLocationCurrentRadius("inv.create.currentRadius"), // 0: radius
 	stageLocationWorldPattern("inv.create.stage.location.worldPattern"),
 	stageLocationWorldPatternLore("inv.create.stage.location.worldPatternLore"),
-	changeTicksRequired("inv.create.changeTicksRequired"),
-	changeEntityType("inv.create.changeEntityType"),
+
+	stageDeathCauses("inv.create.stage.death.causes"),
+	stageDeathCauseAny("inv.create.stage.death.anyCause"),
+	stageDeathCausesSet("inv.create.stage.death.setCauses"), // 0: causes amount
+	
+	stageDealDamageValue("inv.create.stage.dealDamage.damage"),
+	stageDealDamageMobs("inv.create.stage.dealDamage.targetMobs"),
+	
+	stageEatDrinkItems("inv.create.stage.eatDrink.items"),
 	
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
@@ -413,8 +429,6 @@ public enum Lang{
 	startableFromGUILore("inv.details.startableFromGUILore"),
 	scoreboard("inv.details.scoreboardItem"),
 	scoreboardLore("inv.details.scoreboardItemLore"),
-	hide("inv.details.hideItem"),
-	hideLore("inv.details.hideItemLore"),
 	hideNoRequirements("inv.details.hideNoRequirementsItem"),
 	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
@@ -479,6 +493,8 @@ public enum Lang{
 	optionFirework("inv.details.firework"),
 	optionFireworkLore("inv.details.fireworkLore"),
 	optionFireworkDrop("inv.details.fireworkLoreDrop"),
+	optionVisibility("inv.details.visibility"),
+	optionVisibilityLore("inv.details.visibilityLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
@@ -517,6 +533,7 @@ public enum Lang{
 	mythicMob("inv.mobSelect.mythicMob"),
 	epicBoss("inv.mobSelect.epicBoss"),
 	boss("inv.mobSelect.boss"),
+	advancedSpawners("inv.mobSelect.advancedSpawners"),
 	
 	location("inv.stageEnding.locationTeleport"),
 	command("inv.stageEnding.command"),
@@ -613,8 +630,7 @@ public enum Lang{
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
 	poolEdit("inv.poolsManage.edit"),
-	poolChoose(
-			"inv.poolsManage.choose"),
+	poolChoose("inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 	
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
@@ -652,6 +668,26 @@ public enum Lang{
 	title_stay("inv.editTitle.stay"),
 	title_fadeOut("inv.editTitle.fadeOut"),
 	
+	INVENTORY_PARTICLE_EFFECT("inv.particleEffect.name"),
+	particle_shape("inv.particleEffect.shape"),
+	particle_type("inv.particleEffect.type"),
+	particle_color("inv.particleEffect.color"),
+	
+	INVENTORY_PARTICLE_LIST("inv.particleList.name"),
+	particle_colored("inv.particleList.colored"),
+	
+	INVENTORY_DAMAGE_CAUSE("inv.damageCause.name"),
+	
+	INVENTORY_DAMAGE_CAUSES_LIST("inv.damageCausesList.name"),
+	
+	INVENTORY_VISIBILITY("inv.visibility.name"),
+	visibility_notStarted("inv.visibility.notStarted"),
+	visibility_inProgress("inv.visibility.inProgress"),
+	visibility_finished("inv.visibility.finished"),
+	visibility_maps("inv.visibility.maps"),
+	
+	INVENTORY_EQUIPMENT_SLOTS("inv.equipmentSlots.name"),
+	
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),
@@ -686,6 +722,10 @@ public enum Lang{
 	SCOREBOARD_TAME("scoreboard.stage.tame"), // 0: animals to breed
 	SCOREBOARD_LOCATION("scoreboard.stage.location"), // 0: x, 1: y, 2: z, 3: world
 	SCOREBOARD_PLAY_TIME("scoreboard.stage.playTimeFormatted"), // 0: remaining time
+	SCOREBOARD_DIE("scoreboard.stage.die"),
+	SCOREBOARD_DEAL_DAMAGE_ANY("scoreboard.stage.dealDamage.any"), // 0: damage
+	SCOREBOARD_DEAL_DAMAGE_MOBS("scoreboard.stage.dealDamage.mobs"), // 0: damage, 1: mobs
+	SCOREBOARD_EAT_DRINK("scoreboard.stage.eatDrink"), // 0: items
 	
 	/* Indications */
 	
@@ -732,6 +772,9 @@ public enum Lang{
 	PlayTime("misc.stageType.playTime"),
 	Breed("misc.stageType.breedAnimals"),
 	Tame("misc.stageType.tameAnimals"),
+	Death("misc.stageType.die"),
+	DealDamage("misc.stageType.dealDamage"),
+	EatDrink("misc.stageType.eatDrink"),
 	
 	ComparisonEquals("misc.comparison.equals"),
 	ComparisonDifferent("misc.comparison.different"),
@@ -754,6 +797,7 @@ public enum Lang{
 	RQuest("misc.requirement.quest"),
 	RSkillLvl("misc.requirement.mcMMOSkillLevel"),
 	RMoney("misc.requirement.money"),
+	REquipment("misc.requirement.equipment"),
 	
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
@@ -765,6 +809,12 @@ public enum Lang{
 	ClickShiftRight("misc.click.shift-right"),
 	ClickShiftLeft("misc.click.shift-left"),
 	ClickMiddle("misc.click.middle"),
+	
+	AmountItems("misc.amounts.items"), // 0: amount
+	AmountComparisons("misc.amounts.comparisons"), // 0: amount
+	AmountDialogLines("misc.amounts.dialogLines"), // 0: amount
+	AmountPermissions("misc.amounts.permissions"), // 0: amount
+	AmountMobs("misc.amounts.mobs"), // 0: amount
 	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
@@ -806,45 +856,24 @@ public enum Lang{
 		this.prefix = prefix;
 	}
 	
+	@Override
 	public String getPath(){
 		return path;
 	}
 	
-	private void setValue(String value){
+	@Override
+	public void setValue(String value) {
 		this.value = value;
 	}
 	
 	@Override
-	public String toString(){
+	public String getValue() {
 		return prefix == null ? value : (prefix.toString() + value);
 	}
 	
-	public String format(Object... replace){
-		return Utils.format(toString(), replace);
+	@Override
+	public String toString() {
+		return getValue();
 	}
-	
-	public String format(Supplier<Object>... replace) {
-		return Utils.format(toString(), replace);
-	}
-	
-	public void send(CommandSender sender, Object... args){
-		Utils.sendMessage(sender, toString(), args);
-	}
-	
-	public void sendWP(CommandSender p, Object... args){
-		Utils.sendMessageWP(p, toString(), args);
-	}
-
-
-	public static void loadStrings(YamlConfiguration defaultConfig, YamlConfiguration config) {
-		for (Lang l : values()){
-			String value = config.getString(l.path, null);
-			if (value == null) value = defaultConfig.getString(l.path, null);
-			if (value == null) DebugUtils.logMessage("Unavailable string in config for key " + l.path);
-			l.setValue(ChatUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
-		}
-	}
-	
-	
 	
 }

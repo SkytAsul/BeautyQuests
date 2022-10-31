@@ -50,7 +50,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(new Line(line));
 		}
 
-		launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
+		launched = QuestsAPI.getQuests().getQuestsStarted(acc, false, true);
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 		
@@ -179,7 +179,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
 			if (errorWhenUnknown) {
-				launched = QuestsAPI.getQuests().getQuestsStarted(acc, true);
+				launched = QuestsAPI.getQuests().getQuestsStarted(acc, false, true);
 				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 			}else return;
 		}
@@ -201,6 +201,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 	
 	private void updateBoard(boolean update, boolean time) {
+		if (board == null && !time) return;
 		List<String> linesStrings = new ArrayList<>(lines.size());
 		for (int i = 0; i < lines.size(); i++) {
 			Line line = lines.get(i);
@@ -218,7 +219,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				linesStrings.add("§c§lline error");
 			}
 		}
-		if (update) board.updateLines(linesStrings);
+		if (update && board != null) board.updateLines(linesStrings);
 	}
 	
 	public void setCustomLine(int id, String value){

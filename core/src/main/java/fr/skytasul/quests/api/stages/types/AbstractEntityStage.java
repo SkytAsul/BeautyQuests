@@ -1,6 +1,12 @@
-package fr.skytasul.quests.api.stages;
+package fr.skytasul.quests.api.stages.types;
 
+import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Supplier;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,6 +15,10 @@ import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,7 +33,8 @@ import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
-public abstract class AbstractEntityStage extends AbstractStage {
+@LocatableType (types = LocatedType.ENTITY)
+public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable {
 	
 	protected EntityType entity;
 	protected int amount;
@@ -40,7 +51,7 @@ public abstract class AbstractEntityStage extends AbstractStage {
 			if (entity == null || type.equals(entity)) {
 				Integer playerAmount = getPlayerAmount(acc);
 				if (playerAmount == null) {
-					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + debugName() + ". This is a bug!");
+					BeautyQuests.logger.warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
 				}else if (playerAmount.intValue() <= 1) {
 					finishStage(p);
 				}else {
@@ -78,6 +89,28 @@ public abstract class AbstractEntityStage extends AbstractStage {
 		return new Supplier[] { () -> getMobsLeft(acc) };
 	}
 	
+	@Override
+	public boolean canBeFetchedAsynchronously() {
+		return false;
+	}
+	
+	@Override
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
+		return fetcher.getCenter().getWorld()
+				.getEntitiesByClass(entity.getEntityClass())
+				.stream()
+				.map(x -> {
+					double ds = x.getLocation().distanceSquared(fetcher.getCenter());
+					if (ds > fetcher.getMaxDistanceSquared()) return null;
+					return new AbstractMap.SimpleEntry<>(x, ds);
+				})
+				.filter(Objects::nonNull)
+				.sorted(Comparator.comparing(Entry::getValue))
+				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
+				.spliterator();
+	}
+	
 	public abstract static class AbstractCreator<T extends AbstractEntityStage> extends StageCreation<T> {
 		
 		protected EntityType entity = null;
@@ -105,7 +138,7 @@ public abstract class AbstractEntityStage extends AbstractStage {
 		
 		public void setEntity(EntityType entity) {
 			this.entity = entity;
-			line.editItem(6, ItemUtils.lore(line.getItem(6), entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(entity == null ? Lang.EntityTypeAny.toString() : entity.name())));
 		}
 		
 		public void setAmount(int amount) {

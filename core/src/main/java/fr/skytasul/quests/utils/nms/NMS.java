@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -40,7 +40,7 @@ public abstract class NMS{
 	
 	public abstract Object bookPacket(ByteBuf buf);
 	
-	public abstract double entityNameplateHeight(LivingEntity en); // can be remplaced by Entity.getHeight from 1.11
+	public abstract double entityNameplateHeight(Entity en); // can be remplaced by Entity.getHeight from 1.11
 	
 	public List<String> getAvailableBlockProperties(Material material){
 		throw new UnsupportedOperationException();

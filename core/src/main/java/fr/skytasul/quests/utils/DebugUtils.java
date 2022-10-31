@@ -12,7 +12,7 @@ public class DebugUtils {
 	private static Map<String, Long> errors = new HashMap<>();
 	
 	public static void logMessage(String msg){
-		BeautyQuests.getInstance().getLoggerHandler().write("[DEBUG]: " + msg);
+		BeautyQuests.getInstance().getLoggerHandler().write(msg, "DEBUG");
 	}
 	
 	public static String stackTraces(int from, int to){

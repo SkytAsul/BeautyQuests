@@ -1,9 +1,9 @@
 package fr.skytasul.quests.utils.nms;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.minecraft.server.v1_9_R1.EnumChatFormat;
@@ -28,8 +28,8 @@ public class v1_9_R1 extends NMS{
 	}
 
 	@Override
-	public double entityNameplateHeight(LivingEntity en){
-		return ((CraftLivingEntity) en).getHandle().length;
+	public double entityNameplateHeight(Entity en){
+		return ((CraftEntity) en).getHandle().length;
 	}
 
 	public Object getIChatBaseComponent(String text){

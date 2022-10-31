@@ -40,6 +40,7 @@ msg:
   writeMessage: '§aNapisz wiadomość, która zostanie wysłana graczowi'
   writeStartMessage: '§aNapisz wiadomość która będzie się wyświetlać na początku zadania, wpisz "null" aby pozostawić domyślną, wpisz "none" aby zostawić puste:'
   writeEndMsg: '§aNapisz wiadomość, która zostanie wysłana na koniec zadania, "null" jeśli chcesz domyślną lub "none" jeśli nie chcesz. Możesz użyć "{0}", które zostanie zastąpione otrzymanymi nagrodami.'
+  writeEndSound: '§aWpisz nazwę dźwięku, który usłyszy gracz na końcu zadania, wpisz "null" aby pozostawić domyślny dźwięk lub "none", aby pozostawić puste:'
   writeDescriptionText: '§aNapisz tekst, który opisuje cel tego etapu:'
   writeStageText: '§aNapisz tekst, który zostanie wysłany do gracza na początku tego etapu:'
   moveToTeleportPoint: '§aUdaj się do poszukiwanej lokalizacji.'
@@ -73,6 +74,7 @@ msg:
     negative: '§cMusisz wprowadzić liczbę dodatnią!'
     zero: '§cMusisz podać liczbę inną od 0!'
     invalid: '§c{0} nie jest prawidłową liczbą.'
+    notInBounds: '§cWartość, którą wpiszesz musi mieścić się w zakresie od {0} do {1}'
   errorOccurred: '§cWystąpił błąd, skontaktuj się z administratorem! §4§lKod błędu: {0}'
   commandsDisabled: '§cObecnie nie możesz wykonywać poleceń!'
   indexOutOfBounds: '§cLiczba {0} jest poza granicami! Musi być pomiędzy {1} a {2}.'
@@ -87,6 +89,7 @@ msg:
   restartServer: '§7Uruchom ponownie serwer, aby zobaczyć zmiany.'
   dialogs:
     skipped: '§8Dialog pominięty.'
+    tooFar: '§7§oJesteś za daleko od {0}...'
   command:
     downloadTranslations:
       syntax: '§cMusisz określić język do pobrania. Przykład: "/quests downloadTranslations en_US".'
@@ -142,6 +145,9 @@ msg:
       resetAll: '§6Pomyślnie zresetowałeś/aś tablicę wyników gracza {0}.'
       hidden: '§6Tablica wyników gracza {0} została ukryta.'
       shown: '§6Tablica wyników gracza {0} została pokazana.'
+      own:
+        hidden: '§6Twoja tablica wyników jest teraz ukryta.'
+        shown: '§6Twoja tablica wyników pojawiła się ponownie.'
     help:
       header: '§6§lBeautyQuests - Pomoc'
       create: '§6/{0} create: §eUtwórz zadanie.'
@@ -155,8 +161,10 @@ msg:
       reload: '§6/{0} reload: §eZapisz i odśwież wszystkie konfiguracje i pliki. (§cprzestarzałe§e)'
       start: '§6/{0} start <gracz> [id]: §eWymuś rozpoczęcie zadania.'
       setItem: '§6/{0} setItem <talk|launch>: §eZapisz hologram.'
+      setFirework: '§6/{0} setFirework: §eEdytuj domyślny końcowy efekt fajerwerki.'
       adminMode: '§6/{0} adminMode: §ePrzełącz tryb administratora. (Przydatne do wyświetlania małych wiadomości dziennika.)'
       version: '§6/{0} version: §eZobacz aktualną wersję pluginu.'
+      downloadTranslations: '§6/{0} downloadTranslations <język>: §ePobiera plik z tłumaczeniem vanilla'
       save: '§6/{0} save: §eZapisz ręcznie plugin (postęp/zmiany).'
       list: '§6/{0} list: §eZobacz listę zadań. (Tylko dla obsługiwanych wersji.)'
   typeCancel: '§aNapisz "cancel" aby wrócić do ostatniego tekstu.'
@@ -164,6 +172,7 @@ msg:
     blockAmount: '§aNapisz liczbę bloków:'
     blockName: '§aNapisz nazwę bloku:'
     blockData: '§aNapisz dane bloków (dostępne dane bloków: {0}):'
+    blockTag: '§aWpisz tag bloku (dostępne tagi: §7{0}§a):'
     typeBucketAmount: '§aNapisz liczbę wiader do napełnienia:'
     goToLocation: '§aIdź do pożądanej lokalizacji dla tego etapu.'
     typeLocationRadius: '§aNapisz wymaganą odległość od lokalizacji:'
@@ -172,6 +181,7 @@ msg:
     enter:
       title: '§6~ Tryb edytora ~'
       subtitle: '§7Napisz "/quests exitEditor" aby wymusić opuszczenie edytora.'
+      list: '§c⚠ §7Otworzyłeś edytor "listy". Użyj "add", aby dodać linie. Aby uzyskać pomoc, wpisz "help" (bez znaku ukośnika). §e§lWpisz "close", aby opuścić edytor.'
     chat: '§6Jesteś obecnie w trybie edytora. Napisz "/quests exitEditor", aby wymusić opuszczenie edytora. (Wysoko niezalecane, rozważ użycie poleceń, takich jak "close" lub "cancel", aby wrócić do poprzedniego ekwipunku)'
     npc:
       enter: '§aKliknij na NPC, lub napisz "cancel".'
@@ -209,6 +219,11 @@ msg:
     dialog:
       syntax: '§cPoprawna składnia: {0}{1} <message>'
       syntaxRemove: '§cPoprawna składnia: remove <id>'
+      player: '§aWiadomość "§7{0}§a" została dodana dla gracza.'
+      npc: '§aWiadomość "§7{0}§a" została dodana dla NPC.'
+      noSender: '§aWiadomość "§7{0}§a" została dodana bez nadawcy.'
+      messageRemoved: '§aWiadomość "§7{0}§a" usunięta.'
+      edited: '§aWiadomość "§7{0}§a" została edytowana.'
       cleared: '§aUsunięto {0} wiadomość(ci).'
       help:
         header: '§6§lBeautyQuests - Pomoc do edytora okna dialogowego'
@@ -234,13 +249,17 @@ msg:
     epicBossDoesntExist: '§cTen Epicki Boss nie istnieje.'
     textList:
       syntax: '§cPoprawna składnia: '
+      added: '§aTekst "§7{0}§a" dodany.'
+      removed: '§aTekst "§7{0}§a" usunięty.'
       help:
         header: '§6§lBeautyQuests — Pomoc edytora list'
         add: '§6add <wiadomość>: §eDodaj tekst.'
         remove: '§6remove <id>: §eUsuń tekst.'
         list: '§6list: §eZobacz wszystkie dodane teksty.'
         close: '§6close: §ePotwierdź dodane teksty.'
+    availableElements: 'Dostępne elementy: §e{0}'
     noSuchElement: '§cNie ma takiego elementu. Dozwolone elementy to: §e{0}'
+    invalidPattern: '§cNieprawidłowy wzór regex §4{0}§c.'
     scoreboardObjectiveNotFound: '§cNieznany cel tablicy wyników.'
     pool:
       hologramText: 'Napisz niestandardowy tekst hologramu dla tej puli (lub "null" jeśli chcesz domyślnie).'
@@ -252,6 +271,7 @@ msg:
       fadeIn: 'Wpisz czas "fade-in" w tickach (20 ticków = 1 sekunda).'
       stay: 'Wpisz czas "stay" w tickach (20 ticków = 1 sekunda).'
       fadeOut: 'Napisz czas "fade-out" w tickach (20 ticków = 1 sekunda).'
+    colorNamed: 'Wprowadź nazwę koloru.'
   writeCommandDelay: '§aNapisz żądane opóźnienie komendy, w tickach.'
 advancement:
   finished: Zakończono
@@ -277,13 +297,16 @@ inv:
     talkChat: '§aNapisz na czacie'
     interact: '§aInterakcja z blokiem'
     fish: '§aZłap ryby'
+    enchant: '§dZaklnij przedmioty'
     craft: '§aStwórz przedmiot'
     bucket: '§aWypełnij wiadra'
     location: '§aIdź do lokalizacji'
     playTime: '§eCzas gry'
     breedAnimals: '§aRozmnóż zwierzęta'
     tameAnimals: '§aOswój zwierzęta'
+    death: '§cZgiń'
     NPCText: '§eEdytuj okno dialogowe'
+    dialogLines: '{0} linii'
     NPCSelect: '§eWybierz lub utwórz NPC'
     hideClues: Ukryj cząsteczki i hologramy
     gps: Wyświetla kompas pokazujący kierunek celu
@@ -600,6 +623,12 @@ indication:
   closeInventory: '§7Czy na pewno chcesz zamknąć GUI?'
   cancelQuest: '§7Czy na pewno chcesz anulować zadanie {0}?'
   removeQuest: '§7Czy na pewno chcesz usunąć zadanie {0}?'
+description:
+  requirement:
+    title: '§8§lWymagania:'
+    level: 'Poziom {0}'
+  reward:
+    title: '§8§lNagrody:'
 misc:
   format:
     prefix: '§6<§e§lZadania§r§6> §r'

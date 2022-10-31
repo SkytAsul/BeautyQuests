@@ -2,10 +2,10 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import org.bukkit.DyeColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -75,7 +75,6 @@ public class CommandReward extends AbstractReward {
 			@Override
 			public void finish(List<Command> objects) {
 				commands = objects;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}
 			
@@ -83,13 +82,13 @@ public class CommandReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("commands", Utils.serializeList(commands, Command::serialize));
+	public void save(ConfigurationSection section) {
+		section.set("commands", Utils.serializeList(commands, Command::serialize));
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		commands.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("commands"), Command::deserialize));
+	public void load(ConfigurationSection section){
+		commands.addAll(Utils.deserializeList(section.getMapList("commands"), Command::deserialize));
 	}
 
 }

@@ -24,6 +24,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.structure.Quest;
@@ -35,13 +36,18 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	private static final int ACCOUNTS_THRESHOLD = 1000;
 	
-	Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
-	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
-	private int lastAccountID = 0;
-
-	private Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+	private final Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 	
-	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
+	protected final Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
+	private final Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
+	
+	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
+	
+	private int lastAccountID = 0;
+	
+	public File getDirectory() {
+		return directory;
+	}
 	
 	@Override
 	protected Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
@@ -225,6 +231,11 @@ public class PlayersManagerYAML extends PlayersManager {
 			PlayerPoolDatas questDatas = PlayerPoolDatas.deserialize(acc, (Map<String, Object>) poolConfig);
 			acc.poolDatas.put(questDatas.getPoolID(), questDatas);
 		}
+		for (SavableData<?> data : accountDatas) {
+			if (datas.contains(data.getId())) {
+				acc.additionalDatas.put(data, datas.getObject(data.getId(), data.getDataType()));
+			}
+		}
 		addAccount(acc);
 		return acc;
 	}
@@ -251,6 +262,7 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	@Override
 	public void load() {
+		super.load();
 		if (!directory.exists()) directory.mkdirs();
 
 		FileConfiguration config = BeautyQuests.getInstance().getDataFile();

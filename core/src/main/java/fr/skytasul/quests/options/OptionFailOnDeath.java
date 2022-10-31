@@ -1,16 +1,12 @@
 package fr.skytasul.quests.options;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 
 public class OptionFailOnDeath extends QuestOptionBoolean implements Listener {
@@ -23,18 +19,6 @@ public class OptionFailOnDeath extends QuestOptionBoolean implements Listener {
 	@Override
 	public String getDescription() {
 		return Lang.failOnDeathLore.toString();
-	}
-	
-	@Override
-	public void attach(Quest quest) {
-		super.attach(quest);
-		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
-	}
-	
-	@Override
-	public void detach() {
-		super.detach();
-		HandlerList.unregisterAll(this);
 	}
 	
 	@EventHandler

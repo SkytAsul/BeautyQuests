@@ -2,8 +2,8 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.QuestsConfiguration;
@@ -52,25 +52,21 @@ public class XPReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Utils.sendMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (exp == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			Utils.sendMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
 			exp = obj;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("xp", exp);
+	public void save(ConfigurationSection section) {
+		section.set("xp", exp);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		exp = (int) savedDatas.get("xp");
+	public void load(ConfigurationSection section) {
+		exp = section.getInt("xp");
 	}
 	
 }

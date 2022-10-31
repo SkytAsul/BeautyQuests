@@ -88,6 +88,7 @@ msg:
     negative: §cYou must enter a positive number!
     zero: §cYou must enter a number other than 0!
     invalid: §c{0} isn't a valid number.
+    notInBounds: §cYour number must be between {0} and {1}.
   errorOccurred: '§cAn error occurred, contact an adminstrator! §4§lError code: {0}'
   commandsDisabled: §cCurrently you aren't allowed to execute commands!
   indexOutOfBounds: §cThe number {0} is out of bounds! It has to be between {1} and
@@ -108,7 +109,7 @@ msg:
     downloadTranslations:
       syntax: '§cYou must specify a language to download. Example: "/quests downloadTranslations en_US".'
       notFound: '§cLanguage {0} not found for version {1}.'
-      exists: '§cThe file {0} already exists. Append "true" to your command to overwrite it. (/quests downloadTranslations <lang> true)'
+      exists: '§cThe file {0} already exists. Append "-overwrite" to your command to overwrite it. (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§aLanguage {0} has been downloaded! §7You must now edit the
         file "/plugins/BeautyQuests/config.yml" to change the value of §ominecraftTranslationsFile§7 with {0}, then restart the server.'
     checkpoint:
@@ -147,7 +148,7 @@ msg:
     resetQuest: §6Removed datas of the quest for {0} players.
     startQuest: '§6You have forced starting of quest {0} (Player UUID: {1}).'
     startQuestNoRequirements: '§cThe player does not meet the requirements for the quest {0}...
-      Append "true" at the end of your command to bypass the requirements check.'
+      Append "-overrideRequirements" at the end of your command to bypass the requirements check.'
     cancelQuest: §6You have cancelled the quest {0}.
     cancelQuestUnavailable: §cThe quest {0} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
@@ -203,6 +204,7 @@ msg:
     blockData: '§aWrite the blockdata (available blockdatas: §7{0}§a):'
     blockTag: '§aWrite the block tag (available tags: §7{0}§a):'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
+    typeDamageAmount: 'Write the amount of damage player have to deal:'
     goToLocation: §aGo to the wanted location for the stage.
     typeLocationRadius: '§aWrite the required distance from the location:'
     typeGameTicks: '§aWrite the required game ticks:'
@@ -296,7 +298,7 @@ msg:
       list: '§aA list of all Mythic Mobs:'
       isntMythicMob: §cThis Mythic Mob doesn't exist.
       disabled: §cMythicMob is disabled.
-    epicBossDoesntExist: §cThis Epic Boss doesn't exist.
+    advancedSpawnersMob: 'Write the name of the custom spawner mob to kill:'
     textList:
       syntax: '§cCorrect syntax: '
       added: §aText "§7{0}§a" added.
@@ -307,6 +309,7 @@ msg:
         remove: '§6remove <id>: §eRemove a text.'
         list: '§6list: §eView all added texts.'
         close: '§6close: §eValidate the added texts.'
+    availableElements: 'Available elements: §e{0}'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{0}'
     invalidPattern: '§cInvalid regex pattern §4{0}§c.'
     comparisonTypeDefault: '§aChoose the comparison type you want among {0}. Default comparison is: §e§l{1}§r§a. Type §onull§r§a to use it.'
@@ -322,6 +325,9 @@ msg:
       fadeIn: 'Write the "fade-in" duration, in ticks (20 ticks = 1 second).'
       stay: 'Write the "stay" duration, in ticks (20 ticks = 1 second).'
       fadeOut: 'Write the "fade-out" duration, in ticks (20 ticks = 1 second).'
+    colorNamed: 'Enter the name of a color.'
+    color: 'Enter a color in the hexadecimal format (#XXXXX) or RGB format (RED GRE BLU).'
+    invalidColor: 'The color you entered is invalid. It must be either hexadecimal or RGB.'
     firework:
       invalid: 'This item is not a valid firework.'
       invalidHand: 'You must hold a firework in your main hand.'
@@ -364,6 +370,9 @@ inv:
     playTime: §ePlay time
     breedAnimals: §aBreed animals
     tameAnimals: §aTame animals
+    death: §cDie
+    dealDamage: §cDeal damage to mobs
+    eatDrink: §aEat or drink food or potions
     NPCText: §eEdit dialog
     dialogLines: '{0} lines'
     NPCSelect: §eChoose or create NPC
@@ -402,6 +411,15 @@ inv:
       location:
         worldPattern: '§aSet world name pattern §d(ADVANCED)'
         worldPatternLore: 'If you want the stage to be completed for any world matching a specific pattern, enter a regex (regular expression) here.'
+      death:
+        causes: '§aSet death causes §d(ADVANCED)'
+        anyCause: Any death cause
+        setCauses: '{0} death cause(s)'
+      dealDamage:
+        damage: '§eDamage to deal'
+        targetMobs: '§cMobs to damage'
+      eatDrink:
+        items: '§eEdit items to eat or drink'
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -433,8 +451,6 @@ inv:
     startableFromGUILore: Allows the player to start the quest from the Quests Menu.
     scoreboardItem: Enable scoreboard
     scoreboardItemLore: If disabled, the quest will not be tracked through the scoreboard.
-    hideItem: Hide menu and dynmap
-    hideItemLore: If enabled, the quest will not be displayed on the dynmap nor in the Quests Menu.
     hideNoRequirementsItem: Hide when requirements not met
     hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
@@ -491,6 +507,9 @@ inv:
     firework: §dEnding Firework
     fireworkLore: Firework launched when the player finishes the quest
     fireworkLoreDrop: Drop your custom firework here
+    visibility: §bQuest visibility
+    visibilityLore: Choose in which tabs of the menu will the quest be shown, and if
+      the quest is visible on dynamic maps.
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.
@@ -687,6 +706,26 @@ inv:
     fadeIn: §aFade-in duration
     stay: §bStay duration
     fadeOut: §aFade-out duration
+  particleEffect:
+    name: Create particle effect
+    shape: §dParticle shape
+    type: §eParticle type
+    color: §bParticle color
+  particleList:
+    name: Particles list
+    colored: Colored particle
+  damageCause:
+    name: Damage cause
+  damageCausesList:
+    name: Damage causes list
+  visibility:
+    name: Quest visibility
+    notStarted: '"Not started" menu tab'
+    inProgress: '"In progress" menu tab'
+    finished: '"Finished" menu tab'
+    maps: 'Maps (such as dynmap or BlueMap)'
+  equipmentSlots:
+    name: Equipment slots
     
 scoreboard:
   name: §6§lQuests
@@ -714,6 +753,11 @@ scoreboard:
     playTimeFormatted: §ePlay §6{0}
     breed: §eBreed §6{0}
     tame: §eTame §6{0}
+    die: §cDie
+    dealDamage:
+      any: §cDeal {0} damage
+      mobs: §cDeal {0} damage to {1}
+    eatDrink: §eConsume §6{0}
 indication:
   startQuest: §7Do you want to start the quest {0}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -741,6 +785,7 @@ misc:
     editorPrefix: §a
     errorPrefix: §4✖ §c
     successPrefix: §2✔ §a
+    requirementNotMetPrefix: §c
   time:
     weeks: '{0} weeks'
     days: '{0} days'
@@ -765,6 +810,9 @@ misc:
     playTime: Play time
     breedAnimals: Breed animals
     tameAnimals: Tame animals
+    die: Die
+    dealDamage: Deal damage
+    eatDrink: Eat or drink
   comparison:
     equals: equal to {0}
     different: different to {0}
@@ -787,6 +835,7 @@ misc:
     quest: §aQuest required
     mcMMOSkillLevel: §dSkill level required
     money: §dMoney required
+    equipment: §eEquipment required
   bucket:
     water: Water bucket
     lava: Lava bucket
@@ -798,6 +847,12 @@ misc:
     shift-right: Shift-right click
     shift-left: Shift-left click
     middle: Middle click
+  amounts:
+    items: '{0} item(s)'
+    comparisons: '{0} comparaison(s)'
+    dialogLines: '{0} line(s)'
+    permissions: '{0} permission(s)'
+    mobs: '{0} mob(s)'
   ticks: '{0} ticks'
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC

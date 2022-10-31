@@ -1,16 +1,20 @@
 package fr.skytasul.quests.utils.types;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 
-public class BQLocation extends Location {
+public class BQLocation extends Location implements Locatable.Located {
 	
 	private Pattern worldPattern;
 	
@@ -51,6 +55,16 @@ public class BQLocation extends Location {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public Location getLocation() {
+		return new Location(getWorld(), getX(), getY(), getZ());
+	}
+	
+	@Override
+	public LocatedType getType() {
+		return LocatedType.OTHER;
+	}
+	
 	public boolean isWorld(World world) {
 		Validate.notNull(world);
 		if (super.getWorld() != null) return super.getWorld().equals(world);
@@ -59,6 +73,18 @@ public class BQLocation extends Location {
 	
 	public String getWorldName() {
 		return getWorld() == null ? worldPattern.pattern() : getWorld().getName();
+	}
+
+	@Nullable
+	public Block getMatchingBlock() {
+		if (super.getWorld() != null) return super.getBlock();
+		if (worldPattern == null) return null;
+		return Bukkit.getWorlds()
+					.stream()
+					.filter(world -> worldPattern.matcher(world.getName()).matches())
+					.findFirst()
+					.map(world -> world.getBlockAt(getBlockX(), getBlockY(), getBlockZ()))
+					.orElse(null);
 	}
 	
 	@Override
@@ -71,11 +97,29 @@ public class BQLocation extends Location {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!super.equals(obj)) return false;
-		BQLocation other = (BQLocation) obj;
-		if (worldPattern == null) return other.worldPattern == null;
-		if (other.worldPattern == null) return false;
-		return worldPattern.pattern().equals(other.worldPattern.pattern());
+		if (!(obj instanceof Location)) return false;
+		Location other = (Location) obj;
+		
+		if (Double.doubleToLongBits(this.getX()) != Double.doubleToLongBits(other.getX())) return false;
+        if (Double.doubleToLongBits(this.getY()) != Double.doubleToLongBits(other.getY())) return false;
+        if (Double.doubleToLongBits(this.getZ()) != Double.doubleToLongBits(other.getZ())) return false;
+        if (Float.floatToIntBits(this.getPitch()) != Float.floatToIntBits(other.getPitch())) return false;
+        if (Float.floatToIntBits(this.getYaw()) != Float.floatToIntBits(other.getYaw())) return false;
+		
+		if (obj instanceof BQLocation) {
+			BQLocation otherBQ = (BQLocation) obj;
+			if (worldPattern == null) return otherBQ.worldPattern == null;
+			if (otherBQ.worldPattern == null) return false;
+			return worldPattern.pattern().equals(otherBQ.worldPattern.pattern());
+		}
+		
+		if (!Objects.equals(other.getWorld(), getWorld())) {
+			if (other.getWorld() == null) return false;
+			if (worldPattern == null) return false;
+			return worldPattern.matcher(other.getWorld().getName()).matches();
+		}
+		
+		return true;
 	}
 	
 	@Override

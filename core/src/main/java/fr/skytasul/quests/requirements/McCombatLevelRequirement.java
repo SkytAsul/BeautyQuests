@@ -1,16 +1,12 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.McCombatLevel;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class McCombatLevelRequirement extends TargetNumberRequirement {
 
@@ -20,7 +16,6 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	
 	public McCombatLevelRequirement(double target, ComparisonMethod comparison) {
 		super(target, comparison);
-		if (!DependenciesManager.mmo.isEnabled()) throw new MissingDependencyException("McCombatLevel");
 	}
 
 	@Override
@@ -51,17 +46,6 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	@Override
 	public AbstractRequirement clone() {
 		return new McCombatLevelRequirement(target, comparison);
-	}
-	
-	@Override
-	protected void save(Map<String, Object> datas) {
-		super.save(datas);
-	}
-	
-	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		super.load(savedDatas);
-		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
 	}
 
 }

@@ -87,11 +87,11 @@ msg:
   restartServer: '§7รีสตาร์ทเซิร์ฟเวอร์ของคุณเพื่อดูการแก้ไข'
   dialogs:
     skipped: '§8§o Dialog skipped.'
+    tooFar: '§7§oคุณได้อยู่ห่างไกลจาก {0}...'
   command:
     downloadTranslations:
       syntax: '§cคุณต้องระบุภาษาที่จะดาวน์โหลด ตัวอย่าง: "/quests downloadTranslations en_US"'
       notFound: "§cLanguage {0} ไม่พบสำหรับรุ่น {1}\n"
-      exists: '§cไฟล์ {0} มีอยู่แล้ว ผนวก "จริง" ต่อท้ายคำสั่งของคุณเพื่อเขียนทับ (/quests downloadแปล <lang> จริง)'
       downloaded: 'ดาวน์โหลด §aLanguage {0} แล้ว! §7ตอนนี้คุณต้องแก้ไขไฟล์ "/plugins/BeautyQuests/config.yml" เพื่อเปลี่ยนค่าของ §ominecraftTranslationsFile§7 ด้วย {0} จากนั้นรีสตาร์ทเซิร์ฟเวอร์'
     checkpoint:
       noCheckpoint: '§cไม่พบ checkpoint สำหรับภารกิจ {0}'
@@ -126,7 +126,6 @@ msg:
       remover: '§6 {0} ข้อมูลภารกิจของ {1} ถูกลบไปแล้ว'
     resetQuest: '§6ลบข้อมูลของภารกิจสำหรับ  {0} players.'
     startQuest: '§6คุณบังคับให้เริ่มภารกิจ {0} (UUID ของผู้เล่น: {1})'
-    startQuestNoRequirements: '§cผู้เล่นไม่ตรงตามข้อกำหนดสำหรับภารกิจ {0}... ต่อท้าย "จริง" ที่ท้ายคำสั่งของคุณเพื่อข้ามการตรวจสอบข้อกำหนด'
     cancelQuest: '§6คุณได้ยกเลิกภารกิจ {0}.'
     cancelQuestUnavailable: '§ภารกิจ {0} ไม่สามารถยกเลิกได้'
     backupCreated: '§6คุณได้สร้างการสำรองข้อมูลของ ภารกิจ และข้อมูลผู้เล่นทั้งหมดเรียบร้อยแล้ว'
@@ -215,6 +214,8 @@ msg:
     dialog:
       syntax: '§cCorrect syntax: {0}{1} <message>'
       syntaxRemove: '§cCorrect sytax: remove <id>'
+      messageRemoved: '§aข้อความ "§7{0}§a" ได้ถูกลบออกเรียบร้อย'
+      edited: '§aข้อความ "§7{0}§a" ได้ถูกแก้ไขเรียบร้อย'
       cleared: '§a {0} ข้อความที่ถูกลบ'
       help:
         header: '§6§lBeautyQuests — Dialog editor help'
@@ -237,9 +238,10 @@ msg:
       list: '§aรายการทั้งหมดของ Mythic Mobs:'
       isntMythicMob: '§cMythic Mob นี้ไม่มีอยู่จริง'
       disabled: '§cMythicMob ถูกปิดใช้งาน'
-    epicBossDoesntExist: '§c Epic Boss ตัวนี้ไม่มีอยู่จริง'
     textList:
       syntax: '§cCorrect syntax: '
+      added: '§aข้อความ "§7{0}§a" ได้ถูกเพิ่มเรียบร้อย'
+      removed: '§aข้อความ "§7{0}§a" ได้ถูกลบออกเรียบร้อย'
       help:
         header: '§6§lBeautyQuests — List editor help'
         add: '§6add <message>: §eเพิ่มข้อความ'
@@ -251,6 +253,7 @@ msg:
     pool:
       hologramText: 'เขียนข้อความโฮโลแกรมที่กำหนดเองสำหรับพูลนี้ (หรือ "null" ถ้าคุณต้องการใช้ค่าเริ่มต้น)'
       maxQuests: 'เขียนจำนวนสูงสุดของ ภารกิจ ที่สามารถเรียกใช้งานได้จาก pool นี้'
+    colorNamed: 'โปรดใส่รหัสสี'
   writeCommandDelay: '§aเขียนการหน่วงเวลาคำสั่งที่ต้องการ ใน ticks.'
 advancement:
   finished: เสร็จแล้ว
@@ -267,6 +270,8 @@ inv:
   create:
     stageCreate: '§aสร้าง step ใหม่'
     stageRemove: '§cลบ step'
+    stageUp: เลื่อนขึ้น
+    stageDown: เลื่อนลง
     findNPC: '§aค้นหา NPC'
     bringBack: '§aนำ ไอเท่ม กลับมา'
     findRegion: '§aค้นหา region'
@@ -340,8 +345,6 @@ inv:
     startableFromGUILore: อนุญาตให้ผู้เล่นเริ่มภารกิจจากเมนูเควส
     scoreboardItem: เปิดใช้งาน สกอร์บอร์ด
     scoreboardItemLore: หากปิดใช้งานภารกิจจะไม่ถูกติดตามผ่าน สกอร์บอร์ด
-    hideItem: ซ่อนเมนูและ dynmap
-    hideItemLore: หากเปิดใช้งานเควสจะไม่แสดงบน dynmap หรือในเมนูเควส
     hideNoRequirementsItem: ซ่อนเมื่อไม่เป็นไปตามข้อกำหนด
     hideNoRequirementsItemLore: หากเปิดใช้งาน ภารจะไม่แสดงในเมนูภารกิจ เมื่อไม่ตรงตามข้อกำหนด
     bypassLimit: อย่านับขีดจำกัด ของภารกิจ

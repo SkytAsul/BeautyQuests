@@ -15,8 +15,10 @@ import com.sk89q.worldguard.session.SessionManager;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
+import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.requirements.RegionRequirement;
+import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -118,6 +120,8 @@ public class BQWorldGuard {
 	public static void init() {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
+		
+		QuestsAPI.registerStage(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString()), StageArea.Creator::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
 	

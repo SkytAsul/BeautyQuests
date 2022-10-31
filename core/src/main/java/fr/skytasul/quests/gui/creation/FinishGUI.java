@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.creation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,7 +120,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					XMaterial type = enabled ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
 					String itemName = (enabled ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString() + (session.isEdition() ? Lang.edit : Lang.create).toString();
 					String itemLore = QuestOption.formatDescription(Lang.createLore.toString()) + (enabled ? " §a✔" : " §c✖");
-					String[] lore = Boolean.TRUE.equals(keepPlayerDatas) ? new String[] { itemLore } : new String[] { itemLore, "", Lang.resetLore.toString() };
+					String[] lore = keepPlayerDatas == null || keepPlayerDatas.booleanValue() ? new String[] { itemLore } : new String[] { itemLore, "", Lang.resetLore.toString() };
 					
 					ItemStack item = inv.getItem(slot);
 					
@@ -319,18 +320,18 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 19, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 20, OptionStartable.class, OptionStartable::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 21, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 22, OptionCancellable.class, OptionCancellable::new, true));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancelActions", 23, OptionCancelRewards.class, OptionCancelRewards::new, new ArrayList<>()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 19, OptionStartable.class, OptionStartable::new, false));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 20, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 21, OptionCancellable.class, OptionCancellable::new, true));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancelActions", 22, OptionCancelRewards.class, OptionCancelRewards::new, new ArrayList<>()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class, OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class, OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class, OptionScoreboardEnabled::new, true));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hide", 28, OptionHide.class, OptionHide::new, false, "hid"));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new, false));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
+		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("visibility", 32, OptionVisibility.class, OptionVisibility::new, Arrays.asList(OptionVisibility.VisibilityLocation.values()), "hid", "hide"));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endSound", 34, OptionEndSound.class, OptionEndSound::new, QuestsConfiguration.getFinishSound()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("firework", 35, OptionFirework.class, OptionFirework::new, QuestsConfiguration.getDefaultFirework()));
 		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));

@@ -17,6 +17,10 @@ msg:
     updated: '§7A következő küldetés §e{0}§7 frissítve.'
     checkpoint: '§7Küldetés ellenőrző pont elérve!'
     failed: '§cNem sikerült a küldetés{0}'
+  pools:
+    noTime: '§cVárnod kell még {0} mielőtt elkezdenél egy újabb küldetést.'
+    allCompleted: '§7Az összes küldetést teljesítetted!'
+    noAvailable: '§7Nincsen elérhető küldetések.'
   questItem:
     drop: '§cKüldetés itemet nem dobhatsz el!'
     craft: '§cNem barkácsolhatsz küldetés itemmel!'
@@ -28,7 +32,6 @@ msg:
   writeXPGain: '§Írd ide az xp mennyiséget amit a játékos kapni fog:(Utolsó érték:{0})'
   writeMobAmount: '§aÍrd ide a mennyiséget,hogy mennyi szörnyet kell megölni:'
   writeChatMessage: '§aÍrd a következő üzenetet: (Add {SLASH}" az elkezdéshez.)'
-  writeEndMessage: '§aÍrd ide az üzenetet amit a játékos fog kapni mikor befejezi a küldetést:'
   writeDescriptionText: '§aÍrd ide a szöveget ami leírja a lépéseket:'
   writeStageText: '§aÍrd ide a szöveget amit a játékos fog kapni mikor elkezdi a lépést:'
   moveToTeleportPoint: '§aMenj a kért teleportálás helyszínére.'
@@ -46,7 +49,6 @@ msg:
     level: '§cA szintednek a következőnek kell lennie{0}!'
     combatLevel: '§aA harc szinted a következőnek kell lennie{0}!'
     money: '§cEnnyi kell lennied nállad {0}!'
-    wait: '§cVárnod kell {0} percet mielött újra indítanád!'
   experience:
     edited: '§aMegkell változtatnod az xp-t {0} ről ennyire {1}.'
   selectNPCToKill: '§aVálazd ki az NPC akit megkell ölni.'
@@ -67,6 +69,11 @@ msg:
   inventoryFull: '§cTele van a táskád, a tárgy el lett dobva a földre.'
   playerNeverConnected: '§cNem lehet információkat találni a játékosról {0}.'
   playerNotOnline: '§cA következő játékos nem elérhető {0}.'
+  versionRequired: 'Szükséges verzió: §l{0}'
+  restartServer: '§7Indítsd újra a szervert, hogy lásd a módosításokat.'
+  dialogs:
+    skipped: '§8§oPárbeszéd átugorva.'
+    tooFar: '§7§oTúl messze vagy ettől: {0}...'
   command:
     checkpoint:
       noCheckpoint: '§cNem találtunk ellenörző pontot a küldetéshez {0}'
@@ -77,6 +84,9 @@ msg:
       next: '§aA szint kihagyva.'
       nextUnavailable: '§c A "kihagyás" opció nem elérhető mikor a játékos az ág végén van.'
       set: '§aSzint {0} elindítva.'
+    startDialog:
+      noDialog: '§cA megadott játékosnak nincsen folyamatban lévő párbeszéde.'
+      alreadyIn: '§cA játékos már párbeszédben van.'
     playerNeeded: '§cJátékos kell lenned, hogy lefuttathasd ezt a parancsot!'
     incorrectSyntax: '§cHelytelen szintax.'
     noPermission: '§cNincs elég jogod, hogy futtathasd a parancsot! (Szükséges: {0})'
@@ -90,12 +100,12 @@ msg:
     leaveAll: '§aKényszerítve lettél, hogy befejezd a következő küldetést {0}. Hibák:{1}'
     resetPlayer:
       player: '§6Az összes információ a következő küldetésedből {0} törölve lett általa {1}.'
-      remover: '§6{0} küldetés információk törölve lettek {1}.'
     resetPlayerQuest:
       player: '§6Az összes infó a küldetésről {0} törölve lett általa {1}.'
       remover: '§6Küldetés infó törölve {0} ennyiből {1}.'
     resetQuest: '§6Küldetés adat törölve neki {0}.'
     startQuest: '§6Kényszerítve lettél, hogy elkezd a következő küldetést {0} (Játékos UUID: {1}).'
+    startQuestNoRequirements: '§cA megadott játékosnak nincsen meg a szükséges követelményei a(z) {0} küldetéshez... Mellékeld a a "-overrideRequirements" szót a parancsod végére, hogy átugord a követelményeket.'
     cancelQuest: '§6Elutasítottad a következő küldetést {0}.'
     cancelQuestUnavailable: '§cA küldetés nem elutasítható {0}.'
     backupCreated: '§6Sikeresen csináltál mentést.'
@@ -111,6 +121,9 @@ msg:
       resetAll: '§6Sikeres újrarakás a következő játékosnak {0}.'
       hidden: '§6A lista a következő játékosnak {0} láthatatlan.'
       shown: '§6A lista következő játékosnak látható {0}.'
+      own:
+        hidden: '§6A scoreboard mostantól elvan rejtve.'
+        shown: '§6A scoreboard mostantól látható.'
     help:
       header: '§6§lBeautyQuests - Segítség'
       create: '§6/{0} létrehoz: §eLétrehoz egy küldetést.'
@@ -146,11 +159,8 @@ msg:
       list: '§aAz összes Mythic Mob lista:'
       isntMythicMob: '§cEz a Mythic Mob nem létezik.'
       disabled: '§cMythicMob kikapcsolva.'
-    epicBossDoesntExist: '§cEz az Epic Boss nem létezik.'
     textList:
       syntax: '§cHelyes szintax: '
-      added: '§aSzöveg "{0}" hozzáadva.'
-      removed: '§aSzöveg "{0}" törölve.'
       help:
         header: '§6§lBeautyQuests - Lista szerkesztő segítség'
         add: '§6add <message>: §eHozzáad egy szöveget.'
@@ -158,7 +168,6 @@ msg:
         list: '§6list: §eÖsszes szöveg megnézése.'
         close: '§6close: §eHozzáadott szöveg megerősítése.'
     noSuchElement: '§cNincs ilyen elem. Engedélyezett elemek: §e{0}'
-    comparisonType: '§aVálaszd ki a kívánt összehasonlítás tipust {0}. Alap összehasonlítás ez: §e§ljobb vagy egyenlő §r§a. Tipus §onull§r§a, hogy használd.'
     scoreboardObjectiveNotFound: '§cIsmeretlen lista objektum.'
   writeCommandDelay: '§aÍrd a kívánt parancs késleltetést, tickben.'
 advancement:
@@ -186,6 +195,8 @@ inv:
     craft: '§aKészíts tárgyakat'
     bucket: '§aTölts meg vödröket'
     location: '§aMenj el a helyre'
+  stages:
+    laterPage: Előző oldal
   details:
     endMessage: '§eBefejező üzenet szerkesztése'
     startDialog: '§eKezdő üzenet szerkesztése'
@@ -221,9 +232,6 @@ inv:
   mobs:
     name: Szörnyek kiválasztása
     none: '§aKattints a szörny hozzáadásához.'
-    click: |-
-      §7Bal-klikk a szerkesztéshez.
-      Jobb-klikk a törléshez.
   mobSelect:
     name: Szörny tipus kiválasztása
     bukkitEntityType: '§eEntitás tipus kiválasztása'
@@ -252,13 +260,14 @@ inv:
     notStarted: Nem elindított küldetések
     finished: Befejezett küldetések
     inProgress: Folyamatban lévő küldetések
-    loreCancel: '§c§oKattints a küldetés elutasításához.'
-    timeToWait: '§3§o {0} perc mielött újra elindíthatnád a küldetést.'
     canRedo: '§3§oÚjratudod kezdeni ezt a küldetést!'
   itemCreator:
     name: Tárgy készítő
     itemType: '§bTárgy tipus'
     itemFlags: Tárgy funkciók bekapcsolása
+scoreboard:
+  stage:
+    npc: Beszélj az {0} npc-vel
 indication:
   cancelQuest: '§7Biztos vagy benne, hogy megakarod szakítani ezt a küldetést {0}?'
   removeQuest: '§7Biztos vagy benne, hogy elakarod távolítani ezt a küldetést {0}?'

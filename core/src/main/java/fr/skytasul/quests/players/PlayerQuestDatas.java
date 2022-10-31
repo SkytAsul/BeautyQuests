@@ -17,31 +17,33 @@ public class PlayerQuestDatas {
 	protected final PlayerAccount acc;
 	protected final int questID;
 
-	private int finished = 0;
-	private long timer = 0;
-	private int branch = -1, stage = -1;
-	private Map<String, Object>[] stageDatas = new Map[5];
-	private StringJoiner questFlow = new StringJoiner(";");
+	private int finished;
+	private long timer;
+	private int branch;
+	private int stage;
+	protected Map<String, Object> additionalDatas;
+	protected StringJoiner questFlow = new StringJoiner(";");
 	
 	private Boolean hasDialogsCached = null;
 
 	public PlayerQuestDatas(PlayerAccount acc, int questID) {
 		this.acc = acc;
 		this.questID = questID;
+		this.finished = 0;
+		this.timer = 0;
+		this.branch = -1;
+		this.stage = -1;
+		this.additionalDatas = new HashMap<>();
 	}
 
-	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> stage0datas, Map<String, Object> stage1datas, Map<String, Object> stage2datas, Map<String, Object> stage3datas, Map<String, Object> stage4datas, String questFlow) {
+	public PlayerQuestDatas(PlayerAccount acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> additionalDatas, String questFlow) {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = finished;
 		this.timer = timer;
 		this.branch = branch;
 		this.stage = stage;
-		this.stageDatas[0] = stage0datas;
-		this.stageDatas[1] = stage1datas;
-		this.stageDatas[2] = stage2datas;
-		this.stageDatas[3] = stage3datas;
-		this.stageDatas[4] = stage4datas;
+		this.additionalDatas = additionalDatas == null ? new HashMap<>() : additionalDatas;
 		if (questFlow != null) this.questFlow.add(questFlow);
 		if (branch != -1 && stage == -1) BeautyQuests.logger.warning("Incorrect quest " + questID + " datas for " + acc.debugName());
 	}
@@ -110,12 +112,28 @@ public class PlayerQuestDatas {
 		setStage(-2);
 	}
 
-	public Map<String, Object> getStageDatas(int stage) {
-		return stageDatas[stage];
+	public <T> T getAdditionalData(String key) {
+		return (T) additionalDatas.get(key);
+	}
+	
+	public <T> T setAdditionalData(String key, T value) {
+		return (T) (value == null ? additionalDatas.remove(key) : additionalDatas.put(key, value));
 	}
 
-	public void setStageDatas(int stage, Map<String, Object> stageDatas) {
-		this.stageDatas[stage] = stageDatas;
+	public Map<String, Object> getStageDatas(int stage) {
+		return getAdditionalData("stage" + stage);
+	}
+	
+	public void setStageDatas(int stage, Map<String, Object> datas) {
+		setAdditionalData("stage" + stage, datas);
+	}
+	
+	public long getStartingTime() {
+		return getAdditionalData("starting_time");
+	}
+	
+	public void setStartingTime(long time) {
+		setAdditionalData("starting_time", time == 0 ? null : time);
 	}
 	
 	public String getQuestFlow() {
@@ -158,9 +176,7 @@ public class PlayerQuestDatas {
 		if (timer != 0) map.put("timer", timer);
 		if (branch != -1) map.put("currentBranch", branch);
 		if (stage != -1) map.put("currentStage", stage);
-		for (int i = 0; i < stageDatas.length; i++) {
-			if (stageDatas[i] != null) map.put("stage" + i + "datas", stageDatas[i]);
-		}
+		if (!additionalDatas.isEmpty()) map.put("datas", additionalDatas);
 		if (questFlow.length() > 0) map.put("questFlow", questFlow.toString());
 
 		return map;
@@ -173,10 +189,15 @@ public class PlayerQuestDatas {
 		if (map.containsKey("timer")) datas.timer = Utils.parseLong(map.get("timer"));
 		if (map.containsKey("currentBranch")) datas.branch = (int) map.get("currentBranch");
 		if (map.containsKey("currentStage")) datas.stage = (int) map.get("currentStage");
-		for (int i = 0; i < datas.stageDatas.length; i++) {
-			datas.stageDatas[i] = (Map<String, Object>) map.get("stage" + i + "datas");
-		}
+		if (map.containsKey("datas")) datas.additionalDatas = (Map<String, Object>) map.get("datas");
 		if (map.containsKey("questFlow")) datas.questFlow.add((String) map.get("questFlow"));
+		
+		for (int i = 0; i < 5; i++) { // TODO remove ; migration purpose ; added on 0.20
+			if (map.containsKey("stage" + i + "datas")) {
+				datas.additionalDatas.put("stage" + i, map.get("stage" + i + "datas"));
+			}
+		}
+		
 		return datas;
 	}
 

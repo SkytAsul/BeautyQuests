@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Crypto Morin
+ * Copyright (c) 2022 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,20 @@
  */
 package fr.skytasul.quests.utils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
+import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Cake;
 import org.bukkit.material.Colorable;
@@ -56,7 +54,7 @@ import org.bukkit.material.Wool;
  * This class doesn't and shouldn't support materials that are {@link Material#isLegacy()}.
  *
  * @author Crypto Morin
- * @version 2.0.0
+ * @version 2.2.0
  * @see Block
  * @see BlockState
  * @see MaterialData
@@ -71,10 +69,27 @@ public final class XBlock {
 	));
 	public static final Set<XMaterial> DANGEROUS = Collections.unmodifiableSet(EnumSet.of(XMaterial.MAGMA_BLOCK, XMaterial.LAVA, XMaterial.CAMPFIRE, XMaterial.FIRE, XMaterial.SOUL_FIRE));
 	public static final byte CAKE_SLICES = 6;
-    private static final boolean ISFLAT = XMaterial.isNewVersion();
-
-	private XBlock() {}
+	private static final boolean ISFLAT = XMaterial.supports(13);
+	private static final Map<XMaterial, XMaterial> ITEM_TO_BLOCK = new EnumMap<>(XMaterial.class);
 	
+	static {
+		ITEM_TO_BLOCK.put(XMaterial.MELON_SLICE, XMaterial.MELON_STEM);
+		ITEM_TO_BLOCK.put(XMaterial.MELON_SEEDS, XMaterial.MELON_STEM);
+		
+		ITEM_TO_BLOCK.put(XMaterial.CARROT_ON_A_STICK, XMaterial.CARROTS);
+		ITEM_TO_BLOCK.put(XMaterial.GOLDEN_CARROT, XMaterial.CARROTS);
+		ITEM_TO_BLOCK.put(XMaterial.CARROT, XMaterial.CARROTS);
+		
+		ITEM_TO_BLOCK.put(XMaterial.POTATO, XMaterial.POTATOES);
+		ITEM_TO_BLOCK.put(XMaterial.BAKED_POTATO, XMaterial.POTATOES);
+		ITEM_TO_BLOCK.put(XMaterial.POISONOUS_POTATO, XMaterial.POTATOES);
+		
+		ITEM_TO_BLOCK.put(XMaterial.PUMPKIN_SEEDS, XMaterial.PUMPKIN_STEM);
+		ITEM_TO_BLOCK.put(XMaterial.PUMPKIN_PIE, XMaterial.PUMPKIN);
+	}
+	
+	private XBlock() {}
+
     public static boolean isLit(Block block) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) return false;
@@ -86,13 +101,14 @@ public final class XBlock {
     }
 
     /**
-     * Checks if the block is a container.
-     * Containers are chests, hoppers, enderchests and everything that
-     * has an inventory.
-     *
-     * @param block the block to check.
-     * @return true if the block is a container, otherwise false.
-     */
+	 * Checks if the block is a container.
+	 * Containers are chests, hoppers, enderchests and everything that
+	 * has an inventory.
+	 *
+	 * @param block the block to check.
+	 *
+	 * @return true if the block is a container, otherwise false.
+	 */
 	public static boolean isContainer(@Nullable Block block) {
 		return block != null && block.getState() instanceof InventoryHolder;
     }
@@ -106,8 +122,10 @@ public final class XBlock {
     public static void setLit(Block block, boolean lit) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) return;
-			org.bukkit.block.data.Lightable lightable = (org.bukkit.block.data.Lightable) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Lightable lightable = (org.bukkit.block.data.Lightable) data;
             lightable.setLit(lit);
+			block.setBlockData(data, false);
             return;
         }
 
@@ -123,6 +141,7 @@ public final class XBlock {
 	 * Any material that can be planted which is from {@link #CROPS}
 	 *
 	 * @param material the material to check.
+	 *
 	 * @return true if this material is a crop, otherwise false.
 	 */
 	public static boolean isCrop(XMaterial material) {
@@ -133,6 +152,7 @@ public final class XBlock {
 	 * Any material that can damage players, usually by interacting with the block.
 	 *
 	 * @param material the material to check.
+	 *
 	 * @return true if this material is dangerous, otherwise false.
 	 */
 	public static boolean isDangerous(XMaterial material) {
@@ -192,24 +212,24 @@ public final class XBlock {
 
     public static BlockFace getDirection(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof Directional)) return BlockFace.SELF;
-            Directional direction = (Directional) block.getBlockData();
+			if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) return BlockFace.SELF;
+			org.bukkit.block.data.Directional direction = (org.bukkit.block.data.Directional) block.getBlockData();
             return direction.getFacing();
         }
 
         BlockState state = block.getState();
         MaterialData data = state.getData();
-        if (data instanceof org.bukkit.material.Directional) {
-            return ((org.bukkit.material.Directional) data).getFacing();
-        }
-        return null;
+		if (data instanceof org.bukkit.material.Directional) return ((org.bukkit.material.Directional) data).getFacing();
+		return BlockFace.SELF;
     }
 
     public static boolean setDirection(Block block, BlockFace facing) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) return false;
-			org.bukkit.block.data.Directional direction = (org.bukkit.block.data.Directional) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Directional direction = (org.bukkit.block.data.Directional) data;
             direction.setFacing(facing);
+			block.setBlockData(data, false);
             return true;
         }
 
@@ -223,6 +243,124 @@ public final class XBlock {
         return false;
     }
 
+	public static boolean setType(@Nonnull Block block, @Nullable XMaterial material, boolean applyPhysics) {
+		Objects.requireNonNull(block, "Cannot set type of null block");
+		if (material == null) material = XMaterial.AIR;
+		XMaterial smartConversion = ITEM_TO_BLOCK.get(material);
+		if (smartConversion != null) material = smartConversion;
+		if (material.parseMaterial() == null) return false;
+		
+		block.setType(material.parseMaterial(), applyPhysics);
+		if (XMaterial.supports(13)) return false;
+		
+		String parsedName = material.parseMaterial().name();
+		if (parsedName.endsWith("_ITEM")) {
+			String blockName = parsedName.substring(0, parsedName.length() - "_ITEM".length());
+			Material blockMaterial = Objects.requireNonNull(Material.getMaterial(blockName), () -> "Could not find block material for item '" + parsedName + "' as '" + blockName + '\'');
+			block.setType(blockMaterial, applyPhysics);
+		}else if (parsedName.contains("CAKE")) {
+			Material blockMaterial = Material.getMaterial("CAKE_BLOCK");
+			block.setType(blockMaterial, applyPhysics);
+		}
+		
+		LegacyMaterial legacyMaterial = LegacyMaterial.getMaterial(parsedName);
+		if (legacyMaterial == LegacyMaterial.BANNER) block.setType(LegacyMaterial.STANDING_BANNER.material, applyPhysics);
+		LegacyMaterial.Handling handling = legacyMaterial == null ? null : legacyMaterial.handling;
+		
+		BlockState state = block.getState();
+		boolean update = false;
+		
+		if (handling == LegacyMaterial.Handling.COLORABLE) {
+			if (state instanceof Banner) {
+				Banner banner = (Banner) state;
+				String xName = material.name();
+				int colorIndex = xName.indexOf('_');
+				String color = xName.substring(0, colorIndex);
+				if (color.equals("LIGHT")) color = xName.substring(0, "LIGHT_".length() + 4);
+				
+				banner.setBaseColor(DyeColor.valueOf(color));
+			}else state.setRawData(material.getData());
+			update = true;
+		}else if (handling == LegacyMaterial.Handling.WOOD_SPECIES) {
+			// Wood doesn't exist in 1.8
+			// https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/material/Wood.java?until=7d83cba0f2575112577ed7a091ed8a193bfc261a&untilPath=src%2Fmain%2Fjava%2Forg%2Fbukkit%2Fmaterial%2FWood.java
+			// https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/TreeSpecies.java
+			
+			String name = material.name();
+			int firstIndicator = name.indexOf('_');
+			if (firstIndicator < 0) return false;
+			String woodType = name.substring(0, firstIndicator);
+			
+			TreeSpecies species;
+			switch (woodType) {
+			case "OAK":
+				species = TreeSpecies.GENERIC;
+				break;
+			case "DARK":
+				species = TreeSpecies.DARK_OAK;
+				break;
+			case "SPRUCE":
+				species = TreeSpecies.REDWOOD;
+				break;
+			default: {
+				try {
+					species = TreeSpecies.valueOf(woodType);
+				}catch (IllegalArgumentException ex) {
+					throw new AssertionError("Unknown material " + legacyMaterial + " for wood species");
+				}
+			}
+			}
+			
+			// Doesn't handle stairs, slabs, fence and fence gates as they had their own separate materials.
+			boolean firstType = false;
+			switch (legacyMaterial) {
+			case WOOD:
+			case WOOD_DOUBLE_STEP:
+				state.setRawData(species.getData());
+				update = true;
+				break;
+			case LOG:
+			case LEAVES:
+				firstType = true;
+				// fall through to next switch statement below
+			case LOG_2:
+			case LEAVES_2:
+				switch (species) {
+				case GENERIC:
+				case REDWOOD:
+				case BIRCH:
+				case JUNGLE:
+					if (!firstType) throw new AssertionError("Invalid tree species " + species + " for block type" + legacyMaterial + ", use block type 2 instead");
+					break;
+				case ACACIA:
+				case DARK_OAK:
+					if (firstType) throw new AssertionError("Invalid tree species " + species + " for block type 2 " + legacyMaterial + ", use block type instead");
+					break;
+				}
+				state.setRawData((byte) ((state.getRawData() & 0xC) | (species.getData() & 0x3)));
+				update = true;
+				break;
+			case SAPLING:
+			case WOOD_STEP:
+				state.setRawData((byte) ((state.getRawData() & 0x8) | species.getData()));
+				update = true;
+				break;
+			default:
+				throw new AssertionError("Unknown block type " + legacyMaterial + " for tree species: " + species);
+			}
+		}else if (material.getData() != 0) {
+			state.setRawData(material.getData());
+			update = true;
+		}
+		
+		if (update) state.update(false, applyPhysics);
+		return update;
+	}
+	
+	public static boolean setType(@Nonnull Block block, @Nullable XMaterial material) {
+		return setType(block, material, true);
+	}
+	
     public static int getAge(Block block) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) return 0;
@@ -238,8 +376,10 @@ public final class XBlock {
     public static void setAge(Block block, int age) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) return;
-			org.bukkit.block.data.Ageable ageable = (org.bukkit.block.data.Ageable) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Ageable ageable = (org.bukkit.block.data.Ageable) data;
             ageable.setAge(age);
+			block.setBlockData(data, false);
         }
 
         BlockState state = block.getState();
@@ -249,12 +389,13 @@ public final class XBlock {
     }
 
     /**
-     * Sets the type of any block that can be colored.
-     *
-     * @param block the block to color.
-     * @param color the color to use.
-     * @return true if the block can be colored, otherwise false.
-     */
+	 * Sets the type of any block that can be colored.
+	 *
+	 * @param block the block to color.
+	 * @param color the color to use.
+	 *
+	 * @return true if the block can be colored, otherwise false.
+	 */
     public static boolean setColor(Block block, DyeColor color) {
         if (ISFLAT) {
             String type = block.getType().name();
@@ -279,13 +420,16 @@ public final class XBlock {
 	 *
 	 * @param block the block to set the fluid level of.
 	 * @param level the level of fluid.
+	 *
 	 * @return true if this block can have a fluid level, otherwise false.
 	 */
     public static boolean setFluidLevel(Block block, int level) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Levelled)) return false;
-			org.bukkit.block.data.Levelled levelled = (org.bukkit.block.data.Levelled) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Levelled levelled = (org.bukkit.block.data.Levelled) data;
             levelled.setLevel(level);
+			block.setBlockData(data, false);
             return true;
         }
 
@@ -350,12 +494,12 @@ public final class XBlock {
 	public static void setCakeSlices(Block block, int amount) {
 		Validate.isTrue(isCake(block.getType()), "Block is not a cake: " + block.getType());
 		if (ISFLAT) {
-			org.bukkit.block.data.BlockData bd = block.getBlockData();
-			org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) bd;
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) data;
 			int remaining = cake.getMaximumBites() - (cake.getBites() + amount);
 			if (remaining > 0) {
 				cake.setBites(remaining);
-				block.setBlockData(bd);
+				block.setBlockData(data);
 			}else {
 				block.breakNaturally();
 			}
@@ -376,14 +520,14 @@ public final class XBlock {
 	public static int addCakeSlices(Block block, int slices) {
 		Validate.isTrue(isCake(block.getType()), "Block is not a cake: " + block.getType());
 		if (ISFLAT) {
-			org.bukkit.block.data.BlockData bd = block.getBlockData();
-			org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) bd;
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) data;
 			int bites = cake.getBites() - slices;
 			int remaining = cake.getMaximumBites() - bites;
 			
 			if (remaining > 0) {
 				cake.setBites(bites);
-				block.setBlockData(bd);
+				block.setBlockData(data);
 				return remaining;
 			}else {
 				block.breakNaturally();
@@ -403,19 +547,6 @@ public final class XBlock {
 			block.breakNaturally();
 			return 0;
 		}
-	}
-	
-	public static boolean setWooden(Block block, XMaterial species) {
-		block.setType(species.parseMaterial());
-		if (ISFLAT) return true;
-		
-		TreeSpecies type = species == XMaterial.SPRUCE_LOG ? TreeSpecies.REDWOOD : TreeSpecies.valueOf(species.name().substring(0, species.name().indexOf('_')));
-		
-		BlockState state = block.getState();
-		MaterialData data = state.getData();
-		((Wood) data).setSpecies(type);
-		state.update(true);
-		return true;
     }
 
 	public static void setEnderPearlOnFrame(Block endPortalFrame, boolean eye) {
@@ -433,6 +564,7 @@ public final class XBlock {
 
 	/**
 	 * @param block the block to get its XMaterial type.
+	 *
 	 * @return the XMaterial of the block.
 	 * @deprecated Not stable, use {@link #isType(Block, XMaterial)} or {@link #isSimilar(Block, XMaterial)} instead.
 	 * If you want to save a block material somewhere, you need to use {@link XMaterial#matchXMaterial(Material)}
@@ -443,34 +575,37 @@ public final class XBlock {
         String type = block.getType().name();
         BlockState state = block.getState();
         MaterialData data = state.getData();
+		byte dataValue;
 
         if (data instanceof Wood) {
             TreeSpecies species = ((Wood) data).getSpecies();
-            return XMaterial.matchXMaterial(species.name() + block.getType().name())
-                    .orElseThrow(() -> new IllegalArgumentException("Unsupported material from tree species " + species.name() + ": " + block.getType().name()));
+			dataValue = species.getData();
+		}else if (data instanceof Colorable) {
+			DyeColor color = ((Colorable) data).getColor();
+			dataValue = color.getDyeData();
+		}else {
+			dataValue = data.getData();
         }
-        if (data instanceof Colorable) {
-            Colorable color = (Colorable) data;
-            return XMaterial.matchXMaterial(color.getColor().name() + '_' + type).orElseThrow(() -> new IllegalArgumentException("Unsupported colored material"));
-        }
-        return XMaterial.matchXMaterial(block.getType());
-    }
-
-    /**
+		
+		return XMaterial.matchDefinedXMaterial(type, dataValue).orElseThrow(() -> new IllegalArgumentException("Unsupported material for block " + dataValue + ": " + block.getType().name()));
+	}
+	
+	/**
 	 * Same as {@link #isType(Block, XMaterial)} except it also does a simple {@link XMaterial#matchXMaterial(Material)}
 	 * comparison with the given block and material.
 	 *
 	 * @param block    the block to compare.
 	 * @param material the material to compare with.
+	 *
 	 * @return true if block type is similar to the given material.
 	 * @see #isType(Block, XMaterial)
 	 * @since 1.3.0
 	 */
 	public static boolean isSimilar(Block block, XMaterial material) {
 		return material == XMaterial.matchXMaterial(block.getType()) || isType(block, material);
-	}
-	
-	/**
+    }
+
+    /**
 	 * <b>Universal Method</b>
 	 * <p>
 	 * Check if the block type matches the specified XMaterial.
@@ -479,6 +614,7 @@ public final class XBlock {
 	 *
 	 * @param block    the block to check.
 	 * @param material the XMaterial similar to this block type.
+	 *
 	 * @return true if the raw block type matches with the material.
 	 * @see #isSimilar(Block, XMaterial)
 	 */
@@ -515,14 +651,23 @@ public final class XBlock {
 		case CAVE_AIR:
 		case VOID_AIR:
 			return isAir(mat);
-		default:
-			return mat.equals(material.parseMaterial()); // EDITED FOR BEAUTYQUESTS
 		}
+		return false;
     }
 
 	public static boolean isAir(@Nullable Material material) {
-		if (material == Material.AIR) return true;
-		return ISFLAT && (material == Material.CAVE_AIR || material == Material.VOID_AIR);
+		if (ISFLAT) {
+			// material.isAir() doesn't exist for 1.13
+			switch (material) {
+			case AIR:
+			case CAVE_AIR:
+			case VOID_AIR:
+				return true;
+			default:
+				return false;
+			}
+		}
+		return material == Material.AIR;
     }
 
     public static boolean isPowered(Block block) {
@@ -540,8 +685,10 @@ public final class XBlock {
     public static void setPowered(Block block, boolean powered) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Powerable)) return;
-			org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) data;
             powerable.setPowered(powered);
+			block.setBlockData(data, false);
             return;
         }
 
@@ -565,8 +712,12 @@ public final class XBlock {
     public static void setOpened(Block block, boolean opened) {
         if (ISFLAT) {
             if (!(block.getBlockData() instanceof org.bukkit.block.data.Openable)) return;
-            org.bukkit.block.data.Openable openable = (org.bukkit.block.data.Openable) block.getBlockData();
+			// These useless "data" variables are used because JVM doesn't like upcasts/downcasts for
+			// non-existing classes even if unused.
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Openable openable = (org.bukkit.block.data.Openable) data;
             openable.setOpen(opened);
+			block.setBlockData(data, false);
             return;
         }
 
@@ -591,8 +742,10 @@ public final class XBlock {
     public static void setRotation(Block block, BlockFace facing) {
         if (ISFLAT) {
 			if (!(block.getBlockData() instanceof org.bukkit.block.data.Rotatable)) return;
-			org.bukkit.block.data.Rotatable rotatable = (org.bukkit.block.data.Rotatable) block.getBlockData();
+			BlockData data = block.getBlockData();
+			org.bukkit.block.data.Rotatable rotatable = (org.bukkit.block.data.Rotatable) data;
             rotatable.setRotation(facing);
+			block.setBlockData(data, false);
         }
     }
 
@@ -603,6 +756,69 @@ public final class XBlock {
 		}
         return false;
     }
+	
+	private enum LegacyMaterial {
+		// Colorable
+		STANDING_BANNER(
+				Handling.COLORABLE),
+		WALL_BANNER(
+				Handling.COLORABLE),
+		BANNER(
+				Handling.COLORABLE),
+		CARPET(
+				Handling.COLORABLE),
+		WOOL(
+				Handling.COLORABLE),
+		STAINED_CLAY(
+				Handling.COLORABLE),
+		STAINED_GLASS(
+				Handling.COLORABLE),
+		STAINED_GLASS_PANE(
+				Handling.COLORABLE),
+		THIN_GLASS(
+				Handling.COLORABLE),
+		
+		// Wood Species
+		WOOD(
+				Handling.WOOD_SPECIES),
+		WOOD_STEP(
+				Handling.WOOD_SPECIES),
+		WOOD_DOUBLE_STEP(
+				Handling.WOOD_SPECIES),
+		LEAVES(
+				Handling.WOOD_SPECIES),
+		LEAVES_2(
+				Handling.WOOD_SPECIES),
+		LOG(
+				Handling.WOOD_SPECIES),
+		LOG_2(
+				Handling.WOOD_SPECIES),
+		SAPLING(
+				Handling.WOOD_SPECIES);
+		
+		private static final Map<String, LegacyMaterial> LOOKUP = new HashMap<>();
+		
+		static {
+			for (LegacyMaterial legacyMaterial : values()) {
+				LOOKUP.put(legacyMaterial.name(), legacyMaterial);
+			}
+		}
+		
+		private final Material material = Material.getMaterial(name());
+		private final Handling handling;
+		
+		LegacyMaterial(Handling handling) {
+			this.handling = handling;
+		}
+		
+		private static LegacyMaterial getMaterial(String name) {
+			return LOOKUP.get(name);
+		}
+		
+		private enum Handling {
+			COLORABLE, WOOD_SPECIES;
+		}
+	}
 	
 	/**
 	 * An enum with cached legacy materials which can be used when comparing blocks with blocks and blocks with items.

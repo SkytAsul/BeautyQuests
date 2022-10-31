@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.options;
 
 import java.util.Map;
-import java.util.function.Function;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
@@ -18,11 +17,6 @@ public abstract class QuestOptionRewards extends QuestOptionObject<AbstractRewar
 	}
 	
 	protected abstract void attachedAsyncReward(AbstractReward reward);
-	
-	@Override
-	protected Function<AbstractReward, Map<String, Object>> getSerializeFunction() {
-		return AbstractReward::serialize;
-	}
 
 	@Override
 	protected AbstractReward deserialize(Map<String, Object> map) {

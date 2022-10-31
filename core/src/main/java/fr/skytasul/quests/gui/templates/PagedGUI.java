@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
 	private ItemStack validationItem = ItemUtils.itemDone;
-	private LevenshteinComparator<T> comparator;
+	protected LevenshteinComparator<T> comparator;
 	
 	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
 		this(name, color, objects, null, null);
@@ -81,6 +82,12 @@ public abstract class PagedGUI<T> implements CustomInventory {
 		if (validationItem == null) throw new IllegalArgumentException("Cannot set a null validation item.");
 		this.validate = validate;
 		this.validationItem = validationItem;
+		return this;
+	}
+	
+	public PagedGUI<T> sortValuesByName() {
+		Validate.notNull(comparator);
+		sortValues(comparator.getFunction());
 		return this;
 	}
 	

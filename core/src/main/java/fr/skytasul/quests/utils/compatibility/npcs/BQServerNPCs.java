@@ -62,7 +62,7 @@ public class BQServerNPCs extends BQNPCsManager {
 	
 	@EventHandler
 	public void onInteract(NPCInteractEvent e) {
-		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), e.isLeftClick() ? ClickType.LEFT : ClickType.RIGHT);
+		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), ClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
 	}
 	
 	public static class BQServerNPC extends BQNPC {

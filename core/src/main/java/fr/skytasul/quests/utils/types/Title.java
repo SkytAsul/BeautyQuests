@@ -1,8 +1,6 @@
 package fr.skytasul.quests.utils.types;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.utils.Lang;
@@ -48,24 +46,20 @@ public class Title {
 		return title + ", " + subtitle + ", " + Lang.Ticks.format(fadeIn + stay + fadeOut);
 	}
 	
-	public Map<String, Object> serialize(){
-		Map<String, Object> map = new HashMap<>();
-		
-		if (title != null) map.put("title", title);
-		if (subtitle != null) map.put("subtitle", subtitle);
-		if (fadeIn != FADE_IN) map.put("fadeIn", fadeIn);
-		if (stay != STAY) map.put("stay", stay);
-		if (fadeOut != FADE_OUT) map.put("fadeOut", fadeOut);
-		
-		return map;
+	public void serialize(ConfigurationSection section) {
+		if (title != null) section.set("title", title);
+		if (subtitle != null) section.set("subtitle", subtitle);
+		if (fadeIn != FADE_IN) section.set("fadeIn", fadeIn);
+		if (stay != STAY) section.set("stay", stay);
+		if (fadeOut != FADE_OUT) section.set("fadeOut", fadeOut);
 	}
 	
-	public static Title deserialize(Map<String, Object> map) {
-		String title = (String) map.getOrDefault("title", null);
-		String subtitle = (String) map.getOrDefault("subtitle", null);
-		int fadeIn = map.containsKey("fadeIn") ? (int) map.get("fadeIn") : FADE_IN;
-		int stay = map.containsKey("stay") ? (int) map.get("stay") : STAY;
-		int fadeOut = map.containsKey("fadeOut") ? (int) map.get("fadeOut") : FADE_OUT;
+	public static Title deserialize(ConfigurationSection section) {
+		String title = section.getString("title", null);
+		String subtitle = section.getString("subtitle", null);
+		int fadeIn = section.getInt("fadeIn", FADE_IN);
+		int stay = section.getInt("stay", STAY);
+		int fadeOut = section.getInt("fadeOut", FADE_OUT);
 		return new Title(title, subtitle, fadeIn, stay, fadeOut);
 	}
 	

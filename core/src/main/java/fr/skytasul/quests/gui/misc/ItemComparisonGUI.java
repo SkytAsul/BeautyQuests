@@ -21,7 +21,7 @@ public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 	private ItemComparisonMap comparisons;
 	
 	public ItemComparisonGUI(ItemComparisonMap comparisons, Runnable validate) {
-		super(Lang.INVENTORY_ITEM_COMPARISONS.toString(), DyeColor.LIME, QuestsAPI.itemComparisons, x -> validate.run(), null);
+		super(Lang.INVENTORY_ITEM_COMPARISONS.toString(), DyeColor.LIME, QuestsAPI.getItemComparisons(), x -> validate.run(), null);
 		this.comparisons = comparisons;
 	}
 	

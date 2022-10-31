@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.minecraft.core.Registry;
@@ -34,7 +34,7 @@ public class v1_19_R1 extends NMS{
 	}
 
 	@Override
-	public double entityNameplateHeight(LivingEntity en){
+	public double entityNameplateHeight(Entity en) {
 		return en.getHeight();
 	}
 	

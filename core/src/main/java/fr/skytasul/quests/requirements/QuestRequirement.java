@@ -1,7 +1,6 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
@@ -62,15 +61,11 @@ public class QuestRequirement extends AbstractRequirement {
 		
 		new ChooseQuestGUI(QuestsAPI.getQuests().getQuests(), quest -> {
 			this.questId = quest.getID();
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}) {
 			@Override
 			public fr.skytasul.quests.gui.CustomInventory.CloseBehavior onClose(Player p, org.bukkit.inventory.Inventory inv) {
-				Utils.runSync(() -> {
-					event.getGUI().remove(QuestRequirement.this);
-					event.reopenGUI();
-				});
+				Utils.runSync(event::remove);
 				return CloseBehavior.NOTHING;
 			}
 		}.create(event.getPlayer());
@@ -82,13 +77,13 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("questID", questId);
+	public void save(ConfigurationSection section) {
+		section.set("questID", questId);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		questId = (int) savedDatas.get("questID");
+	public void load(ConfigurationSection section) {
+		questId = section.getInt("questID");
 	}
 	
 }

@@ -17,6 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -29,7 +30,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 
-public abstract class BQNPC {
+public abstract class BQNPC implements Located.LocatedEntity {
 	
 	private Map<Quest, List<Player>> quests = new TreeMap<>();
 	private Set<QuestPool> pools = new TreeSet<>();
@@ -40,6 +41,7 @@ public abstract class BQNPC {
 	private BukkitTask launcheableTask;
 	
 	/* Holograms */
+	private boolean debug = false;
 	private BukkitTask hologramsTask;
 	private boolean hologramsRemoved = true;
 	private Hologram hologramText = new Hologram(false, QuestsAPI.hasHologramsManager() && !QuestsConfiguration.isTextHologramDisabled(), Lang.HologramText.toString());
@@ -64,8 +66,10 @@ public abstract class BQNPC {
 	
 	public abstract boolean isSpawned();
 	
+	@Override
 	public abstract Entity getEntity();
 	
+	@Override
 	public abstract Location getLocation();
 	
 	public abstract void setSkin(String skin);
@@ -174,7 +178,7 @@ public abstract class BQNPC {
 				if (isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
 				if (en == null) {
-					if (!hologramsRemoved) removeHolograms(); // if the NPC is not living and holograms have not been already removed before
+					if (!hologramsRemoved) removeHolograms(false); // if the NPC is not living and holograms have not been already removed before
 					return;
 				}
 				hologramsRemoved = false;
@@ -182,7 +186,7 @@ public abstract class BQNPC {
 				if (hologramText.canAppear && hologramText.visible) hologramText.refresh(en);
 				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
-				if (hologramPool.canAppear && hologramPool.visible) hologramPool.refresh(en);
+				if (hologramPool.canAppear) hologramPool.refresh(en);
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
@@ -237,7 +241,6 @@ public abstract class BQNPC {
 	public void addPool(QuestPool pool) {
 		if (!pools.add(pool)) return;
 		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
-		hologramPool.visible = true;
 		addStartablePredicate(pool::canGive, pool);
 		updatedObjects();
 	}
@@ -246,10 +249,7 @@ public abstract class BQNPC {
 		boolean b = pools.remove(pool);
 		removeStartablePredicate(pool);
 		updatedObjects();
-		if (pools.isEmpty()) {
-			hologramPool.visible = false;
-			hologramPool.delete();
-		}
+		if (pools.isEmpty()) hologramPool.delete();
 		return b;
 	}
 	
@@ -280,13 +280,13 @@ public abstract class BQNPC {
 		return startable.values().stream().anyMatch(predicate -> predicate.test(p, acc));
 	}
 	
-	private void removeHolograms() {
+	private void removeHolograms(boolean cancelRefresh) {
 		hologramText.delete();
 		hologramLaunch.delete();
 		hologramLaunchNo.delete();
 		hologramPool.delete();
 		hologramsRemoved = true;
-		if (hologramsTask != null) {
+		if (cancelRefresh && hologramsTask != null) {
 			hologramsTask.cancel();
 			hologramsTask = null;
 		}
@@ -298,14 +298,14 @@ public abstract class BQNPC {
 	
 	private void updatedObjects() {
 		if (isEmpty()) {
-			removeHolograms();
+			removeHolograms(true);
 		}else if (holograms && hologramsTask == null) {
 			hologramsTask = startHologramsTask();
 		}
 	}
 	
 	public void unload() {
-		removeHolograms();
+		removeHolograms(true);
 		if (launcheableTask != null) {
 			launcheableTask.cancel();
 			launcheableTask = null;
@@ -324,6 +324,30 @@ public abstract class BQNPC {
 			pool.unloadStarter();
 		}
 		unload();
+	}
+	
+	public void toggleDebug() {
+		if (debug)
+			debug = false;
+		else debug = true;
+	}
+	
+	@Override
+	public String toString() {
+		String npcInfo = "NPC #" + getId() + ", " + quests.size() + " quests, " + pools.size() + " pools";
+		String hologramsInfo;
+		if (!holograms) {
+			hologramsInfo = "no holograms";
+		}else if (hologramsRemoved) {
+			hologramsInfo = "holograms removed";
+		}else {
+			hologramsInfo = "holograms:";
+			hologramsInfo += "\n- text=" + hologramText.toString();
+			hologramsInfo += "\n- launch=" + hologramLaunch.toString();
+			hologramsInfo += "\n- launchNo=" + hologramLaunchNo.toString();
+			hologramsInfo += "\n- pool=" + hologramPool.toString();
+		}
+		return npcInfo + " " + hologramsInfo;
 	}
 	
 	public class Hologram {
@@ -349,9 +373,12 @@ public abstract class BQNPC {
 		
 		public void refresh(LivingEntity en) {
 			Location lc = Utils.upLocationForEntity(en, getYAdd());
+			if (debug) System.out.println("refreshing " + toString() + " (hologram null: " + (hologram == null) + ")");
 			if (hologram == null) {
 				create(lc);
-			}else hologram.teleport(lc);
+			}else {
+				hologram.teleport(lc);
+			}
 		}
 		
 		public double getYAdd() {
@@ -390,10 +417,22 @@ public abstract class BQNPC {
 		}
 		
 		public void delete() {
+			if (debug) System.out.println("deleting " + toString());
 			if (hologram == null) return;
 			hologram.delete();
 			hologram = null;
 		}
+		
+		@Override
+		public String toString() {
+			if (!enabled) return "disabled";
+			if (!canAppear) return "cannot appear";
+			return (visible ? "visible" : "invisible") + " by default, "
+					+ (item == null ? "" : item.getType().name() + ", ")
+					+ (text == null ? "no text" : "text=" + text) + ", "
+					+ (hologram == null ? " not spawned" : "spawned");
+		}
+		
 	}
 	
 }

@@ -2,8 +2,8 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -11,8 +11,6 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionReward extends AbstractReward {
@@ -24,7 +22,6 @@ public class PermissionReward extends AbstractReward {
 	}
 
 	public PermissionReward(List<Permission> permissions) {
-		if (!DependenciesManager.vault.isEnabled()) throw new MissingDependencyException("Vault");
 		this.permissions = permissions;
 	}
 
@@ -50,19 +47,18 @@ public class PermissionReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new PermissionListGUI(permissions, permissions -> {
 			PermissionReward.this.permissions = permissions;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
 		}).create(event.getPlayer());
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("perms", Utils.serializeList(permissions, Permission::serialize));
+	public void save(ConfigurationSection section) {
+		section.set("perms", Utils.serializeList(permissions, Permission::serialize));
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		permissions.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("perms"), Permission::deserialize));
+	public void load(ConfigurationSection section){
+		permissions.addAll(Utils.deserializeList(section.getMapList("perms"), Permission::deserialize));
 	}
 	
 }

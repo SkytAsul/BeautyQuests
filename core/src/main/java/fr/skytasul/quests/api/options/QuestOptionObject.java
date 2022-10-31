@@ -3,9 +3,7 @@ package fr.skytasul.quests.api.options;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -15,17 +13,16 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>> extends QuestOption<List<T>> {
 	
 	@Override
 	public void attach(Quest quest) {
-		Validate.notNull(quest, "Attached quest cannot be null");
 		super.attach(quest);
 		attachObjects();
 	}
@@ -57,7 +54,7 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	
 	@Override
 	public Object save() {
-		return Utils.serializeList(getValue(), getSerializeFunction());
+		return SerializableObject.serializeList(getValue());
 	}
 	
 	@Override
@@ -69,8 +66,6 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	public List<T> cloneValue(List<T> value) {
 		return new ArrayList<>(value);
 	}
-	
-	protected abstract Function<T, Map<String, Object>> getSerializeFunction();
 	
 	protected abstract T deserialize(Map<String, Object> map);
 	

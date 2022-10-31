@@ -1,7 +1,10 @@
 package fr.skytasul.quests.stages;
 
+import java.util.Collections;
+import java.util.Spliterator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,12 +12,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.WaitBlockClick;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -26,27 +33,36 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.BQLocation;
 
-public class StageInteract extends AbstractStage {
+@LocatableType (types = { LocatedType.BLOCK, LocatedType.OTHER })
+public class StageInteract extends AbstractStage implements Locatable.MultipleLocatable, Locatable.PreciseLocatable {
 
-	private boolean left;
-	private Location lc;
-	private BQBlock block;
+	private final boolean left;
+	private final BQLocation lc;
+	private final BQBlock block;
 	
-	public StageInteract(QuestBranch branch, boolean leftClick, Location location) {
+	private Located.LocatedBlock locatedBlock;
+
+	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
 		super(branch);
 		this.left = leftClick;
-		this.lc = location.getBlock().getLocation();
+		this.lc = new BQLocation(location.getWorldName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		
+		this.block = null;
 	}
 	
 	public StageInteract(QuestBranch branch, boolean leftClick, BQBlock block) {
 		super(branch);
 		this.left = leftClick;
 		this.block = block;
+		
+		this.lc = null;
 	}
 
-	public Location getLocation(){
+	public BQLocation getLocation() {
 		return lc;
 	}
 	
@@ -58,15 +74,42 @@ public class StageInteract extends AbstractStage {
 		return left;
 	}
 	
+	@Override
+	public Located getLocated() {
+		if (lc == null)
+			return null;
+		if (locatedBlock == null) {
+			Block realBlock = lc.getMatchingBlock();
+			if (realBlock != null)
+				locatedBlock = Located.LocatedBlock.create(realBlock);
+		}
+		return locatedBlock;
+	}
+	
+	@Override
+	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+		if (block == null) return null;
+		
+		return BQBlock.getNearbyBlocks(fetcher, Collections.singleton(block));
+	}
+	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
+		if (NMS.getMCVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) return;
+		
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		
 		if (lc != null) {
-			if (!e.getClickedBlock().getLocation().equals(lc)) return;
-		}else if (!block.applies(e.getClickedBlock())) return;
+			if (!lc.equals(e.getClickedBlock().getLocation())) return;
+		}else if (block != null) {
+			if (!block.applies(e.getClickedBlock())) return;
+		}else {
+			BeautyQuests.logger.warning("No block nor location set for " + toString());
+			return;
+		}
 		
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
@@ -90,7 +133,7 @@ public class StageInteract extends AbstractStage {
 	
 	public static StageInteract deserialize(ConfigurationSection section, QuestBranch branch) {
 		if (section.contains("location")) {
-			return new StageInteract(branch, section.getBoolean("leftClick"), Location.deserialize(section.getConfigurationSection("location").getValues(false)));
+			return new StageInteract(branch, section.getBoolean("leftClick"), BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
 		}else {
 			BQBlock block;
 			if (section.contains("material")) {
@@ -178,7 +221,7 @@ public class StageInteract extends AbstractStage {
 		@Override
 		public StageInteract finishStage(QuestBranch branch) {
 			if (location != null) {
-				return new StageInteract(branch, leftClick, location);
+				return new StageInteract(branch, leftClick, new BQLocation(location));
 			}else return new StageInteract(branch, leftClick, block);
 		}
 		

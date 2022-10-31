@@ -1,8 +1,11 @@
 package fr.skytasul.quests.players;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -11,10 +14,11 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.data.SavableData;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -22,8 +26,9 @@ import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public abstract class PlayersManager {
-
-	public static PlayersManager manager;
+	
+	protected final Set<SavableData<?>> accountDatas = new HashSet<>();
+	private boolean loaded = false;
 
 	protected abstract Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp);
 	
@@ -41,9 +46,33 @@ public abstract class PlayersManager {
 	
 	public abstract void unloadAccount(PlayerAccount acc);
 
-	public abstract void load();
+	public void load() {
+		if (loaded) throw new IllegalStateException("Already loaded");
+		loaded = true;
+	}
+	
+	public boolean isLoaded() {
+		return loaded;
+	}
 
 	public abstract void save();
+	
+	public void addAccountData(SavableData<?> data) {
+		if (loaded)
+			throw new IllegalStateException("Cannot add account data after players manager has been loaded");
+		if (PlayerAccount.FORBIDDEN_DATA_ID.contains(data.getId()))
+			throw new IllegalArgumentException("Forbidden account data id " + data.getId());
+		if (accountDatas.stream().anyMatch(x -> x.getId().equals(data.getId())))
+			throw new IllegalArgumentException("Another account data already exists with the id " + data.getId());
+		if (data.getDataType().isPrimitive())
+			throw new IllegalArgumentException("Primitive account data types are not supported");
+		accountDatas.add(data);
+		DebugUtils.logMessage("Registered account data " + data.getId());
+	}
+	
+	public Collection<SavableData<?>> getAccountDatas() {
+		return accountDatas;
+	}
 
 	public AbstractAccount createAbstractAccount(Player p) {
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
@@ -80,6 +109,7 @@ public abstract class PlayersManager {
 	}
 
 	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
+	public static PlayersManager manager;
 	
 	public static synchronized void loadPlayer(Player p) {
 		long time = System.currentTimeMillis();
@@ -134,6 +164,7 @@ public abstract class PlayersManager {
 	
 	public static PlayerAccount getPlayerAccount(Player p) {
 		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
+		if (!p.isOnline()) BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
 		
 		return cachedAccounts.get(p);
 	}

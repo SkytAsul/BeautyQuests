@@ -2,9 +2,6 @@ package fr.skytasul.quests;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,31 +9,31 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import com.google.common.base.Charsets;
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
-
+import fr.skytasul.quests.api.Locale;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarImplementation;
-import fr.skytasul.quests.commands.Commands;
 import fr.skytasul.quests.commands.CommandsManager;
 import fr.skytasul.quests.editors.Editor;
 import fr.skytasul.quests.gui.Inventories;
@@ -44,9 +41,7 @@ import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -58,19 +53,19 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.logger.ILoggerHandler;
 import fr.skytasul.quests.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 
-import de.jeff_media.updatechecker.UpdateChecker;
-
 public class BeautyQuests extends JavaPlugin {
 
 	public static LoggerExpanded logger;
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
+	private boolean isPaper;
 	
 	/* --------- Storage --------- */
 	
@@ -84,6 +79,8 @@ public class BeautyQuests extends JavaPlugin {
 	private YamlConfiguration data;
 	private File dataFile;
 	private File saveFolder;
+	
+	private Path backupDir = null;
 	
 	/* --------- Datas --------- */
 
@@ -99,6 +96,7 @@ public class BeautyQuests extends JavaPlugin {
 	public static boolean loaded = false;
 	
 	public DependenciesManager dependencies = new DependenciesManager();
+	private CommandsManager command;
 	
 	private LoggerHandler loggerHandler;
 	
@@ -122,18 +120,21 @@ public class BeautyQuests extends JavaPlugin {
 		try {
 			logger.info("------------ BeautyQuests ------------");
 			
+			checkPaper();
+			
 			dependencies.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(dependencies, this);
 
 			saveDefaultConfig();
 			NMS.getMCVersion();
-			registerCommands();
 
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
 			loadConfigParameters(true);
 
+			registerCommands();
+			
 			try {
 				dependencies.initializeCompatibilities();
 			}catch (Exception ex) {
@@ -156,6 +157,8 @@ public class BeautyQuests extends JavaPlugin {
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
 						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
+						if (NMS.getMCVersion() >= 16)
+							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
 						
 						launchSaveCycle();
 
@@ -188,15 +191,30 @@ public class BeautyQuests extends JavaPlugin {
 			logger.severe("This is a fatal error. Now disabling.");
 			disable = true;
 			setEnabled(false);
+		}catch (Exception ex) {
+			logger.severe("An unexpected exception occurred while loading plugin.", ex);
+			logger.severe("This is a fatal error. Now disabling.");
+			disable = true;
+			setEnabled(false);
 		}
 	}
 	
 	@Override
 	public void onDisable(){
 		try {
-			Editor.leaveAll();
-			Inventories.closeAll();
-			stopSaveCycle();
+			try {
+				if (command != null) command.unload();
+			}catch (Throwable ex) {
+				logger.severe("An error occurred while disabling command manager.", ex);
+			}
+			
+			try {
+				Editor.leaveAll();
+				Inventories.closeAll();
+				stopSaveCycle();
+			}catch (Throwable ex) {
+				logger.severe("An error occurred while disabling editing systems.", ex);
+			}
 			
 			try {
 				if (!disable) saveAllConfig(true);
@@ -216,26 +234,21 @@ public class BeautyQuests extends JavaPlugin {
 	}
 	
 	/* ---------- Various init ---------- */
+	
+	private void checkPaper() {
+		try {
+			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
+			DebugUtils.logMessage("Paper detected.");
+		}catch (ClassNotFoundException ex) {
+			isPaper = false;
+			logger.warning("You are not running the Paper software.\n"
+					+ "It is highly recommended to use it for extended features and more stability.");
+		}
+	}
 
 	private void registerCommands(){
-		CommandsManager questCommand = new CommandsManager((sender) -> {
-			if (!(sender instanceof Player)) return;
-			Player p = (Player) sender;
-			if (!p.hasPermission("beautyquests.command.listPlayer")){
-				Lang.INCORRECT_SYNTAX.send(p);
-			}else {
-				PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-				if (acc == null) {
-					Lang.ERROR_OCCURED.send(p, "no account data");
-					logger.severe("Player " + p.getName() + " has got no account. This is a CRITICAL issue.");
-				}else Inventories.create(p, new PlayerListGUI(acc));
-			}
-		});
-		PluginCommand cmd = getCommand("beautyquests");
-		cmd.setPermission("beautyquests.command");
-		cmd.setExecutor(questCommand);
-		cmd.setTabCompleter(questCommand);
-		questCommand.registerCommandsClass(new Commands());
+		command = new CommandsManager();
+		command.initializeCommands();
 	}
 	
 	private void launchSaveCycle(){
@@ -291,31 +304,42 @@ public class BeautyQuests extends JavaPlugin {
 			if (size > 5) return "5 - 10";
 			return "0 - 5";
 		}));
+		metrics.addCustomChart(new AdvancedPie("hooks", () -> { // replace with bar chart when bStats add them back
+			return dependencies.getDependencies()
+				.stream()
+				.filter(dep -> dep.isEnabled())
+				.map(dep -> dep.getFoundPlugin().getName())
+				.distinct()
+				.collect(Collectors.toMap(Function.identity(), __ -> 1));
+		}));
 		DebugUtils.logMessage("Started bStats metrics");
 	}
 	
 	private void launchUpdateChecker(String pluginVersion) {
 		DebugUtils.logMessage("Starting Spigot updater");
+		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
 			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
-				UpdateChecker.init(instance, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+				checker = new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
 						.setUserAgent("")
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
-						.setNotifyOpsOnJoin(false)
 						.setUsedVersion(build)
-						.setNameFreeVersion("(dev builds)")
-						.checkNow();
+						.setNameFreeVersion("(dev builds)");
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
+				return;
 			}
 		}else {
-			UpdateChecker.init(this, 39255)
-					.setDownloadLink(39255)
-					.setNotifyOpsOnJoin(false)
-					.checkNow();
+			checker = new UpdateChecker(this, UpdateCheckSource.SPIGOT, "39255")
+					.setDownloadLink(39255);
 		}
+		checker
+				.setDonationLink("https://paypal.me/SkytAsul")
+				.setSupportLink("https://discord.gg/H8fXrkD")
+				.setNotifyOpsOnJoin(false)
+				.checkNow();
 	}
 	
 	/* ---------- YAML ---------- */
@@ -328,24 +352,24 @@ public class BeautyQuests extends JavaPlugin {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
 			}
-			if (init && loadLang() == null) return;
+			if (init) loadLang();
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 			
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
+				db = null;
 				try {
 					db = new Database(dbConfig);
 					db.testConnection();
 					logger.info("Connection to database etablished.");
 				}catch (Exception ex) {
-					if (db != null) {
-						db.closeConnection();
-						db = null;
-					}
+					db = null;
 					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
+			
+			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
 			
 			/*				static initialization				*/
 			if (init) {
@@ -365,47 +389,10 @@ public class BeautyQuests extends JavaPlugin {
 	
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
-			for (String language : new String[] { "en_US", "fr_FR", "zh_CN", "zh_HK", "de_DE", "pt_PT", "it_IT", "es_ES", "sv_SE", "hu_HU", "ru_RU", "pl_PL", "th_TH", "lt_LT", "vi_VN" }) {
-				File file = new File(getDataFolder(), "locales/" + language + ".yml");
-				if (!file.exists()) saveResource("locales/" + language + ".yml", false);
-			}
-
-			long lastMillis = System.currentTimeMillis();
 			loadedLanguage = config.getConfig().getString("lang", "en_US");
-			String language = "locales/" + loadedLanguage + ".yml";
-			File file = new File(getDataFolder(), language);
-			InputStream res = getResource(language);
-			boolean created = false;
-			if (!file.exists()){
-				logger.warning("Language file " + language + " does not exist. Using default english strings.");
-				file.createNewFile();
-				res = getResource("locales/en_US.yml");
-				created = true;
-			}
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(file);
-			boolean changes = false;
-			if (res != null){ // if it's a local resource
-				YamlConfiguration def = YamlConfiguration.loadConfiguration(new InputStreamReader(res, StandardCharsets.UTF_8));
-				for (String key : def.getKeys(true)){ // get all keys in resource
-					if (!def.isConfigurationSection(key)){ // if not a block
-						if (!conf.contains(key)){ // if string does not exist in the file
-							conf.set(key, def.get(key)); // copy string
-							if (!created) DebugUtils.logMessage("String copied from source file to " + language + ". Key: " + key);
-							changes = true;
-						}
-					}
-				}
-			}
-			Lang.loadStrings(YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("locales/en_US.yml"), Charsets.UTF_8)), conf);
-
-			if (changes) {
-				getLogger().info("Copied new strings into " + language + " language file.");
-				conf.save(file); // if there has been changes before, save the edited file
-			}
-			getLogger().info("Loaded language file " + language + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
-			return conf;
-		} catch(Exception e) {
-			throw new LoadingException("Couldn't create language file.", e);
+			return Locale.loadLang(this, Lang.values(), loadedLanguage);
+		}catch (Exception ex) {
+			throw new LoadingException("Couldn't load language file.", ex);
 		}
 	}
 	
@@ -426,8 +413,9 @@ public class BeautyQuests extends JavaPlugin {
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
 				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
-				createFolderBackup();
-				createDataBackup();
+				backupDir = backupDir();
+				createFolderBackup(backupDir);
+				createDataBackup(backupDir);
 			}
 		}else lastVersion = getDescription().getVersion();
 		data.options().header("Do not edit ANYTHING here.");
@@ -437,6 +425,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
 		dependencies.lockDependencies();
+		command.lockCommands();
 		
 		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
@@ -446,10 +435,11 @@ public class BeautyQuests extends JavaPlugin {
 		}
 
 		try{
-			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			if (db == null && backupDir != null) createPlayerDatasBackup(backupDir, (PlayersManagerYAML) PlayersManager.manager);
+			
 			PlayersManager.manager.load();
 		}catch (Exception ex) {
-			createDataBackup();
+			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
 		}
 		
@@ -512,7 +502,6 @@ public class BeautyQuests extends JavaPlugin {
 			try {
 				PlayersManager.manager.save();
 			}catch (Exception ex) {
-				createDataBackup();
 				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
@@ -528,20 +517,27 @@ public class BeautyQuests extends JavaPlugin {
 	private void resetDatas(){
 		quests = null;
 		pools = null;
-		if (db != null) db.closeConnection();
+		try {
+			if (db != null) db.close();
+		}catch (Exception ex) {
+			logger.severe("An error occurred while closing database connection.", ex);
+		}
+		PlayersManager.manager = null;
 		//HandlerList.unregisterAll(this);
 		loaded = false;
 	}
 	
 	/* ---------- Backups ---------- */
 	
-	public boolean createFolderBackup() {
+	public boolean createFolderBackup(Path backup) {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating quests backup...");
-		Path backupDir = backupDir();
+		Path backupDir = backup.resolve("quests");
 		Path saveFolderPath = saveFolder.toPath();
 		try (Stream<Path> stream = Files.walk(saveFolderPath)) {
+			Files.createDirectories(backupDir);
 			stream.forEach(path -> {
+				if (path.equals(saveFolderPath)) return;
 				try {
 					Files.copy(path, backupDir.resolve(saveFolderPath.relativize(path)));
 				}catch (IOException ex) {
@@ -556,11 +552,41 @@ public class BeautyQuests extends JavaPlugin {
 		}
 	}
 	
-	public boolean createDataBackup() {
+	public boolean createDataBackup(Path backup) {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating data backup...");
 		try{
-			logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), backupDir().resolve("data.yml")).getParent().getFileName());
+			Path target = backup.resolve("data.yml");
+			if (Files.exists(target)) {
+				logger.warning("File " + target.toString() + " already exist. This should not happen.");
+			}else {
+				Files.createDirectories(backup);
+				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
+			}
+			return true;
+		}catch (Exception e) {
+			logger.severe("An error occured while creating the backup.", e);
+			return false;
+		}
+	}
+	
+	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
+		if (!QuestsConfiguration.backups) return false;
+		
+		logger.info("Creating player datas backup...");
+		Path backupDir = backup.resolve("players");
+		Path playersFolderPath = yamlManager.getDirectory().toPath();
+		try (Stream<Path> stream = Files.walk(playersFolderPath)) {
+			Files.createDirectories(backupDir);
+			stream.forEach(path -> {
+				if (path.equals(playersFolderPath)) return;
+				try {
+					Files.copy(path, backupDir.resolve(playersFolderPath.relativize(path)));
+				}catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			});
+			logger.info("Player datas backup created in " + backupDir.getFileName().toString());
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -572,7 +598,12 @@ public class BeautyQuests extends JavaPlugin {
 		if (!QuestsConfiguration.backups) return false;
 		logger.info("Creating single quest backup...");
 		try{
-			logger.info("Quest backup created at " + Files.copy(file, Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml")).getFileName());
+			Path target = Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml");
+			if (Files.exists(target)) {
+				logger.warning("File " + target.toString() + " already exist. This should not happen.");
+			}else {
+				logger.info("Quest backup created at " + Files.copy(file, target).getFileName());
+			}
 			return true;
 		}catch (Exception e) {
 			logger.severe("An error occured while creating the backup.", e);
@@ -582,7 +613,7 @@ public class BeautyQuests extends JavaPlugin {
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
 	
-	private Path backupDir() {
+	public Path backupDir() {
 		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
 	}
 	
@@ -624,6 +655,10 @@ public class BeautyQuests extends JavaPlugin {
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
 	}
 	
+	public CommandsManager getCommand() {
+		return command;
+	}
+	
 	public QuestsConfiguration getConfiguration() {
 		return config;
 	}
@@ -651,13 +686,17 @@ public class BeautyQuests extends JavaPlugin {
 	public ILoggerHandler getLoggerHandler() {
 		return loggerHandler == null ? ILoggerHandler.EMPTY_LOGGER : loggerHandler;
 	}
+	
+	public boolean isRunningPaper() {
+		return isPaper;
+	}
 
 
 	public static BeautyQuests getInstance(){
 		return instance;
 	}
 	
-	class LoadingException extends Exception {
+	public static class LoadingException extends Exception {
 		private static final long serialVersionUID = -2811265488885752109L;
 
 		private String loggerMessage;
@@ -670,6 +709,11 @@ public class BeautyQuests extends JavaPlugin {
 			super(cause);
 			this.loggerMessage = loggerMessage;
 		}
+		
+		public String getLoggerMessage() {
+			return loggerMessage;
+		}
+		
 	}
 	
 }

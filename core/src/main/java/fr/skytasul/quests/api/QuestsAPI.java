@@ -24,17 +24,22 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.structure.QuestsManager;
 import fr.skytasul.quests.structure.pools.QuestPoolsManager;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 
+/**
+ * This class contains most of the useful accessors to fetch data from BeautyQuests
+ * and methods to implement custom behaviors.
+ */
 public final class QuestsAPI {
 	
-	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>(Lang.INVENTORY_REQUIREMENTS.toString());
-	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>(Lang.INVENTORY_REWARDS.toString());
-	public static final List<StageType<?>> stages = new LinkedList<>();
-	public static final List<ItemComparison> itemComparisons = new LinkedList<>();
+	private static final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
+	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
+	private static final StageTypeRegistry stages = new StageTypeRegistry();
+	private static final List<ItemComparison> itemComparisons = new LinkedList<>();
 	
 	private static BQNPCsManager npcsManager = null;
 	private static AbstractHolograms<?> hologramsManager = null;
@@ -46,11 +51,16 @@ public final class QuestsAPI {
 	
 	/**
 	 * Register new stage type into the plugin
-	 * @param creator StageType instance
+	 * @param type StageType instance
+	 * @deprecated use {@link StageTypeRegistry#register(StageType)}
 	 */
-	public static <T extends AbstractStage> void registerStage(StageType<T> creator) {
-		stages.add(creator);
-		DebugUtils.logMessage("Stage registered (" + creator.name + ", " + (stages.size() - 1) + ")");
+	@Deprecated
+	public static <T extends AbstractStage> void registerStage(StageType<T> type) { // TODO remove, edited on 0.20
+		stages.register(type);
+	}
+	
+	public static StageTypeRegistry getStages() {
+		return stages;
 	}
 	
 	/**
@@ -70,7 +80,12 @@ public final class QuestsAPI {
 		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
 	}
 	
+	public static List<ItemComparison> getItemComparisons() {
+		return itemComparisons;
+	}
+	
 	public static void registerItemComparison(ItemComparison comparison) {
+		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())), "This item comparison was already registerd");
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}

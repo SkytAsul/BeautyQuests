@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,7 +47,7 @@ public class MythicMobs implements MobFactory<MythicMob> {
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
 				try {
-					mobItem = XMaterial.mobItem(getEntityType(object));
+					mobItem = Utils.mobItem(getEntityType(object));
 				}catch (Exception ex) {
 					mobItem = XMaterial.SPONGE;
 					BeautyQuests.logger.warning("Unknow entity type for MythicMob " + object.getInternalName(), ex);
@@ -65,6 +66,13 @@ public class MythicMobs implements MobFactory<MythicMob> {
 	@Override
 	public MythicMob fromValue(String value) {
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(value);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
+		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId())
+				.map(mob -> mob.getType().equals(first))
+				.orElse(false);
 	}
 
 	@Override
