@@ -216,12 +216,25 @@ public class Quest implements Comparable<Quest>, OptionSet {
 		return true;
 	}
 	
+   	public int getMaxLaunchedQuestByPermission(PlayerAccount acc){
+        	int max = 0;
+        	for (PermissionAttachmentInfo next : acc.getPlayer().getEffectivePermissions()) {
+           	 	if (next.getPermission().contains("beautyquests.start")) {
+				if(max < Integer.parseInt(next.getPermission().replaceAll("beautyquests\\.start\\.", "")))
+					max = Integer.parseInt(next.getPermission().replaceAll("beautyquests\\.start\\.", ""));
+            		}
+        	}
+       		return max;
+    	}
+	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
 			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
-				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
-				return false;
+				if(QuestAPI.getQuests().getStartedSize(acc) >= getMaxLaunchedQuestByPermission(acc)){
+					if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
+					return false;
+				}
 			}
 		}
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
