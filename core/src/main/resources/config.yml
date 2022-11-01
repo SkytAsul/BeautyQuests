@@ -13,7 +13,10 @@ enablePrefix: true
 saveCycle: 15
 # Enable "periodic save" message in console
 saveCycleMessage: true
-# Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
+# Maximum amount of quests that can be started at the same time by a player.
+# This limit can also be set by player by giving the permission "beautyquests.start.<max launched quests>"
+# to a group or a player with your permissions plugin.
+# It is possible not to count some quests in this limit with the "Bypass limit" quest option.
 maxLaunchedQuests: 0
 # Database configuration
 database:

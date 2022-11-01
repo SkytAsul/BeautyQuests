@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.OptionalInt;
+import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -47,6 +47,8 @@ import fr.skytasul.quests.utils.Utils;
 
 public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProvider {
 	
+	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
+
 	private final int id;
 	private final File file;
 	private BranchesManager manager;
@@ -229,12 +231,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
 		if (!p.hasPermission("beautyquests.start")) return false;
-		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
-			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
-				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
-				return false;
-			}
-		}
+		if (!testQuestLimit(p, acc, sendMessage)) return false;
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {
 			if (!ar.test(p)) {
@@ -245,6 +242,30 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 	
+	public boolean testQuestLimit(Player p, PlayerAccount acc, boolean sendMessage) {
+		if (Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
+			return true;
+		int playerMaxLaunchedQuest;
+		OptionalInt playerMaxLaunchedQuestOpt = p.getEffectivePermissions().stream()
+				.filter(permission -> permission.getValue()) // all "active" permissions
+				.map(permission -> PERMISSION_PATTERN.matcher(permission.getPermission()))
+				.filter(matcher -> matcher.matches()) // all permissions that matches "beautyquests.start.<number>"
+				.mapToInt(matcher -> Integer.parseInt(matcher.group(1))) // get the effective number
+				.max();
+		if (playerMaxLaunchedQuestOpt.isPresent()) {
+			playerMaxLaunchedQuest = playerMaxLaunchedQuestOpt.getAsInt();
+		}else {
+			if (QuestsConfiguration.getMaxLaunchedQuests() == 0) return true;
+			playerMaxLaunchedQuest = QuestsConfiguration.getMaxLaunchedQuests();
+		}
+		if (QuestsAPI.getQuests().getStartedSize(acc) >= playerMaxLaunchedQuest) {
+			if (sendMessage)
+				Lang.QUESTS_MAX_LAUNCHED.send(p, playerMaxLaunchedQuest);
+			return false;
+		}
+		return true;
+	}
+
 	public boolean testTimer(PlayerAccount acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
