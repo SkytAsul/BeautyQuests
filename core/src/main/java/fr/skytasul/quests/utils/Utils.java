@@ -551,5 +551,12 @@ public class Utils{
 		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
 		return XMaterial.SPONGE;
 	}
-	
+
+	public static Optional<Integer> parseInt(String toParse) {
+		try {
+			return Optional.of(Integer.parseInt(toParse));
+		} catch (NumberFormatException e) {
+			return Optional.empty();
+		}
+	}
 }

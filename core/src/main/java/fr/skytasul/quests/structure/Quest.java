@@ -3,11 +3,7 @@ package fr.skytasul.quests.structure;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,6 +40,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProvider {
 	
@@ -57,7 +54,9 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	private boolean removed = false;
 	public boolean asyncEnd = false;
 	public List<Player> asyncStart = null;
-	
+
+	private final String bqStartPermission = "beautyquests.start.";
+
 	public Quest(int id) {
 		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
@@ -228,10 +227,28 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
-		if (!p.hasPermission("beautyquests.start")) return false;
-		if (QuestsConfiguration.getMaxLaunchedQuests() != 0 && Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
-			if (QuestsAPI.getQuests().getStartedSize(acc) >= QuestsConfiguration.getMaxLaunchedQuests()) {
-				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, QuestsConfiguration.getMaxLaunchedQuests());
+		if (!p.hasPermission(bqStartPermission)) return false;
+
+		if (Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class))) {
+			int limitLaunchedQuests = QuestsConfiguration.getMaxLaunchedQuests();
+
+			int maxQuestsFromPerm = p.getEffectivePermissions().stream()
+					.map(PermissionAttachmentInfo::getPermission)
+					.filter(perm -> perm.startsWith(bqStartPermission))
+					.map(perm -> perm.replace(bqStartPermission, ""))
+					.map(Utils::parseInt)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.mapToInt(Integer::intValue).max().orElse(0);
+
+			int pLaunchedQuests = QuestsAPI.getQuests().getStartedSize(acc);
+
+			if (maxQuestsFromPerm != 0 && pLaunchedQuests >= maxQuestsFromPerm) {
+				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, maxQuestsFromPerm);
+				return false;
+			}
+			if (limitLaunchedQuests != 0 && pLaunchedQuests >= limitLaunchedQuests) {
+				if (sendMessage) Lang.QUESTS_MAX_LAUNCHED.send(p, limitLaunchedQuests);
 				return false;
 			}
 		}
