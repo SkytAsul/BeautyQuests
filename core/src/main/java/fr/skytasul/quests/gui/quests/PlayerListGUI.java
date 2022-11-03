@@ -24,6 +24,7 @@ import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -97,7 +98,7 @@ public class PlayerListGUI implements CustomInventory {
 		
 		case FINISHED:
 			displayQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription();
 				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -108,7 +109,7 @@ public class PlayerListGUI implements CustomInventory {
 		
 		case IN_PROGRESS:
 			displayQuests(QuestsAPI.getQuests().getQuestsStarted(acc, true, false), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription();
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription();
 				
 				boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
 				boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
@@ -123,7 +124,7 @@ public class PlayerListGUI implements CustomInventory {
 			
 		case NOT_STARTED:
 			displayQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()), qu -> {
-				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat).formatDescription());
+				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription());
 			});
 			break;
 

@@ -2,7 +2,6 @@ package fr.skytasul.quests.options;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
@@ -36,6 +35,11 @@ public class OptionRepeatable extends QuestOptionBoolean implements QuestDescrip
 		return lore;
 	}
 	
+	@Override
+	public String getDescriptionId() {
+		return "repeatable";
+	}
+
 	@Override
 	public double getDescriptionPriority() {
 		return 100;

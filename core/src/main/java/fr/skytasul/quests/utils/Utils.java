@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,7 +42,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -52,9 +50,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
-
 import net.md_5.bungee.api.ChatColor;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -105,7 +101,7 @@ public class Utils{
 			try {
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
-			}catch (Exception e) {
+			} catch (Throwable e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName(), e);
 			}
 		}

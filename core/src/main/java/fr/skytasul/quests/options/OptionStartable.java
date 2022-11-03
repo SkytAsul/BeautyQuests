@@ -2,7 +2,6 @@ package fr.skytasul.quests.options;
 
 import java.util.Arrays;
 import java.util.List;
-
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
@@ -30,6 +29,11 @@ public class OptionStartable extends QuestOptionBoolean implements QuestDescript
 		return context.getQuest().isLauncheable(context.getPlayerAccount().getPlayer(), context.getPlayerAccount(), false) ? STARTABLE : NOT_STARTABLE;
 	}
 	
+	@Override
+	public String getDescriptionId() {
+		return "startable_from_gui";
+	}
+
 	@Override
 	public double getDescriptionPriority() {
 		return 100;

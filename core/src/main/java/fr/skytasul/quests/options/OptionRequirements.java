@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionObject;
@@ -69,6 +68,11 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 		return requirements;
 	}
 	
+	@Override
+	public String getDescriptionId() {
+		return "requirements";
+	}
+
 	@Override
 	public double getDescriptionPriority() {
 		return 30;

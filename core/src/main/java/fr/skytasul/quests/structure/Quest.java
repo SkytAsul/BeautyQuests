@@ -307,9 +307,14 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		if (!context.getPlayerAccount().isCurrent()) return null;
 		if (context.getCategory() != Category.IN_PROGRESS) return null;
-		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), Source.MENU));
+		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), context.getSource()));
 	}
 	
+	@Override
+	public String getDescriptionId() {
+		return "advancement";
+	}
+
 	@Override
 	public double getDescriptionPriority() {
 		return 15;

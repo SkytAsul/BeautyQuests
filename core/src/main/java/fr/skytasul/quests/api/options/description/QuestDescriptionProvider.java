@@ -9,6 +9,8 @@ public interface QuestDescriptionProvider {
 	
 	List<String> provideDescription(QuestDescriptionContext context);
 	
+	String getDescriptionId();
+
 	double getDescriptionPriority();
 	
 	default boolean prefixDescriptionWithNewLine() {

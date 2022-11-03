@@ -12,7 +12,10 @@ public class ScoreboardLine {
 	
 	public ScoreboardLine(String value){
 		Validate.notNull(value);
-		this.value = value.replace("&", "§");
+		this.value = value
+				.replace("&", "§")
+				.replace("{questName}", "{quest_name}")
+				.replace("{questDescription}", "{quest_advancement}");
 	}
 	
 	public String getValue(){

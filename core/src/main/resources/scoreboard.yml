@@ -2,9 +2,11 @@
 quests:
   # Time in seconds before the quest tracker switch
   changeTime: 10
-  # If enabled and the player has no quest launched, the scoreboard will disappear until the player starts a new quest
+  # If enabled and the player has no quest launched, the scoreboard will disappear
+  # until the player starts a new quest
   hideIfEmpty: true
-  # If enabled, scoreboard lines containing {questName} or {questDescription} will be automatically refreshed whenever the quest tracker is refreshed
+  # If enabled, scoreboard lines containing a {quest_xxx} placeholder
+  # will be automatically refreshed whenever the quest tracker is updated
   refreshLines: true
 
 worlds:
@@ -14,15 +16,17 @@ worlds:
   isAllowList: false
 
 # Lines contained in the scoreboard
-#  Available parameters:
-#  * value: the value of line, surrounded by '
-#   -> special placehlolders: {questName} and {questDescription}
+#  Available parameters are:
+#  * value: the value of line, surrounded by quotes (')
+#   -> special placeholders: {quest_name}, {quest_advancement}, {quest_description}
 #  * refresh: time in seconds before the line is refreshed (useful with dynamic placeholders)
+#   -> not needed for {quest_xxx} lines if the "refreshLines" setting is set to true
 #  * length: max length of the line, if the number of characters exceed this limit the line will be split
 lines:
 - value: ''
-- value: '&6{questName}'
+- value: '§6{quest_name}'
 - value: ''
-- value: '{questDescription}'
+- value: '{quest_advancement}'
   length: 30
+- value: ''
   

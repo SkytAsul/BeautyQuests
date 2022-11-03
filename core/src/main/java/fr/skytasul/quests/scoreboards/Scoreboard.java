@@ -3,17 +3,22 @@ package fr.skytasul.quests.scoreboards;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
+import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
@@ -25,6 +30,7 @@ import fr.skytasul.quests.utils.nms.NMS;
 
 public class Scoreboard extends BukkitRunnable implements Listener {
 
+	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
 	private static final int maxLength = NMS.getMCVersion() >= 13 ? 128 : 30;
 	
 	private PlayerAccount acc;
@@ -189,9 +195,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 	public void refreshQuestsLines(boolean updateBoard) {
 		if (!manager.refreshLines()) return;
-		for (Line line : lines) {
-			if (line.getValue().contains("{questName}") || line.getValue().contains("{questDescription}")) line.willRefresh = true;
-		}
+		lines.stream().filter(line -> line.hasQuestPlaceholders).forEach(line -> line.willRefresh = true);
 		if (board == null || launched.isEmpty()) {
 			changeTime = 1;
 			run();
@@ -229,7 +233,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(line);
 		}else {
 			Line line = lines.get(id);
-			line.customValue = value;
+			line.setCustomValue(value);
 			line.willRefresh = true;
 		}
 		updateBoard(true, false);
@@ -241,7 +245,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (line.createdLine){
 			lines.remove(id);
 		}else {
-			line.customValue = null;
+			line.setCustomValue(null);
 			line.willRefresh = true;
 		}
 		updateBoard(true, false);
@@ -268,18 +272,22 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	}
 
 	class Line{
+
 		ScoreboardLine param;
 		int timeLeft = 0;
 		
-		String customValue = null;
+		private String customValue = null;
 		boolean createdLine = false;
 		
 		boolean willRefresh = false;
 		String lastValue = null;
 		List<String> lines;
 		
+		boolean hasQuestPlaceholders;
+
 		private Line(ScoreboardLine param) {
 			this.param = param;
+			computeHasQuestPlaceholders();
 		}
 		
 		private boolean tryRefresh(boolean time) {
@@ -288,12 +296,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				willRefresh = false;
 				timeLeft = param.getRefreshTime();
 				String text = getValue();
-				if (text.contains("{questName}")) {
-					text = shown == null ? Lang.SCOREBOARD_NONE_NAME.toString() : text.replace("{questName}", shown.getName());
-				}
-				if (text.contains("{questDescription}")) {
-					text = shown == null ? Lang.SCOREBOARD_NONE_DESC.toString() : text.replace("{questDescription}", shown.getDescriptionLine(acc, Source.SCOREBOARD));
-				}
+				if (hasQuestPlaceholders)
+					text = formatQuestPlaceholders(text);
 				text = Utils.finalFormat(p, text, true);
 				if (text.equals(lastValue)) return false;
 				
@@ -316,6 +320,49 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			return customValue == null ? param.getValue() : customValue;
 		}
 		
+		public void setCustomValue(String value) {
+			customValue = value;
+			computeHasQuestPlaceholders();
+		}
+
+		private void computeHasQuestPlaceholders() {
+			hasQuestPlaceholders = QUEST_PLACEHOLDER.matcher(getValue()).find();
+		}
+		
+		private String formatQuestPlaceholders(String text) {
+			StringBuffer textBuffer = new StringBuffer();
+			Matcher matcher = QUEST_PLACEHOLDER.matcher(text);
+			QuestDescriptionContext lazyContext = null;
+			while (matcher.find()) {
+				String descriptionId = matcher.group(1);
+				String replacement;
+				if (descriptionId.equals("name")) {
+					replacement = shown == null ? Lang.SCOREBOARD_NONE_NAME.toString() : shown.getName();
+				} else {
+					if (shown == null) {
+						replacement = descriptionId.equals("advancement")
+								? Lang.SCOREBOARD_NONE_DESC.toString() // kept for consistency with pre-0.20
+								: Lang.SCOREBOARD_NONE.toString();
+					} else {
+						Optional<QuestDescriptionProvider> optionalDescription = shown.getDescriptions().stream()
+								.filter(description -> description.getDescriptionId().equals(descriptionId))
+								.findFirst();
+						if (optionalDescription.isPresent()) {
+							if (lazyContext == null)
+								lazyContext = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(),
+										shown, acc, PlayerListGUI.Category.IN_PROGRESS, Source.SCOREBOARD);
+							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
+						} else {
+							replacement = descriptionId;
+						}
+					}
+				}
+				matcher.appendReplacement(textBuffer, replacement);
+			}
+			matcher.appendTail(textBuffer);
+			return textBuffer.toString();
+		}
+
 	}
 	
 }

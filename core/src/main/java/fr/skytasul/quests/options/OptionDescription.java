@@ -2,12 +2,10 @@ package fr.skytasul.quests.options;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.options.QuestOptionString;
-import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 
@@ -52,6 +50,11 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 		return cachedDescription;
 	}
 	
+	@Override
+	public String getDescriptionId() {
+		return "description";
+	}
+
 	@Override
 	public double getDescriptionPriority() {
 		return 0;

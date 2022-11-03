@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import fr.skytasul.quests.api.options.QuestOptionRewards;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
@@ -55,6 +54,11 @@ public class OptionEndRewards extends QuestOptionRewards implements QuestDescrip
 		
 		rewards.add(0, Lang.RWDTitle.toString());
 		return rewards;
+	}
+
+	@Override
+	public String getDescriptionId() {
+		return "rewards";
 	}
 
 	@Override
