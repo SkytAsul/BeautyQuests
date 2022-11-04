@@ -179,7 +179,7 @@ public abstract class PlayersManager {
 		return cachedAccounts.get(p);
 	}
 
-	public static String getPlayerName(UUID uuid) {
+	public static synchronized String getPlayerName(UUID uuid) {
 		if (cachedPlayerNames.containsKey(uuid))
 			return cachedPlayerNames.get(uuid);
 
