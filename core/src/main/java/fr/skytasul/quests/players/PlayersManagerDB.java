@@ -18,11 +18,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
@@ -134,15 +132,15 @@ public class PlayersManagerDB extends PlayersManager {
 					result.close();
 				}
 			}
-		}catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			BeautyQuests.logger.severe("An error occurred while fetching account datas of " + acc.debugName(), ex);
 		}
 	}
 	
 	@Override
-	protected synchronized Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
+	public synchronized void load(AccountFetchRequest request) {
 		try (Connection connection = db.getConnection()) {
-			String uuid = player.getUniqueId().toString();
+			String uuid = request.getOfflinePlayer().getUniqueId().toString();
 			try (PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
 				statement.setString(1, uuid);
 				ResultSet result = statement.executeQuery();
@@ -154,33 +152,38 @@ public class PlayersManagerDB extends PlayersManager {
 						try {
 							// in order to ensure that, if the player was previously connected to another server,
 							// its datas have been fully pushed to database, we wait for 0,4 seconds
-							long timeout = 400 - (System.currentTimeMillis() - joinTimestamp);
+							long timeout = 400 - (System.currentTimeMillis() - request.getJoinTimestamp());
 							if (timeout > 0) wait(timeout);
 						}catch (InterruptedException e) {
 							e.printStackTrace();
 							Thread.currentThread().interrupt();
 						}
 						retrievePlayerDatas(account);
-						return new AbstractMap.SimpleEntry<>(account, false);
+						request.loaded(account, "database");
+						return;
 					}
 				}
-				result.close();
 			}
-			try (PreparedStatement statement = connection.prepareStatement(insertAccount, PreparedStatement.RETURN_GENERATED_KEYS)) {
-				AbstractAccount absacc = super.createAbstractAccount(player);
-				statement.setString(1, absacc.getIdentifier());
-				statement.setString(2, uuid);
-				statement.executeUpdate();
-				ResultSet result = statement.getGeneratedKeys();
-				if (!result.next()) throw new SQLException("The plugin has not been able to create a player account.");
-				int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
-				result.close();
-				return new AbstractMap.SimpleEntry<>(new PlayerAccountDB(absacc, index), true);
+
+			if (request.mustCreateMissing()) {
+				try (PreparedStatement statement =
+						connection.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS)) {
+					AbstractAccount absacc = super.createAbstractAccount(request.getOnlinePlayer());
+					statement.setString(1, absacc.getIdentifier());
+					statement.setString(2, uuid);
+					statement.executeUpdate();
+					ResultSet result = statement.getGeneratedKeys();
+					if (!result.next())
+						throw new SQLException("The plugin has not been able to create a player account.");
+					int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
+					request.created(new PlayerAccountDB(absacc, index));
+				}
+			} else {
+				request.notLoaded();
 			}
-		}catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			BeautyQuests.logger.severe("An error occurred while loading account of " + request.getDebugPlayerName(), ex);
 		}
-		return null;
 	}
 	
 	@Override

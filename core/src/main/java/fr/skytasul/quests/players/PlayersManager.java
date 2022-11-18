@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -35,7 +35,7 @@ public abstract class PlayersManager {
 	protected final Set<SavableData<?>> accountDatas = new HashSet<>();
 	private boolean loaded = false;
 
-	protected abstract Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp);
+	public abstract void load(AccountFetchRequest request);
 	
 	protected abstract void removeAccount(PlayerAccount acc);
 	
@@ -83,8 +83,13 @@ public abstract class PlayersManager {
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 
-	public String getIdentifier(Player p) {
-		return QuestsConfiguration.hookAccounts() ? "Hooked|" + Accounts.getPlayerCurrentIdentifier(p) : p.getUniqueId().toString();
+	public String getIdentifier(OfflinePlayer p) {
+		if (QuestsConfiguration.hookAccounts()) {
+			if (!p.isOnline())
+				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
+			return "Hooked|" + Accounts.getPlayerCurrentIdentifier(p.getPlayer());
+		}
+		return p.getUniqueId().toString();
 	}
 
 	protected AbstractAccount createAccountFromIdentifier(String identifier) {
@@ -130,34 +135,49 @@ public abstract class PlayersManager {
 			while (i > 0) {
 				i--;
 				try {
-					
-					Entry<PlayerAccount, Boolean> entry = manager.load(p, time);
-					PlayerAccount account = entry.getKey();
-					boolean created = entry.getValue();
-					if (!p.isOnline()) {
-						if (created) {
-							DebugUtils.logMessage("New account registered for " + p.getName() + "... but deleted as player left before loading.");
-							manager.removeAccount(account);
+					AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
+					manager.load(request);
+
+					if (request.isFinished() && request.getAccount() != null) {
+						if (!p.isOnline()) {
+							if (request.isAccountCreated()) {
+								DebugUtils.logMessage("New account registered for " + p.getName()
+										+ "... but deleted as player left before loading.");
+								manager.removeAccount(request.getAccount());
+							}
+							return;
 						}
+						if (request.isAccountCreated())
+							DebugUtils.logMessage("New account registered for " + p.getName() + " ("
+									+ request.getAccount().abstractAcc.getIdentifier() + "), index "
+									+ request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
+						cachedAccounts.put(p, request.getAccount());
+						Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+							String loadMessage = "Completed load of " + p.getName() + " datas within "
+									+ (System.currentTimeMillis() - time) + " ms ("
+									+ request.getAccount().getQuestsDatas().size() + " quests, "
+									+ request.getAccount().getPoolDatas().size() + " pools)";
+							if (request.getLoadedFrom() != null)
+								loadMessage += " | Loaded from " + request.getLoadedFrom();
+							DebugUtils.logMessage(loadMessage);
+							if (p.isOnline()) {
+								Bukkit.getPluginManager().callEvent(
+										new PlayerAccountJoinEvent(p, request.getAccount(), request.isAccountCreated()));
+							} else {
+								BeautyQuests.logger.warning("Player " + p.getName()
+										+ " has quit the server while loading its datas. This may be a bug.");
+								if (request.isAccountCreated()) {
+									manager.removeAccount(request.getAccount());
+								}
+							}
+						});
 						return;
 					}
-					if (created) DebugUtils.logMessage("New account registered for " + p.getName() + " (" + account.abstractAcc.getIdentifier() + "), index " + account.index + " via " + DebugUtils.stackTraces(2, 4));
-					cachedAccounts.put(p, account);
-					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
-						DebugUtils.logMessage("Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time) + " ms (" + account.getQuestsDatas().size() + " quests, " + account.getPoolDatas().size() + " pools)");
-						if (p.isOnline()) {
-							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(p, account, created));
-						}else {
-							BeautyQuests.logger.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
-							if (created) {
-								manager.removeAccount(account);
-							}
-						}
-					});
-					return;
+					BeautyQuests.logger.severe("The account of " + p.getName() + " has not been properly loaded.");
 				}catch (Exception ex) {
-					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ". Doing " + i + " more attempt.", ex);
+					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ".", ex);
 				}
+				BeautyQuests.logger.severe("Doing " + i + " more attempt.");
 			}
 			BeautyQuests.logger.severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
 		});
@@ -215,6 +235,128 @@ public abstract class PlayersManager {
 
 		cachedPlayerNames.put(uuid, name);
 		return name;
+	}
+
+	public static class AccountFetchRequest {
+		private final OfflinePlayer player;
+		private final long joinTimestamp;
+		private final boolean allowCreation;
+		private final boolean shouldCache;
+
+		private boolean finished = false;
+		private boolean created;
+		private PlayerAccount account;
+		private String loadedFrom;
+
+		public AccountFetchRequest(OfflinePlayer player, long joinTimestamp, boolean allowCreation, boolean shouldCache) {
+			this.player = player;
+			this.joinTimestamp = joinTimestamp;
+			this.allowCreation = allowCreation;
+			this.shouldCache = shouldCache;
+
+			if (allowCreation && !player.isOnline())
+				throw new IllegalArgumentException("Cannot create an account for an offline player.");
+		}
+
+		public OfflinePlayer getOfflinePlayer() {
+			return player;
+		}
+
+		public Player getOnlinePlayer() {
+			if (player.isOnline())
+				return player.getPlayer();
+			throw new IllegalStateException("The player " + player.getName() + " is offline.");
+		}
+
+		public long getJoinTimestamp() {
+			return joinTimestamp;
+		}
+
+		/**
+		 * @return <code>true</code> if an account must be created when no account can be loaded
+		 */
+		public boolean mustCreateMissing() {
+			return allowCreation;
+		}
+
+		/**
+		 * @return <code>true</code> if the loaded account should be cached internally (usually because this
+		 *         account will get associated with an online player)
+		 */
+		public boolean shouldCache() {
+			return shouldCache;
+		}
+
+		public String getDebugPlayerName() {
+			String name = player.getName();
+			if (name == null)
+				name = player.getUniqueId().toString();
+			return name;
+		}
+
+		/**
+		 * This method must be called when the request results in a successfully loaded account.
+		 * 
+		 * @param account account that has been loaded
+		 * @param from source of the saved account
+		 */
+		public void loaded(PlayerAccount account, String from) {
+			ensureAvailable();
+			this.account = account;
+			this.loadedFrom = from;
+			this.created = false;
+		}
+
+		/**
+		 * This method must be called when the request results in the creation of a new account.
+		 * <p>
+		 * It <strong>cannot</strong> be called when the {@link AccountFetchRequest#mustCreateMissing()}
+		 * method returns false.
+		 * 
+		 * @param account account that has been created
+		 */
+		public void created(PlayerAccount account) {
+			if (!mustCreateMissing())
+				throw new IllegalStateException(
+						"This method cannot be called as this request does not allow account creation");
+			ensureAvailable();
+			this.account = account;
+			this.created = true;
+		}
+
+		/**
+		 * This method must be called when the request cannot load any account associated with the player
+		 * and the {@link AccountFetchRequest#mustCreateMissing()} returns false.
+		 */
+		public void notLoaded() {
+			if (mustCreateMissing())
+				throw new IllegalStateException(
+						"This method cannot be called as this request requires account creation if no account can be loaded");
+			ensureAvailable();
+		}
+
+		private void ensureAvailable() {
+			if (finished)
+				throw new IllegalStateException("This request has already been completed");
+			this.finished = true;
+		}
+
+		public boolean isFinished() {
+			return finished;
+		}
+
+		public PlayerAccount getAccount() {
+			return account;
+		}
+
+		public boolean isAccountCreated() {
+			return created;
+		}
+
+		public String getLoadedFrom() {
+			return loadedFrom;
+		}
+
 	}
 
 }
