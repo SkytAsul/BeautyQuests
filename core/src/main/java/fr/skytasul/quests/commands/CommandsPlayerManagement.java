@@ -1,12 +1,10 @@
 package fr.skytasul.quests.commands;
 
 import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
@@ -25,7 +23,6 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.DialogRunner;
-
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Range;
 import revxrsal.commands.annotation.Subcommand;
@@ -298,12 +295,21 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 	
 	private void cancel(CommandSender sender, PlayerAccount acc, Quest quest) {
-		if (!sender.hasPermission(cancelOtherPermission.getPermission()) && !quest.isCancellable()) {
+		if (!quest.isCancellable()) {
 			Lang.CANCEL_QUEST_UNAVAILABLE.send(sender, quest.getName());
 			return;
 		}
-		quest.cancelPlayer(acc);
-		Lang.CANCEL_QUEST.send(sender, quest.getName());
+
+		if (quest.cancelPlayer(acc)) {
+			Lang.CANCEL_QUEST.send(sender, quest.getName());
+		} else {
+			if (sender.equals(acc.getPlayer())) {
+				Lang.QUEST_NOT_STARTED.send(sender);
+			} else {
+				Lang.ERROR_OCCURED.send(sender,
+						"Player " + acc.getName() + " does not have the quest " + quest.getID() + " started.");
+			}
+		}
 	}
 	
 }

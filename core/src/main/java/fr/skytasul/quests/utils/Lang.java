@@ -29,6 +29,7 @@ public enum Lang implements Locale {
 	QUEST_INVALID("msg.quest.invalidID"), // 0: quest id
 	POOL_INVALID("msg.quest.invalidPoolID"), // 0: pool id
 	ALREADY_STARTED("msg.quest.alreadyStarted"),
+	QUEST_NOT_STARTED("msg.quest.notStarted"),
 	
 	QUESTS_MAX_LAUNCHED("msg.quests.maxLaunched"), // 0: max quests
 	QUEST_NOSTEPS("msg.quests.nopStep"),

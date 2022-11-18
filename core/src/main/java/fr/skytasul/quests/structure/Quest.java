@@ -198,13 +198,18 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
 	}
 	
-	public void cancelPlayer(PlayerAccount acc){
+	public boolean cancelPlayer(PlayerAccount acc) {
+		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(this);
+		if (datas == null || !datas.hasStarted())
+			return false;
+
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		
 		if (acc.isCurrent())
 			Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
+		return true;
 	}
 	
 	public boolean resetPlayer(PlayerAccount acc){
