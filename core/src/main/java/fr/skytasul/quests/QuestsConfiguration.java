@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -16,9 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
-
 import com.google.common.collect.Sets;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -56,6 +53,7 @@ public class QuestsConfiguration {
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
+	private static boolean usePlayerBlockTracker = false;
 	private static ParticleEffect particleStart;
 	private static ParticleEffect particleTalk;
 	private static ParticleEffect particleNext;
@@ -190,6 +188,7 @@ public class QuestsConfiguration {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
+		usePlayerBlockTracker = DependenciesManager.PlayerBlockTracker.isEnabled() && config.getBoolean("usePlayerBlockTracker");
 		dSetName = config.getString("dynmap.markerSetName");
 		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
@@ -428,6 +427,10 @@ public class QuestsConfiguration {
 		return hookAcounts;
 	}
 	
+	public static boolean usePlayerBlockTracker() {
+		return usePlayerBlockTracker;
+	}
+
 	public static String dynmapSetName(){
 		return dSetName;
 	}

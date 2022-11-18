@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,7 +25,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.BQCraftEvent;
@@ -208,7 +206,7 @@ public class QuestsListener implements Listener{
 		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
 	}
 	
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBreak(BlockBreakEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getPlayer() == null) return;

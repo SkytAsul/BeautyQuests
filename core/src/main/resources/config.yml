@@ -106,6 +106,9 @@ gps: false
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
+# If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
+# using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
+usePlayerBlockTracker: true
 # (HolographicDisplays) Disable the hologram above NPC's head
 disableTextHologram: false
 # (HolographicDisplays) Value added to the hologram height (decimal value)

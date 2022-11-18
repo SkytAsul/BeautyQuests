@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
-
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -14,8 +13,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
+import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
@@ -59,8 +59,15 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
 			for (Block block : e.getBlocks()) {
-				if (placeCancelled && block.hasMetadata("playerInStage")) {
-					if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName())) return;
+				if (placeCancelled) {
+					if (QuestsConfiguration.usePlayerBlockTracker()) {
+						if (PlayerBlockTracker.isTracked(block)) return;
+					} else {
+						if (block.hasMetadata("playerInStage")) {
+							if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName()))
+								return;
+						}
+					}
 				}
 				if (event(acc, p, block, 1)) return;
 			}
@@ -69,6 +76,9 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
+		if (QuestsConfiguration.usePlayerBlockTracker())
+			return;
+
 		if (e.isCancelled() || !placeCancelled) return;
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);

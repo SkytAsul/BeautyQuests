@@ -33,6 +33,7 @@ softdepend:
 - Sentinel
 - AdvancedSpawners
 - DecentHolograms
+- PlayerBlockTracker
 
 #commands:
 #  beautyquests:

@@ -274,6 +274,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.Flo0</groupId>
+			<artifactId>PlayerBlockTracker</artifactId>
+			<version>1.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>d72483065c</version>

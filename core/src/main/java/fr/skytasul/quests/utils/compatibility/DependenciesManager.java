@@ -120,6 +120,7 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
+	public static final BQDependency PlayerBlockTracker = new BQDependency("PlayerBlockTracker");
 	
 	//public static final BQDependency par = new BQDependency("Parties");
 	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
@@ -134,7 +135,7 @@ public class DependenciesManager implements Listener {
 		dependencies = new ArrayList<>(Arrays.asList(
 				/*par, eboss, */
 				znpcs, citizens, // npcs
-				wg, gps, tokenEnchant, ultimateTimber, sentinel, // other
+				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
 				mm, boss, advancedspawners, // mobs
 				vault, papi, acc, // hooks
 				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
