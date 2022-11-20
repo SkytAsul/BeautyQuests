@@ -2,8 +2,8 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
-
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -22,7 +21,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
-
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
@@ -94,8 +92,11 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 		if (data.getEntityType() == null) {
 			typeName = data.getMythicEntity() == null ? null : data.getMythicEntity().getClass().getSimpleName().substring(6);
 		}else {
-			typeName = data.getEntityType().toUpperCase();
+			typeName = Objects.toString(data.getEntityType()).toUpperCase();
 		}
+		if (typeName == null)
+			return null;
+
 		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
 		if (NMS.getMCVersion() < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
