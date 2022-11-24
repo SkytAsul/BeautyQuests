@@ -23,6 +23,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.DialogRunner;
+import fr.skytasul.quests.utils.types.DialogRunner.DialogNextReason;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Range;
 import revxrsal.commands.annotation.Subcommand;
@@ -161,7 +162,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			if (runner.isPlayerInDialog(player)) {
 				Lang.COMMAND_STARTDIALOG_ALREADY.send(actor.getSender());
 			}else {
-				runner.handleNext(player);
+				runner.handleNext(player, DialogNextReason.COMMAND);
 				Lang.COMMAND_STARTDIALOG_SUCCESS.send(actor.getSender(), player.getName(), quest.getID());
 			}
 		}

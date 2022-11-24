@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.DialogSendEvent;
@@ -96,10 +94,10 @@ public class DialogRunner {
 			end(p);
 			return TestResult.ALLOW;
 		}
-		return handleNext(p);
+		return handleNext(p, DialogNextReason.NPC_CLICK);
 	}
 	
-	public TestResult handleNext(Player p) {
+	public TestResult handleNext(Player p, DialogNextReason reason) {
 		TestResult test = test(p);
 		if (test == TestResult.ALLOW) {
 			// player fulfills conditions to start or continue the dialog
@@ -116,7 +114,7 @@ public class DialogRunner {
 			PlayerStatus status = addPlayer(p);
 			status.cancel();
 			
-			if (send(p, status)) {
+			if (send(p, status, reason)) {
 				// when dialog finished
 				removePlayer(p);
 				end(p);
@@ -128,7 +126,7 @@ public class DialogRunner {
 						status.task = null;
 						// we test if the player is within the authorized distance from the NPC
 						if (canContinue(p)) {
-							handleNext(p);
+							handleNext(p, DialogNextReason.AUTO_TIME);
 						}else {
 							Lang.DIALOG_TOO_FAR.send(p, dialog.getNPCName(npc));
 							removePlayer(p);
@@ -147,16 +145,19 @@ public class DialogRunner {
 	
 	/**
 	 * Sends the next dialog line for a player, or the first message if it has just begun the dialog.
+	 * 
 	 * @param p player to send the dialog to
+	 * @param reason reason the message has to be sent
 	 * @return <code>true</code> if the dialog ends following this call, <code>false</code>otherwise
 	 */
-	private boolean send(Player p, PlayerStatus status) {
+	private boolean send(Player p, PlayerStatus status, DialogNextReason reason) {
 		if (dialog.messages.isEmpty()) return true;
 		
 		int id = ++status.lastId;
 		boolean endOfDialog = id == dialog.messages.size();
 		
-		if (status.runningMsg != null) status.runningMsg.finished(p, endOfDialog);
+		if (status.runningMsg != null)
+			status.runningMsg.finished(p, endOfDialog, reason != DialogNextReason.AUTO_TIME);
 		if (status.runningMsgTask != null) status.runningMsgTask.cancel();
 		
 		if (endOfDialog) return true;
@@ -236,6 +237,10 @@ public class DialogRunner {
 		}
 	}
 	
+	public enum DialogNextReason {
+		NPC_CLICK, AUTO_TIME, COMMAND, PLUGIN;
+	}
+
 	public enum TestResult {
 		ALLOW, DENY, DENY_CANCEL;
 		

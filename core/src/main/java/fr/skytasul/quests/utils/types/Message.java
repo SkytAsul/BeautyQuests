@@ -94,8 +94,8 @@ public class Message implements Cloneable {
 		return sent;
 	}
 	
-	public void finished(Player p, boolean endOfDialog) {
-		if (endOfDialog) return;
+	public void finished(Player p, boolean endOfDialog, boolean forced) {
+		if (endOfDialog || !forced) return;
 		String sentSound = getSound();
 		if (sentSound != null) p.stopSound(sentSound);
 	}
