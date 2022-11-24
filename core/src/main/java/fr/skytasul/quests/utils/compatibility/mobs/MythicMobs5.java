@@ -113,11 +113,12 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 	public List<String> getDescriptiveLore(MythicMob data) {
 		try {
 			return Arrays.asList(
-					QuestOption.formatDescription("Base Health: " + data.getHealth().get()),
-					QuestOption.formatDescription("Base Damage: " + data.getDamage().get()),
-					QuestOption.formatDescription("Base Armor: " + data.getArmor().get()));
-		}catch (NoSuchMethodError e) {
-			return Arrays.asList("§cError when retrieving mob informations", "§c-> §oPlease update MythicMobs");
+					QuestOption.formatDescription("Base Health: " + Objects.toString(data.getHealth())),
+					QuestOption.formatDescription("Base Damage: " + Objects.toString(data.getDamage())),
+					QuestOption.formatDescription("Base Armor: " + Objects.toString(data.getArmor())));
+		} catch (Throwable ex) {
+			BeautyQuests.logger.warning("An error occurred while showing mob description", ex);
+			return Arrays.asList("§cError when retrieving mob informations");
 		}
 	}
 

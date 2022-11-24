@@ -111,7 +111,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			if (stageID != null) {
 				if (currentBranch == null)
 					throw new CommandErrorException(Lang.ERROR_OCCURED.format("player " + acc.debugName() + " has not started quest"));
-				if (currentBranch.getRegularStages().size() <= stageID)
+				if (branch.getRegularStages().size() <= stageID)
 					throw new CommandErrorException(Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.format(stageID));
 			}
 			Lang.COMMAND_SETSTAGE_SET.send(actor.getSender(), stageID);
