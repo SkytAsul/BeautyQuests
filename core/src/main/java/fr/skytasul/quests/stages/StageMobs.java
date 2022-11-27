@@ -55,7 +55,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		if (p == e.getBukkitEntity()) return; // player suicidal
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
-			event(acc, p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), 1);
+			event(acc, p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
 		}
 	}
 	

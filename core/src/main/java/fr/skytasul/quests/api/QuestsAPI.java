@@ -1,20 +1,20 @@
 package fr.skytasul.quests.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -40,6 +40,7 @@ public final class QuestsAPI {
 	private static final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
 	private static final StageTypeRegistry stages = new StageTypeRegistry();
 	private static final List<ItemComparison> itemComparisons = new LinkedList<>();
+	private static final List<MobStacker> mobStackers = new ArrayList<>();
 	
 	private static BQNPCsManager npcsManager = null;
 	private static AbstractHolograms<?> hologramsManager = null;
@@ -90,6 +91,15 @@ public final class QuestsAPI {
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 	
+	public static List<MobStacker> getMobStackers() {
+		return mobStackers;
+	}
+
+	public static void registerMobStacker(MobStacker stacker) {
+		mobStackers.add(stacker);
+		DebugUtils.logMessage("Added " + stacker.toString() + " mob stacker");
+	}
+
 	public static QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getRequirements() {
 		return requirements;
 	}
