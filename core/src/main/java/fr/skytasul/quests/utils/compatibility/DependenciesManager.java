@@ -33,6 +33,7 @@ import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
 import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
 import fr.skytasul.quests.utils.compatibility.mobs.BQLevelledMobs;
+import fr.skytasul.quests.utils.compatibility.mobs.BQWildStacker;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs5;
@@ -124,6 +125,7 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
 	public static final BQDependency PlayerBlockTracker = new BQDependency("PlayerBlockTracker");
+	public static final BQDependency WildStacker = new BQDependency("WildStacker", BQWildStacker::initialize);
 	
 	//public static final BQDependency par = new BQDependency("Parties");
 	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
@@ -139,7 +141,7 @@ public class DependenciesManager implements Listener {
 				/*par, eboss, */
 				znpcs, citizens, // npcs
 				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
-				mm, boss, advancedspawners, LevelledMobs, // mobs
+				mm, boss, advancedspawners, LevelledMobs, WildStacker, // mobs
 				vault, papi, acc, // hooks
 				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
 				dyn, BlueMap, // maps
