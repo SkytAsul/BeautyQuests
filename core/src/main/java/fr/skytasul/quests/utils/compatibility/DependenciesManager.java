@@ -32,6 +32,7 @@ import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
 import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
+import fr.skytasul.quests.utils.compatibility.mobs.BQLevelledMobs;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs5;
@@ -93,6 +94,8 @@ public class DependenciesManager implements Listener {
 	});
 	
 	public static final BQDependency advancedspawners = new BQDependency("AdvancedSpawners", () -> QuestsAPI.registerMobFactory(new BQAdvancedSpawners()));
+	public static final BQDependency LevelledMobs =
+			new BQDependency("LevelledMobs", () -> QuestsAPI.registerMobFactory(new BQLevelledMobs()));
 	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
@@ -136,7 +139,7 @@ public class DependenciesManager implements Listener {
 				/*par, eboss, */
 				znpcs, citizens, // npcs
 				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
-				mm, boss, advancedspawners, // mobs
+				mm, boss, advancedspawners, LevelledMobs, // mobs
 				vault, papi, acc, // hooks
 				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
 				dyn, BlueMap, // maps

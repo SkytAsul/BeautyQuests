@@ -280,6 +280,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.lokka30</groupId>
+			<artifactId>LevelledMobs</artifactId>
+			<version>3.2.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>d72483065c</version>

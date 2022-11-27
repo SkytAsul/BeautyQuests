@@ -34,6 +34,7 @@ softdepend:
 - AdvancedSpawners
 - DecentHolograms
 - PlayerBlockTracker
+- LevelledMobs
 
 #commands:
 #  beautyquests:
