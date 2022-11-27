@@ -1,20 +1,25 @@
 package fr.skytasul.quests.api.mobs;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class Mob<D> implements Cloneable {
 
+	private static final NumberFormat LEVEL_FORMAT = new DecimalFormat();
+
 	protected final MobFactory<D> factory;
 	protected final D data;
 	protected String customName;
+	protected Double minLevel;
+
+	private String formattedName;
 
 	public Mob(MobFactory<D> factory, D data) {
 		Validate.notNull(factory, "Mob factory cannot be null");
@@ -32,11 +37,29 @@ public class Mob<D> implements Cloneable {
 	}
 	
 	public String getName() {
-		return customName == null ? factory.getName(data) : customName;
+		if (formattedName == null) {
+			if (customName != null) {
+				formattedName = customName;
+			} else {
+				formattedName = factory.getName(data);
+
+				if (minLevel != null)
+					formattedName += " lvl " + LEVEL_FORMAT.format(minLevel.doubleValue());
+			}
+		}
+		return formattedName;
 	}
 	
 	public void setCustomName(String customName) {
 		this.customName = customName;
+	}
+
+	public Double getMinLevel() {
+		return minLevel;
+	}
+
+	public void setMinLevel(Double minLevel) {
+		this.minLevel = minLevel;
 	}
 
 	public XMaterial getMobItem() {
@@ -56,6 +79,13 @@ public class Mob<D> implements Cloneable {
 		return factory.bukkitMobApplies(data, entity);
 	}
 	
+	public double getLevel(Entity entity) {
+		if (!(factory instanceof LeveledMobFactory))
+			throw new UnsupportedOperationException(
+					"Cannot get the level of a mob from an unleveled mob factory: " + factory.getID());
+		return ((LeveledMobFactory<D>) factory).getMobLevel(data, entity);
+	}
+
 	@Override
 	public int hashCode() {
 		int hash = 1;
@@ -89,7 +119,10 @@ public class Mob<D> implements Cloneable {
 
 		map.put("factoryName", factory.getID());
 		map.put("value", factory.getValue(data));
-		if (customName != null) map.put("name", customName);
+		if (customName != null)
+			map.put("name", customName);
+		if (minLevel != null)
+			map.put("minLevel", minLevel);
 		
 		return map;
 	}
@@ -104,7 +137,10 @@ public class Mob<D> implements Cloneable {
 		Object object = factory.fromValue(value);
 		if (object == null) throw new IllegalArgumentException("Can't find the mob " + value + " for factory " + factoryName);
 		Mob<?> mob = new Mob(factory, object);
-		if (map.containsKey("name")) mob.setCustomName((String) map.get("name"));
+		if (map.containsKey("name"))
+			mob.setCustomName((String) map.get("name"));
+		if (map.containsKey("minLevel"))
+			mob.setMinLevel((Double) map.get("minLevel"));
 		return mob;
 	}
 	

@@ -8,12 +8,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
-
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
@@ -56,13 +55,23 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		if (p == e.getBukkitEntity()) return; // player suicidal
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this)){
-			event(acc, p, e.getPluginMob(), 1);
+			event(acc, p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), 1);
 		}
 	}
 	
 	@Override
 	protected boolean objectApplies(Mob<?> object, Object other) {
-		return object.applies(other);
+		KilledMob otherMob = (KilledMob) other;
+
+		if (!object.applies(otherMob.pluginMob))
+			return false;
+
+		if (object.getMinLevel() != null) {
+			if (object.getLevel(otherMob.bukkitEntity) < object.getMinLevel())
+				return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -74,7 +83,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
-			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), super.descriptionFormat(acc, Source.FORCELINE));
+			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), (Object[]) super.descriptionFormat(acc, Source.FORCELINE));
 		}
 	}
 
@@ -188,6 +197,16 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 			super.edit(stage);
 			setMobs(stage.cloneObjects());
 			setShoot(stage.shoot);
+		}
+	}
+
+	private class KilledMob {
+		final Object pluginMob;
+		final Entity bukkitEntity;
+
+		KilledMob(Object pluginMob, Entity bukkitEntity) {
+			this.pluginMob = pluginMob;
+			this.bukkitEntity = bukkitEntity;
 		}
 	}
 

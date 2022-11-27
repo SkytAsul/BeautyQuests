@@ -12,7 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -26,7 +26,7 @@ import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 
-public class MythicMobs5 implements MobFactory<MythicMob> {
+public class MythicMobs5 implements LeveledMobFactory<MythicMob> {
 
 	@Override
 	public String getID() {
@@ -72,6 +72,11 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId())
 				.map(mob -> mob.getType().equals(first))
 				.orElse(false);
+	}
+
+	@Override
+	public double getMobLevel(MythicMob type, Entity entity) {
+		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).get().getLevel();
 	}
 
 	@Override

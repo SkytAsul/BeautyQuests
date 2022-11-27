@@ -552,6 +552,7 @@ inv:
       §a§lLeft-click§a to edit amount.
       §a§l§nShift§a§l + left-click§a to edit mob name.
       §c§lRight-click§c to delete.
+    setLevel: Set minimum level
   mobSelect:
     name: Select mob type
     bukkitEntityType: §eSelect entity type

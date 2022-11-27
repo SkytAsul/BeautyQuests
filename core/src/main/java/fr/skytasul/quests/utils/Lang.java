@@ -528,6 +528,7 @@ public enum Lang implements Locale {
 	INVENTORY_MOBS("inv.mobs.name"),
 	mobsNone("inv.mobs.none"),
 	click("inv.mobs.clickLore"),
+	setLevel("inv.mobs.setLevel"),
 
 	INVENTORY_MOBSELECT("inv.mobSelect.name"),
 	bukkitMob("inv.mobSelect.bukkitEntityType"),
