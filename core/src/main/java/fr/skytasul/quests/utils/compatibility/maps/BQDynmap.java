@@ -7,12 +7,10 @@ import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
-
 import net.md_5.bungee.api.ChatColor;
 
 public class BQDynmap extends AbstractMapIntegration {
@@ -20,6 +18,11 @@ public class BQDynmap extends AbstractMapIntegration {
 	private MarkerIcon icon;
 	private MarkerSet markers;
 	
+	@Override
+	public boolean isEnabled() {
+		return QuestsConfiguration.dynmapMarkerIcon() != null && !QuestsConfiguration.dynmapMarkerIcon().isEmpty();
+	}
+
 	@Override
 	protected void initializeMarkers(Runnable initializeQuests) {
 		DynmapAPI dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");

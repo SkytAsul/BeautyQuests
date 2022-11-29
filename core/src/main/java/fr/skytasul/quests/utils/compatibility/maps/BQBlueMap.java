@@ -1,16 +1,13 @@
 package fr.skytasul.quests.utils.compatibility.maps;
 
 import java.util.function.Consumer;
-
 import org.bukkit.Location;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.DebugUtils;
-
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.BlueMapWorld;
@@ -24,6 +21,11 @@ public class BQBlueMap extends AbstractMapIntegration {
 	private Consumer<BlueMapAPI> enableConsumer;
 	private MarkerSet set;
 	
+	@Override
+	public boolean isEnabled() {
+		return QuestsConfiguration.dynmapMarkerIcon() != null && !QuestsConfiguration.dynmapMarkerIcon().isEmpty();
+	}
+
 	@Override
 	protected void initializeMarkers(Runnable initializeQuests) {
 		BlueMapAPI.onEnable(enableConsumer = api -> {

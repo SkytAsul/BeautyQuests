@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility.maps;
 
 import org.bukkit.Location;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsHandler;
@@ -14,7 +13,8 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	
 	@Override
 	public final void load() {
-		initializeMarkers(this::initializeQuests);
+		if (isEnabled())
+			initializeMarkers(this::initializeQuests);
 	}
 	
 	private void initializeQuests() {
@@ -23,7 +23,10 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	
 	@Override
 	public void questLoaded(Quest quest) {
-		if (!quest.hasOption(OptionStarterNPC.class)) return;
+		if (!isEnabled())
+			return;
+		if (!quest.hasOption(OptionStarterNPC.class))
+			return;
 		if (quest.isHidden(VisibilityLocation.MAPS)) {
 			DebugUtils.logMessage("No marker created for quest " + quest.getID() + ": quest is hidden");
 			return;
@@ -42,6 +45,8 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 		if (!quest.isHidden(VisibilityLocation.MAPS) && quest.hasOption(OptionStarterNPC.class)) removeMarker(quest);
 	}
 	
+	public abstract boolean isEnabled();
+
 	protected abstract void initializeMarkers(Runnable initializeQuests);
 	
 	protected abstract void addMarker(Quest quest, Location lc);
