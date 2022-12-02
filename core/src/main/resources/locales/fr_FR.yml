@@ -13,6 +13,7 @@ msg:
     invalidID: '§cLa quête avec l''id {0} n''existe pas.'
     invalidPoolID: '§cLe groupe {0} n''existe pas.'
     alreadyStarted: '§cVous avez déjà commencé cette quête !'
+    notStarted: '§cVous ne faites pas cette quête en ce moment.'
   quests:
     maxLaunched: '§cVous ne pouvez pas avoir plus de {0} quête(s) simultanément...'
     nopStep: '§cCette quête ne comporte aucune étape.'
@@ -518,6 +519,7 @@ inv:
       §a§lClic gauche§a pour modifier la quantité.
       §a§l§nShift§a§l + clic gauche§a pour modifier le nom du mob.
       §c§lclic-droit§c pour supprimer.
+    setLevel: Modifier le niveau minimum
   mobSelect:
     name: Choisir le type de monstre
     bukkitEntityType: '§eSélectionner un type de mob'
