@@ -1,9 +1,9 @@
 package fr.skytasul.quests.editors;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
@@ -74,10 +74,11 @@ public class TextListEditor extends Editor{
 			break;
 
 		case LIST:
-			p.sendMessage(texts
-					.stream()
-					.map(text -> "§7- §r" + text)
-					.collect(Collectors.joining("\n", "§6§lList:\n", "")));
+			StringJoiner joiner = new StringJoiner("\n", "§6§lList:\n", "");
+			for (int i = 0; i < texts.size(); i++) {
+				joiner.add("§6" + i + ": §r" + texts.get(i));
+			}
+			p.sendMessage(joiner.toString());
 			break;
 
 		case HELP:

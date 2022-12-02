@@ -37,8 +37,8 @@ public class Line {
 	 * @param is the item
 	 * @param click the action when a click on the item (if null nothing happens) <i>(runnable parameter is the player)</i>
 	 */
-	public void setItem(int slot, ItemStack is, StageRunnable click){
-		setItem(slot, is, click, false, true);
+	public int setItem(int slot, ItemStack is, StageRunnable click) {
+		return setItem(slot, is, click, false, true);
 	}
 
 	/**
@@ -49,13 +49,13 @@ public class Line {
 	 * @param override override if any other item is on the selected slot <b>deprecated</b>
 	 * @param refresh refresh all items (display this item)
 	 */
-	public void setItem(int slot, ItemStack is, StageRunnable click, boolean override, boolean refresh){
+	public int setItem(int slot, ItemStack is, StageRunnable click, boolean override, boolean refresh) {
 		Pair<ItemStack, StageRunnable> en = new Pair<>(is, click);
 		if (override){
 			items.set(slot, en);
 		}else {
 			if (items.get(slot) != null){
-				items.add(en);
+				slot = items.add(en);
 			}else items.set(slot, en);
 		}
 		if (items.getLast() <= 8) {
@@ -65,6 +65,7 @@ public class Line {
 			activePage = 0;
 			setItems(activePage);
 		}
+		return slot;
 	}
 	
 	/**
@@ -73,9 +74,16 @@ public class Line {
 	 * @param newItem the new item inserted
 	 */
 	public void editItem(int slot, ItemStack newItem){
+		editItem(slot, newItem, false);
+	}
+	
+	public void editItem(int slot, ItemStack newItem, boolean refresh) {
 		Pair<ItemStack, StageRunnable> last = items.get(slot);
 		if (last == null) return;
-		items.set(slot, new Pair<ItemStack, StageRunnable>(newItem, last.getValue()));
+		items.set(slot, new Pair<>(newItem, last.getValue()));
+		if (refresh) {
+			setItems(activePage);
+		}
 	}
 	
 	/**

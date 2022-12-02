@@ -13,7 +13,10 @@ enablePrefix: true
 saveCycle: 15
 # Enable "periodic save" message in console
 saveCycleMessage: true
-# Max amount of quests who can be started at the same time by a player (you can bypass this limit for some quests)
+# Maximum amount of quests that can be started at the same time by a player.
+# This limit can also be set by player by giving the permission "beautyquests.start.<max launched quests>"
+# to a group or a player with your permissions plugin.
+# It is possible not to count some quests in this limit with the "Bypass limit" quest option.
 maxLaunchedQuests: 0
 # Database configuration
 database:
@@ -50,9 +53,10 @@ fireworks: true
 mobsProgressBar: false
 # Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
 progressBarTimeoutSeconds: 15
-# Which click the player has to do on the NPC to start a quest, follow a dialog... (can be: RIGHT, LEFT, ANY)
-npcClick: RIGHT
-# Item which represents a quest in the Choose Quest GUI
+# Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
+# (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
+npcClick: [RIGHT, SHIFT_RIGHT]
+# Default item shown for a quest in the menus
 item: BOOK
 # Page item material
 pageItem: ARROW
@@ -102,6 +106,9 @@ gps: false
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
+# If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
+# using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
+usePlayerBlockTracker: true
 # (HolographicDisplays) Disable the hologram above NPC's head
 disableTextHologram: false
 # (HolographicDisplays) Value added to the hologram height (decimal value)

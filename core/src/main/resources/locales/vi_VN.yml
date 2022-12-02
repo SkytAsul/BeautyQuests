@@ -2,7 +2,7 @@
 msg:
   quest:
     finished:
-      base: '§aChúc mừng bạn đã hoàn thành quest §e{0}§a!'
+      base: '§aChúc mừng! Bạn đã hoàn thành nhiệm vụ §e{0}§a!'
       obtain: '§aBạn nhận được &e{0}!'
     started: '§aBạn đã bắt đầu quest §r§e{0}§o§6!'
     created: '§aXin chúc mừng! Bạn đã chỉnh sửa nhiệm vụ §e{0}§a với {1} giai đoạn!'
@@ -36,10 +36,11 @@ msg:
   writeXPGain: '§aViết số điểm kinh nghiệm mà người chơi sẽ nhận được: (Giá trị cuối cùng: {0})'
   writeMobAmount: '§aViết số lượng mob cần tiêu diệt:'
   writeMobName: '§aViết tên của mobs phải giết'
-  writeChatMessage: '§aViết tin nhắn bắt buộc: (Thêm "{SLASH}" ngay từ đầu nếu bạn muốn một lệnh.)'
+  writeChatMessage: '§aViết tin nhắn bắt buộc: (Thêm "/" ngay từ đầu nếu bạn muốn một lệnh.)'
   writeMessage: '§aViết tin nhắn sẽ gửi đến người chơi'
   writeStartMessage: '§aViết thông báo sẽ gửi khi bắt đầu nhiệm vụ, "null" nếu bạn muốn là 1 thông báo bình thường hoặc "none" nếu bạn không muốn'
   writeEndMsg: '§aViết tin nhắn sẽ gửi khi nhiệm vụ kết thúc, "null" nếu bạn muốn một cái bình thường hoặc "none" nếu bạn không muốn gì hết. Bạn cso thể dùng "{0}" để thay thể với thông báo phần thưởng'
+  writeEndSound: '§aGhi tên của âm thanh sẽ được phát cho người chơi khi nhiệm vụ kết thúc, "null" nếu bạn muốn dùng cái mặc định hoặc "none" nếu bạn muốn không:'
   writeDescriptionText: '§aViết văn bản mô tả mục tiêu của giai đoạn:'
   writeStageText: '§aViết văn bản sẽ được gửi đến người chơi lúc đầu của giai đoạn:'
   moveToTeleportPoint: '§aĐi đến địa điểm muốn đến.'
@@ -73,6 +74,7 @@ msg:
     negative: '§cBạn phải nhập một số dương!'
     zero: '§cBạn phải nhập một số khác với 0!'
     invalid: '§c{0} không phải là con số.'
+    notInBounds: '§cSố của bạn phải nằm ở giữa {0} và {1}.'
   errorOccurred: '§cĐã xảy ra lỗi, hãy liên hệ với quản trị viên! §4§lMã lỗi: {0}'
   commandsDisabled: '§cHiện tại bạn không được phép thực hiện lệnhs!'
   indexOutOfBounds: '§cSố {0} nằm ngoài giới hạn! Nó phải nằm trong khoảng từ {1} đến {2}.'
@@ -87,6 +89,7 @@ msg:
   restartServer: '§7Khởi động lại máy chủ để thấy sửa đổi'
   dialogs:
     skipped: '§8§oLời thoại được bỏ qua'
+    tooFar: '§7§oBạn đang ở quá xa {0}...'
   command:
     downloadTranslations:
       syntax: '§cBạn cần phải tải file ngôn ngữ. Ví dụ: "/quests downloadTranslations vi_VN"'
@@ -134,6 +137,9 @@ msg:
     backupQuestsFailed: '§cTạo backup cho toàn bộ nhiệm vụ thất bại'
     adminModeEntered: '§aBạn đã kích hoạt chế độ admin'
     adminModeLeft: '§aBạn đã thoát khỏi chế độ admin'
+    resetPlayerPool:
+      timer: '§aBạn đã đặt lại {0} bộ hẹn giờ của {1}.'
+      full: '§aBạn đã đặt lại {0} dữ liệu của {1}.'
     scoreboard:
       lineSet: '§6Bạn đã chỉnh sửa thành công dòng {0}'
       lineReset: '§6Bạn đã loại cài lại dòng {0}'
@@ -142,6 +148,9 @@ msg:
       resetAll: '§6Bạn đã đặt lại bảng nhiệm vụ của người chơi {0}'
       hidden: '§6Bảng nhiệm vụ của người chơi {0} đã bị ẩn'
       shown: '§6Bảng nhiệm vụ của người chơi {0} đã được đặt lại'
+      own:
+        hidden: '§6Bảng thông tin của bạn hiện tại đã bị ẩn.'
+        shown: '§6Bảng thông tin của bạn hiện đã được hiển thị lại.'
     help:
       header: '§6§lBeautyQuest - Help'
       create: '§6/{0} create: §eTạo nhiệm vụ mới'
@@ -149,14 +158,17 @@ msg:
       remove: '§6/{0} remove <id nhiệm vụ>: §eXóa nhiệm vụ với id của nó hoặc click vào NPC khi chưa xác định'
       finishAll: '§6/{0} fisnishAll <tên người chơi>: §e Hoàn thành tất cả nhiệm vụ mà người chơi đó đang nhận'
       setStage: '§6/{0} setStage <tên người chơi> <id nhiệm vụ> [nhánh nhiệm vụ mới] [giai đoạn mới]: §eBỏ qua giai đoạn hiện tại để bắt đầu một nhanh nhiệm vụ mới'
+      startDialog: '§6/{0} startDialog <Người chơi> <Mã nhiệm vụ>: §eBắt đầu hộp thoại đang chờ xử lý cho một giai đoạn của NPC hoặc hộp thoại bắt đầu cho một nhiệm vụ.'
       resetPlayer: '§6/{0} resetPlayer <tên người chơi>: §eXóa toàn bộ thông tin người chơi'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <tên người chơi> [id nhiệm vụ] §eXóa thông tin nhiệm vụ từ người chơi'
       seePlayer: '§6/{0} seePlayer <player>: §eXem thông tin của người chơi'
       reload: '§6/{0} reload : §eLưu và tải lại tất cả mọi thứ §c(Lệnh này có thể mang lại lỗi cho máy chủ bạn đến 99.9% nên hãy restart lại máy chủ)'
       start: '§6/{0} start <tên người chơi> [id nhiệm vụ]:§e Bắt buộc người chơi bắt đầu nhiệm vụ'
       setItem: '§6/{0} setItem <talk|laucher>:§e Lưu vật phẩm hologram'
+      setFirework: '§6/{0} setFirework: §eChỉnh sửa pháo hoa mặc định lúc kết thúc.'
       adminMode: '§6/{0} adminMode:§e Bật/tắt chế độ admin (Nó khá hữu dụng cho hiện một vài thông tin log)'
       version: '§6/{0} version: §eKiểm tra phiên bản của plugins'
+      downloadTranslations: '§6/{0} downloadTranslations <Ngôn ngữ>: §eTải xuống một tệp bản dịch vanilla'
       save: '§6/{0} save: §eLưu plugins cách thủ công'
       list: '§6/{0} list:§e Xem tất cả các nhiệm vụ (Chỉ cho phiên bản được hỗ trợ)'
   typeCancel: '§aGõ "cancel" để trở lại dòng tin nhắn cuối cùng'
@@ -166,14 +178,18 @@ msg:
     blockData: '§aViết blockdata (blockdatas có sẵn: {0}):'
     blockTag: '§aViết blockdata (blockdatas có sẵn: {0}):'
     typeBucketAmount: '§aViết số lượng xô nước cần làm đầy'
-    goToLocation: '§aViết vị trí muốn đến cho giai đoạn'
+    goToLocation: '§aĐi đến vị trí muốn đến cho giai đoạn'
     typeLocationRadius: '§aViết yêu cầu tầm xa từ vị trí đã đặt'
     typeGameTicks: '§aViết các dấu tích trò chơi cần thiết:'
     already: '§cBạn đã ở sẵn trong chế độ chỉnh sửa'
+    stage:
+      location:
+        typeWorldPattern: '§aViết regex cho tên của các thế giới:'
     enter:
       title: '§6- Chế Độ Chỉnh Sửa -'
-      subtitle: '§6Write "/quests editor" to force leaving.'
-    chat: '§6You are currently in the Editor Mode. Write "/quests editor" to force leaving the editor. (Highly not recommended, consider using commands such as "close" or "cancel" to come back to the previous inventory.)'
+      subtitle: '§6Dùng "/quests exitEditor" để cưỡng chế thoát.'
+      list: '§c⚠ §7Bạn đã nhập trình chỉnh sửa "list". Dùng "add" để thêm dòng. Hãy tham khảo "help" (với không dấu gạch chéo) để được trợ giúp. §e§lNhập "close" để thoát khỏi trình chỉnh sửa.'
+    chat: '§6Bạn đang ở trong chế độ chỉnh sửa. Dùng "/quests exitEditor" để cưỡng chế thoát. (Không khuyết khích, thay vào đó hãy dùng "close" hoặc "cancel" để trở lại.)'
     npc:
       enter: '§aNhấn vào NPC, hoặc gõ "cancel"'
       choseStarter: '§aChọn NPC để bắt đầu nhiệm vụ'
@@ -194,6 +210,9 @@ msg:
         permissionWorld: '§aViết thế giới trong đó quyền sẽ được chỉnh sửa hoặc "null" nếu bạn muốn là toàn cầu.'
         money: '§aViết số tiền sẽ nhận được'
         wait: '§aViết thời gian game để chờ: (1 giây = 20 game ticks)'
+        random:
+          min: '§aViết số lượng tối thiểu của phần thưởng được gửi tới người chơi (bao gồm).'
+          max: '§aViết số lượng tối đa của phần thưởng được gửi tới người chơi (bao gồm).'
       chooseObjectiveRequired: '§aViết tên dự án.'
       chooseObjectiveTargetScore: '§aGhi điểm mục tiêu cho vật (Target Score For The Objective).'
       chooseRegionRequired: '§aViết tên yêu cầu của khu vực (Bạn phải ở cùng 1 thế giới)'
@@ -230,22 +249,63 @@ msg:
         edit: 'Chỉnh sửa tin nhắn'
         addSound: '§6addSound <id> <sound>: §eThêm âm thanh khi tin nhắn hiển thị.'
         clear: '§6clear: §eXóa toàn bộ tin nhắn.'
+        close: '§6Đóng: §eXác thực tất cả tin nhắn.'
+        setTime: '§6setTime <Mã> <Thời gian>: §eĐặt tốc độ (trong ticks) trước tin nhắn tiếp theo được phát tự động.'
+        npcName: '§6npcName [Tên NPC tùy chỉnh]: §eĐặt (hoặc đặt lại về mặc định) tên tùy chỉnh của NPC trong hộp thoại.'
+        skippable: '§6skippable [true|false]: §eĐặt hộp thoại có thể được bỏ qua hay không'
+      timeSet: '§aThời gian đã được chỉnh sửa cho tin nhắn {0}: hiện tại là {1} ticks.'
+      timeRemoved: '§aThời gian đã được xóa cho tin nhắn {0}.'
+      npcName:
+        set: '§aTên NPC tùy chỉnh đã được đặt thành §7{1}§a (trước đó là §7{0}§a)'
+        unset: '§aCustom NPC đã được đổi tên về mặc định (§7{0}§a)'
+      skippable:
+        set: '§eTrạng thái bỏ qua hộp thoại hiện tại đã được đặt thành §7{1}§a (trước đó là §7{0}§a)'
+        unset: '§aTrạng thái bỏ qua hộp thoại hiện đã được đặt về mặc định (trước đó là §7{0}§a)'
     mythicmobs:
       list: '§aDanh sách tất cả Mythic Mobs:'
       isntMythicMob: '§cMythic Mob không tồn tại.'
       disabled: '§cMythicMob đã tắt'
     epicBossDoesntExist: '§cEpic Boss không tồn tại.'
     textList:
+      syntax: '§cCú pháp chính xác: '
+      added: '§aĐã thêm vào văn bản "§7{0}§a"'
+      removed: '§aĐã loại bỏ văn bản "§7{0}§a"'
       help:
         header: '§6§lBeautyQuests - Giúp đỡ chỉnh sửa đoạn hội thoại'
+        add: '§6add <Tin nhắn>: §eThêm một văn bản.'
+        remove: '§6remove <Mã>: §eLoại bỏ một văn bản.'
+        list: '§6list: §eXem tất cả văn bản đã thêm.'
+        close: '§6close: §eKiểm tra chữ đã thêm.'
+    availableElements: 'Đối tượng khả dụng: §e{0}'
+    noSuchElement: '§cKhông tồn tại. Phần hợp lệ chỉ có: §e{0}'
+    invalidPattern: '§cMẫu regex không hợp lệ §4{0}§c.'
+    comparisonTypeDefault: '§aChọn kiểu bạn muốn: {0}. Mặc định là: §e§l{1}§r§a. Gõ §onull§r§a để sử dụng.'
+    scoreboardObjectiveNotFound: '§cKhông rõ scoreboard'
+    pool:
+      hologramText: 'Viết Hologram tùy chỉnh cho Pool này (hoặc gõ "null" nếu bạn muốn sử dụng loại mặc định)'
+      maxQuests: 'Viết số lượng nhiệm vụ tối đa có thể khởi chạy cho Pool này.'
+      questsPerLaunch: 'Viết số lượng nhiệm vụ được giao khi click vào NPC.'
+      timeMsg: 'Viết thời gian trước khi người chơi có thể nhận một nhiệm vụ mới. (đơn vị: days).'
     title:
       title: 'Thêm một tiêu đề (để "null" nếu bạn muốn để trống)'
       subtitle: 'Thêm một phụ đề (để "null" nếu bạn muốn để trống)'
+      fadeIn: 'Viết thời gian "fade-in", đơn vị: Ticks (20 ticks = 1 giây)'
+      stay: 'Viết thời gian "stay", đơn vị: Ticks (20 ticks = 1 giây).'
+      fadeOut: 'Viết thời gian "fade-out", đơn vị: Ticks (20 ticks = 1 giây).'
+    colorNamed: 'Nhập tên của màu'
+    color: 'Nhập định dạng màu. Định dạng Hexadecimal (#XXXXX) hoặc định dạng RGB (RED GRE BLU).'
+    invalidColor: 'Định dạng màu bạn nhập không hợp lệ. Bắt buộc phải là định dạng Hexadecimal hoặc RGB.'
+    firework:
+      invalid: 'Pháo hoa này không hợp lệ.'
+      invalidHand: 'Bạn phải cầm pháo ra ở tay chính.'
+      edited: 'Đã chỉnh sửa Quest Firework thành công!'
+      removed: 'Đã xóa Quest Firework thành công!'
+  writeCommandDelay: '§aViết độ trễ của lệnh. Đơn vị: Ticks.'
 advancement:
   finished: Đã Hoàn Thành
   notStarted: Chưa bắt đầu
 inv:
-  validate: '§b§lTùy chỉnh'
+  validate: '§b§lXác nhận'
   cancel: '§c§lHủy bỏ'
   search: '§e§lTìm Kiếm'
   addObject: '§aThêm một dự án'
@@ -256,56 +316,193 @@ inv:
   create:
     stageCreate: '§aTạo giai đoạn mới'
     stageRemove: '§cXóa giai đoạn này'
+    stageUp: Lên
+    stageDown: Xuống
+    stageType: '§7Loại giai đoạn: §e{0}'
+    cantFinish: '§7Bạn phải tạo ít nhất một giai đoạn trước khi hoàn thành tạo nhiệm vụ!'
     findNPC: '§aTìm NPC'
     bringBack: '§aMang 1 vật phẩm trả lại !'
-    findRegion: '§aTìm khu vực region'
+    findRegion: '§aTìm khu vực'
     killMobs: '§aGiết quái'
     mineBlocks: '§aPhá khối'
     placeBlocks: '§aĐặt khối'
     talkChat: '§aNhắn tin trên thanh trò chuyện'
     interact: '§aTương tác với khối'
     fish: '§aBắt cá'
+    melt: '§6Vật phẩm tan chảy'
+    enchant: '§dVật phẩm cường hóa'
     craft: '§aChế tạo vật phẩm'
     bucket: '§aLàm đầy cái xô'
     location: '§aĐến địa điểm'
     playTime: '§aThời gian chơi'
     breedAnimals: '§aLàm no động vật'
     tameAnimals: '§aThuần phục động vật'
+    death: '§cChết'
     NPCText: '§eChỉnh sửa cuộc hội thoại'
+    dialogLines: '{0} dòng'
     NPCSelect: '§eChọn hoặc tạo NPC'
     hideClues: Ẩn particles và holograms
+    gps: Hiện thị la bàn hướng tới mục tiêu
     editMobsKill: '§eChỉnh sửa mobs bị tiêu diệt'
+    mobsKillFromAFar: Cần phải tiêu diệt bằng vật thể bay (VD:Mũi tên, cầu tuyết, trứng, ...)
+    editBlocksMine: '§eChỉnh block để đào'
+    preventBlockPlace: Ngăn người chơi phá block của họ
+    editBlocksPlace: '§eChỉnh block để đặt'
+    editMessageType: '§eChỉnh tin nhắn để viết'
+    cancelMessage: Hủy bỏ gửi
+    ignoreCase: Bỏ qua trường hợp tin nhắn
+    replacePlaceholders: Thay thế {PLAYER} and placeholder từ PAPI
     selectItems: '§eChỉnh sửa yêu cầu vật phẩm'
-    selectRegion: '§7Chọn khu vực region'
+    selectItemsMessage: '§eChỉnh sửa thông báo bắt đầu'
+    selectItemsComparisons: '§eChọn vật phẩm so sánh (NÂNG CAO)'
+    selectRegion: '§7Chọn khu vực'
     toggleRegionExit: Khi kết thúc nhiệm vụ
     stageStartMsg: '§eChỉnh sửa thông báo khi bắt đầu'
+    selectBlockLocation: '§eChọn vị trí khối'
+    selectBlockMaterial: '§Chọn khối'
+    leftClick: Nhấn phải bằng chuột trái
+    editFishes: '§eChỉnh sửa cá muốn bắt'
+    editItemsToMelt: '§eChỉnh sửa vật phẩm muốn nung'
+    editItemsToEnchant: '§eChỉnh sửa vật phẩm muốn cường hóa'
+    editItem: '§eChỉnh sửa vật phẩm muốn chế tạo'
+    editBucketType: '§eChỉnh sửa loại xô muốn làm đầy'
+    editBucketAmount: '§eChỉnh sửa số lượng xô làm đầy'
     editLocation: '§eChỉnh sửa địa điểm'
+    editRadius: '§eChỉnh sửa phạm vi từ vị trí'
+    currentRadius: '§ePhạm vi hiện tại: §6{0}'
+    changeTicksRequired: '§eChỉnh sửa yêu cầu thời gian đã chơi (ticks)'
     changeEntityType: '§eThay đổi loại quái'
+    stage:
+      location:
+        worldPattern: '§aChỉnh sửa tên thế giới §d(NÂNG CAO)'
+        worldPatternLore: 'Nếu bạn muốn giai đoạn hoàn thành ở bất kì thế giới nào với một mẫu cụ thể, nhập một regex (mẫu regex) ở đây.'
+      death:
+        causes: '§aĐặt nguyên nhân chết §d(NÂNG CAO)'
+        anyCause: Bất kì nguyên nhân chết nào
+        setCauses: '{0} nguyên nhân chết'
   stages:
     name: Tạo giai đoạn mới
     nextPage: '§eTrang tiếp theo'
     laterPage: '§eTrang trước'
     endingItem: '§eChỉnh sửa phần thưởng kết thúc'
-    descriptionTextItem: '§eChỉnh sửa tiêu đề của nhiệm vụ'
+    descriptionTextItem: '§eChỉnh sửa mô tả'
+    regularPage: '§aCác giai đoạn thông thường'
+    branchesPage: '§dCác nhánh giai đoạn'
+    previousBranch: '§eTrở lại nhánh trước đó'
+    newBranch: '§eĐến nhánh mới'
+    validationRequirements: '§eCác yêu cầu cần xác nhận'
+    validationRequirementsLore: Tất cả các yêu cầu phải phù hợp với người chơi hoàn thành giai đoạn. Nếu không giai đoạn không thể hoàn thành.
   details:
-    customDescription: '§eChỉnh sửa tiêu đề của nhiệm vụ'
+    hologramLaunch: '§eChỉnh sửa "launch" vật phẩm hologram'
+    hologramLaunchLore: Hologram hiển thị bên trên đầu NPC khởi đầu khi người chơi bắt đầu nhiệm vụ.
+    hologramLaunchNo: '§eChỉnh sửa "launch unavailable" vật phẩm hologram'
+    hologramLaunchNoLore: Hologram hiển thị bên trên đầu của NPC khởi đầu khi người chơi không bắt đầu nhiệm vụ.
+    customConfirmMessage: '§eChỉnh sửa cấu hình tin nhắn'
+    customConfirmMessageLore: Tin nhắn hiển thị ở GUI Xác nhận khi người chơi muốn bắt đầu nhiệm vụ.
+    customDescription: '§eChỉnh sửa mô tả nhiệm vụ'
+    customDescriptionLore: Mô tả hiển thị bên dưới tên của nhiệm vụ trong GUI.
+    name: Thông tin nhiệm vụ gần đây
+    multipleTime:
+      itemName: Bật/Tắt có thể lặp lại
+      itemLore: Nhiệm vụ có thể thực hiện nhiều lần?
+    cancellable: Có thể hủy bỏ bởi người chơi
+    cancellableLore: Cho phép người chơi hủy bỏ nhiệm vụ thông qua Menu Nhiệm vụ
+    startableFromGUI: Có thể bắt đầu từ GUI
+    startableFromGUILore: Cho phép người chơi bắt đầu nhiệm vụ từ Menu Nhiệm vụ
+    scoreboardItem: Bật scoreboard
+    scoreboardItemLore: Nếu tắt, nhiệm vụ sẽ không hiển thị thông qua scoreboard.
+    hideItem: Ẩn menu và dynmap
+    hideItemLore: Nếu bật, nhiệm vụ sẽ không hiển thị trên dynmap hoặc trên Menu Nhiệm vụ.
+    hideNoRequirementsItem: Ẩn khi không đạt các yêu cầu
+    hideNoRequirementsItemLore: Nếu bật, nhiệm vụ sẽ không hiện lên Quests Menu nếu không đạt các yêu cầu.
+    bypassLimit: Không giới hạn nhiệm vụ
+    bypassLimitLore: Nếu bật, người chơi có thể nhận nhiệm vụ cho dù đã đạt số lượng nhiệm vụ đã nhận tối đa.
+    auto: Tự động bắt đầu khi lần đầu tham gia
+    autoLore: Nếu bật, nhiệm vụ sẽ tự động được nhận khi người chơi đó lần đầu tiên tham gia máy chủ.
+    questName: '§a§lChỉnh tên nhiệm vụ'
+    questNameLore: Bắt buộc phải đặt tên để hoành thành chỉnh sửa nhiệm vụ
+    setItemsRewards: '§eChỉnh phần thưởng'
+    removeItemsReward: '§eXóa vật phẩm khỏi kho đồ'
+    setXPRewards: '§eChỉnh phần thưởng. kinh nghiệm'
+    setCheckpointReward: '§eChỉnh sửa kiểm soát phần thưởng'
     setRewardStopQuest: '§cDừng nhiệm vụ'
+    setRewardsWithRequirements: '§ePhần thưởng với yêu cầu'
+    setRewardsRandom: '§dPhần thưởng ngẫu nhiên'
+    setPermReward: '§eChỉnh sửa quyền'
+    setMoneyReward: '§eChỉnh sửa phần thưởng tiền'
+    setWaitReward: '§eChỉnh sửa thời gian chờ phần thưởng'
+    setTitleReward: '§eChỉnh sửa tiêu đề phần thưởng'
     selectStarterNPC: '§e§lChọn NPC khởi đầu'
+    selectStarterNPCLore: Nhấn vào NPC đã chọn sẽ bắt đầu nhiệm vụ.
+    selectStarterNPCPool: '§c⚠ Một nhóm nhiệm vụ đã được chọn'
     createQuestName: '§lTạo nhiệm vụ'
+    createQuestLore: Bạn phải đặt một tên cho nhiệm vụ.
     editQuestName: '§lChỉnh sửa nhiệm vụ'
     endMessage: '§eChỉnh sửa thông báo kết thúc'
+    endMessageLore: Tin nhắn sẽ được gửi đến nhười chơi khi hết nhiệm vụ.
+    endSound: '§eChỉnh sửa âm thanh kết thúc'
+    endSoundLore: Âm thanh sẽ reo lên khi kết thúc nhiệm vụ.
+    startMessage: '§eChỉnh sửa tin nhắn bắt đầu'
+    startMessageLore: Tin nhắn sẽ gửi đến người chơi khi bắt đầu nhiệm vụ.
+    startDialog: '§eChỉnh sửa hội thoại bắt đầu'
+    startDialogLore: Hội thoại sẽ được thực hiện trước khi nhiệm vụ bắt đầu khi người chơi nhấn vào NPC.
+    editRequirements: '§eChỉnh sửa yêu cầu'
+    editRequirementsLore: Mỗi yêu cầu phải phù hợp với người chơi trước khi nó có thể bắt đầu nhiệm vụ.
+    startRewards: '§6Bắt đầu phần thưởng'
+    startRewardsLore: Hành động được thực hiện khi nhiệm vụ bắt đầu.
+    cancelRewards: '§cHủy bỏ hành động'
+    cancelRewardsLore: Hành động được thực hiện khi người chơi hủy bỏ nhiệm vụ này.
+    hologramText: '§eChữ hologram'
+    hologramTextLore: Chữ bay được hiển thị trên đầu NPC.
+    timer: '§bBắt đầu lại bộ đếm'
+    timerLore: Thời gian trước khi người chơi có thể bắt đầu nhiệm vụ lần nữa.
+    requirements: '{0} yêu cầu'
+    rewards: '{0} phần thưởng'
+    actions: '{0} hành động'
+    rewardsLore: Hành động được thực hiện khi nhiệm vụ kết thúc.
+    customMaterial: '§eChỉnh sửa vật phẩm nhiệm vụ'
+    customMaterialLore: Vật phẩm biểu thị cho nhiệm vụ này trong Menu Nhiệm vụ.
+    failOnDeath: Thất bại khi chết
+    failOnDeathLore: Nhiệm vụ sẽ bị hủy bỏ khi người chơi chết?
+    questPool: '§eNhóm Nhiệm vụ'
+    questPoolLore: Gắn nhiệm vụ này với một nhóm nhiệm vụ
+    firework: '§dPháo hoa kết thúc'
+    fireworkLore: Pháo hoa sẽ xuất hiện khi người chơi hoàn thành nhiệm vụ
+    fireworkLoreDrop: Vứt pháo hoa tùy chỉnh của bạn vào đây
+    keepDatas: Bảo tồn dữ liệu người chơi
+    keepDatasLore: |-
+      Bắt buộc plugin bảo tồn dữ liệu người chơi, ngay cả khi giai đoạn đã bị chỉnh sửa.
+      §c§lCẢNH BÁO §c- bật lựa chọn này có thể phá hủy dữ liệu của người chơi.
+    loreReset: '§e§lTất cả thành tựu của người chơi sẽ bị đặt lại'
+    optionValue: '§8Giá trị: §7{0}'
+    defaultValue: '§8(giá trị mặc định)'
+    requiredParameter: '§7Yêu cầu tham số'
+  itemsSelect:
+    name: Chỉnh sửa vật phẩm
+    none: |-
+      §aDi chuyển vật phẩm vào đây
+      hoặc mở trình chỉnh sửa vật phẩm.
   itemSelect:
     name: Chọn vật phẩm
   npcCreate:
     name: Tạo NPC
     setName: '§eChỉnh sửa tên NPC'
     setSkin: '§eChỉnh sửa trang phục của NPC'
+    setType: '§eChỉnh sửa loại NPC'
     move:
       itemName: '§eDi Chuyển'
+      itemLore: '§aThay đổi vị trí NPC.'
+    moveItem: '§a§lXác minh địa điểm'
   npcSelect:
+    name: Chọn hay tạo?
+    selectStageNPC: '§eChọn một NPC đã tồn tại'
     createStageNPC: '§eTạo NPC'
+  entityType:
+    name: Chọn loại sinh vật
   chooseQuest:
     name: Nhiệm vụ nào?
+    menu: '§aMenu Nhiệm vụ'
+    menuLore: Đưa bạn đến Menu Nhiệm vụ của bạn.
   mobs:
     name: Chọn các loại quái
     none: '§aẤn vào để thêm quái'
@@ -314,61 +511,174 @@ inv:
       §a§l§nShift§a§l + chuột trái§a để chỉnh sửa tên quái
       §c§lChuột phải§c để xóa
   mobSelect:
+    name: Chọn loại mob
+    bukkitEntityType: '§eChọn loại sinh vật'
     mythicMob: '§6Chọn quái của Mythic Mob'
+    epicBoss: '§6Chọn Epic Boss'
+    boss: '§6Chọn một Boss'
+  stageEnding:
+    locationTeleport: '§eChỉnh sửa vị trí dịch chuyển'
+    command: '§eChỉnh sửa lệnh thực hiện'
+  requirements:
+    name: Yêu cầu
   rewards:
     name: Phần Thưởng
+    commands: 'Lệnh: {0}'
     teleportation: |-
       §aChọn:
       X: {0}
       Y: {1}
       Z: {2}
       Thế giới: {3}
+    random:
+      rewards: Chỉnh sửa phần thưởng
+      minMax: Chỉnh sửa thấp nhất và cao nhất
+  checkpointActions:
+    name: Thiết lập checkpoint
+  cancelActions:
+    name: Hủy bỏ hành động
+  rewardsWithRequirements:
+    name: Phần thưởng với yêu cầu
   listAllQuests:
     name: Các nhiệm vụ
   listPlayerQuests:
-    name: '{0}''s nhiệm vụ'
+    name: 'Nhiệm vụ của {0}'
   listQuests:
     notStarted: Chưa Bắt Đầu Nhiệm Vụ
     finished: Nhiệm Vụ Đã Hoàn Thành
     inProgress: Nhiệm Vụ Đang Thực Hiện
+    loreDialogsHistoryClick: '§7Xem hội thoại'
+    loreCancelClick: '§cHủy bỏ nhiệm vụ'
     loreStart: '§a§oNhấn để bắt đầu nhiệm vụ.'
+    loreStartUnavailable: '§c§oBạn không đạt được yêu cầu để làm nhiệm vụ này.'
+    timeToWaitRedo: '§3§cBạn có thể bắt đầu lại nhiệm vụ này sau {0}.'
+    canRedo: '§3§oBạn có thể bắt đầu lại nhiệm vụ này!'
+    timesFinished: '§3Nhiệm vụ đã hoàn thành {0} lần.'
   itemCreator:
+    name: Trình tạo vật phẩm
+    itemType: '§bLoại vật phẩm'
+    itemFlags: Chuyển đổi cờ vật phẩm
     itemName: '§bTên vật phẩm'
+    itemLore: '§bLore vật phẩm'
+    isQuestItem: '§bVật phẩm nhiệm vụ:'
   command:
     name: Lệnh
+    value: '§eLệnh'
+    console: Console
+    parse: Phân tích placeholder
     delay: '§bThời gian chờ'
+  chooseAccount:
+    name: Tài khoản nào?
   listBook:
     questName: Tên
     questStarter: Bắt đầu
     questRewards: Phần Thưởng
+    questMultiple: Một số lần
+    requirements: Yêu cầu
     questStages: Các giai đoạn
+    noQuests: Không có nhiệm vụ nào đã được tạo trước đó.
   commandsList:
     name: Danh sách lệnh
     value: '§eLệnh: {0}'
+    console: '§eConsole: {0}'
   block:
     name: Chọn khối
+    material: '§eVật phẩm: {0}'
+    materialNotItemLore: 'Khối được chọn không thể hiển thị như là một vật phẩm. Nó vẫn có thể lưu trữ như một {0}.'
+    blockData: '§bDữ liệu khối (nâng cao)'
+    blockTag: '§dThẻ (nâng cao)'
+    blockTagLore: 'Chọn thẻ mô tả danh sách các khối khả dụng. Các thẻ có thể tùy chỉnh bằng gói dữ liệu. Bạn có thể tìm thấy danh sách thẻ trên Minecraft wiki.'
   blocksList:
     name: Chọn khối
     addBlock: '§aẤn vào để thêm một khối'
+  blockAction:
+    name: Chọn hành động khối
+    location: '§eChọn vị trí chỉnh xác'
+    material: '§eChọn một khối'
+  buckets:
+    name: Loại xô
   permission:
+    name: Chọn quyền
+    perm: '§aQuyền'
     world: '§aThế giới'
+    worldGlobal: '§d§lToàn cầu'
     remove: Xóa quyền
+    removeLore: '§7Quyền sẽ được lấy mất\n§7thay vì được cho.'
   permissionList:
     name: Danh sách quyền
+    removed: '§eĐã lấy: §6{0}'
+    world: '§eThế giới: §6{0}'
+  classesRequired.name: Class yêu cầu
+  classesList.name: Danh sách class
+  factionsRequired.name: Faction yêu cầu
+  factionsList.name: Danh sách faction
+  poolsManage:
+    name: Nhóm Nhiệm vụ
+    itemName: '§aNhóm #{0}'
+    poolNPC: '§8NPC: §7{0}'
+    poolMaxQuests: '§8Nhiệm vụ tối đa: §7{0}'
+    poolQuestsPerLaunch: '§8Nhiệm vụ được cho mỗi lần chạy: §7{0}'
+    poolRedo: '§8Có thể hoàn tác nhiệm vụ đã hoàn thành: §7{0}'
+    poolTime: '§8Thời gian giữa các nhiệm vụ: §7{0}'
+    poolHologram: '§8Chữ hologram: §7{0}'
+    poolAvoidDuplicates: '§8Tránh trừng lặp: §7{0}'
+    poolQuestsList: '§7{0} §8nhiệm vụ: §7{1}'
+    create: '§aTạo nhóm nhiệm vụ'
+    edit: '§e> §6§oChỉnh sửa nhóm... §e<'
+    choose: '§e> §6§oChọn nhóm này §e<'
   poolCreation:
+    name: Tạo nhóm nhiệm vụ
+    hologramText: '§eNhóm tùy chỉnh hologram'
     maxQuests: '§aNhiệm vụ tối đa'
+    questsPerLaunch: '§aNhiệm vụ bắt đầu mỗi lần chạy'
+    time: '§bĐặt thời gian giữa các nhiệm vụ'
+    redoAllowed: Hoàn tác có được phép không
+    avoidDuplicates: Tránh trùng lặp
+    avoidDuplicatesLore: '§8> §7Cố gắng làm nhiệm vụ\n lặp đi lặp lại'
+    requirements: '§bYêu cầu để bắt đầu nhiệm vụ'
+  poolsList.name: Nhóm nhiệm vụ
   itemComparisons:
+    name: So sánh vật phẩm
+    bukkit: Bukkit so sánh
     bukkitLore: 'Uses Bukkit default item comparison system.\nCompares material, durability, nbt tags...'
+    customBukkit: Bukkit so sánh - KHÔNG NBT
     customBukkitLore: 'Uses Bukkit default item comparison system, but wipes out NBT tags.\nCompares material, durability...'
+    material: Vật phẩm
+    materialLore: 'So sánh vật phẩm (ví dụ: stone, iron sword,...)'
     itemName: Tên vật phẩm
+    itemNameLore: So sánh tên vật phẩm
+    itemLore: Lore vật phẩm
+    itemLoreLore: So sánh lore vật phẩm
     enchants: Vật phẩm phù phép
+    enchantsLore: So sánh phù phép vật phẩm
     repairCost: 'Giá sửa chữa:'
+    repairCostLore: So sánh giá sửa giáp và kiếm
   editTitle:
     name: Chỉnh sửa tiêu đề
     title: '§6Tiêu đề'
+    subtitle: '§eTiêu đề con'
+    fadeIn: '§aThời gian mờ dần'
+    stay: '§bThời gian hiển thị'
+    fadeOut: '§aThời gian mờ dần'
+  particleEffect:
+    name: Tạo hiệu ứng
+    shape: '§dHình dạng hiệu ứng'
+    type: '§eLoại hiệu ứng'
+    color: '§bMàu hiệu ứng'
+  particleList:
+    name: Danh sách hiệu ứng
+    colored: Màu hiệu ứng
+  damageCause:
+    name: Nguyên nhân thiệt hại
+  damageCausesList:
+    name: Danh sách nguyên nhân thiệu hại
 scoreboard:
   name: '§6§lNhiệm vụ'
+  noLaunched: '§cKhông có nhiệm vụ đang thực hiện.'
+  noLaunchedName: '§c§lĐang tải'
+  noLaunchedDescription: '§c§oĐang tải'
   textBetwteenBranch: '§e hoặc'
+  asyncEnd: '§ví dụ'
   stage:
     region: '§eĐi đến §6{0}'
     npc: '§eNói chuyện với §6{0}'
@@ -377,48 +687,120 @@ scoreboard:
     mine: '§eĐào {0}'
     placeBlocks: '§eĐặt{0}'
     chat: '§eViết §6{0}'
+    interact: '§eNhấn vào khối tại §6{0}'
+    interactMaterial: '§eNhấn vào khối §6{0}'
     fish: '§eCâu §6{0}'
+    melt: '§eNung §6{0}'
+    enchant: '§ePhù phép §6{0}'
     craft: '§eChế tạo §6{0}'
+    bucket: '§eLàm đầy §6{0}'
     location: '§eĐi đên §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
+    playTimeFormatted: '§ePhát §6{0}'
+    breed: '§eChăn §6{0}'
     tame: '§eThuần phục §6{0}'
+    die: '§cChết'
 indication:
   startQuest: '§7Bạn có muốn bắt đầu nhiệm vụ {0}?'
   closeInventory: '§7Bạn có chắc bạn muốn đóng GUI?'
+  cancelQuest: '§7Bạn có chắc chắn muốn hủy nhiệm vụ này {0}?'
+  removeQuest: '§7Bạn có chắc chắn muốn xóa nhiệm vụ này {0}?'
+description:
+  requirement:
+    title: '§8§lYêu cầu:'
+    level: 'Cấp {0}'
+    jobLevel: 'Cấp {0} cho {1}'
+    combatLevel: 'Cấp độ đánh nhau {0}'
+    skillLevel: 'Cấp {0} cho {1}'
+    class: 'Class {0}'
+    faction: 'Faction {0}'
+    quest: 'Hoàn thành nhiệm vụ §e{0}'
+  reward:
+    title: '§8§lPhần thưởng:'
 misc:
   format:
     prefix: '§f[§aQuests§r§f] §r'
     npcText: '§e§l{0}:§r§e {1}'
     offText: '§r§e {0}'
   time:
+    weeks: '{0} tuần'
+    days: '{0} ngày'
     hours: '{0} giờ'
     minutes: '{0} phút'
     lessThanAMinute: 'ít hơn một phút'
   stageType:
-    region: Region (Vùng tìm kiếm)
+    region: Tìm khu vực
     npc: Tìm NPC
+    items: Mang vật phẩm trở lại
     mobs: Giết Mobs
     mine: Phá khối
     placeBlocks: Đặt khối
     chat: Nhắn tin trên thanh trò chuyện
     interact: Tương tác với khối
     Fish: Bắt cá
+    Melt: Nung vật phẩm
+    Enchant: Cường hóa vật phẩm
     Craft: Chế tạo vật phẩm
     Bucket: Làm đầy cái xô
     location: Tìm tọa độ
     playTime: Thời gian chơi
     breedAnimals: Làm no động vật
     tameAnimals: Thuần phục động vật
+    die: Chết
+  comparison:
+    equals: bằng với {0}
+    different: khắc với {0}
+    less: ít hơn {0}
+    lessOrEquals: Ít hơn {0}
+    greater: lớn hơn {0}
+    greaterOrEquals: lớn hơn {0}
   requirement:
+    logicalOr: '§dLogic HOẶC (bắt buộc)'
+    skillAPILevel: '§dYêu cầu cấp SkillAPI'
     class: '§bClass(es) yêu cầu'
+    faction: '§dYêu cầu Faction'
+    jobLevel: '§bYêu cầu cấp độ Job'
+    combatLevel: '§dYêu cầu cấp độ Combat'
+    experienceLevel: '§bYêu cầu cấp độ'
+    permissions: '§3Yêu cầu quyền'
+    scoreboard: '§dYêu cầu điểm'
+    region: '§dYêu cầu khu vực'
+    placeholder: '§dYêu cầu giá trị Placeholder'
     quest: '§aNhiệm vụ yêu cầu'
+    mcMMOSkillLevel: '§dYêu cầu cấp độ kĩ năng'
+    money: '§dYêu cầu tiền'
   bucket:
     water: Xô nước
     lava: Xô nhung nham
+    milk: Xô sữa bò
+    snow: Xô tuyết
+  click:
+    right: Chuột phải
+    left: Chuột trái
+    shift-right: Shift-Chuột phải
+    shift-left: Shift-Chuột trái
+    middle: Chuột giữa
+  amounts:
+    items: '{0} vật phẩm'
+    comparisons: '{0} sự so sánh'
+    dialogLines: '{0} dòng'
+    permissions: '{0} quyền'
+    mobs: '{0} mob'
+  ticks: '{0} ticks'
+  questItemLore: '§e§oVật phẩm nhiệm vụ'
+  hologramText: '§8§lNPC Nhiệm vụ'
+  poolHologramText: '§eNhiệm vụ khả dụng'
+  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
+  entityType: '§eLoại sinh vật: {0}'
+  entityTypeAny: '§eBất kì sinh vật nào'
   enabled: Bật
   disabled: Tắt
   unknown: Không rõ
+  notSet: '§cchưa thiết lập'
+  unused: '§2§lKhông sử dụng'
   used: '§a§lSử dụng'
   remove: '§7Chuột giữa để xóa'
+  removeRaw: Xóa
+  reset: Đặt lại
   or: hoặc
   amount: '§eSố lượng: {0}'
   items: các vật phẩm

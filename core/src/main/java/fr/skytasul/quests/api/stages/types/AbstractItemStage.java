@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.stages;
+package fr.skytasul.quests.api.stages.types;
 
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -35,7 +36,7 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		super(branch, new HashMap<>());
 		
 		if (section.contains("itemComparisons")) {
-			comparisons = new ItemComparisonMap((Map) section.getConfigurationSection("itemComparisons").getValues(false));
+			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));
 		}else comparisons = new ItemComparisonMap();
 		
 		super.deserialize(section);
@@ -100,12 +101,12 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(this.items.size() + " item(s)")));
+			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(Lang.AmountItems.format(this.items.size()))));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(this.comparisons.getEffective().size() + " comparison(s)")));
+			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
 		}
 		
 		@Override

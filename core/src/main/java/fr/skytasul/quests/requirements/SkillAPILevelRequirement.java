@@ -1,7 +1,5 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -48,12 +46,6 @@ public class SkillAPILevelRequirement extends TargetNumberRequirement {
 	@Override
 	public AbstractRequirement clone() {
 		return new SkillAPILevelRequirement(target, comparison);
-	}
-	
-	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		super.load(savedDatas);
-		if (savedDatas.containsKey("level")) super.target = (int) savedDatas.get("level");
 	}
 
 }

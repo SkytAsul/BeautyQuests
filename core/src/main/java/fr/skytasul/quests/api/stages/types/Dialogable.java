@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.stages;
+package fr.skytasul.quests.api.stages.types;
 
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.types.Dialog;
@@ -13,7 +13,7 @@ public interface Dialogable {
 	BQNPC getNPC();
 	
 	default boolean hasDialog() {
-		return getDialog() != null;
+		return getNPC() != null && getDialog() != null && !getDialog().messages.isEmpty();
 	}
 	
 }

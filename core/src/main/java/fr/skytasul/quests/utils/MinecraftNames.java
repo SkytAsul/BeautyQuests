@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.WordUtils;
-import org.apache.logging.log4j.core.util.FileUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -34,7 +33,11 @@ public class MinecraftNames {
 				BeautyQuests.logger.warning("File " + fileName + " not found for loading translations.");
 				return false;
 			}
-			if (!FileUtils.getFileExtension(file).toLowerCase().equals("json")) {
+			
+			int lastPoint = file.getName().lastIndexOf('.');
+			String extension = lastPoint == -1 ? "" : file.getName().substring(lastPoint + 1);
+			
+			if (!extension.equalsIgnoreCase("json")) {
 				BeautyQuests.logger.warning("File " + fileName + " is not a JSON file.");
 				return false;
 			}

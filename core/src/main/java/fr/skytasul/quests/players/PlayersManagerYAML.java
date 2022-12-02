@@ -3,7 +3,6 @@ package fr.skytasul.quests.players;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -12,18 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.structure.Quest;
@@ -35,27 +32,71 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	private static final int ACCOUNTS_THRESHOLD = 1000;
 	
-	Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
-	private Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
-	private int lastAccountID = 0;
-
-	private Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+	private final Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 	
-	private File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
+	protected final Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
+	private final Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
+	
+	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
+	
+	private int lastAccountID = 0;
+	
+	public File getDirectory() {
+		return directory;
+	}
 	
 	@Override
-	protected Entry<PlayerAccount, Boolean> load(Player player, long joinTimestamp) {
-		String identifier = super.getIdentifier(player);
+	public void load(AccountFetchRequest request) {
+		String identifier = super.getIdentifier(request.getOfflinePlayer());
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
-			return new AbstractMap.SimpleEntry<>(getByIndex(id), false);
+			PlayerAccount acc;
+
+			// 1. get the account if it's already loaded
+			acc = loadedAccounts.get(id);
+			if (acc != null) {
+				request.loaded(acc, "cached accounts");
+			} else {
+
+				// 2. get the account from the "pending unload" list
+				acc = request.shouldCache() ? unloadedAccounts.asMap().remove(id) : unloadedAccounts.getIfPresent(id);
+				if (acc != null) {
+					if (request.shouldCache())
+						loadedAccounts.put(id, acc);
+					request.loaded(acc, "cached accounts pending unload");
+				} else {
+
+					// 3. load the account from the corresponding file
+					acc = loadFromFile(id, true);
+					if (acc != null) {
+						if (request.shouldCache())
+							loadedAccounts.put(id, acc);
+						request.loaded(acc, "file from index");
+					} else {
+
+						// 4. that's pretty bizarre: the account's identifier
+						// has an associated index, but no saved datas can be found.
+						if (request.mustCreateMissing()) {
+							acc = createPlayerAccount(identifier, id);
+							if (request.shouldCache())
+								addAccount(acc);
+							request.created(acc);
+						} else {
+							request.notLoaded();
+						}
+					}
+				}
+			}
+		} else if (request.mustCreateMissing()) {
+			AbstractAccount absacc = super.createAbstractAccount(request.getOnlinePlayer());
+			PlayerAccount acc = new PlayerAccount(absacc, lastAccountID + 1);
+			if (request.shouldCache())
+				addAccount(acc);
+
+			request.created(acc);
+		} else {
+			request.notLoaded();
 		}
-
-		AbstractAccount absacc = super.createAbstractAccount(player);
-		PlayerAccount acc = new PlayerAccount(absacc, lastAccountID + 1);
-		addAccount(acc);
-
-		return new AbstractMap.SimpleEntry<>(acc, true);
 	}
 	
 	@Override
@@ -107,10 +148,9 @@ public class PlayersManagerYAML extends PlayersManager {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
 			try {
 				PlayerAccount acc = loadFromFile(entry.getKey(), false);
-				if (acc == null) {
+				if (acc == null)
 					acc = createPlayerAccount(entry.getValue(), entry.getKey());
-					addAccount(acc);
-				}
+				addAccount(acc);
 			}catch (Exception ex) {
 				BeautyQuests.logger.severe("An error occured when loading player account " + entry.getKey(), ex);
 			}
@@ -180,29 +220,13 @@ public class PlayersManagerYAML extends PlayersManager {
 		BeautyQuests.getInstance().getLogger().info("Operation complete.");
 	}
 
-	public PlayerAccount getByIndex(Object index) { // TODO remove on 0.19
-		int id = index instanceof Integer ? (int) index : Utils.parseInt(index);
-		PlayerAccount acc = loadedAccounts.get(id);
-		if (acc != null) return acc;
-		acc = unloadedAccounts.asMap().remove(id);
-		if (acc != null) {
-			loadedAccounts.put(id, acc);
-			return acc;
-		}
-		acc = loadFromFile(id, true);
-		if (acc != null) return acc;
-		acc = createPlayerAccount(identifiersIndex.get(id), id);
-		addAccount(acc);
-		return acc;
-	}
-
 	private synchronized void addAccount(PlayerAccount acc) {
 		loadedAccounts.put(acc.index, acc);
 		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
 	}
 
-	public PlayerAccount loadFromFile(int index, boolean msg) {
+	private PlayerAccount loadFromFile(int index, boolean msg) {
 		File file = new File(directory, index + ".yml");
 		if (!file.exists()) return null;
 		DebugUtils.logMessage("Loading account #" + index + ". Last file edition: " + new Date(file.lastModified()).toString());
@@ -225,7 +249,11 @@ public class PlayersManagerYAML extends PlayersManager {
 			PlayerPoolDatas questDatas = PlayerPoolDatas.deserialize(acc, (Map<String, Object>) poolConfig);
 			acc.poolDatas.put(questDatas.getPoolID(), questDatas);
 		}
-		addAccount(acc);
+		for (SavableData<?> data : accountDatas) {
+			if (datas.contains(data.getId())) {
+				acc.additionalDatas.put(data, datas.getObject(data.getId(), data.getDataType()));
+			}
+		}
 		return acc;
 	}
 
@@ -251,6 +279,7 @@ public class PlayersManagerYAML extends PlayersManager {
 
 	@Override
 	public void load() {
+		super.load();
 		if (!directory.exists()) directory.mkdirs();
 
 		FileConfiguration config = BeautyQuests.getInstance().getDataFile();

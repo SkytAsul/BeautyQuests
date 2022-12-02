@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,15 +21,28 @@ public class ItemComparisonMap implements Cloneable {
 		this(new HashMap<>());
 	}
 	
+	public ItemComparisonMap(ConfigurationSection notDefault) {
+		setNotDefaultComparisons(notDefault);
+	}
+	
 	public ItemComparisonMap(Map<String, Boolean> notDefault) {
 		setNotDefaultComparisons(notDefault);
+	}
+	
+	public void setNotDefaultComparisons(ConfigurationSection section) {
+		this.notDefault = (Map) section.getValues(false);
+		
+		effective = new ArrayList<>();
+		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
+			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault())) effective.add(comp);
+		}
 	}
 	
 	public void setNotDefaultComparisons(Map<String, Boolean> comparisons) {
 		this.notDefault = comparisons;
 		
 		effective = new ArrayList<>();
-		for (ItemComparison comp : QuestsAPI.itemComparisons) {
+		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
 			Boolean bool = notDefault.get(comp.getID());
 			if (Boolean.FALSE.equals(bool)) continue;
 			if (!comp.isEnabledByDefault() && !Boolean.TRUE.equals(bool)) continue;
@@ -38,6 +52,10 @@ public class ItemComparisonMap implements Cloneable {
 	
 	public Map<String, Boolean> getNotDefault() {
 		return notDefault;
+	}
+	
+	public boolean isDefault() {
+		return notDefault.isEmpty();
 	}
 	
 	public List<ItemComparison> getEffective() {

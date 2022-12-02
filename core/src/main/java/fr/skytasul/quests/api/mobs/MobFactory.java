@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -16,11 +16,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
 
 /**
@@ -77,15 +76,21 @@ public abstract interface MobFactory<T> extends Listener {
 	 * @return list of string which will be displayed as the lore of the mob item
 	 */
 	public default List<String> getDescriptiveLore(T data) {
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	public default boolean mobApplies(T first, Object other) {
 		return Objects.equals(first, other);
 	}
 	
+	public default boolean bukkitMobApplies(T first, Entity entity) { // TODO abstract (introduced in 0.20)
+		BeautyQuests.logger.warning("The mob factory " + getID() + " has not been updated. Nag its author about it!");
+		return false;
+	}
+
 	/**
 	 * Has to be called when a mob corresponding to this factory has been killed
+	 * 
 	 * @param originalEvent original event
 	 * @param pluginMob mob killed
 	 * @param entity bukkit entity killed
@@ -93,7 +98,6 @@ public abstract interface MobFactory<T> extends Listener {
 	 */
 	public default void callEvent(Event originalEvent, T pluginMob, Entity entity, Player player) {
 		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
-		Validate.notNull(entity, "Bukkit entity object cannot be null");
 		Validate.notNull(player, "Player cannot be null");
 		if (originalEvent != null) {
 			CompatMobDeathEvent existingCompat = eventsCache.getIfPresent(originalEvent);
@@ -102,7 +106,11 @@ public abstract interface MobFactory<T> extends Listener {
 				return;
 			}
 		}
-		CompatMobDeathEvent compatEvent = new CompatMobDeathEvent(pluginMob, player, entity);
+
+		OptionalInt optionalStackSize = QuestsAPI.getMobStackers().stream()
+				.mapToInt(stacker -> stacker.getEntityStackSize(entity)).filter(size -> size > 1).max();
+
+		CompatMobDeathEvent compatEvent = new CompatMobDeathEvent(pluginMob, player, entity, optionalStackSize.orElse(1));
 		if (originalEvent != null) eventsCache.put(originalEvent, compatEvent);
 		Bukkit.getPluginManager().callEvent(compatEvent);
 	}

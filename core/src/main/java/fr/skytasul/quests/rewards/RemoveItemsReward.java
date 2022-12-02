@@ -3,8 +3,8 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -55,8 +55,8 @@ public class RemoveItemsReward extends AbstractReward {
 	@Override
 	public String[] getLore() {
 		return new String[] {
-				"§7" + items.size() + " " + Lang.Item.toString(),
-				"§7" + comparisons.getEffective().size() + " comparison(s)",
+				"§7" + Lang.AmountItems.format(items.size()),
+				"§7" + Lang.AmountComparisons.format(comparisons.getEffective().size()),
 				"",
 				"§7" + Lang.ClickLeft.toString() + " > " + Lang.stageItems.toString(),
 				"§7" + Lang.ClickRight.toString() + " > " + Lang.stageItemsComparison.toString(),
@@ -68,27 +68,23 @@ public class RemoveItemsReward extends AbstractReward {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {
 			new ItemsGUI(items -> {
 				this.items = items;
-				event.updateItemLore(getLore());
 				event.reopenGUI();
 			}, items).create(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
-			new ItemComparisonGUI(comparisons, () -> {
-				event.updateItemLore(getLore());
-				event.reopenGUI();
-			}).create(event.getPlayer());
+			new ItemComparisonGUI(comparisons, event::reopenGUI).create(event.getPlayer());
 		}
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
-		if (!comparisons.getNotDefault().isEmpty()) datas.put("comparisons", comparisons.getNotDefault());
+	public void save(ConfigurationSection section) {
+		section.set("items", Utils.serializeList(items, ItemStack::serialize));
+		if (!comparisons.getNotDefault().isEmpty()) section.createSection("comparisons", comparisons.getNotDefault());
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
-		if (savedDatas.containsKey("comparisons")) comparisons.setNotDefaultComparisons((Map<String, Boolean>) savedDatas.get("comparisons"));
+	public void load(ConfigurationSection section){
+		items.addAll(Utils.deserializeList(section.getMapList("items"), ItemStack::deserialize));
+		if (section.contains("comparisons")) comparisons.setNotDefaultComparisons(section.getConfigurationSection("comparisons"));
 	}
 
 }

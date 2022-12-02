@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.mineacademy.boss.api.BossAPI;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 import org.mineacademy.boss.model.Boss;
 
@@ -20,6 +22,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class BQBoss implements MobFactory<Boss> {
@@ -40,7 +43,7 @@ public class BQBoss implements MobFactory<Boss> {
 		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses(), null, x -> x.getName()) {
 			@Override
 			public ItemStack getItemStack(Boss object) {
-				return ItemUtils.item(XMaterial.mobItem(object.getType()), object.getName());
+				return ItemUtils.item(Utils.mobItem(object.getType()), object.getName());
 			}
 
 			@Override
@@ -54,6 +57,11 @@ public class BQBoss implements MobFactory<Boss> {
 	@Override
 	public Boss fromValue(String value) {
 		return org.mineacademy.boss.api.BossAPI.getBoss(value);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(Boss first, Entity entity) {
+		return BossAPI.getBoss(entity).getBoss().equals(first);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -60,6 +61,11 @@ public class CitizensFactory implements MobFactory<NPC> {
 	@Override
 	public NPC fromValue(String value) {
 		return CitizensAPI.getNPCRegistry().getById(Integer.parseInt(value));
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(NPC first, Entity entity) {
+		return first.isSpawned() && first.getEntity().equals(entity);
 	}
 
 	@Override

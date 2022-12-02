@@ -1,7 +1,6 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.entity.Player;
 
@@ -28,11 +27,5 @@ public class QuestStopReward extends AbstractReward {
 	public AbstractReward clone() {
 		return this;
 	}
-	
-	@Override
-	protected void save(Map<String, Object> datas) {}
-	
-	@Override
-	protected void load(Map<String, Object> savedDatas) {}
 	
 }

@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.skytasul.quests.api.stages.Dialogable;
+import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.options.OptionStartDialog;

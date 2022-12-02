@@ -2,17 +2,17 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
-
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -21,13 +21,12 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
-
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 
-public class MythicMobs5 implements MobFactory<MythicMob> {
+public class MythicMobs5 implements LeveledMobFactory<MythicMob> {
 
 	@Override
 	public String getID() {
@@ -47,7 +46,7 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
 				try {
-					mobItem = XMaterial.mobItem(getEntityType(object));
+					mobItem = Utils.mobItem(getEntityType(object));
 				}catch (Exception ex) {
 					mobItem = XMaterial.SPONGE;
 					BeautyQuests.logger.warning("Unknow entity type for MythicMob " + object.getInternalName(), ex);
@@ -66,6 +65,18 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 	@Override
 	public MythicMob fromValue(String value) {
 		return MythicBukkit.inst().getMobManager().getMythicMob(value).orElse(null);
+	}
+	
+	@Override
+	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
+		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId())
+				.map(mob -> mob.getType().equals(first))
+				.orElse(false);
+	}
+
+	@Override
+	public double getMobLevel(MythicMob type, Entity entity) {
+		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).get().getLevel();
 	}
 
 	@Override
@@ -86,8 +97,11 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 		if (data.getEntityType() == null) {
 			typeName = data.getMythicEntity() == null ? null : data.getMythicEntity().getClass().getSimpleName().substring(6);
 		}else {
-			typeName = data.getEntityType().toUpperCase();
+			typeName = Objects.toString(data.getEntityType()).toUpperCase();
 		}
+		if (typeName == null)
+			return null;
+
 		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
 		if (NMS.getMCVersion() < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
@@ -104,11 +118,12 @@ public class MythicMobs5 implements MobFactory<MythicMob> {
 	public List<String> getDescriptiveLore(MythicMob data) {
 		try {
 			return Arrays.asList(
-					QuestOption.formatDescription("Base Health: " + data.getHealth().get()),
-					QuestOption.formatDescription("Base Damage: " + data.getDamage().get()),
-					QuestOption.formatDescription("Base Armor: " + data.getArmor().get()));
-		}catch (NoSuchMethodError e) {
-			return Arrays.asList("§cError when retrieving mob informations", "§c-> §oPlease update MythicMobs");
+					QuestOption.formatDescription("Base Health: " + Objects.toString(data.getHealth())),
+					QuestOption.formatDescription("Base Damage: " + Objects.toString(data.getDamage())),
+					QuestOption.formatDescription("Base Armor: " + Objects.toString(data.getArmor())));
+		} catch (Throwable ex) {
+			BeautyQuests.logger.warning("An error occurred while showing mob description", ex);
+			return Arrays.asList("§cError when retrieving mob informations");
 		}
 	}
 

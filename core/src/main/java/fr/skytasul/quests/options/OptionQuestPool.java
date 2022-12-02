@@ -1,5 +1,8 @@
 package fr.skytasul.quests.options;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,8 +51,16 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 		return value;
 	}
 	
-	private String[] getLore() {
-		return new String[] { formatDescription(Lang.questPoolLore.toString()), "", formatValue(getValue() == null ? null : "#" + getValue().getID()) };
+	private List<String> getLore() {
+		List<String> lore = new ArrayList<>(5);
+		lore.add(formatDescription(Lang.questPoolLore.toString()));
+		lore.add("");
+		lore.add(formatValue(getValue() == null ? null : "#" + getValue().getID()));
+		if (hasCustomValue()) {
+			lore.add("");
+			lore.add("§8" + Lang.ClickShiftRight.toString() + " > §d" + Lang.Reset.toString());
+		}
+		return lore;
 	}
 
 	@Override
@@ -59,26 +70,32 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN, BeautyQuests.getInstance().getPoolsManager().getPools(), list -> gui.reopen(p), null) {
-			
-			@Override
-			public ItemStack getItemStack(QuestPool object) {
-				return object.getItemStack(Lang.poolChoose.toString());
-			}
-			
-			@Override
-			public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
-				setValue(existing);
-				ItemUtils.lore(item, getLore());
-				gui.reopen(p);
-			}
-			
-			@Override
-			public CloseBehavior onClose(Player p, Inventory inv) {
-				Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> gui.reopen(p));
-				return CloseBehavior.NOTHING;
-			}
-		}.create(p);
+		if (click == ClickType.SHIFT_RIGHT) {
+			setValue(null);
+			ItemUtils.lore(item, getLore());
+			gui.reopen(p);
+		}else {
+			new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN, BeautyQuests.getInstance().getPoolsManager().getPools(), list -> gui.reopen(p), null) {
+				
+				@Override
+				public ItemStack getItemStack(QuestPool object) {
+					return object.getItemStack(Lang.poolChoose.toString());
+				}
+				
+				@Override
+				public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
+					setValue(existing);
+					ItemUtils.lore(item, getLore());
+					gui.reopen(p);
+				}
+				
+				@Override
+				public CloseBehavior onClose(Player p, Inventory inv) {
+					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> gui.reopen(p));
+					return CloseBehavior.NOTHING;
+				}
+			}.create(p);
+		}
 	}
 	
 }

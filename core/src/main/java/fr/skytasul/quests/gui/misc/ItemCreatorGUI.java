@@ -48,7 +48,7 @@ public class ItemCreatorGUI implements CustomInventory {
 		this.p = p;
 		inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
 
-		inv.setItem(0, ItemUtils.item(XMaterial.ARROW, Lang.itemType.toString()));
+		inv.setItem(0, ItemUtils.item(XMaterial.GRASS_BLOCK, Lang.itemType.toString()));
 		inv.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
 		inv.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
 		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
@@ -82,7 +82,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			new TextEditor<>(p, () -> reopen(), obj -> {
 				type = obj;
 				reopen();
-			}, new MaterialParser(true, false)).enter();
+			}, MaterialParser.ITEM_PARSER).enter();
 			break;
 
 		case 1:

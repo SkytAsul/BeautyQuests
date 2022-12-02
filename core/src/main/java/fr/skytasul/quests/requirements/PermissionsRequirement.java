@@ -2,11 +2,11 @@ package fr.skytasul.quests.requirements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -48,7 +48,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + permissions.size() + " permission(s)", "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
+		return new String[] { "§8> §7" + Lang.AmountPermissions.format(permissions.size()), "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
 	}
 	
 	@Override
@@ -74,7 +74,6 @@ public class PermissionsRequirement extends AbstractRequirement {
 				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
 				new TextEditor<String>(p, event::reopenGUI, obj -> {
 					message = obj;
-					event.updateItemLore(getLore());
 					event.reopenGUI();
 				}).passNullIntoEndConsumer().enter();
 			}
@@ -88,15 +87,15 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
-		if (message != null) datas.put("message", message);
+	public void save(ConfigurationSection section) {
+		section.set("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
+		if (message != null) section.set("message", message);
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		permissions = ((List<String>) savedDatas.get("permissions")).stream().map(Permission::fromString).collect(Collectors.toList());
-		if (savedDatas.containsKey("message")) message = (String) savedDatas.get("message");
+	public void load(ConfigurationSection section) {
+		permissions = section.getStringList("permissions").stream().map(Permission::fromString).collect(Collectors.toList());
+		if (section.contains("message")) message = section.getString("message");
 	}
 
 	public static class Permission {

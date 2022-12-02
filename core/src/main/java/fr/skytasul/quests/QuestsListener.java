@@ -5,14 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -22,11 +23,14 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.BQCraftEvent;
 import fr.skytasul.quests.api.events.BQNPCClickEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.gui.Inventories;
@@ -36,21 +40,20 @@ import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
-import fr.skytasul.quests.players.events.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.compatibility.Paper;
 
 public class QuestsListener implements Listener{
 	
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
-		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
 		
 		Player p = e.getPlayer();
 		BQNPC npc = e.getNPC();
@@ -198,11 +201,40 @@ public class QuestsListener implements Listener{
 		}
 	}
 	
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onDeath(PlayerDeathEvent e) {
+		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBreak(BlockBreakEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getPlayer() == null) return;
 		Bukkit.getPluginManager().callEvent(new BQBlockBreakEvent(e.getPlayer(), Arrays.asList(e.getBlock())));
+	}
+
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onCraftMonitor(CraftItemEvent e){
+		if (e.getInventory().getResult() == null) return;
+
+		int resultCount = e.getInventory().getResult().getAmount();
+		int materialCount = Integer.MAX_VALUE;
+
+		for (ItemStack is : e.getInventory().getMatrix())
+			if (is != null && is.getAmount() < materialCount)
+				materialCount = is.getAmount();
+
+		int maxCraftAmount = resultCount * materialCount;
+		
+		ItemStack item = e.getRecipe().getResult();
+		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
+			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
+			if (key.equals("minecraft:suspicious_stew")) {
+				item = XMaterial.SUSPICIOUS_STEW.parseItem();
+			}
+		}
+		
+		Bukkit.getPluginManager().callEvent(new BQCraftEvent(e, item, maxCraftAmount));
 	}
 	
 }

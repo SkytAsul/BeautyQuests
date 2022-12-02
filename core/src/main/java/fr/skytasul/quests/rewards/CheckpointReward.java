@@ -2,16 +2,16 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -64,19 +64,18 @@ public class CheckpointReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		QuestsAPI.getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
 			actions = rewards;
-			event.updateItemLore(getLore());
 			event.reopenGUI();
-		}, actions).create(event.getPlayer());
+		}, actions, null).create(event.getPlayer());
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		datas.put("actions", Utils.serializeList(actions, AbstractReward::serialize));
+	public void save(ConfigurationSection section) {
+		section.set("actions", SerializableObject.serializeList(actions));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		actions = QuestObject.deserializeList((List<Map<?, ?>>) savedDatas.get("actions"), AbstractReward::deserialize);
+	public void load(ConfigurationSection section) {
+		actions = SerializableObject.deserializeList(section.getMapList("actions"), AbstractReward::deserialize);
 	}
 	
 }

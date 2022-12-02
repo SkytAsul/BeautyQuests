@@ -29,7 +29,7 @@ public class Post1_13 {
 	}
 	
 	public static Object getDustColor(Color color, int size) {
-		return new Particle.DustOptions(Color.fromBGR(color.getBlue(), color.getGreen(), color.getRed()), size);
+		return new Particle.DustOptions(color, size);
 	}
 	
 	public static boolean isBlockData(Object data) {
@@ -60,7 +60,7 @@ public class Post1_13 {
 		
 		@Override
 		public String getAsString() {
-			return BQBlock.BLOCKDATA_HEADER + data.getAsString();
+			return BQBlock.BLOCKDATA_HEADER + data.getAsString(true);
 		}
 		
 	}

@@ -10,26 +10,33 @@ public class CompatMobDeathEvent extends Event {
 	
 	private final Object pluginEntity;
 	private final Player killer;
-	private Entity bukkitEntity;
+	private final Entity bukkitEntity;
+	private final int amount;
 
-	public CompatMobDeathEvent(Object pluginEntity, Player killer, Entity bukkitEntity) {
+	public CompatMobDeathEvent(Object pluginEntity, Player killer, Entity bukkitEntity, int amount) {
 		this.pluginEntity = pluginEntity;
 		this.killer = killer;
 		this.bukkitEntity = bukkitEntity;
-	}
-
-	public Entity getBukkitEntity(){
-		return bukkitEntity;
+		this.amount = amount;
 	}
 	
 	public Object getPluginMob() {
-		return this.pluginEntity;
+		return pluginEntity;
 	}
 
 	public Player getKiller() {
-		return this.killer;
+		return killer;
 	}
 
+	public Entity getBukkitEntity() {
+		return bukkitEntity;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

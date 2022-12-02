@@ -16,6 +16,10 @@ public class LevenshteinComparator<T> implements Comparator<T> {
 		this.reference = reference;
 		return this;
 	}
+	
+	public Function<T, String> getFunction() {
+		return function;
+	}
 
 	@Override
 	public int compare(T o1, T o2) {

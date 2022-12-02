@@ -67,7 +67,7 @@ public class DialogEditor extends Editor{
 		case LIST:
 			for (int i = 0; i < d.messages.size(); i++) {
 				Message dmsg = d.messages.get(i);
-				Utils.IsendMessage(p, "§6{0}: §7 \"{1}§7\"§e by §l{2}", false, i, dmsg.text, dmsg.sender.name().toLowerCase());
+				Utils.IsendMessage(p, "§6{0}: §7\"{1}§7\"§e by §l{2}", false, i, dmsg.text, dmsg.sender.name().toLowerCase());
 			}
 			break;
 			
@@ -95,15 +95,13 @@ public class DialogEditor extends Editor{
 			}
 			try{
 				Message message = d.messages.get(Integer.parseInt(args[1]));
-				if (message == null) {
-					Lang.OUT_OF_BOUNDS.send(p, args[1], 0, d.messages.size());
-				}else {
-					msg = Utils.buildFromArray(argsColored, 2, " ");
-					message.text = msg;
-					Lang.DIALOG_MSG_EDITED.send(p, msg);
-				}
+				msg = Utils.buildFromArray(argsColored, 2, " ");
+				message.text = msg;
+				Lang.DIALOG_MSG_EDITED.send(p, msg);
 			}catch (IllegalArgumentException ex){
 				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}catch (IndexOutOfBoundsException ex) {
+				Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
 			}
 			break;
 			
@@ -114,13 +112,11 @@ public class DialogEditor extends Editor{
 			}
 			try{
 				Message imsg = d.messages.get(Integer.parseInt(args[1]));
-				if (imsg == null){
-					Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
-					break;
-				}
 				Lang.DIALOG_SOUND_ADDED.send(p, imsg.sound = args[2], args[1]);
 			}catch (IllegalArgumentException ex){
 				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}catch (IndexOutOfBoundsException ex) {
+				Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
 			}
 			break;
 			
@@ -131,10 +127,6 @@ public class DialogEditor extends Editor{
 			}
 			try {
 				Message imsg = d.messages.get(Integer.parseInt(args[1]));
-				if (imsg == null) {
-					Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
-					break;
-				}
 				int time = Integer.parseInt(args[2]);
 				if (time < 0) {
 					imsg.wait = -1;
@@ -145,6 +137,8 @@ public class DialogEditor extends Editor{
 				}
 			}catch (IllegalArgumentException ex) {
 				Utils.sendMessage(p, Lang.NUMBER_INVALID.toString());
+			}catch (IndexOutOfBoundsException ex) {
+				Lang.OBJECT_DOESNT_EXIST.send(p, args[1]);
 			}
 			break;
 		

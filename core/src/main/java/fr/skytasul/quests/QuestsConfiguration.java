@@ -1,10 +1,11 @@
 package fr.skytasul.quests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -14,14 +15,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
-
 import com.google.common.collect.Sets;
-
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.structure.QuestDescription;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -54,13 +53,14 @@ public class QuestsConfiguration {
 	private static boolean mobsProgressBar = false;
 	private static int progressBarTimeoutSeconds = 15;
 	private static boolean hookAcounts = false;
+	private static boolean usePlayerBlockTracker = false;
 	private static ParticleEffect particleStart;
 	private static ParticleEffect particleTalk;
 	private static ParticleEffect particleNext;
 	private static boolean sendUpdate = true;
 	private static boolean stageStart = true;
 	private static boolean questConfirmGUI = false;
-	private static ClickType npcClick = ClickType.RIGHT;
+	private static Collection<ClickType> npcClicks = Arrays.asList(ClickType.RIGHT, ClickType.SHIFT_RIGHT);
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -166,9 +166,18 @@ public class QuestsConfiguration {
 		mobsProgressBar = config.getBoolean("mobsProgressBar");
 		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 		try {
-			npcClick = ClickType.valueOf(config.getString("npcClick").toUpperCase());
+			if (config.isString("npcClick")) {
+				String click = config.getString("npcClick");
+				npcClicks = Arrays.asList(click.equals("ANY") ? ClickType.values() : new ClickType[] { ClickType.valueOf(click.toUpperCase()) });
+			}else {
+				npcClicks = config.getStringList("npcClick")
+						.stream()
+						.map(String::toUpperCase)
+						.map(ClickType::valueOf)
+						.collect(Collectors.toList());
+			}
 		}catch (IllegalArgumentException ex) {
-			BeautyQuests.logger.warning("Unknown click type " + config.getString("npcClick") + " for config entry \"npcClick\"");
+			BeautyQuests.logger.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 		}
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
@@ -179,6 +188,7 @@ public class QuestsConfiguration {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
 			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
 		}
+		usePlayerBlockTracker = DependenciesManager.PlayerBlockTracker.isEnabled() && config.getBoolean("usePlayerBlockTracker");
 		dSetName = config.getString("dynmap.markerSetName");
 		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
@@ -305,8 +315,8 @@ public class QuestsConfiguration {
 		return progressBarTimeoutSeconds;
 	}
 	
-	public static ClickType getNPCClick() {
-		return npcClick;
+	public static Collection<ClickType> getNPCClicks() {
+		return npcClicks;
 	}
 	
 	public static boolean handleGPS(){
@@ -417,6 +427,10 @@ public class QuestsConfiguration {
 		return hookAcounts;
 	}
 	
+	public static boolean usePlayerBlockTracker() {
+		return usePlayerBlockTracker;
+	}
+
 	public static String dynmapSetName(){
 		return dSetName;
 	}
@@ -476,10 +490,14 @@ public class QuestsConfiguration {
 	}
 	
 	public enum ClickType {
-		RIGHT, LEFT, ANY;
+		RIGHT, SHIFT_RIGHT, LEFT, SHIFT_LEFT;
 		
-		public boolean applies(ClickType type) {
-			return (this == type) || (this == ANY) || (type == ANY);
+		public static ClickType of(boolean left, boolean shift) {
+			if (left) {
+				return shift ? SHIFT_LEFT : LEFT;
+			}else {
+				return shift ? SHIFT_RIGHT : RIGHT;
+			}
 		}
 	}
 	

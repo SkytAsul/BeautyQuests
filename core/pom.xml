@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.19.7</version>
+		<version>0.20.0</version>
 	</parent>
 
 	<build>
@@ -20,6 +20,7 @@
 				<includes>
 					<include>*.yml</include>
 					<include>locales/*.yml</include>
+					<include>*.properties</include>
 				</includes>
 			</resource>
 		</resources>
@@ -43,8 +44,16 @@
 							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>de.jeff_media.updatechecker</pattern>
+							<pattern>com.jeff_media.updatechecker</pattern>
 							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>revxrsal.commands</pattern>
+							<shadedPattern>fr.skytasul.quests.commands.revxrsal</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.zaxxer.hikari</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.hikari</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
@@ -57,10 +66,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<parameters>true</parameters>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.4.1</version>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<repositories>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
 		<repository>
 			<id>placeholderapi</id>
 			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
@@ -75,7 +102,7 @@
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
-			<url>https://repo.codemc.org/repository/maven-public/</url>
+			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<id>mineacademy-repo</id>
@@ -117,13 +144,17 @@
 			<id>jeff-media-public</id>
 			<url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
 		</repository>
+		<repository>
+			<id>bg-repo</id>
+			<url>https://repo.bg-software.com/repository/api/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>1.18.2-R0.1-SNAPSHOT</version>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>1.19.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -213,7 +244,7 @@
 		<dependency>
 			<groupId>io.lumine</groupId>
 			<artifactId>Mythic-Dist</artifactId>
-			<version>5.0.1</version>
+			<version>5.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -225,13 +256,13 @@
 		<dependency>
 			<groupId>com.github.BlueMap-Minecraft</groupId>
 			<artifactId>BlueMapAPI</artifactId>
-			<version>v1.7.0</version>
+			<version>v2.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>de.jeff_media</groupId>
+			<groupId>com.jeff_media</groupId>
 			<artifactId>SpigotUpdateChecker</artifactId>
-			<version>1.3.2</version>
+			<version>3.0.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -241,10 +272,43 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
+			<groupId>com.github.decentsoftware-eu</groupId>
+			<artifactId>decentholograms</artifactId>
 			<version>2.7.5</version>
-			<scope>provided</scope> <!-- this is added to runtime through Spigot libraries system -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Flo0</groupId>
+			<artifactId>PlayerBlockTracker</artifactId>
+			<version>1.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.lokka30</groupId>
+			<artifactId>LevelledMobs</artifactId>
+			<version>3.2.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.bgsoftware</groupId>
+			<artifactId>WildStackerAPI</artifactId>
+			<version>2022.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Revxrsal.Lamp</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>d72483065c</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Revxrsal.Lamp</groupId>
+			<artifactId>common</artifactId>
+			<version>d72483065c</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>4.0.3</version> <!-- For Java 8 compatibility -->
 		</dependency>
 
 		<!-- Local JARs -->
@@ -287,7 +351,7 @@
 		<dependency>
 			<groupId>com.gamingmesh</groupId>
 			<artifactId>jobs</artifactId>
-			<version>5.0.0.9</version>
+			<version>5.1.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -317,7 +381,13 @@
 		<dependency>
 			<groupId>com.zrips</groupId>
 			<artifactId>cmilib</artifactId>
-			<version>1.0.4.1</version>
+			<version>1.2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>gcspawners</groupId>
+			<artifactId>gcspawners</artifactId>
+			<version>3.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

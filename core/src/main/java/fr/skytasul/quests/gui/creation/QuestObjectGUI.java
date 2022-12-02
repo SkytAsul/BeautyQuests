@@ -22,6 +22,7 @@ import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
+import fr.skytasul.quests.requirements.EquipmentRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
@@ -32,6 +33,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 
@@ -42,13 +44,11 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	public QuestObjectGUI(String name, QuestObjectLocation objectLocation, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
 		super(name, DyeColor.CYAN, (List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toList()));
 		this.name = name;
-		this.creators = creators.stream().filter(creator -> creator.isAllowed(objectLocation) && (creator.multiple || !objects.stream().anyMatch(object -> object.getCreator() == creator))).collect(Collectors.toList());
+		this.creators = creators.stream()
+				.filter(creator -> creator.isAllowed(objectLocation))
+				.filter(creator -> creator.canBeMultiple() || objects.stream().noneMatch(object -> object.getCreator() == creator))
+				.collect(Collectors.toList());
 		this.end = end;
-	}
-
-	@Deprecated
-	public void reopen(Player p) {
-		super.reopen();
 	}
 	
 	@Override
@@ -57,13 +57,8 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	}
 	
 	@Override
-	public boolean remove(QuestObject object) {
-		return super.remove((T) object);
-	}
-	
-	@Override
 	protected void removed(T object) {
-		if (!object.getCreator().multiple) creators.add(object.getCreator());
+		if (!object.getCreator().canBeMultiple()) creators.add(object.getCreator());
 	}
 	
 	@Override
@@ -72,14 +67,14 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 			
 			@Override
 			public ItemStack getItemStack(QuestObjectCreator<T> object) {
-				return object.item;
+				return object.getItem();
 			}
 			
 			@Override
 			public void click(QuestObjectCreator<T> existing, ItemStack item, ClickType clickType) {
-				T object = existing.newObjectSupplier.get();
-				if (!existing.multiple) creators.remove(existing);
-				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true));
+				T object = existing.newObject();
+				if (!existing.canBeMultiple()) creators.remove(existing);
+				object.itemClick(new QuestObjectClickEvent(p, QuestObjectGUI.this, callback.apply(object), clickType, true, object));
 			}
 			
 			@Override
@@ -93,7 +88,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	
 	@Override
 	public void clickObject(QuestObject existing, ItemStack item, ClickType clickType) {
-		existing.itemClick(new QuestObjectClickEvent(p, this, item, clickType, false));
+		existing.itemClick(new QuestObjectClickEvent(p, this, item, clickType, false, existing));
 	}
 	
 	@Override
@@ -124,6 +119,8 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.getRequirements().register(new RequirementCreator("levelRequired", LevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RLevel.toString()), LevelRequirement::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("permissionRequired", PermissionsRequirement.class, ItemUtils.item(XMaterial.PAPER, Lang.RPermissions.toString()), PermissionsRequirement::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("scoreboardRequired", ScoreboardRequirement.class, ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
+		if (NMS.getMCVersion() >= 9)
+			QuestsAPI.getRequirements().register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class, ItemUtils.item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()), EquipmentRequirement::new));
 	}
 
 }

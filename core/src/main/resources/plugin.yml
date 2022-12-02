@@ -1,14 +1,11 @@
 name: BeautyQuests
 author: SkytAsul
 #version: "${human.version}_BUILD${build.number}"
-version: ${human.version}
+version: "${human.version}"
 description: Quests system with a simple graphical interface.
 website: https://www.spigotmc.org/resources/beautyquests.39255/
 api-version: 1.13
 main: fr.skytasul.quests.BeautyQuests
-
-libraries:
-- org.mariadb.jdbc:mariadb-java-client:2.7.5
 
 softdepend:
 - WorldGuard
@@ -34,12 +31,17 @@ softdepend:
 - ProSkillAPI
 - BlueMap
 - Sentinel
+- AdvancedSpawners
+- DecentHolograms
+- PlayerBlockTracker
+- LevelledMobs
+- WildStacker
 
-commands:
-  beautyquests:
-    description: Main command for quests
-    permission: beautyquests.command
-    aliases: [bquests, quests, beautyquests, bq, quest]
+#commands:
+#  beautyquests:
+#    description: Main command for quests
+#    permission: beautyquests.command
+#    aliases: [bquests, quests, beautyquests, bq, quest]
     
 permissions:
   beautyquests.*:

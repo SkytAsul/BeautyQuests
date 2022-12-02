@@ -1,8 +1,7 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
@@ -70,15 +69,15 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		super.save(datas);
-		datas.put("objective", objectiveName);
+	public void save(ConfigurationSection section) {
+		super.save(section);
+		section.set("objective", objectiveName);
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		super.load(savedDatas);
-		setObjectiveName((String) savedDatas.get("objective"));
+	public void load(ConfigurationSection section) {
+		super.load(section);
+		setObjectiveName(section.getString("objective"));
 	}
 
 	@Override

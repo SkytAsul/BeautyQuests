@@ -57,7 +57,7 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	private void launchTask(PlayerAccount acc, Player p, long remaining) {
-		tasks.put(acc, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p), remaining < 0 ? 0 : remaining));
+		tasks.put(acc, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> branch.finishStage(p, this), remaining < 0 ? 0 : remaining));
 	}
 	
 	@Override
@@ -75,7 +75,7 @@ public class StagePlayTime extends AbstractStage {
 			task.cancel();
 			updateObjective(acc, null, "remainingTime", getRemaining(acc));
 		}else {
-			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + debugName() + " for player " + acc.getName());
+			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + acc.getName());
 		}
 	}
 	

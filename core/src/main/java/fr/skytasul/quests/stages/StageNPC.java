@@ -22,9 +22,11 @@ import fr.skytasul.quests.api.events.BQNPCClickEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.Dialogable;
-import fr.skytasul.quests.api.stages.Locatable;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.types.Dialogable;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.editors.DialogEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -39,7 +41,8 @@ import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.Dialog;
 import fr.skytasul.quests.utils.types.DialogRunner;
 
-public class StageNPC extends AbstractStage implements Locatable, Dialogable {
+@LocatableType (types = LocatedType.ENTITY)
+public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
 	
 	private BQNPC npc;
 	private int npcID;
@@ -81,7 +84,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 				
 				if (QuestsConfiguration.showTalkParticles()) {
 					if (tmp.isEmpty()) return;
-					QuestsConfiguration.getParticleTalk().send((LivingEntity) en, tmp);
+					QuestsConfiguration.getParticleTalk().send(en, tmp);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);
@@ -114,7 +117,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		this.npcID = npcID;
 		if (npcID >= 0) this.npc = QuestsAPI.getNPCsManager().getById(npcID);
 		if (npc == null) {
-			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + debugName());
+			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + toString());
 		}else {
 			initDialogRunner();
 		}
@@ -122,11 +125,6 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	
 	public void setDialog(Dialog dialog){
 		this.dialog = dialog;
-	}
-	
-	@Override
-	public boolean hasDialog(){
-		return dialog != null && !dialog.messages.isEmpty();
 	}
 	
 	@Override
@@ -148,15 +146,15 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	}
 	
 	@Override
-	public Location getLocation() {
-		return npc != null && npc.isSpawned() ? npc.getLocation() : null;
-	}
-	
-	@Override
-	public boolean isShown() {
+	public boolean isShown(Player player) {
 		return !hide;
 	}
 
+	@Override
+	public Located getLocated() {
+		return npc;
+	}
+	
 	@Override
 	public String descriptionLine(PlayerAccount acc, Source source){
 		return Utils.format(Lang.SCOREBOARD_NPC.toString(), descriptionFormat(acc, source));
@@ -181,7 +179,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 	public void onClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
-		if (!QuestsConfiguration.getNPCClick().applies(e.getClick())) return;
+		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
 		Player p = e.getPlayer();
 
 		e.setCancelled(dialogRunner.onClick(p).shouldCancel());
@@ -267,7 +265,7 @@ public class StageNPC extends AbstractStage implements Locatable, Dialogable {
 		if (section.contains("msg")) setDialog(Dialog.deserialize(section.getConfigurationSection("msg")));
 		if (section.contains("npcID")) {
 			setNPC(section.getInt("npcID"));
-		}else BeautyQuests.logger.warning("No NPC specified for " + debugName());
+		}else BeautyQuests.logger.warning("No NPC specified for " + toString());
 		if (section.contains("hid")) hide = section.getBoolean("hid");
 	}
 	

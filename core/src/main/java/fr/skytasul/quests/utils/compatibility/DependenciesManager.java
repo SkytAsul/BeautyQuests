@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -32,7 +30,10 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
+import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
 import fr.skytasul.quests.utils.compatibility.mobs.BQBoss;
+import fr.skytasul.quests.utils.compatibility.mobs.BQLevelledMobs;
+import fr.skytasul.quests.utils.compatibility.mobs.BQWildStacker;
 import fr.skytasul.quests.utils.compatibility.mobs.CitizensFactory;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs;
 import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs5;
@@ -86,12 +87,16 @@ public class DependenciesManager implements Listener {
 	
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> {
 		try {
-			Class.forName("io.lumine.xikage.mythicmobs.mobs.MythicMob");
-			QuestsAPI.registerMobFactory(new MythicMobs());
-		}catch (ClassNotFoundException ex) {
+			Class.forName("io.lumine.mythic.api.MythicPlugin");
 			QuestsAPI.registerMobFactory(new MythicMobs5());
+		}catch (ClassNotFoundException ex) {
+			QuestsAPI.registerMobFactory(new MythicMobs());
 		}
 	});
+	
+	public static final BQDependency advancedspawners = new BQDependency("AdvancedSpawners", () -> QuestsAPI.registerMobFactory(new BQAdvancedSpawners()));
+	public static final BQDependency LevelledMobs =
+			new BQDependency("LevelledMobs", () -> QuestsAPI.registerMobFactory(new BQLevelledMobs()));
 	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
@@ -104,6 +109,7 @@ public class DependenciesManager implements Listener {
 			return false;
 		}
 	});
+	public static final BQDependency decentholograms = new BQDependency("DecentHolograms", () -> QuestsAPI.setHologramsManager(new BQDecentHolograms()));
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
@@ -118,6 +124,8 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
+	public static final BQDependency PlayerBlockTracker = new BQDependency("PlayerBlockTracker");
+	public static final BQDependency WildStacker = new BQDependency("WildStacker", BQWildStacker::initialize);
 	
 	//public static final BQDependency par = new BQDependency("Parties");
 	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
@@ -129,7 +137,16 @@ public class DependenciesManager implements Listener {
 	private boolean lockDependencies = false;
 	
 	public DependenciesManager() {
-		dependencies = new ArrayList<>(Arrays.asList(znpcs, citizens, wg, mm, vault, papi, skapi, jobs, fac, acc, dyn, BlueMap, /*par, eboss, */gps, mmo, mclvl, boss, cmi, holod2, holod3, tokenEnchant, ultimateTimber, sentinel));
+		dependencies = new ArrayList<>(Arrays.asList(
+				/*par, eboss, */
+				znpcs, citizens, // npcs
+				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
+				mm, boss, advancedspawners, LevelledMobs, WildStacker, // mobs
+				vault, papi, acc, // hooks
+				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
+				dyn, BlueMap, // maps
+				cmi, holod2, holod3, decentholograms // holograms
+				));
 	}
 	
 	public List<BQDependency> getDependencies() {
@@ -183,6 +200,8 @@ public class DependenciesManager implements Listener {
 		private final Predicate<Plugin> isValid;
 		private boolean enabled = false;
 		private boolean forceDisable = false;
+		private boolean initialized = false;
+		private Plugin foundPlugin;
 		
 		public BQDependency(String pluginName) {
 			this(pluginName, null);
@@ -217,12 +236,14 @@ public class DependenciesManager implements Listener {
 			if (isValid != null && !isValid.test(plugin)) return false;
 			DebugUtils.logMessage("Hooked into " + pluginNames + " v" + plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
 			enabled = true;
+			foundPlugin = plugin;
 			return true;
 		}
 		
 		void initialize() {
 			try {
 				if (initialize != null) initialize.run();
+				initialized = true;
 			}catch (Throwable ex) {
 				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
@@ -233,7 +254,8 @@ public class DependenciesManager implements Listener {
 			forceDisable = true;
 			if (enabled) {
 				enabled = false;
-				if (disable != null) disable.run();
+				if (disable != null && initialized) disable.run();
+				initialized = false;
 			}
 		}
 		
@@ -241,6 +263,13 @@ public class DependenciesManager implements Listener {
 			return enabled;
 		}
 		
+		public Plugin getFoundPlugin() {
+			if (!enabled)
+				throw new IllegalStateException(
+						"The dependency " + pluginNames + " is not enabled");
+			return foundPlugin;
+		}
+
 	}
 	
 }

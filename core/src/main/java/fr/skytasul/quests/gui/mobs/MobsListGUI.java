@@ -1,27 +1,26 @@
 package fr.skytasul.quests.gui.mobs;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
+import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.mobs.Mob;
-import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class MobsListGUI implements CustomInventory{
@@ -38,6 +37,7 @@ public class MobsListGUI implements CustomInventory{
 		return this;
 	}
 
+	@Override
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_MOBS.toString());
 		
@@ -53,10 +53,11 @@ public class MobsListGUI implements CustomInventory{
 			int id = entry.getKey();
 			Entry<Mob<?>, Integer> mobEntry = entry.getValue();
 			mobs.put(id, mobEntry);
-			inv.setItem(id, mobEntry.getKey().createItemStack(mobEntry.getValue()));
+			inv.setItem(id, createItemStack(mobEntry.getKey(), mobEntry.getValue()));
 		}
 	}
 	
+	@Override
 	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
 		if (slot == 8){
 			Inventories.closeAndExit(p);
@@ -65,44 +66,60 @@ public class MobsListGUI implements CustomInventory{
 		}
 		Entry<Mob<?>, Integer> mobEntry = mobs.get(slot);
 		if (mobEntry == null) {
-			new PagedGUI<MobFactory<?>>(Lang.INVENTORY_MOBSELECT.toString(), DyeColor.LIME, MobFactory.factories) {
-				public ItemStack getItemStack(MobFactory<?> object) {
-					return object.getFactoryItem();
+			new MobSelectionGUI(mob -> {
+				if (mob != null) {
+					inv.setItem(slot, createItemStack(mob, 1));
+					mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, 1));
 				}
-				
-				@SuppressWarnings ("rawtypes")
-				public void click(MobFactory<?> existing, ItemStack item, ClickType clickType) {
-					existing.itemClick(p, (obj) -> {
-						Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
-						if (obj == null) return;
-						Mob<?> mob = new Mob(existing, obj);
-						MobsListGUI.this.inv.setItem(slot, mob.createItemStack(1));
-						mobs.put(slot, new AbstractMap.SimpleEntry<>(mob, 1));
-					});
-				}
-			}.create(p);
+				Inventories.put(p, openLastInv(p), MobsListGUI.this.inv);
+			}).create(p);
 		}else {
 			if (click == ClickType.SHIFT_LEFT) {
 				Lang.MOB_NAME.send(p);
 				new TextEditor<>(p, () -> openLastInv(p), name -> {
 					mobEntry.getKey().setCustomName((String) name);
-					inv.setItem(slot, mobEntry.getKey().createItemStack(mobEntry.getValue()));
+					inv.setItem(slot, createItemStack(mobEntry.getKey(), mobEntry.getValue()));
 					openLastInv(p);
 				}).passNullIntoEndConsumer().enter();
 			}else if (click == ClickType.LEFT) {
 				Lang.MOB_AMOUNT.send(p);
 				new TextEditor<>(p, () -> openLastInv(p), amount -> {
 					mobEntry.setValue(amount);
-					inv.setItem(slot, mobEntry.getKey().createItemStack(amount));
+					inv.setItem(slot, createItemStack(mobEntry.getKey(), amount));
 					openLastInv(p);
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
-			}else if (click.isRightClick()) {
+			} else if (click == ClickType.SHIFT_RIGHT) {
+				if (mobEntry.getKey().getFactory() instanceof LeveledMobFactory) {
+					new TextEditor<>(p, () -> openLastInv(p), level -> {
+						mobEntry.getKey().setMinLevel(level);
+						inv.setItem(slot, createItemStack(mobEntry.getKey(), mobEntry.getValue()));
+						openLastInv(p);
+					}, new NumberParser<>(Double.class, true, false)).enter();
+				} else {
+					Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+				}
+			} else if (click == ClickType.RIGHT) {
 				mobs.remove(slot);
 				inv.setItem(slot, none.clone());
-				return true;
 			}
 		}
 		return true;
+	}
+	
+	private ItemStack createItemStack(Mob mob, int amount) {
+		List<String> lore = new ArrayList<>();
+		lore.add(Lang.Amount.format(amount));
+		lore.addAll(mob.getFactory().getDescriptiveLore(mob.getData()));
+		lore.add("");
+		lore.add(Lang.click.toString());
+		if (mob.getFactory() instanceof LeveledMobFactory) {
+			lore.add("§7" + Lang.ClickShiftRight + " > §e" + Lang.setLevel);
+		} else {
+			lore.add("§8§n" + Lang.ClickShiftRight + " > " + Lang.setLevel);
+		}
+		ItemStack item = ItemUtils.item(mob.getMobItem(), mob.getName(), lore);
+		item.setAmount(Math.min(amount, 64));
+		return item;
 	}
 
 	@Override

@@ -74,6 +74,7 @@ msg:
     negative: '§c你必须输入正数!'
     zero: '§c你必须输入大于0的数!'
     invalid: '§c"{0}" 不是有效的数字.'
+    notInBounds: '§c你的数字必须介于{0}和{1}之间。'
   errorOccurred: '§c插件发生错误，请联系管理员！错误代码为: {0}'
   commandsDisabled: '§c你不能在这时输入指令.'
   indexOutOfBounds: '§c数字 ({0}) 超过了区间 [{1}, {2}].'
@@ -93,7 +94,7 @@ msg:
     downloadTranslations:
       syntax: '§c你必须指定要下载的语言。例如："/quests downloadTranslations en_US"。'
       notFound: '§c找不到{1}版本的{0}语言。'
-      exists: '§c文件{0}已存在。质量加上"true"覆盖文件。(/quests downloads translations <lang> true)'
+      exists: '§c文件 {0} 已存在。在你的指令后加上 "-overwrite" 覆盖文件。 (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§a已下载语言{0}！§7你现在必须打开文件"/plugins/BeautyQuests/config.yml"，更改§ominecraftTranslationsFile§7的值为{0}，然后重启服务器。'
     checkpoint:
       noCheckpoint: '§c未找到任务{0}的记录点。'
@@ -128,7 +129,7 @@ msg:
       remover: '§6{1} 的 {0} 条任务信息已被删除.'
     resetQuest: '§6已移除{0}的任务数据。'
     startQuest: '§6你接受了任务 {0} (UUID： {1}).'
-    startQuestNoRequirements: '§c玩家不符合任务{0}需求... 在指令末尾加上“true”绕过任务需求检测。'
+    startQuestNoRequirements: '§c玩家不满足任务{0}的需求……在指令结尾加上 "-overrideRequirements"  无视需求检测。'
     cancelQuest: '§6你放弃了任务 {0}.'
     cancelQuestUnavailable: '§c无法取消任务 {0} .'
     backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
@@ -177,6 +178,7 @@ msg:
     blockData: '§a请输入方块数据 (可用的方块数据: {0})：'
     blockTag: '§a请输入方块标签 (可用标签：§7{0}§a)：'
     typeBucketAmount: '§a请输入要装满桶的数量:'
+    typeDamageAmount: '输入玩家需要造成的伤害：'
     goToLocation: '§a前往该任务阶段指定地点。'
     typeLocationRadius: '§a请输入距离指定位置所需的距离：'
     typeGameTicks: '§a请输入所需的刻数：'
@@ -264,7 +266,7 @@ msg:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
       disabled: '§cMythicMob已关闭.'
-    epicBossDoesntExist: '§c这个EpicBoss 不存在.'
+    advancedSpawnersMob: '输入所需击杀的自定义刷怪笼怪物名称：'
     textList:
       syntax: '§c正确用法: '
       added: '§a已添加文本 "§7{0}§a"。'
@@ -275,6 +277,7 @@ msg:
         remove: '§6remove [id]: §e删除一条文本.'
         list: '§6list: §e查看所有已添加的文本.'
         close: '6close: §e确认添加文本并退出编辑器.'
+    availableElements: '可用元素：§e{0}'
     noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
     invalidPattern: '§c无效的正则表达式§4{0}§c。'
     comparisonTypeDefault: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§l{1}§r§a。输入§onull§r§a使用。'
@@ -290,6 +293,9 @@ msg:
       fadeIn: '输入淡入持续时间，单位为刻（20刻=1秒）。'
       stay: '输入停留持续时间，单位为刻（20刻=1秒）。'
       fadeOut: '输入淡出持续时间，单位为刻（20刻=1秒）。'
+    colorNamed: '输入颜色名称。'
+    color: '可以输入十六位格式(#XXXXX)或RGB格式(RED GRE BLU)的颜色。'
+    invalidColor: '你输入的颜色无效，必须是十六位或RGB颜色。'
     firework:
       invalid: '这件物品不是有效的烟花。'
       invalidHand: '你必须在主手手持烟花。'
@@ -332,6 +338,9 @@ inv:
     playTime: '§e游戏时间'
     breedAnimals: '§a饲养动物'
     tameAnimals: '§a驯服动物'
+    death: '§c死亡'
+    dealDamage: '§c对怪物造成伤害'
+    eatDrink: '§a食用食物或饮用药水'
     NPCText: '§e编辑NPC的文本对话'
     dialogLines: '{0}行'
     NPCSelect: '§e选择或创建NPC'
@@ -370,6 +379,15 @@ inv:
       location:
         worldPattern: '§a设置世界名称模式 §d(高级选项)'
         worldPatternLore: '如果你想要匹配特定模式的任意世界都能完成任务阶段，请在此输入正则表达式。'
+      death:
+        causes: '§a设置死因 §d(高级)'
+        anyCause: 任何死因
+        setCauses: '{0} 死因'
+      dealDamage:
+        damage: '§e要造成的伤害'
+        targetMobs: '§c要造成伤害的怪物对象'
+      eatDrink:
+        items: '§e编辑要食用或饮用的物品'
   stages:
     name: '§8创建任务阶段'
     nextPage: '§e下一页'
@@ -401,8 +419,6 @@ inv:
     startableFromGUILore: 允许玩家在任务菜单中开始任务。
     scoreboardItem: 启用计分版
     scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
-    hideItem: 隐藏任务 (菜单和卫星地图)
-    hideItemLore: 如果启用，任务将不会在dynmap或任务菜单中显示。
     hideNoRequirementsItem: 未满足需求时隐藏
     hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
     bypassLimit: 忽略任务上限
@@ -459,6 +475,8 @@ inv:
     firework: '§d任务结束烟花'
     fireworkLore: 玩家完成任务时发射的烟花
     fireworkLoreDrop: 把你的自定义烟花放在这里
+    visibility: '§b任务可见度'
+    visibilityLore: 选择在菜单栏何处显示任务，如果安装了卫星地图插件，则在地图上显示任务。
     keepDatas: 保留玩家数据
     keepDatasLore: |-
       强制插件保存玩家数据，即使是已编辑阶段也会保存。
@@ -649,6 +667,26 @@ inv:
     fadeIn: '§a淡入持续时间'
     stay: '§b停留持续时间'
     fadeOut: '§a淡出持续时间'
+  particleEffect:
+    name: 创建粒子特效
+    shape: '§d粒子形状'
+    type: '§e粒子类型'
+    color: '§b粒子颜色'
+  particleList:
+    name: 粒子列表
+    colored: 彩色粒子
+  damageCause:
+    name: 造成伤害
+  damageCausesList:
+    name: 造成伤害列表
+  visibility:
+    name: 任务可见度
+    notStarted: '“未开始”菜单栏'
+    inProgress: '“进行中”菜单栏'
+    finished: '“已完成”菜单栏'
+    maps: '地图（比如Dynmap或BlueMap）'
+  equipmentSlots:
+    name: 装备栏位
 scoreboard:
   name: '§6§l任务'
   noLaunched: '§c你没有进行中的任务.'
@@ -675,6 +713,11 @@ scoreboard:
     playTimeFormatted: '§e游玩 §6{0}'
     breed: '§e饲养§6{0}'
     tame: '§e驯服§6{0}'
+    die: '§c死亡'
+    dealDamage:
+      any: '§c造成{0}点伤害'
+      mobs: '§c对{1}造成{0}点伤害'
+    eatDrink: '§e消耗§6{0}'
 indication:
   startQuest: '§7您是否想要接受任务 {0}?'
   closeInventory: '§7你确定要关闭该页面吗？'
@@ -722,6 +765,9 @@ misc:
     playTime: 游戏时间
     breedAnimals: 饲养动物
     tameAnimals: 驯服动物
+    die: 死亡
+    dealDamage: 造成伤害
+    eatDrink: 食用或饮用
   comparison:
     equals: 等于{0}
     different: 不同于{0}
@@ -744,6 +790,7 @@ misc:
     quest: '§a所需前置任务'
     mcMMOSkillLevel: '§d所需技能等级'
     money: '§d所需金额'
+    equipment: '§e所需装备'
   bucket:
     water: 水桶
     lava: 岩浆桶
@@ -755,6 +802,12 @@ misc:
     shift-right: Shift+右击
     shift-left: Shift+左击
     middle: 中键点击
+  amounts:
+    items: '{0}件物品'
+    comparisons: '{0}个对比'
+    dialogLines: '{0}行'
+    permissions: '{0}个权限'
+    mobs: '{0}个怪物'
   ticks: '{0}刻'
   questItemLore: '§e§o任务物品'
   hologramText: '§8§l任务NPC'

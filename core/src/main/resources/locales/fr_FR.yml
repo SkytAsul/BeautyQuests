@@ -13,6 +13,7 @@ msg:
     invalidID: '§cLa quête avec l''id {0} n''existe pas.'
     invalidPoolID: '§cLe groupe {0} n''existe pas.'
     alreadyStarted: '§cVous avez déjà commencé cette quête !'
+    notStarted: '§cVous ne faites pas cette quête en ce moment.'
   quests:
     maxLaunched: '§cVous ne pouvez pas avoir plus de {0} quête(s) simultanément...'
     nopStep: '§cCette quête ne comporte aucune étape.'
@@ -74,6 +75,7 @@ msg:
     negative: '§cTu dois entrer un nombre positif !'
     zero: '§cTu dois entrer un nombre autre que 0 !'
     invalid: '§c{0} n''est pas un nombre valide.'
+    notInBounds: '§cLa valeur doit être comprise entre {0} et {1}.'
   errorOccurred: '§cUne erreur est survenue, prévenez un administrateur ! §4§lCode d''erreur : {0}'
   commandsDisabled: '§cVous n''êtes actuellement pas autorisé à exécuter des commandes !'
   indexOutOfBounds: '§cLe numéro {0} est hors des limites ! Il doit se trouver entre {1} et {2}.'
@@ -93,7 +95,7 @@ msg:
     downloadTranslations:
       syntax: '§cVous devez spécifier une langue à télécharger. Exemple: "/quests downloadTranslations fr_FR".'
       notFound: '§cLangue {0} introuvable pour la version {1}.'
-      exists: '§cLe fichier {0} existe déjà. Ajoutez "true" à votre commande pour l''écraser. (/quests downloadTranslations <lang> true)'
+      exists: '§cLe fichier {0} existe déjà. Ajoutez "-overwrite" à votre commande pour l''écraser. (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§aLa langue {0} a été téléchargée ! §7Vous devez maintenant modifier le fichier "/plugins/BeautyQuests/config.yml" pour changer la valeur de §ominecraftTranslationsFile§7 avec {0}, puis redémarrer le serveur.'
     checkpoint:
       noCheckpoint: '§cAucun checkpoint trouvé pour la quête {0}.'
@@ -128,7 +130,7 @@ msg:
       remover: '§6Les données de la quête {1} du joueur {0} ont bien été supprimées.'
     resetQuest: '§6Les données de la quête ont été supprimées pour {0} joueurs.'
     startQuest: '§6Vous avez forcé le début de la quête {0} (UUID du joueur : {1}).'
-    startQuestNoRequirements: '§cLe joueur ne remplit pas les conditions pour la quête {0}... Ajoutez "true" à la fin de votre commande pour ne pas effectuer la vérification des conditions.'
+    startQuestNoRequirements: '§cLe joueur ne remplit pas les conditions pour la quête {0}... Ajoutez "-overrideRequirements" à la fin de votre commande pour ne pas effectuer la vérification des conditions.'
     cancelQuest: '§6Vous avez annulé la quête {0}.'
     cancelQuestUnavailable: '§cLa quête {0} ne peut être annulée.'
     backupCreated: '§6Vous avez créé une sauvegarde des quêtes et des données joueurs avec succès.'
@@ -177,6 +179,7 @@ msg:
     blockData: '§aÉcrivez la blockdata (blockdatas disponibles : {0}) :'
     blockTag: '§aÉcrivez le tag de bloc (tagsdisponibles: §7{0}§a):'
     typeBucketAmount: '§aÉcrivez la quantité de seaux à remplir :'
+    typeDamageAmount: 'Écrivez le nombre de dégâts que le joueur doit infliger :'
     goToLocation: '§aAllez à l''emplacement souhaité pour l''étape.'
     typeLocationRadius: '§aÉcrivez la distance requise à partir de cet endroit :'
     typeGameTicks: '§aEcrivez la quantité de ticks requis :'
@@ -264,7 +267,7 @@ msg:
       list: '§aListe de tous les MythicMobs :'
       isntMythicMob: '§cCe Mythic Mob n''existe pas.'
       disabled: '§cMythicMob est désactivé.'
-    epicBossDoesntExist: '§cCet EpicBoss n''existe pas.'
+    advancedSpawnersMob: 'Écrivez le nom du mob de AdvancedSpawners à tuer :'
     textList:
       syntax: '§cSyntaxe correcte : '
       added: '§aTexte "§7{0}§a" ajouté.'
@@ -275,6 +278,7 @@ msg:
         remove: '§6remove <id> : §eSupprimer un texte.'
         list: '§6list: §eVoir tout les textes.'
         close: '§6close: §eValider les textes.'
+    availableElements: 'Éléments disponibles : §e{0}'
     noSuchElement: '§cIl n''y a pas d’élément correspondant. Les éléments permis sont : §e{0}'
     invalidPattern: '§cRegex invalide: §4{0}§c.'
     comparisonTypeDefault: '§aChoissez le type de comparaison que vous voulez parmi {0}. La comparaison par défaut est: §e§l{1}§r§a. Tapez §onull§r§a pour l''utiliser.'
@@ -290,6 +294,9 @@ msg:
       fadeIn: 'Écrivez la durée du fondu d''entrée, en ticks (20 ticks = 1 seconde).'
       stay: 'Écrivez la durée où le titre reste affiché, en ticks (20 ticks = 1 seconde).'
       fadeOut: 'Écrivez la durée du fondu de sortie, en ticks (20 ticks = 1 seconde).'
+    colorNamed: 'Saisissez le nom de la couleur :'
+    color: 'Entrez une couleur au format hexadécimal (#XXXXX) ou RVB (ROUGE VERT BLEU).'
+    invalidColor: 'La couleur que vous avez saisie n''est pas valide. Elle doit être hexadécimale ou RVB.'
     firework:
       invalid: 'Cet objet n''est pas un feu d''artifice valide.'
       invalidHand: 'Vous devez tenir un feu d''artifice dans votre main principale.'
@@ -332,6 +339,9 @@ inv:
     playTime: '§eTemps de jeu'
     breedAnimals: '§aFaire reproduire des animaux'
     tameAnimals: '§aApprivoiser des animaux'
+    death: '§cMourir'
+    dealDamage: '§cInfliger des dégâts à des mobs'
+    eatDrink: '§aManger ou boire de la nourriture ou des potions'
     NPCText: '§eModifier le dialogue'
     dialogLines: '{0} lignes'
     NPCSelect: '§eChoisir ou créer un NPC'
@@ -370,6 +380,15 @@ inv:
       location:
         worldPattern: '§aModifier le motif de nom de monde §d(AVANCÉ)'
         worldPatternLore: 'Si vous voulez que l''étape soit terminée pour un monde correspondant à un motif spécifique, entrez ici une regex (expression régulière).'
+      death:
+        causes: '§aDéfinir les causes de la mort §d(AVANCED)'
+        anyCause: Toute cause de mort
+        setCauses: '{0} cause(s) de mort'
+      dealDamage:
+        damage: '§eDégâts à infliger'
+        targetMobs: '§cMobs à heurter'
+      eatDrink:
+        items: '§eModifier les objets à manger ou à boire'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'
@@ -401,8 +420,6 @@ inv:
     startableFromGUILore: Permet au joueur de commencer la quête depuis son menu de Quêtes.
     scoreboardItem: Activer le scoreboard
     scoreboardItemLore: Si désactivée, la quête ne sera pas affichée dans le scoreboard.
-    hideItem: Cacher la quête du menu et de la dynmap
-    hideItemLore: Si activé, la quête ne sera pas affichée sur la dynmap ni dans le menu de Quêtes.
     hideNoRequirementsItem: Masquer lorsque les conditions ne sont pas remplies
     hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
@@ -459,6 +476,8 @@ inv:
     firework: '§dFeu d''artifice de fin'
     fireworkLore: Feu d'artifice lancé lorsque le joueur termine la quête
     fireworkLoreDrop: Déposez votre feu d'artifice personnalisé ici
+    visibility: '§bVisibilité de la quête'
+    visibilityLore: Choisir dans quels onglets du menu seront affichés la quête et si la quête est visible sur les cartes dynamiques.
     keepDatas: Conserver les données des joueurs
     keepDatasLore: |-
       Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées.
@@ -500,6 +519,7 @@ inv:
       §a§lClic gauche§a pour modifier la quantité.
       §a§l§nShift§a§l + clic gauche§a pour modifier le nom du mob.
       §c§lclic-droit§c pour supprimer.
+    setLevel: Modifier le niveau minimum
   mobSelect:
     name: Choisir le type de monstre
     bukkitEntityType: '§eSélectionner un type de mob'
@@ -650,6 +670,26 @@ inv:
     fadeIn: '§aDurée du fondu d''entrée'
     stay: '§bDurée statique'
     fadeOut: '§aDurée du fondu de sortie'
+  particleEffect:
+    name: Créer un effet de particules
+    shape: '§dForme de l''effet'
+    type: '§eType de particules'
+    color: '§bCouleur des particules'
+  particleList:
+    name: Liste des particules
+    colored: Particule colorée
+  damageCause:
+    name: Cause de dégât
+  damageCausesList:
+    name: Liste des causes de dégât
+  visibility:
+    name: Visibilité de la quête
+    notStarted: 'Onglet du menu "Non commencées"'
+    inProgress: 'Onglet du menu "En cours"'
+    finished: 'Onglet du menu "Terminées"'
+    maps: 'Cartes (dynmap, BlueMap...)'
+  equipmentSlots:
+    name: Emplacements d'équipement
 scoreboard:
   name: '§6§lQuêtes'
   noLaunched: '§cAucune quête en cours.'
@@ -676,6 +716,11 @@ scoreboard:
     playTimeFormatted: '§eJoue §6{0}'
     breed: '§eFaites se reproduire §6{0}'
     tame: '§eApprivoisez §6{0}'
+    die: '§cMourez'
+    dealDamage:
+      any: '§cInflige {0} dégâts'
+      mobs: '§cInflige {0} dégâts à {1}'
+    eatDrink: '§eConsomme §6{0}'
 indication:
   startQuest: '§7Voulez-vous commencer la quête {0} ?'
   closeInventory: '§7Êtes-vous sûr de vouloir fermer l''interface graphique ?'
@@ -723,6 +768,9 @@ misc:
     playTime: Temps de jeu
     breedAnimals: Faire reproduire des animaux
     tameAnimals: Apprivoiser des animaux
+    die: Mourir
+    dealDamage: Infliger des dégâts
+    eatDrink: Manger ou boire
   comparison:
     equals: égal à {0}
     different: différent de {0}
@@ -745,6 +793,7 @@ misc:
     quest: '§aQuête requise'
     mcMMOSkillLevel: '§dNiveau de compétence requis'
     money: '§dMonnaie requise'
+    equipment: '§eÉquipement requis'
   bucket:
     water: Seau d'eau
     lava: Seau de lave
@@ -756,6 +805,12 @@ misc:
     shift-right: Maj + clic-droit
     shift-left: Maj + clic-gauche
     middle: Clic central
+  amounts:
+    items: '{0} item(s)'
+    comparisons: '{0} comparaison(s)'
+    dialogLines: '{0} ligne(s)'
+    permissions: '{0} permission(s)'
+    mobs: '{0} mob(s)'
   ticks: '{0} ticks'
   questItemLore: '§e§oItem de Quête'
   hologramText: '§8§lNPC de Quête'

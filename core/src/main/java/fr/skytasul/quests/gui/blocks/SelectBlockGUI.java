@@ -73,7 +73,7 @@ public class SelectBlockGUI implements CustomInventory{
 
 	private void updateTypeItem() {
 		inv.setItem(TYPE_SLOT, item(type, Lang.materialName.format(type.name())));
-		if (inv.getItem(TYPE_SLOT) == null || inv.getItem(3).getType() == Material.AIR) { // means that the material cannot be treated as an inventory item (ex: fire)
+		if (inv.getItem(TYPE_SLOT) == null || inv.getItem(TYPE_SLOT).getType() == Material.AIR) { // means that the material cannot be treated as an inventory item (ex: fire)
 			inv.setItem(TYPE_SLOT, item(XMaterial.STONE, Lang.materialName.format(type.name()), QuestOption.formatDescription(Lang.materialNotItemLore.format(type.name()))));
 		}
 		if (tag == null) ItemUtils.addEnchant(inv.getItem(TYPE_SLOT), Enchantment.DURABILITY, 1);
@@ -126,7 +126,7 @@ public class SelectBlockGUI implements CustomInventory{
 				resetTag();
 				updateTypeItem();
 				openLastInv(p);
-			}, new MaterialParser(false, true)).enter();
+			}, MaterialParser.BLOCK_PARSER).enter();
 			break;
 		
 		case DATA_SLOT:

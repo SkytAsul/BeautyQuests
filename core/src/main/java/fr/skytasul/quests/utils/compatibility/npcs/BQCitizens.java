@@ -50,12 +50,14 @@ public class BQCitizens extends BQNPCsManager {
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCRightClick(NPCRightClickEvent e) {
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), ClickType.RIGHT);
+		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
+		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? ClickType.SHIFT_RIGHT : ClickType.RIGHT);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCLeftClick(NPCLeftClickEvent e) {
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), ClickType.LEFT);
+		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
+		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? ClickType.SHIFT_LEFT : ClickType.LEFT);
 	}
 	
 	@EventHandler

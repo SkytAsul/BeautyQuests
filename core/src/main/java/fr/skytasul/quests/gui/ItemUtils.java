@@ -30,7 +30,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemUtils {
 	
 	private static final int LORE_LINE_LENGTH = 40;
-	private static final int LORE_LINE_LENGTH_CRITICAL = 100;
+	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
 	
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
@@ -70,7 +70,7 @@ public class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack skull(String name, String skull, String... lore) {
-		ItemStack is = XMaterial.playerSkullItem();
+		ItemStack is = XMaterial.PLAYER_HEAD.parseItem();
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		if (skull != null) im.setOwner(skull);
 		is.setItemMeta(applyMeta(im, name, lore));

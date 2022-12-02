@@ -49,7 +49,7 @@ public class QuestCreationSession {
 	}
 	
 	public boolean areStagesEdited() {
-		return stagesEdited;
+		return isEdition() && stagesEdited;
 	}
 	
 	public StagesGUI getMainGUI() {

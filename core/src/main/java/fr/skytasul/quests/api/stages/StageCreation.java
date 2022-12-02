@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.stages;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -10,6 +11,8 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.serializable.SerializableCreator;
+import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -21,9 +24,12 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	protected final Line line;
 	private final boolean ending;
+	private StageType<T> type;
 	
 	private List<AbstractReward> rewards;
 	private List<AbstractRequirement> requirements;
+	
+	private List<StageOption<T>> options;
 	
 	private String customDescription, startMessage;
 	
@@ -60,6 +66,10 @@ public abstract class StageCreation<T extends AbstractStage> {
 				reopenGUI(p, true);
 			}, requirements).create(p);
 		});
+	}
+	
+	public StageType<T> getType() {
+		return type;
 	}
 	
 	public Line getLine() {
@@ -129,6 +139,10 @@ public abstract class StageCreation<T extends AbstractStage> {
 		this.leadingBranch = leadingBranch;
 	}
 	
+	public final void setup(StageType<T> type) {
+		this.type = type;
+	}
+	
 	/**
 	 * Called when stage item clicked
 	 * @param p player who click on the item
@@ -138,6 +152,9 @@ public abstract class StageCreation<T extends AbstractStage> {
 		setRequirements(new ArrayList<>());
 		setCustomDescription(null);
 		setStartMessage(null);
+		
+		options = type.getOptionsRegistry().getCreators().stream().map(SerializableCreator::newObject).collect(Collectors.toList());
+		options.forEach(option -> option.startEdition(this));
 	}
 
 	/**
@@ -149,6 +166,9 @@ public abstract class StageCreation<T extends AbstractStage> {
 		setRequirements(stage.getValidationRequirements());
 		setStartMessage(stage.getStartMessage());
 		setCustomDescription(stage.getCustomText());
+		
+		options = stage.getOptions().stream().map(StageOption::clone).map(x -> (StageOption<T>) x).collect(Collectors.toList());
+		options.forEach(option -> option.startEdition(this));
 	}
 
 	public final T finish(QuestBranch branch) {
@@ -157,6 +177,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		stage.setValidationRequirements(requirements);
 		stage.setCustomText(customDescription);
 		stage.setStartMessage(startMessage);
+		stage.setOptions((List) options);
 		return stage;
 	}
 	

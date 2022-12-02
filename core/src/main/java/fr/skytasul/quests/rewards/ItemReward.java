@@ -3,8 +3,8 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -52,19 +52,18 @@ public class ItemReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new ItemsGUI(items -> {
 			this.items = items;
-			event.updateItemLore(getLore());
-			event.getGUI().reopen();
+			event.reopenGUI();
 		}, items).create(event.getPlayer());
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas){
-		datas.put("items", Utils.serializeList(items, ItemStack::serialize));
+	public void save(ConfigurationSection section) {
+		section.set("items", Utils.serializeList(items, ItemStack::serialize));
 	}
 
 	@Override
-	protected void load(Map<String, Object> savedDatas){
-		items.addAll(Utils.deserializeList((List<Map<String, Object>>) savedDatas.get("items"), ItemStack::deserialize));
+	public void load(ConfigurationSection section){
+		items.addAll(Utils.deserializeList(section.getMapList("items"), ItemStack::deserialize));
 	}
 
 }

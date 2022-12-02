@@ -8,61 +8,38 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.mariadb.jdbc.MariaDbPoolDataSource;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import fr.skytasul.quests.BeautyQuests;
 
-public class Database {
+public class Database implements Closeable {
 
-	private ConfigurationSection config;
-	private String databaseName;
+	private final ConfigurationSection config;
+	private final String databaseName;
+	
+	private final DataSource source;
 
-	private DataSource source;
-
-	public Database(ConfigurationSection config) throws SQLException {
+	public Database(ConfigurationSection config) {
 		this.config = config;
 		this.databaseName = config.getString("database");
 
-		try {
-			Class.forName("org.mariadb.jdbc.MariaDbPoolDataSource");
-			MariaDbPoolDataSource msource = new MariaDbPoolDataSource();
-			msource.setServerName(config.getString("host"));
-			msource.setPortNumber(config.getInt("port"));
-			msource.setDatabaseName(databaseName);
-			msource.setUser(config.getString("username"));
-			msource.setPassword(config.getString("password"));
-			
-			msource.setPoolName("beautyquests");
-			msource.setMaxIdleTime(60);
-			msource.setLoginTimeout(20);
-			
-			source = msource;
-		}catch (ClassNotFoundException e) {
-			MysqlDataSource msource = new MysqlDataSource();
-			msource.setServerName(config.getString("host"));
-			msource.setPortNumber(config.getInt("port"));
-			msource.setDatabaseName(databaseName);
-			msource.setUser(config.getString("username"));
-			msource.setPassword(config.getString("password"));
-			
-			msource.setConnectTimeout(20);
-			boolean ssl = config.getBoolean("ssl");
-			msource.setVerifyServerCertificate(ssl);
-			msource.setUseSSL(ssl);
-			
-			source = msource;
-		}
-		DebugUtils.logMessage("Created SQL data source: " + source.getClass().getName());
-		// Yes, I know there is literally the same code twice.
-		// Unfortunately, there is no common interface
-		// between MariaDB and MySQL pool data source
-		// which provides the configuration methods.
+		HikariConfig hikariConfig = new HikariConfig("/hikari.properties");
+		hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getString("host") + ":" + config.getInt("port") + "/" + databaseName);
+		hikariConfig.setUsername(config.getString("username"));
+		hikariConfig.setPassword(config.getString("password"));
+		hikariConfig.setPoolName("BeautyQuests-SQL-pool");
+		hikariConfig.setConnectionTimeout(20_000);
+		
+		boolean ssl = config.getBoolean("ssl");
+		hikariConfig.addDataSourceProperty("verifyServerCertificate", ssl);
+		hikariConfig.addDataSourceProperty("useSSL", ssl);
+		
+		source = new HikariDataSource(hikariConfig);
 	}
 	
 	public void testConnection() throws SQLException {
-		DebugUtils.logMessage("Trying to connect to " + config.getString("host"));
 		try (Connection connection = source.getConnection()) {
 			if (!connection.isValid(0))
 				throw new SQLException("Could not establish database connection.");
@@ -77,13 +54,13 @@ public class Database {
 		return config;
 	}
 
-	public void closeConnection() {
-		if (source instanceof Closeable) {
-			try {
-				((Closeable) source).close();
-			}catch (IOException e) {
-				e.printStackTrace();
-			}
+	@Override
+	public void close() {
+		BeautyQuests.logger.info("Closing database pool...");
+		try {
+			((Closeable) source).close();
+		}catch (IOException ex) {
+			BeautyQuests.logger.severe("An error occurred while closing database pool.", ex);
 		}
 	}
 

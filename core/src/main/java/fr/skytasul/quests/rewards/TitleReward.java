@@ -1,8 +1,8 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -30,9 +30,11 @@ public class TitleReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		new TitleGUI(newTitle -> {
 			if (newTitle == null) {
-				if (title == null) event.getGUI().remove(this);
-			}else title = newTitle;
-			event.updateItemLore(getLore());
+				event.cancel();
+				return;
+			}
+			
+			title = newTitle;
 			event.reopenGUI();
 		}).edit(title).create(event.getPlayer());
 	}
@@ -49,13 +51,13 @@ public class TitleReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void save(Map<String, Object> datas) {
-		if (title != null) datas.put("title", title.serialize());
+	public void save(ConfigurationSection section) {
+		if (title != null) title.serialize(section.createSection("title"));
 	}
 	
 	@Override
-	protected void load(Map<String, Object> savedDatas) {
-		title = savedDatas.containsKey("title") ? Title.deserialize((Map<String, Object>) savedDatas.get("title")) : null;
+	public void load(ConfigurationSection section) {
+		title = section.contains("title") ? Title.deserialize(section.getConfigurationSection("title")) : null;
 	}
 	
 }

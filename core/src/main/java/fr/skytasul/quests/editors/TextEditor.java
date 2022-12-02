@@ -89,4 +89,10 @@ public class TextEditor<T> extends Editor {
 		return false;
 	}
 	
+	@Override
+	protected void begin() {
+		super.begin();
+		if (parser != null) parser.sendIndication(p);
+	}
+	
 }
