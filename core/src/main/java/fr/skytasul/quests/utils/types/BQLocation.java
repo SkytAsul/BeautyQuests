@@ -1,5 +1,6 @@
 package fr.skytasul.quests.utils.types;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -131,10 +132,23 @@ public class BQLocation extends Location implements Locatable.Located {
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = super.serialize();
+		Map<String, Object> map = new HashMap<>();
 		
-		if (!map.containsKey("world"))
+		if (getWorld() == null) {
 			map.put("pattern", worldPattern.pattern());
+		} else {
+			map.put("world", getWorld().getName());
+		}
+
+		// we cannot use Location#serialize() to add the following values
+		// because on 1.8 it will throw an NPE if the world is null
+
+		map.put("x", getX());
+		map.put("y", getY());
+		map.put("z", getZ());
+
+		map.put("yaw", getYaw());
+		map.put("pitch", getPitch());
 		
 		return map;
 	}
