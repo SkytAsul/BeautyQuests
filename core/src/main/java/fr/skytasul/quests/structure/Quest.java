@@ -249,7 +249,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	public boolean testQuestLimit(Player p, PlayerAccount acc, boolean sendMessage) {
-		if (Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
+		if (Boolean.TRUE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
 			return true;
 		int playerMaxLaunchedQuest;
 		OptionalInt playerMaxLaunchedQuestOpt = p.getEffectivePermissions().stream()
