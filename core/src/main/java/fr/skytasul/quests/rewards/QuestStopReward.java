@@ -1,13 +1,11 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.utils.DebugUtils;
 
 public class QuestStopReward extends AbstractReward {
 	
@@ -18,14 +16,17 @@ public class QuestStopReward extends AbstractReward {
 	
 	@Override
 	public List<String> give(Player p) {
-		Quest quest = getAttachedQuest();
-		if (quest != null) quest.cancelPlayer(PlayersManager.getPlayerAccount(p));
+		if (getAttachedQuest() == null) {
+			DebugUtils.logMessage("No attached quest for " + debugName());
+		} else {
+			getAttachedQuest().cancelPlayer(PlayersManager.getPlayerAccount(p));
+		}
 		return null;
 	}
 	
 	@Override
 	public AbstractReward clone() {
-		return this;
+		return new QuestStopReward();
 	}
 	
 }

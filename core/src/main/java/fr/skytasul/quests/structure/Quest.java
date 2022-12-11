@@ -203,6 +203,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		if (datas == null || !datas.hasStarted())
 			return false;
 
+		DebugUtils.logMessage("Cancelling quest " + id + " for player " + acc.getNameAndID());
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));

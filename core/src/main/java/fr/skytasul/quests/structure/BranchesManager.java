@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -21,7 +19,7 @@ public class BranchesManager{
 
 	private Map<Integer, QuestBranch> branches = new LinkedHashMap<>();
 	
-	private Quest quest;
+	private final Quest quest;
 	
 	public BranchesManager(Quest quest){
 		this.quest = quest;

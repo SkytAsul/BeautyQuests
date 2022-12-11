@@ -8,12 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
@@ -34,7 +32,7 @@ public class QuestBranch {
 	
 	private List<PlayerAccount> asyncReward = new ArrayList<>(5);
 
-	private BranchesManager manager;
+	private final BranchesManager manager;
 	
 	public QuestBranch(BranchesManager manager){
 		this.manager = manager;
