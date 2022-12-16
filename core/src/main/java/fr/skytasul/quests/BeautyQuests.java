@@ -249,6 +249,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void registerCommands(){
 		command = new CommandsManager();
 		command.initializeCommands();
+		command.lockCommands(); // we are obligated to register Brigadier during plugin initialization...
 	}
 	
 	private void launchSaveCycle(){
@@ -425,7 +426,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
 		dependencies.lockDependencies();
-		command.lockCommands();
+		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
 		
 		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
