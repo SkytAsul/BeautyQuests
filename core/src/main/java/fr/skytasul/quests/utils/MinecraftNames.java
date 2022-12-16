@@ -5,16 +5,14 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
-
 import com.google.gson.GsonBuilder;
-
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class MinecraftNames {
 	
@@ -84,7 +82,8 @@ public class MinecraftNames {
 	
 	public static String getMaterialName(ItemStack item) {
 		XMaterial type = XMaterial.matchXMaterial(item);
-		if (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION) {
+		if (NMS.getMCVersion() > 8
+				&& (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION)) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			try {
 				PotionData basePotion = meta.getBasePotionData();
