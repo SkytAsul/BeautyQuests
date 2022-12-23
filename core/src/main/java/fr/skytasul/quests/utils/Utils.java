@@ -45,6 +45,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -95,16 +96,27 @@ public class Utils{
 		});
 	}
 	
-	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) {
+	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) throws InterruptingBranchException {
+		InterruptingBranchException interrupting = null;
+
 		List<String> msg = new ArrayList<>();
 		for (AbstractReward rew : rewards) {
 			try {
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
+			} catch (InterruptingBranchException ex) {
+				if (interrupting != null) {
+					BeautyQuests.logger.warning("Interrupting the same branch via rewards twice!");
+				} else {
+					interrupting = ex;
+				}
 			} catch (Throwable e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName(), e);
 			}
 		}
+
+		if (interrupting != null)
+			throw interrupting;
 		return msg;
 	}
 	

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,13 +11,13 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -57,7 +56,7 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
-	public List<String> give(Player p) {
+	public List<String> give(Player p) throws InterruptingBranchException {
 		if (requirements.stream().allMatch(requirement -> requirement.test(p))) return Utils.giveRewards(p, rewards);
 		return null;
 	}

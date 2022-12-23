@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
@@ -31,6 +32,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
@@ -208,8 +210,13 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		
-		if (acc.isCurrent())
-			Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
+		if (acc.isCurrent()) {
+			try {
+				Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
+			} catch (InterruptingBranchException ex) {
+				BeautyQuests.logger.warning("Trying to interrupt branching in a cancel reward (useless). " + toString());
+			}
+		}
 		return true;
 	}
 	
@@ -362,7 +369,12 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 		
 		Runnable run = () -> {
-			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			List<String> msg = Collections.emptyList();
+			try {
+				msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			} catch (InterruptingBranchException ex) {
+				BeautyQuests.logger.warning("Trying to interrupt branching in a starting reward (useless). " + toString());
+			}
 			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 			if (asyncStart != null) asyncStart.remove(p);

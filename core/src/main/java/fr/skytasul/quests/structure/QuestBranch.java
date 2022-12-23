@@ -16,6 +16,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.requirements.Actionnable;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -169,10 +170,11 @@ public class QuestBranch {
 				if (end != stage) end.end(acc);
 			}
 		}
+		datas.setStage(-1);
 		endStage(acc, stage, () -> {
 			if (!manager.getQuest().hasStarted(acc)) return;
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
-				int newId = datas.getStage() + 1;
+				int newId = stage.getID() + 1;
 				if (newId == regularStages.size()){
 					if (endStages.isEmpty()){
 						remove(acc, false);
@@ -196,7 +198,7 @@ public class QuestBranch {
 		});
 	}
 	
-	public void endStage(PlayerAccount acc, AbstractStage stage, Runnable runAfter) {
+	private void endStage(PlayerAccount acc, AbstractStage stage, Runnable runAfter) {
 		if (acc.isCurrent()){
 			Player p = acc.getPlayer();
 			stage.end(acc);
@@ -208,19 +210,30 @@ public class QuestBranch {
 					try {
 						List<String> given = Utils.giveRewards(p, stage.getRewards());
 						if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
+					} catch (InterruptingBranchException ex) {
+						DebugUtils.logMessage(
+								"Interrupted branching in async stage end for " + p.getName() + " via " + ex.toString());
+						return;
 					}catch (Exception e) {
 						Lang.ERROR_OCCURED.send(p, "giving async rewards");
 						BeautyQuests.logger.severe("An error occurred while giving stage async end rewards.", e);
+					} finally {
+						// by using the try-catch, we ensure that "asyncReward#remove" is called
+						// otherwise, the player would be completely stuck
+						asyncReward.remove(acc);
 					}
-					// by using the try-catch, we ensure that "asyncReward#remove" is called
-					// otherwise, the player would be completely stuck
-					asyncReward.remove(acc);
 					Utils.runSync(runAfter);
 				}, "BQ async stage end " + p.getName()).start();
 			}else{
-				List<String> given = Utils.giveRewards(p, stage.getRewards());
-				if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage()) Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
-				runAfter.run();
+				try {
+					List<String> given = Utils.giveRewards(p, stage.getRewards());
+					if (!given.isEmpty() && QuestsConfiguration.hasStageEndRewardsMessage())
+						Lang.FINISHED_OBTAIN.send(p, Utils.itemsToFormattedString(given.toArray(new String[0])));
+					runAfter.run();
+				} catch (InterruptingBranchException ex) {
+					DebugUtils.logMessage(
+							"Interrupted branching in async stage end for " + p.getName() + " via " + ex.toString());
+				}
 			}
 		}else {
 			stage.end(acc);

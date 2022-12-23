@@ -5,6 +5,7 @@
 ![bStats Servers](https://img.shields.io/bstats/servers/7460)
 ![bStats Players](https://img.shields.io/bstats/players/7460)
 [![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
+[![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.dev)
 
 # BeautyQuests
 What is **BeautyQuests**?

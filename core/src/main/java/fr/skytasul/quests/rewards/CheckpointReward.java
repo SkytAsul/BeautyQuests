@@ -2,15 +2,15 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.utils.Lang;
@@ -47,7 +47,11 @@ public class CheckpointReward extends AbstractReward {
 	}
 	
 	public void applies(Player p) {
-		Utils.giveRewards(p, actions);
+		try {
+			Utils.giveRewards(p, actions);
+		} catch (InterruptingBranchException e) {
+			BeautyQuests.logger.warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
+		}
 	}
 	
 	@Override
