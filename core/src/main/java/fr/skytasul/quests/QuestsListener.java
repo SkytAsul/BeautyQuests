@@ -145,6 +145,7 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
+		DebugUtils.logMessage(player.getName() + " joined the server"); // for timing purpose
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			PlayersManager.loadPlayer(player);
 		}
@@ -152,8 +153,10 @@ public class QuestsListener implements Listener{
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
+		Player player = e.getPlayer();
+		DebugUtils.logMessage(player.getName() + " left the server"); // for timing purpose
 		if (!QuestsConfiguration.hookAccounts()) {
-			PlayersManager.unloadPlayer(e.getPlayer());
+			PlayersManager.unloadPlayer(player);
 		}
 	}
 

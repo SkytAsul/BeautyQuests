@@ -135,6 +135,12 @@ public abstract class PlayersManager {
 			while (i > 0) {
 				i--;
 				try {
+					if (!p.isOnline()) {
+						BeautyQuests.logger.warning("Player " + p.getName()
+								+ " has quit the server while loading its datas. This may be a bug.");
+						return;
+					}
+
 					AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
 					manager.load(request);
 
@@ -194,7 +200,10 @@ public abstract class PlayersManager {
 	
 	public static PlayerAccount getPlayerAccount(Player p) {
 		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
-		if (!p.isOnline()) BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
+		if (!p.isOnline()) {
+			BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
+			DebugUtils.logMessage("(via " + DebugUtils.stackTraces(2, 5) + ")");
+		}
 		
 		return cachedAccounts.get(p);
 	}

@@ -221,6 +221,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private synchronized void addAccount(PlayerAccount acc) {
+		Validate.notNull(acc);
 		loadedAccounts.put(acc.index, acc);
 		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
