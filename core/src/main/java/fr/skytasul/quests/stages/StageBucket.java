@@ -2,14 +2,12 @@ package fr.skytasul.quests.stages;
 
 import java.util.Map;
 import java.util.function.Supplier;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
@@ -25,6 +23,7 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class StageBucket extends AbstractStage {
 
@@ -97,6 +96,8 @@ public class StageBucket extends AbstractStage {
 		SNOW(Lang.BucketSnow, XMaterial.POWDER_SNOW_BUCKET)
 		;
 
+		private static BucketType[] AVAILABLE;
+
 		private Lang name;
 		private XMaterial type;
 
@@ -118,6 +119,15 @@ public class StageBucket extends AbstractStage {
 				if (bucket.type == type) return bucket;
 			}
 			throw new IllegalArgumentException(type.name() + " does not correspond to any bucket type");
+		}
+
+		public static BucketType[] getAvailable() {
+			if (AVAILABLE == null) {
+				AVAILABLE = NMS.getMCVersion() >= 17 ? values() : new BucketType[] {WATER, LAVA, MILK};
+				// inefficient? yes. But it's christmas and I don't want to work on this anymore, plus there will
+				// probably not be more bucket types in the future
+			}
+			return AVAILABLE;
 		}
 	}
 
