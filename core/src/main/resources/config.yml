@@ -56,6 +56,8 @@ progressBarTimeoutSeconds: 15
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
+# If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
+skip npc gui if only one quest: true
 # Default item shown for a quest in the menus
 item: BOOK
 # Page item material
