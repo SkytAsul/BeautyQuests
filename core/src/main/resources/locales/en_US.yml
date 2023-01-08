@@ -701,6 +701,8 @@ inv:
     enchantsLore: Compares items enchants
     repairCost: Repair cost
     repairCostLore: Compares repair cost for armors and swords
+    mmoItems: MMOItems item
+    mmoItemsLore: Compares MMOItems types and IDs
   editTitle:
     name: Edit Title
     title: §6Title

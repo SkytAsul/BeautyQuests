@@ -148,6 +148,10 @@
 			<id>bg-repo</id>
 			<url>https://repo.bg-software.com/repository/api/</url>
 		</repository>
+		<repository>
+			<id>phoenix</id>
+			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -309,6 +313,18 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>4.0.3</version> <!-- For Java 8 compatibility -->
+		</dependency>
+		<dependency>
+			<groupId>io.lumine</groupId>
+			<artifactId>MythicLib-dist</artifactId>
+			<version>1.5.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.Indyuce</groupId>
+			<artifactId>MMOItems-API</artifactId>
+			<version>6.9.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Local JARs -->
