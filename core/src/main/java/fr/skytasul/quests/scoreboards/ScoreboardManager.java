@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
@@ -39,6 +38,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	private int changeTime;
 	private boolean hide;
 	private boolean refreshLines;
+	private boolean hideUnknownQuestPlaceholders;
 	
 	private List<String> worldsFilter;
 	private boolean isWorldAllowList;
@@ -63,6 +63,10 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		return refreshLines;
 	}
 	
+	public boolean hideUnknownQuestPlaceholders() {
+		return hideUnknownQuestPlaceholders;
+	}
+
 	public List<String> getWorldsFilter() {
 		return worldsFilter;
 	}
@@ -109,10 +113,13 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		changeTime = config.getInt("quests.changeTime", 11);
-		hide = config.getBoolean("quests.hideIfEmpty", true);
-		refreshLines = config.getBoolean("quests.refreshLines", true);
 		
+		ConfigurationSection questsSection = config.getConfigurationSection("quests");
+		changeTime = questsSection.getInt("changeTime", 11);
+		hide = questsSection.getBoolean("hideIfEmpty", true);
+		refreshLines = questsSection.getBoolean("refreshLines", true);
+		hideUnknownQuestPlaceholders = questsSection.getBoolean("hide unknown quest placeholders");
+
 		worldsFilter = config.getStringList("worlds.filterList");
 		isWorldAllowList = config.getBoolean("worlds.isAllowList");
 		
