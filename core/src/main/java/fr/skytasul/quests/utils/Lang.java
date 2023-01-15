@@ -591,6 +591,7 @@ public enum Lang implements Locale {
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
 	materialNotItemLore("inv.block.materialNotItemLore"), // 0: block id
+	blockName("inv.block.blockName"),
 	blockData("inv.block.blockData"),
 	blockTag("inv.block.blockTag"),
 	blockTagLore("inv.block.blockTagLore"),
