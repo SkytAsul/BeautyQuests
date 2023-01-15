@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
-
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -99,14 +97,14 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	/**
-	 * When called, this will test the player datas for the passed object.
-	 * If found, the remaining amount will be lowered.
-	 * If no remaining items are found, the stage will complete.
+	 * When called, this will test the player datas for the passed object. If found, the remaining
+	 * amount will be lowered. If no remaining items are found, the stage will complete.
+	 * 
 	 * @param acc player account
 	 * @param p player
 	 * @param object object of the event
 	 * @param amount amount completed
-	 * @return <code>false</code> if there is no need to call this method again in the same game tick.
+	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
 	 */
 	public boolean event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
@@ -120,8 +118,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 					int playerAmount = playerAmounts.get(id);
 					if (playerAmount <= amount) {
 						playerAmounts.remove(id);
-					}else playerAmounts.put(id, playerAmount -= amount);
-				}
+					} else
+						playerAmounts.put(id, playerAmount - amount);
+				} else
+					continue;
 				
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
@@ -138,7 +138,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	@Override
