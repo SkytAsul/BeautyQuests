@@ -13,6 +13,7 @@ msg:
     invalidID: '§cLa misión con la id {0} no existe.'
     invalidPoolID: '§cEl grupo {0} no existe.'
     alreadyStarted: '§cYa has comenzado la misión!'
+    notStarted: '§cActualmente no estás haciendo esta misión.'
   quests:
     maxLaunched: '§cNo puedes tener mas de {0} Misiones al mismo tiempo...'
     nopStep: '§cEsta misión no tiene ningún paso.'
@@ -94,7 +95,7 @@ msg:
     downloadTranslations:
       syntax: '§cDebes especificar un idioma para descargar. Ejemplo: "/quests downloadTranslations en_US".'
       notFound: '§cIdioma {0} no encontrado para la versión {1}.'
-      exists: '§cEl archivo {0} ya existe. Añade "true" a tu comando para sobrescribirlo. (/quests downloadTranslations <lang> true)'
+      exists: '§cEl archivo {0} ya existe. Añade "-overwrite" a tu comando para sobrescribirlo. (/quests downloadTranslations <lang> -overwrite)'
       downloaded: '§a¡El idioma {0} ha sido descargado! §7Ahora debes editar el archivo "/plugins/BeautyQuests/config.yml" para cambiar el valor de §ominecraftTranslationsFile§7 con {0}, y luego reiniciar el servidor.'
     checkpoint:
       noCheckpoint: '§cNo se ha encontrado ningún punto de control para la misión {0}.'
@@ -129,7 +130,7 @@ msg:
       remover: '§6{0} información de {1} ha sido eliminado.'
     resetQuest: '§6Removida información de misiones de {0} jugadores.'
     startQuest: '§6Obligaste a empezar la misión {0} (UUID de Jugador: {1}).'
-    startQuestNoRequirements: '§cEl jugador no cumple con los requisitos para la misión {0}... Añade "verdadero" al final de tu comando para evitar la comprobación de los requisitos.'
+    startQuestNoRequirements: '§cEl jugador no cumple con los requisitos para la misión {0}... Añade "-overrideRequirements" al final de tu comando para evitar la comprobación de requisitos.'
     cancelQuest: '§6Cancelaste la misión {0}.'
     cancelQuestUnavailable: '&cLa misión {0} no puede ser cancelada.'
     backupCreated: '&6Creaste correctamente copias de seguridad de misiones e información.'
@@ -178,6 +179,7 @@ msg:
     blockData: '§aEscribe los datos de bloque (datos de bloques disponibles: {0}):'
     blockTag: '§aEscribe la etiqueta de bloque (etiquetas disponibles: §7{0}§a):'
     typeBucketAmount: '§aEscribe la cantidad de cubos a rellenar:'
+    typeDamageAmount: 'Escribe la cantidad de daño que tiene que hacer el jugador:'
     goToLocation: '§aVe a la ubicación deseada para la etapa y click a la esmeralda.'
     typeLocationRadius: '§aEscribe la distancia requerida de la ubicación:'
     typeGameTicks: '§aEscribe los ticks requeridos:'
@@ -265,7 +267,7 @@ msg:
       list: '&aToda la lista de "Mythic Mobs":'
       isntMythicMob: '§cEste Mob Mítico no existe.'
       disabled: '§cMythicMob está deshabilitado.'
-    epicBossDoesntExist: '§cEste Epic Boss no existe.'
+    advancedSpawnersMob: 'Escribe el nombre del spawner personalizado para matar:'
     textList:
       syntax: '§cSintaxis correcta: '
       added: '§aTexto "§7{0}§a" añadido.'
@@ -338,6 +340,8 @@ inv:
     breedAnimals: '§aReproducir Animales'
     tameAnimals: '§aDomesticar animales'
     death: '§cMuerte'
+    dealDamage: '§cInflige daño a los mobs'
+    eatDrink: '§aIngiere o bebe alimentos o pociones'
     NPCText: '§eEditar dialogo'
     dialogLines: '{0} líneas'
     NPCSelect: '§eElegir o crear NPC'
@@ -380,6 +384,11 @@ inv:
         causes: '§aEstablecer causas de muerte §d(AVANZADO)'
         anyCause: Cualquier causa de muerte
         setCauses: '{0} causa(s) de muerte'
+      dealDamage:
+        damage: '§eDaño para infligir'
+        targetMobs: '§cMobs para dañar'
+      eatDrink:
+        items: '§eEditar items para comer o beber'
   stages:
     name: Crear etapas
     nextPage: '§eSiguiente página'
@@ -411,8 +420,6 @@ inv:
     startableFromGUILore: Permite al jugador comenzar la misión desde el Menú de Misiones.
     scoreboardItem: Habilitar el scoreboard
     scoreboardItemLore: Si está desactivado, la misión no será rastreada a través del marcador.
-    hideItem: Ocultar menú y dynmap
-    hideItemLore: Si está activado, la misión no se mostrará en el mapa ni en el menú de misiones.
     hideNoRequirementsItem: Ocultar cuando no se cumplan los requisitos
     hideNoRequirementsItemLore: Si está activado, la misión no se mostrará en el menú de misiones cuando no se cumplan los requisitos.
     bypassLimit: No cuente el límite de misiones
@@ -469,6 +476,8 @@ inv:
     firework: '§dFuego artificial de finalización'
     fireworkLore: Fuegos artificiales lanzados cuando el jugador termine la misión
     fireworkLoreDrop: Arrastra aquí tu fuego artificial personalizado
+    visibility: Visibilidad de la misión
+    visibilityLore: Elige en qué pestañas del menú se mostrará la misión, y si la misión es visible en los mapas dinámicos.
     keepDatas: Conservar datos de los jugadores
     keepDatasLore: |-
       Forzar el plugin para preservar los datos de los jugadores, aunque las etapas han sido editadas.
@@ -510,6 +519,7 @@ inv:
       §a§lHaz clic izquierdo§a para editar la cantidad.
       §a§l§nShift§l + clic izquierdo§l para editar el nombre del ratón.
       §c§lHaz clic derecho§c para eliminar.
+    setLevel: Nivel mínimo
   mobSelect:
     name: Seleccionar tipo de mob
     bukkitEntityType: '§eSeleccionar tipo de entidad'
@@ -621,6 +631,8 @@ inv:
     poolRedo: '§8Puede rehacer misiones completadas: §7{0}'
     poolTime: '§8Tiempo entre misiones: §7{0}'
     poolHologram: '§8Texto del Holograma: §7{0}'
+    poolAvoidDuplicates: '§8Evitar duplicados: §7{0}'
+    poolQuestsList: '§7{0} §8Misión(s): §7{1}'
     create: '§aCrear conjunto de misiones'
     edit: '§e> §6§oEditar el conjunto... §e<'
     choose: '§e> §6§oElige este grupo §e<'
@@ -670,6 +682,14 @@ inv:
     name: Causa de daño
   damageCausesList:
     name: Lista de causas de daño
+  visibility:
+    name: Visibilidad de la misión
+    notStarted: 'Pestaña de menú: "No iniciado"'
+    inProgress: 'Pestaña de menú: "En progreso"'
+    finished: 'Pestaña de menú: "Finalizado"'
+    maps: 'Mapas (como dynmap o BlueMap)'
+  equipmentSlots:
+    name: Ranuras de equipamiento
 scoreboard:
   name: '§6§lMisión'
   noLaunched: '§cNo hay misiones en curso.'
@@ -697,6 +717,10 @@ scoreboard:
     breed: '§eReproducir §6{0}'
     tame: '§eDomar §6{0}'
     die: '§cMuerte'
+    dealDamage:
+      any: '§cCausa {0} de daño'
+      mobs: '§cCausa {0} de daño a {1}'
+    eatDrink: '§eConsumir §6{0}'
 indication:
   startQuest: '§7Quieres iniciar la misión {0}?'
   closeInventory: '§7¿Estás seguro de que quieres cerrar la GUI?'
@@ -745,6 +769,8 @@ misc:
     breedAnimals: Reproducir Animales
     tameAnimals: Domar animales
     die: Morir
+    dealDamage: Inflige daño.
+    eatDrink: Comer o beber
   comparison:
     equals: igual a {0}
     different: diferente a {0}
@@ -767,6 +793,7 @@ misc:
     quest: '§aMisión requerida'
     mcMMOSkillLevel: '§dNivel de habilidad requerida'
     money: '§dDinero requerido'
+    equipment: '§eEquipamiento requerido'
   bucket:
     water: Balde de agua
     lava: Balde de lava

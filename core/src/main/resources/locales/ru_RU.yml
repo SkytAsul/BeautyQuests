@@ -13,6 +13,7 @@ msg:
     invalidID: '§cКвест под номером {0}, не найден.'
     invalidPoolID: '§cВетка {0} не существует.'
     alreadyStarted: '§cВы уже начали квест!'
+    notStarted: '§cВ данный момент вы не выполняете этот квест.'
   quests:
     maxLaunched: '§cВы не можете взять больше {0} задания(й) одновременно...'
     nopStep: '§cУ этого квеста нету каких либо этапов.'
@@ -87,11 +88,12 @@ msg:
   playerDataNotFound: '§cДанные игрока {0} не найдены.'
   versionRequired: 'Требуемая версия: §l{0}'
   restartServer: '§7Перезагрузите сервер, чтобы увидеть изменения.'
+  dialogs:
+    skipped: '§8§o Диалог пропущен.'
   command:
     downloadTranslations:
       syntax: '§cНеобходимо указать язык для загрузки. Пример: "/quests downloadTranslations ru_RU".'
       notFound: '§cЯзык {0} не найден для версии {1}.'
-      exists: '§cФайл {0} уже существует. Добавьте "true" к команде для его перезаписи. (/quests downloads <lang> true)'
       downloaded: '§aЯзык {0} загружен! §7Вы должны отредактировать файл "/plugins/BeautyQuests/config.yml", чтобы изменить значение §ominecraftTranslationsFile§7 с {0}, а затем перезапустить сервер.'
     checkpoint:
       noCheckpoint: '§cКонтрольная точка для задания {0} не найдена.'
@@ -121,7 +123,6 @@ msg:
       remover: '§6{0} Данные о квесте(ах) {1} удалены.'
     resetQuest: '§6Удалены данные квеста для {0} игроков.'
     startQuest: '§6Вы принудительно начали задание {0} (UUID игрока: {1}).'
-    startQuestNoRequirements: '§cИгрок не выполнил требования для задания {0}... Добавьте "true" в конце команды, чтобы пропустить проверку требований.'
     cancelQuest: '§6Вы отменили квест {0}.'
     cancelQuestUnavailable: '§cЗадание {0} не может быть отменено.'
     backupCreated: '§6Вы успешно создали резервную копию всех квестов и информации о игроках.'
@@ -237,7 +238,6 @@ msg:
       list: '§aСписок всех Mythic Mobs:'
       isntMythicMob: '§cЭтот Mythic Mob не существует.'
       disabled: '§cMythicMob отключен.'
-    epicBossDoesntExist: '§cЭтот Epic Boss не существует.'
     textList:
       syntax: '§cПравильный синтаксис: '
       added: '§aТекст "§7{0}§a" добавлен.'
@@ -357,8 +357,6 @@ inv:
     startableFromGUILore: Позволяет игроку начать квест из меню квестов.
     scoreboardItem: Включить табло
     scoreboardItemLore: Если этот параметр отключен, квест не будет отслеживаться на табло.
-    hideItem: Скрыть меню и динамическую карту
-    hideItemLore: Если этот параметр включен, квест не будет отображаться ни на динамической карте, ни в меню квестов.
     hideNoRequirementsItem: Скрыть когда требования не выполнены
     hideNoRequirementsItemLore: Если включено, задание не будет отображаться в меню заданий, когда требования не выполняются.
     bypassLimit: Не считайте лимит квестов

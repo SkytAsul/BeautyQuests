@@ -595,6 +595,7 @@ inv:
     name: Choisir un bloc
     material: '§eType de bloc : {0}'
     materialNotItemLore: 'Le bloc choisi ne peut pas être affiché comme un item. Il est toujours correctement sauvegardé comme {0}.'
+    blockName: '§bNom de bloc personnalisé'
     blockData: '§dBlockdata (avancé)'
     blockTag: '§dTag (avancé)'
     blockTagLore: 'Choisissez un tag qui décrit une liste de blocs possibles. Les tags peuvent être personnalisés en utilisant des datapacks. Vous pouvez trouver une liste des tags sur le Minecraft Wiki.'
