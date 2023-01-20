@@ -161,7 +161,9 @@ public class Utils{
 	}
 	
 	public static String getStringFromNameAndAmount(String name, String amountColor, int remaining, int total, boolean showXOne) {
-		return name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, total - remaining, total) : "");
+		int done = total - remaining;
+		int percentage = (int) (done / (double) total * 100);
+		return name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, done, percentage) : "");
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
