@@ -32,7 +32,7 @@ import fr.skytasul.quests.utils.nms.NMS;
 public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
-	private static final int maxLength = NMS.getMCVersion() >= 13 ? 128 : 30;
+	private static final int maxLength = NMS.getMCVersion() >= 13 ? 1024 : 30;
 	
 	private PlayerAccount acc;
 	private Player p;
