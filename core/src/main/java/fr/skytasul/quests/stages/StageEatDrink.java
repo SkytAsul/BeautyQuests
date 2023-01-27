@@ -1,13 +1,10 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
+import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -18,10 +15,11 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StageEatDrink extends AbstractItemStage {
 	
-	public StageEatDrink(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> objects, ItemComparisonMap comparisons) {
+	public StageEatDrink(QuestBranch branch, List<CountableObject<ItemStack>> objects, ItemComparisonMap comparisons) {
 		super(branch, objects, comparisons);
 	}
 	
@@ -53,8 +51,8 @@ public class StageEatDrink extends AbstractItemStage {
 		}
 		
 		@Override
-		protected StageEatDrink finishStage(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> itemsMap, ItemComparisonMap comparisons) {
-			return new StageEatDrink(branch, itemsMap, comparisons);
+		protected StageEatDrink finishStage(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
+			return new StageEatDrink(branch, items, comparisons);
 		}
 		
 	}

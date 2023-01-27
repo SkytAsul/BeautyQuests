@@ -1,91 +1,45 @@
 package fr.skytasul.quests.gui.blocks;
 
 import static fr.skytasul.quests.gui.ItemUtils.item;
-
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
+import java.util.function.Function;
+import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
-
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.CountableObject;
+import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
-public class BlocksGUI implements CustomInventory {
+public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 
-	private ItemStack none = item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.addBlock.toString());
-	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
-	
-	public Map<Integer, Entry<BQBlock, Integer>> blocks = new HashMap<>();
-	
-	public Inventory inv;
-	public Consumer<Map<Integer, Entry<BQBlock, Integer>>> run;
-	
-	public CustomInventory openLastInv(Player p) {
-		p.openInventory(inv);
-		return this;
+	private Consumer<List<MutableCountableObject<BQBlock>>> end;
+
+	public BlocksGUI(Collection<MutableCountableObject<BQBlock>> blocks,
+			Consumer<List<MutableCountableObject<BQBlock>>> end) {
+		super(Lang.INVENTORY_BLOCKSLIST.toString(), DyeColor.GREEN, blocks);
+		this.end = end;
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_BLOCKSLIST.toString());
-		
-		inv.setItem(8, done);
-		for (int i = 0; i < 8; i++) inv.setItem(i, none.clone());
-		
-		return inv = p.openInventory(inv).getTopInventory();
+	public void finish(List<MutableCountableObject<BQBlock>> objects) {
+		end.accept(objects);
 	}
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack is, int slot, ClickType click) {
-		if (slot == 8){
-			Inventories.closeAndExit(p);
-			run.accept(blocks);
-			return true;
-		}
-		if (click.isRightClick()){
-			blocks.remove(slot);
-			inv.setItem(slot, none);
-			return true;
-		}
+	public void createObject(Function<MutableCountableObject<BQBlock>, ItemStack> callback) {
 		new SelectBlockGUI(true, (type, amount) -> {
-			Inventories.put(p, openLastInv(p), inv);
-			setItem(inv, slot, type.getMaterial(), type.getAsString(), amount);
-			blocks.put(slot, new AbstractMap.SimpleEntry<>(type, amount));
+			callback.apply(CountableObject.createMutable(UUID.randomUUID(), type, amount));
 		}).create(p);
-		return true;
-	}
-	
-	public void setBlocksFromMap(Map<Integer, Entry<BQBlock, Integer>> map) {
-		for (Entry<Integer, Entry<BQBlock, Integer>> entry : map.entrySet()) {
-			int id = entry.getKey();
-			Entry<BQBlock, Integer> blockEntry = entry.getValue();
-			blocks.put(id, blockEntry);
-			setItem(inv, id, blockEntry.getKey().getMaterial(), blockEntry.getKey().getAsString(), blockEntry.getValue());
-		}
-	}
-	
-	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REOPEN;
 	}
 
-	public static void setItem(Inventory inv, int slot, XMaterial type, String name, int amount) {
-		if (type == null) return;
-		ItemStack is = item(type, Lang.materialName.format(name), Lang.Amount.format(amount));
-		inv.setItem(slot, is);
-		is = inv.getItem(slot);
-		if (is == null || is.getType() == Material.AIR) setItem(inv, slot, XMaterial.STONE, name, amount);
+	@Override
+	public ItemStack getObjectItemStack(MutableCountableObject<BQBlock> object) {
+		return item(object.getObject().getMaterial(), Lang.materialName.format(object.getObject().getAsString()),
+				Lang.Amount.format(object.getAmount()));
 	}
 
 }

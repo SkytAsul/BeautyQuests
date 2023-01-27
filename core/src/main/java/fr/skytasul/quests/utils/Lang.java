@@ -526,7 +526,6 @@ public enum Lang implements Locale {
 	questMenuLore("inv.chooseQuest.menuLore"),
 	
 	INVENTORY_MOBS("inv.mobs.name"),
-	mobsNone("inv.mobs.none"),
 	click("inv.mobs.clickLore"),
 	setLevel("inv.mobs.setLevel"),
 
@@ -597,7 +596,6 @@ public enum Lang implements Locale {
 	blockTagLore("inv.block.blockTagLore"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
-	addBlock("inv.blocksList.addBlock"),
 	
 	INVENTORY_BLOCK_ACTION("inv.blockAction.name"),
 	clickLocation("inv.blockAction.location"),

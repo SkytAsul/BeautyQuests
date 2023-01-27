@@ -1,14 +1,11 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
+import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -19,10 +16,11 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StageMelt extends AbstractItemStage {
 	
-	public StageMelt(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> items, ItemComparisonMap comparisons) {
+	public StageMelt(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
 		super(branch, items, comparisons);
 	}
 	
@@ -58,8 +56,8 @@ public class StageMelt extends AbstractItemStage {
 		}
 		
 		@Override
-		protected StageMelt finishStage(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> itemsMap, ItemComparisonMap comparisons) {
-			return new StageMelt(branch, itemsMap, comparisons);
+		protected StageMelt finishStage(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
+			return new StageMelt(branch, items, comparisons);
 		}
 		
 	}

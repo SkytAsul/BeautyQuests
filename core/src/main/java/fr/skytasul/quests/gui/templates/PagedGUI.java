@@ -5,15 +5,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
@@ -118,14 +117,29 @@ public abstract class PagedGUI<T> implements CustomInventory {
 	private int setMainItem(int mainSlot, ItemStack is){
 		int line = (int) Math.floor(mainSlot * 1.0 / 7.0);
 		int slot = mainSlot + (2 * line);
-		inv.setItem(slot, is);
+		setItem(is, slot);
 		return slot;
 	}
 	
 	private int setBarItem(int barSlot, ItemStack is){
 		int slot = barSlot * 9 + 8;
-		inv.setItem(slot, is);
+		setItem(is, slot);
 		return slot;
+	}
+
+	private void setItem(ItemStack is, int rawSlot) {
+		inv.setItem(rawSlot, is);
+
+		if (is != null && is.getType() != Material.AIR) {
+			ItemStack invItem = inv.getItem(rawSlot);
+			if (invItem == null || invItem.getType() == Material.AIR) {
+				// means the item was a material that cannot be put in an inventory:
+				// fire, water block, crops...
+				is = is.clone();
+				is.setType(Material.STONE);
+				inv.setItem(rawSlot, is);
+			}
+		}
 	}
 	
 	/**
