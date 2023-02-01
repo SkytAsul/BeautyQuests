@@ -702,6 +702,8 @@ inv:
     enchantsLore: Compares items enchants
     repairCost: Repair cost
     repairCostLore: Compares repair cost for armors and swords
+    itemsAdder: ItemsAdder
+    itemsAdderLore: Compares ItemsAdder IDs
   editTitle:
     name: Edit Title
     title: §6Title

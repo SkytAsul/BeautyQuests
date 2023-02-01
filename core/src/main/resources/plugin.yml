@@ -36,6 +36,7 @@ softdepend:
 - PlayerBlockTracker
 - LevelledMobs
 - WildStacker
+- ItemsAdder
 
 #commands:
 #  beautyquests:

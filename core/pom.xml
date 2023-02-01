@@ -296,6 +296,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.LoneDev6</groupId>
+			<artifactId>api-itemsadder</artifactId>
+			<version>3.2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>3.1.1</version>

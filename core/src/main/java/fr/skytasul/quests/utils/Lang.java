@@ -661,6 +661,8 @@ public enum Lang implements Locale {
 	comparisonEnchantsLore("inv.itemComparisons.enchantsLore"),
 	comparisonRepairCost("inv.itemComparisons.repairCost"),
 	comparisonRepairCostLore("inv.itemComparisons.repairCostLore"),
+	comparisonItemsAdder("inv.itemComparisons.itemsAdder"),
+	comparisonItemsAdderLore("inv.itemComparisons.itemsAdderLore"),
 	
 	INVENTORY_EDIT_TITLE("inv.editTitle.name"),
 	title_title("inv.editTitle.title"),

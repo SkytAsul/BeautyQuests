@@ -64,7 +64,7 @@ public class BQWorldGuard {
 		}
 	}
 	
-	public void disable() {
+	private void disable() {
 		if (handleEntry) {
 			handleEntry = false;
 			WorldGuardEntryHandler.FACTORY.unregister(com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager());
@@ -114,14 +114,19 @@ public class BQWorldGuard {
 		return getRegionManager(w).getRegion(name);
 	}
 	
-	public static void init() {
+	public static void initialize() {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
 		
-		QuestsAPI.registerStage(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString()), StageArea.Creator::new));
+		QuestsAPI.getStages().register(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize,
+				ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString()), StageArea.Creator::new));
 		QuestsAPI.getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
 	
+	public static void unload() {
+		instance.disable();
+	}
+
 	public static BQWorldGuard getInstance() {
 		return instance;
 	}
