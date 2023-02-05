@@ -3,13 +3,12 @@ package fr.skytasul.quests.structure.pools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
@@ -129,8 +128,8 @@ public class QuestPool implements Comparable<QuestPool> {
 				"", action);
 	}
 	
-	public void resetPlayer(PlayerAccount acc) {
-		acc.removePoolDatas(this);
+	public CompletableFuture<PlayerPoolDatas> resetPlayer(PlayerAccount acc) {
+		return acc.removePoolDatas(this);
 	}
 	
 	public void resetPlayerTimer(PlayerAccount acc) {

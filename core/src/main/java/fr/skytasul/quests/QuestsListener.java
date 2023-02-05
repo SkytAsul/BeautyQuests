@@ -147,7 +147,7 @@ public class QuestsListener implements Listener{
 		Player player = e.getPlayer();
 		DebugUtils.logMessage(player.getName() + " joined the server"); // for timing purpose
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
-			PlayersManager.loadPlayer(player);
+			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class QuestsListener implements Listener{
 		Player player = e.getPlayer();
 		DebugUtils.logMessage(player.getName() + " left the server"); // for timing purpose
 		if (!QuestsConfiguration.hookAccounts()) {
-			PlayersManager.unloadPlayer(player);
+			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
 		}
 	}
 

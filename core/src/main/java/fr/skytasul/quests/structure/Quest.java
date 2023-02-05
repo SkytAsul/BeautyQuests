@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -220,16 +221,24 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 	
-	public boolean resetPlayer(PlayerAccount acc){
-		if (acc == null) return false;
-		boolean c = false;
+	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc){
+		if (acc == null)
+			return CompletableFuture.completedFuture(Boolean.FALSE);
+		
+		boolean hadDatas = false;
+		CompletableFuture<?> future = null;
+
 		if (acc.hasQuestDatas(this)) {
+			hadDatas = true;
 			cancelPlayer(acc);
-			acc.removeQuestDatas(this);
-			c = true;
+			future = acc.removeQuestDatas(this);
 		}
-		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().removePlayer(acc.getPlayer())) c = true;
-		return c;
+
+		if (acc.isCurrent() && hasOption(OptionStartDialog.class)
+				&& getOption(OptionStartDialog.class).getDialogRunner().removePlayer(acc.getPlayer()))
+			hadDatas = true;
+
+		return future == null ? CompletableFuture.completedFuture(hadDatas) : future.thenApply(__ -> true);
 	}
 	
 	public boolean isLauncheable(Player p, PlayerAccount acc, boolean sendMessage) {
@@ -441,7 +450,8 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		QuestsAPI.getQuests().removeQuest(this);
 		unload();
 		if (removeDatas) {
-			PlayersManager.manager.removeQuestDatas(this);
+			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(this).whenComplete(
+					BeautyQuests.logger.logError("An error occurred while removing player datas after quest removal"));
 			if (file.exists()) file.delete();
 		}
 		removed = true;

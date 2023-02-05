@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.structure.Quest;
@@ -63,20 +63,22 @@ public class PlayerAccount {
 	public PlayerQuestDatas getQuestDatas(Quest quest) {
 		PlayerQuestDatas datas = questDatas.get(quest.getID());
 		if (datas == null) {
-			datas = PlayersManager.manager.createPlayerQuestDatas(this, quest);
+			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerQuestDatas(this, quest);
 			questDatas.put(quest.getID(), datas);
 		}
 		return datas;
 	}
 
-	public PlayerQuestDatas removeQuestDatas(Quest quest) {
+	public CompletableFuture<PlayerQuestDatas> removeQuestDatas(Quest quest) {
 		return removeQuestDatas(quest.getID());
 	}
 	
-	public PlayerQuestDatas removeQuestDatas(int id) {
+	public CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id) {
 		PlayerQuestDatas removed = questDatas.remove(id);
-		if (removed != null) PlayersManager.manager.playerQuestDataRemoved(this, id, removed);
-		return removed;
+		if (removed == null)
+			return CompletableFuture.completedFuture(null);
+
+		return BeautyQuests.getInstance().getPlayersManager().playerQuestDataRemoved(removed).thenApply(__ -> removed);
 	}
 	
 	protected PlayerQuestDatas removeQuestDatasSilently(int id) {
@@ -94,20 +96,22 @@ public class PlayerAccount {
 	public PlayerPoolDatas getPoolDatas(QuestPool pool) {
 		PlayerPoolDatas datas = poolDatas.get(pool.getID());
 		if (datas == null) {
-			datas = PlayersManager.manager.createPlayerPoolDatas(this, pool);
+			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerPoolDatas(this, pool);
 			poolDatas.put(pool.getID(), datas);
 		}
 		return datas;
 	}
 	
-	public PlayerPoolDatas removePoolDatas(QuestPool pool) {
+	public CompletableFuture<PlayerPoolDatas> removePoolDatas(QuestPool pool) {
 		return removePoolDatas(pool.getID());
 	}
 	
-	public PlayerPoolDatas removePoolDatas(int id) {
+	public CompletableFuture<PlayerPoolDatas> removePoolDatas(int id) {
 		PlayerPoolDatas removed = poolDatas.remove(id);
-		if (removed != null) PlayersManager.manager.playerPoolDataRemoved(this, id, removed);
-		return removed;
+		if (removed == null)
+			return CompletableFuture.completedFuture(null);
+
+		return BeautyQuests.getInstance().getPlayersManager().playerPoolDataRemoved(removed).thenApply(__ -> removed);
 	}
 	
 	public Collection<PlayerPoolDatas> getPoolDatas() {
@@ -115,13 +119,13 @@ public class PlayerAccount {
 	}
 	
 	public <T> T getData(SavableData<T> data) {
-		if (!PlayersManager.manager.getAccountDatas().contains(data))
+		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		return (T) additionalDatas.getOrDefault(data, data.getDefaultValue());
 	}
 
 	public <T> void setData(SavableData<T> data, T value) {
-		if (!PlayersManager.manager.getAccountDatas().contains(data))
+		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		additionalDatas.put(data, value);
 	}

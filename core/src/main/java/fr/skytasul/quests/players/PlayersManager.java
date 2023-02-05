@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -31,25 +32,30 @@ import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public abstract class PlayersManager {
-	
+
+	protected final Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
 	protected final Set<SavableData<?>> accountDatas = new HashSet<>();
 	private boolean loaded = false;
 
 	public abstract void load(AccountFetchRequest request);
 	
-	protected abstract void removeAccount(PlayerAccount acc);
+	public abstract void unloadAccount(PlayerAccount acc);
+
+	protected abstract CompletableFuture<Void> removeAccount(PlayerAccount acc);
 	
+	public abstract CompletableFuture<Integer> removeQuestDatas(Quest quest);
+
 	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
 
-	public void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {}
-
 	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
+
+	public CompletableFuture<Void> playerQuestDataRemoved(PlayerQuestDatas datas) {
+		return CompletableFuture.completedFuture(null);
+	}
 	
-	public void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {}
-	
-	public abstract int removeQuestDatas(Quest quest);
-	
-	public abstract void unloadAccount(PlayerAccount acc);
+	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatas datas) {
+		return CompletableFuture.completedFuture(null);
+	}
 
 	public void load() {
 		if (loaded) throw new IllegalStateException("Already loaded");
@@ -79,11 +85,11 @@ public abstract class PlayersManager {
 		return accountDatas;
 	}
 
-	public AbstractAccount createAbstractAccount(Player p) {
+	protected AbstractAccount createAbstractAccount(Player p) {
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 
-	public String getIdentifier(OfflinePlayer p) {
+	protected String getIdentifier(OfflinePlayer p) {
 		if (QuestsConfiguration.hookAccounts()) {
 			if (!p.isOnline())
 				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
@@ -117,88 +123,94 @@ public abstract class PlayersManager {
 		}
 		return null;
 	}
-
-	protected static Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
-	private static Map<UUID, String> cachedPlayerNames = new HashMap<>();
-	private static Gson gson = new Gson();
-	private static long lastOnlineFailure = 0;
-	public static PlayersManager manager;
 	
-	public static synchronized void loadPlayer(Player p) {
+	public synchronized void loadPlayer(Player p) {
 		cachedPlayerNames.put(p.getUniqueId(), p.getName());
 
 		long time = System.currentTimeMillis();
 		DebugUtils.logMessage("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
-			int i = 2;
-			while (i > 0) {
-				i--;
+			for (int i = 1; i >= 0; i--) {
 				try {
-					if (!p.isOnline()) {
-						BeautyQuests.logger.warning("Player " + p.getName()
-								+ " has quit the server while loading its datas. This may be a bug.");
+					if (!tryLoad(p, time))
 						return;
-					}
-
-					AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
-					manager.load(request);
-
-					if (request.isFinished() && request.getAccount() != null) {
-						if (!p.isOnline()) {
-							if (request.isAccountCreated()) {
-								DebugUtils.logMessage("New account registered for " + p.getName()
-										+ "... but deleted as player left before loading.");
-								manager.removeAccount(request.getAccount());
-							}
-							return;
-						}
-						if (request.isAccountCreated())
-							DebugUtils.logMessage("New account registered for " + p.getName() + " ("
-									+ request.getAccount().abstractAcc.getIdentifier() + "), index "
-									+ request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
-						cachedAccounts.put(p, request.getAccount());
-						Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
-							String loadMessage = "Completed load of " + p.getName() + " datas within "
-									+ (System.currentTimeMillis() - time) + " ms ("
-									+ request.getAccount().getQuestsDatas().size() + " quests, "
-									+ request.getAccount().getPoolDatas().size() + " pools)";
-							if (request.getLoadedFrom() != null)
-								loadMessage += " | Loaded from " + request.getLoadedFrom();
-							DebugUtils.logMessage(loadMessage);
-							if (p.isOnline()) {
-								Bukkit.getPluginManager().callEvent(
-										new PlayerAccountJoinEvent(p, request.getAccount(), request.isAccountCreated()));
-							} else {
-								BeautyQuests.logger.warning("Player " + p.getName()
-										+ " has quit the server while loading its datas. This may be a bug.");
-								if (request.isAccountCreated()) {
-									manager.removeAccount(request.getAccount());
-								}
-							}
-						});
-						return;
-					}
-					BeautyQuests.logger.severe("The account of " + p.getName() + " has not been properly loaded.");
-				}catch (Exception ex) {
+				} catch (Exception ex) {
 					BeautyQuests.logger.severe("An error ocurred while trying to load datas of " + p.getName() + ".", ex);
 				}
-				BeautyQuests.logger.severe("Doing " + i + " more attempt.");
+				if (i > 0)
+					BeautyQuests.logger.severe("Doing " + i + " more attempt.");
 			}
 			BeautyQuests.logger.severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
 		});
 	}
+
+	private boolean tryLoad(Player p, long time) {
+		if (!p.isOnline()) {
+			BeautyQuests.logger
+					.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+			return false;
+		}
+
+		AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
+		load(request);
+
+		if (!request.isFinished() || request.getAccount() == null) {
+			BeautyQuests.logger.severe("The account of " + p.getName() + " has not been properly loaded.");
+			return true;
+		}
+
+		if (!p.isOnline()) {
+			if (request.isAccountCreated()) {
+				DebugUtils.logMessage(
+						"New account registered for " + p.getName() + "... but deleted as player left before loading.");
+				removeAccount(request.getAccount()).whenComplete(
+						BeautyQuests.logger.logError("An error occurred while removing newly created account"));
+			}
+			return false;
+		}
+
+		if (request.isAccountCreated())
+			DebugUtils.logMessage(
+					"New account registered for " + p.getName() + " (" + request.getAccount().abstractAcc.getIdentifier()
+							+ "), index " + request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
+
+		cachedAccounts.put(p, request.getAccount());
+		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+			String loadMessage = "Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time)
+					+ " ms (" + request.getAccount().getQuestsDatas().size() + " quests, "
+					+ request.getAccount().getPoolDatas().size() + " pools)";
+
+			if (request.getLoadedFrom() != null)
+				loadMessage += " | Loaded from " + request.getLoadedFrom();
+
+			DebugUtils.logMessage(loadMessage);
+
+			if (p.isOnline()) {
+				Bukkit.getPluginManager()
+						.callEvent(new PlayerAccountJoinEvent(p, request.getAccount(), request.isAccountCreated()));
+			} else {
+				BeautyQuests.logger.warning(
+						"Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
+
+				if (request.isAccountCreated())
+					removeAccount(request.getAccount()).whenComplete(
+							BeautyQuests.logger.logError("An error occurred while removing newly created account"));
+			}
+		});
+		return false;
+	}
 	
-	public static synchronized void unloadPlayer(Player p) {
+	public synchronized void unloadPlayer(Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		DebugUtils.logMessage("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
-		manager.unloadAccount(acc);
+		unloadAccount(acc);
 		cachedAccounts.remove(p);
 	}
 	
-	public static PlayerAccount getPlayerAccount(Player p) {
+	public PlayerAccount getAccount(Player p) {
 		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
 		if (!p.isOnline()) {
 			BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
@@ -206,6 +218,20 @@ public abstract class PlayersManager {
 		}
 		
 		return cachedAccounts.get(p);
+	}
+
+	private static Map<UUID, String> cachedPlayerNames = new HashMap<>();
+	private static Gson gson = new Gson();
+	private static long lastOnlineFailure = 0;
+
+	/**
+	 * @deprecated use {@link BeautyQuests#getPlayersManager()}
+	 */
+	@Deprecated
+	public static PlayersManager manager; // TODO remove, changed in 0.20.1
+
+	public static PlayerAccount getPlayerAccount(Player p) {
+		return BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 	}
 
 	public static synchronized String getPlayerName(UUID uuid) {

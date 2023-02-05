@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -99,7 +100,7 @@ public class PlayersManagerDB extends PlayersManager {
 				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE `id` = ?"));
 	}
 	
-	private synchronized void retrievePlayerDatas(PlayerAccount acc) {
+	private void retrievePlayerDatas(PlayerAccount acc) {
 		try (Connection connection = db.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
 				statement.setInt(1, acc.index);
@@ -138,7 +139,7 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	public synchronized void load(AccountFetchRequest request) {
+	public void load(AccountFetchRequest request) {
 		try (Connection connection = db.getConnection()) {
 			String uuid = request.getOfflinePlayer().getUniqueId().toString();
 			try (PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
@@ -153,7 +154,8 @@ public class PlayersManagerDB extends PlayersManager {
 							// in order to ensure that, if the player was previously connected to another server,
 							// its datas have been fully pushed to database, we wait for 0,4 seconds
 							long timeout = 400 - (System.currentTimeMillis() - request.getJoinTimestamp());
-							if (timeout > 0) wait(timeout);
+							if (timeout > 0)
+								Thread.sleep(timeout);
 						}catch (InterruptedException e) {
 							e.printStackTrace();
 							Thread.currentThread().interrupt();
@@ -187,14 +189,16 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	protected synchronized void removeAccount(PlayerAccount acc) {
-		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(deleteAccount)) {
-			statement.setInt(1, acc.index);
-			statement.executeUpdate();
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
+	protected CompletableFuture<Void> removeAccount(PlayerAccount acc) {
+		return CompletableFuture.runAsync(() -> {
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(deleteAccount)) {
+				statement.setInt(1, acc.index);
+				statement.executeUpdate();
+			} catch (SQLException ex) {
+				throw new DataException("An error occurred while removing account from database.", ex);
+			}
+		});
 	}
 
 	@Override
@@ -203,16 +207,18 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	@Override
-	public synchronized void playerQuestDataRemoved(PlayerAccount acc, int id, PlayerQuestDatas datas) {
-		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(removeQuestData)) {
-			((PlayerQuestDatasDB) datas).stop();
-			statement.setInt(1, acc.index);
-			statement.setInt(2, id);
-			statement.executeUpdate();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public CompletableFuture<Void> playerQuestDataRemoved(PlayerQuestDatas datas) {
+		return CompletableFuture.runAsync(() -> {
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(removeQuestData)) {
+				((PlayerQuestDatasDB) datas).stop();
+				statement.setInt(1, datas.acc.index);
+				statement.setInt(2, datas.questID);
+				statement.executeUpdate();
+			} catch (SQLException ex) {
+				throw new DataException("An error occurred while removing player quest data from database.", ex);
+			}
+		});
 	}
 	
 	@Override
@@ -221,47 +227,52 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	public synchronized void playerPoolDataRemoved(PlayerAccount acc, int id, PlayerPoolDatas datas) {
-		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(removePoolData)) {
-			statement.setInt(1, acc.index);
-			statement.setInt(2, id);
-			statement.executeUpdate();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public synchronized int removeQuestDatas(Quest quest) {
-		int amount = 0;
-		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(removeExistingQuestDatas)) {
-			for (PlayerAccount acc : PlayersManager.cachedAccounts.values()) {
-				PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getID());
-				if (datas != null) datas.stop();
+	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatas datas) {
+		return CompletableFuture.runAsync(() -> {
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(removePoolData)) {
+				statement.setInt(1, datas.acc.index);
+				statement.setInt(2, datas.poolID);
+				statement.executeUpdate();
+			} catch (SQLException ex) {
+				throw new DataException("An error occurred while removing player quest data from database.", ex);
 			}
-			statement.setInt(1, quest.getID());
-			amount += statement.executeUpdate();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		DebugUtils.logMessage("Removed " + amount + " quest datas for quest " + quest.getID());
-		return amount;
+		});
 	}
 
-	public synchronized boolean hasAccounts(Player p) {
-		try (Connection connection = db.getConnection();
-				PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
-			statement.setString(1, p.getUniqueId().toString());
-			ResultSet result = statement.executeQuery();
-			boolean has = result.next();
-			result.close();
-			return has;
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
+	@Override
+	public CompletableFuture<Integer> removeQuestDatas(Quest quest) {
+		return CompletableFuture.supplyAsync(() -> {
+			int amount = 0;
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(removeExistingQuestDatas)) {
+				for (PlayerAccount acc : cachedAccounts.values()) {
+					PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getID());
+					if (datas != null) datas.stop();
+				}
+				statement.setInt(1, quest.getID());
+				amount += statement.executeUpdate();
+			} catch (SQLException ex) {
+				throw new DataException("Failed to remove quest datas from database.", ex);
+			}
+			DebugUtils.logMessage("Removed " + amount + " quest datas for quest " + quest.getID());
+			return amount;
+		});
+	}
+
+	public CompletableFuture<Boolean> hasAccounts(Player p) {
+		return CompletableFuture.supplyAsync(() -> {
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
+				statement.setString(1, p.getUniqueId().toString());
+				ResultSet result = statement.executeQuery();
+				boolean has = result.next();
+				result.close();
+				return has;
+			} catch (SQLException ex) {
+				throw new DataException("An error occurred while fetching account from database.", ex);
+			}
+		});
 	}
 
 	@Override
@@ -305,7 +316,7 @@ public class PlayersManagerDB extends PlayersManager {
 
 	@Override
 	public void save() {
-		PlayersManager.cachedAccounts.values().forEach(x -> saveAccount(x, false));
+		cachedAccounts.values().forEach(x -> saveAccount(x, false));
 	}
 	
 	private void createTables() throws SQLException {

@@ -1,6 +1,9 @@
 package fr.skytasul.quests.commands;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +25,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.DialogRunner;
 import fr.skytasul.quests.utils.types.DialogRunner.DialogNextReason;
 import revxrsal.commands.annotation.Optional;
@@ -173,25 +177,40 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	public void resetPlayer(BukkitCommandActor actor, EntitySelector<Player> players) {
 		for (Player player : players) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+
+			List<CompletableFuture<?>> futures = new ArrayList<>(acc.getQuestsDatas().size() + acc.getPoolDatas().size());
+
 			int quests = 0, pools = 0;
 			for (PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
 				Quest quest = questDatas.getQuest();
-				if (quest != null) {
-					quest.resetPlayer(acc);
-				}else acc.removeQuestDatas(questDatas.getQuestID());
+				CompletableFuture<?> future =
+						quest == null ? acc.removeQuestDatas(questDatas.getQuestID()) : quest.resetPlayer(acc);
+				future = future.whenComplete(BeautyQuests.logger.logError("An error occurred while resetting quest "
+						+ questDatas.getQuestID() + " to player " + player.getName(), actor.getSender()));
+				futures.add(future);
 				quests++;
 			}
 			for (PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
 				QuestPool pool = poolDatas.getPool();
-				if (pool != null) {
-					pool.resetPlayer(acc);
-				}else acc.removePoolDatas(poolDatas.getPoolID());
+				CompletableFuture<?> future =
+						pool == null ? acc.removePoolDatas(poolDatas.getPoolID()) : pool.resetPlayer(acc);
+				future = future.whenComplete(BeautyQuests.logger.logError(
+						"An error occurred while resetting pool " + poolDatas.getPoolID() + " to player " + player.getName(),
+						actor.getSender()));
+				futures.add(future);
 				pools++;
 			}
 			acc.resetDatas();
-			Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
-			if (acc.isCurrent()) Lang.DATA_REMOVED.send(player, quests, actor.getName(), pools);
-			Lang.DATA_REMOVED_INFO.send(actor.getSender(), quests, player.getName(), pools);
+
+			final int questsFinal = quests;
+			final int poolsFinal = pools;
+			CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete(Utils.runSyncConsumer(() -> {
+				Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
+				if (acc.isCurrent())
+					Lang.DATA_REMOVED.send(player, questsFinal, actor.getName(), poolsFinal);
+				Lang.DATA_REMOVED_INFO.send(actor.getSender(), questsFinal, player.getName(), poolsFinal);
+			}));
+
 		}
 	}
 	
@@ -209,9 +228,11 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 	
 	private void reset(CommandSender sender, Player target, PlayerAccount acc, Quest qu) {
-		qu.resetPlayer(acc);
-		if (acc.isCurrent()) Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());
-		Lang.DATA_QUEST_REMOVED_INFO.send(sender, target.getName(), qu.getName());
+		qu.resetPlayer(acc).whenComplete(BeautyQuests.logger.logError(__ -> {
+			if (acc.isCurrent())
+				Lang.DATA_QUEST_REMOVED.send(target, qu.getName(), sender.getName());
+			Lang.DATA_QUEST_REMOVED_INFO.send(sender, target.getName(), qu.getName());
+		}, "An error occurred while removing player quest data", sender));
 	}
 	
 	@Subcommand ("resetPlayerPool")
@@ -222,20 +243,46 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			pool.resetPlayerTimer(acc);
 			Lang.POOL_RESET_TIMER.send(actor.getSender(), pool.getID(), player.getName());
 		}else {
-			pool.resetPlayer(acc);
-			Lang.POOL_RESET_FULL.send(actor.getSender(), pool.getID(), player.getName());
+			pool.resetPlayer(acc).whenComplete(BeautyQuests.logger.logError(__ -> {
+				Lang.POOL_RESET_FULL.send(actor.getSender(), pool.getID(), player.getName());
+			}, "An error occurred while resetting pool " + pool.getID() + " to player " + player.getName(),
+					actor.getSender()));
 		}
 	}
 	
 	@Subcommand ("resetQuest")
 	@CommandPermission ("beautyquests.command.resetQuest")
 	public void resetQuest(BukkitCommandActor actor, Quest quest) {
-		int amount = 0;
+		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (quest.resetPlayer(PlayersManager.getPlayerAccount(p))) amount++;
+			futures.add(quest.resetPlayer(PlayersManager.getPlayerAccount(p))
+					.whenComplete(BeautyQuests.logger.logError(
+							"An error occurred while resetting quest " + quest.getID() + " to player " + p.getName(),
+							actor.getSender())));
 		}
-		amount += PlayersManager.manager.removeQuestDatas(quest);
-		Lang.QUEST_PLAYERS_REMOVED.send(actor.getSender(), amount);
+
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((__, ___) -> {
+			// we do not care about failure or success of this "global" future
+
+			int resetAmount =
+					(int) futures.stream().filter(future -> {
+						try {
+							return !future.isCompletedExceptionally() && future.get();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						} catch (ExecutionException ignored) {
+							// we already check if the future is completed exceptionnally before using get()
+						}
+						return false;
+					}).count();
+
+			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(quest)
+					.whenComplete(BeautyQuests.logger.logError(removedAmount -> {
+						Lang.QUEST_PLAYERS_REMOVED.send(actor.getSender(), removedAmount + resetAmount);
+					}, "An error occurred while removing quest datas", actor.getSender()));
+		}).whenComplete(BeautyQuests.logger.logError());
+
 	}
 	
 	@Subcommand ("seePlayer")

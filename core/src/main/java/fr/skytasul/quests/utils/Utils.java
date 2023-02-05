@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -380,13 +381,16 @@ public class Utils{
 		}
 	}
 	
-	
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {
 			run.run();
 		}else Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
 	}
 	
+	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
+		return (__, ___) -> runSync(run);
+	}
+
 	public static void runSync(Runnable run){
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
 	}
