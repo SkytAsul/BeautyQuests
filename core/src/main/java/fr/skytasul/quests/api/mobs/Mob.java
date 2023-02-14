@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.mobs;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
@@ -50,6 +51,10 @@ public class Mob<D> implements Cloneable {
 		return formattedName;
 	}
 	
+	public List<String> getDescriptiveLore() {
+		return factory.getDescriptiveLore(data);
+	}
+
 	public void setCustomName(String customName) {
 		this.customName = customName;
 	}
@@ -143,5 +148,5 @@ public class Mob<D> implements Cloneable {
 			mob.setMinLevel((Double) map.get("minLevel"));
 		return mob;
 	}
-	
+
 }

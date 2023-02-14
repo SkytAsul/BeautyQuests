@@ -86,14 +86,14 @@ public final class QuestsAPI {
 	}
 	
 	public static void registerItemComparison(ItemComparison comparison) {
-		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())), "This item comparison was already registered");
+		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())),
+				"This item comparison was already registered");
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 
 	public static void unregisterItemComparison(ItemComparison comparison) {
-		boolean registered = itemComparisons.remove(comparison);
-		Validate.isTrue(registered, "This item comparison was not registered");
+		Validate.isTrue(itemComparisons.remove(comparison), "This item comparison was not registered");
 		DebugUtils.logMessage("Item comparison unregistered (id: " + comparison.getID() + ")");
 	}
 	

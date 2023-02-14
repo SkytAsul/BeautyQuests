@@ -631,6 +631,7 @@ inv:
     name: Choose block
     material: '§eMaterial: {0}'
     materialNotItemLore: 'The block chosen cannot be displayed as an item. It is still correctly stored as {0}.'
+    blockName: '§bCustom block name'
     blockData: '§dBlockdata (advanced)'
     blockTag: '§dTag (advanced)'
     blockTagLore: 'Choose a tag which describes a list of possible blocks.
@@ -701,6 +702,8 @@ inv:
     enchantsLore: Compares items enchants
     repairCost: Repair cost
     repairCostLore: Compares repair cost for armors and swords
+    itemsAdder: ItemsAdder
+    itemsAdderLore: Compares ItemsAdder IDs
     mmoItems: MMOItems item
     mmoItemsLore: Compares MMOItems types and IDs
   editTitle:

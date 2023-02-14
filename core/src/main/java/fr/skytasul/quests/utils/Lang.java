@@ -526,7 +526,6 @@ public enum Lang implements Locale {
 	questMenuLore("inv.chooseQuest.menuLore"),
 	
 	INVENTORY_MOBS("inv.mobs.name"),
-	mobsNone("inv.mobs.none"),
 	click("inv.mobs.clickLore"),
 	setLevel("inv.mobs.setLevel"),
 
@@ -591,12 +590,12 @@ public enum Lang implements Locale {
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
 	materialNotItemLore("inv.block.materialNotItemLore"), // 0: block id
+	blockName("inv.block.blockName"),
 	blockData("inv.block.blockData"),
 	blockTag("inv.block.blockTag"),
 	blockTagLore("inv.block.blockTagLore"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
-	addBlock("inv.blocksList.addBlock"),
 	
 	INVENTORY_BLOCK_ACTION("inv.blockAction.name"),
 	clickLocation("inv.blockAction.location"),
@@ -662,6 +661,8 @@ public enum Lang implements Locale {
 	comparisonEnchantsLore("inv.itemComparisons.enchantsLore"),
 	comparisonRepairCost("inv.itemComparisons.repairCost"),
 	comparisonRepairCostLore("inv.itemComparisons.repairCostLore"),
+	comparisonItemsAdder("inv.itemComparisons.itemsAdder"),
+	comparisonItemsAdderLore("inv.itemComparisons.itemsAdderLore"),
 	comparisonMmoItems("inv.itemComparisons.mmoItems"),
 	comparisonMmoItemsLore("inv.itemComparisons.mmoItemsLore"),
 	

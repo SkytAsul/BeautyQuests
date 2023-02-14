@@ -3,7 +3,6 @@ package fr.skytasul.quests.gui;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -16,9 +15,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Pair;
 
@@ -43,11 +42,12 @@ public class Inventories{
 	public static <T extends CustomInventory> T create(Player p, T inv) {
 		closeWithoutExit(p);
 		try {
+			DebugUtils.logMessage(p.getName() + " has opened inventory " + inv.getClass().getName() + ".");
 			Inventory tinv = inv.open(p);
 			if (tinv == null) return inv;
 			put(p, inv, tinv);
 			return inv;
-		}catch (Throwable ex) {
+		} catch (Exception ex) {
 			BeautyQuests.logger.severe("Cannot open inventory " + inv.getClass().getSimpleName() + " to player " + p.getName(), ex);
 			closeAndExit(p);
 			return null;

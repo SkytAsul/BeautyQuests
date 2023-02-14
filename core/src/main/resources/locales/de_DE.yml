@@ -27,6 +27,7 @@ msg:
   questItem:
     drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
     craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
+    eat: Du kannst Quest Items nicht Essen!
   stageMobs:
     noMobs: '§cDer Schritt beinhaltet nicht das Töten von Mobs.'
     listMobs: '§aDu musst {0} töten.'
@@ -82,11 +83,12 @@ msg:
   playerNeverConnected: '§cKann keine Informationen über den Spieler {0} finden.'
   playerNotOnline: '§cDer Spieler {0} ist offline.'
   versionRequired: 'Benötigte Version: §l{0}'
+  dialogs:
+    skipped: 'Dialog übersprungen.'
   command:
     downloadTranslations:
       syntax: "§cDu musst eine Sprache auswählen zum downloaden.\nBeispiel: \"/quests downloadTranslations en_US\"."
       notFound: '§cSprache {0} nicht gefunden für die Version {1}.'
-      exists: '§cDie Datei {0} existiert bereits. Hänge "true" an deinen Befehl an, um sie zu überschreiben. (/quests downloadTranslations <lang> true)'
       downloaded: '§aSprache {0} wurde heruntergeladen! §7Du musst nun die Datei "/plugins/BeautyQuests/config.yml" bearbeiten, um den Wert von §ominecraftTranslationsFile§7 mit {0} zu ändern. Der Server muss anschliessend neu gestartet werden.'
     checkpoint:
       noCheckpoint: '§cKein Checkpoint für die Quest {0} gefunden.'
@@ -116,7 +118,6 @@ msg:
       remover: '§6{0} Questinformation(en) von {1} wurde(n) gelöscht.'
     resetQuest: '§6Quest Daten wurden für {0} Spieler entfernt.'
     startQuest: '§6Du hast den Start der Quest {0} erzwungen. (Spieler‐UUID: {1})'
-    startQuestNoRequirements: '§cDer Spieler erfüllt nicht die Anforderungen für die Quest {0}... Füge "true" am Ende deines Befehls an, um die Überprüfung der Anforderungen zu umgehen.'
     cancelQuest: '§6Du hast die Quest {0} abgebrochen.'
     cancelQuestUnavailable: '§cDie Quest {0} kann nicht abgebrochen werden.'
     backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
@@ -135,6 +136,8 @@ msg:
       resetAll: '§6Du hast das Scoreboard des Spielers {0} erfolgreich zurückgesetzt.'
       hidden: '§6Das Scoreboard des Spielers {0} wurde versteckt.'
       shown: '§6Das Scoreboard des Spielers {0} wurde angezeigt.'
+      own:
+        shown: Dein Scoreboard wird wieder angezeigt.
     help:
       header: '§6§lBeautyQuests — Hilfe'
       create: '§6/{0} create: §eErstelle eine Quest.'
@@ -239,7 +242,6 @@ msg:
       list: '§aEine Liste aller Mythic Mobs:'
       isntMythicMob: '§cDieser Mythic Mob existiert nicht.'
       disabled: '§cMythicMob ist deaktiviert.'
-    epicBossDoesntExist: '§cDieser Epic Boss exisitert nicht.'
     textList:
       syntax: '§cKorrekte Syntax: '
       added: '§aText "§7{0}§a" hinzugefügt.'
@@ -251,7 +253,6 @@ msg:
         list: '§6list: §eSieh dir alle hinzugefügten Texte an.'
         close: '§6close: §eBestätige die hinzugefügten Texte.'
     noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{0}'
-    comparisonType: '§aWähle eine folgender Vergleichsarten aus: {0}. Der Standard ist: §e§lgreater or equals§r§a. Benutze §onull§r§a um dies zu nutzen.'
     scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
     pool:
       hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
@@ -264,6 +265,9 @@ msg:
       fadeIn: 'Schreibe die "Einblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
       stay: 'Schreibe die "Bleibe"-Dauer, in Ticks (20 Ticks = 1 Sekunde).'
       fadeOut: 'Schreibe die "Ausblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
+    firework:
+      invalidHand: 'Du musst ein Feuerwerk in deiner Main Hand halten.'
+      edited: 'Feuerwerk Quest bearbeitet!'
   writeCommandDelay: '§aGebe die gewünschte Befehl Verzögerung in Ticks an.'
 advancement:
   finished: Abgeschlossen
@@ -362,8 +366,6 @@ inv:
     startableFromGUILore: Ermöglicht dem Spieler, die Quest aus dem Quest-Menü zu starten.
     scoreboardItem: Scoreboard aktivieren
     scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
-    hideItem: Menü und Dynmap verstecken
-    hideItemLore: Wenn aktiviert, wird die Quest weder auf der Dynmap, noch im Quest-Menü angezeigt.
     hideNoRequirementsItem: Verstecken, wenn die Anforderungen nicht erfüllt sind
     hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
     bypassLimit: Questlimit nicht zählen
@@ -620,7 +622,6 @@ scoreboard:
     craft: '§eStelle §6{0} §eher'
     bucket: '§eBefülle §6{0}'
     location: '§eGehe zu: §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
-    playTime: '§eSpiele §6{0} Spielsticks'
     breed: '§eZüchte §6{0}'
     tame: '§eZähme §6{0}'
 indication:

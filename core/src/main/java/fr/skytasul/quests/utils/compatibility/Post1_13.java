@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -10,7 +9,6 @@ import org.bukkit.Particle;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
 
@@ -40,11 +38,12 @@ public class Post1_13 {
 		
 		private final BlockData data;
 		
-		public BQBlockData(String stringData) {
-			this.data = Bukkit.createBlockData(stringData);
+		public BQBlockData(String customName, String stringData) {
+			this(customName, Bukkit.createBlockData(stringData));
 		}
 		
-		public BQBlockData(BlockData data) {
+		public BQBlockData(String customName, BlockData data) {
+			super(customName);
 			this.data = data;
 		}
 		
@@ -59,7 +58,7 @@ public class Post1_13 {
 		}
 		
 		@Override
-		public String getAsString() {
+		public String getDataString() {
 			return BQBlock.BLOCKDATA_HEADER + data.getAsString(true);
 		}
 		
@@ -70,12 +69,12 @@ public class Post1_13 {
 		private final Tag<Material> tag;
 		private final String tagKey;
 		
-		public BQBlockTag(String stringData) {
-			this.tagKey = stringData;
-			this.tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.fromString(stringData), Material.class);
+		public BQBlockTag(String customName, String stringData) {
+			this(customName, Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.fromString(stringData), Material.class));
 		}
 		
-		public BQBlockTag(Tag<Material> tag) {
+		public BQBlockTag(String customName, Tag<Material> tag) {
+			super(customName);
 			this.tagKey = tag.getKey().toString();
 			this.tag = tag;
 		}
@@ -95,12 +94,12 @@ public class Post1_13 {
 		}
 		
 		@Override
-		public String getName() {
+		public String getDefaultName() {
 			return tag == null ? tagKey : tag.getKey().getKey();
 		}
 		
 		@Override
-		public String getAsString() {
+		public String getDataString() {
 			return BQBlock.TAG_HEADER + tagKey;
 		}
 		

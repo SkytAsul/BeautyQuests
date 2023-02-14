@@ -1,9 +1,7 @@
 package fr.skytasul.quests.gui.blocks;
 
 import static fr.skytasul.quests.gui.ItemUtils.item;
-
 import java.util.function.BiConsumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -12,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
@@ -28,9 +25,12 @@ import fr.skytasul.quests.utils.types.BQBlock;
 
 public class SelectBlockGUI implements CustomInventory{
 	
-	private static final int TYPE_SLOT = 3;
-	private static final int DATA_SLOT = 4;
-	private static final int TAG_SLOT = 5;
+	private static final int AMOUNT_SLOT = 1;
+	private static final int NAME_SLOT = 2;
+	private static final int TYPE_SLOT = 4;
+	private static final int DATA_SLOT = 5;
+	private static final int TAG_SLOT = 6;
+	private static final int FINISH_SLOT = 8;
 	
 	private ItemStack done = item(XMaterial.DIAMOND, Lang.done.toString());
 	
@@ -40,6 +40,7 @@ public class SelectBlockGUI implements CustomInventory{
 	public Inventory inv;
 	
 	private XMaterial type = XMaterial.STONE;
+	private String customName = null;
 	private String blockData = null;
 	private String tag = null;
 	private int amount = 1;
@@ -62,10 +63,13 @@ public class SelectBlockGUI implements CustomInventory{
 	public Inventory open(Player p){
 		inv = Bukkit.createInventory(null, 9, name());
 		
-		if (allowAmount) inv.setItem(1, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+		if (allowAmount)
+			inv.setItem(AMOUNT_SLOT, item(XMaterial.REDSTONE, Lang.Amount.format(amount)));
+		inv.setItem(NAME_SLOT,
+				item(XMaterial.NAME_TAG, Lang.blockName.toString(), QuestOption.formatNullableValue(null, true)));
 		if (NMS.getMCVersion() >= 13) inv.setItem(DATA_SLOT, item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(), Lang.NotSet.toString()));
 		if (NMS.getMCVersion() >= 13) inv.setItem(TAG_SLOT, item(XMaterial.FILLED_MAP, Lang.blockTag.toString(), QuestOption.formatDescription(Lang.blockTagLore.toString()), "", Lang.NotSet.toString()));
-		inv.setItem(8, done.clone());
+		inv.setItem(FINISH_SLOT, done.clone());
 		updateTypeItem();
 		
 		return inv = p.openInventory(inv).getTopInventory();
@@ -102,7 +106,7 @@ public class SelectBlockGUI implements CustomInventory{
 		default:
 			break;
 			
-		case 1:
+		case AMOUNT_SLOT:
 			Lang.BLOCKS_AMOUNT.send(p);
 			new TextEditor<>(p, () -> openLastInv(p), obj -> {
 				amount = obj;
@@ -111,6 +115,15 @@ public class SelectBlockGUI implements CustomInventory{
 			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
 			break;
 			
+		case NAME_SLOT:
+			Lang.BLOCK_NAME.send(p);
+			new TextEditor<String>(p, () -> openLastInv(p), obj -> {
+				customName = obj;
+				ItemUtils.lore(current, QuestOption.formatNullableValue(customName, customName == null));
+				openLastInv(p);
+			}).passNullIntoEndConsumer().enter();
+			break;
+
 		case TYPE_SLOT:
 			Lang.BLOCK_NAME.send(p);
 			new TextEditor<>(p, () -> openLastInv(p), type -> {
@@ -170,15 +183,15 @@ public class SelectBlockGUI implements CustomInventory{
 			}).useStrippedMessage().enter();
 			break;
 
-		case 8:
+		case FINISH_SLOT:
 			Inventories.closeAndExit(p);
 			BQBlock block;
 			if (blockData != null) {
-				block = new Post1_13.BQBlockData(Bukkit.createBlockData(type.parseMaterial(), blockData));
+				block = new Post1_13.BQBlockData(customName, Bukkit.createBlockData(type.parseMaterial(), blockData));
 			}else if (tag != null) {
-				block = new Post1_13.BQBlockTag(tag);
+				block = new Post1_13.BQBlockTag(customName, tag);
 			}else {
-				block = new BQBlock.BQBlockMaterial(type);
+				block = new BQBlock.BQBlockMaterial(customName, type);
 			}
 			run.accept(block, amount);
 			break;

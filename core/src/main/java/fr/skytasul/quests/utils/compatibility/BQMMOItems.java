@@ -22,7 +22,7 @@ public class BQMMOItems {
         QuestsAPI.registerItemComparison(COMPARISON);
     }
 
-    public static void disable() {
+    public static void unload() {
         QuestsAPI.unregisterItemComparison(COMPARISON);
     }
 

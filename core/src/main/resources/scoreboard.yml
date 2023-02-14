@@ -8,6 +8,10 @@ quests:
   # If enabled, scoreboard lines containing a {quest_xxx} placeholder
   # will be automatically refreshed whenever the quest tracker is updated
   refreshLines: true
+  # If enabled, lines containing quest placeholders which relies on context
+  # (such as {quest_time_left} in the expansion) that are not available for the
+  # currently displayed quest will not be shown.
+  hide unknown quest placeholders: false
 
 worlds:
   # List of worlds to filter

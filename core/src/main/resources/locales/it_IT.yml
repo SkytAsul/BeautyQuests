@@ -13,6 +13,7 @@ msg:
     invalidID: '§ cLa quest con id {0} non esiste.'
     invalidPoolID: '§cLa piscina {0} Non esiste'
     alreadyStarted: '§cHai già iniziato la missione!'
+    notStarted: '§cNon stai facendo questa missione attualmente.'
   quests:
     maxLaunched: '§cTu non puoi averne più di {0} quest(s) allo stesso momento...'
     nopStep: '§cQuesta missione non ha alcun obbiettivo.'
@@ -27,6 +28,7 @@ msg:
   questItem:
     drop: Non puoi buttare un oggetto necessario per la missione!
     craft: '§cNon puoi usare un oggetto della missione per caftare!'
+    eat: '§cNon puoi mangiare un oggetto della missione!'
   stageMobs:
     noMobs: '§questa fase non ha bisogno di alcun mob da uccidere.'
     listMobs: '§aDevi uccidere {0}.'
@@ -36,6 +38,10 @@ msg:
   writeMobAmount: '§aScrivi la quantità di mob da uccidere:'
   writeMobName: '§aScrivi il nome personalizzato del mob da uccidere:'
   writeChatMessage: '§aScrivi il messaggio richiesto: (Aggiungi "{SLASH}" all''inizio se vuoi usare un comando.)'
+  writeMessage: '§aScrivi il messaggio che verrà inviato al giocatore'
+  writeStartMessage: '§aScrivi il messaggio che verrà inviato all''inizio della missione, "null" se vuoi quello predefinito o "none" se non vuoi:'
+  writeEndMsg: '§aScrivi il messaggio che verrà inviato alla fine della missione, "null" se vuoi quello predefinito o "nessuno" se vuoi nessuno. È possibile utilizzare "{0}" che verrà sostituito con i premi ottenuti.'
+  writeEndSound: '§aScrivi il nome del suono che verrà riprodotto al giocatore alla fine della missione, "null" se vuoi quello predefinito o "none" se non vuoi:'
   writeDescriptionText: '§aScrivi il testo che descrive l''obiettivo della fase:'
   writeStageText: '§aScrivi il testo che verrà inviato al giocatore all''inizio della fase:'
   moveToTeleportPoint: '§aVai alla posizione di teletrasporto desiderata.'
@@ -55,6 +61,7 @@ msg:
     skill: '§cIl tuo livello per l''abilità §e{1}§c deve essere {0}!'
     combatLevel: '§cIl tuo livello di combattimento deve essere {0}!'
     money: '§cDevi avere {0}!'
+    waitTime: '§cDevi aspettare {0} minuto(i) prima di poter riavviare questa missione!'
   experience:
     edited: '§aHai cambiato l''esperienza guadagnata da {0} a {1} punti.'
   selectNPCToKill: '§aSeleziona il NPC da uccidere.'
@@ -68,10 +75,12 @@ msg:
     negative: '§cDevi inserire un numero positivo!'
     zero: '§cDevi inserire un numero diverso da 0!'
     invalid: '§c{0} non è un numero valido.'
+    notInBounds: Il valore di entrata deve essere compreso fra {0} e {1}
   errorOccurred: '§cSi è verificato un errore, contatta un amministratore! §4§lCodice di errore: {0}'
   commandsDisabled: '§cAttualmente non sei autorizzato a eseguire comandi!'
   indexOutOfBounds: '§cIl numero {0} è fuori dai limiti! Deve essere compreso tra {1} e {2}.'
   invalidBlockData: '§cIl blockdata {0} non è valido o incompatibile con il blocco {1}.'
+  invalidBlockTag: '§cTag blocco {0} non disponibile.'
   bringBackObjects: Riportami {0}.
   inventoryFull: '§cIl tuo inventario è pieno, l''oggetto è stato droppato sul pavimento.'
   playerNeverConnected: '§cImpossibile trovare informazioni sul giocatore {0}.'
@@ -204,7 +213,6 @@ msg:
       list: '§aUn elenco di tutti i Mythic Mobs:'
       isntMythicMob: '§cQuesto Mythic Mob non esiste.'
       disabled: '§cMythicMob è disabilitato.'
-    epicBossDoesntExist: '§cQuesto Epic Boss non esiste.'
     textList:
       syntax: '§cSintassi corretta: '
       help:
@@ -291,7 +299,6 @@ inv:
       itemLore: "La missione può essere \navviata più volte?"
     cancellable: Annullabile dal giocatore
     scoreboardItem: Abilita scoreboard
-    hideItem: Nascondi menu e dynmap
     bypassLimit: Non contare il limite della quest
     questName: '§a§lModifica il nome della quest'
     setItemsRewards: '§eModifica ricompense'

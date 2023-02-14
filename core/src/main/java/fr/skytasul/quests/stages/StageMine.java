@@ -1,9 +1,11 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Spliterator;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,13 +32,14 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.CountableObject;
 
 @LocatableType (types = LocatedType.BLOCK)
 public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable {
 
 	private boolean placeCancelled;
 	
-	public StageMine(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> blocks) {
+	public StageMine(QuestBranch branch, List<CountableObject<BQBlock>> blocks) {
 		super(branch, blocks);
 	}
 	
@@ -83,10 +86,13 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		Player p = e.getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (!branch.hasStageLaunched(acc, this)) return;
-		Map<Integer, Integer> playerBlocks = getPlayerRemainings(acc, true);
+
+		Map<UUID, Integer> playerBlocks = getPlayerRemainings(acc, true);
 		if (playerBlocks == null) return;
-		for (Integer id : playerBlocks.keySet()) {
-			if (objectApplies(super.objects.get(id).getKey(), e.getBlock())) {
+		for (UUID id : playerBlocks.keySet()) {
+			Optional<CountableObject<BQBlock>> object = getObject(id);
+			if (object.isPresent() && objectApplies(object.get().getObject(), e.getBlock())) {
+				// we cannot use Optional#ifPresent(...) as we must stop the loop
 				e.getBlock().setMetadata("playerInStage", new FixedMetadataValue(BeautyQuests.getInstance(), p.getName()));
 				return;
 			}
@@ -95,7 +101,8 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
-		return BQBlock.getNearbyBlocks(fetcher, objects.values().stream().map(Entry::getKey).collect(Collectors.toList()));
+		return BQBlock.getNearbyBlocks(fetcher,
+				objects.stream().map(CountableObject::getObject).collect(Collectors.toList()));
 	}
 	
 	@Override
@@ -105,7 +112,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	}
 	
 	public static StageMine deserialize(ConfigurationSection section, QuestBranch branch) {
-		StageMine stage = new StageMine(branch, new HashMap<>());
+		StageMine stage = new StageMine(branch, new ArrayList<>());
 		stage.deserialize(section);
 
 		if (section.contains("placeCancelled")) stage.placeCancelled = section.getBoolean("placeCancelled");
@@ -142,7 +149,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		
 		@Override
 		public StageMine finishStage(QuestBranch branch) {
-			StageMine stage = new StageMine(branch, blocks);
+			StageMine stage = new StageMine(branch, getImmutableBlocks());
 			stage.setPlaceCancelled(prevent);
 			return stage;
 		}

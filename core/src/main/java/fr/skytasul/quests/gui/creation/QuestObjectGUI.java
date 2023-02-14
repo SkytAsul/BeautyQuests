@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -110,7 +108,9 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 		QuestsAPI.getRewards().register(new RewardCreator("requirementDependentReward", RequirementDependentReward.class, ItemUtils.item(XMaterial.REDSTONE, Lang.rewardWithRequirements.toString()), RequirementDependentReward::new, true).setCanBeAsync(true));
 		QuestsAPI.getRewards().register(new RewardCreator("randomReward", RandomReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardRandom.toString()), RandomReward::new, true).setCanBeAsync(true));
 		QuestsAPI.getRewards().register(new RewardCreator("wait", WaitReward.class, ItemUtils.item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true).setCanBeAsync(true));
-		QuestsAPI.getRewards().register(new RewardCreator("titleReward", TitleReward.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
+		if (NMS.getMCVersion() >= 9)
+			QuestsAPI.getRewards().register(new RewardCreator("titleReward", TitleReward.class,
+					ItemUtils.item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 		
 		DebugUtils.logMessage("Initlializing default requirements.");
 		

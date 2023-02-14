@@ -271,17 +271,27 @@ scoreboard:
 indication:
   cancelQuest: '§7Biztos vagy benne, hogy megakarod szakítani ezt a küldetést {0}?'
   removeQuest: '§7Biztos vagy benne, hogy elakarod távolítani ezt a küldetést {0}?'
+description:
+  requirement:
+    level: 'Szint {0}'
 misc:
   format:
     prefix: '§6<§e§lKüldetések§r§6> §r'
     npcText: '§6[{2}/{3}] §e§l{0}: §r§e {1}'
     selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
+  time:
+    weeks: '{0} hét'
+    days: '{0} nap'
+    hours: '{0} óra'
+    minutes: '{0} perc'
+    lessThanAMinute: 'kisebb mint egy perc'
   stageType:
     region: Találd meg a helyet
     npc: Találd meg őt
     items: Hozz vissza tárgyakat
     mobs: Ölj meg szörnyeket
     mine: Törj blokkokat
+    placeBlocks: Tegyél le egy blokkot
     chat: Írj chatbe
     interact: Lépj interakcióba blokkokal
     Fish: Fogj halakat
@@ -304,6 +314,11 @@ misc:
     water: Vizes vödör
     lava: Lávás vödör
     milk: Tejes vödör
+  click:
+    right: Jobb klikk
+    left: Bal klikk
+    shift-right: Shift+Jobb klikk
+    shift-left: Shift+Bal klikk
   questItemLore: '§e§o Küldetés Tárgy'
   hologramText: '§7§lKüldetés NPC'
   mobsProgression: '§6§l{0}: §r§e{1}/{2}'

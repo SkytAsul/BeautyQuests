@@ -3,14 +3,12 @@ package fr.skytasul.quests.gui.templates;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -27,6 +25,9 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 	
 	public ListGUI(String name, DyeColor color, Collection<T> objects) {
 		super(name, color, objects);
+		if (objects.contains(null))
+			throw new IllegalArgumentException("Object cannot be null in a list GUI");
+
 		super.objects.add(null);
 		super.validate = list -> {
 			list.remove(null);

@@ -1,6 +1,7 @@
 package fr.skytasul.quests.scoreboards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ import fr.skytasul.quests.utils.nms.NMS;
 public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
-	private static final int maxLength = NMS.getMCVersion() >= 13 ? 128 : 30;
+	private static final int maxLength = NMS.getMCVersion() >= 13 ? 1024 : 30;
 	
 	private PlayerAccount acc;
 	private Player p;
@@ -298,12 +299,21 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				String text = getValue();
 				if (hasQuestPlaceholders)
 					text = formatQuestPlaceholders(text);
-				text = Utils.finalFormat(p, text, true);
-				if (text.equals(lastValue)) return false;
-				
-				lines = ChatUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
-				
-				lastValue = text;
+
+				if (text == null) {
+					// in this case, the line must not be displayed
+
+					lines = Collections.emptyList();
+					lastValue = null;
+				} else {
+					text = Utils.finalFormat(p, text, true);
+					if (text.equals(lastValue))
+						return false;
+
+					lines = ChatUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
+
+					lastValue = text;
+				}
 				return true;
 			}
 			if (time) timeLeft--;
@@ -353,6 +363,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 										shown, acc, PlayerListGUI.Category.IN_PROGRESS, Source.SCOREBOARD);
 							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
 						} else {
+							if (manager.hideUnknownQuestPlaceholders()) {
+								// early return as there is no point continuing processing placeholders
+								// as this line won't be displayed
+								return null;
+							}
+
 							replacement = descriptionId;
 						}
 					}

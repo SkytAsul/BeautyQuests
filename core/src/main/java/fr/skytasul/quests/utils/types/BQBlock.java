@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
-
 import org.bukkit.block.Block;
-
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
@@ -21,10 +19,18 @@ public abstract class BQBlock {
 	
 	public static final String BLOCKDATA_HEADER = "blockdata:";
 	public static final String TAG_HEADER = "tag:";
+	public static final String CUSTOM_NAME_FOOTER = "|customname:";
 	
+	private final String customName;
+
 	private XMaterial cachedMaterial;
+	private String cachedName;
 	
-	public abstract String getAsString();
+	protected BQBlock(String customName) {
+		this.customName = customName;
+	}
+
+	protected abstract String getDataString();
 	
 	public abstract boolean applies(Block block);
 	
@@ -35,19 +41,41 @@ public abstract class BQBlock {
 		return cachedMaterial;
 	}
 	
-	public String getName() {
+	public String getDefaultName() {
 		return MinecraftNames.getMaterialName(getMaterial());
 	}
+
+	public final String getName() {
+		if (cachedName == null)
+			cachedName = customName == null ? getDefaultName() : customName;
+
+		return cachedName;
+	}
+
+	public final String getAsString() {
+		return getDataString() + getFooter();
+	}
 	
+	private String getFooter() {
+		return customName == null ? "" : CUSTOM_NAME_FOOTER + customName;
+	}
+
 	@Override
 	public String toString() {
 		return "BQBlock{" + getAsString() + "}";
 	}
-	
+
 	public static BQBlock fromString(String string) {
-		if (string.startsWith(BLOCKDATA_HEADER)) return new Post1_13.BQBlockData(string.substring(BLOCKDATA_HEADER.length()));
-		if (string.startsWith(TAG_HEADER)) return new Post1_13.BQBlockTag(string.substring(TAG_HEADER.length()));
-		return new BQBlockMaterial(XMaterial.valueOf(string));
+		int nameIndex = string.lastIndexOf(CUSTOM_NAME_FOOTER);
+		String customName = nameIndex == -1 ? null : string.substring(nameIndex + CUSTOM_NAME_FOOTER.length());
+
+		int dataEnd = nameIndex == -1 ? string.length() : nameIndex;
+
+		if (string.startsWith(BLOCKDATA_HEADER))
+			return new Post1_13.BQBlockData(customName, string.substring(BLOCKDATA_HEADER.length(), dataEnd));
+		if (string.startsWith(TAG_HEADER))
+			return new Post1_13.BQBlockTag(customName, string.substring(TAG_HEADER.length(), dataEnd));
+		return new BQBlockMaterial(customName, XMaterial.valueOf(string.substring(0, dataEnd)));
 	}
 	
 	public static Spliterator<Locatable.Located> getNearbyBlocks(Locatable.MultipleLocatable.NearbyFetcher fetcher, Collection<BQBlock> types) {
@@ -115,7 +143,8 @@ public abstract class BQBlock {
 		
 		private final XMaterial material;
 		
-		public BQBlockMaterial(XMaterial material) {
+		public BQBlockMaterial(String customName, XMaterial material) {
+			super(customName);
 			this.material = material;
 		}
 		
@@ -130,7 +159,7 @@ public abstract class BQBlock {
 		}
 		
 		@Override
-		public String getAsString() {
+		public String getDataString() {
 			return material.name();
 		}
 		

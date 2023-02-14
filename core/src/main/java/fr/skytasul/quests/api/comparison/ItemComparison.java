@@ -1,14 +1,13 @@
 package fr.skytasul.quests.api.comparison;
 
 import java.util.function.BiPredicate;
-
 import org.bukkit.inventory.ItemStack;
 
 public class ItemComparison {
 	
 	private final String id, itemName, itemDescription;
 	private final BiPredicate<ItemStack, ItemStack> comparator;
-	private boolean enabledByDefault, needsMeta;
+	private boolean enabledByDefault, needsMeta, hasPriority;
 	
 	public ItemComparison(String id, String itemName, String itemDescription, BiPredicate<ItemStack, ItemStack> comparator) {
 		this.id = id;
@@ -47,6 +46,15 @@ public class ItemComparison {
 		return needsMeta;
 	}
 	
+	public ItemComparison setHasPriority() {
+		this.hasPriority = true;
+		return this;
+	}
+
+	public boolean hasPriority() {
+		return hasPriority;
+	}
+
 	/**
 	 * This must <i>not</i> check the amount of the item. The function call must not affect the item in any way.
 	 */

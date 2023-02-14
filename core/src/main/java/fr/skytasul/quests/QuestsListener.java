@@ -99,10 +99,10 @@ public class QuestsListener implements Listener{
 					return;
 				}
 			}
-			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
+			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, quest -> {
 				if (quest == null) return;
 				quest.clickNPC(p);
-			});
+			}, true);
 			gui.setValidate(__ -> {
 				new PlayerListGUI(acc).create(p);
 			}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));

@@ -45,7 +45,9 @@ import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 public class DependenciesManager implements Listener {
 	
 	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.setNPCsManager(new BQServerNPCs()), null, plugin -> {
-		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) return true;
+		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) // NOSONAR
+			return true;
+
 		BeautyQuests.logger.warning("Your version of znpcs (" + plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
 		return false;
 	});
@@ -100,7 +102,9 @@ public class DependenciesManager implements Listener {
 	
 	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
 	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
-		if (!plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays")) return false;
+		if (!plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays")) // NOSONAR
+			return false;
+		
 		try {
 			Class.forName("me.filoghost.holographicdisplays.api.HolographicDisplaysAPI");
 			return true;
@@ -113,7 +117,8 @@ public class DependenciesManager implements Listener {
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
-	public static final BQDependency wg = new BQDependency("WorldGuard", BQWorldGuard::init, () -> BQWorldGuard.getInstance().disable(), null);
+	public static final BQDependency wg =
+			new BQDependency("WorldGuard", BQWorldGuard::initialize, BQWorldGuard::unload);
 	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.getRequirements().register(new RequirementCreator("jobLevelRequired", JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
 	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.getRequirements().register(new RequirementCreator("factionRequired", FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
 	public static final BQDependency acc = new BQDependency("AccountsHook");
@@ -126,8 +131,10 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
 	public static final BQDependency PlayerBlockTracker = new BQDependency("PlayerBlockTracker");
 	public static final BQDependency WildStacker = new BQDependency("WildStacker", BQWildStacker::initialize);
-	public static final BQDependency mmoItems =
-			new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::disable, null);
+	public static final BQDependency ItemsAdder =
+			new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload);
+	public static final BQDependency MMOItems =
+			new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload);
 	
 	//public static final BQDependency par = new BQDependency("Parties");
 	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
@@ -142,12 +149,13 @@ public class DependenciesManager implements Listener {
 		dependencies = new ArrayList<>(Arrays.asList(
 				/*par, eboss, */
 				znpcs, citizens, // npcs
-				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, mmoItems, // other
+				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
 				mm, boss, advancedspawners, LevelledMobs, WildStacker, // mobs
 				vault, papi, acc, // hooks
 				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
 				dyn, BlueMap, // maps
-				cmi, holod2, holod3, decentholograms // holograms
+				cmi, holod2, holod3, decentholograms, // holograms
+				ItemsAdder, MMOItems // items
 				));
 	}
 	
@@ -213,6 +221,10 @@ public class DependenciesManager implements Listener {
 			this(pluginName, initialize, null, null);
 		}
 		
+		public BQDependency(String pluginName, Runnable initialize, Runnable disable) {
+			this(pluginName, initialize, disable, null);
+		}
+
 		public BQDependency(String pluginName, Runnable initialize, Runnable disable, Predicate<Plugin> isValid) {
 			Validate.notNull(pluginName);
 			this.pluginNames = new ArrayList<>();

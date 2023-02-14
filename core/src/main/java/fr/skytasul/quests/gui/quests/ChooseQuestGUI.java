@@ -3,7 +3,6 @@ package fr.skytasul.quests.gui.quests;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Consumer;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -11,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -22,6 +21,7 @@ import fr.skytasul.quests.utils.Lang;
 public class ChooseQuestGUI extends PagedGUI<Quest> {
 	
 	private Consumer<Quest> run;
+	private boolean canSkip;
 	
 	public CustomInventory openLastInv(Player p) {
 		p.openInventory(inv);
@@ -29,11 +29,16 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 	}
 	
 	public ChooseQuestGUI(Collection<Quest> quests, Consumer<Quest> run) {
+		this(quests, run, false);
+	}
+
+	public ChooseQuestGUI(Collection<Quest> quests, Consumer<Quest> run, boolean canSkip) {
 		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);
 		Validate.notNull(run, "Runnable cannot be null");
 		super.objects.sort(Comparator.naturalOrder());
 		
 		this.run = run;
+		this.canSkip = canSkip;
 	}
 	
 	@Override
@@ -41,7 +46,7 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 		if (objects.size() == 0) {
 			run.accept(null);
 			return null;
-		}else if (objects.size() == 1) {
+		} else if (objects.size() == 1 && canSkip && QuestsConfiguration.skipNpcGuiIfOnlyOneQuest()) {
 			run.accept(objects.get(0));
 			return null;
 		}

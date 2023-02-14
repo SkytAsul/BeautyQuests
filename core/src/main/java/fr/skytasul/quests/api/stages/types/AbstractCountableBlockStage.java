@@ -1,24 +1,24 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.CountableObject;
+import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> {
 	
-	protected AbstractCountableBlockStage(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> objects) {
+	protected AbstractCountableBlockStage(QuestBranch branch, List<CountableObject<BQBlock>> objects) {
 		super(branch, objects);
 	}
 
@@ -45,28 +45,30 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 	
 	public abstract static class AbstractCreator<T extends AbstractCountableBlockStage> extends StageCreation<T> {
 		
-		protected Map<Integer, Entry<BQBlock, Integer>> blocks;
+		protected List<MutableCountableObject<BQBlock>> blocks;
 		
 		protected AbstractCreator(Line line, boolean ending) {
 			super(line, ending);
 			
 			line.setItem(getBlocksSlot(), getBlocksItem(), (p, item) -> {
-				BlocksGUI blocksGUI = Inventories.create(p, new BlocksGUI());
-				blocksGUI.setBlocksFromMap(blocks);
-				blocksGUI.run = obj -> {
+				new BlocksGUI(blocks, obj -> {
 					setBlocks(obj);
 					reopenGUI(p, true);
-				};
+				}).create(p);
 			});
 		}
 		
+		public List<CountableObject<BQBlock>> getImmutableBlocks() {
+			return blocks.stream().map(MutableCountableObject::toImmutable).collect(Collectors.toList());
+		}
+
 		protected abstract ItemStack getBlocksItem();
 		
 		protected int getBlocksSlot() {
 			return 7;
 		}
 		
-		public void setBlocks(Map<Integer, Entry<BQBlock, Integer>> blocks) {
+		public void setBlocks(List<MutableCountableObject<BQBlock>> blocks) {
 			this.blocks = blocks;
 			line.editItem(getBlocksSlot(), ItemUtils.lore(line.getItem(getBlocksSlot()), Lang.optionValue.format(blocks.size() + " blocks")));
 		}
@@ -74,16 +76,16 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			Inventories.create(p, new BlocksGUI()).run = obj -> {
+			new BlocksGUI(Collections.emptyList(), obj -> {
 				setBlocks(obj);
 				reopenGUI(p, true);
-			};
+			}).create(p);
 		}
 		
 		@Override
 		public void edit(T stage) {
 			super.edit(stage);
-			setBlocks(stage.cloneObjects());
+			setBlocks(stage.getMutableObjects());
 		}
 		
 	}

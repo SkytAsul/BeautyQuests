@@ -61,6 +61,7 @@ public class QuestsConfiguration {
 	private static boolean stageStart = true;
 	private static boolean questConfirmGUI = false;
 	private static Collection<ClickType> npcClicks = Arrays.asList(ClickType.RIGHT, ClickType.SHIFT_RIGHT);
+	private static boolean skipNpcGuiIfOnlyOneQuest = true;
 	private static String dSetName = "Quests";
 	private static String dIcon = "bookshelf";
 	private static int dMinZoom = 0;
@@ -179,6 +180,7 @@ public class QuestsConfiguration {
 		}catch (IllegalArgumentException ex) {
 			BeautyQuests.logger.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 		}
+		skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
@@ -319,6 +321,10 @@ public class QuestsConfiguration {
 		return npcClicks;
 	}
 	
+	public static boolean skipNpcGuiIfOnlyOneQuest() {
+		return skipNpcGuiIfOnlyOneQuest;
+	}
+
 	public static boolean handleGPS(){
 		return gps;
 	}

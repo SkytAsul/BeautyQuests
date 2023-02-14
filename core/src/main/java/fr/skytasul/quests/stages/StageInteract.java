@@ -137,7 +137,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		}else {
 			BQBlock block;
 			if (section.contains("material")) {
-				block = new BQBlock.BQBlockMaterial(XMaterial.valueOf(section.getString("material")));
+				block = new BQBlock.BQBlockMaterial(null, XMaterial.valueOf(section.getString("material")));
 			}else {
 				block = BQBlock.fromString(section.getString("block"));
 			}
