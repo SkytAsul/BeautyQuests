@@ -373,7 +373,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 						}
 					}
 				}
-				matcher.appendReplacement(textBuffer, replacement);
+				matcher.appendReplacement(textBuffer, Matcher.quoteReplacement(replacement));
 			}
 			matcher.appendTail(textBuffer);
 			return textBuffer.toString();
