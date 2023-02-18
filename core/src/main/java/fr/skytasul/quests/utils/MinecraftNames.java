@@ -87,7 +87,8 @@ public class MinecraftNames {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			try {
 				PotionData basePotion = meta.getBasePotionData();
-				XPotion potion = XPotion.matchXPotion(basePotion.getType().getEffectType());
+				XPotion potion = basePotion.getType().name().equals("TURTLE_MASTER") ? XPotion.TURTLE_MASTER
+						: XPotion.matchXPotion(basePotion.getType().getEffectType());
 				String string = potion.getTranslated(type);
 				if (basePotion.isUpgraded()) {
 					string += " II" + potion.strongDuration;
