@@ -145,7 +145,10 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
-		DebugUtils.logMessage(player.getName() + " joined the server"); // for timing purpose
+
+		DebugUtils.logMessage(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
+		// for timing purpose
+
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
 			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}

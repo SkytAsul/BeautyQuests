@@ -177,9 +177,10 @@ public abstract class PlayersManager {
 
 		cachedAccounts.put(p, request.getAccount());
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
-			String loadMessage = "Completed load of " + p.getName() + " datas within " + (System.currentTimeMillis() - time)
-					+ " ms (" + request.getAccount().getQuestsDatas().size() + " quests, "
-					+ request.getAccount().getPoolDatas().size() + " pools)";
+			String loadMessage =
+					"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
+							+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()
+							+ " quests, " + request.getAccount().getPoolDatas().size() + " pools)";
 
 			if (request.getLoadedFrom() != null)
 				loadMessage += " | Loaded from " + request.getLoadedFrom();
