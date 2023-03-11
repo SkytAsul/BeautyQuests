@@ -243,7 +243,6 @@ public class PlayersManagerDB extends PlayersManager {
 	@Override
 	public CompletableFuture<Integer> removeQuestDatas(Quest quest) {
 		return CompletableFuture.supplyAsync(() -> {
-			int amount = 0;
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(removeExistingQuestDatas)) {
 				for (PlayerAccount acc : cachedAccounts.values()) {
@@ -251,12 +250,12 @@ public class PlayersManagerDB extends PlayersManager {
 					if (datas != null) datas.stop();
 				}
 				statement.setInt(1, quest.getID());
-				amount += statement.executeUpdate();
+				int amount = statement.executeUpdate();
+				DebugUtils.logMessage("Removed " + amount + " in-database quest datas for quest " + quest.getID());
+				return amount;
 			} catch (SQLException ex) {
 				throw new DataException("Failed to remove quest datas from database.", ex);
 			}
-			DebugUtils.logMessage("Removed " + amount + " quest datas for quest " + quest.getID());
-			return amount;
 		});
 	}
 
@@ -639,7 +638,7 @@ public class PlayersManagerDB extends PlayersManager {
 													BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
 												}
 											}
-										}catch (SQLException ex) {
+										} catch (Exception ex) {
 											BeautyQuests.logger.severe("An error occurred while updating a player's quest datas.", ex);
 										}finally {
 											dbLock.unlock();
@@ -695,13 +694,16 @@ public class PlayersManagerDB extends PlayersManager {
 		
 		private void createDataRow(Connection connection) throws SQLException {
 			DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
-			try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData, Statement.RETURN_GENERATED_KEYS)) {
+			try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData, new String[] {"id"})) {
 				insertStatement.setInt(1, acc.index);
 				insertStatement.setInt(2, questID);
 				insertStatement.setQueryTimeout(DATA_QUERY_TIMEOUT);
-				insertStatement.executeUpdate();
+				int affectedLines = insertStatement.executeUpdate();
+				if (affectedLines != 1)
+					throw new DataException("No row inserted");
 				ResultSet generatedKeys = insertStatement.getGeneratedKeys();
-				generatedKeys.next();
+				if (!generatedKeys.next())
+					throw new DataException("Generated keys ResultSet is empty");
 				dbId = generatedKeys.getInt(1);
 				DebugUtils.logMessage("Created row " + dbId + " for quest " + questID + ", account " + acc.index);
 			}

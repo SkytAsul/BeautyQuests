@@ -207,6 +207,10 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 			return false;
 
 		DebugUtils.logMessage("Cancelling quest " + id + " for player " + acc.getNameAndID());
+		return true;
+	}
+
+	private void cancelInternal(PlayerAccount acc) {
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
@@ -218,7 +222,6 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 				BeautyQuests.logger.warning("Trying to interrupt branching in a cancel reward (useless). " + toString());
 			}
 		}
-		return true;
 	}
 	
 	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc){
@@ -230,7 +233,9 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 
 		if (acc.hasQuestDatas(this)) {
 			hadDatas = true;
-			cancelPlayer(acc);
+
+			DebugUtils.logMessage("Resetting quest " + id + " for player " + acc.getNameAndID());
+			cancelInternal(acc);
 			future = acc.removeQuestDatas(this);
 		}
 

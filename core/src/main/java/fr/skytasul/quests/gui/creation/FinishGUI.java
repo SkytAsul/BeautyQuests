@@ -170,6 +170,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		boolean keepPlayerDatas = Boolean.TRUE.equals(this.keepPlayerDatas);
 		Quest qu;
 		if (session.isEdition()) {
+			DebugUtils.logMessage(
+					"Editing quest " + session.getQuestEdited().getID() + " with keep datas: " + keepPlayerDatas);
 			session.getQuestEdited().remove(false, false);
 			qu = new Quest(session.getQuestEdited().getID(), session.getQuestEdited().getFile());
 		}else {
