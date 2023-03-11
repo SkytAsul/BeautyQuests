@@ -136,7 +136,7 @@ public abstract class BQBlock {
 				throw new NoSuchElementException();
 			}
 			
-		}, Spliterator.ORDERED & Spliterator.IMMUTABLE & Spliterator.DISTINCT & Spliterator.NONNULL);
+		}, Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.DISTINCT | Spliterator.NONNULL);
 	}
 	
 	public static class BQBlockMaterial extends BQBlock {
