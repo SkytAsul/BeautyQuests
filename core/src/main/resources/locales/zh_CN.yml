@@ -13,6 +13,7 @@ msg:
     invalidID: '§cID为 {0} 的任务不存在.'
     invalidPoolID: '§c任务池{0}不存在。'
     alreadyStarted: '§c你已经接受了这个任务!'
+    notStarted: '§c你未执行这个任务。'
   quests:
     maxLaunched: '§c你不能同时进行多于{0}个任务……'
     nopStep: '§c这个任务没有任何阶段...  :-)'
@@ -517,6 +518,7 @@ inv:
       §a§l左击§a以编辑数量。
       §l§l§nShift§a§l+左击§a以编辑生物名称。
       §c§l右击§c以删除。
+    setLevel: 设置最低等级
   mobSelect:
     name: 选择怪物类型
     bukkitEntityType: '§e选择一个生物类型'
@@ -592,6 +594,7 @@ inv:
     name: 选择方块
     material: '§e材料: {0}'
     materialNotItemLore: '所选方块无法显示为物品。它仍正确地存储为{0}。'
+    blockName: '§b自定义方块名称'
     blockData: '§d方块数据(高级)'
     blockTag: '§d标签 (高级)'
     blockTagLore: '选择描述可能方块列表的标签。可使用数据包自定义标签。你可以在Minecraft Wiki查询标签列表。'
