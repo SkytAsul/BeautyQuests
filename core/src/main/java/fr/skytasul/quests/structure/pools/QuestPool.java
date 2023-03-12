@@ -191,24 +191,19 @@ public class QuestPool implements Comparable<QuestPool> {
 			if (notCompleted.isEmpty()) { // all quests completed
 				notCompleted = replenishQuests(datas);
 				if (notCompleted.isEmpty()) {
-					//System.out.println("QuestPool.give() not completed empty");
 					if (started.isEmpty()) return Lang.POOL_ALL_COMPLETED.toString();
 					break;
 				}
 			}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) {
-				//System.out.println("QuestPool.give() max");
 				if (started.isEmpty()) return Lang.POOL_MAX_QUESTS.format(maxQuests);
 				break;
 			}
 			
 			List<Quest> notStarted = notCompleted.stream().filter(quest -> !quest.hasStarted(acc)).collect(Collectors.toList());
-			//System.out.println("QuestPool.give() not completed " + notCompleted.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(" ")));
 			if (notStarted.isEmpty()) notStarted = replenishQuests(datas);
-			//System.out.println("QuestPool.give() not started " + notStarted.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(" ")));
 			
 			List<Quest> available = notStarted.stream().filter(quest -> quest.isLauncheable(p, acc, false)).collect(Collectors.toList());
 			if (available.isEmpty()) {
-				//System.out.println("QuestPool.give() no available");
 				if (started.isEmpty()) return Lang.POOL_NO_AVAILABLE.toString();
 				break;
 			}else {
@@ -224,11 +219,10 @@ public class QuestPool implements Comparable<QuestPool> {
 				});
 			}
 		}
-		//return "started quest(s) #" + started.stream().map(x -> Integer.toString(x.getID())).collect(Collectors.joining(", "));
-		return null;
+		return "started quest(s) " + started.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "));
 	}
 	
-	List<Quest> replenishQuests(PlayerPoolDatas datas) {
+	private List<Quest> replenishQuests(PlayerPoolDatas datas) {
 		if (!redoAllowed) return Collections.emptyList();
 		List<Quest> notDoneQuests = quests.stream()
 				.filter(Quest::isRepeatable)

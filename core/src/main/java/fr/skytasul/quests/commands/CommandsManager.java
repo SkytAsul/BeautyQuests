@@ -114,6 +114,7 @@ public class CommandsManager {
 		
 		registerCommands("", new CommandsAdmin(), new CommandsPlayer(), new CommandsPlayerManagement());
 		registerCommands("scoreboard", new CommandsScoreboard());
+		registerCommands("pools", new CommandsPools());
 	}
 	
 	public void registerCommands(String subpath, OrphanCommand... commands) {

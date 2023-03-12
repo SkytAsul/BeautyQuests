@@ -143,6 +143,8 @@ public enum Lang implements Locale {
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
 	POOL_RESET_TIMER("msg.command.resetPlayerPool.timer"), // 0: pool ID, 1: player
 	POOL_RESET_FULL("msg.command.resetPlayerPool.full"), // 0: pool ID, 1: player
+	POOL_START_ERROR("msg.command.startPlayerPool.error", ErrorPrefix), // 0: pool ID, 1: player
+	POOL_START_SUCCESS("msg.command.startPlayerPool.success", SuccessPrefix), // 0: pool ID, 1: player, 2: result
 	
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id

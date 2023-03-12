@@ -80,6 +80,8 @@ permissions:
       beautyquests.command.scoreboard: true
       beautyquests.command.scoreboard.toggle: true
       beautyquests.command.checkpoint: true
+      beautyquests.command.pools: true
+      beautyquests.command.pools.start: true
   beautyquests.command.listPlayer:
     decription: 'Gives access to the menu GUI'
     default: true
@@ -145,6 +147,9 @@ permissions:
     default: true
   beautyquests.command.pools:
     description: 'Gives access to "/quests pools"'
+    default: op
+  beautyquests.command.pools.start:
+    description: 'Gives access to "/quests pools start"'
     default: op
   beautyquests.command.checkpoint:
     description: 'Allows player to use checkpoints'

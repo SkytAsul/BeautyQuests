@@ -235,21 +235,6 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}, "An error occurred while removing player quest data", sender));
 	}
 	
-	@Subcommand ("resetPlayerPool")
-	@CommandPermission ("beautyquests.command.resetPlayer")
-	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPool pool, @Switch boolean timer) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		if (timer) {
-			pool.resetPlayerTimer(acc);
-			Lang.POOL_RESET_TIMER.send(actor.getSender(), pool.getID(), player.getName());
-		}else {
-			pool.resetPlayer(acc).whenComplete(BeautyQuests.logger.logError(__ -> {
-				Lang.POOL_RESET_FULL.send(actor.getSender(), pool.getID(), player.getName());
-			}, "An error occurred while resetting pool " + pool.getID() + " to player " + player.getName(),
-					actor.getSender()));
-		}
-	}
-	
 	@Subcommand ("resetQuest")
 	@CommandPermission ("beautyquests.command.resetQuest")
 	public void resetQuest(BukkitCommandActor actor, Quest quest) {

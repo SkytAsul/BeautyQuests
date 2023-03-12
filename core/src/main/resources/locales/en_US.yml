@@ -161,6 +161,9 @@ msg:
     resetPlayerPool:
       timer: §aYou have reset the {0} pool timer of {1}.
       full: §aYou have reset the {0} pool datas of {1}.
+    startPlayerPool:
+      error: 'Failed to start the pool {0} for {1}.'
+      success: 'Started pool {0} to {1}. Result: {2}'
     scoreboard:
       lineSet: §6You have successfully edited the line {0}.
       lineReset: §6You have successfully reset the line {0}.
