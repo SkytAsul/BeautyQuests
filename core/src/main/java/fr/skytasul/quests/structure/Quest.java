@@ -207,6 +207,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 			return false;
 
 		DebugUtils.logMessage("Cancelling quest " + id + " for player " + acc.getNameAndID());
+		cancelInternal(acc);
 		return true;
 	}
 
