@@ -87,6 +87,7 @@ public class BeautyQuests extends JavaPlugin {
 	private ScoreboardManager scoreboards;
 	private QuestsManager quests;
 	private QuestPoolsManager pools;
+	private PlayersManager players;
 	
 	/* ---------- Operations -------- */
 
@@ -249,6 +250,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void registerCommands(){
 		command = new CommandsManager();
 		command.initializeCommands();
+		command.lockCommands(); // we are obligated to register Brigadier during plugin initialization...
 	}
 	
 	private void launchSaveCycle(){
@@ -369,7 +371,8 @@ public class BeautyQuests extends JavaPlugin {
 				}
 			}
 			
-			PlayersManager.manager = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			players = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			PlayersManager.manager = players;
 			
 			/*				static initialization				*/
 			if (init) {
@@ -425,7 +428,7 @@ public class BeautyQuests extends JavaPlugin {
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
 		dependencies.lockDependencies();
-		command.lockCommands();
+		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
 		
 		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
@@ -435,9 +438,10 @@ public class BeautyQuests extends JavaPlugin {
 		}
 
 		try{
-			if (db == null && backupDir != null) createPlayerDatasBackup(backupDir, (PlayersManagerYAML) PlayersManager.manager);
+			if (db == null && backupDir != null)
+				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
 			
-			PlayersManager.manager.load();
+			players.load();
 		}catch (Exception ex) {
 			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
@@ -475,7 +479,7 @@ public class BeautyQuests extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				PlayersManager.loadPlayer(p);
+				players.loadPlayer(p);
 			}
 			loaded = true;
 		}, 1L);
@@ -500,7 +504,7 @@ public class BeautyQuests extends JavaPlugin {
 			data.set("version", getDescription().getVersion());
 			
 			try {
-				PlayersManager.manager.save();
+				players.save();
 			}catch (Exception ex) {
 				logger.severe("Error when saving player datas.", ex);
 			}
@@ -522,6 +526,7 @@ public class BeautyQuests extends JavaPlugin {
 		}catch (Exception ex) {
 			logger.severe("An error occurred while closing database connection.", ex);
 		}
+		players = null;
 		PlayersManager.manager = null;
 		//HandlerList.unregisterAll(this);
 		loaded = false;
@@ -683,6 +688,10 @@ public class BeautyQuests extends JavaPlugin {
 		return pools;
 	}
 	
+	public PlayersManager getPlayersManager() {
+		return players;
+	}
+
 	public ILoggerHandler getLoggerHandler() {
 		return loggerHandler == null ? ILoggerHandler.EMPTY_LOGGER : loggerHandler;
 	}

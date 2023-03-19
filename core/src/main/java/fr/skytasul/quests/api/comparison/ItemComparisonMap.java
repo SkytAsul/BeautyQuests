@@ -1,15 +1,15 @@
 package fr.skytasul.quests.api.comparison;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.QuestsAPI;
 
 public class ItemComparisonMap implements Cloneable {
@@ -32,22 +32,25 @@ public class ItemComparisonMap implements Cloneable {
 	public void setNotDefaultComparisons(ConfigurationSection section) {
 		this.notDefault = (Map) section.getValues(false);
 		
-		effective = new ArrayList<>();
+		effective = new ArrayList<>(3);
 		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
-			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault())) effective.add(comp);
+			if (section.getBoolean(comp.getID(), comp.isEnabledByDefault()))
+				effective.add(comp);
 		}
+		updated();
 	}
 	
 	public void setNotDefaultComparisons(Map<String, Boolean> comparisons) {
 		this.notDefault = comparisons;
-		
-		effective = new ArrayList<>();
+
+		effective = new ArrayList<>(3);
 		for (ItemComparison comp : QuestsAPI.getItemComparisons()) {
 			Boolean bool = notDefault.get(comp.getID());
 			if (Boolean.FALSE.equals(bool)) continue;
 			if (!comp.isEnabledByDefault() && !Boolean.TRUE.equals(bool)) continue;
 			effective.add(comp);
 		}
+		updated();
 	}
 	
 	public Map<String, Boolean> getNotDefault() {
@@ -79,6 +82,7 @@ public class ItemComparisonMap implements Cloneable {
 		}
 		if (bool) {
 			effective.add(comparison);
+			updated();
 			return true;
 		}else {
 			effective.remove(comparison);
@@ -86,16 +90,41 @@ public class ItemComparisonMap implements Cloneable {
 		}
 	}
 	
+	private void updated() {
+		Collections.sort(effective, Comparator.comparing(ItemComparison::hasPriority));
+	}
+
 	public boolean isSimilar(ItemStack item1, ItemStack item2) {
 		boolean meta1 = item1.hasItemMeta();
 		boolean meta2 = item2.hasItemMeta();
-		return effective.stream().allMatch(x -> {
-			if (x.isMetaNeeded()) {
-				if (meta1 != meta2) return false;
-				if (!meta1) return true;
+
+		boolean lastResult = true;
+		for (ItemComparison comparison : effective) {
+			if (!comparison.hasPriority() && !lastResult) {
+				// comparisons with priority are tested at the very beginning
+				// if this comparison does not has priority and the last result is false then there is no need to go
+				// further: we can stop there
+				return false;
 			}
-			return x.isSimilar(item1, item2);
-		});
+
+			Boolean result = null;
+			
+			if (comparison.isMetaNeeded()) {
+				if (meta1 != meta2) continue;
+				if (!meta1) result = true;
+			}
+			
+			if (result == null) result = comparison.isSimilar(item1, item2);
+			
+			if (result && comparison.hasPriority()) {
+				// if the comparison has priority and matches those items then we can stop there
+				return true;
+			}
+
+			lastResult = result;
+		}
+		
+		return lastResult;
 	}
 	
 	public boolean containsItems(Inventory inv, ItemStack i, int amount) {

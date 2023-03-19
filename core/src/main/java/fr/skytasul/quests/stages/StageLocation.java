@@ -1,13 +1,11 @@
 package fr.skytasul.quests.stages;
 
 import java.util.regex.Pattern;
-
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
-
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -75,8 +73,10 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
+		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
+				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
+			return; // only rotation
 		if (!lc.isWorld(e.getTo().getWorld())) return;
-		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return; // only rotation
 		
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {

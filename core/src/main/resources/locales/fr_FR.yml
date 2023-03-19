@@ -141,6 +141,9 @@ msg:
     resetPlayerPool:
       timer: '§aVous avez réinitialisé le minuteur de {1} pour le groupe {0}.'
       full: '§aVous avez réinitialisé les données de {1} pour le groupe {0}.'
+    startPlayerPool:
+      error: 'Impossible de démarrer le groupe {0} pour {1}.'
+      success: 'Groupe {0} démarré pour {1}. Résultat: {2}'
     scoreboard:
       lineSet: '§6Vous avez modifié la ligne {0}.'
       lineReset: '§6Vous avez réinitialisé la ligne {0}.'
@@ -595,6 +598,7 @@ inv:
     name: Choisir un bloc
     material: '§eType de bloc : {0}'
     materialNotItemLore: 'Le bloc choisi ne peut pas être affiché comme un item. Il est toujours correctement sauvegardé comme {0}.'
+    blockName: '§bNom de bloc personnalisé'
     blockData: '§dBlockdata (avancé)'
     blockTag: '§dTag (avancé)'
     blockTagLore: 'Choisissez un tag qui décrit une liste de blocs possibles. Les tags peuvent être personnalisés en utilisant des datapacks. Vous pouvez trouver une liste des tags sur le Minecraft Wiki.'
@@ -663,6 +667,8 @@ inv:
     enchantsLore: Compare les enchantements des items
     repairCost: Coût de réparation
     repairCostLore: Compare les coûts de réparation des armures et des épées
+    itemsAdder: ItemsAdder
+    itemsAdderLore: Compare les IDs d'ItemsAdder
   editTitle:
     name: Modifier le titre
     title: '§6Titre'

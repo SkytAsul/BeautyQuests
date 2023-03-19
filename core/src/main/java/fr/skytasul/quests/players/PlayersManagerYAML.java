@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -100,10 +103,10 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 	
 	@Override
-	protected void removeAccount(PlayerAccount acc) {
+	protected CompletableFuture<Void> removeAccount(PlayerAccount acc) {
 		loadedAccounts.remove(acc.index);
 		identifiersIndex.remove(acc.index);
-		removePlayerFile(acc.index);
+		return CompletableFuture.runAsync(() -> removePlayerFile(acc.index));
 	}
 
 	@Override
@@ -117,15 +120,28 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 	
 	@Override
-	public int removeQuestDatas(Quest quest) {
-		loadAllAccounts();
-		int amount = 0;
-		
-		for (PlayerAccount account : loadedAccounts.values()) {
-			if (account.removeQuestDatas(quest) != null) amount++;
-		}
-		
-		return amount;
+	public CompletableFuture<Integer> removeQuestDatas(Quest quest) {
+		return CompletableFuture.supplyAsync(() -> {
+			loadAllAccounts();
+			int amount = 0;
+
+			for (PlayerAccount account : loadedAccounts.values()) {
+				try {
+					if (account.removeQuestDatas(quest).get() != null) {
+						// we can use the .get() method as the CompletableFuture created by the YAML players manager is
+						// already completed
+						amount++;
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new CompletionException(e);
+				} catch (ExecutionException e) {
+					throw new CompletionException(e);
+				}
+			}
+
+			return amount;
+		});
 	}
 
 	public boolean hasAccounts(Player p) {
@@ -162,7 +178,7 @@ public class PlayersManagerYAML extends PlayersManager {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.kickPlayer("§cCleanup operation.");
 		}
-		PlayersManager.cachedAccounts.clear();
+		cachedAccounts.clear();
 
 		loadAllAccounts();
 		int amount = 0;
@@ -221,6 +237,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	}
 
 	private synchronized void addAccount(PlayerAccount acc) {
+		Validate.notNull(acc);
 		loadedAccounts.put(acc.index, acc);
 		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;

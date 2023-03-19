@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -45,6 +46,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
@@ -95,16 +97,27 @@ public class Utils{
 		});
 	}
 	
-	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) {
+	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) throws InterruptingBranchException {
+		InterruptingBranchException interrupting = null;
+
 		List<String> msg = new ArrayList<>();
 		for (AbstractReward rew : rewards) {
 			try {
 				List<String> messages = rew.give(p);
 				if (messages != null) msg.addAll(messages);
+			} catch (InterruptingBranchException ex) {
+				if (interrupting != null) {
+					BeautyQuests.logger.warning("Interrupting the same branch via rewards twice!");
+				} else {
+					interrupting = ex;
+				}
 			} catch (Throwable e) {
 				BeautyQuests.logger.severe("Error when giving reward " + rew.getName() + " to " + p.getName(), e);
 			}
 		}
+
+		if (interrupting != null)
+			throw interrupting;
 		return msg;
 	}
 	
@@ -149,7 +162,14 @@ public class Utils{
 	}
 	
 	public static String getStringFromNameAndAmount(String name, String amountColor, int remaining, int total, boolean showXOne) {
-		return name + ((remaining > 1 || showXOne) ? "§r" + amountColor + " " + Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, total - remaining, total) : "");
+		int done = total - remaining;
+		int percentage = (int) (done / (double) total * 100);
+		String string = name;
+		if (remaining > 1 || showXOne) {
+			string += "§r" + amountColor + " "
+					+ Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, done, total, percentage);
+		}
+		return string;
 	}
 	
 	public static void sendMessage(CommandSender sender, String msg, Object... replace){
@@ -361,13 +381,16 @@ public class Utils{
 		}
 	}
 	
-	
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {
 			run.run();
 		}else Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
 	}
 	
+	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
+		return (__, ___) -> runSync(run);
+	}
+
 	public static void runSync(Runnable run){
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
 	}

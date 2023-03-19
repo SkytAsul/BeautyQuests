@@ -3,11 +3,9 @@ package fr.skytasul.quests.commands;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -19,7 +17,6 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
-
 import revxrsal.commands.autocomplete.SuggestionProvider;
 import revxrsal.commands.bukkit.BukkitCommandActor;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
@@ -117,6 +114,7 @@ public class CommandsManager {
 		
 		registerCommands("", new CommandsAdmin(), new CommandsPlayer(), new CommandsPlayerManagement());
 		registerCommands("scoreboard", new CommandsScoreboard());
+		registerCommands("pools", new CommandsPools());
 	}
 	
 	public void registerCommands(String subpath, OrphanCommand... commands) {
@@ -127,14 +125,16 @@ public class CommandsManager {
 			path = Orphans.path(Arrays.stream(COMMAND_ALIASES).map(x -> x + " " + subpath).toArray(String[]::new));
 		}
 		handler.register(Arrays.stream(commands).map(path::handler).toArray());
-		if (locked) BeautyQuests.logger.warning("Registered commands after final locking.");
+		// if (locked) BeautyQuests.logger.warning("Registered commands after final locking.");
 	}
 	
 	public void lockCommands() {
 		if (locked) return;
 		locked = true;
-		handler.registerBrigadier();
-		if (handler.isBrigadierSupported()) DebugUtils.logMessage("Brigadier supported!");
+		handler.getBrigadier().ifPresent(brigadier -> {
+			brigadier.register();
+			DebugUtils.logMessage("Brigadier registered!");
+		});
 	}
 	
 	public void unload() {

@@ -1,12 +1,13 @@
 package fr.skytasul.quests.utils.logger;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,10 +16,8 @@ import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Utils;
 
@@ -26,7 +25,6 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 
 	private final Date launchDate = new Date();
 	
-	private final File file;
 	private PrintWriter stream;
 	
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");
@@ -45,12 +43,10 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 			}
 		});
 		
-		file = new File(plugin.getDataFolder(), "latest.log");
-		if (file.exists()) {
-			Files.move(file.toPath(), new File(plugin.getDataFolder(), "latest.log_old").toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-		Files.createFile(file.toPath());
-		stream = new PrintWriter(new FileWriter(file));
+		Path path = plugin.getDataFolder().toPath().resolve("latest.log");
+		if (Files.exists(path))
+			Files.move(path, plugin.getDataFolder().toPath().resolve("latest.log_old"), StandardCopyOption.REPLACE_EXISTING);
+		stream = new PrintWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW));
 		write("---- BEAUTYQUESTS LOGGER - OPENED " + launchDate.toString() + " ----");
 	}
 	

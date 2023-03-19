@@ -2,9 +2,7 @@ package fr.skytasul.quests.api.rewards;
 
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 
@@ -24,7 +22,7 @@ public abstract class AbstractReward extends QuestObject {
 	 * @param p Player to give the reward
 	 * @return title of all the subsequent reward (for instance : "4 gold")
 	 */
-	public abstract List<String> give(Player p);
+	public abstract List<String> give(Player p) throws InterruptingBranchException;
 	
 	@Override
 	public abstract AbstractReward clone();

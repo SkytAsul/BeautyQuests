@@ -143,6 +143,8 @@ public enum Lang implements Locale {
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
 	POOL_RESET_TIMER("msg.command.resetPlayerPool.timer"), // 0: pool ID, 1: player
 	POOL_RESET_FULL("msg.command.resetPlayerPool.full"), // 0: pool ID, 1: player
+	POOL_START_ERROR("msg.command.startPlayerPool.error", ErrorPrefix), // 0: pool ID, 1: player
+	POOL_START_SUCCESS("msg.command.startPlayerPool.success", SuccessPrefix), // 0: pool ID, 1: player, 2: result
 	
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id
@@ -526,7 +528,6 @@ public enum Lang implements Locale {
 	questMenuLore("inv.chooseQuest.menuLore"),
 	
 	INVENTORY_MOBS("inv.mobs.name"),
-	mobsNone("inv.mobs.none"),
 	click("inv.mobs.clickLore"),
 	setLevel("inv.mobs.setLevel"),
 
@@ -591,12 +592,12 @@ public enum Lang implements Locale {
 	INVENTORY_BLOCK("inv.block.name"),
 	materialName("inv.block.material"),
 	materialNotItemLore("inv.block.materialNotItemLore"), // 0: block id
+	blockName("inv.block.blockName"),
 	blockData("inv.block.blockData"),
 	blockTag("inv.block.blockTag"),
 	blockTagLore("inv.block.blockTagLore"),
 	
 	INVENTORY_BLOCKSLIST("inv.blocksList.name"),
-	addBlock("inv.blocksList.addBlock"),
 	
 	INVENTORY_BLOCK_ACTION("inv.blockAction.name"),
 	clickLocation("inv.blockAction.location"),
@@ -662,6 +663,8 @@ public enum Lang implements Locale {
 	comparisonEnchantsLore("inv.itemComparisons.enchantsLore"),
 	comparisonRepairCost("inv.itemComparisons.repairCost"),
 	comparisonRepairCostLore("inv.itemComparisons.repairCostLore"),
+	comparisonItemsAdder("inv.itemComparisons.itemsAdder"),
+	comparisonItemsAdderLore("inv.itemComparisons.itemsAdderLore"),
 	
 	INVENTORY_EDIT_TITLE("inv.editTitle.name"),
 	title_title("inv.editTitle.title"),

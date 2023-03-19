@@ -72,7 +72,7 @@ public class StageBringBack extends StageNPC{
 
 	public void sendNeedMessage(Player p) {
 		String message = getMessage();
-		if (message != null && !message.isEmpty())
+		if (message != null && !message.isEmpty() && !message.equals("none"))
 			Lang.NpcText.sendWP(p, npcName(), Utils.format(message, line), 1, 1);
 	}
 	

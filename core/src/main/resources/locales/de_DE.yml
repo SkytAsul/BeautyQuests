@@ -13,6 +13,7 @@ msg:
     invalidID: '§cDie Quest mit der ID {0} existiert nicht.'
     invalidPoolID: '§cDie Gruppe {0} existiert nicht.'
     alreadyStarted: '§cDu hast die Quest bereits gestartet!'
+    notStarted: '§cDu machst diese Quest momentan nicht.'
   quests:
     maxLaunched: '§cDu kannst nicht mehr als {0} Quest(s) gleichzeitig haben...'
     nopStep: '§cDiese Quest hat keinen Schritt.'
@@ -27,6 +28,7 @@ msg:
   questItem:
     drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
     craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
+    eat: Du kannst Quest Items nicht Essen!
   stageMobs:
     noMobs: '§cDer Schritt beinhaltet nicht das Töten von Mobs.'
     listMobs: '§aDu musst {0} töten.'
@@ -39,6 +41,7 @@ msg:
   writeMessage: '§aSchreibe die Nachricht die an den Spieler gesendet wird'
   writeStartMessage: '§aSchreibe die Nachricht, die zu Beginn der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst:'
   writeEndMsg: '§aSchreibe die Nachricht, die am Ende der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst. Du kannst "{0}" verwenden, das dann durch die erhaltenen Belohnungen ersetzt wird.'
+  writeEndSound: '§aSchreibe den Tonnamen, der am Ende der Quest dem Spieler abgespielt wird, "null" wenn Sie die Standardeinstellung oder "keine" wollen, wenn Sie keine wollen:'
   writeDescriptionText: '§aSchreibe einen Text, der das Ziel des Schrittes beschreibt:'
   writeStageText: '§aSchreibe den am Anfang des Schrittes zum Spieler gesendete Text:'
   moveToTeleportPoint: '§aGehe zur gewünschten Teleportationsposition.'
@@ -72,6 +75,7 @@ msg:
     negative: '§cDu musst eine positive Zahl eingeben!'
     zero: '§cDie Zahl darf nicht 0 sein!'
     invalid: '§c{0} ist keine gültige Zahl.'
+    notInBounds: '§cDeine Zahl muss zwischen {0} und {1} liegen.'
   errorOccurred: '§cEin Fehler ist aufgetreten; kontaktiere einen Administrator! §4§lFehlercode: {0}'
   commandsDisabled: '§cDu kannst zurzeit keine Befehle ausführen!'
   indexOutOfBounds: '§cDie Zahl {0} ist außerhalb der Grenze! Sie muss zwischen {1} und {2} liegen.'
@@ -81,12 +85,17 @@ msg:
   inventoryFull: '§cDein Inventar ist voll, das Item wurde auf den Boden gelegt.'
   playerNeverConnected: '§cKann keine Informationen über den Spieler {0} finden.'
   playerNotOnline: '§cDer Spieler {0} ist offline.'
+  playerDataNotFound: '§cDaten des Spielers {0} nicht gefunden.'
   versionRequired: 'Benötigte Version: §l{0}'
+  restartServer: '§7Starte deinen Server neu, um die Änderungen zu sehen.'
+  dialogs:
+    skipped: 'Dialog übersprungen.'
+    tooFar: '§7§oDu bist zu weit von {0}...'
   command:
     downloadTranslations:
       syntax: "§cDu musst eine Sprache auswählen zum downloaden.\nBeispiel: \"/quests downloadTranslations en_US\"."
       notFound: '§cSprache {0} nicht gefunden für die Version {1}.'
-      exists: '§cDie Datei {0} existiert bereits. Hänge "true" an deinen Befehl an, um sie zu überschreiben. (/quests downloadTranslations <lang> true)'
+      exists: '§cDie Datei {0} existiert bereits. Füge "-Overwrite "true" an deinen Befehl an, um ihn zu überschreiben. (/quests downloadTranslations <lang> -overwrite true)'
       downloaded: '§aSprache {0} wurde heruntergeladen! §7Du musst nun die Datei "/plugins/BeautyQuests/config.yml" bearbeiten, um den Wert von §ominecraftTranslationsFile§7 mit {0} zu ändern. Der Server muss anschliessend neu gestartet werden.'
     checkpoint:
       noCheckpoint: '§cKein Checkpoint für die Quest {0} gefunden.'
@@ -97,6 +106,11 @@ msg:
       next: '§aDer Schritt wurde übersprungen.'
       nextUnavailable: '§cDie „Überspringen“‐Option ist nicht verfügbar, wenn der Spieler am Ende eines Zweiges ist.'
       set: '§aSchritt {0} gestartet.'
+    startDialog:
+      impossible: '§cKann den Dialog jetzt nicht starten.'
+      noDialog: '§cDer Spieler hat keinen ausstehenden Dialog.'
+      alreadyIn: '§cDer Spieler spielt bereits einen Dialog.'
+      success: '§aStartete Dialog für Spieler {0} in Quest {1}!'
     playerNeeded: '§cDu musst ein Spieler sein, um diesen Befehl ausführen zu können.'
     incorrectSyntax: '§cFalsche Syntax.'
     noPermission: '§cDu hast nicht die benötigte Berechtigung „{0}“, um diesen Befehl auszuführen!'
@@ -116,7 +130,7 @@ msg:
       remover: '§6{0} Questinformation(en) von {1} wurde(n) gelöscht.'
     resetQuest: '§6Quest Daten wurden für {0} Spieler entfernt.'
     startQuest: '§6Du hast den Start der Quest {0} erzwungen. (Spieler‐UUID: {1})'
-    startQuestNoRequirements: '§cDer Spieler erfüllt nicht die Anforderungen für die Quest {0}... Füge "true" am Ende deines Befehls an, um die Überprüfung der Anforderungen zu umgehen.'
+    startQuestNoRequirements: '§cDer Spieler erfüllt nicht die Anforderungen für die Quest {0}... Füge "-OverrideRequirements am Ende deines Befehls hinzu, um die Anforderungsüberprüfung zu umgehen.'
     cancelQuest: '§6Du hast die Quest {0} abgebrochen.'
     cancelQuestUnavailable: '§cDie Quest {0} kann nicht abgebrochen werden.'
     backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
@@ -135,6 +149,9 @@ msg:
       resetAll: '§6Du hast das Scoreboard des Spielers {0} erfolgreich zurückgesetzt.'
       hidden: '§6Das Scoreboard des Spielers {0} wurde versteckt.'
       shown: '§6Das Scoreboard des Spielers {0} wurde angezeigt.'
+      own:
+        hidden: '§6Dein Scoreboard ist jetzt versteckt.'
+        shown: Dein Scoreboard wird wieder angezeigt.
     help:
       header: '§6§lBeautyQuests — Hilfe'
       create: '§6/{0} create: §eErstelle eine Quest.'
@@ -142,14 +159,17 @@ msg:
       remove: '§6/{0} remove <ID>: §eLösche eine Quest mit der angegebenen ID oder klicke auf den NPC, wenn nicht definiert.'
       finishAll: '§6/{0} finishAll <Spieler>: §eBeende alle Quests eines Spielers.'
       setStage: '§6/{0} setStage <Spieler> <ID> [neuer Zweig] [neuer Schritt]: §eÜberspringe den aktuellen Schritt/starte einen Zweig/setze einen Schritt für einen Zweig.'
+      startDialog: '§6/{0} startDialog <player> <quest id>: §eStartet den ausstehenden Dialog für eine NPC-Stufe oder den Startdialog für eine Quest.'
       resetPlayer: '§6/{0} resetPlayer <Spieler>: §eEntferne alle Informationen eines Spielers.'
       resetPlayerQuest: '§6/{0} resetPlayerQuest <Spieler> [ID]: §eLösche Informationen einer Quest für einen Spieler.'
       seePlayer: '§6/{0} seePlayer <Spieler>: §eSieh dir die Informationen eines Spielers an.'
       reload: '§6/{0} reload: §eSpeichere und und lade alle Konfigurationen und Dateien neu. (§cveraltet§e)'
       start: '§6/{0} start <Spieler> [ID]: §eErzwinge das Starten einer Quest.'
       setItem: '§6/{0} setItem <talk|launch>: §eSpeichere das Hologramm‐Item.'
+      setFirework: '§6/{0} SetFeuerwerk: §eBearbeite das standardmäßig end Feuerwerk.'
       adminMode: '§6/{0} adminMode: §eSchalte den Admin‐Modus (für die Anzeige von Protokollnachrichten) für dich um.'
       version: '§6/{0} version: §eLass dir die aktuelle Plugin‐Version anzeigen.'
+      downloadTranslations: '§6/{0} heruntergeladene Übersetzung <language>: §eDownloads einer Vanille-Übersetzungsdatei'
       save: '§6/{0} save: §eFühre eine manuelle Plugin‐Speicherung durch.'
       list: '§6/{0} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
   typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
@@ -159,10 +179,14 @@ msg:
     blockData: '§aSchreibe die Blockdaten (verfügbare Blockdaten: {0}):'
     blockTag: '§aSchreibe den Blocktag (verfügbare Blocktags: §7{0}§a):'
     typeBucketAmount: '§aSchreibe die Anzahl an zu füllenden Eimern:'
+    typeDamageAmount: 'Schreibe die Menge an Schaden, die der Spieler zufügen muss:'
     goToLocation: '§aGehe zur gewünschten Position für den Schritt.'
     typeLocationRadius: '§aSchreibe die benötigte Distanz von der Position:'
     typeGameTicks: '§aSchreibe die benötigten Spiel-Ticks:'
     already: '§cDu befindest dich bereits im Editor.'
+    stage:
+      location:
+        typeWorldPattern: '§aSchreibe einen Regex für Weltnamen:'
     enter:
       title: '§6~ Editor‐Modus ~'
       subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
@@ -230,16 +254,18 @@ msg:
         close: '§6close: §eBestätige alle Nachrichten.'
         setTime: '§6setTime <id> <time>: §eSetze die Zeit (in Ticks) bevor die nächste automatische Nachricht gesendet wird.'
         npcName: '§6npcName [benutzerdefinierter NPC-Name]: §eSetze (oder zurücksetzen auf Standard) des benutzerdefinierten Namens des NPCs im Dialog'
+        skippable: '§6Überspringbar [true|falsch]: §eLegen Sie fest, ob der Dialog übersprungen werden kann oder nicht'
       timeSet: '§aDie Zeit für die Nachricht {0} wurde bearbeitet: jetzt {1} Ticks.'
       timeRemoved: '§aDie Zeit wurde für die Nachricht {0} entfernt.'
       npcName:
         set: '§aBenutzerdefinierter NPC-Name wurde zu §7{1}§a gesetzt (alter Name war §7{0}§a)'
         unset: '§aBenutzerdefinierter NPC-Name wurde auf Standard gesetzt (alter Name war §7{0}§a)'
+      skippable:
+        set: '§aDer dialogbare Status ist nun auf §7{1}§a gesetzt (war §7{0}§a)'
     mythicmobs:
       list: '§aEine Liste aller Mythic Mobs:'
       isntMythicMob: '§cDieser Mythic Mob existiert nicht.'
       disabled: '§cMythicMob ist deaktiviert.'
-    epicBossDoesntExist: '§cDieser Epic Boss exisitert nicht.'
     textList:
       syntax: '§cKorrekte Syntax: '
       added: '§aText "§7{0}§a" hinzugefügt.'
@@ -251,7 +277,6 @@ msg:
         list: '§6list: §eSieh dir alle hinzugefügten Texte an.'
         close: '§6close: §eBestätige die hinzugefügten Texte.'
     noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{0}'
-    comparisonType: '§aWähle eine folgender Vergleichsarten aus: {0}. Der Standard ist: §e§lgreater or equals§r§a. Benutze §onull§r§a um dies zu nutzen.'
     scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
     pool:
       hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
@@ -264,6 +289,9 @@ msg:
       fadeIn: 'Schreibe die "Einblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
       stay: 'Schreibe die "Bleibe"-Dauer, in Ticks (20 Ticks = 1 Sekunde).'
       fadeOut: 'Schreibe die "Ausblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
+    firework:
+      invalidHand: 'Du musst ein Feuerwerk in deiner Main Hand halten.'
+      edited: 'Feuerwerk Quest bearbeitet!'
   writeCommandDelay: '§aGebe die gewünschte Befehl Verzögerung in Ticks an.'
 advancement:
   finished: Abgeschlossen
@@ -362,8 +390,6 @@ inv:
     startableFromGUILore: Ermöglicht dem Spieler, die Quest aus dem Quest-Menü zu starten.
     scoreboardItem: Scoreboard aktivieren
     scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
-    hideItem: Menü und Dynmap verstecken
-    hideItemLore: Wenn aktiviert, wird die Quest weder auf der Dynmap, noch im Quest-Menü angezeigt.
     hideNoRequirementsItem: Verstecken, wenn die Anforderungen nicht erfüllt sind
     hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
     bypassLimit: Questlimit nicht zählen
@@ -620,7 +646,6 @@ scoreboard:
     craft: '§eStelle §6{0} §eher'
     bucket: '§eBefülle §6{0}'
     location: '§eGehe zu: §6{0}§e, §6{1}§e, §6{2}§e in §6{3}'
-    playTime: '§eSpiele §6{0} Spielsticks'
     breed: '§eZüchte §6{0}'
     tame: '§eZähme §6{0}'
 indication:

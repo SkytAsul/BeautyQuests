@@ -99,10 +99,10 @@ public class QuestsListener implements Listener{
 					return;
 				}
 			}
-			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, (quest) -> {
+			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, quest -> {
 				if (quest == null) return;
 				quest.clickNPC(p);
-			});
+			}, true);
 			gui.setValidate(__ -> {
 				new PlayerListGUI(acc).create(p);
 			}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
@@ -145,15 +145,21 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
+
+		DebugUtils.logMessage(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
+		// for timing purpose
+
 		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
-			PlayersManager.loadPlayer(player);
+			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
+		Player player = e.getPlayer();
+		DebugUtils.logMessage(player.getName() + " left the server"); // for timing purpose
 		if (!QuestsConfiguration.hookAccounts()) {
-			PlayersManager.unloadPlayer(e.getPlayer());
+			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
 		}
 	}
 

@@ -1,16 +1,13 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
@@ -21,10 +18,11 @@ import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	
-	public StagePlaceBlocks(QuestBranch branch, Map<Integer, Entry<BQBlock, Integer>> blocks) {
+	public StagePlaceBlocks(QuestBranch branch, List<CountableObject<BQBlock>> blocks) {
 		super(branch, blocks);
 	}
 
@@ -44,7 +42,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	}
 	
 	public static StagePlaceBlocks deserialize(ConfigurationSection section, QuestBranch branch) {
-		StagePlaceBlocks stage = new StagePlaceBlocks(branch, new HashMap<>());
+		StagePlaceBlocks stage = new StagePlaceBlocks(branch, new ArrayList<>());
 		stage.deserialize(section);
 		return stage;
 	}
@@ -62,7 +60,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		
 		@Override
 		public StagePlaceBlocks finishStage(QuestBranch branch) {
-			return new StagePlaceBlocks(branch, blocks);
+			return new StagePlaceBlocks(branch, getImmutableBlocks());
 		}
 	}
 

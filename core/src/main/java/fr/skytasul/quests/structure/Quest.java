@@ -7,9 +7,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,6 +33,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
@@ -203,25 +206,45 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		if (datas == null || !datas.hasStarted())
 			return false;
 
+		DebugUtils.logMessage("Cancelling quest " + id + " for player " + acc.getNameAndID());
+		cancelInternal(acc);
+		return true;
+	}
+
+	private void cancelInternal(PlayerAccount acc) {
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
 		
-		if (acc.isCurrent())
-			Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
-		return true;
+		if (acc.isCurrent()) {
+			try {
+				Utils.giveRewards(acc.getPlayer(), getOptionValueOrDef(OptionCancelRewards.class));
+			} catch (InterruptingBranchException ex) {
+				BeautyQuests.logger.warning("Trying to interrupt branching in a cancel reward (useless). " + toString());
+			}
+		}
 	}
 	
-	public boolean resetPlayer(PlayerAccount acc){
-		if (acc == null) return false;
-		boolean c = false;
+	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc){
+		if (acc == null)
+			return CompletableFuture.completedFuture(Boolean.FALSE);
+		
+		boolean hadDatas = false;
+		CompletableFuture<?> future = null;
+
 		if (acc.hasQuestDatas(this)) {
-			cancelPlayer(acc);
-			acc.removeQuestDatas(this);
-			c = true;
+			hadDatas = true;
+
+			DebugUtils.logMessage("Resetting quest " + id + " for player " + acc.getNameAndID());
+			cancelInternal(acc);
+			future = acc.removeQuestDatas(this);
 		}
-		if (acc.isCurrent() && hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().removePlayer(acc.getPlayer())) c = true;
-		return c;
+
+		if (acc.isCurrent() && hasOption(OptionStartDialog.class)
+				&& getOption(OptionStartDialog.class).getDialogRunner().removePlayer(acc.getPlayer()))
+			hadDatas = true;
+
+		return future == null ? CompletableFuture.completedFuture(hadDatas) : future.thenApply(__ -> true);
 	}
 	
 	public boolean isLauncheable(Player p, PlayerAccount acc, boolean sendMessage) {
@@ -249,7 +272,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	public boolean testQuestLimit(Player p, PlayerAccount acc, boolean sendMessage) {
-		if (Boolean.FALSE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
+		if (Boolean.TRUE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
 			return true;
 		int playerMaxLaunchedQuest;
 		OptionalInt playerMaxLaunchedQuestOpt = p.getEffectivePermissions().stream()
@@ -361,7 +384,12 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 		
 		Runnable run = () -> {
-			List<String> msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			List<String> msg = Collections.emptyList();
+			try {
+				msg = Utils.giveRewards(p, getOptionValueOrDef(OptionStartRewards.class));
+			} catch (InterruptingBranchException ex) {
+				BeautyQuests.logger.warning("Trying to interrupt branching in a starting reward (useless). " + toString());
+			}
 			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (!silently && !msg.isEmpty()) Utils.sendMessage(p, Lang.FINISHED_OBTAIN.format(Utils.itemsToFormattedString(msg.toArray(new String[0]))));
 			if (asyncStart != null) asyncStart.remove(p);
@@ -428,7 +456,8 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		QuestsAPI.getQuests().removeQuest(this);
 		unload();
 		if (removeDatas) {
-			PlayersManager.manager.removeQuestDatas(this);
+			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(this).whenComplete(
+					BeautyQuests.logger.logError("An error occurred while removing player datas after quest removal"));
 			if (file.exists()) file.delete();
 		}
 		removed = true;

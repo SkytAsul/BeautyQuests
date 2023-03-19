@@ -1,7 +1,7 @@
 # - General configuration -
 # Number of minutes before the quest can be redone
 redoMinuts: 5
-# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
+# Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, pt_BR, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
 lang: en_US
 # (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
 minecraftTranslationsFile: ''
@@ -56,6 +56,8 @@ progressBarTimeoutSeconds: 15
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
+# If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
+skip npc gui if only one quest: true
 # Default item shown for a quest in the menus
 item: BOOK
 # Page item material
@@ -149,7 +151,7 @@ itemAmountColor: "§e"
 stageDescriptionItemsSplit:
   # Prefix before each line
   prefix: "§e- §6"
-  # Format of object amounts. Placeholders: {0} = remaining (decreasing), {1} = done (increasing), {2} = total. Example: "{1}/{2}"
+  # Format of object amounts. Placeholders: {0} = remaining (decreasing), {1} = done (increasing), {2} = total, {3} = percentage (0 to 100). Example: "{1}/{2}"
   amountFormat: "x{0}"
   # Show amount format if there is only one object remaining
   showXOne: true

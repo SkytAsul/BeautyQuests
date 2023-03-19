@@ -9,14 +9,12 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.sql.SQLException;
-
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.npcs.BQNPC;
@@ -26,7 +24,6 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ConfirmGUI;
 import fr.skytasul.quests.gui.misc.ListBook;
-import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayersManager;
@@ -38,7 +35,6 @@ import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.nms.NMS;
-
 import revxrsal.commands.annotation.Flag;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.SecretCommand;
@@ -122,11 +118,6 @@ public class CommandsAdmin implements OrphanCommand {
 		}
 	}
 	
-	@Subcommand ("pools")
-	@CommandPermission ("beautyquests.command.pools")
-	public void pools(Player player) {
-		PoolsManageGUI.get().create(player);
-	}
 	
 	@Subcommand ("reload")
 	@CommandPermission ("beautyquests.command.manage")

@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.20.0</version>
+		<version>0.20.1-SNAPSHOT</version>
 	</parent>
 
 	<build>
@@ -296,14 +296,20 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.LoneDev6</groupId>
+			<artifactId>api-itemsadder</artifactId>
+			<version>3.2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>d72483065c</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.Revxrsal.Lamp</groupId>
 			<artifactId>common</artifactId>
-			<version>d72483065c</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -320,8 +326,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.songoda</groupId>
-			<artifactId>ultimatetimber</artifactId>
-			<version>2.2.5</version>
+			<artifactId>UltimateTimber</artifactId>
+			<version>2.3.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

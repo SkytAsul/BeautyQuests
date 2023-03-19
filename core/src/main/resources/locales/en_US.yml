@@ -161,6 +161,9 @@ msg:
     resetPlayerPool:
       timer: §aYou have reset the {0} pool timer of {1}.
       full: §aYou have reset the {0} pool datas of {1}.
+    startPlayerPool:
+      error: 'Failed to start the pool {0} for {1}.'
+      success: 'Started pool {0} to {1}. Result: {2}'
     scoreboard:
       lineSet: §6You have successfully edited the line {0}.
       lineReset: §6You have successfully reset the line {0}.
@@ -631,6 +634,7 @@ inv:
     name: Choose block
     material: '§eMaterial: {0}'
     materialNotItemLore: 'The block chosen cannot be displayed as an item. It is still correctly stored as {0}.'
+    blockName: '§bCustom block name'
     blockData: '§dBlockdata (advanced)'
     blockTag: '§dTag (advanced)'
     blockTagLore: 'Choose a tag which describes a list of possible blocks.
@@ -701,6 +705,8 @@ inv:
     enchantsLore: Compares items enchants
     repairCost: Repair cost
     repairCostLore: Compares repair cost for armors and swords
+    itemsAdder: ItemsAdder
+    itemsAdderLore: Compares ItemsAdder IDs
   editTitle:
     name: Edit Title
     title: §6Title

@@ -2,7 +2,7 @@ package fr.skytasul.quests.utils;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.StringJoiner;
 import fr.skytasul.quests.BeautyQuests;
 
 public class DebugUtils {
@@ -16,14 +16,13 @@ public class DebugUtils {
 	}
 	
 	public static String stackTraces(int from, int to){
-		from++;
-		
-		String s = "";
+		StringJoiner joiner = new StringJoiner(" -> ");
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-		for (;from <= to; from++) {
-			s = s + stack[from].getClassName().replace("fr.skytasul.quests", "f.s.q") + "." + stack[from].getMethodName() + " " + stack[from].getLineNumber() + "; ";
+		for (int i = from + 1; i <= to && i < stack.length; i++) {
+			joiner.add(stack[from].getClassName().replace("fr.skytasul.quests", "f.s.q") + "." + stack[from].getMethodName()
+					+ " " + stack[from].getLineNumber());
 		}
-		return s;
+		return joiner.toString();
 	}
 
 	public static void printError(String errorMsg, String typeID, int seconds) {

@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -172,6 +170,8 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		boolean keepPlayerDatas = Boolean.TRUE.equals(this.keepPlayerDatas);
 		Quest qu;
 		if (session.isEdition()) {
+			DebugUtils.logMessage(
+					"Editing quest " + session.getQuestEdited().getID() + " with keep datas: " + keepPlayerDatas);
 			session.getQuestEdited().remove(false, false);
 			qu = new Quest(session.getQuestEdited().getID(), session.getQuestEdited().getFile());
 		}else {
@@ -189,12 +189,6 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			qu = new Quest(id);
 		}
 		
-		if (session.areStagesEdited()) {
-			if (keepPlayerDatas) {
-				BeautyQuests.logger.warning("Players quests datas will be kept for quest #" + qu.getID() + " - this may cause datas issues.");
-			}else PlayersManager.manager.removeQuestDatas(qu);
-		}
-		
 		for (QuestOption<?> option : this) {
 			if (option.hasCustomValue()) qu.addOption(option);
 		}
@@ -209,6 +203,17 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			qu.remove(false, true);
 			Utils.sendMessage(p, Lang.CANCELLED.toString());
 		}else {
+
+			if (session.areStagesEdited()) {
+				if (keepPlayerDatas) {
+					BeautyQuests.logger.warning("Players quests datas will be kept for quest #" + qu.getID()
+							+ " - this may cause datas issues.");
+				} else
+					BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(session.getQuestEdited())
+							.whenComplete(BeautyQuests.logger
+									.logError("An error occurred while removing player datas after quest edition", p));
+			}
+
 			QuestsAPI.getQuests().addQuest(qu);
 			Utils.sendMessage(p, ((!session.isEdition()) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);

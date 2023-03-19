@@ -2,17 +2,19 @@ package fr.skytasul.quests.api.stages.types;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
-
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -23,45 +25,97 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.types.CountableObject;
+import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
-	protected Map<Integer, Entry<T, Integer>> objects;
+	protected final List<CountableObject<T>> objects;
 
 	protected Map<Player, BossBar> bars = new HashMap<>();
 	private boolean barsEnabled = false;
 	private int cachedSize = 0;
 
-	public AbstractCountableStage(QuestBranch branch, Map<Integer, Entry<T, Integer>> objects) {
+	protected AbstractCountableStage(QuestBranch branch, List<CountableObject<T>> objects) {
 		super(branch);
 		this.objects = objects;
 		calculateSize();
 	}
 
-	public Map<Integer, Entry<T, Integer>> getObjects() {
+	@Deprecated
+	protected AbstractCountableStage(QuestBranch branch, Map<Integer, Entry<T, Integer>> objects) {
+		this(branch, objects.keySet().stream().sorted().map(index -> {
+			Entry<T, Integer> entry = objects.get(index);
+			return CountableObject.create(uuidFromLegacyIndex(index), entry.getKey(), entry.getValue());
+		}).collect(Collectors.toList()));
+
+		BeautyQuests.logger.warning("The stage " + getType().getName()
+				+ " uses an outdated way to store player datas. Please notice its author.");
+	}
+
+	public List<CountableObject<T>> getObjects() {
 		return objects;
 	}
 
+	public List<MutableCountableObject<T>> getMutableObjects() {
+		return objects.stream().map(countable -> CountableObject.createMutable(countable.getUUID(),
+				cloneObject(countable.getObject()), countable.getAmount())).collect(Collectors.toList());
+	}
+
+	public Optional<CountableObject<T>> getObject(UUID uuid) {
+		return objects.stream().filter(object -> object.getUUID().equals(uuid)).findAny();
+	}
+
+	@Deprecated
 	public Map<Integer, Entry<T, Integer>> cloneObjects() {
 		Map<Integer, Entry<T, Integer>> map = new HashMap<>();
-		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
-			map.put(entry.getKey(), new AbstractMap.SimpleEntry<>(cloneObject(entry.getValue().getKey()), entry.getValue().getValue()));
+		for (int id = 0; id < objects.size(); id++) {
+			CountableObject<T> object = objects.get(id);
+			map.put(id, new AbstractMap.SimpleEntry<>(cloneObject(object.getObject()), object.getAmount()));
 		}
 		return map;
 	}
 
-	public Map<Integer, Integer> getPlayerRemainings(PlayerAccount acc, boolean warnNull) {
-		Map<Integer, Integer> remaining = getData(acc, "remaining");
+	@SuppressWarnings("rawtypes")
+	public Map<UUID, Integer> getPlayerRemainings(PlayerAccount acc, boolean warnNull) {
+		Map<?, Integer> remaining = getData(acc, "remaining");
 		if (warnNull && remaining == null)
 			BeautyQuests.logger.severe("Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString());
-		return remaining;
+
+		if (remaining == null || remaining.isEmpty())
+			return (Map) remaining;
+
+		Object object = remaining.keySet().iterator().next();
+		if (object instanceof Integer) {
+			// datas before migration
+			Map<UUID, Integer> newRemaining = new HashMap<>(remaining.size());
+			Map<String, Integer> dataMap = new HashMap<>(remaining.size());
+			remaining.forEach((key, amount) -> {
+				UUID uuid = uuidFromLegacyIndex((Integer) key);
+				if (!getObject(uuid).isPresent()) {
+					BeautyQuests.logger.warning("Cannot migrate " + acc.getNameAndID() + " data for stage " + toString()
+							+ " as there is no migrated data for object " + key);
+				}
+				newRemaining.put(uuid, amount);
+				dataMap.put(uuid.toString(), amount);
+			});
+			updateObjective(acc, acc.getPlayer(), "remaining", dataMap);
+			return newRemaining;
+		} else if (object instanceof String) {
+			// datas stored as string
+			return remaining.entrySet().stream()
+					.collect(Collectors.toMap(entry -> UUID.fromString((String) entry.getKey()), Entry::getValue));
+		} else
+			throw new UnsupportedOperationException(object.getClass().getName());
+	}
+
+	protected void updatePlayerRemaining(PlayerAccount acc, Player player, Map<UUID, Integer> remaining) {
+		updateObjective(acc, player, "remaining", remaining.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
 	}
 
 	protected void calculateSize() {
-		cachedSize = 0;
-		for (Entry<T, Integer> objectsEntry : objects.values()) {
-			cachedSize += objectsEntry.getValue();
-		}
+		cachedSize = objects.stream().mapToInt(CountableObject::getAmount).sum();
 		barsEnabled = QuestsConfiguration.showMobsProgressBar() && cachedSize > 0;
 	}
 
@@ -76,14 +130,17 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
-		Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc, true);
+		Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
 		if (playerAmounts == null) return new String[] { "§4§lerror" };
 		String[] elements = new String[playerAmounts.size()];
+
 		int i = 0;
-		for (Entry<Integer, Integer> obj : playerAmounts.entrySet()) {
-			Entry<T, Integer> object = objects.get(obj.getKey());
-			elements[i] = object == null ? "no object " + obj.getKey() : QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(getName(object.getKey()), QuestsConfiguration.getItemAmountColor(), obj.getValue(), object.getValue(), QuestsConfiguration.showDescriptionItemsXOne(source));
-			i++;
+		for (Entry<UUID, Integer> entry : playerAmounts.entrySet()) {
+			elements[i++] = getObject(entry.getKey())
+					.map(object -> QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(
+							getName(object.getObject()), QuestsConfiguration.getItemAmountColor(), entry.getValue(),
+							object.getAmount(), QuestsConfiguration.showDescriptionItemsXOne(source)))
+					.orElse("no object " + entry.getKey());
 		}
 		return elements;
 	}
@@ -91,37 +148,37 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	@Override
 	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
-		Map<Integer, Integer> amounts = new HashMap<>();
-		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
-			amounts.put(entry.getKey(), entry.getValue().getValue());
-		}
-		datas.put("remaining", amounts);
+		datas.put("remaining", objects.stream()
+				.collect(Collectors.toMap(object -> object.getUUID().toString(), CountableObject::getAmount)));
 	}
 
 	/**
-	 * When called, this will test the player datas for the passed object.
-	 * If found, the remaining amount will be lowered.
-	 * If no remaining items are found, the stage will complete.
+	 * When called, this will test the player datas for the passed object. If found, the remaining
+	 * amount will be lowered. If no remaining items are found, the stage will complete.
+	 * 
 	 * @param acc player account
 	 * @param p player
 	 * @param object object of the event
 	 * @param amount amount completed
-	 * @return <code>false</code> if there is no need to call this method again in the same game tick.
+	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
 	 */
 	public boolean event(PlayerAccount acc, Player p, Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		if (!canUpdate(p)) return true;
-		for (Entry<Integer, Entry<T, Integer>> entry : objects.entrySet()) {
-			int id = entry.getKey();
-			if (objectApplies(entry.getValue().getKey(), object)) {
-				Map<Integer, Integer> playerAmounts = getPlayerRemainings(acc, true);
+
+		for (CountableObject<T> countableObject : objects) {
+			if (objectApplies(countableObject.getObject(), object)) {
+				Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
 				if (playerAmounts == null) return true;
-				if (playerAmounts.containsKey(id)) {
-					int playerAmount = playerAmounts.get(id);
+				if (playerAmounts.containsKey(countableObject.getUUID())) {
+					int playerAmount = playerAmounts.remove(countableObject.getUUID());
 					if (playerAmount <= amount) {
-						playerAmounts.remove(id);
-					}else playerAmounts.put(id, playerAmount -= amount);
-				}
+						// playerAmount - amount will be negative, so this object must be removed.
+						// we do nothing as the entry has already been deleted
+					} else
+						playerAmounts.put(countableObject.getUUID(), playerAmount - amount);
+				} else
+					continue;
 				
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
@@ -133,12 +190,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 							BeautyQuests.logger.warning(p.getName() + " does not have boss bar for stage " + toString() + ". This is a bug!");
 						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
 					}
-					updateObjective(acc, p, "remaining", playerAmounts);
+
+					updatePlayerRemaining(acc, p, playerAmounts);
 					return false;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -162,7 +220,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	@Override
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
-		Map<Integer, Integer> remainings = getPlayerRemainings(acc, true);
+		Map<UUID, Integer> remainings = getPlayerRemainings(acc, true);
 		if (remainings == null) return;
 		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
 	}
@@ -175,7 +233,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 
 	protected void createBar(Player p, int amount) {
 		if (barsEnabled) {
-			if (bars.containsKey(p)) {
+			if (bars.containsKey(p)) { // NOSONAR Map#computeIfAbsent cannot be used here as we should log the issue
 				BeautyQuests.logger.warning("Trying to create an already existing bossbar for player " + p.getName());
 				return;
 			}
@@ -211,11 +269,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	@Override
 	protected void serialize(ConfigurationSection section) {
 		ConfigurationSection objectsSection = section.createSection("objects");
-		for (Entry<Integer, Entry<T, Integer>> obj : objects.entrySet()) {
-			ConfigurationSection objectSection = objectsSection.createSection(Integer.toString(obj.getKey()));
-			objectSection.set("amount", obj.getValue().getValue());
-			objectSection.set("object", serialize(obj.getValue().getKey()));
+		for (CountableObject<T> obj : objects) {
+			ConfigurationSection objectSection = objectsSection.createSection(obj.getUUID().toString());
+			objectSection.set("amount", obj.getAmount());
+			objectSection.set("object", serialize(obj.getObject()));
 		}
+
 		Map<String, Object> serialized = new HashMap<>();
 		serialize(serialized);
 		Utils.setConfigurationSectionContent(section, serialized);
@@ -233,15 +292,28 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		ConfigurationSection objectsSection = section.getConfigurationSection("objects");
 		if (objectsSection != null) {
 			for (String key : objectsSection.getKeys(false)) {
-				ConfigurationSection object = objectsSection.getConfigurationSection(key);
-				Object serialized = object.get("object");
+				UUID uuid;
+				try {
+					uuid = UUID.fromString(key);
+				} catch (IllegalArgumentException ex) {
+					uuid = uuidFromLegacyIndex(Integer.parseInt(key));
+				}
+
+				ConfigurationSection objectSection = objectsSection.getConfigurationSection(key);
+				Object serialized = objectSection.get("object");
 				if (serialized instanceof ConfigurationSection) serialized = ((ConfigurationSection) serialized).getValues(false);
-				objects.put(Integer.parseInt(key), new AbstractMap.SimpleEntry<>(deserialize(serialized), object.getInt("amount")));
+				objects.add(CountableObject.create(uuid, deserialize(serialized), objectSection.getInt("amount")));
 			}
 		}
-		
+
 		if (objects.isEmpty()) BeautyQuests.logger.warning("Stage with no content: " + toString());
 		calculateSize();
+	}
+
+	private static UUID uuidFromLegacyIndex(int index) { // useful for migration purpose
+		return new UUID(index, 2478L);
+		// 2478 is a magic value, the only necessity is that it stays constant
+		// and I like the number 2478
 	}
 
 	class BossBar {

@@ -1,17 +1,15 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
 import fr.skytasul.accounts.Account;
 import fr.skytasul.accounts.AccountService;
 import fr.skytasul.accounts.events.AccountLeaveEvent;
 import fr.skytasul.accounts.events.AccountUseEvent;
-import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.HookedAccount;
 
 public class Accounts implements Listener {
@@ -38,14 +36,12 @@ public class Accounts implements Listener {
 
 	@EventHandler
 	public void onAccountUse(AccountUseEvent e) {
-		PlayersManager.loadPlayer(e.getPlayer());
-		//Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer()), e.isAccountCreated()));
+		BeautyQuests.getInstance().getPlayersManager().loadPlayer(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onAccountLeave(AccountLeaveEvent e) {
-		PlayersManager.unloadPlayer(e.getPlayer());
-		//Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(e.getPlayer(), PlayersManager.getPlayerAccount(e.getPlayer())));
+		BeautyQuests.getInstance().getPlayersManager().unloadPlayer(e.getPlayer());
 	}
 	
 }

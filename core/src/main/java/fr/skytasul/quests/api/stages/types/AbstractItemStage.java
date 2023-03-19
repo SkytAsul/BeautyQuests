@@ -1,17 +1,14 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -22,18 +19,20 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.types.CountableObject;
 
 public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack> {
 	
 	protected final ItemComparisonMap comparisons;
 
-	protected AbstractItemStage(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> objects, ItemComparisonMap comparisons) {
+	protected AbstractItemStage(QuestBranch branch, List<CountableObject<ItemStack>> objects,
+			ItemComparisonMap comparisons) {
 		super(branch, objects);
 		this.comparisons = comparisons;
 	}
 	
 	protected AbstractItemStage(QuestBranch branch, ConfigurationSection section) {
-		super(branch, new HashMap<>());
+		super(branch, new ArrayList<>());
 		
 		if (section.contains("itemComparisons")) {
 			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));
@@ -121,9 +120,9 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		@Override
 		public void edit(T stage) {
 			super.edit(stage);
-			setItems(stage.getObjects().values().stream().map(entry -> {
-				ItemStack item = entry.getKey().clone();
-				item.setAmount(entry.getValue());
+			setItems(stage.getObjects().stream().map(entry -> {
+				ItemStack item = entry.getObject().clone();
+				item.setAmount(entry.getAmount());
 				return item;
 			}).collect(Collectors.toList()));
 			setComparisons(stage.comparisons.clone());
@@ -131,18 +130,18 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		
 		@Override
 		public final T finishStage(QuestBranch branch) {
-			Map<Integer, Entry<ItemStack, Integer>> itemsMap = new HashMap<>();
+			List<CountableObject<ItemStack>> itemsMap = new ArrayList<>();
 			for (int i = 0; i < items.size(); i++) {
 				ItemStack item = items.get(i);
 				int amount = item.getAmount();
 				item.setAmount(1);
-				itemsMap.put(i, new AbstractMap.SimpleEntry<>(item, amount));
+				itemsMap.add(CountableObject.create(new UUID(item.hashCode(), 2478), item, amount));
 			}
 			return finishStage(branch, itemsMap, comparisons);
 		}
 		
-		protected abstract T finishStage(QuestBranch branch, Map<Integer, Entry<ItemStack, Integer>> itemsMap, ItemComparisonMap comparisons);
+		protected abstract T finishStage(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons);
 		
 	}
-	
+
 }

@@ -8,11 +8,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
-
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
@@ -30,6 +28,7 @@ import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
+import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardExitEvent;
 
 @LocatableType (types = LocatedType.OTHER)
 public class StageArea extends AbstractStage implements Locatable.PreciseLocatable {
@@ -62,7 +61,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		if (BQWorldGuard.getInstance().doHandleEntry()) return; // on WG 7.0 or higher
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
-			if (BQWorldGuard.getInstance().isInRegion(region, e.getTo()) == !exit) {
+			if (world.equals(e.getTo().getWorld()) && BQWorldGuard.getInstance().isInRegion(region, e.getTo()) == !exit) {
 				finishStage(e.getPlayer());
 			}
 		}
@@ -70,12 +69,28 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	
 	@EventHandler
 	public void onRegionEntry(WorldGuardEntryEvent e) {
+		if (exit)
+			return;
 		if (region == null) {
 			DebugUtils.printError("No region for " + toString(), "area" + toString(), 5);
 			return;
 		}
 		if (e.getRegionsEntered().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) finishStage(e.getPlayer());
+		}
+	}
+
+	@EventHandler
+	public void onRegionExit(WorldGuardExitEvent e) {
+		if (!exit)
+			return;
+		if (region == null) {
+			DebugUtils.printError("No region for " + toString(), "area" + toString(), 5);
+			return;
+		}
+		if (e.getRegionsExited().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
+			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
+				finishStage(e.getPlayer());
 		}
 	}
 

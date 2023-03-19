@@ -3,17 +3,17 @@ package fr.skytasul.quests.utils.compatibility.npcs;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
-
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
 import io.github.znetworkw.znpcservers.npc.NPC;
@@ -24,6 +24,8 @@ import io.github.znetworkw.znpcservers.npc.event.NPCInteractEvent;
 
 public class BQServerNPCs extends BQNPCsManager {
 	
+	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+
 	@Override
 	public int getTimeToWaitForNPCs() {
 		return 45;
@@ -36,7 +38,12 @@ public class BQServerNPCs extends BQNPCsManager {
 	
 	@Override
 	public boolean isNPC(Entity entity) {
-		return NPC.all().stream().anyMatch(npc1 -> npc1.getEntityID() == entity.getEntityId());
+		Boolean result = cachedNpcs.getIfPresent(entity.getEntityId());
+		if (result == null) {
+			result = NPC.all().stream().anyMatch(npc1 -> npc1.getEntityID() == entity.getEntityId());
+			cachedNpcs.put(entity.getEntityId(), result);
+		}
+		return result;
 	}
 	
 	@Override
