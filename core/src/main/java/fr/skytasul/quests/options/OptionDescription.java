@@ -2,16 +2,21 @@ package fr.skytasul.quests.options;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.bukkit.entity.Player;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.options.QuestOptionString;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionDescription extends QuestOptionString implements QuestDescriptionProvider {
 	
-	private List<String> cachedDescription;
+	private Cache<QuestDescriptionContext, List<String>> cachedDescription =
+			CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	
 	@Override
 	public void setValue(String value) {
@@ -46,8 +51,12 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (cachedDescription == null) cachedDescription = Arrays.asList("§7" + getValue());
-		return cachedDescription;
+		List<String> description = cachedDescription.getIfPresent(context);
+		if (description == null) {
+			description = Arrays.asList("§7" + Utils.finalFormat(context.getPlayerAccount().getPlayer(), getValue(), true));
+			cachedDescription.put(context, description);
+		}
+		return description;
 	}
 	
 	@Override

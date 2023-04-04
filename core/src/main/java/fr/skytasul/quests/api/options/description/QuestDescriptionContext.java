@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.options.description;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -70,4 +71,20 @@ public class QuestDescriptionContext {
 		return list;
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(descriptionOptions, quest, acc, category, source);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof QuestDescriptionContext))
+			return false;
+
+		QuestDescriptionContext context = (QuestDescriptionContext) obj;
+
+		return descriptionOptions.equals(context.descriptionOptions) && quest.equals(context.quest)
+				&& acc.equals(context.acc) && category == context.category && source == context.source;
+	}
+
 }

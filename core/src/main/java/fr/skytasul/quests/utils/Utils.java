@@ -183,8 +183,10 @@ public class Utils{
 	}
 	
 	public static String finalFormat(CommandSender sender, String text, boolean playerName, Object... replace) {
-		if (DependenciesManager.papi.isEnabled() && sender instanceof Player) text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
-		if (playerName) text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+		if (DependenciesManager.papi.isEnabled() && sender instanceof Player)
+			text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
+		if (playerName && sender != null)
+			text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
 		text = ChatColor.translateAlternateColorCodes('&', text);
 		return format(text, replace);
 	}
