@@ -21,7 +21,9 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	@Override
 	public void setValue(String value) {
 		super.setValue(value);
-		cachedDescription = null;
+
+		if (cachedDescription != null) // not in constructor
+			cachedDescription.invalidateAll();
 	}
 	
 	@Override

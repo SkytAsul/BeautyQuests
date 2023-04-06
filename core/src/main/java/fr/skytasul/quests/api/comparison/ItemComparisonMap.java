@@ -110,8 +110,10 @@ public class ItemComparisonMap implements Cloneable {
 			Boolean result = null;
 			
 			if (comparison.isMetaNeeded()) {
-				if (meta1 != meta2) continue;
-				if (!meta1) result = true;
+				if (meta1 != meta2)
+					result = false;
+				else if (!meta1)
+					result = true;
 			}
 			
 			if (result == null) result = comparison.isSimilar(item1, item2);
