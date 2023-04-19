@@ -58,11 +58,13 @@ public class MoneyReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("money", money);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		money = section.getDouble("money");
 	}
 	

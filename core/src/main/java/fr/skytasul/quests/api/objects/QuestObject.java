@@ -153,7 +153,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 			new TextEditor<String>(event.getPlayer(), event::reopenGUI, msg -> {
 				setCustomDescription(msg);
 				event.reopenGUI();
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		} else {
 			clickInternal(event);
 		}

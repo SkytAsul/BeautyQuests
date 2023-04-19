@@ -52,11 +52,13 @@ public class TitleReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		if (title != null) title.serialize(section.createSection("title"));
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		title = section.contains("title") ? Title.deserialize(section.getConfigurationSection("title")) : null;
 	}
 	

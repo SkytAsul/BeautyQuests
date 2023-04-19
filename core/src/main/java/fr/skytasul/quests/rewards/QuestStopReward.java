@@ -32,7 +32,7 @@ public class QuestStopReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new QuestStopReward();
+		return new QuestStopReward(getCustomDescription());
 	}
 	
 }

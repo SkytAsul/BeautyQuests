@@ -84,11 +84,13 @@ public class CommandReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("commands", Utils.serializeList(commands, Command::serialize));
 	}
 
 	@Override
 	public void load(ConfigurationSection section){
+		super.load(section);
 		commands.addAll(Utils.deserializeList(section.getMapList("commands"), Command::deserialize));
 	}
 

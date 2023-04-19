@@ -49,11 +49,13 @@ public class MessageReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("text", text);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		text = section.getString("text");
 	}
 	

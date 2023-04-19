@@ -58,11 +58,13 @@ public class WaitReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("delay", delay);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		delay = section.getInt("delay");
 	}
 	

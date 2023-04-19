@@ -62,11 +62,13 @@ public class XPReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("xp", exp);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		exp = section.getInt("xp");
 	}
 	

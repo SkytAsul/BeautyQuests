@@ -114,6 +114,7 @@ public class RandomReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("rewards", SerializableObject.serializeList(rewards));
 		section.set("min", min);
 		section.set("max", max);
@@ -121,6 +122,7 @@ public class RandomReward extends AbstractReward {
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
 		setMinMax(section.getInt("min"), section.getInt("max"));
 	}

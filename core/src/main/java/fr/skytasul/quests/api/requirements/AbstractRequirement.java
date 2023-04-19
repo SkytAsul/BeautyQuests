@@ -99,7 +99,7 @@ public abstract class AbstractRequirement extends QuestObject {
 			new TextEditor<String>(event.getPlayer(), event::reopenGUI, msg -> {
 				setCustomReason(msg);
 				event.reopenGUI();
-			}).enter();
+			}).passNullIntoEndConsumer().enter();
 		} else {
 			itemClick(event);
 		}

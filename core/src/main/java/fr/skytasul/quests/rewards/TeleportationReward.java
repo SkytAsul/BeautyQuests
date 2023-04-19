@@ -51,11 +51,13 @@ public class TeleportationReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("tp", teleportation.serialize());
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		teleportation = Location.deserialize(section.getConfigurationSection("tp").getValues(false));
 	}
 	

@@ -53,11 +53,13 @@ public class PermissionReward extends AbstractReward {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("perms", Utils.serializeList(permissions, Permission::serialize));
 	}
 
 	@Override
 	public void load(ConfigurationSection section){
+		super.load(section);
 		permissions.addAll(Utils.deserializeList(section.getMapList("perms"), Permission::deserialize));
 	}
 	
