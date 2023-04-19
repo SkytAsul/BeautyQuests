@@ -2,13 +2,12 @@ package fr.skytasul.quests.requirements.logical;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.structure.Quest;
@@ -19,10 +18,11 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	private List<AbstractRequirement> requirements;
 	
 	public LogicalOrRequirement() {
-		this(new ArrayList<>());
+		this(null, null, new ArrayList<>());
 	}
 	
-	public LogicalOrRequirement(List<AbstractRequirement> requirements) {
+	public LogicalOrRequirement(String customDescription, String customReason, List<AbstractRequirement> requirements) {
+		super(customDescription, customReason);
 		this.requirements = requirements;
 	}
 	
@@ -39,8 +39,9 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.requirements.format(requirements.size()), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.requirements.format(requirements.size()));
 	}
 	
 	@Override
@@ -58,16 +59,18 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new LogicalOrRequirement(new ArrayList<>(requirements));
+		return new LogicalOrRequirement(getCustomDescription(), getCustomReason(), new ArrayList<>(requirements));
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("requirements", SerializableObject.serializeList(requirements));
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
 	}
 	

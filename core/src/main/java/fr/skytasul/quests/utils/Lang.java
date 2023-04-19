@@ -259,6 +259,9 @@ public enum Lang implements Locale {
 	CHOOSE_SCOREBOARD_OBJECTIVE("msg.editor.text.chooseObjectiveRequired"),
 	CHOOSE_SCOREBOARD_TARGET("msg.editor.text.chooseObjectiveTargetScore"),
 	CHOOSE_REGION_REQUIRED("msg.editor.text.chooseRegionRequired"),
+	CHOOSE_REQUIREMENT_CUSTOM_REASON("msg.editor.text.chooseRequirementCustomReason", EditorPrefix),
+	CHOOSE_REQUIREMENT_CUSTOM_DESCRIPTION("msg.editor.text.chooseRequirementCustomDescription", EditorPrefix),
+	CHOOSE_REWARD_CUSTOM_DESCRIPTION("msg.editor.text.chooseRewardCustomDescription", EditorPrefix),
 	
 	// rewards
 	CHOOSE_PERM_REWARD("msg.editor.text.reward.permissionName"),
@@ -542,6 +545,8 @@ public enum Lang implements Locale {
 	command("inv.stageEnding.command"),
 	
 	INVENTORY_REQUIREMENTS("inv.requirements.name"),
+	setRequirementReason("inv.requirements.setReason"),
+	requirementReason("inv.requirements.reason"), // 0: message
 	
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
@@ -693,6 +698,9 @@ public enum Lang implements Locale {
 	
 	INVENTORY_EQUIPMENT_SLOTS("inv.equipmentSlots.name"),
 	
+	object_description_set("inv.questObjects.setCustomDescription"),
+	object_description("inv.questObjects.description"), // 0: description
+
 	BOOK_NAME("inv.listBook.questName"),
 	BOOK_STARTER("inv.listBook.questStarter"),
 	BOOK_REWARDS("inv.listBook.questRewards"),

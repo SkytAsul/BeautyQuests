@@ -8,7 +8,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.serializable.SerializableObject;
@@ -21,10 +21,11 @@ public class CheckpointReward extends AbstractReward {
 	private List<AbstractReward> actions;
 	
 	public CheckpointReward() {
-		this(new ArrayList<>());
+		this(null, new ArrayList<>());
 	}
 	
-	public CheckpointReward(List<AbstractReward> actions) {
+	public CheckpointReward(String customDescription, List<AbstractReward> actions) {
+		super(customDescription);
 		this.actions = actions;
 	}
 	
@@ -56,12 +57,13 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new CheckpointReward(new ArrayList<>(actions));
+		return new CheckpointReward(getCustomDescription(), new ArrayList<>(actions));
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.actions.format(actions.size())), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.actions.format(actions.size()));
 	}
 	
 	@Override

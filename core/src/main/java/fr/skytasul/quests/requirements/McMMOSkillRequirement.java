@@ -2,8 +2,8 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
@@ -16,11 +16,11 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	public String skillName;
 
 	public McMMOSkillRequirement(){
-		this(0, ComparisonMethod.GREATER_OR_EQUAL);
+		this(null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public McMMOSkillRequirement(double target, ComparisonMethod comparison) {
-		super(target, comparison);
+	public McMMOSkillRequirement(String customDescription, String customReason, double target, ComparisonMethod comparison) {
+		super(customDescription, customReason, target, comparison);
 	}
 
 	@Override
@@ -29,12 +29,12 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p){
-		Lang.REQUIREMENT_SKILL.send(p, getFormattedValue(), skillName);
+	protected String getDefaultReason(Player player) {
+		return Lang.REQUIREMENT_SKILL.format(getFormattedValue(), skillName);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Lang.RDSkillLevel.format(Integer.toString((int) target), skillName);
 	}
 	
@@ -49,8 +49,9 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { getValueLore(), "§8> Skill name: §7" + skillName, "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription("§8Skill name: §7" + skillName);
 	}
 	
 	@Override
@@ -79,7 +80,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new McMMOSkillRequirement(target, comparison);
+		return new McMMOSkillRequirement(getCustomDescription(), getCustomReason(), target, comparison);
 	}
 	
 }

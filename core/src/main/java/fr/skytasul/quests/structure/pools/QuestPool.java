@@ -176,15 +176,12 @@ public class QuestPool implements Comparable<QuestPool> {
 		
 		List<Quest> started = new ArrayList<>(questsPerLaunch);
 		for (int i = 0; i < questsPerLaunch; i++) {
-			for (AbstractRequirement requirement : requirements) {
-				try {
-					if (requirement.test(p)) continue;
-					requirement.sendReason(p);
-				}catch (Exception ex) {
-					BeautyQuests.logger.severe("Cannot test requirement " + requirement.getClass().getSimpleName() + " in pool " + id + " for player " + p.getName(), ex);
+			if (!Utils.testRequirements(p, requirements, started.isEmpty())) {
+				if (started.isEmpty()) {
+					return null;
+				} else {
+					break;
 				}
-				if (started.isEmpty()) return null;
-				break;
 			}
 			
 			List<Quest> notCompleted = avoidDuplicates ? quests.stream().filter(quest -> !datas.getCompletedQuests().contains(quest.getID())).collect(Collectors.toList()) : quests;

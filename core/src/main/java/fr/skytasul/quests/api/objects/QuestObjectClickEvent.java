@@ -3,7 +3,6 @@ package fr.skytasul.quests.api.objects;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 
@@ -66,7 +65,7 @@ public class QuestObjectClickEvent {
 	}
 	
 	public void updateItemLore() {
-		ItemUtils.lore(item, clickedObject.getLore());
+		ItemUtils.lore(item, clickedObject.getItemLore());
 	}
 	
 }

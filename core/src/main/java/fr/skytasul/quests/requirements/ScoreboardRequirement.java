@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
@@ -19,11 +19,12 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	private String objectiveName;
 
 	public ScoreboardRequirement() {
-		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
+		this(null, null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public ScoreboardRequirement(String objectiveName, double target, ComparisonMethod comparison) {
-		super(target, comparison);
+	public ScoreboardRequirement(String customDescription, String customReason, String objectiveName, double target,
+			ComparisonMethod comparison) {
+		super(customDescription, customReason, target, comparison);
 		if (objectiveName != null) this.objectiveName = objectiveName;
 	}
 
@@ -48,8 +49,9 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { getValueLore(), "§8>Objective name: §7" + objectiveName, "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription("§8Objective name: §7" + objectiveName);
 	}
 	
 	@Override
@@ -82,7 +84,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new ScoreboardRequirement(objectiveName, target, comparison);
+		return new ScoreboardRequirement(getCustomDescription(), getCustomReason(), objectiveName, target, comparison);
 	}
 
 }

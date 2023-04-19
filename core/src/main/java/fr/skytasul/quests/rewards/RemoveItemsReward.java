@@ -3,14 +3,14 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
@@ -23,10 +23,11 @@ public class RemoveItemsReward extends AbstractReward {
 	private ItemComparisonMap comparisons;
 	
 	public RemoveItemsReward(){
-		this(new ArrayList<>(), new ItemComparisonMap());
+		this(null, new ArrayList<>(), new ItemComparisonMap());
 	}
 	
-	public RemoveItemsReward(List<ItemStack> items, ItemComparisonMap comparisons) {
+	public RemoveItemsReward(String customDescription, List<ItemStack> items, ItemComparisonMap comparisons) {
+		super(customDescription);
 		this.items = items;
 		this.comparisons = comparisons;
 	}
@@ -44,25 +45,23 @@ public class RemoveItemsReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new RemoveItemsReward(items, comparisons);
+		return new RemoveItemsReward(getCustomDescription(), items, comparisons);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return items.stream().mapToInt(ItemStack::getAmount).sum() + " " + Lang.Item.toString();
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] {
-				"§7" + Lang.AmountItems.format(items.size()),
-				"§7" + Lang.AmountComparisons.format(comparisons.getEffective().size()),
-				"",
-				"§7" + Lang.ClickLeft.toString() + " > " + Lang.stageItems.toString(),
-				"§7" + Lang.ClickRight.toString() + " > " + Lang.stageItemsComparison.toString(),
-				"§7" + Lang.ClickMiddle.toString() + " > §c" + Lang.Remove.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.AmountItems.format(items.size()));
+		loreBuilder.addDescription(Lang.AmountComparisons.format(comparisons.getEffective().size()));
+		loreBuilder.addClick(ClickType.LEFT, Lang.stageItems.toString());
+		loreBuilder.addClick(ClickType.RIGHT, Lang.stageItemsComparison.toString());
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {

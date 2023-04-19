@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import com.massivecraft.factions.FactionsIndex;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
@@ -31,10 +29,11 @@ public class FactionRequirement extends AbstractRequirement {
 	public List<Faction> factions;
 	
 	public FactionRequirement() {
-		this(new ArrayList<>());
+		this(null, null, new ArrayList<>());
 	}
 	
-	public FactionRequirement(List<Faction> factions) {
+	public FactionRequirement(String customDescription, String customReason, List<Faction> factions) {
+		super(customDescription, customReason);
 		this.factions = factions;
 	}
 	
@@ -43,7 +42,7 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Lang.RDFaction.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> factions.stream().map(Faction::getName).iterator()));
 	}
 	
@@ -57,8 +56,9 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + factions.size() + " factions", "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(factions.size() + " factions");
 	}
 
 	@Override
@@ -97,16 +97,18 @@ public class FactionRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new FactionRequirement(new ArrayList<>(factions));
+		return new FactionRequirement(getCustomDescription(), getCustomReason(), new ArrayList<>(factions));
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("factions", factions.stream().map(Faction::getId).collect(Collectors.toList()));
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		for (String s : section.getStringList("factions")) {
 			if (!FactionColl.get().containsId(s)) {
 				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists.");

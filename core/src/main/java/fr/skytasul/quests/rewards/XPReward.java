@@ -2,12 +2,11 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -22,7 +21,8 @@ public class XPReward extends AbstractReward {
 
 	public XPReward() {}
 
-	public XPReward(int exp) {
+	public XPReward(String customDescription, int exp) {
+		super(customDescription);
 		this.exp = exp;
 	}
 
@@ -36,17 +36,18 @@ public class XPReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new XPReward(exp);
+		return new XPReward(getCustomDescription(), exp);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return exp + " " + Lang.Exp.toString();
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(exp + " " + Lang.Exp.toString());
 	}
 	
 	@Override

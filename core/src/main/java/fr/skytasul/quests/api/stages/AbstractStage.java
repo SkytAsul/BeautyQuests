@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -144,13 +142,7 @@ public abstract class AbstractStage implements Listener {
 	}
 
 	protected boolean canUpdate(Player p, boolean msg) {
-		for (AbstractRequirement requirement : validationRequirements) {
-			if (!requirement.test(p)) {
-				if (msg) requirement.sendReason(p);
-				return false;
-			}
-		}
-		return true;
+		return Utils.testRequirements(p, validationRequirements, msg);
 	}
 	
 	@Override

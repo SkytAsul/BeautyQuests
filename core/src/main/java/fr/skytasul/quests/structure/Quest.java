@@ -31,7 +31,6 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.Inventories;
@@ -262,13 +261,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (!testQuestLimit(p, acc, sendMessage)) return false;
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
-		for (AbstractRequirement ar : getOptionValueOrDef(OptionRequirements.class)) {
-			if (!ar.test(p)) {
-				if (sendMessage) ar.sendReason(p);
-				return false;
-			}
-		}
-		return true;
+		return Utils.testRequirements(p, getOptionValueOrDef(OptionRequirements.class), sendMessage);
 	}
 	
 	public boolean testQuestLimit(Player p, PlayerAccount acc, boolean sendMessage) {
@@ -566,7 +559,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 				rewards = qu.getOption(OptionEndRewards.class);
 			}else {
 				rewards = (OptionEndRewards) QuestOptionCreator.creators.get(OptionEndRewards.class).optionSupplier.get();
-				rewards.getValue().add(new MessageReward(endMessage));
+				rewards.getValue().add(new MessageReward(null, endMessage));
 				qu.addOption(rewards);
 			}
 		}

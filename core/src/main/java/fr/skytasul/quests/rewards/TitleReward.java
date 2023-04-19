@@ -1,14 +1,12 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.misc.TitleGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.Title;
 
 public class TitleReward extends AbstractReward {
@@ -17,15 +15,17 @@ public class TitleReward extends AbstractReward {
 	
 	public TitleReward() {}
 	
-	public TitleReward(Title title) {
+	public TitleReward(String customDescription, Title title) {
+		super(customDescription);
 		this.title = title;
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { title == null ? Lang.NotSet.toString() : Lang.optionValue.format(title.toString()), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(title);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new TitleGUI(newTitle -> {
@@ -47,7 +47,7 @@ public class TitleReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new TitleReward(title);
+		return new TitleReward(getCustomDescription(), title);
 	}
 	
 	@Override

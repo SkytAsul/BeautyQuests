@@ -252,6 +252,12 @@ msg:
       chooseObjectiveRequired: §aWrite the objective name.
       chooseObjectiveTargetScore: §aWrite the target score for the objective.
       chooseRegionRequired: §aWrite the name of the required region (you must be in the same world).
+      chooseRequirementCustomReason: 'Write the custom reason for this requirement. If the player does
+        not meet the requirement but tries to start the quest anyway, this message will appear in the chat.'
+      chooseRequirementCustomDescription: 'Write the custom description for this requirement. It will appear
+        in the description of the quest in the menu.'
+      chooseRewardCustomDescription: 'Write the custom description for this reward. It will appear
+        in the description of the quest in the menu.'
     selectWantedBlock: §aClick with the stick on the wanted block for the stage.
     itemCreator:
       itemType: '§aWrite the name of the wanted item type:'
@@ -567,6 +573,8 @@ inv:
     command: §eEdit executed command
   requirements:
     name: Requirements
+    setReason: Set custom reason
+    reason: '§8Custom reason: §7{0}'
   rewards:
     name: Rewards
     commands: 'Commands: {0}'
@@ -734,6 +742,9 @@ inv:
     maps: 'Maps (such as dynmap or BlueMap)'
   equipmentSlots:
     name: Equipment slots
+  questObjects:
+    setCustomDescription: 'Set custom description'
+    description: '§8Description: §7{0}'
     
 scoreboard:
   name: §6§lQuests

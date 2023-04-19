@@ -38,6 +38,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,6 +46,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -121,6 +123,24 @@ public class Utils{
 		return msg;
 	}
 	
+	public static boolean testRequirements(Player p, List<AbstractRequirement> requirements, boolean message) {
+		for (AbstractRequirement requirement : requirements) {
+			try {
+				if (!requirement.test(p)) {
+					if (message && !requirement.sendReason(p))
+						continue; // means a reason has not yet been sent
+					return false;
+				}
+			} catch (Exception ex) {
+				BeautyQuests.logger.severe(
+						"Cannot test requirement " + requirement.getClass().getSimpleName() + " for player " + p.getName(),
+						ex);
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static String ticksToElapsedTime(int ticks) {
 		int i = ticks / 20;
 		int j = i / 60;
@@ -573,4 +593,21 @@ public class Utils{
 		return XMaterial.SPONGE;
 	}
 	
+	public static String clickName(ClickType click) {
+		switch (click) {
+			case LEFT:
+				return Lang.ClickLeft.toString();
+			case RIGHT:
+				return Lang.ClickRight.toString();
+			case SHIFT_LEFT:
+				return Lang.ClickShiftLeft.toString();
+			case SHIFT_RIGHT:
+				return Lang.ClickShiftRight.toString();
+			case MIDDLE:
+				return Lang.ClickMiddle.toString();
+			default:
+				return click.name().toLowerCase();
+		}
+	}
+
 }

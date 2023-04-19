@@ -3,12 +3,11 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.utils.Lang;
@@ -19,10 +18,11 @@ public class ItemReward extends AbstractReward {
 	public List<ItemStack> items;
 	
 	public ItemReward(){
-		this(new ArrayList<>());
+		this(null, new ArrayList<>());
 	}
 	
-	public ItemReward(List<ItemStack> items){
+	public ItemReward(String customDescription, List<ItemStack> items) {
+		super(customDescription);
 		this.items = items;
 	}
 
@@ -35,19 +35,20 @@ public class ItemReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new ItemReward(items);
+		return new ItemReward(getCustomDescription(), items);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return items.stream().mapToInt(ItemStack::getAmount).sum() + " " + Lang.Item.toString();
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + items.size() + " " + Lang.Item.toString(), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(items.size() + " " + Lang.Item.toString());
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new ItemsGUI(items -> {

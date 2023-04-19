@@ -2,14 +2,12 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Permission;
 
@@ -18,10 +16,11 @@ public class PermissionReward extends AbstractReward {
 	public List<Permission> permissions;
 
 	public PermissionReward(){
-		this(new ArrayList<>());
+		this(null, new ArrayList<>());
 	}
 
-	public PermissionReward(List<Permission> permissions) {
+	public PermissionReward(String customDescription, List<Permission> permissions) {
+		super(customDescription);
 		this.permissions = permissions;
 	}
 
@@ -35,12 +34,13 @@ public class PermissionReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new PermissionReward(new ArrayList<>(permissions));
+		return new PermissionReward(getCustomDescription(), new ArrayList<>(permissions));
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + permissions.size() + " permissions", "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(permissions.size() + " permissions");
 	}
 	
 	@Override

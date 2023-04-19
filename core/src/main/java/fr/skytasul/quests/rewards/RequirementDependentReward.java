@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
@@ -33,10 +33,12 @@ public class RequirementDependentReward extends AbstractReward {
 	private List<AbstractReward> rewards;
 	
 	public RequirementDependentReward() {
-		this(new ArrayList<>(), new ArrayList<>());
+		this(null, new ArrayList<>(), new ArrayList<>());
 	}
 	
-	public RequirementDependentReward(List<AbstractRequirement> requirements, List<AbstractReward> rewards) {
+	public RequirementDependentReward(String customDescription, List<AbstractRequirement> requirements,
+			List<AbstractReward> rewards) {
+		super(customDescription);
 		this.requirements = requirements;
 		this.rewards = rewards;
 	}
@@ -68,11 +70,12 @@ public class RequirementDependentReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new RequirementDependentReward(new ArrayList<>(requirements), new ArrayList<>(rewards));
+		return new RequirementDependentReward(getCustomDescription(), new ArrayList<>(requirements),
+				new ArrayList<>(rewards));
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return requirements.stream().allMatch(req -> req.test(p)) ?
 				rewards
 				.stream()
@@ -83,8 +86,9 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.requirements.format(requirements.size()) + ", " + Lang.actions.format(rewards.size())), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.requirements.format(requirements.size()));
 	}
 	
 	@Override

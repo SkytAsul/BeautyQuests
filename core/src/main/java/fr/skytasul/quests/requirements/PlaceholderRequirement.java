@@ -1,12 +1,12 @@
 package fr.skytasul.quests.requirements;
 
 import java.math.BigDecimal;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.ComparisonMethod;
@@ -14,7 +14,6 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
-
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -30,10 +29,12 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	private boolean parseValue = false;
 
 	public PlaceholderRequirement(){
-		this(null, null, ComparisonMethod.EQUALS);
+		this(null, null, null, null, ComparisonMethod.EQUALS);
 	}
 	
-	public PlaceholderRequirement(String placeholder, String value, ComparisonMethod comparison) {
+	public PlaceholderRequirement(String customDescription, String customReason, String placeholder, String value,
+			ComparisonMethod comparison) {
+		super(customDescription, customReason);
 		if (placeholder != null) setPlaceholder(placeholder);
 		this.value = value;
 		this.comparison = comparison;
@@ -63,8 +64,13 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p) {
-		if (hook == null) p.sendMessage("§cError: unknown placeholder " + rawPlaceholder);
+	public boolean isValid() {
+		return hook != null;
+	}
+
+	@Override
+	protected String getInvalidReason() {
+		return "unknown placeholder " + rawPlaceholder;
 	}
 	
 	public void setPlaceholder(String placeholder){
@@ -102,6 +108,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("placeholder", rawPlaceholder);
 		section.set("value", value);
 		section.set("comparison", comparison.name());
@@ -110,6 +117,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 
 	@Override
 	public void load(ConfigurationSection section){
+		super.load(section);
 		setPlaceholder(section.getString("placeholder"));
 		this.value = section.getString("value");
 		if (section.contains("comparison")) this.comparison = ComparisonMethod.valueOf(section.getString("comparison"));
@@ -117,10 +125,12 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + rawPlaceholder, "§8> §7" + comparison.getTitle().format(value), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(QuestOption.formatNullableValue(rawPlaceholder));
+		loreBuilder.addDescription(comparison.getTitle().format(value));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(event.getPlayer());
@@ -148,7 +158,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new PlaceholderRequirement(rawPlaceholder, value, comparison);
+		return new PlaceholderRequirement(getCustomDescription(), getCustomReason(), rawPlaceholder, value, comparison);
 	}
 	
 }

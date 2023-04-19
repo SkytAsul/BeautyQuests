@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import org.bukkit.event.inventory.ClickType;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.editors.TextEditor;
@@ -26,10 +25,11 @@ public class RandomReward extends AbstractReward {
 	private int min, max;
 	
 	public RandomReward() {
-		this(new ArrayList<>(), 1, 1);
+		this(null, new ArrayList<>(), 1, 1);
 	}
 	
-	public RandomReward(List<AbstractReward> rewards, int min, int max) {
+	public RandomReward(String customDescription, List<AbstractReward> rewards, int min, int max) {
+		super(customDescription);
 		this.rewards = rewards;
 		this.min = min;
 		this.max = max;
@@ -72,11 +72,11 @@ public class RandomReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new RandomReward(new ArrayList<>(rewards), min, max);
+		return new RandomReward(getCustomDescription(), new ArrayList<>(rewards), min, max);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return rewards
 				.stream()
 				.map(req -> req.getDescription(p))
@@ -85,16 +85,14 @@ public class RandomReward extends AbstractReward {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] {
-				QuestOption.formatDescription(Lang.actions.format(rewards.size())),
-				"§8 | min: §7" + min + "§8 | max: §7" + max,
-				"",
-				"§7" + Lang.ClickLeft + " > §7" + Lang.rewardRandomRewards,
-				"§7" + Lang.ClickRight + " > §7" + Lang.rewardRandomMinMax,
-				"§7" + Lang.ClickMiddle + " > §c" + Lang.Remove };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.actions.format(rewards.size()));
+		loreBuilder.addDescriptionRaw("§8 | min: §7" + min + "§8 | max: §7" + max);
+		loreBuilder.addClick(ClickType.LEFT, Lang.rewardRandomRewards.toString());
+		loreBuilder.addClick(ClickType.RIGHT, Lang.rewardRandomMinMax.toString());
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {

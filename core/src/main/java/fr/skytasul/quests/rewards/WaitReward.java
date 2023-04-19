@@ -1,11 +1,10 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -15,11 +14,10 @@ public class WaitReward extends AbstractReward {
 	
 	private int delay;
 	
-	public WaitReward() {
-		this(0);
-	}
+	public WaitReward() {}
 	
-	public WaitReward(int delay) {
+	public WaitReward(String customDescription, int delay) {
+		super(customDescription);
 		this.delay = delay;
 	}
 	
@@ -29,8 +27,9 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(Lang.Ticks.format(delay)), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(Lang.Ticks.format(delay));
 	}
 	
 	@Override
@@ -54,7 +53,7 @@ public class WaitReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new WaitReward(delay);
+		return new WaitReward(getCustomDescription(), delay);
 	}
 	
 	@Override

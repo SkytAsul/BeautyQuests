@@ -2,8 +2,8 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.editors.TextEditor;
@@ -16,11 +16,12 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	public String jobName;
 	
 	public JobLevelRequirement() {
-		this(null, 0, ComparisonMethod.GREATER_OR_EQUAL);
+		this(null, null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public JobLevelRequirement(String jobName, double target, ComparisonMethod comparison) {
-		super(target, comparison);
+	public JobLevelRequirement(String customDescription, String customReason, String jobName, double target,
+			ComparisonMethod comparison) {
+		super(customDescription, customReason, target, comparison);
 		this.jobName = jobName;
 	}
 
@@ -40,23 +41,24 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p){
-		Lang.REQUIREMENT_JOB.send(p, getFormattedValue(), jobName);
+	protected String getDefaultReason(Player player) {
+		return Lang.REQUIREMENT_JOB.format(getFormattedValue(), jobName);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Lang.RDJobLevel.format(Integer.toString((int) target), jobName);
 	}
-	
+
 	@Override
 	public AbstractRequirement clone() {
-		return new JobLevelRequirement(jobName, target, comparison);
+		return new JobLevelRequirement(getCustomDescription(), getCustomReason(), jobName, target, comparison);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { getValueLore(), "§8>Job name: §7" + jobName, "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription("§8Job name: §7" + jobName);
 	}
 	
 	@Override

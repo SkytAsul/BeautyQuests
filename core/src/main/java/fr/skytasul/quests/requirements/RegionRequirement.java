@@ -3,11 +3,11 @@ package fr.skytasul.quests.requirements;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.Lang;
@@ -21,10 +21,11 @@ public class RegionRequirement extends AbstractRequirement {
 	private ProtectedRegion region;
 	
 	public RegionRequirement() {
-		this(null, null);
+		this(null, null, null, null);
 	}
 	
-	public RegionRequirement(String worldName, String regionName) {
+	public RegionRequirement(String customDescription, String customReason, String worldName, String regionName) {
+		super(customDescription, customReason);
 		this.worldName = worldName;
 		setRegionName(regionName);
 	}
@@ -38,8 +39,9 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(regionName), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(QuestOption.formatNullableValue(regionName));
 	}
 	
 	@Override
@@ -70,23 +72,30 @@ public class RegionRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p) {
-		if (region == null) Lang.ERROR_OCCURED.send(p, "required region does not exist");
+	protected String getInvalidReason() {
+		return "required region " + regionName + " in " + worldName + " does not exist";
 	}
-	
+
+	@Override
+	public boolean isValid() {
+		return region != null;
+	}
+
 	@Override
 	public AbstractRequirement clone() {
-		return new RegionRequirement(worldName, regionName);
+		return new RegionRequirement(getCustomDescription(), getCustomReason(), worldName, regionName);
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("world", worldName);
 		section.set("region", regionName);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		worldName = section.getString("world");
 		setRegionName(section.getString("region"));
 	}

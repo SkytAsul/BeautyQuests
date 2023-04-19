@@ -1,11 +1,11 @@
 package fr.skytasul.quests.api.requirements;
 
 import java.text.NumberFormat;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.utils.ComparisonMethod;
@@ -13,12 +13,12 @@ import fr.skytasul.quests.utils.Lang;
 
 public abstract class TargetNumberRequirement extends AbstractRequirement {
 
-	private static NumberFormat numberFormat = NumberFormat.getInstance();
-
 	protected ComparisonMethod comparison;
 	protected double target;
 	
-	protected TargetNumberRequirement(double target, ComparisonMethod comparison) {
+	protected TargetNumberRequirement(String customDescription, String customReason, double target,
+			ComparisonMethod comparison) {
+		super(customDescription, customReason);
 		this.target = target;
 		this.comparison = comparison;
 	}
@@ -37,17 +37,22 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		return comparison.test(diff);
 	}
 
+	public String getShortFormattedValue() {
+		return comparison.getSymbol() + " " + getNumberFormat().format(target);
+	}
+
 	public String getFormattedValue() {
-		return comparison.getTitle().format(numberFormat.format(target));
+		return comparison.getTitle().format(getNumberFormat().format(target));
 	}
-	
-	protected String getValueLore() {
-		return "§8> §7" + getFormattedValue();
+
+	protected NumberFormat getNumberFormat() {
+		return numberClass() == Integer.class ? NumberFormat.getIntegerInstance() : NumberFormat.getInstance();
 	}
-	
+
 	@Override
-	public String[] getLore() {
-		return new String[] { getValueLore(), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(QuestOption.formatNullableValue(getFormattedValue()));
 	}
 
 	public abstract double getPlayerTarget(Player p);
@@ -58,12 +63,14 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("comparison", comparison.name());
 		section.set("target", target);
 	}
 
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		if (section.contains("comparison")) comparison = ComparisonMethod.valueOf(section.getString("comparison"));
 		target = section.getDouble("target");
 	}

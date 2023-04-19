@@ -2,9 +2,10 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.PlayersManager;
@@ -18,10 +19,11 @@ public class QuestRequirement extends AbstractRequirement {
 	private Quest cached;
 	
 	public QuestRequirement() {
-		this(-1);
+		this(null, null, -1);
 	}
 	
-	public QuestRequirement(int questId) {
+	public QuestRequirement(String customDescription, String customReason, int questId) {
+		super(customDescription, customReason);
 		this.questId = questId;
 	}
 	
@@ -32,12 +34,12 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p){
-		if (exists()) Lang.REQUIREMENT_QUEST.send(p, cached.getName());
+	protected String getDefaultReason(Player player) {
+		return exists() ? Lang.REQUIREMENT_QUEST.format(cached.getName()) : null;
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Lang.RDQuest.format(exists() ? cached.getName() : questId);
 	}
 
@@ -47,8 +49,9 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + (exists() ? cached.getName() : Lang.NotSet.toString()), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(QuestOption.formatNullableValue(exists() ? cached.getName() : null));
 	}
 
 	@Override
@@ -73,16 +76,18 @@ public class QuestRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new QuestRequirement(questId);
+		return new QuestRequirement(getCustomDescription(), getCustomReason(), questId);
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("questID", questId);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		questId = section.getInt("questID");
 	}
 	

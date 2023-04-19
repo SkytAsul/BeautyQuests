@@ -5,11 +5,17 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
+import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.utils.Lang;
 
 public abstract class AbstractReward extends QuestObject {
 
 	protected AbstractReward() {
-		super(QuestsAPI.getRewards());
+		this(null);
+	}
+
+	protected AbstractReward(String customDescription) {
+		super(QuestsAPI.getRewards(), customDescription);
 	}
 	
 	@Override
@@ -23,7 +29,19 @@ public abstract class AbstractReward extends QuestObject {
 	 * @return title of all the subsequent reward (for instance : "4 gold")
 	 */
 	public abstract List<String> give(Player p) throws InterruptingBranchException;
+
+	@Override
+	protected void sendCustomDescriptionHelpMessage(Player p) {
+		Lang.CHOOSE_REWARD_CUSTOM_DESCRIPTION.send(p);
+	}
 	
+	@Override
+	protected final void clickInternal(QuestObjectClickEvent event) {
+		itemClick(event);
+	}
+
+	protected abstract void itemClick(QuestObjectClickEvent event);
+
 	@Override
 	public abstract AbstractReward clone();
 	
@@ -34,5 +52,5 @@ public abstract class AbstractReward extends QuestObject {
 	public boolean isAsync() {
 		return false;
 	}
-	
+
 }

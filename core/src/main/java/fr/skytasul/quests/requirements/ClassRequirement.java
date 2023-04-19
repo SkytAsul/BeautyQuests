@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
@@ -28,10 +26,11 @@ public class ClassRequirement extends AbstractRequirement {
 	public List<RPGClass> classes;
 	
 	public ClassRequirement() {
-		this(new ArrayList<>());
+		this(null, null, new ArrayList<>());
 	}
 	
-	public ClassRequirement(List<RPGClass> classes) {
+	public ClassRequirement(String customDescription, String customReason, List<RPGClass> classes) {
+		super(customDescription, customReason);
 		this.classes = classes;
 	}
 
@@ -56,13 +55,14 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Lang.RDClass.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> classes.stream().map(RPGClass::getName).iterator()));
 	}
 
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + classes.size() + " classes", "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(classes.size() + " classes");
 	}
 	
 	@Override
@@ -101,17 +101,19 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new ClassRequirement(new ArrayList<>(classes));
+		return new ClassRequirement(getCustomDescription(), getCustomReason(), new ArrayList<>(classes));
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		if (!classes.isEmpty())
 			section.set("classes", classes.stream().map(RPGClass::getName).collect(Collectors.toList()));
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		if (!section.contains("classes")) return;
 		for (String s : section.getStringList("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());

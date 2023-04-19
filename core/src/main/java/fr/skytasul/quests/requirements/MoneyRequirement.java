@@ -2,8 +2,8 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.editors.TextEditor;
@@ -17,7 +17,8 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	
 	public MoneyRequirement() {}
 
-	public MoneyRequirement(double money) {
+	public MoneyRequirement(String customDescription, String customReason, double money) {
+		super(customDescription, customReason);
 		this.money = money;
 	}
 
@@ -32,23 +33,24 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	}
 
 	@Override
-	public void sendReason(Player p) {
-		Lang.REQUIREMENT_MONEY.send(p, Vault.format(money));
+	protected String getDefaultReason(Player player) {
+		return Lang.REQUIREMENT_MONEY.format(Vault.format(money));
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Vault.format(money);
 	}
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new MoneyRequirement(money);
+		return new MoneyRequirement(getCustomDescription(), getCustomReason(), money);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(money), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.optionValue.format(money));
 	}
 	
 	@Override
@@ -62,11 +64,13 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("money", money);
 	}
 
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		money = section.getDouble("money");
 	}
 

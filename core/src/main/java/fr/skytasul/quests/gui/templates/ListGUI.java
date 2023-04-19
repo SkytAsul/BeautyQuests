@@ -42,7 +42,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 	
 	@Override
 	public final void click(T existing, ItemStack item, ClickType clickType) {
-		if (clickType == ClickType.MIDDLE) {
+		if (clickType == getRemoveClick(existing)) {
 			remove(existing);
 		}else {
 			if (existing == null) {
@@ -51,6 +51,10 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		}
 	}
 	
+	protected ClickType getRemoveClick(T object) {
+		return ClickType.MIDDLE;
+	}
+
 	public boolean remove(T object) {
 		int index = objects.indexOf(object);
 		if (index == -1) return false;

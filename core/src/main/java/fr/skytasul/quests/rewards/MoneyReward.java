@@ -2,11 +2,10 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.NumberParser;
@@ -19,7 +18,8 @@ public class MoneyReward extends AbstractReward {
 	
 	public MoneyReward() {}
 	
-	public MoneyReward(double money) {
+	public MoneyReward(String customDescription, double money) {
+		super(customDescription);
 		this.money = money;
 	}
 
@@ -33,19 +33,20 @@ public class MoneyReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new MoneyReward(money);
+		return new MoneyReward(getCustomDescription(), money);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
+	public String getDefaultDescription(Player p) {
 		return Vault.format(money);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(money), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(money);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_MONEY_REWARD.send(event.getPlayer());

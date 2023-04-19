@@ -2,7 +2,6 @@ package fr.skytasul.quests.editors;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +12,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager.BQBossBar;
@@ -122,11 +120,6 @@ public abstract class Editor implements Listener{
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		if (e.getPlayer() == p) leave(p);
-	}
-
-	@Deprecated
-	public static <T extends Editor> T enterOrLeave(Player p, T editor) {
-		return editor.enterOrLeave(p);
 	}
 	
 	public static boolean hasEditor(Player player){

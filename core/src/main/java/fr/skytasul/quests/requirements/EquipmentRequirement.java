@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableMap;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
@@ -27,7 +27,9 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	public EquipmentRequirement() {}
 	
-	public EquipmentRequirement(EquipmentSlot slot, ItemStack item, ItemComparisonMap comparisons) {
+	public EquipmentRequirement(String customDescription, String customReason, EquipmentSlot slot, ItemStack item,
+			ItemComparisonMap comparisons) {
+		super(customDescription, customReason);
 		this.slot = slot;
 		this.item = item;
 		this.comparisons = comparisons;
@@ -41,16 +43,15 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new EquipmentRequirement(slot, item, comparisons);
+		return new EquipmentRequirement(getCustomDescription(), getCustomReason(), slot, item, comparisons);
 	}
 	
 	@Override
-	public String[] getLore() {
-		if (slot == null) return null;
-		return new String[] {
-				QuestOption.formatNullableValue(slot.name() + " > " + ItemUtils.getName(item)),
-				"",
-				Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		if (slot != null) {
+			loreBuilder.addDescription(slot.name() + ": " + ItemUtils.getName(item));
+		}
 	}
 	
 	@Override
@@ -76,6 +77,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("slot", slot.name());
 		section.set("item", item);
 		if (!comparisons.isDefault()) section.set("comparisons", comparisons.getNotDefault());
@@ -83,6 +85,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		slot = EquipmentSlot.valueOf(section.getString("slot"));
 		item = section.getItemStack("item");
 		comparisons = section.contains("comparisons") ? new ItemComparisonMap(section.getConfigurationSection("comparisons")) : new ItemComparisonMap();

@@ -1,12 +1,11 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.WaitClick;
 import fr.skytasul.quests.gui.npc.NPCGUI;
@@ -19,7 +18,8 @@ public class TeleportationReward extends AbstractReward {
 
 	public TeleportationReward() {}
 	
-	public TeleportationReward(Location teleportation){
+	public TeleportationReward(String customDescription, Location teleportation) {
+		super(customDescription);
 		this.teleportation = teleportation;
 	}
 
@@ -31,12 +31,13 @@ public class TeleportationReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new TeleportationReward(teleportation.clone());
+		return new TeleportationReward(getCustomDescription(), teleportation.clone());
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + Utils.locationToString(teleportation), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(Utils.locationToString(teleportation));
 	}
 	
 	@Override

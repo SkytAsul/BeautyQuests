@@ -12,6 +12,10 @@ public class QuestStopReward extends AbstractReward {
 	
 	public QuestStopReward() {}
 	
+	public QuestStopReward(String customDescription) {
+		super(customDescription);
+	}
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {}
 	

@@ -1,11 +1,10 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.Lang;
@@ -17,7 +16,8 @@ public class MessageReward extends AbstractReward {
 	
 	public MessageReward() {}
 	
-	public MessageReward(String text){
+	public MessageReward(String customDescription, String text) {
+		super(customDescription);
 		this.text = text;
 	}
 
@@ -29,12 +29,13 @@ public class MessageReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new MessageReward(text);
+		return new MessageReward(getCustomDescription(), text);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(text), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(text);
 	}
 	
 	@Override

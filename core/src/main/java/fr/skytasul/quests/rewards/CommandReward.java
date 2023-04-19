@@ -3,14 +3,13 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -27,7 +26,8 @@ public class CommandReward extends AbstractReward {
 
 	public CommandReward() {}
 	
-	public CommandReward(List<Command> list){
+	public CommandReward(String customDescription, List<Command> list) {
+		super(customDescription);
 		if (list != null) this.commands.addAll(list);
 	}
 
@@ -42,14 +42,15 @@ public class CommandReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new CommandReward(commands);
+		return new CommandReward(getCustomDescription(), commands);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + Lang.commands.format(commands.size()), "", Lang.RemoveMid.toString() };
+	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.commands.format(commands.size()));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Inventories.create(event.getPlayer(), new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
