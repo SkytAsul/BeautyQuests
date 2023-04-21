@@ -306,7 +306,8 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	public void clickNPC(Player p){
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().onClick(p);
-		}else attemptStart(p, null);
+		} else
+			attemptStart(p);
 	}
 	
 	public void leave(Player p) {
@@ -342,17 +343,21 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return 15;
 	}
 	
-	public void attemptStart(Player p, Runnable atStart) {
-		if (!isLauncheable(p, PlayersManager.getPlayerAccount(p), true)) return;
+	public CompletableFuture<Boolean> attemptStart(Player p) {
+		if (!isLauncheable(p, PlayersManager.getPlayerAccount(p), true))
+			return CompletableFuture.completedFuture(false);
+
 		String confirm;
 		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
+			CompletableFuture<Boolean> future = new CompletableFuture<>();
 			new ConfirmGUI(() -> {
 				start(p);
-				if (atStart != null) atStart.run();
+				future.complete(true);
 			}, () -> Inventories.closeAndExit(p), Lang.INDICATION_START.format(getName()), confirm).create(p);
+			return future;
 		}else {
 			start(p);
-			if (atStart != null) atStart.run();
+			return CompletableFuture.completedFuture(true);
 		}
 	}
 	

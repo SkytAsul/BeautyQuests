@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.pools.QuestPool;
 import fr.skytasul.quests.utils.Utils;
 
@@ -17,8 +15,6 @@ public class PlayerPoolDatas {
 	
 	private long lastGive;
 	private Set<Integer> completedQuests;
-	
-	private Quest tempStartQuest;
 	
 	public PlayerPoolDatas(PlayerAccount acc, int poolID) {
 		this(acc, poolID, 0, new HashSet<>());
@@ -61,14 +57,6 @@ public class PlayerPoolDatas {
 	}
 	
 	public void updatedCompletedQuests() {}
-	
-	public Quest getTempStartQuest() {
-		return tempStartQuest;
-	}
-	
-	public void setTempStartQuest(Quest tempStartQuest) {
-		this.tempStartQuest = tempStartQuest;
-	}
 	
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();

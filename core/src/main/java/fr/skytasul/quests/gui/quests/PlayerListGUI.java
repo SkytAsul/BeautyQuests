@@ -3,7 +3,6 @@ package fr.skytasul.quests.gui.quests;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
@@ -12,7 +11,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -221,7 +219,7 @@ public class PlayerListGUI implements CustomInventory {
 				Player target = acc.getPlayer();
 				if (qu.isLauncheable(target, acc, true)) {
 					p.closeInventory();
-					qu.attemptStart(target, null);
+					qu.attemptStart(target);
 				}
 			}else {
 				if (click.isRightClick()) {

@@ -5,7 +5,6 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -91,7 +90,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	public DialogRunner getDialogRunner() {
 		if (runner == null) {
 			runner = new DialogRunner(getValue(), getNPC());
-			runner.addEndAction(p -> getAttachedQuest().attemptStart(p, null));
+			runner.addEndAction(p -> getAttachedQuest().attemptStart(p));
 		}
 		return runner;
 	}
