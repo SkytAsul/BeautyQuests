@@ -36,6 +36,7 @@ public class StageChat extends AbstractStage{
 
 		this.cancel = cancel;
 		this.ignoreCase = ignoreCase;
+		this.placeholders = placeholders;
 	}
 
 	@Override
