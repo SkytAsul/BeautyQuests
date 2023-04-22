@@ -28,6 +28,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
@@ -660,39 +662,39 @@ public class BeautyQuests extends JavaPlugin {
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
 	}
 	
-	public CommandsManager getCommand() {
+	public @NotNull CommandsManager getCommand() {
 		return command;
 	}
 	
-	public QuestsConfiguration getConfiguration() {
+	public @NotNull QuestsConfiguration getConfiguration() {
 		return config;
 	}
 	
-	public FileConfiguration getDataFile(){
+	public @NotNull FileConfiguration getDataFile() {
 		return data;
 	}
 	
-	public Database getBQDatabase() {
+	public @Nullable Database getBQDatabase() {
 		return db;
 	}
 
-	public ScoreboardManager getScoreboardManager(){
+	public @Nullable ScoreboardManager getScoreboardManager() {
 		return scoreboards;
 	}
 	
-	public QuestsManager getQuestsManager() {
+	public @NotNull QuestsManager getQuestsManager() {
 		return quests;
 	}
 	
-	public QuestPoolsManager getPoolsManager() {
+	public @NotNull QuestPoolsManager getPoolsManager() {
 		return pools;
 	}
 	
-	public PlayersManager getPlayersManager() {
+	public @NotNull PlayersManager getPlayersManager() {
 		return players;
 	}
 
-	public ILoggerHandler getLoggerHandler() {
+	public @NotNull ILoggerHandler getLoggerHandler() {
 		return loggerHandler == null ? ILoggerHandler.EMPTY_LOGGER : loggerHandler;
 	}
 	
@@ -701,7 +703,7 @@ public class BeautyQuests extends JavaPlugin {
 	}
 
 
-	public static BeautyQuests getInstance(){
+	public static @NotNull BeautyQuests getInstance() {
 		return instance;
 	}
 	

@@ -1,11 +1,10 @@
 package fr.skytasul.quests.api.stages;
 
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.serializable.SerializableRegistry;
@@ -15,16 +14,16 @@ import fr.skytasul.quests.structure.QuestBranch;
 
 public class StageType<T extends AbstractStage> {
 	
-	private final String id;
-	private final Class<T> clazz;
-	private final String name;
-	private final StageLoader<T> loader;
-	private final ItemStack item;
-	private final StageCreationSupplier<T> creationSupplier;
+	private final @NotNull String id;
+	private final @NotNull Class<T> clazz;
+	private final @NotNull String name;
+	private final @NotNull StageLoader<T> loader;
+	private final @NotNull ItemStack item;
+	private final @NotNull StageCreationSupplier<T> creationSupplier;
 	@Deprecated
-	public final String[] dependencies;
+	public final String[] dependencies; // TODO remove
 	
-	private final SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry;
+	private final @NotNull SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry;
 	
 	/**
 	 * Creates a stage type.
@@ -36,7 +35,8 @@ public class StageType<T extends AbstractStage> {
 	 * @param item item representing this stage in the Stages GUI
 	 * @param creationSupplier function creating a stage creation context
 	 */
-	public StageType(String id, Class<T> clazz, String name, StageLoader<T> loader, ItemStack item, StageCreationSupplier<T> creationSupplier) {
+	public StageType(@NotNull String id, @NotNull Class<T> clazz, @NotNull String name, @NotNull StageLoader<T> loader,
+			@NotNull ItemStack item, @NotNull StageCreationSupplier<T> creationSupplier) {
 		this(id, clazz, name, loader, item, creationSupplier, new String[0]);
 	}
 	
@@ -60,31 +60,31 @@ public class StageType<T extends AbstractStage> {
 		if (dependencies.length != 0) BeautyQuests.logger.warning("Nag author of the " + id + " stage type about its use of the deprecated \"dependencies\" feature.");
 	}
 	
-	public String getID() {
+	public @NotNull String getID() {
 		return id;
 	}
 	
-	public Class<T> getStageClass() {
+	public @NotNull Class<T> getStageClass() {
 		return clazz;
 	}
 	
-	public String getName() {
+	public @NotNull String getName() {
 		return name;
 	}
 	
-	public StageLoader<T> getLoader() {
+	public @NotNull StageLoader<T> getLoader() {
 		return loader;
 	}
 	
-	public ItemStack getItem() {
+	public @NotNull ItemStack getItem() {
 		return item;
 	}
 	
-	public StageCreationSupplier<T> getCreationSupplier() {
+	public @NotNull StageCreationSupplier<T> getCreationSupplier() {
 		return creationSupplier;
 	}
 	
-	public SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> getOptionsRegistry() {
+	public @NotNull SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> getOptionsRegistry() {
 		return optionsRegistry;
 	}
 	
@@ -99,7 +99,8 @@ public class StageType<T extends AbstractStage> {
 	@FunctionalInterface
 	public static interface StageCreationSupplier<T extends AbstractStage> {
 		
-		StageCreation<T> supply(Line line, boolean endingStage);
+		@NotNull
+		StageCreation<T> supply(@NotNull Line line, boolean endingStage);
 		
 	}
 	
@@ -123,7 +124,8 @@ public class StageType<T extends AbstractStage> {
 	@FunctionalInterface
 	public static interface StageLoader<T extends AbstractStage> {
 		
-		T supply(ConfigurationSection section, QuestBranch branch);
+		@NotNull
+		T supply(@NotNull ConfigurationSection section, @NotNull QuestBranch branch);
 		
 	}
 	

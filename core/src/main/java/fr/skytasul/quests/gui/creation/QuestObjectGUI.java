@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -39,12 +40,15 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	private Collection<QuestObjectCreator<T>> creators;
 	private Consumer<List<T>> end;
 
-	public QuestObjectGUI(String name, QuestObjectLocation objectLocation, Collection<QuestObjectCreator<T>> creators, Consumer<List<T>> end, List<T> objects) {
+	public QuestObjectGUI(@NotNull String name, @NotNull QuestObjectLocation objectLocation,
+			@NotNull Collection<@NotNull QuestObjectCreator<T>> creators, @NotNull Consumer<@NotNull List<T>> end,
+			@NotNull List<T> objects) {
 		super(name, DyeColor.CYAN, (List<T>) objects.stream().map(QuestObject::clone).collect(Collectors.toList()));
 		this.name = name;
 		this.creators = creators.stream()
 				.filter(creator -> creator.isAllowed(objectLocation))
-				.filter(creator -> creator.canBeMultiple() || objects.stream().noneMatch(object -> object.getCreator() == creator))
+				.filter(creator -> creator.canBeMultiple()
+						|| objects.stream().noneMatch(object -> object.getCreator() == creator))
 				.collect(Collectors.toList());
 		this.end = end;
 	}

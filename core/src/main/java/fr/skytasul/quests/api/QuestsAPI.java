@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.bossbar.BQBossBarManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
@@ -60,7 +62,7 @@ public final class QuestsAPI {
 		stages.register(type);
 	}
 	
-	public static StageTypeRegistry getStages() {
+	public static @NotNull StageTypeRegistry getStages() {
 		return stages;
 	}
 	
@@ -68,57 +70,57 @@ public final class QuestsAPI {
 	 * Register new mob factory
 	 * @param factory MobFactory instance
 	 */
-	public static void registerMobFactory(MobFactory<?> factory) {
+	public static void registerMobFactory(@NotNull MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
 		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
 		DebugUtils.logMessage("Mob factory registered (id: " + factory.getID() + ")");
 	}
 	
-	public static void registerQuestOption(QuestOptionCreator<?, ?> creator) {
+	public static void registerQuestOption(@NotNull QuestOptionCreator<?, ?> creator) {
 		Validate.notNull(creator);
 		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass), "This quest option was already registered");
 		QuestOptionCreator.creators.put(creator.optionClass, creator);
 		DebugUtils.logMessage("Quest option registered (id: " + creator.id + ")");
 	}
 	
-	public static List<ItemComparison> getItemComparisons() {
+	public static @NotNull List<@NotNull ItemComparison> getItemComparisons() {
 		return itemComparisons;
 	}
 	
-	public static void registerItemComparison(ItemComparison comparison) {
+	public static void registerItemComparison(@NotNull ItemComparison comparison) {
 		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())),
 				"This item comparison was already registered");
 		itemComparisons.add(comparison);
 		DebugUtils.logMessage("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 
-	public static void unregisterItemComparison(ItemComparison comparison) {
+	public static void unregisterItemComparison(@NotNull ItemComparison comparison) {
 		Validate.isTrue(itemComparisons.remove(comparison), "This item comparison was not registered");
 		DebugUtils.logMessage("Item comparison unregistered (id: " + comparison.getID() + ")");
 	}
 	
-	public static List<MobStacker> getMobStackers() {
+	public static @NotNull List<@NotNull MobStacker> getMobStackers() {
 		return mobStackers;
 	}
 
-	public static void registerMobStacker(MobStacker stacker) {
+	public static void registerMobStacker(@NotNull MobStacker stacker) {
 		mobStackers.add(stacker);
 		DebugUtils.logMessage("Added " + stacker.toString() + " mob stacker");
 	}
 
-	public static QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getRequirements() {
+	public static @NotNull QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getRequirements() {
 		return requirements;
 	}
 	
-	public static QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards() {
+	public static @NotNull QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards() {
 		return rewards;
 	}
 	
-	public static BQNPCsManager getNPCsManager() {
+	public static @NotNull BQNPCsManager getNPCsManager() {
 		return npcsManager;
 	}
 	
-	public static void setNPCsManager(BQNPCsManager newNpcsManager) {
+	public static void setNPCsManager(@NotNull BQNPCsManager newNpcsManager) {
 		if (npcsManager != null) {
 			BeautyQuests.logger.warning(newNpcsManager.getClass().getSimpleName() + " will replace " + npcsManager.getClass().getSimpleName() + " as the new NPCs manager.");
 			HandlerList.unregisterAll(npcsManager);
@@ -131,11 +133,11 @@ public final class QuestsAPI {
 		return hologramsManager != null;
 	}
 	
-	public static AbstractHolograms<?> getHologramsManager() {
+	public static @Nullable AbstractHolograms<?> getHologramsManager() {
 		return hologramsManager;
 	}
 	
-	public static void setHologramsManager(AbstractHolograms<?> newHologramsManager) {
+	public static void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null) BeautyQuests.logger.warning(newHologramsManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
@@ -146,32 +148,32 @@ public final class QuestsAPI {
 		return bossBarManager != null;
 	}
 	
-	public static BQBossBarManager getBossBarManager() {
+	public static @Nullable BQBossBarManager getBossBarManager() {
 		return bossBarManager;
 	}
 	
-	public static void setBossBarManager(BQBossBarManager newBossBarManager) {
+	public static void setBossBarManager(@NotNull BQBossBarManager newBossBarManager) {
 		Validate.notNull(newBossBarManager);
 		if (bossBarManager != null) BeautyQuests.logger.warning(newBossBarManager.getClass().getSimpleName() + " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
 		bossBarManager = newBossBarManager;
 		DebugUtils.logMessage("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
 	}
 	
-	public static void registerQuestsHandler(QuestsHandler handler) {
+	public static void registerQuestsHandler(@NotNull QuestsHandler handler) {
 		Validate.notNull(handler);
 		if (handlers.add(handler) && BeautyQuests.loaded)
 			handler.load(); // if BeautyQuests not loaded so far, it will automatically call the load method
 	}
 	
-	public static void unregisterQuestsHandler(QuestsHandler handler) {
+	public static void unregisterQuestsHandler(@NotNull QuestsHandler handler) {
 		if (handlers.remove(handler)) handler.unload();
 	}
 	
-	public static Collection<QuestsHandler> getQuestsHandlers() {
+	public static @NotNull Collection<@NotNull QuestsHandler> getQuestsHandlers() {
 		return handlers;
 	}
 	
-	public static void propagateQuestsHandlers(Consumer<QuestsHandler> consumer) {
+	public static void propagateQuestsHandlers(@NotNull Consumer<@NotNull QuestsHandler> consumer) {
 		handlers.forEach(handler -> {
 			try {
 				consumer.accept(handler);
@@ -181,11 +183,11 @@ public final class QuestsAPI {
 		});
 	}
 	
-	public static QuestsManager getQuests() {
+	public static @NotNull QuestsManager getQuests() {
 		return BeautyQuests.getInstance().getQuestsManager();
 	}
 	
-	public static QuestPoolsManager getQuestPools() {
+	public static @NotNull QuestPoolsManager getQuestPools() {
 		return BeautyQuests.getInstance().getPoolsManager();
 	}
 	

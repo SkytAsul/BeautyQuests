@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.structure.Quest;
 
 /**
@@ -10,10 +10,11 @@ import fr.skytasul.quests.structure.Quest;
  */
 public class QuestLaunchEvent extends PlayerQuestEvent {
 	
-	public QuestLaunchEvent(Player who, Quest quest){
+	public QuestLaunchEvent(@NotNull Player who, @NotNull Quest quest) {
 		super(who, quest);
 	}
 	
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

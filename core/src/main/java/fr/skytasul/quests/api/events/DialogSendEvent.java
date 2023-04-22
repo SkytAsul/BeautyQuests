@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.types.Dialog;
 
@@ -12,16 +12,17 @@ public class DialogSendEvent extends Event implements Cancellable {
 
     private boolean cancelled = false;
 
-    private Dialog dialog;
-	private BQNPC npc;
-    private Player player;
-    private Runnable runnable;
+	private final @NotNull Dialog dialog;
+	private final @NotNull BQNPC npc;
+	private final @NotNull Player player;
+	private final @NotNull Runnable runnable;
 
-	public DialogSendEvent(Dialog dialog, BQNPC npc, Player player, Runnable runnable) {
+	public DialogSendEvent(@NotNull Dialog dialog, @NotNull BQNPC npc, @NotNull Player player, @NotNull Runnable runnable) {
         this.dialog = dialog;
         this.npc = npc;
         this.player = player;
         this.runnable = runnable;
+		// TODO change this "runnable" thing
     }
 
     @Override

@@ -1,15 +1,17 @@
 package fr.skytasul.quests.structure;
 
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -17,15 +19,15 @@ import fr.skytasul.quests.players.PlayerQuestDatas;
 
 public class BranchesManager{
 
-	private Map<Integer, QuestBranch> branches = new LinkedHashMap<>();
+	private @NotNull Map<Integer, QuestBranch> branches = new TreeMap<>(Integer::compare);
 	
-	private final Quest quest;
+	private final @NotNull Quest quest;
 	
-	public BranchesManager(Quest quest){
+	public BranchesManager(@NotNull Quest quest) {
 		this.quest = quest;
 	}
 	
-	public Quest getQuest(){
+	public @NotNull Quest getQuest() {
 		return quest;
 	}
 	
@@ -33,12 +35,12 @@ public class BranchesManager{
 		return branches.size();
 	}
 	
-	public void addBranch(QuestBranch branch){
+	public void addBranch(@NotNull QuestBranch branch) {
 		Validate.notNull(branch, "Branch cannot be null !");
 		branches.put(branches.size(), branch);
 	}
 	
-	public int getID(QuestBranch branch){
+	public int getID(@NotNull QuestBranch branch) {
 		for (Entry<Integer, QuestBranch> en : branches.entrySet()){
 			if (en.getValue() == branch) return en.getKey();
 		}
@@ -46,20 +48,20 @@ public class BranchesManager{
 		return -1;
 	}
 	
-	public List<QuestBranch> getBranches() {
-		return branches.entrySet().stream().sorted(Comparator.comparingInt(Entry::getKey)).map(Entry::getValue).collect(Collectors.toList());
+	public @UnmodifiableView @NotNull Collection<@NotNull QuestBranch> getBranches() {
+		return branches.values();
 	}
 	
-	public QuestBranch getBranch(int id){
+	public @NotNull QuestBranch getBranch(int id) {
 		return branches.get(id);
 	}
 	
-	public QuestBranch getPlayerBranch(PlayerAccount acc) {
+	public @Nullable QuestBranch getPlayerBranch(@NotNull PlayerAccount acc) {
 		if (!acc.hasQuestDatas(quest)) return null;
 		return branches.get(acc.getQuestDatas(quest).getBranch());
 	}
 	
-	public boolean hasBranchStarted(PlayerAccount acc, QuestBranch branch){
+	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
 		if (!acc.hasQuestDatas(quest)) return false;
 		return acc.getQuestDatas(quest).getBranch() == branch.getID();
 	}
@@ -68,20 +70,20 @@ public class BranchesManager{
 	 * Called internally when the quest is updated for the player
 	 * @param p Player
 	 */
-	public final void objectiveUpdated(Player p, PlayerAccount acc) {
+	public final void objectiveUpdated(@NotNull Player p, @NotNull PlayerAccount acc) {
 		if (quest.hasStarted(acc)) {
 			QuestsAPI.propagateQuestsHandlers(x -> x.questUpdated(acc, p, quest));
 		}
 	}
 
-	public void startPlayer(PlayerAccount acc){
+	public void startPlayer(@NotNull PlayerAccount acc) {
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		datas.resetQuestFlow();
 		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);
 	}
 	
-	public void remove(PlayerAccount acc) {
+	public void remove(@NotNull PlayerAccount acc) {
 		if (!acc.hasQuestDatas(quest)) return;
 		QuestBranch branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
@@ -94,7 +96,7 @@ public class BranchesManager{
 		branches.clear();
 	}
 	
-	public void save(ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) {
 		ConfigurationSection branchesSection = section.createSection("branches");
 		branches.forEach((id, branch) -> {
 			try {
@@ -111,7 +113,7 @@ public class BranchesManager{
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 	
-	public static BranchesManager deserialize(ConfigurationSection section, Quest qu) {
+	public static @NotNull BranchesManager deserialize(@NotNull ConfigurationSection section, @NotNull Quest qu) {
 		BranchesManager bm = new BranchesManager(qu);
 		
 		ConfigurationSection branchesSection;

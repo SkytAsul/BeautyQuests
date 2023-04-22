@@ -18,7 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;

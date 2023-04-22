@@ -3,18 +3,17 @@ package fr.skytasul.quests.utils.compatibility.npcs;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
-
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensReloadEvent;
@@ -123,18 +122,23 @@ public class BQCitizens extends BQNPCsManager {
 		}
 		
 		@Override
-		public Entity getEntity() {
+		public @NotNull Entity getEntity() {
 			return npc.getEntity();
 		}
 		
 		@Override
-		public Location getLocation() {
+		public @NotNull Location getLocation() {
 			return npc.getStoredLocation();
 		}
 		
 		@Override
-		public void setSkin(String skin) {
-			npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
+		public void setSkin(@Nullable String skin) {
+			if (skin == null) {
+				if (npc.hasTrait(SkinTrait.class))
+					npc.getTraitNullable(SkinTrait.class).clearTexture();
+			} else {
+				npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
+			}
 		}
 		
 		@Override

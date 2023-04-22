@@ -2,14 +2,16 @@ package fr.skytasul.quests.api.comparison;
 
 import java.util.function.BiPredicate;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemComparison {
 	
-	private final String id, itemName, itemDescription;
-	private final BiPredicate<ItemStack, ItemStack> comparator;
+	private final @NotNull String id, itemName, itemDescription;
+	private final @NotNull BiPredicate<@NotNull ItemStack, @NotNull ItemStack> comparator;
 	private boolean enabledByDefault, needsMeta, hasPriority;
 	
-	public ItemComparison(String id, String itemName, String itemDescription, BiPredicate<ItemStack, ItemStack> comparator) {
+	public ItemComparison(@NotNull String id, @NotNull String itemName, @NotNull String itemDescription,
+			@NotNull BiPredicate<@NotNull ItemStack, @NotNull ItemStack> comparator) {
 		this.id = id;
 		this.itemName = itemName;
 		this.itemDescription = itemDescription;
@@ -58,7 +60,7 @@ public class ItemComparison {
 	/**
 	 * This must <i>not</i> check the amount of the item. The function call must not affect the item in any way.
 	 */
-	public boolean isSimilar(ItemStack item1, ItemStack item2) {
+	public boolean isSimilar(@NotNull ItemStack item1, @NotNull ItemStack item2) {
 		return comparator.test(item1, item2);
 	}
 	

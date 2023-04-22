@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 
 public class ItemComparisonMap implements Cloneable {
@@ -21,15 +22,15 @@ public class ItemComparisonMap implements Cloneable {
 		this(new HashMap<>());
 	}
 	
-	public ItemComparisonMap(ConfigurationSection notDefault) {
+	public ItemComparisonMap(@NotNull ConfigurationSection notDefault) {
 		setNotDefaultComparisons(notDefault);
 	}
 	
-	public ItemComparisonMap(Map<String, Boolean> notDefault) {
+	public ItemComparisonMap(@NotNull Map<String, Boolean> notDefault) {
 		setNotDefaultComparisons(notDefault);
 	}
 	
-	public void setNotDefaultComparisons(ConfigurationSection section) {
+	public void setNotDefaultComparisons(@NotNull ConfigurationSection section) {
 		this.notDefault = (Map) section.getValues(false);
 		
 		effective = new ArrayList<>(3);
@@ -40,7 +41,7 @@ public class ItemComparisonMap implements Cloneable {
 		updated();
 	}
 	
-	public void setNotDefaultComparisons(Map<String, Boolean> comparisons) {
+	public void setNotDefaultComparisons(@NotNull Map<String, Boolean> comparisons) {
 		this.notDefault = comparisons;
 
 		effective = new ArrayList<>(3);
@@ -53,7 +54,7 @@ public class ItemComparisonMap implements Cloneable {
 		updated();
 	}
 	
-	public Map<String, Boolean> getNotDefault() {
+	public @NotNull Map<String, Boolean> getNotDefault() {
 		return notDefault;
 	}
 	
@@ -61,15 +62,15 @@ public class ItemComparisonMap implements Cloneable {
 		return notDefault.isEmpty();
 	}
 	
-	public List<ItemComparison> getEffective() {
+	public @NotNull List<@NotNull ItemComparison> getEffective() {
 		return effective;
 	}
 	
-	public boolean isEnabled(ItemComparison comparison) {
+	public boolean isEnabled(@NotNull ItemComparison comparison) {
 		return effective.contains(comparison);
 	}
 	
-	public boolean toggle(ItemComparison comparison) {
+	public boolean toggle(@NotNull ItemComparison comparison) {
 		Boolean bool = notDefault.get(comparison.getID());
 		if (bool == null) {
 			bool = !comparison.isEnabledByDefault();
@@ -94,7 +95,7 @@ public class ItemComparisonMap implements Cloneable {
 		Collections.sort(effective, Comparator.comparing(ItemComparison::hasPriority));
 	}
 
-	public boolean isSimilar(ItemStack item1, ItemStack item2) {
+	public boolean isSimilar(@NotNull ItemStack item1, @NotNull ItemStack item2) {
 		boolean meta1 = item1.hasItemMeta();
 		boolean meta2 = item2.hasItemMeta();
 
@@ -129,7 +130,7 @@ public class ItemComparisonMap implements Cloneable {
 		return lastResult;
 	}
 	
-	public boolean containsItems(Inventory inv, ItemStack i, int amount) {
+	public boolean containsItems(@NotNull Inventory inv, @NotNull ItemStack i, int amount) {
 		for (ItemStack item : inv.getContents()) {
 			if (item == null) continue;
 			if (isSimilar(item, i)) {
@@ -146,7 +147,7 @@ public class ItemComparisonMap implements Cloneable {
 		return false;
 	}
 	
-	public void removeItems(Inventory inv, ItemStack i) {
+	public void removeItems(@NotNull Inventory inv, @NotNull ItemStack i) {
 		int amount = i.getAmount();
 		if (amount <= 0) return;
 		ItemStack[] items = inv.getContents();
@@ -170,7 +171,7 @@ public class ItemComparisonMap implements Cloneable {
 	}
 	
 	@Override
-	public ItemComparisonMap clone() {
+	public @NotNull ItemComparisonMap clone() {
 		return new ItemComparisonMap(new HashMap<>(notDefault));
 	}
 	

@@ -3,9 +3,12 @@ package fr.skytasul.quests.api.rewards;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.utils.Lang;
 
 public abstract class AbstractReward extends QuestObject {
@@ -14,12 +17,12 @@ public abstract class AbstractReward extends QuestObject {
 		this(null);
 	}
 
-	protected AbstractReward(String customDescription) {
+	protected AbstractReward(@Nullable String customDescription) {
 		super(QuestsAPI.getRewards(), customDescription);
 	}
 	
 	@Override
-	public RewardCreator getCreator() {
+	public @NotNull RewardCreator getCreator() {
 		return (RewardCreator) super.getCreator();
 	}
 	
@@ -28,25 +31,25 @@ public abstract class AbstractReward extends QuestObject {
 	 * @param p Player to give the reward
 	 * @return title of all the subsequent reward (for instance : "4 gold")
 	 */
-	public abstract List<String> give(Player p) throws InterruptingBranchException;
+	public abstract @Nullable List<@NotNull String> give(Player p) throws InterruptingBranchException;
 
 	@Override
-	protected void sendCustomDescriptionHelpMessage(Player p) {
+	protected void sendCustomDescriptionHelpMessage(@NotNull Player p) {
 		Lang.CHOOSE_REWARD_CUSTOM_DESCRIPTION.send(p);
 	}
 	
 	@Override
-	protected final void clickInternal(QuestObjectClickEvent event) {
+	protected final void clickInternal(@NotNull QuestObjectClickEvent event) {
 		itemClick(event);
 	}
 
-	protected abstract void itemClick(QuestObjectClickEvent event);
+	protected abstract void itemClick(@NotNull QuestObjectClickEvent event);
 
 	@Override
-	public abstract AbstractReward clone();
+	public abstract @NotNull AbstractReward clone();
 	
-	public static AbstractReward deserialize(Map<String, Object> map) {
-		return QuestObject.deserialize(map, QuestsAPI.getRewards());
+	public static @NotNull AbstractReward deserialize(Map<String, Object> map) {
+		return SerializableObject.deserialize(map, QuestsAPI.getRewards());
 	}
 	
 	public boolean isAsync() {

@@ -205,7 +205,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			final int questsFinal = quests;
 			final int poolsFinal = pools;
 			CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete(Utils.runSyncConsumer(() -> {
-				Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(player, acc));
+				Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(acc));
 				if (acc.isCurrent())
 					Lang.DATA_REMOVED.send(player, questsFinal, actor.getName(), poolsFinal);
 				Lang.DATA_REMOVED_INFO.send(actor.getSender(), questsFinal, player.getName(), poolsFinal);

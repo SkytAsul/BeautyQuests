@@ -2,21 +2,22 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.structure.Quest;
 
 public abstract class QuestEvent extends Event {
 
-	protected Quest qu;
+	protected final @NotNull Quest quest;
 	
-	public QuestEvent(Quest quest){
-		this.qu = quest;
+	protected QuestEvent(@NotNull Quest quest) {
+		this.quest = quest;
 	}
 
-	public Quest getQuest(){
-		return qu;
+	public @NotNull Quest getQuest() {
+		return quest;
 	}
 
+	@Override
 	public HandlerList getHandlers(){
 		return handlers;
 	}

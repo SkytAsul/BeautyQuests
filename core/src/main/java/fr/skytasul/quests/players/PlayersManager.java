@@ -14,6 +14,9 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,27 +36,27 @@ import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public abstract class PlayersManager {
 
-	protected final Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
-	protected final Set<SavableData<?>> accountDatas = new HashSet<>();
+	protected final @NotNull Map<Player, PlayerAccount> cachedAccounts = new HashMap<>();
+	protected final @NotNull Set<@NotNull SavableData<?>> accountDatas = new HashSet<>();
 	private boolean loaded = false;
 
-	public abstract void load(AccountFetchRequest request);
+	public abstract void load(@NotNull AccountFetchRequest request);
 	
-	public abstract void unloadAccount(PlayerAccount acc);
+	public abstract void unloadAccount(@NotNull PlayerAccount acc);
 
-	protected abstract CompletableFuture<Void> removeAccount(PlayerAccount acc);
+	protected abstract @NotNull CompletableFuture<Void> removeAccount(@NotNull PlayerAccount acc);
 	
-	public abstract CompletableFuture<Integer> removeQuestDatas(Quest quest);
+	public abstract @NotNull CompletableFuture<Integer> removeQuestDatas(@NotNull Quest quest);
 
-	public abstract PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest);
+	public abstract @NotNull PlayerQuestDatas createPlayerQuestDatas(@NotNull PlayerAccount acc, @NotNull Quest quest);
 
-	public abstract PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool);
+	public abstract @NotNull PlayerPoolDatas createPlayerPoolDatas(@NotNull PlayerAccount acc, @NotNull QuestPool pool);
 
-	public CompletableFuture<Void> playerQuestDataRemoved(PlayerQuestDatas datas) {
+	public @NotNull CompletableFuture<Void> playerQuestDataRemoved(@NotNull PlayerQuestDatas datas) {
 		return CompletableFuture.completedFuture(null);
 	}
 	
-	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatas datas) {
+	public @NotNull CompletableFuture<Void> playerPoolDataRemoved(@NotNull PlayerPoolDatas datas) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -68,7 +71,7 @@ public abstract class PlayersManager {
 
 	public abstract void save();
 	
-	public void addAccountData(SavableData<?> data) {
+	public void addAccountData(@NotNull SavableData<?> data) {
 		if (loaded)
 			throw new IllegalStateException("Cannot add account data after players manager has been loaded");
 		if (PlayerAccount.FORBIDDEN_DATA_ID.contains(data.getId()))
@@ -81,15 +84,15 @@ public abstract class PlayersManager {
 		DebugUtils.logMessage("Registered account data " + data.getId());
 	}
 	
-	public Collection<SavableData<?>> getAccountDatas() {
+	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas() {
 		return accountDatas;
 	}
 
-	protected AbstractAccount createAbstractAccount(Player p) {
+	protected @NotNull AbstractAccount createAbstractAccount(@NotNull Player p) {
 		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 
-	protected String getIdentifier(OfflinePlayer p) {
+	protected @NotNull String getIdentifier(@NotNull OfflinePlayer p) {
 		if (QuestsConfiguration.hookAccounts()) {
 			if (!p.isOnline())
 				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
@@ -98,7 +101,7 @@ public abstract class PlayersManager {
 		return p.getUniqueId().toString();
 	}
 
-	protected AbstractAccount createAccountFromIdentifier(String identifier) {
+	protected @Nullable AbstractAccount createAccountFromIdentifier(@NotNull String identifier) {
 		if (identifier.startsWith("Hooked|")){
 			if (!QuestsConfiguration.hookAccounts()) throw new MissingDependencyException("AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
 			String nidentifier = identifier.substring(7);
@@ -124,7 +127,7 @@ public abstract class PlayersManager {
 		return null;
 	}
 	
-	public synchronized void loadPlayer(Player p) {
+	public synchronized void loadPlayer(@NotNull Player p) {
 		cachedPlayerNames.put(p.getUniqueId(), p.getName());
 
 		long time = System.currentTimeMillis();
@@ -145,7 +148,7 @@ public abstract class PlayersManager {
 		});
 	}
 
-	private boolean tryLoad(Player p, long time) {
+	private boolean tryLoad(@NotNull Player p, long time) {
 		if (!p.isOnline()) {
 			BeautyQuests.logger
 					.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
@@ -189,7 +192,7 @@ public abstract class PlayersManager {
 
 			if (p.isOnline()) {
 				Bukkit.getPluginManager()
-						.callEvent(new PlayerAccountJoinEvent(p, request.getAccount(), request.isAccountCreated()));
+						.callEvent(new PlayerAccountJoinEvent(request.getAccount(), request.isAccountCreated()));
 			} else {
 				BeautyQuests.logger.warning(
 						"Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
@@ -202,16 +205,16 @@ public abstract class PlayersManager {
 		return false;
 	}
 	
-	public synchronized void unloadPlayer(Player p) {
+	public synchronized void unloadPlayer(@NotNull Player p) {
 		PlayerAccount acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		DebugUtils.logMessage("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
-		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(p, acc));
+		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc));
 		unloadAccount(acc);
 		cachedAccounts.remove(p);
 	}
 	
-	public PlayerAccount getAccount(Player p) {
+	public @UnknownNullability PlayerAccount getAccount(@NotNull Player p) {
 		if (QuestsAPI.getNPCsManager().isNPC(p)) return null;
 		if (!p.isOnline()) {
 			BeautyQuests.logger.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
@@ -231,11 +234,11 @@ public abstract class PlayersManager {
 	@Deprecated
 	public static PlayersManager manager; // TODO remove, changed in 0.20.1
 
-	public static PlayerAccount getPlayerAccount(Player p) {
+	public static @UnknownNullability PlayerAccount getPlayerAccount(@NotNull Player p) {
 		return BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 	}
 
-	public static synchronized String getPlayerName(UUID uuid) {
+	public static synchronized @Nullable String getPlayerName(@NotNull UUID uuid) {
 		if (cachedPlayerNames.containsKey(uuid))
 			return cachedPlayerNames.get(uuid);
 

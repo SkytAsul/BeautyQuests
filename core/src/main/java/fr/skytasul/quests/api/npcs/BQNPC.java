@@ -3,7 +3,6 @@ package fr.skytasul.quests.api.npcs;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiPredicate;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -12,7 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -62,17 +62,17 @@ public abstract class BQNPC implements Located.LocatedEntity {
 	
 	public abstract int getId();
 	
-	public abstract String getName();
+	public abstract @NotNull String getName();
 	
 	public abstract boolean isSpawned();
 	
 	@Override
-	public abstract Entity getEntity();
+	public abstract @NotNull Entity getEntity();
 	
 	@Override
-	public abstract Location getLocation();
+	public abstract @NotNull Location getLocation();
 	
-	public abstract void setSkin(String skin);
+	public abstract void setSkin(@Nullable String skin);
 	
 	/**
 	 * Sets the "paused" state of the NPC navigation

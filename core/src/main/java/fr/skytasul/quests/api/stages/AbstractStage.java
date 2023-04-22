@@ -15,6 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -34,69 +36,69 @@ import fr.skytasul.quests.utils.Utils;
 
 public abstract class AbstractStage implements Listener {
 	
-	private final StageType<?> type;
+	private final @NotNull StageType<?> type;
+	
+	protected final @NotNull QuestBranch branch;
+	
+	private @Nullable String startMessage = null;
+	private @Nullable String customText = null;
+	private @NotNull List<@NotNull AbstractReward> rewards = new ArrayList<>();
+	private @NotNull List<@NotNull AbstractRequirement> validationRequirements = new ArrayList<>();
+	
+	private @NotNull List<@NotNull StageOption> options;
 	protected boolean asyncEnd = false;
 	
-	protected final QuestBranch branch;
-	
-	private String startMessage = null;
-	private String customText = null;
-	private List<AbstractReward> rewards = new ArrayList<>();
-	private List<AbstractRequirement> validationRequirements = new ArrayList<>();
-	
-	private List<StageOption> options;
-	
-	protected AbstractStage(QuestBranch branch) {
+	protected AbstractStage(@NotNull QuestBranch branch) {
 		this.branch = branch;
 		this.type = QuestsAPI.getStages().getType(getClass()).orElseThrow(() -> new IllegalArgumentException(getClass().getName() + "has not been registered as a stage type via the API."));
 		
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 	}
 	
-	public QuestBranch getQuestBranch(){
+	public @NotNull QuestBranch getQuestBranch() {
 		return branch;
 	}
 	
-	public void setStartMessage(String text){
+	public void setStartMessage(@Nullable String text) {
 		this.startMessage = text;
 	}
 	
-	public String getStartMessage(){
+	public @Nullable String getStartMessage() {
 		return startMessage;
 	}
 	
-	public List<AbstractReward> getRewards(){
+	public @NotNull List<@NotNull AbstractReward> getRewards() {
 		return rewards;
 	}
 	
-	public void setRewards(List<AbstractReward> rewards){
+	public void setRewards(@NotNull List<@NotNull AbstractReward> rewards) {
 		this.rewards = rewards;
 		rewards.forEach(reward -> reward.attach(branch.getQuest()));
 		checkAsync();
 	}
 
-	public List<AbstractRequirement> getValidationRequirements() {
+	public @NotNull List<@NotNull AbstractRequirement> getValidationRequirements() {
 		return validationRequirements;
 	}
 
-	public void setValidationRequirements(List<AbstractRequirement> validationRequirements) {
+	public void setValidationRequirements(@NotNull List<@NotNull AbstractRequirement> validationRequirements) {
 		this.validationRequirements = validationRequirements;
 		validationRequirements.forEach(requirement -> requirement.attach(branch.getQuest()));
 	}
 	
-	public List<StageOption> getOptions() {
+	public @NotNull List<@NotNull StageOption> getOptions() {
 		return options;
 	}
 	
-	public void setOptions(List<StageOption> options) {
+	public void setOptions(@NotNull List<@NotNull StageOption> options) {
 		this.options = options;
 	}
 
-	public String getCustomText(){
+	public @Nullable String getCustomText() {
 		return customText;
 	}
 	
-	public void setCustomText(String message) {
+	public void setCustomText(@Nullable String message) {
 		this.customText = message;
 	}
 	
@@ -104,7 +106,7 @@ public abstract class AbstractStage implements Listener {
 		return startMessage == null && QuestsConfiguration.sendStageStartMessage();
 	}
 	
-	public StageType<?> getType() {
+	public @NotNull StageType<?> getType() {
 		return type;
 	}
 	
@@ -137,11 +139,11 @@ public abstract class AbstractStage implements Listener {
 		return index;
 	}
 	
-	protected boolean canUpdate(Player p) {
+	protected boolean canUpdate(@NotNull Player p) {
 		return canUpdate(p, false);
 	}
 
-	protected boolean canUpdate(Player p, boolean msg) {
+	protected boolean canUpdate(@NotNull Player p, boolean msg) {
 		return Utils.testRequirements(p, validationRequirements, msg);
 	}
 	
@@ -150,7 +152,7 @@ public abstract class AbstractStage implements Listener {
 		return "stage " + getID() + "(" + type.getID() + ") of quest " + branch.getQuest().getID() + ", branch " + branch.getID();
 	}
 
-	private void propagateStageHandlers(Consumer<StageHandler> consumer) {
+	private void propagateStageHandlers(@NotNull Consumer<@NotNull StageHandler> consumer) {
 		Consumer<StageHandler> newConsumer = handler -> {
 			try {
 				consumer.accept(handler);
@@ -166,7 +168,7 @@ public abstract class AbstractStage implements Listener {
 	 * Called internally when a player finish stage's objectives
 	 * @param p Player who finish the stage
 	 */
-	protected final void finishStage(Player p) {
+	protected final void finishStage(@NotNull Player p) {
 		Utils.runSync(() -> branch.finishStage(p, this));
 	}
 	
@@ -175,7 +177,7 @@ public abstract class AbstractStage implements Listener {
 	 * @param p Player to test
 	 * @see QuestBranch#hasStageLaunched(PlayerAccount, AbstractStage)
 	 */
-	protected final boolean hasStarted(Player p){
+	protected final boolean hasStarted(@NotNull Player p) {
 		return branch.hasStageLaunched(PlayersManager.getPlayerAccount(p), this);
 	}
 	
@@ -183,7 +185,7 @@ public abstract class AbstractStage implements Listener {
 	 * Called when the stage starts (player can be offline)
 	 * @param acc PlayerAccount for which the stage starts
 	 */
-	public void start(PlayerAccount acc) {
+	public void start(@NotNull PlayerAccount acc) {
 		if (acc.isCurrent()) Utils.sendOffMessage(acc.getPlayer(), startMessage);
 		Map<String, Object> datas = new HashMap<>();
 		initPlayerDatas(acc, datas);
@@ -191,13 +193,13 @@ public abstract class AbstractStage implements Listener {
 		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 	}
 	
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {}
+	protected void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
 
 	/**
 	 * Called when the stage ends (player can be offline)
 	 * @param acc PlayerAccount for which the stage ends
 	 */
-	public void end(PlayerAccount acc) {
+	public void end(@NotNull PlayerAccount acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStoredID(), null);
 		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 	}
@@ -206,7 +208,7 @@ public abstract class AbstractStage implements Listener {
 	 * Called when an account with this stage launched joins
 	 * @param acc PlayerAccount which just joined
 	 */
-	public void joins(PlayerAccount acc, Player p) {
+	public void joins(@NotNull PlayerAccount acc, @NotNull Player p) {
 		propagateStageHandlers(handler -> handler.stageJoin(acc, p, this));
 	}
 	
@@ -214,11 +216,11 @@ public abstract class AbstractStage implements Listener {
 	 * Called when an account with this stage launched leaves
 	 * @param acc PlayerAccount which just left
 	 */
-	public void leaves(PlayerAccount acc, Player p) {
+	public void leaves(@NotNull PlayerAccount acc, @NotNull Player p) {
 		propagateStageHandlers(handler -> handler.stageLeave(acc, p, this));
 	}
 	
-	public final String getDescriptionLine(PlayerAccount acc, Source source){
+	public final @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull Source source) {
 		if (customText != null) return "§e" + Utils.format(customText, descriptionFormat(acc, source));
 		try{
 			return descriptionLine(acc, source);
@@ -233,7 +235,7 @@ public abstract class AbstractStage implements Listener {
 	 * @param source source of the description request
 	 * @return the progress of the stage for the player
 	 */
-	protected abstract String descriptionLine(PlayerAccount acc, Source source);
+	protected abstract @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull Source source);
 	
 	/**
 	 * Will be called only if there is a {@link #customText}
@@ -241,9 +243,12 @@ public abstract class AbstractStage implements Listener {
 	 * @param source source of the description request
 	 * @return all strings that can be used to format the custom description text
 	 */
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {return null;}
+	protected @Nullable Object @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull Source source) {
+		return null;
+	}
 	
-	public void updateObjective(PlayerAccount acc, Player p, String dataKey, Object dataValue) {
+	public void updateObjective(@NotNull PlayerAccount acc, @NotNull Player p, @NotNull String dataKey,
+			@Nullable Object dataValue) {
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
 		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + toString());
 		datas.put(dataKey, dataValue);
@@ -251,7 +256,7 @@ public abstract class AbstractStage implements Listener {
 		branch.getBranchesManager().objectiveUpdated(p, acc);
 	}
 
-	protected <T> T getData(PlayerAccount acc, String dataKey) {
+	protected <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
 		Map<String, Object> stageDatas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStoredID());
 		return stageDatas == null ? null : (T) stageDatas.get(dataKey);
 	}
@@ -294,13 +299,13 @@ public abstract class AbstractStage implements Listener {
 	@Deprecated
 	protected void serialize(Map<String, Object> map) {}
 	
-	protected void serialize(ConfigurationSection section) {
+	protected void serialize(@NotNull ConfigurationSection section) {
 		Map<String, Object> map = new HashMap<>();
 		serialize(map);
 		Utils.setConfigurationSectionContent(section, map);
 	}
 	
-	public final void save(ConfigurationSection section) {
+	public final void save(@NotNull ConfigurationSection section) {
 		serialize(section);
 		
 		section.set("stageType", type.getID());
@@ -313,7 +318,7 @@ public abstract class AbstractStage implements Listener {
 		options.stream().filter(StageOption::shouldSave).forEach(option -> option.save(section.createSection("options." + option.getCreator().getID())));
 	}
 	
-	public static AbstractStage deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static @NotNull AbstractStage deserialize(@NotNull ConfigurationSection section, @NotNull QuestBranch branch) {
 		String typeID = section.getString("stageType");
 		
 		Optional<StageType<?>> stageTypeOptional = QuestsAPI.getStages().getType(typeID);

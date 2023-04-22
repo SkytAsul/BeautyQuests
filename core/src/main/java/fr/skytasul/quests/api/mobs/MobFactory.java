@@ -16,6 +16,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.BeautyQuests;
@@ -33,57 +35,57 @@ public abstract interface MobFactory<T> extends Listener {
 	/**
 	 * @return internal ID of this Mob Factory
 	 */
-	public abstract String getID();
+	public abstract @NotNull String getID();
 
 	/**
 	 * @return item which will represent this Mob Factory in the Mobs Create GUI
 	 */
-	public abstract ItemStack getFactoryItem();
+	public abstract @NotNull ItemStack getFactoryItem();
 
 	/**
 	 * Called when a player click on the {@link #getFactoryItem()}
 	 * @param p Player who clicked on the item
 	 * @param run
 	 */
-	public abstract void itemClick(Player p, Consumer<T> run);
+	public abstract void itemClick(@NotNull Player p, @NotNull Consumer<@Nullable T> run);
 
 	/**
 	 * @param value value returned from {@link #getValue(Object)}
 	 * @return object created with the value
 	 */
-	public abstract T fromValue(String value);
+	public abstract @NotNull T fromValue(@NotNull String value);
 
 	/**
 	 * @param data object to get a String value from
 	 * @return String value
 	 */
-	public abstract String getValue(T data);
+	public abstract @NotNull String getValue(@NotNull T data);
 
 	/**
 	 * @param data object to get a name from
 	 * @return name of the object
 	 */
-	public abstract String getName(T data);
+	public abstract @NotNull String getName(@NotNull T data);
 
 	/**
 	 * @param data object to get the entity type from
 	 * @return entity type of the object
 	 */
-	public abstract EntityType getEntityType(T data);
+	public abstract @NotNull EntityType getEntityType(@NotNull T data);
 
 	/**
 	 * @param data object to get a description from
 	 * @return list of string which will be displayed as the lore of the mob item
 	 */
-	public default List<String> getDescriptiveLore(T data) {
+	public default @NotNull List<@Nullable String> getDescriptiveLore(@NotNull T data) {
 		return Collections.emptyList();
 	}
 
-	public default boolean mobApplies(T first, Object other) {
+	public default boolean mobApplies(@Nullable T first, @Nullable Object other) {
 		return Objects.equals(first, other);
 	}
 	
-	public default boolean bukkitMobApplies(T first, Entity entity) { // TODO abstract (introduced in 0.20)
+	public default boolean bukkitMobApplies(@NotNull T first, @NotNull Entity entity) { // TODO abstract (introduced in 0.20)
 		BeautyQuests.logger.warning("The mob factory " + getID() + " has not been updated. Nag its author about it!");
 		return false;
 	}
@@ -96,7 +98,8 @@ public abstract interface MobFactory<T> extends Listener {
 	 * @param entity bukkit entity killed
 	 * @param player killer
 	 */
-	public default void callEvent(Event originalEvent, T pluginMob, Entity entity, Player player) {
+	public default void callEvent(@Nullable Event originalEvent, @NotNull T pluginMob, @NotNull Entity entity,
+			@NotNull Player player) {
 		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
 		Validate.notNull(player, "Player cannot be null");
 		if (originalEvent != null) {
@@ -118,7 +121,7 @@ public abstract interface MobFactory<T> extends Listener {
 	static final Cache<Event, CompatMobDeathEvent> eventsCache = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.SECONDS).build();
 	public static final List<MobFactory<?>> factories = new ArrayList<>();
 
-	public static MobFactory<?> getMobFactory(String id) {
+	public static @Nullable MobFactory<?> getMobFactory(@NotNull String id) {
 		for (MobFactory<?> factory : factories) {
 			if (factory.getID().equals(id)) return factory;
 		}

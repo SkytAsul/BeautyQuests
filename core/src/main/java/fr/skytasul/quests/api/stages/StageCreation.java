@@ -3,9 +3,8 @@ package fr.skytasul.quests.api.stages;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.bukkit.entity.Player;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -35,7 +34,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	private StagesGUI leadingBranch;
 	
-	public StageCreation(Line line, boolean ending) {
+	protected StageCreation(Line line, boolean ending) {
 		this.line = line;
 		this.ending = ending;
 		
@@ -139,7 +138,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		this.leadingBranch = leadingBranch;
 	}
 	
-	public final void setup(StageType<T> type) {
+	public final void setup(@NotNull StageType<T> type) {
 		this.type = type;
 	}
 	
@@ -147,7 +146,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * Called when stage item clicked
 	 * @param p player who click on the item
 	 */
-	public void start(Player p) {
+	public void start(@NotNull Player p) {
 		setRewards(new ArrayList<>());
 		setRequirements(new ArrayList<>());
 		setCustomDescription(null);
@@ -161,7 +160,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * Called when quest edition started
 	 * @param stage Existing stage
 	 */
-	public void edit(T stage) {
+	public void edit(@NotNull T stage) {
 		setRewards(stage.getRewards());
 		setRequirements(stage.getValidationRequirements());
 		setStartMessage(stage.getStartMessage());
@@ -171,7 +170,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		options.forEach(option -> option.startEdition(this));
 	}
 
-	public final T finish(QuestBranch branch) {
+	public final @NotNull T finish(@NotNull QuestBranch branch) {
 		T stage = finishStage(branch);
 		stage.setRewards(rewards);
 		stage.setValidationRequirements(requirements);
@@ -186,6 +185,6 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * @param branch quest created
 	 * @return AsbtractStage created
 	 */
-	protected abstract T finishStage(QuestBranch branch);
+	protected abstract @NotNull T finishStage(@NotNull QuestBranch branch);
 	
 }

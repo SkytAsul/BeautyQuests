@@ -18,6 +18,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -67,7 +69,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
 	
-	public Quest(int id, File file) {
+	public Quest(int id, @NotNull File file) {
 		this.id = id;
 		this.file = file;
 		this.manager = new BranchesManager(this);
@@ -78,7 +80,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
 	
-	public List<QuestDescriptionProvider> getDescriptions() {
+	public @NotNull List<QuestDescriptionProvider> getDescriptions() {
 		return descriptions;
 	}
 	
@@ -87,7 +89,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return (Iterator) options.iterator();
 	}
 	
-	public <D> D getOptionValueOrDef(Class<? extends QuestOption<D>> clazz) {
+	public @Nullable <D> D getOptionValueOrDef(@NotNull Class<? extends QuestOption<D>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (D) option.getValue();
 		}
@@ -95,7 +97,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	@Override
-	public <T extends QuestOption<?>> T getOption(Class<T> clazz) {
+	public @NotNull <T extends QuestOption<?>> T getOption(@NotNull Class<T> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
 		}
@@ -103,14 +105,14 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 	@Override
-	public boolean hasOption(Class<? extends QuestOption<?>> clazz) {
+	public boolean hasOption(@NotNull Class<? extends QuestOption<?>> clazz) {
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return true;
 		}
 		return false;
 	}
 	
-	public void addOption(QuestOption<?> option) {
+	public void addOption(@NotNull QuestOption<?> option) {
 		if (!option.hasCustomValue()) return;
 		options.add(option);
 		option.attach(this);
@@ -122,7 +124,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		});
 	}
 	
-	public void removeOption(Class<? extends QuestOption<?>> clazz) {
+	public void removeOption(@NotNull Class<? extends QuestOption<?>> clazz) {
 		for (Iterator<QuestOption<?>> iterator = options.iterator(); iterator.hasNext();) {
 			QuestOption<?> option = iterator.next();
 			if (clazz.isInstance(option)) {
@@ -145,15 +147,15 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return file;
 	}
 	
-	public String getName(){
+	public @Nullable String getName() {
 		return getOptionValueOrDef(OptionName.class);
 	}
 	
-	public String getDescription() {
+	public @Nullable String getDescription() {
 		return getOptionValueOrDef(OptionDescription.class);
 	}
 	
-	public ItemStack getQuestItem() {
+	public @NotNull ItemStack getQuestItem() {
 		return getOptionValueOrDef(OptionQuestItem.class);
 	}
 	
@@ -181,26 +183,26 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return getOptionValueOrDef(OptionBypassLimit.class);
 	}
 	
-	public BranchesManager getBranchesManager(){
+	public @NotNull BranchesManager getBranchesManager() {
 		return manager;
 	}
 	
-	public String getTimeLeft(PlayerAccount acc) {
+	public @NotNull String getTimeLeft(@NotNull PlayerAccount acc) {
 		return Utils.millisToHumanString(acc.getQuestDatas(this).getTimer() - System.currentTimeMillis());
 	}
 
-	public boolean hasStarted(PlayerAccount acc){
+	public boolean hasStarted(@NotNull PlayerAccount acc) {
 		if (!acc.hasQuestDatas(this)) return false;
 		if (acc.getQuestDatas(this).hasStarted()) return true;
 		if (acc.isCurrent() && asyncStart != null && asyncStart.contains(acc.getPlayer())) return true;
 		return false;
 	}
 
-	public boolean hasFinished(PlayerAccount acc){
+	public boolean hasFinished(@NotNull PlayerAccount acc) {
 		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
 	}
 	
-	public boolean cancelPlayer(PlayerAccount acc) {
+	public boolean cancelPlayer(@NotNull PlayerAccount acc) {
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(this);
 		if (datas == null || !datas.hasStarted())
 			return false;
@@ -210,7 +212,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 
-	private void cancelInternal(PlayerAccount acc) {
+	private void cancelInternal(@NotNull PlayerAccount acc) {
 		manager.remove(acc);
 		QuestsAPI.propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
@@ -224,10 +226,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 	}
 	
-	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc){
-		if (acc == null)
-			return CompletableFuture.completedFuture(Boolean.FALSE);
-		
+	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc) {
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
@@ -246,7 +245,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return future == null ? CompletableFuture.completedFuture(hadDatas) : future.thenApply(__ -> true);
 	}
 	
-	public boolean isLauncheable(Player p, PlayerAccount acc, boolean sendMessage) {
+	public boolean isLauncheable(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (hasStarted(acc)){
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
@@ -257,14 +256,14 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 	
-	public boolean testRequirements(Player p, PlayerAccount acc, boolean sendMessage){
+	public boolean testRequirements(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (!testQuestLimit(p, acc, sendMessage)) return false;
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		return Utils.testRequirements(p, getOptionValueOrDef(OptionRequirements.class), sendMessage);
 	}
 	
-	public boolean testQuestLimit(Player p, PlayerAccount acc, boolean sendMessage) {
+	public boolean testQuestLimit(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (Boolean.TRUE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
 			return true;
 		int playerMaxLaunchedQuest;
@@ -288,7 +287,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 
-	public boolean testTimer(PlayerAccount acc, boolean sendMessage) {
+	public boolean testTimer(@NotNull PlayerAccount acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()) {
@@ -299,24 +298,24 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return true;
 	}
 	
-	public boolean isInDialog(Player p) {
+	public boolean isInDialog(@NotNull Player p) {
 		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().isPlayerInDialog(p);
 	}
 	
-	public void clickNPC(Player p){
+	public void clickNPC(@NotNull Player p) {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().onClick(p);
 		} else
 			attemptStart(p);
 	}
 	
-	public void leave(Player p) {
+	public void leave(@NotNull Player p) {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().removePlayer(p);
 		}
 	}
 	
-	public String getDescriptionLine(PlayerAccount acc, Source source) {
+	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull Source source) {
 		if (!acc.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
 		if (asyncStart != null && acc.isCurrent() && asyncStart.contains(acc.getPlayer())) return "§7x";
 		PlayerQuestDatas datas = acc.getQuestDatas(this);
@@ -327,14 +326,17 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 
 	@Override
-	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (!context.getPlayerAccount().isCurrent()) return null;
-		if (context.getCategory() != Category.IN_PROGRESS) return null;
+	public @NotNull List<String> provideDescription(QuestDescriptionContext context) {
+		if (!context.getPlayerAccount().isCurrent())
+			return Collections.emptyList();
+		if (context.getCategory() != Category.IN_PROGRESS)
+			return Collections.emptyList();
+
 		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), context.getSource()));
 	}
 	
 	@Override
-	public String getDescriptionId() {
+	public @NotNull String getDescriptionId() {
 		return "advancement";
 	}
 
@@ -343,7 +345,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		return 15;
 	}
 	
-	public CompletableFuture<Boolean> attemptStart(Player p) {
+	public @NotNull CompletableFuture<Boolean> attemptStart(@NotNull Player p) {
 		if (!isLauncheable(p, PlayersManager.getPlayerAccount(p), true))
 			return CompletableFuture.completedFuture(false);
 
@@ -361,11 +363,11 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 	}
 	
-	public void start(Player p){
+	public void start(@NotNull Player p) {
 		start(p, false);
 	}
 	
-	public void start(Player p, boolean silently) {
+	public void start(@NotNull Player p, boolean silently) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
 			if (!silently) Lang.ALREADY_STARTED.send(p);
@@ -404,7 +406,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}else run.run();
 	}
 	
-	public void finish(Player p){
+	public void finish(@NotNull Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		AdminMode.broadcast(p.getName() + " is completing the quest " + id);
 		PlayerQuestDatas questDatas = acc.getQuestDatas(Quest.this);
@@ -506,7 +508,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 	}
 	
-	private void save(ConfigurationSection section) throws Exception{
+	private void save(@NotNull ConfigurationSection section) throws Exception {
 		for (QuestOption<?> option : options) {
 			try {
 				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
@@ -520,7 +522,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 	}
 	
 
-	public static Quest loadFromFile(File file){
+	public static @Nullable Quest loadFromFile(@NotNull File file) {
 		try {
 			YamlConfiguration config = new YamlConfiguration();
 			config.load(file);
@@ -531,7 +533,7 @@ public class Quest implements Comparable<Quest>, OptionSet, QuestDescriptionProv
 		}
 	}
 	
-	private static Quest deserialize(File file, ConfigurationSection map) {
+	private static @Nullable Quest deserialize(@NotNull File file, @NotNull ConfigurationSection map) {
 		if (!map.contains("id")) {
 			BeautyQuests.getInstance().getLogger().severe("Quest doesn't have an id.");
 			return null;

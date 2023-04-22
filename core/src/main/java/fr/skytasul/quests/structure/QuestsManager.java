@@ -12,7 +12,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.options.OptionStartable;
@@ -70,15 +72,15 @@ public class QuestsManager implements Iterable<Quest> {
 		return lastID.incrementAndGet();
 	}
 	
-	public BeautyQuests getPlugin() {
+	public @NotNull BeautyQuests getPlugin() {
 		return plugin;
 	}
 	
-	public File getSaveFolder() {
+	public @NotNull File getSaveFolder() {
 		return saveFolder;
 	}
 	
-	public List<Quest> getQuests() {
+	public @NotNull List<Quest> getQuests() {
 		return quests;
 	}
 	
@@ -87,11 +89,11 @@ public class QuestsManager implements Iterable<Quest> {
 	}
 	
 	@Override
-	public Iterator<Quest> iterator() {
+	public @NotNull Iterator<Quest> iterator() {
 		return quests.iterator();
 	}
 	
-	public Quest getQuest(int id) {
+	public @Nullable Quest getQuest(int id) {
 		return quests.stream().filter(x -> x.getID() == id).findAny().orElse(null);
 	}
 	
@@ -105,14 +107,14 @@ public class QuestsManager implements Iterable<Quest> {
 		}
 	}
 	
-	public void removeQuest(Quest quest) {
+	public void removeQuest(@NotNull Quest quest) {
 		quests.remove(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
 			quest.getOption(OptionStarterNPC.class).getValue().removeQuest(quest);
 		}
 	}
 	
-	public void addQuest(Quest quest) {
+	public void addQuest(@NotNull Quest quest) {
 		lastID.set(Math.max(lastID.get(), quest.getID()));
 		quests.add(quest);
 		if (quest.hasOption(OptionStarterNPC.class)) {
@@ -122,11 +124,12 @@ public class QuestsManager implements Iterable<Quest> {
 		quest.load();
 	}
 	
-	public List<Quest> getQuestsStarted(PlayerAccount acc) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(PlayerAccount acc) {
 		return getQuestsStarted(acc, false, false);
 	}
 	
-	public List<Quest> getQuestsStarted(PlayerAccount acc, boolean hide, boolean withoutScoreboard) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(@NotNull PlayerAccount acc, boolean hide,
+			boolean withoutScoreboard) {
 		return acc.getQuestsDatas()
 				.stream()
 				.filter(PlayerQuestDatas::hasStarted)
@@ -138,7 +141,7 @@ public class QuestsManager implements Iterable<Quest> {
 				.collect(Collectors.toList());
 	}
 	
-	public void updateQuestsStarted(PlayerAccount acc, boolean withoutScoreboard, List<Quest> list) {
+	public void updateQuestsStarted(@NotNull PlayerAccount acc, boolean withoutScoreboard, @NotNull List<Quest> list) {
 		for (Iterator<Quest> iterator = list.iterator(); iterator.hasNext();) {
 			Quest existing = iterator.next();
 			if (!existing.hasStarted(acc) || (withoutScoreboard && !existing.isScoreboardEnabled())) iterator.remove();
@@ -150,21 +153,22 @@ public class QuestsManager implements Iterable<Quest> {
 		}
 	}
 	
-	public int getStartedSize(PlayerAccount acc) {
+	public int getStartedSize(@NotNull PlayerAccount acc) {
 		return (int) quests
 				.stream()
 				.filter(quest -> !quest.canBypassLimit() && quest.hasStarted(acc))
 				.count();
 	}
 	
-	public List<Quest> getQuestsFinished(PlayerAccount acc, boolean hide) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsFinished(@NotNull PlayerAccount acc, boolean hide) {
 		return quests
 				.stream()
 				.filter(quest -> !(hide && quest.isHidden(VisibilityLocation.TAB_FINISHED)) && quest.hasFinished(acc))
 				.collect(Collectors.toList());
 	}
 	
-	public List<Quest> getQuestsNotStarted(PlayerAccount acc, boolean hide, boolean clickableAndRedoable) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsNotStarted(@NotNull PlayerAccount acc, boolean hide,
+			boolean clickableAndRedoable) {
 		return quests
 				.stream()
 				.filter(quest -> {

@@ -3,6 +3,8 @@ package fr.skytasul.quests.api.options.description;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -20,8 +22,8 @@ public class QuestDescriptionContext {
 	
 	private PlayerQuestDatas cachedDatas;
 	
-	public QuestDescriptionContext(QuestDescription descriptionOptions, Quest quest, PlayerAccount acc,
-			PlayerListGUI.Category category, Source source) {
+	public QuestDescriptionContext(@NotNull QuestDescription descriptionOptions, @NotNull Quest quest,
+			@NotNull PlayerAccount acc, @NotNull PlayerListGUI.Category category, @NotNull Source source) {
 		this.descriptionOptions = descriptionOptions;
 		this.quest = quest;
 		this.acc = acc;
@@ -29,32 +31,32 @@ public class QuestDescriptionContext {
 		this.source = source;
 	}
 	
-	public QuestDescription getDescriptionOptions() {
+	public @NotNull QuestDescription getDescriptionOptions() {
 		return descriptionOptions;
 	}
 	
-	public Quest getQuest() {
+	public @NotNull Quest getQuest() {
 		return quest;
 	}
 	
-	public PlayerAccount getPlayerAccount() {
+	public @NotNull PlayerAccount getPlayerAccount() {
 		return acc;
 	}
 	
-	public Category getCategory() {
+	public @NotNull Category getCategory() {
 		return category;
 	}
 	
-	public Source getSource() {
+	public @NotNull Source getSource() {
 		return source;
 	}
 
-	public PlayerQuestDatas getQuestDatas() {
+	public @Nullable PlayerQuestDatas getQuestDatas() {
 		if (cachedDatas == null) cachedDatas = acc.getQuestDatasIfPresent(quest);
 		return cachedDatas;
 	}
 	
-	public List<String> formatDescription() {
+	public @NotNull List<@Nullable String> formatDescription() {
 		List<String> list = new ArrayList<>();
 		
 		quest.getDescriptions()

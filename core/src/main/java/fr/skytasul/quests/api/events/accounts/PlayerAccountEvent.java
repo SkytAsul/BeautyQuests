@@ -2,28 +2,30 @@ package fr.skytasul.quests.api.events.accounts;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.players.PlayerAccount;
 
 public abstract class PlayerAccountEvent extends Event {
 	
-	private Player who;
-	private PlayerAccount account;
+	protected final @NotNull PlayerAccount account;
 
-	protected PlayerAccountEvent(Player who, PlayerAccount account) {
-		this.who = who;
+	protected PlayerAccountEvent(@NotNull PlayerAccount account) {
 		this.account = account;
 	}
 	
 	public boolean isAccountCurrent() {
-		return who != null;
+		return account.isCurrent();
 	}
 	
-	public Player getPlayer() {
-		return who;
+	public @Nullable Player getPlayer() {
+		if (!account.isCurrent())
+			throw new IllegalStateException("Account is not currently used");
+
+		return account.getPlayer();
 	}
 
-	public PlayerAccount getPlayerAccount() {
+	public @NotNull PlayerAccount getPlayerAccount() {
 		return account;
 	}
 	

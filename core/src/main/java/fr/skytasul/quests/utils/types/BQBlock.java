@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
@@ -21,42 +23,42 @@ public abstract class BQBlock {
 	public static final String TAG_HEADER = "tag:";
 	public static final String CUSTOM_NAME_FOOTER = "|customname:";
 	
-	private final String customName;
+	private final @Nullable String customName;
 
-	private XMaterial cachedMaterial;
-	private String cachedName;
+	private @Nullable XMaterial cachedMaterial;
+	private @Nullable String cachedName;
 	
-	protected BQBlock(String customName) {
+	protected BQBlock(@Nullable String customName) {
 		this.customName = customName;
 	}
 
-	protected abstract String getDataString();
+	protected abstract @NotNull String getDataString();
 	
-	public abstract boolean applies(Block block);
+	public abstract boolean applies(@NotNull Block block);
 	
-	public abstract XMaterial retrieveMaterial();
+	public abstract @NotNull XMaterial retrieveMaterial();
 	
-	public final XMaterial getMaterial() {
+	public final @NotNull XMaterial getMaterial() {
 		if (cachedMaterial == null) cachedMaterial = retrieveMaterial();
 		return cachedMaterial;
 	}
 	
-	public String getDefaultName() {
+	public @NotNull String getDefaultName() {
 		return MinecraftNames.getMaterialName(getMaterial());
 	}
 
-	public final String getName() {
+	public final @NotNull String getName() {
 		if (cachedName == null)
 			cachedName = customName == null ? getDefaultName() : customName;
 
 		return cachedName;
 	}
 
-	public final String getAsString() {
+	public final @NotNull String getAsString() {
 		return getDataString() + getFooter();
 	}
 	
-	private String getFooter() {
+	private @NotNull String getFooter() {
 		return customName == null ? "" : CUSTOM_NAME_FOOTER + customName;
 	}
 
@@ -65,7 +67,7 @@ public abstract class BQBlock {
 		return "BQBlock{" + getAsString() + "}";
 	}
 
-	public static BQBlock fromString(String string) {
+	public static @NotNull BQBlock fromString(@NotNull String string) {
 		int nameIndex = string.lastIndexOf(CUSTOM_NAME_FOOTER);
 		String customName = nameIndex == -1 ? null : string.substring(nameIndex + CUSTOM_NAME_FOOTER.length());
 
@@ -78,7 +80,8 @@ public abstract class BQBlock {
 		return new BQBlockMaterial(customName, XMaterial.valueOf(string.substring(0, dataEnd)));
 	}
 	
-	public static Spliterator<Locatable.Located> getNearbyBlocks(Locatable.MultipleLocatable.NearbyFetcher fetcher, Collection<BQBlock> types) {
+	public static @NotNull Spliterator<Locatable.@NotNull Located> getNearbyBlocks(
+			@NotNull Locatable.MultipleLocatable.NearbyFetcher fetcher, @NotNull Collection<@NotNull BQBlock> types) {
 		if (!fetcher.isTargeting(LocatedType.BLOCK)) return Spliterators.emptySpliterator();
 		
 		int minY = (int) Math.max(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() - fetcher.getMaxDistance());

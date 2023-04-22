@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.XMaterial;
@@ -22,22 +24,22 @@ public class Mob<D> implements Cloneable {
 
 	private String formattedName;
 
-	public Mob(MobFactory<D> factory, D data) {
+	public Mob(@NotNull MobFactory<D> factory, @NotNull D data) {
 		Validate.notNull(factory, "Mob factory cannot be null");
 		Validate.notNull(data, "Mob data cannot be null");
 		this.factory = factory;
 		this.data = data;
 	}
 	
-	public MobFactory<D> getFactory() {
+	public @NotNull MobFactory<D> getFactory() {
 		return factory;
 	}
 	
-	public D getData() {
+	public @NotNull D getData() {
 		return data;
 	}
 	
-	public String getName() {
+	public @NotNull String getName() {
 		if (formattedName == null) {
 			if (customName != null) {
 				formattedName = customName;
@@ -51,23 +53,23 @@ public class Mob<D> implements Cloneable {
 		return formattedName;
 	}
 	
-	public List<String> getDescriptiveLore() {
+	public @NotNull List<@Nullable String> getDescriptiveLore() {
 		return factory.getDescriptiveLore(data);
 	}
 
-	public void setCustomName(String customName) {
+	public void setCustomName(@Nullable String customName) {
 		this.customName = customName;
 	}
 
-	public Double getMinLevel() {
+	public @Nullable Double getMinLevel() {
 		return minLevel;
 	}
 
-	public void setMinLevel(Double minLevel) {
+	public void setMinLevel(@Nullable Double minLevel) {
 		this.minLevel = minLevel;
 	}
 
-	public XMaterial getMobItem() {
+	public @NotNull XMaterial getMobItem() {
 		try {
 			return Utils.mobItem(factory.getEntityType(data));
 		}catch (Exception ex) {
@@ -76,15 +78,15 @@ public class Mob<D> implements Cloneable {
 		}
 	}
 	
-	public boolean applies(Object data) {
+	public boolean applies(@Nullable Object data) {
 		return factory.mobApplies(this.data, data);
 	}
 	
-	public boolean appliesEntity(Entity entity) {
+	public boolean appliesEntity(@NotNull Entity entity) {
 		return factory.bukkitMobApplies(data, entity);
 	}
 	
-	public double getLevel(Entity entity) {
+	public double getLevel(@NotNull Entity entity) {
 		if (!(factory instanceof LeveledMobFactory))
 			throw new UnsupportedOperationException(
 					"Cannot get the level of a mob from an unleveled mob factory: " + factory.getID());

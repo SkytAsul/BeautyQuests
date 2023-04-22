@@ -1,14 +1,13 @@
 package fr.skytasul.quests.api.events.accounts;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.players.PlayerAccount;
 
 public class PlayerAccountResetEvent extends PlayerAccountEvent {
 	
-	public PlayerAccountResetEvent(Player who, PlayerAccount account) {
-		super(who, account);
+	public PlayerAccountResetEvent(@NotNull PlayerAccount account) {
+		super(account);
 	}
 	
 	@Override

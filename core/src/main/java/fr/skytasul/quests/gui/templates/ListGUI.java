@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.XMaterial;
@@ -23,7 +24,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 	
 	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, Lang.addObject.toString());
 	
-	public ListGUI(String name, DyeColor color, Collection<T> objects) {
+	protected ListGUI(@NotNull String name, @NotNull DyeColor color, @NotNull Collection<T> objects) {
 		super(name, color, objects);
 		if (objects.contains(null))
 			throw new IllegalArgumentException("Object cannot be null in a list GUI");

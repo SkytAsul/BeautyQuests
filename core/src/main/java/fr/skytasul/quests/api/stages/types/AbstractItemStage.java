@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,15 +24,15 @@ import fr.skytasul.quests.utils.types.CountableObject;
 
 public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack> {
 	
-	protected final ItemComparisonMap comparisons;
+	protected final @NotNull ItemComparisonMap comparisons;
 
-	protected AbstractItemStage(QuestBranch branch, List<CountableObject<ItemStack>> objects,
+	protected AbstractItemStage(@NotNull QuestBranch branch, @NotNull List<@NotNull CountableObject<ItemStack>> objects,
 			ItemComparisonMap comparisons) {
 		super(branch, objects);
 		this.comparisons = comparisons;
 	}
 	
-	protected AbstractItemStage(QuestBranch branch, ConfigurationSection section) {
+	protected AbstractItemStage(@NotNull QuestBranch branch, @NotNull ConfigurationSection section) {
 		super(branch, new ArrayList<>());
 		
 		if (section.contains("itemComparisons")) {
@@ -42,32 +43,32 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 	}
 
 	@Override
-	protected ItemStack cloneObject(ItemStack object) {
+	protected @NotNull ItemStack cloneObject(@NotNull ItemStack object) {
 		return object.clone();
 	}
 
 	@Override
-	protected boolean objectApplies(ItemStack object, Object other) {
+	protected boolean objectApplies(@NotNull ItemStack object, @NotNull Object other) {
 		return comparisons.isSimilar(object, (ItemStack) other);
 	}
 
 	@Override
-	protected String getName(ItemStack object) {
+	protected @NotNull String getName(@NotNull ItemStack object) {
 		return ItemUtils.getName(object, true);
 	}
 
 	@Override
-	protected Object serialize(ItemStack object) {
+	protected @NotNull Object serialize(@NotNull ItemStack object) {
 		return object.serialize();
 	}
 
 	@Override
-	protected ItemStack deserialize(Object object) {
+	protected @NotNull ItemStack deserialize(@NotNull Object object) {
 		return ItemStack.deserialize((Map<String, Object>) object);
 	}
 
 	@Override
-	protected void serialize(ConfigurationSection section) {
+	protected void serialize(@NotNull ConfigurationSection section) {
 		super.serialize(section);
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
@@ -76,8 +77,8 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		
 		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
 		
-		private List<ItemStack> items;
-		private ItemComparisonMap comparisons = new ItemComparisonMap();
+		private @NotNull List<ItemStack> items;
+		private @NotNull ItemComparisonMap comparisons = new ItemComparisonMap();
 		
 		protected Creator(Line line, boolean ending) {
 			super(line, ending);
@@ -96,7 +97,7 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 			});
 		}
 		
-		protected abstract ItemStack getEditItem();
+		protected abstract @NotNull ItemStack getEditItem();
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
@@ -140,7 +141,8 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 			return finishStage(branch, itemsMap, comparisons);
 		}
 		
-		protected abstract T finishStage(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons);
+		protected abstract T finishStage(@NotNull QuestBranch branch,
+				@NotNull List<@NotNull CountableObject<ItemStack>> items, @NotNull ItemComparisonMap comparisons);
 		
 	}
 

@@ -9,6 +9,9 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -26,7 +29,7 @@ public class PlayerAccount {
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 	protected final int index;
 	
-	protected PlayerAccount(AbstractAccount account, int index) {
+	protected PlayerAccount(@NotNull AbstractAccount account, int index) {
 		this.abstractAcc = account;
 		this.index = index;
 	}
@@ -41,26 +44,26 @@ public class PlayerAccount {
 	/**
 	 * @return the OfflinePlayer instance attached to this account (no matter if the player is online or not, or if the account is the currently used)
 	 */
-	public OfflinePlayer getOfflinePlayer(){
+	public @NotNull OfflinePlayer getOfflinePlayer() {
 		return abstractAcc.getOfflinePlayer();
 	}
 	
 	/**
 	 * @return the Player instance who own this account. If the account is not which in use by the player ({@link #isCurrent()}), this will return null.
 	 */
-	public Player getPlayer(){
+	public @Nullable Player getPlayer() {
 		return abstractAcc.getPlayer();
 	}
 	
-	public boolean hasQuestDatas(Quest quest) {
+	public boolean hasQuestDatas(@NotNull Quest quest) {
 		return questDatas.containsKey(quest.getID());
 	}
 	
-	public PlayerQuestDatas getQuestDatasIfPresent(Quest quest) {
+	public @Nullable PlayerQuestDatas getQuestDatasIfPresent(@NotNull Quest quest) {
 		return questDatas.get(quest.getID());
 	}
 
-	public PlayerQuestDatas getQuestDatas(Quest quest) {
+	public @NotNull PlayerQuestDatas getQuestDatas(@NotNull Quest quest) {
 		PlayerQuestDatas datas = questDatas.get(quest.getID());
 		if (datas == null) {
 			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerQuestDatas(this, quest);
@@ -69,11 +72,11 @@ public class PlayerAccount {
 		return datas;
 	}
 
-	public CompletableFuture<PlayerQuestDatas> removeQuestDatas(Quest quest) {
+	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(@NotNull Quest quest) {
 		return removeQuestDatas(quest.getID());
 	}
 	
-	public CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id) {
+	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id) {
 		PlayerQuestDatas removed = questDatas.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
@@ -81,19 +84,19 @@ public class PlayerAccount {
 		return BeautyQuests.getInstance().getPlayersManager().playerQuestDataRemoved(removed).thenApply(__ -> removed);
 	}
 	
-	protected PlayerQuestDatas removeQuestDatasSilently(int id) {
+	protected @Nullable PlayerQuestDatas removeQuestDatasSilently(int id) {
 		return questDatas.remove(id);
 	}
 	
-	public Collection<PlayerQuestDatas> getQuestsDatas() {
+	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatas> getQuestsDatas() {
 		return questDatas.values();
 	}
 	
-	public boolean hasPoolDatas(QuestPool pool) {
+	public boolean hasPoolDatas(@NotNull QuestPool pool) {
 		return poolDatas.containsKey(pool.getID());
 	}
 	
-	public PlayerPoolDatas getPoolDatas(QuestPool pool) {
+	public @NotNull PlayerPoolDatas getPoolDatas(@NotNull QuestPool pool) {
 		PlayerPoolDatas datas = poolDatas.get(pool.getID());
 		if (datas == null) {
 			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerPoolDatas(this, pool);
@@ -102,11 +105,11 @@ public class PlayerAccount {
 		return datas;
 	}
 	
-	public CompletableFuture<PlayerPoolDatas> removePoolDatas(QuestPool pool) {
+	public @NotNull CompletableFuture<PlayerPoolDatas> removePoolDatas(@NotNull QuestPool pool) {
 		return removePoolDatas(pool.getID());
 	}
 	
-	public CompletableFuture<PlayerPoolDatas> removePoolDatas(int id) {
+	public @NotNull CompletableFuture<PlayerPoolDatas> removePoolDatas(int id) {
 		PlayerPoolDatas removed = poolDatas.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
@@ -114,17 +117,17 @@ public class PlayerAccount {
 		return BeautyQuests.getInstance().getPlayersManager().playerPoolDataRemoved(removed).thenApply(__ -> removed);
 	}
 	
-	public Collection<PlayerPoolDatas> getPoolDatas() {
+	public @UnmodifiableView @NotNull Collection<@NotNull PlayerPoolDatas> getPoolDatas() {
 		return poolDatas.values();
 	}
 	
-	public <T> T getData(SavableData<T> data) {
+	public <T> @Nullable T getData(@NotNull SavableData<T> data) {
 		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		return (T) additionalDatas.getOrDefault(data, data.getDefaultValue());
 	}
 
-	public <T> void setData(SavableData<T> data, T value) {
+	public <T> void setData(@NotNull SavableData<T> data, @Nullable T value) {
 		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		additionalDatas.put(data, value);
@@ -135,12 +138,14 @@ public class PlayerAccount {
 	}
 	
 	@Override
-	public boolean equals(Object arg0) {
-		if (arg0 == this) return true;
-		if (arg0.getClass() != this.getClass()) return false;
-		PlayerAccount otherAccount = (PlayerAccount) arg0;
-		if (!abstractAcc.equals(otherAccount.abstractAcc)) return false;
-		return true;
+	public boolean equals(Object object) {
+		if (object == this)
+			return true;
+		if (object == null)
+			return false;
+		if (object.getClass() != this.getClass())
+			return false;
+		return abstractAcc.equals(((PlayerAccount) object).abstractAcc);
 	}
 	
 	@Override
@@ -153,21 +158,21 @@ public class PlayerAccount {
 		return hash;
 	}
 	
-	public String getName() {
+	public @NotNull String getName() {
 		Player p = getPlayer();
 		return p == null ? debugName() : p.getName();
 	}
 	
-	public String getNameAndID() {
+	public @NotNull String getNameAndID() {
 		Player p = getPlayer();
 		return p == null ? debugName() : p.getName() + " (# " + index + ")";
 	}
 	
-	public String debugName() {
+	public @NotNull String debugName() {
 		return abstractAcc.getIdentifier() + " (#" + index + ")";
 	}
 
-	public void serialize(ConfigurationSection config) {
+	public void serialize(@NotNull ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
 		config.set("quests", questDatas.isEmpty() ? null : Utils.serializeList(questDatas.values(), PlayerQuestDatas::serialize));
 		config.set("pools", poolDatas.isEmpty() ? null : Utils.serializeList(poolDatas.values(), PlayerPoolDatas::serialize));

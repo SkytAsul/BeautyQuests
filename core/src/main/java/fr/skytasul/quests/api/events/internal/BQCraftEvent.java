@@ -1,29 +1,30 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.events.internal;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class BQCraftEvent extends PlayerEvent {
 	
-	private final InventoryClickEvent clickEvent;
-	private final ItemStack result;
+	private final @NotNull InventoryClickEvent clickEvent;
+	private final @NotNull ItemStack result;
 	private final int maxCraftable;
 
-	public BQCraftEvent(InventoryClickEvent clickEvent, ItemStack result, int maxCraftable) {
+	public BQCraftEvent(@NotNull InventoryClickEvent clickEvent, @NotNull ItemStack result, int maxCraftable) {
 		super((Player) clickEvent.getView().getPlayer());
 		this.clickEvent = clickEvent;
 		this.result = result;
 		this.maxCraftable = maxCraftable;
 	}
 	
-	public InventoryClickEvent getClickEvent() {
+	public @NotNull InventoryClickEvent getClickEvent() {
 		return clickEvent;
 	}
 	
-	public ItemStack getResult() {
+	public @NotNull ItemStack getResult() {
 		return result;
 	}
 	

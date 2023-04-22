@@ -3,7 +3,6 @@ package fr.skytasul.quests.api.npcs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -11,9 +10,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Listener;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
-import fr.skytasul.quests.api.events.BQNPCClickEvent;
+import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 
 public abstract class BQNPCsManager implements Listener {
 	
@@ -21,30 +22,31 @@ public abstract class BQNPCsManager implements Listener {
 	
 	public abstract int getTimeToWaitForNPCs();
 	
-	public abstract Collection<Integer> getIDs();
+	public abstract @NotNull Collection<@NotNull Integer> getIDs();
 	
-	public abstract boolean isNPC(Entity entity);
+	public abstract boolean isNPC(@NotNull Entity entity);
 	
-	public final BQNPC createNPC(Location location, EntityType type, String name, String skin) {
+	public final @NotNull BQNPC createNPC(@NotNull Location location, @NotNull EntityType type, @NotNull String name,
+			@Nullable String skin) {
 		BQNPC npc = create(location, type, name);
 		try {
 			if (type == EntityType.PLAYER) npc.setSkin(skin);
 		}catch (Exception ex) {
-			ex.printStackTrace();
+			BeautyQuests.logger.severe("Failed to set NPC skin", ex);
 		}
 		npcs.put(npc.getId(), npc);
 		return npc;
 	}
 	
-	public abstract boolean isValidEntityType(EntityType type);
+	public abstract boolean isValidEntityType(@NotNull EntityType type);
 	
-	protected abstract BQNPC create(Location location, EntityType type, String name);
+	protected abstract @NotNull BQNPC create(@NotNull Location location, @NotNull EntityType type, @NotNull String name);
 	
-	public final BQNPC getById(int id) {
+	public final @Nullable BQNPC getById(int id) {
 		return npcs.computeIfAbsent(id, this::fetchNPC);
 	}
 	
-	protected abstract BQNPC fetchNPC(int id);
+	protected abstract @Nullable BQNPC fetchNPC(int id);
 	
 	protected final void removeEvent(int id) {
 		BQNPC npc = npcs.get(id);
@@ -53,7 +55,7 @@ public abstract class BQNPCsManager implements Listener {
 		npcs.remove(id);
 	}
 	
-	protected final void clickEvent(Cancellable event, int npcID, Player p, ClickType click) {
+	protected final void clickEvent(@NotNull Cancellable event, int npcID, @NotNull Player p, @NotNull ClickType click) {
 		if (event != null && event.isCancelled()) return;
 		BQNPCClickEvent newEvent = new BQNPCClickEvent(getById(npcID), p, click);
 		Bukkit.getPluginManager().callEvent(newEvent);

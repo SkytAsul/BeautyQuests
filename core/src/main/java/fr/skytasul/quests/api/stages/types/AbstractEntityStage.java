@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -36,16 +36,16 @@ import fr.skytasul.quests.utils.XMaterial;
 @LocatableType (types = LocatedType.ENTITY)
 public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable {
 	
-	protected EntityType entity;
-	protected int amount;
+	protected final @NotNull EntityType entity;
+	protected final int amount;
 
-	public AbstractEntityStage(QuestBranch branch, EntityType entity, int amount) {
+	protected AbstractEntityStage(@NotNull QuestBranch branch, @NotNull EntityType entity, int amount) {
 		super(branch);
 		this.entity = entity;
 		this.amount = amount;
 	}
 	
-	protected void event(Player p, EntityType type) {
+	protected void event(@NotNull Player p, @NotNull EntityType type) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
 			if (entity == null || type.equals(entity)) {
@@ -61,23 +61,23 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		}
 	}
 	
-	protected Integer getPlayerAmount(PlayerAccount acc) {
+	protected @Nullable Integer getPlayerAmount(@NotNull PlayerAccount acc) {
 		return getData(acc, "amount");
 	}
 	
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	protected void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", amount);
 	}
 	
 	@Override
-	protected void serialize(ConfigurationSection section) {
+	protected void serialize(@NotNull ConfigurationSection section) {
 		section.set("entityType", entity == null ? "any" : entity.name());
 		section.set("amount", amount);
 	}
 	
-	protected String getMobsLeft(PlayerAccount acc) {
+	protected @NotNull String getMobsLeft(@NotNull PlayerAccount acc) {
 		Integer playerAmount = getPlayerAmount(acc);
 		if (playerAmount == null) return "§cerror: no datas";
 		
@@ -85,7 +85,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull Source source) {
 		return new Supplier[] { () -> getMobsLeft(acc) };
 	}
 	
@@ -95,7 +95,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
-	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
+	public @NotNull Spliterator<@NotNull Located> getNearbyLocated(@NotNull NearbyFetcher fetcher) {
 		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
 		return fetcher.getCenter().getWorld()
 				.getEntitiesByClass(entity.getEntityClass())
@@ -163,7 +163,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 			return true;
 		}
 		
-		protected abstract boolean canUseEntity(EntityType type);
+		protected abstract boolean canUseEntity(@NotNull EntityType type);
 		
 	}
 	

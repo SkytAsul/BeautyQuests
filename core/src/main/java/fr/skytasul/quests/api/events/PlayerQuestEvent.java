@@ -1,29 +1,28 @@
 package fr.skytasul.quests.api.events;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountEvent;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
 
-public abstract class PlayerQuestEvent extends PlayerEvent{
+public abstract class PlayerQuestEvent extends PlayerAccountEvent {
 
-	protected Quest qu;
-	protected PlayerAccount acc;
+	protected final @NotNull Quest quest;
 	
-	public PlayerQuestEvent(Player who, Quest quest){
-		super(who);
-		this.qu = quest;
-		this.acc = PlayersManager.getPlayerAccount(who);
+	protected PlayerQuestEvent(@NotNull Player who, @NotNull Quest quest) {
+		super(PlayersManager.getPlayerAccount(who));
+		this.quest = quest;
 	}
 
-	public Quest getQuest(){
-		return qu;
+	protected PlayerQuestEvent(@NotNull PlayerAccount acc, @NotNull Quest quest) {
+		super(acc);
+		this.quest = quest;
 	}
-	
-	public PlayerAccount getPlayerAccount(){
-		return acc;
+
+	public @NotNull Quest getQuest() {
+		return quest;
 	}
 
 }

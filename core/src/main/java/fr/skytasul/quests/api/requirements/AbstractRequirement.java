@@ -4,10 +4,13 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
@@ -22,16 +25,16 @@ public abstract class AbstractRequirement extends QuestObject {
 		this(null, null);
 	}
 
-	protected AbstractRequirement(String customDescription, String customReason) {
+	protected AbstractRequirement(@Nullable String customDescription, @Nullable String customReason) {
 		super(QuestsAPI.getRequirements(), customDescription);
 		this.customReason = customReason;
 	}
 	
-	public String getCustomReason() {
+	public @Nullable String getCustomReason() {
 		return customReason;
 	}
 
-	public void setCustomReason(String customReason) {
+	public void setCustomReason(@Nullable String customReason) {
 		this.customReason = customReason;
 	}
 
@@ -40,13 +43,13 @@ public abstract class AbstractRequirement extends QuestObject {
 	 * @param p Player to test
 	 * @return if the player fills conditions of this requirement
 	 */
-	public abstract boolean test(Player p);
+	public abstract boolean test(@NotNull Player p);
 	
 	/**
 	 * Called if the condition if not filled and if the plugin allows to send a message to the player
 	 * @param p Player to send the reason
 	 */
-	public final boolean sendReason(Player player) {
+	public final boolean sendReason(@NotNull Player player) {
 		String reason;
 
 		if (!isValid())
@@ -71,29 +74,29 @@ public abstract class AbstractRequirement extends QuestObject {
 	 * @param player player to get the message for
 	 * @return the reason of the requirement (nullable)
 	 */
-	protected String getDefaultReason(Player player) {
+	protected @Nullable String getDefaultReason(@NotNull Player player) {
 		return null;
 	}
 	
-	protected String getInvalidReason() {
+	protected @NotNull String getInvalidReason() {
 		return "invalid requirement";
 	}
 
-	protected ClickType getCustomReasonClick() {
+	protected @Nullable ClickType getCustomReasonClick() {
 		return ClickType.SHIFT_RIGHT;
 	}
 
-	protected void sendCustomReasonHelpMessage(Player p) {
+	protected void sendCustomReasonHelpMessage(@NotNull Player p) {
 		Lang.CHOOSE_REQUIREMENT_CUSTOM_REASON.send(p);
 	}
 
 	@Override
-	protected void sendCustomDescriptionHelpMessage(Player p) {
+	protected void sendCustomDescriptionHelpMessage(@NotNull Player p) {
 		Lang.CHOOSE_REQUIREMENT_CUSTOM_DESCRIPTION.send(p);
 	}
 
 	@Override
-	protected final void clickInternal(QuestObjectClickEvent event) {
+	protected final void clickInternal(@NotNull QuestObjectClickEvent event) {
 		if (event.getClick() == getCustomReasonClick()) {
 			sendCustomReasonHelpMessage(event.getPlayer());
 			new TextEditor<String>(event.getPlayer(), event::reopenGUI, msg -> {
@@ -105,10 +108,10 @@ public abstract class AbstractRequirement extends QuestObject {
 		}
 	}
 
-	protected abstract void itemClick(QuestObjectClickEvent event);
+	protected abstract void itemClick(@NotNull QuestObjectClickEvent event);
 
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder
 				.addDescription(Lang.requirementReason.format(customReason == null ? Lang.NotSet.toString() : customReason));
@@ -116,24 +119,24 @@ public abstract class AbstractRequirement extends QuestObject {
 	}
 
 	@Override
-	public abstract AbstractRequirement clone();
+	public abstract @NotNull AbstractRequirement clone();
 	
 	@Override
-	public void save(ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) {
 		super.save(section);
 		if (customReason != null)
 			section.set(CUSTOM_REASON_KEY, customReason);
 	}
 
 	@Override
-	public void load(ConfigurationSection section) {
+	public void load(@NotNull ConfigurationSection section) {
 		super.load(section);
 		if (section.contains(CUSTOM_REASON_KEY))
 			customReason = section.getString(CUSTOM_REASON_KEY);
 	}
 
-	public static AbstractRequirement deserialize(Map<String, Object> map) {
-		return QuestObject.deserialize(map, QuestsAPI.getRequirements());
+	public static @NotNull AbstractRequirement deserialize(Map<String, Object> map) {
+		return SerializableObject.deserialize(map, QuestsAPI.getRequirements());
 	}
 	
 }

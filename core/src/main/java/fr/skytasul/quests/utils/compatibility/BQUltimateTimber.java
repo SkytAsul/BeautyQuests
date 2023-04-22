@@ -10,8 +10,7 @@ import org.bukkit.event.Listener;
 
 import com.songoda.ultimatetimber.events.TreeFellEvent;
 import com.songoda.ultimatetimber.tree.ITreeBlock;
-
-import fr.skytasul.quests.api.events.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 
 public class BQUltimateTimber implements Listener {
 	

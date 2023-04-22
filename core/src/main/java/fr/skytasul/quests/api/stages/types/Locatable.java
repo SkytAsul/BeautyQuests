@@ -12,7 +12,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.utils.DebugUtils;
 
 /**
@@ -36,7 +37,7 @@ public interface Locatable {
 	 * @return	<code>true</code> if location indications should be displayed
 	 * 			to the player, <code>false</code> otherwise.
 	 */
-	default boolean isShown(Player player) {
+	default boolean isShown(@NotNull Player player) {
 		return true;
 	}
 	
@@ -65,6 +66,7 @@ public interface Locatable {
 		 * having something else changed in the game state would return the same value.
 		 * @return the located object
 		 */
+		@NotNull
 		Located getLocated();
 		
 	}
@@ -81,7 +83,8 @@ public interface Locatable {
 		 * @param fetcher describes the region from where the targets must be found
 		 * @return a Spliterator which allows iterating through the targets
 		 */
-		Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher);
+		@NotNull
+		Spliterator<@NotNull Located> getNearbyLocated(@NotNull NearbyFetcher fetcher);
 		
 		/**
 		 * This POJO contains informations on the region from where
@@ -89,6 +92,7 @@ public interface Locatable {
 		 */
 		interface NearbyFetcher {
 			
+			@NotNull
 			Location getCenter();
 			
 			double getMaxDistance();
@@ -97,15 +101,16 @@ public interface Locatable {
 				return getMaxDistance() * getMaxDistance();
 			}
 			
-			default boolean isTargeting(LocatedType type) {
+			default boolean isTargeting(@NotNull LocatedType type) {
 				return true;
 			}
 			
-			static NearbyFetcher create(Location location, double maxDistance) {
+			static @NotNull NearbyFetcher create(@NotNull Location location, double maxDistance) {
 				return new NearbyFetcherImpl(location, maxDistance, null);
 			}
 			
-			static NearbyFetcher create(Location location, double maxDistance, LocatedType targetType) {
+			static @NotNull NearbyFetcher create(@NotNull Location location, double maxDistance,
+					@Nullable LocatedType targetType) {
 				return new NearbyFetcherImpl(location, maxDistance, targetType);
 			}
 			
@@ -153,7 +158,8 @@ public interface Locatable {
 		 * @return	an array of {@link LocatedType} that can be retrieved
 		 * 			from the class attached to this annotation.
 		 */
-		LocatedType[] types() default { LocatedType.ENTITY, LocatedType.BLOCK, LocatedType.OTHER };
+		@NotNull
+		LocatedType @NotNull [] types() default {LocatedType.ENTITY, LocatedType.BLOCK, LocatedType.OTHER};
 	}
 	
 	/**
@@ -161,11 +167,13 @@ public interface Locatable {
 	 */
 	interface Located {
 		
+		@NotNull
 		Location getLocation();
 		
+		@NotNull
 		LocatedType getType();
 		
-		static Located create(Location location) {
+		static @NotNull Located create(@NotNull Location location) {
 			return new LocatedImpl(location);
 		}
 		
@@ -202,20 +210,21 @@ public interface Locatable {
 		
 		interface LocatedEntity extends Located {
 			
+			@NotNull
 			Entity getEntity();
 			
 			@Override
-			default Location getLocation() {
+			default @NotNull Location getLocation() {
 				Entity entity = getEntity();
 				return entity == null ? null : entity.getLocation();
 			}
 			
 			@Override
-			default LocatedType getType() {
+			default @NotNull LocatedType getType() {
 				return LocatedType.ENTITY;
 			}
 			
-			static LocatedEntity create(Entity entity) {
+			static @NotNull LocatedEntity create(Entity entity) {
 				return new LocatedEntityImpl(entity);
 			}
 			
@@ -249,11 +258,11 @@ public interface Locatable {
 		
 		interface LocatedBlock extends Located {
 			
-			default Block getBlock() {
+			default @NotNull Block getBlock() {
 				return getLocation().getBlock();
 			}
 			
-			default Block getBlockNullable() {
+			default @Nullable Block getBlockNullable() {
 				Location location = getLocation();
 				if (location == null || location.getWorld() == null)
 					return null;
@@ -261,15 +270,15 @@ public interface Locatable {
 			}
 
 			@Override
-			default LocatedType getType() {
+			default @NotNull LocatedType getType() {
 				return LocatedType.BLOCK;
 			}
 			
-			static LocatedBlock create(Block block) {
+			static @NotNull LocatedBlock create(@NotNull Block block) {
 				return new LocatedBlockImpl(block);
 			}
 			
-			static LocatedBlock create(Location location) {
+			static @NotNull LocatedBlock create(@NotNull Location location) {
 				return new LocatedBlockLocationImpl(location);
 			}
 			
@@ -341,7 +350,7 @@ public interface Locatable {
 	 * 			<b>OR</b> if the clazz does not have a {@link LocatableType} annotation attached,
 	 * 			<code>false</code> otherwise.
 	 */
-	static boolean hasLocatedTypes(Class<? extends Locatable> clazz, LocatedType... types) {
+	static boolean hasLocatedTypes(@NotNull Class<? extends Locatable> clazz, @NotNull LocatedType @NotNull... types) {
 		Set<LocatedType> toTest = new HashSet<>(Arrays.asList(types));
 		boolean foundAnnotation = false;
 		

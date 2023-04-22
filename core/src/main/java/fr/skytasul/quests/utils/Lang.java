@@ -1,5 +1,8 @@
 package fr.skytasul.quests.utils;
 
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.Locale;
 
 /**
@@ -855,32 +858,32 @@ public enum Lang implements Locale {
 	
 	private static final String DEFAULT_STRING = "§cnot loaded";
 	
-	private final String path;
-	private final Lang prefix;
+	private final @NotNull String path;
+	private final @Nullable Lang prefix;
 	
-	private String value = DEFAULT_STRING;
+	private @NotNull String value = DEFAULT_STRING;
 
-	private Lang(String path){
+	private Lang(@NotNull String path) {
 		this(path, null);
 	}
 	
-	private Lang(String path, Lang prefix) {
+	private Lang(@NotNull String path, @Nullable Lang prefix) {
 		this.path = path;
 		this.prefix = prefix;
 	}
 	
 	@Override
-	public String getPath(){
+	public @NotNull String getPath() {
 		return path;
 	}
 	
 	@Override
-	public void setValue(String value) {
-		this.value = value;
+	public void setValue(@NotNull String value) {
+		this.value = Objects.requireNonNull(value);
 	}
 	
 	@Override
-	public String getValue() {
+	public @NotNull String getValue() {
 		return prefix == null ? value : (prefix.toString() + value);
 	}
 	

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
@@ -18,28 +19,29 @@ import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> {
 	
-	protected AbstractCountableBlockStage(QuestBranch branch, List<CountableObject<BQBlock>> objects) {
+	protected AbstractCountableBlockStage(@NotNull QuestBranch branch,
+			@NotNull List<@NotNull CountableObject<BQBlock>> objects) {
 		super(branch, objects);
 	}
 
 	@Override
-	protected boolean objectApplies(BQBlock object, Object other) {
+	protected boolean objectApplies(@NotNull BQBlock object, Object other) {
 		if (other instanceof Block) return object.applies((Block) other);
 		return super.objectApplies(object, other);
 	}
 
 	@Override
-	protected String getName(BQBlock object) {
+	protected @NotNull String getName(@NotNull BQBlock object) {
 		return object.getName();
 	}
 
 	@Override
-	protected Object serialize(BQBlock object) {
+	protected @NotNull Object serialize(@NotNull BQBlock object) {
 		return object.getAsString();
 	}
 
 	@Override
-	protected BQBlock deserialize(Object object) {
+	protected @NotNull BQBlock deserialize(@NotNull Object object) {
 		return BQBlock.fromString((String) object);
 	}
 	

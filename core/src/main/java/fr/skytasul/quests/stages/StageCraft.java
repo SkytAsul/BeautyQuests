@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.events.BQCraftEvent;
+import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.gui.ItemUtils;

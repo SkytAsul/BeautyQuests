@@ -6,37 +6,40 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.utils.Lang;
 
 public class LoggerExpanded {
 	
-	private Logger logger;
+	private final @NotNull Logger logger;
 	
-	public LoggerExpanded(Logger logger) {
+	public LoggerExpanded(@NotNull Logger logger) {
 		this.logger = logger;
 	}
 	
-	public void info(String msg) {
+	public void info(@Nullable String msg) {
 		logger.info(msg);
 	}
 	
-	public void warning(String msg) {
+	public void warning(@Nullable String msg) {
 		logger.log(Level.WARNING, msg);
 	}
 	
-	public void warning(String msg, Throwable throwable) {
+	public void warning(@Nullable String msg, @Nullable Throwable throwable) {
 		logger.log(Level.WARNING, msg, throwable);
 	}
 	
-	public void severe(String msg) {
+	public void severe(@Nullable String msg) {
 		logger.log(Level.SEVERE, msg);
 	}
 	
-	public void severe(String msg, Throwable throwable) {
+	public void severe(@Nullable String msg, @Nullable Throwable throwable) {
 		logger.log(Level.SEVERE, msg, throwable);
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(Consumer<T> consumer, String friendlyErrorMessage, CommandSender sender) {
+	public <T> BiConsumer<T, Throwable> logError(@Nullable Consumer<T> consumer, @Nullable String friendlyErrorMessage,
+			@Nullable CommandSender sender) {
 		return (object, ex) -> {
 			if (ex == null) {
 				if (consumer != null)
@@ -55,11 +58,11 @@ public class LoggerExpanded {
 		};
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(String friendlyErrorMessage, CommandSender sender) {
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable CommandSender sender) {
 		return logError(null, friendlyErrorMessage, sender);
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(String friendlyErrorMessage) {
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage) {
 		return logError(null, friendlyErrorMessage, null);
 	}
 

@@ -12,6 +12,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
@@ -29,21 +31,23 @@ import fr.skytasul.quests.utils.Utils;
 public class QuestBranch {
 	
 	private LinkedHashMap<AbstractStage, QuestBranch> endStages = new LinkedHashMap<>();
+	// TODO change this LinkedHashMap to a better option using a list
+
 	private LinkedList<AbstractStage> regularStages = new LinkedList<>();
 	
 	private List<PlayerAccount> asyncReward = new ArrayList<>(5);
 
-	private final BranchesManager manager;
+	private final @NotNull BranchesManager manager;
 	
-	public QuestBranch(BranchesManager manager){
+	public QuestBranch(@NotNull BranchesManager manager) {
 		this.manager = manager;
 	}
 	
-	public Quest getQuest(){
+	public @NotNull Quest getQuest() {
 		return manager.getQuest();
 	}
 	
-	public BranchesManager getBranchesManager(){
+	public @NotNull BranchesManager getBranchesManager() {
 		return manager;
 	}
 	
@@ -55,39 +59,39 @@ public class QuestBranch {
 		return manager.getID(this);
 	}
 	
-	public void addRegularStage(AbstractStage stage){
+	public void addRegularStage(@NotNull AbstractStage stage) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		regularStages.add(stage);
 		stage.load();
 	}
 	
-	public void addEndStage(AbstractStage stage, QuestBranch linked){
+	public void addEndStage(@NotNull AbstractStage stage, @NotNull QuestBranch linked) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		endStages.put(stage, linked);
 		stage.load();
 	}
 	
-	public int getID(AbstractStage stage){
+	public int getID(@NotNull AbstractStage stage) {
 		return regularStages.indexOf(stage);
 	}
 	
-	public LinkedList<AbstractStage> getRegularStages(){
+	public @NotNull List<@NotNull AbstractStage> getRegularStages() {
 		return regularStages;
 	}
 	
-	public AbstractStage getRegularStage(int id){
+	public @NotNull AbstractStage getRegularStage(int id) {
 		return regularStages.get(id);
 	}
 
-	public boolean isRegularStage(AbstractStage stage){
+	public boolean isRegularStage(@NotNull AbstractStage stage) {
 		return regularStages.contains(stage);
 	}
 	
-	public LinkedHashMap<AbstractStage, QuestBranch> getEndingStages() {
+	public @NotNull LinkedHashMap<AbstractStage, QuestBranch> getEndingStages() {
 		return endStages;
 	}
 	
-	public AbstractStage getEndingStage(int id) {
+	public @Nullable AbstractStage getEndingStage(int id) {
 		int i = 0;
 		for (AbstractStage stage : endStages.keySet()) {
 			if (i++ == id) return stage;
@@ -95,7 +99,7 @@ public class QuestBranch {
 		return null;
 	}
 	
-	public String getDescriptionLine(PlayerAccount acc, Source source) {
+	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull Source source) {
 		PlayerQuestDatas datas;
 		if (!acc.hasQuestDatas(getQuest()) || (datas = acc.getQuestDatas(getQuest())).getBranch() != getID()) throw new IllegalArgumentException("Account does not have this branch launched");
 		if (asyncReward.contains(acc)) return Lang.SCOREBOARD_ASYNC_END.toString();
@@ -117,14 +121,15 @@ public class QuestBranch {
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
 		return Utils.format(QuestsConfiguration.getStageDescriptionFormat(), datas.getStage() + 1, regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
 	}
+
 	/**
 	 * Where do the description request come from
 	 */
-	public static enum Source{
+	public enum Source {
 		SCOREBOARD, MENU, PLACEHOLDER, FORCESPLIT, FORCELINE;
 	}
 	
-	public boolean hasStageLaunched(PlayerAccount acc, AbstractStage stage){
+	public boolean hasStageLaunched(@Nullable PlayerAccount acc, @NotNull AbstractStage stage) {
 		if (acc == null) return false;
 		if (asyncReward.contains(acc)) return false;
 		if (!acc.hasQuestDatas(getQuest())) return false;
@@ -134,7 +139,7 @@ public class QuestBranch {
 		return (endStages.keySet().contains(stage));
 	}
 	
-	public void remove(PlayerAccount acc, boolean end) {
+	public void remove(@NotNull PlayerAccount acc, boolean end) {
 		if (!acc.hasQuestDatas(getQuest())) return;
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		if (end) {
@@ -146,7 +151,7 @@ public class QuestBranch {
 		datas.setStage(-1);
 	}
 	
-	public void start(PlayerAccount acc){
+	public void start(@NotNull PlayerAccount acc) {
 		acc.getQuestDatas(getQuest()).setBranch(getID());
 		if (!regularStages.isEmpty()){
 			setStage(acc, 0);
@@ -155,7 +160,7 @@ public class QuestBranch {
 		}
 	}
 	
-	public void finishStage(Player p, AbstractStage stage){
+	public void finishStage(@NotNull Player p, @NotNull AbstractStage stage) {
 		DebugUtils.logMessage("Next stage for player " + p.getName() + " (coming from " + stage.toString() + ") via " + DebugUtils.stackTraces(1, 3));
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
@@ -198,7 +203,7 @@ public class QuestBranch {
 		});
 	}
 	
-	private void endStage(PlayerAccount acc, AbstractStage stage, Runnable runAfter) {
+	private void endStage(@NotNull PlayerAccount acc, @NotNull AbstractStage stage, @NotNull Runnable runAfter) {
 		if (acc.isCurrent()){
 			Player p = acc.getPlayer();
 			stage.end(acc);
@@ -241,7 +246,7 @@ public class QuestBranch {
 		}
 	}
 	
-	public void setStage(PlayerAccount acc, int id) {
+	public void setStage(@NotNull PlayerAccount acc, int id) {
 		AbstractStage stage = regularStages.get(id);
 		Player p = acc.getPlayer();
 		if (stage == null){
@@ -258,7 +263,7 @@ public class QuestBranch {
 		}
 	}
 	
-	public void setEndingStages(PlayerAccount acc, boolean launchStage) {
+	public void setEndingStages(@NotNull PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
 		if (QuestsConfiguration.sendQuestUpdateMessage() && p != null && launchStage) Utils.sendMessage(p, Lang.QUEST_UPDATED.toString(), getQuest().getName());
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
@@ -270,7 +275,7 @@ public class QuestBranch {
 		if (p != null && launchStage) playNextStage(p);
 	}
 
-	private void playNextStage(Player p) {
+	private void playNextStage(@NotNull Player p) {
 		Utils.playPluginSound(p.getLocation(), QuestsConfiguration.getNextStageSound(), 0.5F);
 		if (QuestsConfiguration.showNextParticles()) QuestsConfiguration.getParticleNext().send(p, Arrays.asList(p));
 	}
@@ -282,7 +287,7 @@ public class QuestBranch {
 		endStages.clear();
 	}
 	
-	public void save(ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) {
 		ConfigurationSection stagesSection = section.createSection("stages");
 		int id = 0;
 		for (AbstractStage stage : regularStages) {
@@ -314,7 +319,7 @@ public class QuestBranch {
 		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + "}";
 	}
 	
-	public boolean load(ConfigurationSection section) {
+	public boolean load(@NotNull ConfigurationSection section) {
 		ConfigurationSection stagesSection;
 		if (section.isList("stages")) { // migration on 0.19.3: TODO remove
 			List<Map<?, ?>> stages = section.getMapList("stages");

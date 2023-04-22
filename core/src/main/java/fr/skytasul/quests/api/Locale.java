@@ -8,41 +8,44 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.function.Supplier;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Utils;
 
 public interface Locale {
 	
+	@NotNull
 	String getPath();
 	
+	@NotNull
 	String getValue();
 	
-	void setValue(String value);
+	void setValue(@NotNull String value);
 	
-	default String format(Object... replace) {
+	default @NotNull String format(@Nullable Object @Nullable... replace) {
 		return Utils.format(getValue(), replace);
 	}
 	
-	default String format(Supplier<Object>... replace) {
+	default @NotNull String format(@NotNull Supplier<Object> @Nullable... replace) {
 		return Utils.format(getValue(), replace);
 	}
 	
-	default void send(CommandSender sender, Object... args) {
+	default void send(@NotNull CommandSender sender, @Nullable Object @Nullable... args) {
 		Utils.sendMessage(sender, getValue(), args);
 	}
 	
-	default void sendWP(CommandSender p, Object... args) {
+	default void sendWP(@NotNull CommandSender p, @Nullable Object @Nullable... args) {
 		Utils.sendMessageWP(p, getValue(), args);
 	}
 	
-	public static void loadStrings(Locale[] locales, YamlConfiguration defaultConfig, YamlConfiguration config) {
+	public static void loadStrings(@NotNull Locale @NotNull [] locales, @NotNull YamlConfiguration defaultConfig,
+			@NotNull YamlConfiguration config) {
 		for (Locale l : locales) {
 			String value = config.getString(l.getPath(), null);
 			if (value == null) value = defaultConfig.getString(l.getPath(), null);
@@ -51,7 +54,8 @@ public interface Locale {
 		}
 	}
 	
-	public static YamlConfiguration loadLang(Plugin plugin, Locale[] locales, String loadedLanguage) throws IOException, URISyntaxException {
+	public static YamlConfiguration loadLang(@NotNull Plugin plugin, @NotNull Locale @NotNull [] locales,
+			@NotNull String loadedLanguage) throws IOException, URISyntaxException {
 		long lastMillis = System.currentTimeMillis();
 		
 		Utils.walkResources(plugin.getClass(), "/locales", 1, path -> {

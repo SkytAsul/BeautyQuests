@@ -5,52 +5,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Utils;
 
 public abstract class SerializableObject {
 	
-	protected final SerializableCreator creator;
+	protected final @NotNull SerializableCreator creator;
 
-	protected SerializableObject(SerializableRegistry registry) {
+	protected SerializableObject(@NotNull SerializableRegistry registry) {
 		this.creator = registry.getByClass(getClass());
 		if (creator == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as an object.");
 	}
 	
-	protected SerializableObject(SerializableCreator creator) {
+	protected SerializableObject(@NotNull SerializableCreator creator) {
 		this.creator = creator;
 		if (creator == null) throw new IllegalArgumentException("Creator cannot be null.");
 	}
 
-	public SerializableCreator getCreator() {
+	public @NotNull SerializableCreator getCreator() {
 		return creator;
 	}
 
-	public String getName() {
-		return getCreator().getID();
+	public @NotNull String getName() {
+		return creator.getID();
 	}
 
 	@Override
-	public abstract SerializableObject clone();
+	public abstract @NotNull SerializableObject clone();
 	
-	public abstract void save(ConfigurationSection section);
+	public abstract void save(@NotNull ConfigurationSection section);
 	
-	public abstract void load(ConfigurationSection section);
+	public abstract void load(@NotNull ConfigurationSection section);
 	
-	public final void serialize(ConfigurationSection section) {
+	public final void serialize(@NotNull ConfigurationSection section) {
 		section.set("id", creator.getID());
 		save(section);
 	}
 
-	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(Map<String, Object> map, SerializableRegistry<T, C> registry) {
+	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(
+			@NotNull Map<String, Object> map, @NotNull SerializableRegistry<T, C> registry) {
 		return deserialize(Utils.createConfigurationSection(map), registry);
 	}
 	
-	public static <T extends SerializableObject, C extends SerializableCreator<T>> T deserialize(ConfigurationSection section, SerializableRegistry<T, C> registry) {
+	public static <T extends SerializableObject, C extends SerializableCreator<T>> @NotNull T deserialize(
+			@NotNull ConfigurationSection section, @NotNull SerializableRegistry<T, C> registry) {
 		SerializableCreator<T> creator = null;
 		
 		String id = section.getString("id");
@@ -76,7 +77,8 @@ public abstract class SerializableObject {
 		return reward;
 	}
 
-	public static <T extends SerializableObject> List<T> deserializeList(List<Map<?, ?>> objectList, Function<Map<String, Object>, T> deserializeFunction) {
+	public static <T extends SerializableObject> @NotNull List<T> deserializeList(@NotNull List<Map<?, ?>> objectList,
+			@NotNull Function<Map<String, Object>, T> deserializeFunction) {
 		List<T> objects = new ArrayList<>(objectList.size());
 		for (Map<?, ?> objectMap : objectList) {
 			try {
@@ -93,7 +95,7 @@ public abstract class SerializableObject {
 		return objects;
 	}
 	
-	public static List<Map<String, Object>> serializeList(List<? extends SerializableObject> objects) {
+	public static @NotNull List<Map<String, Object>> serializeList(@NotNull List<? extends SerializableObject> objects) {
 		return objects.stream().map(object -> {
 			MemoryConfiguration section = new MemoryConfiguration();
 			object.serialize(section);

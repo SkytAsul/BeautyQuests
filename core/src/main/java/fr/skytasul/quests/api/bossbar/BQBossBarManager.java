@@ -3,26 +3,28 @@ package fr.skytasul.quests.api.bossbar;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public interface BQBossBarManager {
 	
-	BQBossBar buildBossBar(String name, BarColor color, BarStyle style);
+	@NotNull
+	BQBossBar buildBossBar(@NotNull String name, @NotNull BarColor color, @NotNull BarStyle style);
 	
-	default BQBossBar buildBossBar(String name, String color, String style) {
+	default @NotNull BQBossBar buildBossBar(@NotNull String name, @NotNull String color, @NotNull String style) {
 		return buildBossBar(name, BarColor.valueOf(color), BarStyle.valueOf(style));
 	}
 	
 	public interface BQBossBar {
 		
-		void setTitle(String name);
+		void setTitle(@NotNull String name);
 		
 		void setProgress(double progress);
 		
-		void setStyle(BarStyle style);
+		void setStyle(@NotNull BarStyle style);
 		
-		void addPlayer(Player player);
+		void addPlayer(@NotNull Player player);
 		
-		void removePlayer(Player player);
+		void removePlayer(@NotNull Player player);
 		
 		void removeAll();
 		

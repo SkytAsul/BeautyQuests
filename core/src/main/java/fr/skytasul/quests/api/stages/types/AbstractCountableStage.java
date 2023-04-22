@@ -15,6 +15,9 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -30,13 +33,13 @@ import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
-	protected final List<CountableObject<T>> objects;
+	protected final @NotNull List<@NotNull CountableObject<T>> objects;
 
-	protected Map<Player, BossBar> bars = new HashMap<>();
+	protected @NotNull Map<Player, BossBar> bars = new HashMap<>();
 	private boolean barsEnabled = false;
 	private int cachedSize = 0;
 
-	protected AbstractCountableStage(QuestBranch branch, List<CountableObject<T>> objects) {
+	protected AbstractCountableStage(@NotNull QuestBranch branch, @NotNull List<@NotNull CountableObject<T>> objects) {
 		super(branch);
 		this.objects = objects;
 		calculateSize();
@@ -53,16 +56,16 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				+ " uses an outdated way to store player datas. Please notice its author.");
 	}
 
-	public List<CountableObject<T>> getObjects() {
+	public @NotNull List<@NotNull CountableObject<T>> getObjects() {
 		return objects;
 	}
 
-	public List<MutableCountableObject<T>> getMutableObjects() {
+	public @NotNull List<@NotNull MutableCountableObject<T>> getMutableObjects() {
 		return objects.stream().map(countable -> CountableObject.createMutable(countable.getUUID(),
 				cloneObject(countable.getObject()), countable.getAmount())).collect(Collectors.toList());
 	}
 
-	public Optional<CountableObject<T>> getObject(UUID uuid) {
+	public @NotNull Optional<CountableObject<T>> getObject(@NotNull UUID uuid) {
 		return objects.stream().filter(object -> object.getUUID().equals(uuid)).findAny();
 	}
 
@@ -77,7 +80,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Map<UUID, Integer> getPlayerRemainings(PlayerAccount acc, boolean warnNull) {
+	public @NotNull Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc, boolean warnNull) {
 		Map<?, Integer> remaining = getData(acc, "remaining");
 		if (warnNull && remaining == null)
 			BeautyQuests.logger.severe("Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString());
@@ -109,7 +112,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			throw new UnsupportedOperationException(object.getClass().getName());
 	}
 
-	protected void updatePlayerRemaining(PlayerAccount acc, Player player, Map<UUID, Integer> remaining) {
+	protected void updatePlayerRemaining(@NotNull PlayerAccount acc, @NotNull Player player,
+			@NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
 		updateObjective(acc, player, "remaining", remaining.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
 	}
@@ -120,16 +124,16 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source){
+	protected @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull Source source) {
 		return Utils.descriptionLines(source, buildRemainingArray(acc, source));
 	}
 
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull Source source) {
 		return new Supplier[] { () -> Utils.descriptionLines(source, buildRemainingArray(acc, source)) };
 	}
 
-	private String[] buildRemainingArray(PlayerAccount acc, Source source) {
+	private @NotNull String @NotNull [] buildRemainingArray(@NotNull PlayerAccount acc, @NotNull Source source) {
 		Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
 		if (playerAmounts == null) return new String[] { "§4§lerror" };
 		String[] elements = new String[playerAmounts.size()];
@@ -146,7 +150,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	protected void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("remaining", objects.stream()
 				.collect(Collectors.toMap(object -> object.getUUID().toString(), CountableObject::getAmount)));
@@ -162,7 +166,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	 * @param amount amount completed
 	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
 	 */
-	public boolean event(PlayerAccount acc, Player p, Object object, int amount) {
+	public boolean event(@NotNull PlayerAccount acc, @NotNull Player p, @UnknownNullability Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		if (!canUpdate(p)) return true;
 
@@ -200,13 +204,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	public void start(PlayerAccount acc) {
+	public void start(@NotNull PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
 	}
 
 	@Override
-	public void end(PlayerAccount acc) {
+	public void end(@NotNull PlayerAccount acc) {
 		super.end(acc);
 		if (acc.isCurrent()) removeBar(acc.getPlayer());
 	}
@@ -218,7 +222,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	public void joins(PlayerAccount acc, Player p) {
+	public void joins(@NotNull PlayerAccount acc, @NotNull Player p) {
 		super.joins(acc, p);
 		Map<UUID, Integer> remainings = getPlayerRemainings(acc, true);
 		if (remainings == null) return;
@@ -226,12 +230,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 	
 	@Override
-	public void leaves(PlayerAccount acc, Player p) {
+	public void leaves(@NotNull PlayerAccount acc, @NotNull Player p) {
 		super.leaves(acc, p);
 		removeBar(p);
 	}
 
-	protected void createBar(Player p, int amount) {
+	protected void createBar(@NotNull Player p, int amount) {
 		if (barsEnabled) {
 			if (bars.containsKey(p)) { // NOSONAR Map#computeIfAbsent cannot be used here as we should log the issue
 				BeautyQuests.logger.warning("Trying to create an already existing bossbar for player " + p.getName());
@@ -241,23 +245,23 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		}
 	}
 
-	protected void removeBar(Player p) {
+	protected void removeBar(@NotNull Player p) {
 		if (bars.containsKey(p)) bars.remove(p).remove();
 	}
 
-	protected boolean objectApplies(T object, Object other) {
+	protected boolean objectApplies(@NotNull T object, @UnknownNullability Object other) {
 		return object.equals(other);
 	}
 	
-	protected T cloneObject(T object) {
+	protected @NotNull T cloneObject(@NotNull T object) {
 		return object;
 	}
 
-	protected abstract String getName(T object);
+	protected abstract @NotNull String getName(@NotNull T object);
 
-	protected abstract Object serialize(T object);
+	protected abstract @NotNull Object serialize(@NotNull T object);
 
-	protected abstract T deserialize(Object object);
+	protected abstract @NotNull T deserialize(@NotNull Object object);
 
 	/**
 	 * @deprecated for removal, {@link #serialize(ConfigurationSection)} should be used instead.
@@ -267,7 +271,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected void serialize(Map<String, Object> map) {}
 	
 	@Override
-	protected void serialize(ConfigurationSection section) {
+	protected void serialize(@NotNull ConfigurationSection section) {
 		ConfigurationSection objectsSection = section.createSection("objects");
 		for (CountableObject<T> obj : objects) {
 			ConfigurationSection objectSection = objectsSection.createSection(obj.getUUID().toString());
@@ -288,7 +292,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		deserialize(Utils.createConfigurationSection(serializedDatas));
 	}
 
-	protected void deserialize(ConfigurationSection section) {
+	protected void deserialize(@NotNull ConfigurationSection section) {
 		ConfigurationSection objectsSection = section.getConfigurationSection("objects");
 		if (objectsSection != null) {
 			for (String key : objectsSection.getKeys(false)) {

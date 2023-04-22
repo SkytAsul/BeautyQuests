@@ -44,6 +44,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -300,7 +302,7 @@ public class Utils{
 		return list;
 	}
 	
-	public static String format(String msg, Supplier<Object>... replace) {
+	public static @NotNull String format(@NotNull String msg, @NotNull Supplier<Object> @Nullable... replace) {
 		if (replace != null && replace.length != 0) {
 			for (int i = 0; i < replace.length; i++) {
 				Supplier<Object> supplier = replace[i];
@@ -310,7 +312,7 @@ public class Utils{
 		return msg;
 	}
 
-	public static String format(String msg, Object... replace){
+	public static @NotNull String format(@NotNull String msg, @Nullable Object @Nullable... replace) {
 		if (replace != null && replace.length != 0){
 			for (int i = 0; i < replace.length; i++){
 				Object replacement = replace[i];
@@ -327,7 +329,7 @@ public class Utils{
 	private static final Map<Integer, Pattern> REPLACEMENT_PATTERNS = new HashMap<>();
 	private static final Pattern RESET_PATTERN = Pattern.compile("§[rR]");
 	
-	public static String format(String msg, int i, Supplier<Object> replace) {
+	public static String format(@NotNull String msg, int i, @NotNull Supplier<Object> replace) {
 		Pattern pattern = REPLACEMENT_PATTERNS.computeIfAbsent(i, __ -> Pattern.compile("\\{" + i + "\\}"));
 		Matcher matcher = pattern.matcher(msg);
 		StringBuilder output = new StringBuilder(msg.length());

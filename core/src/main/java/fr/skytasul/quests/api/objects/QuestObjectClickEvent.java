@@ -3,19 +3,21 @@ package fr.skytasul.quests.api.objects;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 
 public class QuestObjectClickEvent {
 	
-	private final Player player;
-	private final QuestObjectGUI gui;
-	private final ItemStack item;
-	private final ClickType click;
+	private final @NotNull Player player;
+	private final @NotNull QuestObjectGUI gui;
+	private final @NotNull ItemStack item;
+	private final @NotNull ClickType click;
+	private final @NotNull QuestObject clickedObject;
 	private final boolean creation;
-	private final QuestObject clickedObject;
 	
-	public QuestObjectClickEvent(Player player, QuestObjectGUI gui, ItemStack item, ClickType click, boolean creation, QuestObject clickedObject) {
+	public QuestObjectClickEvent(@NotNull Player player, @NotNull QuestObjectGUI gui, @NotNull ItemStack item,
+			@NotNull ClickType click, boolean creation, @NotNull QuestObject clickedObject) {
 		this.player = player;
 		this.gui = gui;
 		this.item = item;
@@ -24,19 +26,19 @@ public class QuestObjectClickEvent {
 		this.clickedObject = clickedObject;
 	}
 	
-	public Player getPlayer() {
+	public @NotNull Player getPlayer() {
 		return player;
 	}
 	
-	public QuestObjectGUI getGUI() {
+	public @NotNull QuestObjectGUI getGUI() {
 		return gui;
 	}
 	
-	public ItemStack getItem() {
+	public @NotNull ItemStack getItem() {
 		return item;
 	}
 	
-	public ClickType getClick() {
+	public @NotNull ClickType getClick() {
 		return click;
 	}
 	

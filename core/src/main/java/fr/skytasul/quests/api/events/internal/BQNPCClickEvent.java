@@ -1,21 +1,21 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.events.internal;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
 
 public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
 	
-	private final BQNPC npc;
-	private final ClickType click;
+	private final @NotNull BQNPC npc;
+	private final @NotNull ClickType click;
 	
 	private boolean cancelled = false;
 	
-	public BQNPCClickEvent(BQNPC npc, Player p, ClickType click) {
+	public BQNPCClickEvent(@NotNull BQNPC npc, @NotNull Player p, @NotNull ClickType click) {
 		super(p);
 		this.npc = npc;
 		this.click = click;
@@ -31,11 +31,11 @@ public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 	
-	public BQNPC getNPC() {
+	public @NotNull BQNPC getNPC() {
 		return npc;
 	}
 	
-	public ClickType getClick() {
+	public @NotNull ClickType getClick() {
 		return click;
 	}
 	

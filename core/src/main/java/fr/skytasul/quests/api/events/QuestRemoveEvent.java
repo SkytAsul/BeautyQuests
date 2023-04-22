@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.events;
 
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.structure.Quest;
 
 /**
@@ -8,7 +9,7 @@ import fr.skytasul.quests.structure.Quest;
  */
 public class QuestRemoveEvent extends QuestEvent{
 	
-	public QuestRemoveEvent(Quest quest) {
+	public QuestRemoveEvent(@NotNull Quest quest) {
 		super(quest);
 	}
 

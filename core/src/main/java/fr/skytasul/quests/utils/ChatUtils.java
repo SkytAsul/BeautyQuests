@@ -7,8 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ChatUtils {
 	
@@ -63,11 +64,12 @@ public class ChatUtils {
 	 * @param lineLength The length of a line of text.
 	 * @return An array of word-wrapped lines.
 	 */
-	public static List<String> wordWrap(String rawString, int lineLength) {
+	public static @NotNull List<@NotNull String> wordWrap(@Nullable String rawString, int lineLength) {
 		return wordWrap(rawString, lineLength, lineLength);
 	}
 	
-	public static List<String> wordWrap(String rawString, int maxLineLength, int criticalLineLength) {
+	public static @NotNull List<@NotNull String> wordWrap(@Nullable String rawString, int maxLineLength,
+			int criticalLineLength) {
 		if (maxLineLength > criticalLineLength) maxLineLength = criticalLineLength;
 		// A null string is a single line
 		if (rawString == null) {
@@ -190,7 +192,7 @@ public class ChatUtils {
 		}
 	}
 	
-	public static String appendRawColorString(String original, String appended) {
+	public static @NotNull String appendRawColorString(@NotNull String original, @NotNull String appended) {
 		StringBuilder builder = new StringBuilder(original);
 		StringBuilder hexBuilder = null;
 		for (int colorIndex = 1; colorIndex < appended.length(); colorIndex += 2) {
@@ -221,11 +223,12 @@ public class ChatUtils {
 		return builder.toString();
 	}
 	
-	private static String getColorDifference(String oldColors, String newColors) {
+	private static @NotNull String getColorDifference(@NotNull String oldColors, @NotNull String newColors) {
 		return newColors.startsWith(oldColors) ? newColors.substring(oldColors.length()) : newColors;
 	}
 	
-	private static List<String> splitColoredWord(String string, int stringLength, int maxLength, int criticalLength, String startColors) {
+	private static @NotNull List<@NotNull String> splitColoredWord(@NotNull String string, int stringLength, int maxLength,
+			int criticalLength, @NotNull String startColors) {
 		final String original = string;
 		int loops = 0;
 		List<String> split = new ArrayList<>();
@@ -284,7 +287,7 @@ public class ChatUtils {
 		return split;
 	}
 	
-	private static int getFirstTextIndex(String string) {
+	private static int getFirstTextIndex(@NotNull String string) {
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 			if (i % 2 == 0) {
@@ -296,7 +299,7 @@ public class ChatUtils {
 		return string.length();
 	}
 	
-	public static String translateHexColorCodes(String message) {
+	public static @NotNull String translateHexColorCodes(@NotNull String message) {
 		Matcher matcher = HEX_COLOR.matcher(message);
 		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
 		while (matcher.find()) {
@@ -309,7 +312,7 @@ public class ChatUtils {
 		return matcher.appendTail(buffer).toString();
 	}
 	
-	public static String getLastColors(String originalColors, String appended) {
+	public static @NotNull String getLastColors(@NotNull String originalColors, @Nullable String appended) {
 		if (appended == null || appended.length() == 0) return originalColors;
 		StringBuilder builder = originalColors == null ? new StringBuilder() : new StringBuilder(originalColors);
 		StringBuilder hexBuilder = null;

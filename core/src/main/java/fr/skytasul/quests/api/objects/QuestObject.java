@@ -6,6 +6,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.editors.TextEditor;
@@ -21,7 +23,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	private Quest quest;
 	private String customDescription;
 	
-	protected QuestObject(QuestObjectsRegistry registry, String customDescription) {
+	protected QuestObject(@NotNull QuestObjectsRegistry registry, @Nullable String customDescription) {
 		super(registry);
 		this.customDescription = customDescription;
 	}
@@ -31,7 +33,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		return (QuestObjectCreator) super.getCreator();
 	}
 	
-	public void attach(Quest quest) {
+	public void attach(@NotNull Quest quest) {
 		this.quest = quest;
 	}
 	
@@ -39,19 +41,19 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		this.quest = null;
 	}
 	
-	public Quest getAttachedQuest() {
+	public @Nullable Quest getAttachedQuest() {
 		return quest;
 	}
 	
-	public String getCustomDescription() {
+	public @Nullable String getCustomDescription() {
 		return customDescription;
 	}
 
-	public void setCustomDescription(String customDescription) {
+	public void setCustomDescription(@Nullable String customDescription) {
 		this.customDescription = customDescription;
 	}
 
-	public String debugName() {
+	public @NotNull String debugName() {
 		return getClass().getSimpleName() + (quest == null ? ", unknown quest" : (", quest " + quest.getID()));
 	}
 	
@@ -60,7 +62,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	}
 
 	@Override
-	public abstract QuestObject clone();
+	public abstract @NotNull QuestObject clone();
 	
 	@Deprecated
 	protected void save(Map<String, Object> datas) {}
@@ -69,7 +71,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	protected void load(Map<String, Object> savedDatas) {}
 	
 	@Override
-	public void save(ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) {
 		Map<String, Object> datas = new HashMap<>();
 		save(datas);
 		Utils.setConfigurationSectionContent(section, datas);
@@ -79,14 +81,14 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	}
 	
 	@Override
-	public void load(ConfigurationSection section) {
+	public void load(@NotNull ConfigurationSection section) {
 		load(section.getValues(false));
 
 		if (section.contains(CUSTOM_DESCRIPTION_KEY))
 			customDescription = section.getString(CUSTOM_DESCRIPTION_KEY);
 	}
 	
-	public final String getDescription(Player player) {
+	public final @Nullable String getDescription(Player player) {
 		return customDescription == null ? getDefaultDescription(player) : customDescription;
 	}
 
@@ -96,7 +98,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	 * @param player player to get the description for
 	 * @return the description of this object (nullable)
 	 */
-	protected String getDefaultDescription(Player p) {
+	protected @Nullable String getDefaultDescription(@NotNull Player p) {
 		return null;
 	}
 	
@@ -105,7 +107,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		return null;
 	}
 
-	public String[] getItemLore() {
+	public @NotNull String @Nullable [] getItemLore() {
 		String[] legacyLore = getLore();
 		if (legacyLore != null)
 			return legacyLore;
@@ -115,7 +117,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		return lore.toLoreArray();
 	}
 	
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
 		loreBuilder.addClick(getRemoveClick(), "§c" + Lang.Remove.toString());
 		loreBuilder.addClick(getCustomDescriptionClick(), Lang.object_description_set.toString());
 
@@ -130,21 +132,21 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 				Lang.object_description.format(description + (customDescription == null ? " " + Lang.defaultValue : "")));
 	}
 
-	public ItemStack getItemStack() {
+	public @NotNull ItemStack getItemStack() {
 		return ItemUtils.lore(getCreator().getItem().clone(), getItemLore());
 	}
 	
-	public ClickType getRemoveClick() {
+	public @Nullable ClickType getRemoveClick() {
 		return ClickType.SHIFT_LEFT;
 	}
 
-	protected ClickType getCustomDescriptionClick() {
+	protected @Nullable ClickType getCustomDescriptionClick() {
 		return ClickType.RIGHT;
 	}
 
-	protected abstract void sendCustomDescriptionHelpMessage(Player p);
+	protected abstract void sendCustomDescriptionHelpMessage(@NotNull Player p);
 
-	public final void click(QuestObjectClickEvent event) {
+	public final void click(@NotNull QuestObjectClickEvent event) {
 		if (event.getClick() == getRemoveClick())
 			return;
 
@@ -159,6 +161,6 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		}
 	}
 	
-	protected abstract void clickInternal(QuestObjectClickEvent event);
+	protected abstract void clickInternal(@NotNull QuestObjectClickEvent event);
 
 }

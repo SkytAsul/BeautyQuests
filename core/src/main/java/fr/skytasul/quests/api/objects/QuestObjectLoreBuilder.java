@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.utils.Utils;
 
@@ -27,26 +29,26 @@ public class QuestObjectLoreBuilder {
 
 	public QuestObjectLoreBuilder() {}
 
-	public void addDescriptionRaw(String line) {
+	public void addDescriptionRaw(@Nullable String line) {
 		description.add(line);
 	}
 
-	public void addDescription(String line) {
+	public void addDescription(@Nullable String line) {
 		addDescriptionRaw(QuestOption.formatDescription(line));
 	}
 
-	public void addDescriptionAsValue(Object value) {
+	public void addDescriptionAsValue(@Nullable Object value) {
 		addDescription(QuestOption.formatNullableValue(value == null ? null : value.toString()));
 	}
 
-	public void addClick(ClickType click, String action) {
+	public void addClick(@Nullable ClickType click, @NotNull String action) {
 		if (click == null)
 			return;
 
 		clicks.put(click, action);
 	}
 
-	public String[] toLoreArray() {
+	public @NotNull String @Nullable [] toLoreArray() {
 		String[] lore = new String[description.size() + 1 + clicks.size()];
 		int i = 0;
 

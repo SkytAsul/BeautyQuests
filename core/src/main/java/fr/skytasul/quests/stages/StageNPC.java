@@ -18,7 +18,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.events.BQNPCClickEvent;
+import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
