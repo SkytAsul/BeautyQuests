@@ -84,6 +84,9 @@ dialogs:
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
+  # Limits the maximum amount of messages per history page.
+  # If -1 then the plugin will try to put as many messages as possible until the page is full.
+  max messages per history page: -1
   # Maximum distance the player can be from the NPC for the dialog to continue. 0 to disable.
   maxDistance: 15
   # Default dialog sound when players are speaking

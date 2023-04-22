@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -110,7 +111,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		
 		WrappedDialogable(Dialogable dialogable) {
 			this.dialogable = dialogable;
-			
+
 			List<Message> messages = dialogable.getDialog().messages;
 			List<List<String>> lines = new ArrayList<>(messages.size());
 			for (int i = 0; i < messages.size(); i++) {
@@ -118,33 +119,52 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				String formatted = msg.formatMessage(player, dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
 				lines.add(ChatUtils.wordWrap(formatted, 40, 100));
 			}
-			
+
 			if (lines.isEmpty()) {
 				pages = Arrays.asList(new Page());
 				return;
 			}
-			
+
 			pages = new ArrayList<>();
 			Page page = new Page();
 			int messagesAdded = 0;
+			int messagesInPage = 0;
 			for (int i = 0; i < lines.size(); i++) {
 				List<String> msg = lines.get(i);
 				boolean last = i + 1 == lines.size();
-				if (last || page.lines.size() + msg.size() > MAX_LINES) {
+				boolean pageFull = !page.lines.isEmpty() && page.lines.size() + msg.size() > MAX_LINES;
+				if (QuestsConfiguration.getDialogsConfig().getMaxMessagesPerHistoryPage() > 0)
+					pageFull |= messagesInPage >= QuestsConfiguration.getDialogsConfig().getMaxMessagesPerHistoryPage();
+
+				if (last || pageFull) {
+					// means the page currently in writing must be flushed
 					boolean added = false;
-					if (last || page.lines.isEmpty()) {
+					if (page.lines.isEmpty() || (last && !pageFull)) {
+						// means the current message must be added to the page before it is flushed
 						page.lines.addAll(msg);
 						messagesAdded++;
+						messagesInPage++;
 						added = true;
 					}
 					page.header = "§7§l" + messagesAdded + "§8 / §7§l" + Lang.dialogLines.format(messages.size());
-					page.lines.addLast("  " + (pages.isEmpty() ? "§8" : "§7") + "◀ " + Lang.ClickLeft + " §8/ " + (last ? "§8" : "§7") + Lang.ClickRight + " ▶");
+					page.lines.addLast("  " + (pages.isEmpty() ? "§8" : "§7") + "◀ " + Lang.ClickLeft + " §8/ "
+							+ (last && !pageFull ? "§8" : "§7") + Lang.ClickRight + " ▶");
 					pages.add(page);
 					page = new Page();
-					if (added) continue;
+					messagesInPage = 0;
+					if (added) // means the message has already been added to the page
+						continue;
 				}
 				messagesAdded++;
+				messagesInPage++;
 				page.lines.addAll(msg);
+			}
+
+			if (!page.lines.isEmpty()) {
+				page.header = "§7§l" + messagesAdded + "§8 / §7§l" + Lang.dialogLines.format(messages.size());
+				page.lines.addLast(
+						"  " + (pages.isEmpty() ? "§8" : "§7") + "◀ " + Lang.ClickLeft + " §8/ " + Lang.ClickRight + " ▶");
+				pages.add(page);
 			}
 		}
 		

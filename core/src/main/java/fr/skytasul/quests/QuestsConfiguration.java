@@ -514,6 +514,7 @@ public class QuestsConfiguration {
 		private boolean defaultSkippable = true;
 		private boolean disableClick = false;
 		private boolean history = true;
+		private int maxMessagesPerHistoryPage = -1;
 		private int maxDistance = 15, maxDistanceSquared = 15 * 15;
 		
 		private String defaultPlayerSound = null;
@@ -542,6 +543,7 @@ public class QuestsConfiguration {
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
 			history = config.getBoolean("history");
+			maxMessagesPerHistoryPage = config.getInt("max messages per history page");
 			maxDistance = config.getInt("maxDistance");
 			maxDistanceSquared = maxDistance <= 0 ? 0 : (maxDistance * maxDistance);
 			
@@ -569,6 +571,10 @@ public class QuestsConfiguration {
 			return history;
 		}
 		
+		public int getMaxMessagesPerHistoryPage() {
+			return maxMessagesPerHistoryPage;
+		}
+
 		public int getMaxDistance() {
 			return maxDistance;
 		}
