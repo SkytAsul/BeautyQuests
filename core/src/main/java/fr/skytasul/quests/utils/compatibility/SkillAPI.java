@@ -1,9 +1,7 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.Collection;
-
 import org.bukkit.entity.Player;
-
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 

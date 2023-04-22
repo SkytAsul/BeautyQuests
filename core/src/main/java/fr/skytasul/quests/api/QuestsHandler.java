@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api;
 
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.api.stages.StageHandler;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.structure.Quest;

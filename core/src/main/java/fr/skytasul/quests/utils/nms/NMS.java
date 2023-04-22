@@ -4,16 +4,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.ReflectUtils;
-
 import io.netty.buffer.ByteBuf;
 
 public abstract class NMS{

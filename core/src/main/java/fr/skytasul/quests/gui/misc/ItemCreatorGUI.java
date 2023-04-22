@@ -3,7 +3,6 @@ package fr.skytasul.quests.gui.misc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,7 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.TextListEditor;
 import fr.skytasul.quests.editors.checkers.MaterialParser;
@@ -21,7 +20,6 @@ import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class ItemCreatorGUI implements CustomInventory {
 

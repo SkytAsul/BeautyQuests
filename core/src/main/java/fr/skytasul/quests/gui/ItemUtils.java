@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
@@ -17,14 +16,12 @@ import org.bukkit.inventory.meta.KnowledgeBookMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.nms.NMS;
-
 import net.md_5.bungee.api.ChatColor;
 
 public class ItemUtils {
@@ -380,7 +377,7 @@ public class ItemUtils {
 		if (itemSwitch == null) return null;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));
-		if (XMaterial.isNewVersion()){
+		if (NMS.getMCVersion() >= 13) {
 			itemSwitch.setType(enable ? XMaterial.LIME_DYE.parseMaterial() : XMaterial.GRAY_DYE.parseMaterial());
 		}else itemSwitch.setDurability((short) (enable ? 10 : 8));
 		return itemSwitch;

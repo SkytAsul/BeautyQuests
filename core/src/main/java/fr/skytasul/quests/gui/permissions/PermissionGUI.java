@@ -1,7 +1,6 @@
 package fr.skytasul.quests.gui.permissions;
 
 import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,13 +8,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.editors.checkers.WorldParser;
 import fr.skytasul.quests.gui.CustomInventory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionGUI implements CustomInventory {

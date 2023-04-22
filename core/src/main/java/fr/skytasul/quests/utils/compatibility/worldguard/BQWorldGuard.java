@@ -6,6 +6,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import com.cryptomorin.xseries.XMaterial;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -18,7 +19,6 @@ import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.stages.StageArea;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class BQWorldGuard {

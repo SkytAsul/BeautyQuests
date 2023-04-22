@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 

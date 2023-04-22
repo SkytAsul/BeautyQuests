@@ -3,15 +3,13 @@ package fr.skytasul.quests.gui.permissions;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.ListGUI;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionListGUI extends ListGUI<Permission> {

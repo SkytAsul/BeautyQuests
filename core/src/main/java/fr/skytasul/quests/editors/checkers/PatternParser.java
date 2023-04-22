@@ -2,9 +2,7 @@ package fr.skytasul.quests.editors.checkers;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class PatternParser implements AbstractParser<Pattern> {

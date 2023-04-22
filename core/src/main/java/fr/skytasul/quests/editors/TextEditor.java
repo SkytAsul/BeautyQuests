@@ -1,10 +1,8 @@
 package fr.skytasul.quests.editors;
 
 import java.util.function.Consumer;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.editors.checkers.AbstractParser;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;

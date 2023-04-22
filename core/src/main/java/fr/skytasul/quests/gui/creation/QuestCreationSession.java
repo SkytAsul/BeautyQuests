@@ -1,7 +1,6 @@
 package fr.skytasul.quests.gui.creation;
 
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.structure.Quest;

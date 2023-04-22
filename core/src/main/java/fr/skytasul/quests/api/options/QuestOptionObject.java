@@ -3,12 +3,11 @@ package fr.skytasul.quests.api.options;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -17,7 +16,6 @@ import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.XMaterial;
 
 public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>> extends QuestOption<List<T>> {
 	

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import fr.skytasul.quests.utils.Utils;
 
 public class NumberedList<T> implements Iterable<T>, Cloneable{

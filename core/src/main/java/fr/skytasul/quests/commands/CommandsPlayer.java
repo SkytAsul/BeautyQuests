@@ -1,9 +1,7 @@
 package fr.skytasul.quests.commands;
 
 import java.util.Optional;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
@@ -14,7 +12,6 @@ import fr.skytasul.quests.rewards.CheckpointReward;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.Lang;
-
 import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.BukkitCommandActor;

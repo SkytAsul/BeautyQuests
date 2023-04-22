@@ -1,13 +1,12 @@
 package fr.skytasul.quests.options;
 
 import org.bukkit.entity.Player;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionString;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionHologramText extends QuestOptionString {
 	

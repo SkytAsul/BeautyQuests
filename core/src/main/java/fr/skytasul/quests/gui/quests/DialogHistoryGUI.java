@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -15,7 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
 import fr.skytasul.quests.gui.templates.PagedGUI;
@@ -27,7 +26,6 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Message;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {

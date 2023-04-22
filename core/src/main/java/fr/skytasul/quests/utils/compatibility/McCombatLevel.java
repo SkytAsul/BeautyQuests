@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.OptionalInt;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionObject;
@@ -14,7 +15,6 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator> implements QuestDescriptionProvider {
 	

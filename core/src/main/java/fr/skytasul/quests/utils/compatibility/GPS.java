@@ -2,9 +2,7 @@ package fr.skytasul.quests.utils.compatibility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
 import com.live.bemmamin.gps.api.GPSAPI;
-
 import fr.skytasul.quests.BeautyQuests;
 
 public class GPS {

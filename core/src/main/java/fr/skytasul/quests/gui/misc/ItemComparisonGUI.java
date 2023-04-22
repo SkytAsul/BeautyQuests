@@ -14,7 +14,7 @@ import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.utils.nms.NMS;
 
 public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 
@@ -46,7 +46,7 @@ public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 				Lang.comparisonMaterialLore.toString(), (item1, item2) -> {
 					if (item2.getType() != item1.getType())
 						return false;
-					if (item1.getType().getMaxDurability() > 0 || XMaterial.isNewVersion())
+					if (item1.getType().getMaxDurability() > 0 || NMS.getMCVersion() >= 13)
 						return true;
 					return item2.getDurability() == item1.getDurability();
 				}));

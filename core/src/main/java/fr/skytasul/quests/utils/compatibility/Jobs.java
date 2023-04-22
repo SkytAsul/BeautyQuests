@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import org.bukkit.entity.Player;
-
 import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsPlayer;

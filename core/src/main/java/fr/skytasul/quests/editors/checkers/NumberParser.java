@@ -1,9 +1,7 @@
 package fr.skytasul.quests.editors.checkers;
 
 import java.math.BigDecimal;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class NumberParser<T extends Number> implements AbstractParser<T> {

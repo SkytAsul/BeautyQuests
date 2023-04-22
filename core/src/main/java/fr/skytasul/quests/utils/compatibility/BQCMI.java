@@ -1,12 +1,9 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.lang.reflect.Constructor;
-
 import org.bukkit.Location;
-
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
-
 import fr.skytasul.quests.api.AbstractHolograms;
 
 public class BQCMI extends AbstractHolograms<CMIHologram> {

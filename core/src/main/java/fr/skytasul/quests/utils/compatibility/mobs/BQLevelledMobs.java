@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
-import fr.skytasul.quests.utils.XMaterial;
 import me.lokka30.levelledmobs.LevelledMobs;
 
 public class BQLevelledMobs extends BukkitEntityFactory implements LeveledMobFactory<EntityType> {

@@ -3,7 +3,6 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -15,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.mineacademy.boss.api.BossAPI;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 import org.mineacademy.boss.model.Boss;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
@@ -23,7 +22,6 @@ import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
 import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class BQBoss implements MobFactory<Boss> {
 

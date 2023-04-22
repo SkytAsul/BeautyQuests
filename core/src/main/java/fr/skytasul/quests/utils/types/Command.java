@@ -2,11 +2,9 @@ package fr.skytasul.quests.utils.types;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;

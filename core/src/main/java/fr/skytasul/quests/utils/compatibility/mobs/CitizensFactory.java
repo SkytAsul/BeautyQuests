@@ -3,7 +3,6 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -11,13 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.editors.CancellableEditor;
 import fr.skytasul.quests.gui.npc.SelectGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;

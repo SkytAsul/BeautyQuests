@@ -2,9 +2,7 @@ package fr.skytasul.quests.utils.types;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class Permission implements Cloneable {

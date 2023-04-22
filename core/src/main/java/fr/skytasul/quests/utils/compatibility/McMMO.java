@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import org.bukkit.entity.Player;
-
 import com.gmail.nossr50.api.ExperienceAPI;
 
 public class McMMO {

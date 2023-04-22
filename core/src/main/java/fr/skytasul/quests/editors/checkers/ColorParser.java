@@ -2,11 +2,9 @@ package fr.skytasul.quests.editors.checkers;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class ColorParser implements AbstractParser<Color> {

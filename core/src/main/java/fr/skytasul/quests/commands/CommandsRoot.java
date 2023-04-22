@@ -3,7 +3,6 @@ package fr.skytasul.quests.commands;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
-
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Description;
 import revxrsal.commands.annotation.Subcommand;

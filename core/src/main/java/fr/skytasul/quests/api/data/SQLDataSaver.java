@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import com.google.common.collect.ImmutableMap;
-
 import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 
 public class SQLDataSaver<T> {

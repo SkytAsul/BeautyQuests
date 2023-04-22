@@ -1,19 +1,16 @@
 package fr.skytasul.quests.utils.compatibility.mobs;
 
 import java.util.function.Consumer;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.editors.TextEditor;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
-
 import gcspawners.AdvancedEntityDeathEvent;
 
 public class BQAdvancedSpawners implements MobFactory<String> {

@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class CollectionParser<T> implements AbstractParser<T> {

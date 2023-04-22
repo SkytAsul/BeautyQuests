@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.Collection;
-
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 

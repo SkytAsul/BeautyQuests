@@ -3,7 +3,6 @@ package fr.skytasul.quests.players;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
-
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;

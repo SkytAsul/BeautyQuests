@@ -3,7 +3,6 @@ package fr.skytasul.quests.editors.checkers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class ScoreboardObjectiveParser implements AbstractParser<Objective> {

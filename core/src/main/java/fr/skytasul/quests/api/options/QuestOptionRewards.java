@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.options;
 
 import java.util.Map;
-
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.rewards.AbstractReward;

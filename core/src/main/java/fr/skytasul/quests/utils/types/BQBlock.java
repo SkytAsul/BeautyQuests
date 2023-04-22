@@ -8,13 +8,13 @@ import java.util.Spliterators;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.cryptomorin.xseries.XBlock;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.XBlock;
-import fr.skytasul.quests.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public abstract class BQBlock {

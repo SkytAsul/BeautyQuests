@@ -1,14 +1,12 @@
 package fr.skytasul.quests.editors;
 
 import java.util.function.Consumer;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.gui.ItemUtils;
 
 public class WaitBlockClick extends InventoryClear{

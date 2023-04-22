@@ -3,7 +3,6 @@ package fr.skytasul.quests.utils.compatibility.mobs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -11,14 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class BukkitEntityFactory implements MobFactory<EntityType> {
 

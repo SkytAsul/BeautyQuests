@@ -1,7 +1,6 @@
 package fr.skytasul.quests.editors;
 
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Dialog;

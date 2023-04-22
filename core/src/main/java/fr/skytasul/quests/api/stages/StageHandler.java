@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.stages;
 
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.players.PlayerAccount;
 
 public interface StageHandler {

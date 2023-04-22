@@ -4,9 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import fr.skytasul.quests.utils.ReflectUtils;
-
 import io.netty.buffer.ByteBuf;
 
 public class NullNMS extends NMS {

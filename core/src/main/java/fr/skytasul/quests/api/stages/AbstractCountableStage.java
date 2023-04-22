@@ -2,7 +2,6 @@ package fr.skytasul.quests.api.stages;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
 import fr.skytasul.quests.structure.QuestBranch;
 
 @Deprecated

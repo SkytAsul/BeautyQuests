@@ -2,10 +2,8 @@ package fr.skytasul.quests.utils.compatibility;
 
 import java.util.Iterator;
 import java.util.function.Predicate;
-
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.utils.nms.NMS;
 
 public final class Paper {

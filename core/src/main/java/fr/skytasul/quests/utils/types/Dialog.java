@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.configuration.ConfigurationSection;
-
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.utils.Lang;

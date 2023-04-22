@@ -4,14 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import javax.sql.DataSource;
-
 import org.bukkit.configuration.ConfigurationSection;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import fr.skytasul.quests.BeautyQuests;
 
 public class Database implements Closeable {

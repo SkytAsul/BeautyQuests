@@ -2,7 +2,6 @@ package fr.skytasul.quests.utils.types;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.utils.Lang;
 
 public class Title {

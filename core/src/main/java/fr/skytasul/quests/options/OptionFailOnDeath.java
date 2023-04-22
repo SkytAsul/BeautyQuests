@@ -3,7 +3,6 @@ package fr.skytasul.quests.options;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
