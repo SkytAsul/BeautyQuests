@@ -47,8 +47,7 @@ public class CommandsPools implements OrphanCommand {
 			return;
 		}
 
-		String result = pool.give(player);
-		Lang.POOL_START_SUCCESS.send(player, pool.getID(), player.getName(), result);
+		pool.give(player).thenAccept(result -> Lang.POOL_START_SUCCESS.send(player, pool.getID(), player.getName(), result));
 	}
 
 }

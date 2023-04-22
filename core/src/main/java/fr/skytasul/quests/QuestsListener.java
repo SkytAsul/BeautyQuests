@@ -116,7 +116,7 @@ public class QuestsListener implements Listener{
 			}else if (!requirements.isEmpty()) {
 				requirements.get(0).testRequirements(p, acc, true);
 			}else {
-				Utils.sendMessage(p, npc.getPools().iterator().next().give(p));
+				npc.getPools().iterator().next().give(p).thenAccept(result -> Utils.sendMessage(p, result));
 			}
 			e.setCancelled(false);
 		}

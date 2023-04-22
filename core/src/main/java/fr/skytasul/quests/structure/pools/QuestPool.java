@@ -169,36 +169,38 @@ public class QuestPool implements Comparable<QuestPool> {
 		return notDoneQuests.stream().anyMatch(quest -> quest.isLauncheable(p, acc, false));
 	}
 	
-	public String give(Player p) {
+	public CompletableFuture<String> give(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 		
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0)
-			return Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time));
+			return CompletableFuture.completedFuture(Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time)));
 
-		List<Quest> started = new ArrayList<>(questsPerLaunch);
-		try {
-			for (int i = 0; i < questsPerLaunch; i++) {
-				PoolGiveResult result = giveOne(p, acc, datas, !started.isEmpty()).get();
-				if (result.quest != null) {
-					started.add(result.quest);
-					datas.setLastGive(System.currentTimeMillis());
-				} else if (!result.forceContinue) {
-					if (started.isEmpty())
-						return result.reason;
-					else
-						break;
+		return CompletableFuture.supplyAsync(() -> {
+			List<Quest> started = new ArrayList<>(questsPerLaunch);
+			try {
+				for (int i = 0; i < questsPerLaunch; i++) {
+					PoolGiveResult result = giveOne(p, acc, datas, !started.isEmpty()).get();
+					if (result.quest != null) {
+						started.add(result.quest);
+						datas.setLastGive(System.currentTimeMillis());
+					} else if (!result.forceContinue) {
+						if (started.isEmpty())
+							return result.reason;
+						else
+							break;
+					}
 				}
+			} catch (InterruptedException ex) {
+				BeautyQuests.logger.severe("Interrupted!", ex);
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException ex) {
+				BeautyQuests.logger.severe("Failed to give quests to player " + p.getName() + " from pool " + id, ex);
 			}
-		} catch (InterruptedException ex) {
-			BeautyQuests.logger.severe("Interrupted!", ex);
-			Thread.currentThread().interrupt();
-		} catch (ExecutionException ex) {
-			BeautyQuests.logger.severe("Failed to give quests to player " + p.getName() + " from pool " + id, ex);
-		}
 
-		return "started quest(s) " + started.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "));
+			return "started quest(s) " + started.stream().map(x -> "#" + x.getID()).collect(Collectors.joining(", "));
+		});
 	}
 
 	private CompletableFuture<PoolGiveResult> giveOne(Player p, PlayerAccount acc, PlayerPoolDatas datas, boolean hadOne) {
