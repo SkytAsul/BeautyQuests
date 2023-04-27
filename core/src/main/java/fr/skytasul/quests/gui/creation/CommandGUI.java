@@ -8,13 +8,14 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.CustomInventory.CloseBehavior;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.types.Command;
 
@@ -78,7 +79,7 @@ public class CommandGUI implements CustomInventory {
 				this.cmd = cmd;
 				inv.getItem(SLOT_FINISH).setType(Material.DIAMOND);
 				p.openInventory(inv);
-			}, () -> p.openInventory(inv), null).useStrippedMessage().enter();
+			}, () -> p.openInventory(inv), null).useStrippedMessage().start();
 			break;
 			
 		case SLOT_CONSOLE:
@@ -94,7 +95,7 @@ public class CommandGUI implements CustomInventory {
 			new TextEditor<>(p, () -> p.openInventory(inv), x -> {
 				delay = x;
 				p.openInventory(inv);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 
 		case SLOT_FINISH:
@@ -111,7 +112,7 @@ public class CommandGUI implements CustomInventory {
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
 		Utils.runSync(cancel);
-		return CloseBehavior.NOTHING;
+		return StandardCloseBehavior.NOTHING;
 	}
 
 }

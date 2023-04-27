@@ -9,13 +9,13 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class RemoveItemsReward extends AbstractReward {
 
@@ -68,9 +68,9 @@ public class RemoveItemsReward extends AbstractReward {
 			new ItemsGUI(items -> {
 				this.items = items;
 				event.reopenGUI();
-			}, items).create(event.getPlayer());
+			}, items).open(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
-			new ItemComparisonGUI(comparisons, event::reopenGUI).create(event.getPlayer());
+			new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
 		}
 	}
 	

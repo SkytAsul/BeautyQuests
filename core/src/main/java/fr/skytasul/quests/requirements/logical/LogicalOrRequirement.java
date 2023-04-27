@@ -5,13 +5,13 @@ import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
 
 public class LogicalOrRequirement extends AbstractRequirement {
 	
@@ -46,10 +46,10 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
+		QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
 			this.requirements = requirements;
 			event.reopenGUI();
-		}, requirements).create(event.getPlayer());
+		}, requirements).open(event.getPlayer());
 	}
 	
 	@Override

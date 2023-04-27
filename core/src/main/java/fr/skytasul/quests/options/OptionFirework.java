@@ -10,12 +10,12 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class OptionFirework extends QuestOption<FireworkMeta> {
 	
@@ -81,7 +81,7 @@ public class OptionFirework extends QuestOption<FireworkMeta> {
 		if (cursorMeta instanceof FireworkMeta) {
 			setValue((FireworkMeta) cursorMeta);
 			ItemUtils.lore(item, getLore());
-			Utils.runSync(() -> p.setItemOnCursor(null));
+			Utils.runSync(() -> player.setItemOnCursor(null));
 			Lang.FIREWORK_EDITED.send(p);
 		}else {
 			Lang.FIREWORK_INVALID.send(p);

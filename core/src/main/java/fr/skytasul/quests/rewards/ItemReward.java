@@ -6,12 +6,12 @@ import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class ItemReward extends AbstractReward {
 
@@ -54,7 +54,7 @@ public class ItemReward extends AbstractReward {
 		new ItemsGUI(items -> {
 			this.items = items;
 			event.reopenGUI();
-		}, items).create(event.getPlayer());
+		}, items).open(event.getPlayer());
 	}
 	
 	@Override

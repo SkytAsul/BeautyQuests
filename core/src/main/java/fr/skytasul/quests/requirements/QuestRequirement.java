@@ -3,15 +3,14 @@ package fr.skytasul.quests.requirements;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class QuestRequirement extends AbstractRequirement {
 
@@ -44,7 +43,7 @@ public class QuestRequirement extends AbstractRequirement {
 	}
 
 	private boolean exists(){
-		cached = QuestsAPI.getQuests().getQuest(questId);
+		cached = QuestsAPI.getAPI().getQuestsManager().getQuest(questId);
 		return cached != null;
 	}
 	
@@ -56,22 +55,10 @@ public class QuestRequirement extends AbstractRequirement {
 
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		if (QuestsAPI.getQuests().getQuests().isEmpty()) {
-			event.getGUI().remove(this);
+		ChooseQuestGUI.choose(event.getPlayer(), QuestsAPI.getAPI().getQuestsManager().getQuests(), quest -> {
+			this.questId = quest.getId();
 			event.reopenGUI();
-			return;
-		}
-		
-		new ChooseQuestGUI(QuestsAPI.getQuests().getQuests(), quest -> {
-			this.questId = quest.getID();
-			event.reopenGUI();
-		}) {
-			@Override
-			public fr.skytasul.quests.gui.CustomInventory.CloseBehavior onClose(Player p, org.bukkit.inventory.Inventory inv) {
-				Utils.runSync(event::remove);
-				return CloseBehavior.NOTHING;
-			}
-		}.create(event.getPlayer());
+		}, event::remove, false);
 	}
 	
 	@Override

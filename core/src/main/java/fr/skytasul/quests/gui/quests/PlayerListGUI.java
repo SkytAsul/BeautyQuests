@@ -11,66 +11,70 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.misc.ConfirmGUI;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.options.OptionStartable;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.utils.QuestUtils;
 
-public class PlayerListGUI implements CustomInventory {
+public class PlayerListGUI extends CustomInventory {
 
-	private static final String UNSELECTED_PREFIX = "§7○ ";
+	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";
 	
 	private Inventory inv;
 	private Player open;
-	private PlayerAccount acc;
+	private PlayerAccountImplementation acc;
 	private boolean hide;
 	
 	private int page = 0;
-	private Category cat = Category.NONE;
+	private @Nullable PlayerListCategory cat = null;
 	private List<Quest> quests;
 	
-	public PlayerListGUI(PlayerAccount acc) {
+	public PlayerListGUI(PlayerAccountImplementation acc) {
 		this(acc, true);
 	}
 	
-	public PlayerListGUI(PlayerAccount acc, boolean hide) {
+	public PlayerListGUI(PlayerAccountImplementation acc, boolean hide) {
 		this.acc = acc;
 		this.hide = hide;
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		open = p;
-		inv = Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
+	}
 
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		
-		for (Category enabledCat : QuestsConfiguration.getMenuConfig().getEnabledTabs()) {
-			setBarItem(enabledCat.slot, enabledCat.item);
+		for (PlayerListCategory enabledCat : QuestsConfiguration.getMenuConfig().getEnabledTabs()) {
+			setBarItem(enabledCat.getSlot(),
+					ItemUtils.item(enabledCat.getMaterial(), UNSELECTED_PREFIX + enabledCat.getName()));
 		}
 
-		if (Category.IN_PROGRESS.isEnabled()) {
-			setCategory(Category.IN_PROGRESS);
-			if (quests.isEmpty() && QuestsConfiguration.getMenuConfig().isNotStartedTabOpenedWhenEmpty() && Category.NOT_STARTED.isEnabled()) setCategory(Category.NOT_STARTED);
-		}else if (Category.NOT_STARTED.isEnabled()) {
-			setCategory(Category.NOT_STARTED);
-		}else setCategory(Category.FINISHED);
-
-		inv = p.openInventory(inv).getTopInventory();
-		return inv;
+		if (PlayerListCategory.IN_PROGRESS.isEnabled()) {
+			setCategory(PlayerListCategory.IN_PROGRESS);
+			if (quests.isEmpty() && QuestsConfiguration.getMenuConfig().isNotStartedTabOpenedWhenEmpty() && PlayerListCategory.NOT_STARTED.isEnabled()) setCategory(PlayerListCategory.NOT_STARTED);
+		}else if (PlayerListCategory.NOT_STARTED.isEnabled()) {
+			setCategory(PlayerListCategory.NOT_STARTED);
+		}else setCategory(PlayerListCategory.FINISHED);
 	}
 	
 	private void setQuests(List<Quest> quests) {
@@ -78,15 +82,16 @@ public class PlayerListGUI implements CustomInventory {
 		quests.sort(null);
 	}
 	
-	private void setCategory(Category category){
+	private void setCategory(PlayerListCategory category){
 		if (cat == category) return;
-		if (cat != Category.NONE) toggleCategorySelected();
+		if (cat != null)
+			toggleCategorySelected();
 		cat = category;
 		page = 0;
 		toggleCategorySelected();
 		setItems();
 		
-		DyeColor color = cat == Category.FINISHED ? DyeColor.GREEN: (cat == Category.IN_PROGRESS ? DyeColor.YELLOW : DyeColor.RED);
+		DyeColor color = cat == PlayerListCategory.FINISHED ? DyeColor.GREEN: (cat == PlayerListCategory.IN_PROGRESS ? DyeColor.YELLOW : DyeColor.RED);
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 	}
 	
@@ -95,8 +100,8 @@ public class PlayerListGUI implements CustomInventory {
 		switch (cat){
 		
 		case FINISHED:
-			displayQuests(QuestsAPI.getQuests().getQuestsFinished(acc, hide), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription();
+			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(acc, hide), qu -> {
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription();
 				if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -106,8 +111,8 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 		
 		case IN_PROGRESS:
-			displayQuests(QuestsAPI.getQuests().getQuestsStarted(acc, true, false), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription();
+			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, true, false), qu -> {
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription();
 				
 				boolean hasDialogs = QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
 				boolean cancellable = QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
@@ -121,8 +126,10 @@ public class PlayerListGUI implements CustomInventory {
 			break;
 			
 		case NOT_STARTED:
-			displayQuests(QuestsAPI.getQuests().getQuestsNotStarted(acc, hide, true).stream().filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.isLauncheable(acc.getPlayer(), acc, false)).collect(Collectors.toList()), qu -> {
-				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, Source.MENU).formatDescription());
+			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, hide, true).stream()
+					.filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.canStart(acc.getPlayer(), false))
+					.collect(Collectors.toList()), qu -> {
+				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription());
 			});
 			break;
 
@@ -140,8 +147,8 @@ public class PlayerListGUI implements CustomInventory {
 			try {
 				item = itemProvider.apply(qu);
 			}catch (Exception ex) {
-				item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getID());
-				BeautyQuests.logger.severe("An error ocurred when creating item of quest " + qu.getID() + " for account " + acc.abstractAcc.getIdentifier(), ex);
+				item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getId());
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest " + qu.getId() + " for account " + acc.abstractAcc.getIdentifier(), ex);
 			}
 			setMainItem(i - page * 35, item);
 		}
@@ -161,7 +168,7 @@ public class PlayerListGUI implements CustomInventory {
 	}
 	
 	private ItemStack createQuestItem(Quest qu, List<String> lore) {
-		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getID()) : Lang.formatNormal.format(qu.getName()), lore);
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getId()) : Lang.formatNormal.format(qu.getName()), lore);
 	}
 	
 	private void toggleCategorySelected() {
@@ -181,8 +188,7 @@ public class PlayerListGUI implements CustomInventory {
 
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-		PlayerListGUI thiz = this;
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot % 9){
 		case 8:
 			int barSlot = (slot - 8) / 9;
@@ -200,7 +206,7 @@ public class PlayerListGUI implements CustomInventory {
 			case 1:
 			case 2:
 			case 3:
-				Category category = Category.values()[barSlot];
+				PlayerListCategory category = PlayerListCategory.values()[barSlot];
 				if (category.isEnabled()) setCategory(category);
 				break;
 				
@@ -213,31 +219,24 @@ public class PlayerListGUI implements CustomInventory {
 		default:
 			int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
 			Quest qu = quests.get(id);
-			if (cat == Category.NOT_STARTED) {
+			if (cat == PlayerListCategory.NOT_STARTED) {
 				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
 				if (!acc.isCurrent()) break;
 				Player target = acc.getPlayer();
-				if (qu.isLauncheable(target, acc, true)) {
+				if (qu.canStart(target, true)) {
 					p.closeInventory();
 					qu.attemptStart(target);
 				}
 			}else {
 				if (click.isRightClick()) {
 					if (QuestsConfiguration.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
-						Utils.playPluginSound(p, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-						new DialogHistoryGUI(acc, qu, () -> {
-							Inventories.put(p, thiz, inv);
-							p.openInventory(inv);
-						}).create(p);
+						QuestUtils.playPluginSound(p, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+						new DialogHistoryGUI(acc, qu, () -> reopen(p)).open(p);
 					}
 				}else if (click.isLeftClick()) {
-					if (QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && cat == Category.IN_PROGRESS && qu.isCancellable()) {
-						Inventories.create(p, new ConfirmGUI(() -> {
-							qu.cancelPlayer(acc);
-						}, () -> {
-							p.openInventory(inv);
-							Inventories.put(p, thiz, inv);
-						}, Lang.INDICATION_CANCEL.format(qu.getName())));
+					if (QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest() && cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
+						ConfirmGUI.confirm(() -> qu.cancelPlayer(acc), () -> reopen(p),
+								Lang.INDICATION_CANCEL.format(qu.getName())).open(p);
 					}
 				}
 			}
@@ -248,47 +247,8 @@ public class PlayerListGUI implements CustomInventory {
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv){
-		return CloseBehavior.REMOVE;
-	}
-
-	public enum Category {
-		NONE,
-		FINISHED(
-				1,
-				XMaterial.WRITTEN_BOOK,
-				Lang.finisheds.toString()),
-		IN_PROGRESS(
-				2,
-				XMaterial.BOOK,
-				Lang.inProgress.toString()),
-		NOT_STARTED(
-				3,
-				XMaterial.WRITABLE_BOOK,
-				Lang.notStarteds.toString());
-
-		private int slot;
-		private ItemStack item;
-		
-		private Category() {}
-		
-		private Category(int slot, XMaterial material, String name) {
-			this.slot = slot;
-			this.item = ItemUtils.item(material, UNSELECTED_PREFIX + name);
-		}
-		
-		public boolean isEnabled() {
-			return QuestsConfiguration.getMenuConfig().getEnabledTabs().contains(this);
-		}
-		
-		public static Category fromString(String name) {
-			try {
-				Category cat = Category.valueOf(name.toUpperCase());
-				if (cat != NONE) return cat;
-			}catch (IllegalArgumentException ex) {}
-			return null;
-		}
-		
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REMOVE;
 	}
 	
 }

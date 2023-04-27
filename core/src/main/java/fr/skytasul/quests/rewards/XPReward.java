@@ -5,13 +5,13 @@ import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
@@ -52,12 +52,12 @@ public class XPReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		Utils.sendMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
+		MessageUtils.sendPrefixedMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
 		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
-			Utils.sendMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
+			MessageUtils.sendPrefixedMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
 			exp = obj;
 			event.reopenGUI();
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}
 	
 	@Override

@@ -53,7 +53,7 @@ public class WorldGuardEntryHandler extends Handler {
 	@Override
 	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 		Player bukkitPlayer = BukkitAdapter.adapt(player);
-		if (!QuestsAPI.getNPCsManager().isNPC(bukkitPlayer)) {
+		if (!QuestsAPI.getAPI().getNPCsManager().isNPC(bukkitPlayer)) {
 			Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(bukkitPlayer, entered));
 			Bukkit.getPluginManager().callEvent(new WorldGuardExitEvent(bukkitPlayer, exited));
 		}

@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class CheckpointReward extends AbstractReward {
 	
@@ -49,9 +49,9 @@ public class CheckpointReward extends AbstractReward {
 	
 	public void applies(Player p) {
 		try {
-			Utils.giveRewards(p, actions);
+			QuestUtils.giveRewards(p, actions);
 		} catch (InterruptingBranchException e) {
-			BeautyQuests.logger.warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
 		}
 	}
 	
@@ -68,10 +68,10 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		QuestsAPI.getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
+		QuestsAPI.getAPI().getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
 			actions = rewards;
 			event.reopenGUI();
-		}, actions, null).create(event.getPlayer());
+		}, actions, null).open(event.getPlayer());
 	}
 	
 	@Override

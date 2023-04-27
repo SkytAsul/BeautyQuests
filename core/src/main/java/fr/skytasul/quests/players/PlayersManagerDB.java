@@ -23,19 +23,19 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.utils.Database;
-import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.ThrowingConsumer;
-import fr.skytasul.quests.utils.Utils;
 
-public class PlayersManagerDB extends PlayersManager {
+public class PlayersManagerDB extends AbstractPlayersManager {
 
 	public final String ACCOUNTS_TABLE;
 	public final String QUESTS_DATAS_TABLE;
@@ -100,7 +100,7 @@ public class PlayersManagerDB extends PlayersManager {
 				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE `id` = ?"));
 	}
 	
-	private void retrievePlayerDatas(PlayerAccount acc) {
+	private void retrievePlayerDatas(PlayerAccountImplementation acc) {
 		try (Connection connection = db.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
 				statement.setInt(1, acc.index);
@@ -134,7 +134,7 @@ public class PlayersManagerDB extends PlayersManager {
 				}
 			}
 		} catch (SQLException ex) {
-			BeautyQuests.logger.severe("An error occurred while fetching account datas of " + acc.debugName(), ex);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while fetching account datas of " + acc.debugName(), ex);
 		}
 	}
 	
@@ -148,7 +148,7 @@ public class PlayersManagerDB extends PlayersManager {
 				while (result.next()) {
 					AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
 					if (abs.isCurrent()) {
-						PlayerAccount account = new PlayerAccountDB(abs, result.getInt("id"));
+						PlayerAccountImplementation account = new PlayerAccountDB(abs, result.getInt("id"));
 						result.close();
 						try {
 							// in order to ensure that, if the player was previously connected to another server,
@@ -184,12 +184,12 @@ public class PlayersManagerDB extends PlayersManager {
 				request.notLoaded();
 			}
 		} catch (SQLException ex) {
-			BeautyQuests.logger.severe("An error occurred while loading account of " + request.getDebugPlayerName(), ex);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading account of " + request.getDebugPlayerName(), ex);
 		}
 	}
 	
 	@Override
-	protected CompletableFuture<Void> removeAccount(PlayerAccount acc) {
+	protected CompletableFuture<Void> removeAccount(PlayerAccountImplementation acc) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(deleteAccount)) {
@@ -202,12 +202,12 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 
 	@Override
-	public PlayerQuestDatas createPlayerQuestDatas(PlayerAccount acc, Quest quest) {
-		return new PlayerQuestDatasDB(acc, quest.getID());
+	public PlayerQuestDatasImplementation createPlayerQuestDatas(PlayerAccountImplementation acc, Quest quest) {
+		return new PlayerQuestDatasDB(acc, quest.getId());
 	}
 
 	@Override
-	public CompletableFuture<Void> playerQuestDataRemoved(PlayerQuestDatas datas) {
+	public CompletableFuture<Void> playerQuestDataRemoved(PlayerQuestDatasImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(removeQuestData)) {
@@ -222,12 +222,12 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	public PlayerPoolDatas createPlayerPoolDatas(PlayerAccount acc, QuestPool pool) {
-		return new PlayerPoolDatasDB(acc, pool.getID());
+	public PlayerPoolDatasImplementation createPlayerPoolDatas(PlayerAccountImplementation acc, QuestPool pool) {
+		return new PlayerPoolDatasDB(acc, pool.getId());
 	}
 	
 	@Override
-	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatas datas) {
+	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatasImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(removePoolData)) {
@@ -245,13 +245,13 @@ public class PlayersManagerDB extends PlayersManager {
 		return CompletableFuture.supplyAsync(() -> {
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(removeExistingQuestDatas)) {
-				for (PlayerAccount acc : cachedAccounts.values()) {
-					PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getID());
+				for (PlayerAccountImplementation acc : cachedAccounts.values()) {
+					PlayerQuestDatasDB datas = (PlayerQuestDatasDB) acc.removeQuestDatasSilently(quest.getId());
 					if (datas != null) datas.stop();
 				}
-				statement.setInt(1, quest.getID());
+				statement.setInt(1, quest.getId());
 				int amount = statement.executeUpdate();
-				DebugUtils.logMessage("Removed " + amount + " in-database quest datas for quest " + quest.getID());
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removed " + amount + " in-database quest datas for quest " + quest.getId());
 				return amount;
 			} catch (SQLException ex) {
 				throw new DataException("Failed to remove quest datas from database.", ex);
@@ -353,7 +353,7 @@ public class PlayersManagerDB extends PlayersManager {
 				if (!columns.contains("quest_flow")) { // 0.19
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
-					BeautyQuests.logger.info("Updated database with quest_flow column.");
+					QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated database with quest_flow column.");
 				}
 				
 				if (!columns.contains("additional_datas") || columns.contains("stage_0_datas")) { // 0.20
@@ -361,10 +361,10 @@ public class PlayersManagerDB extends PlayersManager {
 					if (!columns.contains("additional_datas")) {
 						statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 								+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
-						BeautyQuests.logger.info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
+						QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
 					}
 					
-					Utils.runAsync(this::migrateOldQuestDatas);
+					QuestUtils.runAsync(this::migrateOldQuestDatas);
 				}
 			});
 			
@@ -373,7 +373,7 @@ public class PlayersManagerDB extends PlayersManager {
 					if (!columns.contains(data.getWrappedData().getColumnName().toLowerCase())) {
 						statement.execute("ALTER TABLE " + ACCOUNTS_TABLE
 								+ " ADD COLUMN " + data.getColumnDefinition());
-						BeautyQuests.logger.info("Updated database by adding the missing " + data.getWrappedData().getColumnName() + " column in the player accounts table.");
+						QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated database by adding the missing " + data.getWrappedData().getColumnName() + " column in the player accounts table.");
 					}
 				}
 			});
@@ -388,14 +388,14 @@ public class PlayersManagerDB extends PlayersManager {
 			}
 		}
 		if (columns.isEmpty()) {
-			BeautyQuests.logger.severe("Cannot check integrity of SQL table " + tableName);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot check integrity of SQL table " + tableName);
 		}else {
 			columnsConsumer.accept(columns);
 		}
 	}
 	
 	private void migrateOldQuestDatas() {
-		BeautyQuests.logger.info("---- CAUTION ----\n"
+		QuestsPlugin.getPlugin().getLoggerExpanded().info("---- CAUTION ----\n"
 				+ "BeautyQuests will now migrate old quest datas in database to the newest format.\n"
 				+ "This may take a LONG time. Players should NOT enter the server during this time, "
 				+ "or serious data loss can occur.");
@@ -408,7 +408,7 @@ public class PlayersManagerDB extends PlayersManager {
 							+ " ON R1.account_id = R2.account_id"
 							+ " AND R1.quest_id = R2.quest_id"
 							+ " AND R1.id < R2.id;");
-			if (deletedDuplicates > 0) BeautyQuests.logger.info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
+			if (deletedDuplicates > 0) QuestsPlugin.getPlugin().getLoggerExpanded().info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
 			
 			int batchCount = 0;
 			PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
@@ -426,9 +426,9 @@ public class PlayersManagerDB extends PlayersManager {
 				migration.addBatch();
 				batchCount++;
 			}
-			BeautyQuests.logger.info("Migrating " + batchCount + "quest datas...");
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Migrating " + batchCount + "quest datas...");
 			int migrated = migration.executeBatch().length;
-			BeautyQuests.logger.info("Migrated " + migrated + " quest datas.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Migrated " + migrated + " quest datas.");
 			
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 					+ " DROP COLUMN `stage_0_datas`,"
@@ -436,11 +436,11 @@ public class PlayersManagerDB extends PlayersManager {
 					+ " DROP COLUMN `stage_2_datas`,"
 					+ " DROP COLUMN `stage_3_datas`,"
 					+ " DROP COLUMN `stage_4_datas`;");
-			BeautyQuests.logger.info("Updated database by deleting old stage_[0::4]_datas columns.");
-			BeautyQuests.logger.info("---- CAUTION ----\n"
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated database by deleting old stage_[0::4]_datas columns.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("---- CAUTION ----\n"
 					+ "The data migration succeeded. Players can now safely connect.");
 		}catch (SQLException ex) {
-			BeautyQuests.logger.severe("---- CAUTION ----\n"
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("---- CAUTION ----\n"
 					+ "The plugin failed to migrate old quest datas in database.", ex);
 		}
 	}
@@ -470,14 +470,14 @@ public class PlayersManagerDB extends PlayersManager {
 			
 			int amount = 0, failed = 0;
 			yaml.loadAllAccounts();
-			for (PlayerAccount acc : yaml.loadedAccounts.values()) {
+			for (PlayerAccountImplementation acc : yaml.loadedAccounts.values()) {
 				try {
 					insertAccount.setInt(1, acc.index);
 					insertAccount.setString(2, acc.abstractAcc.getIdentifier());
 					insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
 					insertAccount.executeUpdate();
 					
-					for (Entry<Integer, PlayerQuestDatas> entry : acc.questDatas.entrySet()) {
+					for (Entry<Integer, PlayerQuestDatasImplementation> entry : acc.questDatas.entrySet()) {
 						insertQuestData.setInt(1, acc.index);
 						insertQuestData.setInt(2, entry.getKey());
 						insertQuestData.setInt(3, entry.getValue().getTimesFinished());
@@ -491,7 +491,7 @@ public class PlayersManagerDB extends PlayersManager {
 						insertQuestData.executeUpdate();
 					}
 					
-					for (Entry<Integer, PlayerPoolDatas> entry : acc.poolDatas.entrySet()) {
+					for (Entry<Integer, PlayerPoolDatasImplementation> entry : acc.poolDatas.entrySet()) {
 						insertPoolData.setInt(1, acc.index);
 						insertPoolData.setInt(2, entry.getKey());
 						insertPoolData.setLong(3, entry.getValue().getLastGive());
@@ -501,7 +501,7 @@ public class PlayersManagerDB extends PlayersManager {
 					
 					amount++;
 				}catch (Exception ex) {
-					BeautyQuests.logger.severe("Failed to migrate datas for account " + acc.debugName(), ex);
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to migrate datas for account " + acc.debugName(), ex);
 					failed++;
 				}
 			}
@@ -515,11 +515,11 @@ public class PlayersManagerDB extends PlayersManager {
 	}
 	
 	@Override
-	public void unloadAccount(PlayerAccount acc) {
-		Utils.runAsync(() -> saveAccount(acc, true));
+	public void unloadAccount(PlayerAccountImplementation acc) {
+		QuestUtils.runAsync(() -> saveAccount(acc, true));
 	}
 
-	public void saveAccount(PlayerAccount acc, boolean stop) {
+	public void saveAccount(PlayerAccountImplementation acc, boolean stop) {
 		acc.getQuestsDatas()
 			.stream()
 			.map(PlayerQuestDatasDB.class::cast)
@@ -530,7 +530,7 @@ public class PlayersManagerDB extends PlayersManager {
 		return completedQuests.isEmpty() ? null : completedQuests.stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";"));
 	}
 
-	public class PlayerQuestDatasDB extends PlayerQuestDatas {
+	public class PlayerQuestDatasDB extends PlayerQuestDatasImplementation {
 
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
@@ -541,11 +541,11 @@ public class PlayersManagerDB extends PlayersManager {
 		private boolean disabled = false;
 		private int dbId = -1;
 
-		public PlayerQuestDatasDB(PlayerAccount acc, int questID) {
+		public PlayerQuestDatasDB(PlayerAccountImplementation acc, int questID) {
 			super(acc, questID);
 		}
 
-		public PlayerQuestDatasDB(PlayerAccount acc, int questID, ResultSet result) throws SQLException {
+		public PlayerQuestDatasDB(PlayerAccountImplementation acc, int questID, ResultSet result) throws SQLException {
 			super(
 					acc,
 					questID,
@@ -590,7 +590,7 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 		
 		@Override
-		public void addQuestFlow(AbstractStage finished) {
+		public void addQuestFlow(StageController finished) {
 			super.addQuestFlow(finished);
 			setDataStatement(updateFlow, getQuestFlow(), true);
 		}
@@ -635,19 +635,19 @@ public class PlayersManagerDB extends PlayersManager {
 												statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
 												statement.executeUpdate();
 												if (entry.getValue() == null && !allowNull) {
-													BeautyQuests.logger.warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
+													QuestsPlugin.getPlugin().getLoggerExpanded().warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
 												}
 											}
 										} catch (Exception ex) {
-											BeautyQuests.logger.severe("An error occurred while updating a player's quest datas.", ex);
+											QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's quest datas.", ex);
 										}finally {
 											dbLock.unlock();
 										}
 									}else {
-										BeautyQuests.logger.severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
+										QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
 									}
 								}catch (InterruptedException ex) {
-									BeautyQuests.logger.severe("Interrupted database locking.", ex);
+									QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
 									Thread.currentThread().interrupt();
 								}
 							}
@@ -669,14 +669,14 @@ public class PlayersManagerDB extends PlayersManager {
 								run.cancel();
 								run.run();
 							});
-					if (!cachedDatas.isEmpty()) BeautyQuests.logger.warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
+					if (!cachedDatas.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
 					if (stop) disabled = true;
 					datasLock.unlock();
 				}else {
-					BeautyQuests.logger.severe("Cannot acquire database lock to save all datas of quest " + questID + ", player " + acc.getNameAndID());
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock to save all datas of quest " + questID + ", player " + acc.getNameAndID());
 				}
 			}catch (InterruptedException ex) {
-				BeautyQuests.logger.severe("Interrupted database locking.", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -693,7 +693,7 @@ public class PlayersManagerDB extends PlayersManager {
 		}
 		
 		private void createDataRow(Connection connection) throws SQLException {
-			DebugUtils.logMessage("Inserting DB row of quest " + questID + " for account " + acc.index);
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Inserting DB row of quest " + questID + " for account " + acc.index);
 			try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData, new String[] {"id"})) {
 				insertStatement.setInt(1, acc.index);
 				insertStatement.setInt(2, questID);
@@ -705,19 +705,19 @@ public class PlayersManagerDB extends PlayersManager {
 				if (!generatedKeys.next())
 					throw new DataException("Generated keys ResultSet is empty");
 				dbId = generatedKeys.getInt(1);
-				DebugUtils.logMessage("Created row " + dbId + " for quest " + questID + ", account " + acc.index);
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Created row " + dbId + " for quest " + questID + ", account " + acc.index);
 			}
 		}
 		
 	}
 	
-	public class PlayerPoolDatasDB extends PlayerPoolDatas {
+	public class PlayerPoolDatasDB extends PlayerPoolDatasImplementation {
 		
-		public PlayerPoolDatasDB(PlayerAccount acc, int poolID) {
+		public PlayerPoolDatasDB(PlayerAccountImplementation acc, int poolID) {
 			super(acc, poolID);
 		}
 		
-		public PlayerPoolDatasDB(PlayerAccount acc, int poolID, long lastGive, Set<Integer> completedQuests) {
+		public PlayerPoolDatasDB(PlayerAccountImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
 			super(acc, poolID, lastGive, completedQuests);
 		}
 		
@@ -752,13 +752,13 @@ public class PlayersManagerDB extends PlayersManager {
 					statement.executeUpdate();
 				}
 			}catch (SQLException ex) {
-				BeautyQuests.logger.severe("An error occurred while updating a player's pool datas.", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's pool datas.", ex);
 			}
 		}
 		
 	}
 	
-	public class PlayerAccountDB extends PlayerAccount {
+	public class PlayerAccountDB extends PlayerAccountImplementation {
 		
 		public PlayerAccountDB(AbstractAccount account, int index) {
 			super(account, index);
@@ -775,7 +775,7 @@ public class PlayersManagerDB extends PlayersManager {
 				statement.setInt(2, index);
 				statement.executeUpdate();
 			}catch (SQLException ex) {
-				BeautyQuests.logger.severe("An error occurred while saving account data " + data.getId() + " to database", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while saving account data " + data.getId() + " to database", ex);
 			}
 		}
 		
@@ -789,7 +789,7 @@ public class PlayersManagerDB extends PlayersManager {
 					statement.setInt(1, index);
 					statement.executeUpdate();
 				}catch (SQLException ex) {
-					BeautyQuests.logger.severe("An error occurred while resetting account " + index + " datas from database", ex);
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while resetting account " + index + " datas from database", ex);
 				}
 			}
 		}

@@ -4,13 +4,13 @@ import java.util.function.Consumer;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.mobs.Mob;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.mobs.Mob;
 
 public class MobSelectionGUI extends PagedGUI<MobFactory<?>> {
 	
@@ -28,15 +28,14 @@ public class MobSelectionGUI extends PagedGUI<MobFactory<?>> {
 	
 	@Override
 	public void click(MobFactory<?> existing, ItemStack item, ClickType clickType) {
-		existing.itemClick(p, mobData -> {
+		existing.itemClick(player, mobData -> {
 			end.accept(mobData == null ? null : new Mob(existing, mobData));
 		});
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(() -> end.accept(null));
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return new DelayCloseBehavior(() -> end.accept(null));
 	}
 	
 }

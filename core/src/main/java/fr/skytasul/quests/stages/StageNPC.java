@@ -17,27 +17,28 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.dialogs.Dialog;
+import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.editors.DialogEditor;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.npc.SelectGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import fr.skytasul.quests.utils.compatibility.GPS;
-import fr.skytasul.quests.utils.types.Dialog;
-import fr.skytasul.quests.utils.types.DialogRunner;
 
 @LocatableType (types = LocatedType.ENTITY)
 public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
@@ -53,8 +54,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private List<Player> cached = new ArrayList<>();
 	protected AbstractHolograms<?>.BQHologram hologram;
 	
-	public StageNPC(QuestBranch branch) {
-		super(branch);
+	public StageNPC(StageController controller) {
+		super(controller);
 	}
 	
 	private void launchRefreshTask(){
@@ -74,7 +75,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 					tmp.add(p);
 				}
 				
-				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.hasHologramsManager() && QuestsAPI.getHologramsManager().supportItems() && QuestsAPI.getHologramsManager().supportPerPlayerVisibility()) {
+				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.getAPI().hasHologramsManager() && QuestsAPI.getAPI().getHologramsManager().supportItems() && QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
 					if (hologram == null) createHoloLaunch();
 					hologram.setPlayersVisible(tmp);
 					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));
@@ -90,7 +91,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	
 	private void createHoloLaunch(){
 		ItemStack item = QuestsConfiguration.getHoloTalkItem();
-		hologram = QuestsAPI.getHologramsManager().createHologram(npc.getLocation(), false);
+		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getLocation(), false);
 		if (QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			hologram.appendTextLine(item.getItemMeta().getDisplayName());
 		hologram.appendItem(item);
@@ -113,9 +114,9 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
-		if (npcID >= 0) this.npc = QuestsAPI.getNPCsManager().getById(npcID);
+		if (npcID >= 0) this.npc = QuestsAPI.getAPI().getNPCsManager().getById(npcID);
 		if (npc == null) {
-			BeautyQuests.logger.warning("The NPC " + npcID + " does not exist for " + toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The NPC " + npcID + " does not exist for " + toString());
 		}else {
 			initDialogRunner();
 		}
@@ -154,12 +155,12 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Utils.format(Lang.SCOREBOARD_NPC.toString(), descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new String[] { npcName() };
 	}
 	
@@ -232,8 +233,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 	
 	@Override
-	public void end(PlayerAccount acc) {
-		super.end(acc);
+	public void ended(PlayerAccount acc) {
+		super.ended(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			if (dialogRunner != null) dialogRunner.removePlayer(p);
@@ -263,7 +264,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (section.contains("msg")) setDialog(Dialog.deserialize(section.getConfigurationSection("msg")));
 		if (section.contains("npcID")) {
 			setNPC(section.getInt("npcID"));
-		}else BeautyQuests.logger.warning("No NPC specified for " + toString());
+		}else QuestsPlugin.getPlugin().getLoggerExpanded().warning("No NPC specified for " + toString());
 		if (section.contains("hid")) hide = section.getBoolean("hid");
 	}
 	
@@ -274,7 +275,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (hide) section.set("hid", true);
 	}
 	
-	public static StageNPC deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageNPC deserialize(ConfigurationSection section, StageController controller) {
 		StageNPC st = new StageNPC(branch);
 		st.loadDatas(section);
 		return st;
@@ -294,10 +295,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			super(line, ending);
 			
 			line.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), (p, item) -> {
-				new SelectGUI(() -> reopenGUI(p, true), newNPC -> {
+				new NpcSelectGUI(() -> reopenGUI(p, true), newNPC -> {
 					setNPCId(newNPC.getId());
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 			
 			line.setItem(SLOT_DIALOG, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString(), Lang.NotSet.toString()), (p, item) -> {
@@ -305,7 +306,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 				new DialogEditor(p, () -> {
 					setDialog(dialog);
 					reopenGUI(p, false);
-				}, dialog == null ? dialog = new Dialog() : dialog).enter();
+				}, dialog == null ? dialog = new Dialog() : dialog).start();
 			}, true, true);
 			
 			line.setItem(SLOT_HIDE, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
@@ -331,10 +332,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new SelectGUI(removeAndReopen(p, true), newNPC -> {
+			new NpcSelectGUI(removeAndReopen(p, true), newNPC -> {
 				setNPCId(newNPC.getId());
 				reopenGUI(p, true);
-			}).create(p);
+			}).open(p);
 		}
 		
 		@Override
@@ -346,7 +347,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		}
 		
 		@Override
-		protected final T finishStage(QuestBranch branch) {
+		protected final T finishStage(StageController controller) {
 			T stage = createStage(branch);
 			stage.setDialog(dialog);
 			stage.setNPC(npcID);
@@ -354,7 +355,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			return stage;
 		}
 		
-		protected abstract T createStage(QuestBranch branch);
+		protected abstract T createStage(StageController controller);
 		
 	}
 	
@@ -365,7 +366,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		}
 		
 		@Override
-		protected StageNPC createStage(QuestBranch branch) {
+		protected StageNPC createStage(StageController controller) {
 			return new StageNPC(branch);
 		}
 		

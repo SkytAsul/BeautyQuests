@@ -13,9 +13,11 @@ import org.bukkit.plugin.Plugin;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.RewardCreator;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.requirements.ClassRequirement;
 import fr.skytasul.quests.requirements.FactionRequirement;
 import fr.skytasul.quests.requirements.JobLevelRequirement;
@@ -26,8 +28,6 @@ import fr.skytasul.quests.requirements.PlaceholderRequirement;
 import fr.skytasul.quests.requirements.SkillAPILevelRequirement;
 import fr.skytasul.quests.rewards.MoneyReward;
 import fr.skytasul.quests.rewards.PermissionReward;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
@@ -44,44 +44,44 @@ import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
-	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.setNPCsManager(new BQServerNPCs()), null, plugin -> {
+	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.getAPI().setNPCsManager(new BQServerNPCs()), null, plugin -> {
 		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) // NOSONAR
 			return true;
 
-		BeautyQuests.logger.warning("Your version of znpcs (" + plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs (" + plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
 		return false;
 	});
 	
 	public static final BQDependency citizens = new BQDependency("Citizens", () -> {
-		QuestsAPI.setNPCsManager(new BQCitizens());
-		QuestsAPI.registerMobFactory(new CitizensFactory());
+		QuestsAPI.getAPI().setNPCsManager(new BQCitizens());
+		QuestsAPI.getAPI().registerMobFactory(new CitizensFactory());
 	});
 	
 	public static final BQDependency vault = new BQDependency("Vault", () -> {
-		QuestsAPI.getRewards().register(new RewardCreator("moneyReward", MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
-		QuestsAPI.getRewards().register(new RewardCreator("permReward", PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
-		QuestsAPI.getRequirements().register(new RequirementCreator("moneyRequired", MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("moneyReward", MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("permReward", PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("moneyRequired", MoneyRequirement.class, ItemUtils.item(XMaterial.EMERALD, Lang.RMoney.toString()), MoneyRequirement::new));
 	});
 	
 	public static final BQDependency papi = new BQDependency("PlaceholderAPI", () -> {
 		QuestsPlaceholders.registerPlaceholders(BeautyQuests.getInstance().getConfig().getConfigurationSection("startedQuestsPlaceholder"));
-		QuestsAPI.getRequirements().register(new RequirementCreator("placeholderRequired", PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("placeholderRequired", PlaceholderRequirement.class, ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
 	});
 	
 	public static final BQDependency skapi = new BQDependency("SkillAPI", () -> {
-		QuestsAPI.getRequirements().register(new RequirementCreator("classRequired", ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
-		QuestsAPI.getRequirements().register(new RequirementCreator("skillAPILevelRequired", SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("classRequired", ClassRequirement.class, ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("skillAPILevelRequired", SkillAPILevelRequirement.class, ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()), SkillAPILevelRequirement::new));
 	}).addPluginName("ProSkillAPI");
 	
 	public static final BQDependency cmi = new BQDependency("CMI", () -> {
-		if (BQCMI.areHologramsEnabled()) QuestsAPI.setHologramsManager(new BQCMI());
+		if (BQCMI.areHologramsEnabled()) QuestsAPI.getAPI().setHologramsManager(new BQCMI());
 	});
 	
-	public static final BQDependency boss = new BQDependency("Boss", () -> QuestsAPI.registerMobFactory(new BQBoss()), null, plugin -> {
+	public static final BQDependency boss = new BQDependency("Boss", () -> QuestsAPI.getAPI().registerMobFactory(new BQBoss()), null, plugin -> {
 		try {
 			Class.forName("org.mineacademy.boss.model.Boss");
 		}catch (ClassNotFoundException ex) {
-			BeautyQuests.logger.warning("Your version of Boss (" + plugin.getDescription().getVersion() + ") is not compatible with BeautyQuests.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of Boss (" + plugin.getDescription().getVersion() + ") is not compatible with BeautyQuests.");
 			return false;
 		}
 		return true;
@@ -90,18 +90,18 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency mm = new BQDependency("MythicMobs", () -> {
 		try {
 			Class.forName("io.lumine.mythic.api.MythicPlugin");
-			QuestsAPI.registerMobFactory(new MythicMobs5());
+			QuestsAPI.getAPI().registerMobFactory(new MythicMobs5());
 		}catch (ClassNotFoundException ex) {
-			QuestsAPI.registerMobFactory(new MythicMobs());
+			QuestsAPI.getAPI().registerMobFactory(new MythicMobs());
 		}
 	});
 	
-	public static final BQDependency advancedspawners = new BQDependency("AdvancedSpawners", () -> QuestsAPI.registerMobFactory(new BQAdvancedSpawners()));
+	public static final BQDependency advancedspawners = new BQDependency("AdvancedSpawners", () -> QuestsAPI.getAPI().registerMobFactory(new BQAdvancedSpawners()));
 	public static final BQDependency LevelledMobs =
-			new BQDependency("LevelledMobs", () -> QuestsAPI.registerMobFactory(new BQLevelledMobs()));
+			new BQDependency("LevelledMobs", () -> QuestsAPI.getAPI().registerMobFactory(new BQLevelledMobs()));
 	
-	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
-	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
+	public static final BQDependency holod2 = new BQDependency("HolographicDisplays", () -> QuestsAPI.getAPI().setHologramsManager(new BQHolographicDisplays2()), null, plugin -> plugin.getClass().getName().equals("com.gmail.filoghost.holographicdisplays.HolographicDisplays"));
+	public static final BQDependency holod3 = new BQDependency("HolographicDisplays", () -> QuestsAPI.getAPI().setHologramsManager(new BQHolographicDisplays3()), null, plugin -> {
 		if (!plugin.getClass().getName().equals("me.filoghost.holographicdisplays.plugin.HolographicDisplays")) // NOSONAR
 			return false;
 		
@@ -109,24 +109,24 @@ public class DependenciesManager implements Listener {
 			Class.forName("me.filoghost.holographicdisplays.api.HolographicDisplaysAPI");
 			return true;
 		}catch (ClassNotFoundException ex) {
-			BeautyQuests.logger.warning("Your version of HolographicDisplays is unsupported. Please make sure you are running the LATEST dev build of HolographicDisplays.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of HolographicDisplays is unsupported. Please make sure you are running the LATEST dev build of HolographicDisplays.");
 			return false;
 		}
 	});
-	public static final BQDependency decentholograms = new BQDependency("DecentHolograms", () -> QuestsAPI.setHologramsManager(new BQDecentHolograms()));
+	public static final BQDependency decentholograms = new BQDependency("DecentHolograms", () -> QuestsAPI.getAPI().setHologramsManager(new BQDecentHolograms()));
 	
 	public static final BQDependency sentinel = new BQDependency("Sentinel", BQSentinel::initialize);
 	
 	public static final BQDependency wg =
 			new BQDependency("WorldGuard", BQWorldGuard::initialize, BQWorldGuard::unload);
-	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.getRequirements().register(new RequirementCreator("jobLevelRequired", JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
-	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.getRequirements().register(new RequirementCreator("factionRequired", FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
+	public static final BQDependency jobs = new BQDependency("Jobs", () -> QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("jobLevelRequired", JobLevelRequirement.class, ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()), JobLevelRequirement::new)));
+	public static final BQDependency fac = new BQDependency("Factions", () -> QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("factionRequired", FactionRequirement.class, ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new)));
 	public static final BQDependency acc = new BQDependency("AccountsHook");
-	public static final BQDependency dyn = new BQDependency("dynmap", () -> QuestsAPI.registerQuestsHandler(new BQDynmap()));
-	public static final BQDependency BlueMap = new BQDependency("BlueMap", () -> QuestsAPI.registerQuestsHandler(new BQBlueMap()));
+	public static final BQDependency dyn = new BQDependency("dynmap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQDynmap()));
+	public static final BQDependency BlueMap = new BQDependency("BlueMap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQBlueMap()));
 	public static final BQDependency gps = new BQDependency("GPS", GPS::init);
-	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoSklillLevelRequired", McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
-	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getRequirements().register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
+	public static final BQDependency mmo = new BQDependency("mcMMO", () -> QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("mcmmoSklillLevelRequired", McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new)));
+	public static final BQDependency mclvl = new BQDependency("McCombatLevel", () -> QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class, ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new)));
 	public static final BQDependency tokenEnchant = new BQDependency("TokenEnchant", () -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), BeautyQuests.getInstance()));
 	public static final BQDependency ultimateTimber = new BQDependency("UltimateTimber", () -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), BeautyQuests.getInstance()));
 	public static final BQDependency PlayerBlockTracker = new BQDependency("PlayerBlockTracker");
@@ -163,7 +163,7 @@ public class DependenciesManager implements Listener {
 	
 	public void addDependency(BQDependency dependency) {
 		if (lockDependencies) {
-			BeautyQuests.logger.severe("Trying to add a BQ dependency for plugin " + dependency.pluginNames + " after final locking.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Trying to add a BQ dependency for plugin " + dependency.pluginNames + " after final locking.");
 			return;
 		}
 		dependencies.add(dependency);
@@ -246,7 +246,7 @@ public class DependenciesManager implements Listener {
 			Plugin plugin = pluginNames.stream().map(Bukkit.getPluginManager()::getPlugin).filter(x -> x != null && x.isEnabled()).findAny().orElse(null);
 			if (plugin == null) return false;
 			if (isValid != null && !isValid.test(plugin)) return false;
-			DebugUtils.logMessage("Hooked into " + pluginNames + " v" + plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Hooked into " + pluginNames + " v" + plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
 			enabled = true;
 			foundPlugin = plugin;
 			return true;
@@ -257,7 +257,7 @@ public class DependenciesManager implements Listener {
 				if (initialize != null) initialize.run();
 				initialized = true;
 			}catch (Throwable ex) {
-				BeautyQuests.logger.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
 			}
 		}

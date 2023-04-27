@@ -6,14 +6,15 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.pools.QuestPool;
 
 public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
@@ -32,17 +33,17 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	public void click(QuestPool existing, ItemStack clicked, ClickType click) {
 		if (click == ClickType.MIDDLE) {
 			if (existing != null) {
-				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getID());
-				get().create(p);
+				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getId());
+				get().open(player);
 			}
 		}else {
-			new PoolEditGUI(() -> get().create(p), existing).create(p);
+			new PoolEditGUI(() -> get().open(player), existing).open(player);
 		}
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REMOVE;
 	}
 	
 	public static PoolsManageGUI get() {

@@ -11,7 +11,7 @@ public class BQWildStacker implements Listener {
 	private BQWildStacker() {}
 
 	public static void initialize() {
-		QuestsAPI.registerMobStacker(entity -> {
+		QuestsAPI.getAPI().registerMobStacker(entity -> {
 			if (entity instanceof LivingEntity && !(entity instanceof Player))
 				return WildStackerAPI.getEntityAmount((LivingEntity) entity);
 			return 1;

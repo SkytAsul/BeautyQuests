@@ -6,17 +6,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.DialogEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.dialogs.Dialog;
+import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.types.Dialogable;
-import fr.skytasul.quests.editors.DialogEditor;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.Dialog;
-import fr.skytasul.quests.utils.types.DialogRunner;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
 	
@@ -64,7 +64,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 		new DialogEditor(p, () -> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}, getValue()).enter();
+		}, getValue()).start();
 	}
 	
 	@Override

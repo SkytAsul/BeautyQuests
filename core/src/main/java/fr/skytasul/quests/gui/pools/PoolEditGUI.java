@@ -9,25 +9,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.DurationParser;
+import fr.skytasul.quests.api.editors.checkers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.DurationParser;
-import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.npc.SelectGUI;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
-public class PoolEditGUI implements CustomInventory {
+public class PoolEditGUI extends CustomInventory {
 	
 	private static final int SLOT_NPC = 1;
 	private static final int SLOT_HOLOGRAM = 2;
@@ -63,7 +63,7 @@ public class PoolEditGUI implements CustomInventory {
 			questsPerLaunch = editing.getQuestsPerLaunch();
 			redoAllowed = editing.isRedoAllowed();
 			timeDiff = editing.getTimeDiff();
-			npcID = editing.getNPCID();
+			npcID = editing.getNpcId();
 			avoidDuplicates = editing.doAvoidDuplicates();
 			requirements = editing.getRequirements();
 		}
@@ -93,11 +93,6 @@ public class PoolEditGUI implements CustomInventory {
 		return new String[] { "", QuestOption.formatDescription(Lang.requirements.format(requirements.size())) };
 	}
 	
-	private void reopen(Player p, Inventory inv, boolean reimplement) {
-		if (reimplement) Inventories.put(p, this, inv);
-		p.openInventory(inv);
-	}
-	
 	private void handleDoneButton(Inventory inv) {
 		boolean newState = /*name != null &&*/ npcID != -1;
 		if (newState == canFinish) return;
@@ -106,9 +101,12 @@ public class PoolEditGUI implements CustomInventory {
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		Inventory inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_POOL_CREATE.toString());
-		
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 18, Lang.INVENTORY_POOL_CREATE.toString());
+	}
+
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
 		inv.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
 		inv.setItem(SLOT_HOLOGRAM, ItemUtils.item(XMaterial.OAK_SIGN, Lang.poolEditHologramText.toString(), getHologramLore()));
 		inv.setItem(SLOT_MAX_QUESTS, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getMaxQuestsLore()));
@@ -121,52 +119,50 @@ public class PoolEditGUI implements CustomInventory {
 		inv.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
 		inv.setItem(SLOT_CREATE, ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString()));
 		handleDoneButton(inv);
-		
-		return p.openInventory(inv).getTopInventory();
 	}
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot) {
 		case SLOT_NPC:
-			new SelectGUI(() -> reopen(p, inv, true), npc -> {
+			NpcSelectGUI.select(() -> reopen(p), npc -> {
 				npcID = npc.getId();
 				ItemUtils.lore(current, getNPCLore());
-				handleDoneButton(inv);
-				reopen(p, inv, true);
-			}).create(p);
+				handleDoneButton(getInventory());
+				reopen(p);
+			}).open(p);
 			break;
 		case SLOT_HOLOGRAM:
 			Lang.POOL_HOLOGRAM_TEXT.send(p);
-			new TextEditor<String>(p, () -> reopen(p, inv, false), msg -> {
+			new TextEditor<String>(p, () -> reopen(p), msg -> {
 				hologram = msg;
 				ItemUtils.lore(current, getHologramLore());
-				reopen(p, inv, false);
-			}).passNullIntoEndConsumer().enter();
+				reopen(p);
+			}).passNullIntoEndConsumer().start();
 			break;
 		case SLOT_MAX_QUESTS:
 			Lang.POOL_MAXQUESTS.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			new TextEditor<>(p, () -> reopen(p), msg -> {
 				maxQuests = msg;
 				ItemUtils.lore(current, getMaxQuestsLore());
-				reopen(p, inv, false);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				reopen(p);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 		case SLOT_QUESTS_PER_LAUNCH:
 			Lang.POOL_QUESTS_PER_LAUNCH.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			new TextEditor<>(p, () -> reopen(p), msg -> {
 				questsPerLaunch = msg;
 				ItemUtils.lore(current, getQuestsPerLaunchLore());
-				reopen(p, inv, false);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				reopen(p);
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 		case SLOT_TIME:
 			Lang.POOL_TIME.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			new TextEditor<>(p, () -> reopen(p), msg -> {
 				timeDiff = msg * 1000;
 				ItemUtils.lore(current, getTimeLore());
-				reopen(p, inv, false);
-			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).enter();
+				reopen(p);
+			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).start();
 			break;
 		case SLOT_REDO:
 			redoAllowed = ItemUtils.toggle(current);
@@ -175,11 +171,11 @@ public class PoolEditGUI implements CustomInventory {
 			avoidDuplicates = ItemUtils.toggle(current);
 			break;
 		case SLOT_REQUIREMENTS:
-			QuestsAPI.getRequirements().createGUI(QuestObjectLocation.POOL, requirements -> {
+			QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.POOL, requirements -> {
 				PoolEditGUI.this.requirements = requirements;
 				ItemUtils.lore(current, getRequirementsLore());
-				reopen(p, inv, true);
-			}, requirements).create(p);
+				reopen(p);
+			}, requirements).open(p);
 			break;
 		
 		case SLOT_CANCEL:

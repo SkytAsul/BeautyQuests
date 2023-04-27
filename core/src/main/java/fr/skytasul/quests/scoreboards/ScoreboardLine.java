@@ -2,7 +2,7 @@ package fr.skytasul.quests.scoreboards;
 
 import java.util.Map;
 import org.apache.commons.lang.Validate;
-import fr.skytasul.quests.utils.ChatUtils;
+import fr.skytasul.quests.api.utils.ChatColorUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class ScoreboardLine {
@@ -14,7 +14,7 @@ public class ScoreboardLine {
 	public ScoreboardLine(String value) {
 		Validate.notNull(value);
 		this.value = ChatColor.translateAlternateColorCodes('&',
-				ChatUtils.translateHexColorCodes(value
+				ChatColorUtils.translateHexColorCodes(value
 						.replace("{questName}", "{quest_name}")
 						.replace("{questDescription}", "{quest_advancement}")));
 	}

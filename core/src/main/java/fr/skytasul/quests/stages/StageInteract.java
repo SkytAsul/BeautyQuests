@@ -16,24 +16,23 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.WaitBlockClick;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.editors.WaitBlockClick;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.BQLocation;
 
@@ -46,16 +45,16 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	
 	private Located.LocatedBlock locatedBlock;
 
-	public StageInteract(QuestBranch branch, boolean leftClick, BQLocation location) {
-		super(branch);
+	public StageInteract(StageController controller, boolean leftClick, BQLocation location) {
+		super(controller);
 		this.left = leftClick;
 		this.lc = new BQLocation(location.getWorldName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
 		
 		this.block = null;
 	}
 	
-	public StageInteract(QuestBranch branch, boolean leftClick, BQBlock block) {
-		super(branch);
+	public StageInteract(StageController controller, boolean leftClick, BQBlock block) {
+		super(controller);
 		this.left = leftClick;
 		this.block = block;
 		
@@ -81,7 +80,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		if (locatedBlock == null) {
 			Block realBlock = lc.getMatchingBlock();
 			if (realBlock != null)
-				locatedBlock = Located.LocatedBlock.create(realBlock);
+				locatedBlock = Located.LocatedBlock.open(realBlock);
 		}
 		return locatedBlock;
 	}
@@ -96,7 +95,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
-		if (NMS.getMCVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) return;
+		if (MinecraftVersion.MAJOR >= 9 && e.getHand() != EquipmentSlot.HAND) return;
 		
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
@@ -107,7 +106,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		}else if (block != null) {
 			if (!block.applies(e.getClickedBlock())) return;
 		}else {
-			BeautyQuests.logger.warning("No block nor location set for " + toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No block nor location set for " + toString());
 			return;
 		}
 		
@@ -119,7 +118,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source){
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return lc == null ? Lang.SCOREBOARD_INTERACT_MATERIAL.format(block.getName()) : Lang.SCOREBOARD_INTERACT.format(lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
 	}
 
@@ -131,7 +130,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		}else section.set("location", lc.serialize());
 	}
 	
-	public static StageInteract deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageInteract deserialize(ConfigurationSection section, StageController controller) {
 		if (section.contains("location")) {
 			return new StageInteract(branch, section.getBoolean("leftClick"), BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
 		}else {
@@ -167,11 +166,11 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		public void setLocation(Location location) {
 			if (this.location == null) {
 				line.setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
-					Lang.CLICK_BLOCK.send(p);
-					new WaitBlockClick(p, () -> reopenGUI(p, false), obj -> {
+					Lang.CLICK_BLOCK.send(player);
+					new WaitBlockClick(player, () -> reopenGUI(player, false), obj -> {
 						setLocation(obj);
-						reopenGUI(p, false);
-					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
+						reopenGUI(player, false);
+					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
 				});
 			}
 			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription(Utils.locationToString(location))));
@@ -183,8 +182,8 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 				line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), (p, item) -> {
 					new SelectBlockGUI(false, (newBlock, __) -> {
 						setMaterial(newBlock);
-						reopenGUI(p, true);
-					}).create(p);
+						reopenGUI(player, true);
+					}).open(player);
 				});
 			}
 			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(block.getName())));
@@ -200,13 +199,13 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 				new WaitBlockClick(p, cancel, obj -> {
 					setLocation(obj);
 					reopenGUI(p, true);
-				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).enter();
+				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
 			}, () -> {
 				new SelectBlockGUI(false, (newBlock, __) -> {
 					setMaterial(newBlock);
 					reopenGUI(p, true);
-				}).create(p);
-			}).create(p);
+				}).open(p);
+			}).open(p);
 		}
 
 		@Override
@@ -219,7 +218,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		}
 
 		@Override
-		public StageInteract finishStage(QuestBranch branch) {
+		public StageInteract finishStage(StageController controller) {
 			if (location != null) {
 				return new StageInteract(branch, leftClick, new BQLocation(location));
 			}else return new StageInteract(branch, leftClick, block);

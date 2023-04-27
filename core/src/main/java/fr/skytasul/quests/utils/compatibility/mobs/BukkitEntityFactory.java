@@ -12,11 +12,11 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
 
 public class BukkitEntityFactory implements MobFactory<EntityType> {
 
@@ -33,7 +33,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType> {
 
 	@Override
 	public void itemClick(Player p, Consumer<EntityType> run) {
-		new EntityTypeGUI(run, x -> x != null).create(p);
+		new EntityTypeGUI(run, x -> x != null).open(p);
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType> {
 	public void onEntityKilled(EntityDeathEvent e) {
 		LivingEntity en = e.getEntity();
 		if (en.getKiller() == null) return;
-		if (QuestsAPI.getNPCsManager().isNPC(en)) return;
+		if (QuestsAPI.getAPI().getNPCsManager().isNPC(en)) return;
 		callEvent(e, en.getType(), en, en.getKiller());
 	}
 	

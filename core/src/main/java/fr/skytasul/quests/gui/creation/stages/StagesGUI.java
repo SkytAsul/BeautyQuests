@@ -11,20 +11,20 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
-import fr.skytasul.quests.stages.*;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.structure.QuestBranchImplementation;
 
 public class StagesGUI implements CustomInventory {
 
@@ -102,7 +102,7 @@ public class StagesGUI implements CustomInventory {
 		line.setItem(0, stageCreate.clone(), (p, item) -> {
 			line.setItem(0, null, null, true, false);
 			int i = 0;
-			for (StageType<?> type : QuestsAPI.getStages()) {
+			for (StageType<?> type : QuestsAPI.getAPI().getStages()) {
 				if (type.isValid()) {
 					line.setItem(++i, type.getItem(), (p1, item1) -> {
 						runClick(line, type, branches).start(p1);
@@ -186,7 +186,7 @@ public class StagesGUI implements CustomInventory {
 		
 		if (branches){
 			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(session, this));
-			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.create(p, creation.getLeadingBranch()));
+			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.open(p, creation.getLeadingBranch()));
 		}
 		
 		if (line.getLine() != 0 && line.getLine() != 15) updateLineManageLore(getLine(line.getLine() - 1));
@@ -246,7 +246,7 @@ public class StagesGUI implements CustomInventory {
 						}else Lang.QUEST_EDIT_CANCEL.send(p);
 					}
 				}else { // branch inventory = previous branch button
-					Inventories.create(p, previousBranch);
+					Inventories.open(p, previousBranch);
 				}
 			}
 		}else {
@@ -259,8 +259,8 @@ public class StagesGUI implements CustomInventory {
 
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv){
-		if (isEmpty() || stop) return CloseBehavior.REMOVE;
-		return CloseBehavior.REOPEN;
+		if (isEmpty() || stop) return StandardCloseBehavior.REMOVE;
+		return StandardCloseBehavior.REOPEN;
 	}
 
 	private void refresh() {
@@ -282,9 +282,9 @@ public class StagesGUI implements CustomInventory {
 		return stages;
 	}
 	
-	private void editBranch(QuestBranch branch){
+	private void editBranch(QuestBranchImplementation branch){
 		for (AbstractStage stage : branch.getRegularStages()){
-			Line line = getLine(stage.getID());
+			Line line = getLine(stage.getId());
 			@SuppressWarnings ("rawtypes")
 			StageCreation creation = runClick(line, stage.getType(), false);
 			creation.edit(stage);
@@ -292,7 +292,7 @@ public class StagesGUI implements CustomInventory {
 		}
 		
 		int i = 15;
-		for (Entry<AbstractStage, QuestBranch> en : branch.getEndingStages().entrySet()){
+		for (Entry<AbstractStage, QuestBranchImplementation> en : branch.getEndingStages().entrySet()){
 			Line line = getLine(i);
 			@SuppressWarnings ("rawtypes")
 			StageCreation creation = runClick(line, en.getKey().getType(), true);
@@ -306,49 +306,4 @@ public class StagesGUI implements CustomInventory {
 		}
 	}
 
-
-
-	private static final ItemStack stageNPC = ItemUtils.item(XMaterial.OAK_SIGN, Lang.stageNPC.toString());
-	private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageBring.toString());
-	private static final ItemStack stageMobs = ItemUtils.item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString());
-	private static final ItemStack stageMine = ItemUtils.item(XMaterial.WOODEN_PICKAXE, Lang.stageMine.toString());
-	private static final ItemStack stagePlace = ItemUtils.item(XMaterial.OAK_STAIRS, Lang.stagePlace.toString());
-	private static final ItemStack stageChat = ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.stageChat.toString());
-	private static final ItemStack stageInteract = ItemUtils.item(XMaterial.STICK, Lang.stageInteract.toString());
-	private static final ItemStack stageFish = ItemUtils.item(XMaterial.COD, Lang.stageFish.toString());
-	private static final ItemStack stageMelt = ItemUtils.item(XMaterial.FURNACE, Lang.stageMelt.toString());
-	private static final ItemStack stageEnchant = ItemUtils.item(XMaterial.ENCHANTING_TABLE, Lang.stageEnchant.toString());
-	private static final ItemStack stageCraft = ItemUtils.item(XMaterial.CRAFTING_TABLE, Lang.stageCraft.toString());
-	private static final ItemStack stageBucket = ItemUtils.item(XMaterial.BUCKET, Lang.stageBucket.toString());
-	private static final ItemStack stageLocation = ItemUtils.item(XMaterial.MINECART, Lang.stageLocation.toString());
-	private static final ItemStack stagePlayTime = ItemUtils.item(XMaterial.CLOCK, Lang.stagePlayTime.toString());
-	private static final ItemStack stageBreed = ItemUtils.item(XMaterial.WHEAT, Lang.stageBreedAnimals.toString());
-	private static final ItemStack stageTame = ItemUtils.item(XMaterial.CARROT, Lang.stageTameAnimals.toString());
-	private static final ItemStack stageDeath = ItemUtils.item(XMaterial.SKELETON_SKULL, Lang.stageDeath.toString());
-	private static final ItemStack stageDealDamage = ItemUtils.item(XMaterial.REDSTONE, Lang.stageDealDamage.toString());
-	private static final ItemStack stageEatDrink = ItemUtils.item(XMaterial.COOKED_PORKCHOP, Lang.stageEatDrink.toString());
-
-	public static void initialize(){
-		DebugUtils.logMessage("Initlializing default stage types.");
-
-		QuestsAPI.getStages().register(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(), StageNPC::deserialize, stageNPC, StageNPC.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(), StageBringBack::deserialize, stageItems, StageBringBack.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("MOBS", StageMobs.class, Lang.Mobs.name(), StageMobs::deserialize, stageMobs, StageMobs.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("MINE", StageMine.class, Lang.Mine.name(), StageMine::deserialize, stageMine, StageMine.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("PLACE_BLOCKS", StagePlaceBlocks.class, Lang.Place.name(), StagePlaceBlocks::deserialize, stagePlace, StagePlaceBlocks.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("CHAT", StageChat.class, Lang.Chat.name(), StageChat::deserialize, stageChat, StageChat.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("INTERACT", StageInteract.class, Lang.Interact.name(), StageInteract::deserialize, stageInteract, StageInteract.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("FISH", StageFish.class, Lang.Fish.name(), StageFish::deserialize, stageFish, StageFish.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("MELT", StageMelt.class, Lang.Melt.name(), StageMelt::deserialize, stageMelt, StageMelt.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("ENCHANT", StageEnchant.class, Lang.Enchant.name(), StageEnchant::deserialize, stageEnchant, StageEnchant.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("CRAFT", StageCraft.class, Lang.Craft.name(), StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(), StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(), StageLocation::deserialize, stageLocation, StageLocation.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name(), StagePlayTime::deserialize, stagePlayTime, StagePlayTime.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("BREED", StageBreed.class, Lang.Breed.name(), StageBreed::deserialize, stageBreed, StageBreed.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("TAME", StageTame.class, Lang.Tame.name(), StageTame::deserialize, stageTame, StageTame.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("DEATH", StageDeath.class, Lang.Death.name(), StageDeath::deserialize, stageDeath, StageDeath.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("DEAL_DAMAGE", StageDealDamage.class, Lang.DealDamage.name(), StageDealDamage::deserialize, stageDealDamage, StageDealDamage.Creator::new));
-		QuestsAPI.getStages().register(new StageType<>("EAT_DRINK", StageEatDrink.class, Lang.EatDrink.name(), StageEatDrink::new, stageEatDrink, StageEatDrink.Creator::new));
-	}
 }

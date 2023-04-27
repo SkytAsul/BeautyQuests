@@ -2,9 +2,9 @@ package fr.skytasul.quests.options;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionItem;
-import fr.skytasul.quests.utils.Lang;
 
 public class OptionHologramLaunchNo extends QuestOptionItem {
 	
@@ -29,7 +29,7 @@ public class OptionHologramLaunchNo extends QuestOptionItem {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return QuestsAPI.hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
+		return QuestsAPI.getAPI().hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

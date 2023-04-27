@@ -11,19 +11,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.TextListEditor;
-import fr.skytasul.quests.editors.checkers.MaterialParser;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.TextListEditor;
+import fr.skytasul.quests.api.editors.checkers.MaterialParser;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 
-public class ItemCreatorGUI implements CustomInventory {
+public class ItemCreatorGUI extends CustomInventory {
 
-	private Inventory inv;
 	private Player p;
 	private Consumer<ItemStack> run;
 	private boolean allowCancel;
@@ -40,56 +39,56 @@ public class ItemCreatorGUI implements CustomInventory {
 	private boolean quest = false;
 	private boolean flags = false;
 	
-
 	@Override
-	public Inventory open(Player p) {
-		this.p = p;
-		inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
-
-		inv.setItem(0, ItemUtils.item(XMaterial.GRASS_BLOCK, Lang.itemType.toString()));
-		inv.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
-		inv.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
-		inv.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
-		inv.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
-		inv.setItem(6, ItemUtils.item(XMaterial.BOOK, Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
-		if (allowCancel) inv.setItem(8, ItemUtils.itemCancel);
-		inv.setItem(17, ItemUtils.itemDone);
-		inv.getItem(17).setType(Material.COAL);
-
-		inv = p.openInventory(inv).getTopInventory();
-		return inv;
+	protected Inventory instanciate(@NotNull Player player) {
+		this.p = player;
+		return Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
 	}
 
-	private void reopen(){
-		p.openInventory(inv);
-		refresh();
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		inventory.setItem(0, ItemUtils.item(XMaterial.GRASS_BLOCK, Lang.itemType.toString()));
+		inventory.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
+		inventory.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
+		inventory.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
+		inventory.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
+		inventory.setItem(6, ItemUtils.item(XMaterial.BOOK, Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
+		if (allowCancel)
+			inventory.setItem(8, ItemUtils.itemCancel);
+		inventory.setItem(17, ItemUtils.itemDone);
+		inventory.getItem(17).setType(Material.COAL);
+	}
+
+	private void reopen() {
+		reopen(p);
 	}
 
 	private void refresh(){
 		if (type != null){
-			inv.setItem(13, build());
-			if (inv.getItem(17).getType() != Material.DIAMOND) inv.getItem(17).setType(Material.DIAMOND);
+			getInventory().setItem(13, build());
+			if (getInventory().getItem(17).getType() != Material.DIAMOND)
+				getInventory().getItem(17).setType(Material.DIAMOND);
 		}
 	}
 
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot){
 		case 0:
 			Lang.CHOOSE_ITEM_TYPE.send(p);
-			new TextEditor<>(p, () -> reopen(), obj -> {
+			new TextEditor<>(p, this::reopen, obj -> {
 				type = obj;
 				reopen();
-			}, MaterialParser.ITEM_PARSER).enter();
+			}, MaterialParser.ITEM_PARSER).start();
 			break;
 
 		case 1:
 			Lang.CHOOSE_ITEM_AMOUNT.send(p);
-			new TextEditor<>(p, () -> reopen(), obj -> {
+			new TextEditor<>(p, this::reopen, obj -> {
 				amount = /*Math.min(obj, 64)*/ obj;
 				ItemUtils.name(current, Lang.Amount.format(amount));
 				reopen();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 		
 		case 2:
@@ -99,10 +98,10 @@ public class ItemCreatorGUI implements CustomInventory {
 
 		case 3:
 			Lang.CHOOSE_ITEM_NAME.send(p);
-			new TextEditor<String>(p, () -> reopen(), obj -> {
+			new TextEditor<String>(p, this::reopen, obj -> {
 				name = obj;
 				reopen();
-			}).enter();
+			}).start();
 			break;
 
 		case 4:
@@ -110,7 +109,7 @@ public class ItemCreatorGUI implements CustomInventory {
 			new TextListEditor(p, list -> {
 				lore = list;
 				reopen();
-			}, lore).enter();
+			}, lore).start();
 			break;
 
 		case 6:
@@ -125,13 +124,13 @@ public class ItemCreatorGUI implements CustomInventory {
 			break;
 
 		case 8:
-			Inventories.closeAndExit(p);
+			close(p);
 			run.accept(null);
 			break;
 
 		case 17: //VALIDATE
 			if (current.getType() == Material.DIAMOND){
-				Inventories.closeAndExit(p);
+				close(p);
 				run.accept(build());
 			}
 			break;

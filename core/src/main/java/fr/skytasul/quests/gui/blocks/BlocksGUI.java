@@ -1,6 +1,6 @@
 package fr.skytasul.quests.gui.blocks;
 
-import static fr.skytasul.quests.gui.ItemUtils.item;
+import static fr.skytasul.quests.api.gui.ItemUtils.item;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -8,8 +8,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.CountableObject;
 import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
@@ -33,7 +33,7 @@ public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 	public void createObject(Function<MutableCountableObject<BQBlock>, ItemStack> callback) {
 		new SelectBlockGUI(true, (type, amount) -> {
 			callback.apply(CountableObject.createMutable(UUID.randomUUID(), type, amount));
-		}).create(p);
+		}).open(player);
 	}
 
 	@Override

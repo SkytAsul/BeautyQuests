@@ -10,24 +10,25 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.dialogs.Message;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.types.Dialogable;
+import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
-import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.options.OptionStartDialog;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerQuestDatas;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.utils.ChatUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.types.Message;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	
@@ -63,13 +64,13 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			if (existing.page > 0) {
 				existing.page--;
 				changed = true;
-				Utils.playPluginSound(p, "ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
+				QuestUtils.playPluginSound(player, "ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
 			}
 		}else if (clickType.isRightClick()) {
 			if (existing.page + 1 < existing.pages.size()) {
 				existing.page++;
 				changed = true;
-				Utils.playPluginSound(p, "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
+				QuestUtils.playPluginSound(player, "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
 			}
 		}
 		
@@ -77,9 +78,9 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(end);
-		return CloseBehavior.NOTHING;
+	public CloseBehavior onClose(Player p) {
+		QuestUtils.runSync(end);
+		return StandardCloseBehavior.NOTHING;
 	}
 
 	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
@@ -112,12 +113,12 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		WrappedDialogable(Dialogable dialogable) {
 			this.dialogable = dialogable;
 
-			List<Message> messages = dialogable.getDialog().messages;
+			List<Message> messages = dialogable.getDialog().getMessages();
 			List<List<String>> lines = new ArrayList<>(messages.size());
 			for (int i = 0; i < messages.size(); i++) {
 				Message msg = messages.get(i);
 				String formatted = msg.formatMessage(player, dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
-				lines.add(ChatUtils.wordWrap(formatted, 40, 100));
+				lines.add(ChatColorUtils.wordWrap(formatted, 40, 100));
 			}
 
 			if (lines.isEmpty()) {

@@ -20,17 +20,17 @@ import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.CountableObject;
 
@@ -39,7 +39,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 
 	private boolean placeCancelled;
 	
-	public StageMine(QuestBranch branch, List<CountableObject<BQBlock>> blocks) {
+	public StageMine(StageController controller, List<CountableObject<BQBlock>> blocks) {
 		super(branch, blocks);
 	}
 	
@@ -52,7 +52,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Lang.SCOREBOARD_MINE.format(super.descriptionLine(acc, source));
 	}
 	
@@ -111,7 +111,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		if (placeCancelled) section.set("placeCancelled", placeCancelled);
 	}
 	
-	public static StageMine deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageMine deserialize(ConfigurationSection section, StageController controller) {
 		StageMine stage = new StageMine(branch, new ArrayList<>());
 		stage.deserialize(section);
 
@@ -148,7 +148,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		}
 		
 		@Override
-		public StageMine finishStage(QuestBranch branch) {
+		public StageMine finishStage(StageController controller) {
 			StageMine stage = new StageMine(branch, getImmutableBlocks());
 			stage.setPlaceCancelled(prevent);
 			return stage;

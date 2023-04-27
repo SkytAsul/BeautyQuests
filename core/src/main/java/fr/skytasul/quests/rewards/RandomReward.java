@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.utils.Lang;
 
 public class RandomReward extends AbstractReward {
 	
@@ -40,7 +40,7 @@ public class RandomReward extends AbstractReward {
 		this.max = Math.max(min, max);
 		
 		if (max > rewards.size())
-			BeautyQuests.logger.warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ") in " + debugName());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ") in " + debugName());
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class RandomReward extends AbstractReward {
 				List<String> messages = reward.give(p);
 				if (messages != null) msg.addAll(messages);
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
 			}
 		}
 		
@@ -96,10 +96,10 @@ public class RandomReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {
-			QuestsAPI.getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
+			QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
 				this.rewards = rewards;
 				event.reopenGUI();
-			}, rewards).create(event.getPlayer());
+			}, rewards).open(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
 			Lang.REWARD_EDITOR_RANDOM_MIN.send(event.getPlayer());
 			new TextEditor<>(event.getPlayer(), event::reopenGUI, min -> {
@@ -107,8 +107,8 @@ public class RandomReward extends AbstractReward {
 				new TextEditor<>(event.getPlayer(), event::reopenGUI, max -> {
 					setMinMax(min, max == null ? min : max);
 					event.reopenGUI();
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).passNullIntoEndConsumer().enter();
-			}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).passNullIntoEndConsumer().start();
+			}, NumberParser.INTEGER_PARSER_POSITIVE).start();
 		}
 	}
 	

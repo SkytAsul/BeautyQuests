@@ -14,14 +14,14 @@ import com.massivecraft.factions.FactionsIndex;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.Factions;
 
 public class FactionRequirement extends AbstractRequirement {
@@ -83,7 +83,7 @@ public class FactionRequirement extends AbstractRequirement {
 					public void click(Faction existing, ItemStack item, ClickType clickType) {
 						callback.apply(existing);
 					}
-				}.create(p);
+				}.open(player);
 			}
 			
 			@Override
@@ -92,7 +92,7 @@ public class FactionRequirement extends AbstractRequirement {
 				event.reopenGUI();
 			}
 			
-		}.create(event.getPlayer());
+		}.open(event.getPlayer());
 	}
 	
 	@Override
@@ -111,7 +111,7 @@ public class FactionRequirement extends AbstractRequirement {
 		super.load(section);
 		for (String s : section.getStringList("factions")) {
 			if (!FactionColl.get().containsId(s)) {
-				BeautyQuests.getInstance().getLogger().warning("Faction with ID " + s + " no longer exists.");
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Faction with ID " + s + " no longer exists.");
 				continue;
 			}
 			factions.add(FactionColl.get().get(s));

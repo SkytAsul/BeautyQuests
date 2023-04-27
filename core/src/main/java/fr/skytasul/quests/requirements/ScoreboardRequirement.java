@@ -4,14 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.ScoreboardObjectiveParser;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.ScoreboardObjectiveParser;
-import fr.skytasul.quests.utils.ComparisonMethod;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.ComparisonMethod;
 
 public class ScoreboardRequirement extends TargetNumberRequirement {
 
@@ -67,7 +67,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		}, () -> {
 			event.getGUI().remove(this);
 			event.reopenGUI();
-		}, new ScoreboardObjectiveParser()).enter();
+		}, new ScoreboardObjectiveParser()).start();
 	}
 	
 	@Override

@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 
@@ -30,7 +30,7 @@ public class Command {
 			if (parse && DependenciesManager.papi.isEnabled()) formattedcmd = QuestsPlaceholders.setPlaceholders(o, formattedcmd);
 			CommandSender sender = console ? Bukkit.getConsoleSender() : o;
 			Bukkit.dispatchCommand(sender, formattedcmd);
-			DebugUtils.logMessage(sender.getName() + " performed command " + formattedcmd);
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug(sender.getName() + " performed command " + formattedcmd);
 		};
 		if (delay == 0 && Bukkit.isPrimaryThread()) {
 			run.run();

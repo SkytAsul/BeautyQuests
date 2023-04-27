@@ -29,6 +29,7 @@
 	</repositories>
 
 	<modules>
+		<module>api</module>
 		<module>core</module>
 		<module>v1_9_R1</module>
 		<module>v1_9_R2</module>

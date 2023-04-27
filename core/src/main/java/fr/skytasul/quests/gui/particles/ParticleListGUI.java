@@ -8,10 +8,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.Particle;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.StaticPagedGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.ParticleEffect;
 
 public class ParticleListGUI extends StaticPagedGUI<Particle> {

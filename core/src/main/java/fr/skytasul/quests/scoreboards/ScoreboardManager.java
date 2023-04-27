@@ -20,11 +20,11 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.DebugUtils;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.quests.Quest;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
 
@@ -126,7 +126,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		lines.clear();
 		for (Map<?, ?> map : config.getMapList("lines")) {
 			if (lines.size() == 15) {
-				BeautyQuests.logger.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
 				break;
 			}
 			try {
@@ -135,7 +135,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 				ex.printStackTrace();
 			}
 		}
-		DebugUtils.logMessage("Registered " + lines.size() + " lines in scoreboard");
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered " + lines.size() + " lines in scoreboard");
 		
 		scoreboards = new HashMap<>();
 		forceHiddenState = new HashMap<>();
@@ -146,7 +146,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void unload(){
 		HandlerList.unregisterAll(this);
 		for (Scoreboard s : scoreboards.values()) s.cancel();
-		if (!scoreboards.isEmpty()) BeautyQuests.getInstance().getLogger().info(scoreboards.size() + " scoreboards deleted.");
+		if (!scoreboards.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().info(scoreboards.size() + " scoreboards deleted.");
 		scoreboards.clear();
 		scoreboards = null;
 		forceHiddenState.clear();
@@ -190,33 +190,32 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 	
 	@Override
-	public void questFinish(PlayerAccount acc, Player p, Quest quest) {
+	public void questFinish(PlayerAccount acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, p, x -> x.questRemove(quest));
+		questEvent(acc, x -> x.questRemove(quest));
 	}
 	
 	@Override
 	public void questReset(PlayerAccount acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, null, x -> x.questRemove(quest));
+		questEvent(acc, x -> x.questRemove(quest));
 	}
 	
 	@Override
-	public void questUpdated(PlayerAccount acc, Player p, Quest quest) {
+	public void questUpdated(PlayerAccount acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, p, x -> x.setShownQuest(quest, true));
+		questEvent(acc, x -> x.setShownQuest(quest, true));
 	}
 	
 	@Override
-	public void questStart(PlayerAccount acc, Player p, Quest quest) {
+	public void questStart(PlayerAccount acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, p, x -> x.questAdd(quest));
+		questEvent(acc, x -> x.questAdd(quest));
 	}
 	
-	private void questEvent(PlayerAccount acc, Player p, Consumer<Scoreboard> consumer) {
-		if (p == null) p = acc.getPlayer();
-		if (p != null) {
-			Scoreboard scoreboard = scoreboards.get(p);
+	private void questEvent(PlayerAccount acc, Consumer<Scoreboard> consumer) {
+		if (acc.isCurrent()) {
+			Scoreboard scoreboard = scoreboards.get(acc.getPlayer());
 			if (scoreboard != null) consumer.accept(scoreboard);
 		}
 	}

@@ -7,16 +7,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class StageChat extends AbstractStage{
 	
@@ -27,8 +27,8 @@ public class StageChat extends AbstractStage{
 	
 	private boolean command;
 	
-	public StageChat(QuestBranch branch, String text, boolean cancel, boolean ignoreCase, boolean placeholders) {
-		super(branch);
+	public StageChat(StageController controller, String text, boolean cancel, boolean ignoreCase, boolean placeholders) {
+		super(controller);
 		
 		Validate.notNull(text, "Text cannot be null");
 		this.text = text;
@@ -40,12 +40,12 @@ public class StageChat extends AbstractStage{
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Lang.SCOREBOARD_CHAT.format(text);
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source){
 		return new String[]{text};
 	}
 	
@@ -91,7 +91,7 @@ public class StageChat extends AbstractStage{
 		if (!placeholders) section.set("placeholders", false);
 	}
 	
-	public static StageChat deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageChat deserialize(ConfigurationSection section, StageController controller) {
 		return new StageChat(branch, section.getString("writeText"), section.getBoolean("cancel", true), section.getBoolean("ignoreCase", false), section.getBoolean("placeholders", true));
 	}
 
@@ -158,7 +158,7 @@ public class StageChat extends AbstractStage{
 		}
 
 		@Override
-		public StageChat finishStage(QuestBranch branch) {
+		public StageChat finishStage(StageController controller) {
 			return new StageChat(branch, text, cancel, ignoreCase, placeholders);
 		}
 		
@@ -171,7 +171,7 @@ public class StageChat extends AbstractStage{
 				obj = obj.replace("{SLASH}", "/");
 				setText(obj);
 				reopenGUI(p, false);
-			}).enter();
+			}).start();
 		}
 	}
 

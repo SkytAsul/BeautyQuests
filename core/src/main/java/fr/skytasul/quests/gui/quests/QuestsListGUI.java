@@ -5,15 +5,15 @@ import java.util.function.Consumer;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.quests.Quest;
 
 public class QuestsListGUI extends PagedGUI<Quest> {
 	
@@ -22,27 +22,27 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	public QuestsListGUI(Consumer<Quest> run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
 		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, Quest::getName);
 		if (acc != null){
-			if (started) super.objects.addAll(QuestsAPI.getQuests().getQuestsStarted(acc));
-			if (notStarted) super.objects.addAll(QuestsAPI.getQuests().getQuestsNotStarted(acc, false, true));
-			if (finished) super.objects.addAll(QuestsAPI.getQuests().getQuestsFinished(acc, false));
-		}else super.objects.addAll(QuestsAPI.getQuests().getQuests());
+			if (started) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc));
+			if (notStarted) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, false, true));
+			if (finished) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(acc, false));
+		}else super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuests());
 		this.run = run;
 	}
 
 	@Override
 	public ItemStack getItemStack(Quest qu){
-		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getID(), qu.getDescription());
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), "§6§l§o" + qu.getName() + "    §r§e#" + qu.getId(), qu.getDescription());
 	}
 
 	@Override
 	public void click(Quest existing, ItemStack item, ClickType clickType){
-		Inventories.closeAndExit(p);
+		close(player);
 		run.accept(existing);
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv){
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REMOVE;
 	}
 
 }

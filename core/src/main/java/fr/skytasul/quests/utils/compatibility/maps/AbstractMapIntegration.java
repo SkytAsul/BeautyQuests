@@ -1,13 +1,12 @@
 package fr.skytasul.quests.utils.compatibility.maps;
 
 import org.bukkit.Location;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.DebugUtils;
 
 public abstract class AbstractMapIntegration implements QuestsHandler {
 	
@@ -18,7 +17,8 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	}
 	
 	private void initializeQuests() {
-		if (QuestsAPI.getQuests() != null) QuestsAPI.getQuests().forEach(this::questLoaded);
+		if (QuestsAPI.getAPI().getQuestsManager() != null)
+			QuestsAPI.getAPI().getQuestsManager().getQuests().forEach(this::questLoaded);
 	}
 	
 	@Override
@@ -27,14 +27,14 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 			return;
 		if (!quest.hasOption(OptionStarterNPC.class))
 			return;
-		if (quest.isHidden(VisibilityLocation.MAPS)) {
-			DebugUtils.logMessage("No marker created for quest " + quest.getID() + ": quest is hidden");
+		if (quest.isHidden(QuestVisibilityLocation.MAPS)) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("No marker created for quest " + quest.getId() + ": quest is hidden");
 			return;
 		}
 		
 		Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getLocation();
 		if (lc == null) {
-			BeautyQuests.logger.warning("Cannot create map marker for quest #" + quest.getID() + " (" + quest.getName() + ")");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot create map marker for quest #" + quest.getId() + " (" + quest.getName() + ")");
 		}else {
 			addMarker(quest, lc);
 		}
@@ -42,7 +42,7 @@ public abstract class AbstractMapIntegration implements QuestsHandler {
 	
 	@Override
 	public void questUnload(Quest quest) {
-		if (!quest.isHidden(VisibilityLocation.MAPS) && quest.hasOption(OptionStarterNPC.class)) removeMarker(quest);
+		if (!quest.isHidden(QuestVisibilityLocation.MAPS) && quest.hasOption(OptionStarterNPC.class)) removeMarker(quest);
 	}
 	
 	public abstract boolean isEnabled();

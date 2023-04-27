@@ -5,11 +5,11 @@ import java.util.function.Consumer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ChooseGUI;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ChooseGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.stages.StageBucket.BucketType;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class BucketTypeGUI extends ChooseGUI<BucketType>{
 
@@ -40,7 +40,7 @@ public class BucketTypeGUI extends ChooseGUI<BucketType>{
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
 		Utils.runSync(cancel);
-		return CloseBehavior.NOTHING;
+		return StandardCloseBehavior.NOTHING;
 	}
 	
 }

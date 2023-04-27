@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -18,17 +19,19 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.Sets;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.nms.NMS;
 
 public class QuestsConfiguration {
 
@@ -73,7 +76,7 @@ public class QuestsConfiguration {
 	private static String descAmountFormat = "x{0}";
 	private static boolean descXOne = true;
 	private static boolean inlineAlone = true;
-	private static List<Source> descSources = new ArrayList<>();
+	private static List<DescriptionSource> descSources = new ArrayList<>();
 	private static boolean requirementReasonOnMultipleQuests = true;
 	private static boolean stageEndRewardsMessage = true;
 	private static QuestDescription questDescription;
@@ -121,20 +124,12 @@ public class QuestsConfiguration {
 	
 	void init() {
 		backups = config.getBoolean("backups", true);
-		if (!backups) BeautyQuests.logger.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
+		if (!backups) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
 		
 		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled()) {
-			if (NMS.getMCVersion() >= 13) {
-				if (!MinecraftNames.intialize(minecraftTranslationsFile)) {
-					BeautyQuests.logger.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
-					minecraftTranslationsFile = null;
-				}
-			}else{
-				BeautyQuests.logger.warning("Cannot enable the \"minecraftTranslationsFile\" option : only supported on Spigot 1.13 and higher");
-				minecraftTranslationsFile = null;
-			}
+			initializeTranslations();
 		}
 		dialogs.init();
 		menu.init();
@@ -178,7 +173,7 @@ public class QuestsConfiguration {
 						.collect(Collectors.toList());
 			}
 		}catch (IllegalArgumentException ex) {
-			BeautyQuests.logger.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 		}
 		skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
 		enablePrefix = config.getBoolean("enablePrefix");
@@ -188,7 +183,7 @@ public class QuestsConfiguration {
 		hookAcounts = DependenciesManager.acc.isEnabled() && config.getBoolean("accountsHook");
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
-			BeautyQuests.logger.info("AccountsHook is now managing player datas for quests !");
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
 		}
 		usePlayerBlockTracker = DependenciesManager.PlayerBlockTracker.isEnabled() && config.getBoolean("usePlayerBlockTracker");
 		dSetName = config.getString("dynmap.markerSetName");
@@ -208,15 +203,15 @@ public class QuestsConfiguration {
 		inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
 		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
 			try{
-				descSources.add(Source.valueOf(s));
+				descSources.add(DescriptionSource.valueOf(s));
 			}catch (IllegalArgumentException ex){
-				BeautyQuests.logger.warning("Loading of description splitted sources failed : source " + s + " does not exist");
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of description splitted sources failed : source " + s + " does not exist");
 			}
 		}
 		
 		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
-		if (NMS.getMCVersion() >= 9) {
+		if (MinecraftVersion.MAJOR >= 9) {
 			particleStart = loadParticles(config, "start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
 			particleTalk = loadParticles(config, "talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
 			particleNext = loadParticles(config, "next", new ParticleEffect(Particle.SMOKE_NORMAL, ParticleShape.SPOT, null));
@@ -236,16 +231,41 @@ public class QuestsConfiguration {
 		}
 	}
 	
+	private void initializeTranslations() {
+		if (MinecraftVersion.MAJOR >= 13) {
+			String fileName = minecraftTranslationsFile;
+			Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
+			if (extension.isPresent()) {
+				if (extension.get().equalsIgnoreCase("json")) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
+					return;
+				}
+			} else {
+				fileName += ".json";
+			}
+
+			if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
+				minecraftTranslationsFile = null;
+			}
+		} else {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"Cannot enable the \"minecraftTranslationsFile\" option : only supported on Spigot 1.13 and higher");
+			minecraftTranslationsFile = null;
+		}
+	}
+
 	private ParticleEffect loadParticles(FileConfiguration config, String name, ParticleEffect defaultParticle) {
 		ParticleEffect particle = null;
 		if (config.getBoolean(name + ".enabled")) {
 			try{
 				particle = ParticleEffect.deserialize(config.getConfigurationSection(name));
 			}catch (Exception ex){
-				BeautyQuests.logger.warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
 			}
 			if (particle == null) particle = defaultParticle;
-			BeautyQuests.logger.info("Loaded " + name + " particles: " + particle.toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded " + name + " particles: " + particle.toString());
 		}
 		return particle;
 	}
@@ -263,7 +283,7 @@ public class QuestsConfiguration {
 			Sound.valueOf(sound.toUpperCase());
 			sound = sound.toUpperCase();
 		}catch (IllegalArgumentException ex) {
-			BeautyQuests.logger.warning("Sound " + sound + " is not a valid Bukkit sound.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Sound " + sound + " is not a valid Bukkit sound.");
 		}
 		return sound;
 	}
@@ -310,7 +330,7 @@ public class QuestsConfiguration {
 	}
 	
 	public static boolean showMobsProgressBar() {
-		return mobsProgressBar && QuestsAPI.hasBossBarManager();
+		return mobsProgressBar && QuestsAPI.getAPI().hasBossBarManager();
 	}
 	
 	public static int getProgressBarTimeout(){
@@ -461,7 +481,7 @@ public class QuestsConfiguration {
 		return descAmountFormat;
 	}
 	
-	public static boolean showDescriptionItemsXOne(Source source){
+	public static boolean showDescriptionItemsXOne(DescriptionSource source){
 		return splitDescription(source) && descXOne;
 	}
 	
@@ -469,9 +489,9 @@ public class QuestsConfiguration {
 		return inlineAlone;
 	}
 
-	public static boolean splitDescription(Source source){
-		if (source == Source.FORCESPLIT) return true;
-		if (source == Source.FORCELINE) return false;
+	public static boolean splitDescription(DescriptionSource source){
+		if (source == DescriptionSource.FORCESPLIT) return true;
+		if (source == DescriptionSource.FORCELINE) return false;
 		return descSources.contains(source);
 	}
 	
@@ -538,7 +558,7 @@ public class QuestsConfiguration {
 		}
 		
 		private void init() {
-			inActionBar = NMS.getMCVersion() > 8 && config.getBoolean("inActionBar");
+			inActionBar = MinecraftVersion.MAJOR > 8 && config.getBoolean("inActionBar");
 			defaultTime = config.getInt("defaultTime");
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
@@ -595,7 +615,7 @@ public class QuestsConfiguration {
 	
 	public class QuestsMenuConfig {
 		
-		private Set<Category> tabs;
+		private Set<PlayerListCategory> tabs;
 		private boolean openNotStartedTabWhenEmpty = true;
 		private boolean allowPlayerCancelQuest = true;
 		
@@ -615,10 +635,10 @@ public class QuestsConfiguration {
 		}
 		
 		private void init() {
-			tabs = config.getStringList("enabledTabs").stream().map(Category::fromString).collect(Collectors.toSet());
+			tabs = config.getStringList("enabledTabs").stream().map(PlayerListCategory::fromString).collect(Collectors.toSet());
 			if (tabs.isEmpty()) {
-				BeautyQuests.logger.warning("Quests Menu must have at least one enabled tab.");
-				tabs = Sets.newHashSet(Category.values());
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Quests Menu must have at least one enabled tab.");
+				tabs = Sets.newHashSet(PlayerListCategory.values());
 			}
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
@@ -632,7 +652,7 @@ public class QuestsConfiguration {
 			return allowPlayerCancelQuest;
 		}
 		
-		public Set<Category> getEnabledTabs() {
+		public Set<PlayerListCategory> getEnabledTabs() {
 			return tabs;
 		}
 		

@@ -3,12 +3,12 @@ package fr.skytasul.quests.rewards;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.MessageUtils;
 
 public class MessageReward extends AbstractReward {
 
@@ -23,7 +23,7 @@ public class MessageReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player p) {
-		Utils.sendOffMessage(p, text);
+		MessageUtils.sendOffMessage(p, text);
 		return null;
 	}
 
@@ -44,7 +44,7 @@ public class MessageReward extends AbstractReward {
 		new TextEditor<String>(event.getPlayer(), event::cancel, obj -> {
 			this.text = obj;
 			event.reopenGUI();
-		}).enter();
+		}).start();
 	}
 	
 	@Override

@@ -2,8 +2,8 @@ package fr.skytasul.quests.commands;
 
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.scoreboards.Scoreboard;
-import fr.skytasul.quests.utils.Lang;
 import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Range;

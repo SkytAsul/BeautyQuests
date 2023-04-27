@@ -12,20 +12,21 @@ import com.cryptomorin.xseries.XMaterial;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardExitEvent;
@@ -42,8 +43,8 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	private Locatable.Located center = null;
 	private long lastCenter = 0;
 	
-	public StageArea(QuestBranch branch, String regionName, String worldName, boolean exit) {
-		super(branch);
+	public StageArea(StageController controller, String regionName, String worldName, boolean exit) {
+		super(controller);
 		
 		World w = Bukkit.getWorld(worldName);
 		Validate.notNull(w, "No world with specified name (\"" + worldName + "\")");
@@ -95,12 +96,12 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
-		return Utils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
+		return MessageUtils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new String[]{region.getId()};
 	}
 
@@ -116,7 +117,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 						.add(region.getMinimumPoint())) // midpoint
 					.add(0.5, 0.5, 0.5);
 			
-			center = Locatable.Located.create(centerLoc);
+			center = Locatable.Located.open(centerLoc);
 			lastCenter = System.currentTimeMillis();
 		}
 		return center;
@@ -137,7 +138,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		section.set("exit", exit);
 	}
 	
-	public static StageArea deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageArea deserialize(ConfigurationSection section, StageController controller) {
 		return new StageArea(branch, section.getString("region"), section.getString("world"), section.getBoolean("exit", false));
 	}
 
@@ -179,7 +180,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 					if (first) remove();
 				}
 				reopenGUI(p, false);
-			}).useStrippedMessage().enter();
+			}).useStrippedMessage().start();
 		}
 		
 		@Override
@@ -196,7 +197,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		}
 		
 		@Override
-		public StageArea finishStage(QuestBranch branch) {
+		public StageArea finishStage(StageController controller) {
 			return new StageArea(branch, regionName, worldName, exit);
 		}
 	}

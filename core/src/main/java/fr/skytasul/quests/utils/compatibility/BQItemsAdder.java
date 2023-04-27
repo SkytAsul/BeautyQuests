@@ -3,7 +3,7 @@ package fr.skytasul.quests.utils.compatibility;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.comparison.ItemComparison;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.localization.Lang;
 import dev.lone.itemsadder.api.CustomStack;
 
 public final class BQItemsAdder {
@@ -14,11 +14,11 @@ public final class BQItemsAdder {
 			Lang.comparisonItemsAdderLore.toString(), BQItemsAdder::compareItems).setHasPriority();
 
 	public static void initialize() {
-		QuestsAPI.registerItemComparison(COMPARISON);
+		QuestsAPI.getAPI().registerItemComparison(COMPARISON);
 	}
 
 	public static void unload() {
-		QuestsAPI.unregisterItemComparison(COMPARISON);
+		QuestsAPI.getAPI().unregisterItemComparison(COMPARISON);
 	}
 
 	public static boolean compareItems(ItemStack item1, ItemStack item2) {

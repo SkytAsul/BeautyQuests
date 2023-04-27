@@ -12,13 +12,13 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.SessionManager;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.requirements.RegionRequirement;
 import fr.skytasul.quests.stages.StageArea;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public class BQWorldGuard {
@@ -48,7 +48,7 @@ public class BQWorldGuard {
 				SessionManager sessionManager = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager();
 				if (WorldGuardEntryHandler.FACTORY.register(sessionManager)) {
 					handleEntry = true;
-					DebugUtils.logMessage("Now using WorldGuard entry API.");
+					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Now using WorldGuard entry API.");
 					WorldGuardEntryHandler.FACTORY.registerSessions(sessionManager);
 					
 				}
@@ -68,7 +68,7 @@ public class BQWorldGuard {
 		if (handleEntry) {
 			handleEntry = false;
 			WorldGuardEntryHandler.FACTORY.unregister(com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getSessionManager());
-			DebugUtils.logMessage("Unregistered from WorldGuard entry API.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unregistered from WorldGuard entry API.");
 		}
 	}
 	
@@ -118,9 +118,9 @@ public class BQWorldGuard {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
 		
-		QuestsAPI.getStages().register(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize,
+		QuestsAPI.getAPI().getStages().register(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize,
 				ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString()), StageArea.Creator::new));
-		QuestsAPI.getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
 	
 	public static void unload() {

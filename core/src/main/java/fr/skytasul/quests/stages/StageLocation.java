@@ -8,24 +8,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.WaitClick;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.editors.checkers.PatternParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.WaitClick;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.editors.checkers.PatternParser;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.npc.NPCGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.BQLocation;
 
@@ -39,8 +39,8 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	
 	private String descMessage;
 	
-	public StageLocation(QuestBranch branch, BQLocation lc, int radius, boolean gps) {
-		super(branch);
+	public StageLocation(StageController controller, BQLocation lc, int radius, boolean gps) {
+		super(controller);
 		this.lc = lc;
 		this.radius = radius;
 		this.radiusSquared = radius * radius;
@@ -106,8 +106,8 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	}
 	
 	@Override
-	public void end(PlayerAccount acc) {
-		super.end(acc);
+	public void ended(PlayerAccount acc) {
+		super.ended(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			if (QuestsConfiguration.handleGPS() && gps) GPS.stopCompass(p);
@@ -115,12 +115,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source){
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return descMessage;
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Object[] { lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorldName() };
 	}
 
@@ -131,7 +131,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		if (!gps) section.set("gps", false);
 	}
 
-	public static StageLocation deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageLocation deserialize(ConfigurationSection section, StageController controller) {
 		return new StageLocation(branch, BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)), section.getInt("radius"), section.getBoolean("gps", true));
 	}
 	
@@ -155,21 +155,21 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 				new TextEditor<>(p, () -> reopenGUI(p, false), x -> {
 					setRadius(x);
 					reopenGUI(p, false);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			});
 			line.setItem(SLOT_LOCATION, ItemUtils.item(XMaterial.STICK, Lang.stageLocationLocation.toString()), (p, item) -> {
 				Lang.LOCATION_GO.send(p);
-				new WaitClick(p, () -> reopenGUI(p, false), NPCGUI.validMove, () -> {
+				new WaitClick(p, () -> reopenGUI(p, false), NpcCreateGUI.validMove, () -> {
 					setLocation(new BQLocation(p.getLocation()));
 					reopenGUI(p, false);
-				}).enter();
+				}).start();
 			});
 			line.setItem(SLOT_WORLD_PATTERN, ItemUtils.item(XMaterial.NAME_TAG, Lang.stageLocationWorldPattern.toString(), QuestOption.formatDescription(Lang.stageLocationWorldPatternLore.toString())), (p, item) -> {
 				Lang.LOCATION_WORLDPATTERN.send(p);
 				new TextEditor<>(p, () -> reopenGUI(p, false), pattern -> {
 					setPattern(pattern);
 					reopenGUI(p, false);
-				}, PatternParser.PARSER).passNullIntoEndConsumer().enter();
+				}, PatternParser.PARSER).passNullIntoEndConsumer().start();
 			});
 			
 			if (QuestsConfiguration.handleGPS()) line.setItem(SLOT_GPS, ItemUtils.itemSwitch(Lang.stageGPS.toString(), gps), (p, item) -> setGPS(ItemUtils.toggle(item)), true, true);
@@ -207,11 +207,11 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		public void start(Player p) {
 			super.start(p);
 			Lang.LOCATION_GO.send(p);
-			new WaitClick(p, removeAndReopen(p, false), NPCGUI.validMove, () -> {
+			new WaitClick(p, removeAndReopen(p, false), NpcCreateGUI.validMove, () -> {
 				setLocation(p.getLocation());
 				setRadius(5);
 				reopenGUI(p, false);
-			}).enter();
+			}).start();
 		}
 
 		@Override
@@ -224,7 +224,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		}
 		
 		@Override
-		public StageLocation finishStage(QuestBranch branch) {
+		public StageLocation finishStage(StageController controller) {
 			return new StageLocation(branch, getBQLocation(), radius, gps);
 		}
 		

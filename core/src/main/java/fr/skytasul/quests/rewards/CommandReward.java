@@ -9,15 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.CommandGUI;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Command;
 
 public class CommandReward extends AbstractReward {
@@ -53,11 +52,11 @@ public class CommandReward extends AbstractReward {
 
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		Inventories.create(event.getPlayer(), new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
+		new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
 			
 			@Override
 			public void createObject(Function<Command, ItemStack> callback) {
-				new CommandGUI(callback::apply, this::reopen).create(p);
+				new CommandGUI(callback::apply, this::reopen).open(player);
 			}
 			
 			@Override
@@ -65,7 +64,7 @@ public class CommandReward extends AbstractReward {
 				new CommandGUI(command -> {
 					updateObject(object, command);
 					reopen();
-				}, this::reopen).setFromExistingCommand(object).create(p);
+				}, this::reopen).setFromExistingCommand(object).open(player);
 			}
 
 			@Override
@@ -79,7 +78,7 @@ public class CommandReward extends AbstractReward {
 				event.reopenGUI();
 			}
 			
-		});
+		}.open(event.getPlayer());
 	}
 	
 	@Override

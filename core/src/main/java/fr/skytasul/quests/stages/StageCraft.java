@@ -14,18 +14,18 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 import fr.skytasul.quests.gui.misc.ItemGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -35,8 +35,8 @@ public class StageCraft extends AbstractStage {
 	private ItemStack result;
 	private final ItemComparisonMap comparisons;
 	
-	public StageCraft(QuestBranch branch, ItemStack result, ItemComparisonMap comparisons) {
-		super(branch);
+	public StageCraft(StageController controller, ItemStack result, ItemComparisonMap comparisons) {
+		super(controller);
 		this.result = result;
 		this.comparisons = comparisons;
 		if (result.getAmount() == 0) result.setAmount(1);
@@ -134,12 +134,12 @@ public class StageCraft extends AbstractStage {
 	}
 
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source){
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
 	}
 
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
 	}
 	
@@ -150,7 +150,7 @@ public class StageCraft extends AbstractStage {
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 	
-	public static StageCraft deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageCraft deserialize(ConfigurationSection section, StageController controller) {
 		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
 	}
 
@@ -180,13 +180,13 @@ public class StageCraft extends AbstractStage {
 				new ItemGUI((is) -> {
 					setItem(is);
 					reopenGUI(p, true);
-				}, () -> reopenGUI(p, true)).create(p);
+				}, () -> reopenGUI(p, true)).open(p);
 			});
 			line.setItem(COMPARISONS_SLOT, ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString()), (p, item) -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 		}
 
@@ -206,7 +206,7 @@ public class StageCraft extends AbstractStage {
 			new ItemGUI(is -> {
 				setItem(is);
 				reopenGUI(p, true);
-			}, removeAndReopen(p, true)).create(p);
+			}, removeAndReopen(p, true)).open(p);
 		}
 
 		@Override
@@ -217,7 +217,7 @@ public class StageCraft extends AbstractStage {
 		}
 		
 		@Override
-		public StageCraft finishStage(QuestBranch branch) {
+		public StageCraft finishStage(StageController controller) {
 			return new StageCraft(branch, item, comparisons);
 		}
 	}

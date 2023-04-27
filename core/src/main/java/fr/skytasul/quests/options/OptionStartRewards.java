@@ -2,9 +2,9 @@ package fr.skytasul.quests.options;
 
 import java.util.ArrayList;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionRewards;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.utils.Lang;
 
 public class OptionStartRewards extends QuestOptionRewards {
 	

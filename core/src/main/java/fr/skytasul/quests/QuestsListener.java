@@ -15,10 +15,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,25 +23,25 @@ import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.compatibility.Paper;
 
 public class QuestsListener implements Listener{
@@ -58,27 +54,34 @@ public class QuestsListener implements Listener{
 		Player p = e.getPlayer();
 		BQNPC npc = e.getNPC();
 		
-		if (Inventories.isInSystem(p)) return;
+		if (QuestsPlugin.getPlugin().getGuiManager().hasGuiOpened(p)
+				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
+			return;
 		
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		PlayerAccountImplementation acc = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 		if (acc == null) return;
 		
 		Set<Quest> quests = npc.getQuests();
-		quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() ? true : !qu.hasFinished(acc))).collect(Collectors.toSet());
+		quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() || !qu.hasFinished(acc)))
+				.collect(Collectors.toSet());
 		if (quests.isEmpty() && npc.getPools().isEmpty()) return;
 		
-		List<Quest> launcheable = new ArrayList<>();
-		List<Quest> requirements = new ArrayList<>();
-		List<Quest> timer = new ArrayList<>();
+		List<QuestImplementation> launcheable = new ArrayList<>();
+		List<QuestImplementation> requirements = new ArrayList<>();
+		List<QuestImplementation> timer = new ArrayList<>();
 		for (Quest qu : quests) {
+			QuestImplementation quest = (QuestImplementation) qu;
 			try {
-				if (!qu.testRequirements(p, acc, false)) {
-					requirements.add(qu);
-				}else if (!qu.testTimer(acc, false)) {
-					timer.add(qu);
-				}else launcheable.add(qu);
+				if (!quest.testRequirements(p, acc, false)) {
+					requirements.add(quest);
+				} else if (!quest.testTimer(acc, false)) {
+					timer.add(quest);
+				} else
+					launcheable.add(quest);
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("An exception occured when checking requirements on the quest " + qu.getID() + " for player " + p.getName(), ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.severe("An exception occured when checking requirements on the quest " + quest.getId()
+								+ " for player " + p.getName(), ex);
 			}
 		}
 		
@@ -86,70 +89,50 @@ public class QuestsListener implements Listener{
 			try {
 				return pool.canGive(p, acc);
 			}catch (Exception ex) {
-				BeautyQuests.logger.severe("An exception occured when checking requirements on the pool " + pool.getID() + " for player " + p.getName(), ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An exception occured when checking requirements on the pool " + pool.getId() + " for player " + p.getName(), ex);
 				return false;
 			}
 		}).collect(Collectors.toSet());
 		
 		e.setCancelled(true);
 		if (!launcheable.isEmpty()) {
-			for (Quest quest : launcheable) {
+			for (QuestImplementation quest : launcheable) {
 				if (quest.isInDialog(p)) {
 					quest.clickNPC(p);
 					return;
 				}
 			}
-			ChooseQuestGUI gui = new ChooseQuestGUI(launcheable, quest -> {
-				if (quest == null) return;
-				quest.clickNPC(p);
-			}, true);
-			gui.setValidate(__ -> {
-				new PlayerListGUI(acc).create(p);
-			}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(), QuestOption.formatDescription(Lang.questMenuLore.toString())));
-			gui.create(p);
+			ChooseQuestGUI.choose(p, quests, quest -> {
+				((QuestImplementation) quest).clickNPC(p);
+			}, null, true, gui -> {
+				gui.setValidate(__ -> {
+					new PlayerListGUI(acc).open(p);
+				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
+						QuestOption.formatDescription(Lang.questMenuLore.toString())));
+			});
 		}else if (!startablePools.isEmpty()) {
 			QuestPool pool = startablePools.iterator().next();
-			DebugUtils.logMessage("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
 		}else {
 			if (!timer.isEmpty()) {
 				timer.get(0).testTimer(acc, true);
 			}else if (!requirements.isEmpty()) {
 				requirements.get(0).testRequirements(p, acc, true);
 			}else {
-				npc.getPools().iterator().next().give(p).thenAccept(result -> Utils.sendMessage(p, result));
+				npc.getPools().iterator().next().give(p).thenAccept(result -> MessageUtils.sendPrefixedMessage(p, result));
 			}
 			e.setCancelled(false);
 		}
-	}
-	
-	@EventHandler
-	public void onClose(InventoryCloseEvent e) {
-		Inventories.onClose(e);
-	}
-
-	@EventHandler
-	public void onClick(InventoryClickEvent e) {
-		Inventories.onClick(e);
-	}
-	
-	@EventHandler
-	public void onDrag(InventoryDragEvent e) {
-		Inventories.onDrag(e);
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onOpen(InventoryOpenEvent e) {
-		Inventories.onOpen(e);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 
-		DebugUtils.logMessage(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
 		// for timing purpose
 
-		if (BeautyQuests.loaded && !QuestsConfiguration.hookAccounts()) {
+		if (BeautyQuests.getInstance().loaded && !QuestsConfiguration.hookAccounts()) {
 			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}
 	}
@@ -157,7 +140,7 @@ public class QuestsListener implements Listener{
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		DebugUtils.logMessage(player.getName() + " left the server"); // for timing purpose
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " left the server"); // for timing purpose
 		if (!QuestsConfiguration.hookAccounts()) {
 			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
 		}
@@ -166,13 +149,13 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOW)
 	public void onAccountJoin(PlayerAccountJoinEvent e) {
 		if (e.isFirstJoin()) {
-			QuestsAPI.getQuests().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
+			QuestsAPI.getAPI().getQuestsManager().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
 	}
 	
 	@EventHandler
 	public void onAccountLeave(PlayerAccountLeaveEvent e) {
-		QuestsAPI.getQuests().forEach(x -> x.leave(e.getPlayer()));
+		BeautyQuests.getInstance().getQuestsManager().getQuestsRaw().forEach(x -> x.leave(e.getPlayer()));
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)

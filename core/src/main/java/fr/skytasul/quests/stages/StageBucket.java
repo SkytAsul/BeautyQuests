@@ -10,28 +10,27 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.BucketTypeGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.nms.NMS;
 
 public class StageBucket extends AbstractStage {
 
 	private BucketType bucket;
 	private int amount;
 
-	public StageBucket(QuestBranch branch, BucketType bucket, int amount) {
-		super(branch);
+	public StageBucket(StageController controller, BucketType bucket, int amount) {
+		super(controller);
 		this.bucket = bucket;
 		this.amount = amount;
 	}
@@ -70,12 +69,12 @@ public class StageBucket extends AbstractStage {
 	}
 
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false));
 	}
 
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
 	}
 
@@ -85,7 +84,7 @@ public class StageBucket extends AbstractStage {
 		section.set("amount", amount);
 	}
 
-	public static StageBucket deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageBucket deserialize(ConfigurationSection section, StageController controller) {
 		return new StageBucket(branch, BucketType.valueOf(section.getString("bucket")), section.getInt("amount"));
 	}
 
@@ -123,7 +122,7 @@ public class StageBucket extends AbstractStage {
 
 		public static BucketType[] getAvailable() {
 			if (AVAILABLE == null) {
-				AVAILABLE = NMS.getMCVersion() >= 17 ? values() : new BucketType[] {WATER, LAVA, MILK};
+				AVAILABLE = MinecraftVersion.MAJOR >= 17 ? values() : new BucketType[] {WATER, LAVA, MILK};
 				// inefficient? yes. But it's christmas and I don't want to work on this anymore, plus there will
 				// probably not be more bucket types in the future
 			}
@@ -144,13 +143,13 @@ public class StageBucket extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, true), obj -> {
 					setAmount(obj);
 					reopenGUI(p, true);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			});
 			line.setItem(7, ItemUtils.item(XMaterial.BUCKET, Lang.editBucketType.toString()), (p, item) -> {
 				new BucketTypeGUI(() -> reopenGUI(p, true), bucket -> {
 					setBucket(bucket);
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 		}
 		
@@ -176,8 +175,8 @@ public class StageBucket extends AbstractStage {
 				new TextEditor<>(p, cancel, obj -> {
 					setAmount(obj);
 					reopenGUI(p, true);
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
-			}).create(p);
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+			}).open(p);
 		}
 
 		@Override
@@ -188,7 +187,7 @@ public class StageBucket extends AbstractStage {
 		}
 		
 		@Override
-		public StageBucket finishStage(QuestBranch branch) {
+		public StageBucket finishStage(StageController controller) {
 			return new StageBucket(branch, bucket, amount);
 		}
 	}

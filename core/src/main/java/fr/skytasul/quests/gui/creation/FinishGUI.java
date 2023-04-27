@@ -1,7 +1,5 @@
 package fr.skytasul.quests.gui.creation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -12,29 +10,27 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.options.*;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayerQuestDatas;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.nms.NMS;
+import fr.skytasul.quests.options.OptionName;
+import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
+import fr.skytasul.quests.structure.QuestBranchImplementation;
+import fr.skytasul.quests.structure.StageControllerImplementation;
 
 public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomInventory {
 
@@ -62,7 +58,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			String invName = Lang.INVENTORY_DETAILS.toString();
 			if (session.isEdition()) {
 				invName = invName + " #" + session.getQuestEdited().getID();
-				if (NMS.getMCVersion() <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
+				if (MinecraftVersion.MAJOR <= 8 && invName.length() > 32) invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
 			}
 			inv = Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt() + 1) / 9D) * 9, invName);
 			
@@ -170,22 +166,22 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		boolean keepPlayerDatas = Boolean.TRUE.equals(this.keepPlayerDatas);
 		Quest qu;
 		if (session.isEdition()) {
-			DebugUtils.logMessage(
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug(
 					"Editing quest " + session.getQuestEdited().getID() + " with keep datas: " + keepPlayerDatas);
 			session.getQuestEdited().remove(false, false);
 			qu = new Quest(session.getQuestEdited().getID(), session.getQuestEdited().getFile());
 		}else {
 			int id = -1;
 			if (session.hasCustomID()) {
-				if (QuestsAPI.getQuests().getQuests().stream().anyMatch(x -> x.getID() == session.getCustomID())) {
-					BeautyQuests.logger.warning("Cannot create quest with custom ID " + session.getCustomID() + " because another quest with this ID already exists.");
+				if (QuestsAPI.getAPI().getQuestsManager().getQuests().stream().anyMatch(x -> x.getID() == session.getCustomID())) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot create quest with custom ID " + session.getCustomID() + " because another quest with this ID already exists.");
 				}else {
 					id = session.getCustomID();
-					BeautyQuests.logger.warning("A quest will be created with custom ID " + id + ".");
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("A quest will be created with custom ID " + id + ".");
 				}
 			}
 			if (id == -1)
-				id = QuestsAPI.getQuests().getFreeQuestID();
+				id = QuestsAPI.getAPI().getQuestsManager().getFreeQuestID();
 			qu = new Quest(id);
 		}
 		
@@ -193,7 +189,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			if (option.hasCustomValue()) qu.addOption(option);
 		}
 
-		QuestBranch mainBranch = new QuestBranch(qu.getBranchesManager());
+		QuestBranchImplementation mainBranch = new QuestBranchImplementation(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
 		boolean failure = loadBranch(mainBranch, session.getMainGUI());
 
@@ -206,27 +202,27 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 
 			if (session.areStagesEdited()) {
 				if (keepPlayerDatas) {
-					BeautyQuests.logger.warning("Players quests datas will be kept for quest #" + qu.getID()
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Players quests datas will be kept for quest #" + qu.getId()
 							+ " - this may cause datas issues.");
 				} else
 					BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(session.getQuestEdited())
-							.whenComplete(BeautyQuests.logger
+							.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded()
 									.logError("An error occurred while removing player datas after quest edition", p));
 			}
 
-			QuestsAPI.getQuests().addQuest(qu);
+			QuestsAPI.getAPI().getQuestsManager().addQuest(qu);
 			Utils.sendMessage(p, ((!session.isEdition()) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(), qu.getBranchesManager().getBranchesAmount());
 			Utils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
-			BeautyQuests.logger.info("New quest created: " + qu.getName() + ", ID " + qu.getID() + ", by " + p.getName());
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("New quest created: " + qu.getName() + ", ID " + qu.getId() + ", by " + p.getName());
 			if (session.isEdition()) {
-				BeautyQuests.getInstance().getLogger().info("Quest " + qu.getName() + " has been edited");
+				QuestsPlugin.getPlugin().getLoggerExpanded().info("Quest " + qu.getName() + " has been edited");
 				if (failure) BeautyQuests.getInstance().createQuestBackup(qu.getFile().toPath(), "Error occurred while editing");
 			}
 			try {
 				qu.saveToFile();
 			}catch (Exception e) {
 				Lang.ERROR_OCCURED.send(p, "initial quest save");
-				BeautyQuests.logger.severe("Error when trying to save newly created quest.", e);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
 			
 			if (keepPlayerDatas) {
@@ -234,18 +230,18 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 					PlayerAccount account = PlayersManager.getPlayerAccount(p);
 					if (account == null) continue;
 					if (account.hasQuestDatas(qu)) {
-						PlayerQuestDatas datas = account.getQuestDatas(qu);
+						PlayerQuestDatasImplementation datas = account.getQuestDatas(qu);
 						datas.questEdited();
 						if (datas.getBranch() == -1) continue;
-						QuestBranch branch = qu.getBranchesManager().getBranch(datas.getBranch());
+						QuestBranchImplementation branch = qu.getBranchesManager().getBranch(datas.getBranch());
 						if (datas.isInEndingStages()) {
-							branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, p));
+							branch.getEndingStages().keySet().forEach(stage -> stage.joins(account, player));
 						}else branch.getRegularStage(datas.getStage()).joins(account, p);
 					}
 				}
 			}
 			
-			QuestsAPI.propagateQuestsHandlers(handler -> {
+			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> {
 				if (session.isEdition())
 					handler.questEdit(qu, session.getQuestEdited(), keepPlayerDatas);
 				else handler.questCreate(qu);
@@ -255,16 +251,16 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		Inventories.closeAndExit(p);
 	}
 	
-	private boolean loadBranch(QuestBranch branch, StagesGUI gui) {
+	private boolean loadBranch(QuestBranchImplementation branch, StagesGUI gui) {
 		boolean failure = false;
 		for (StageCreation<?> creation : gui.getStageCreations()) {
 			try{
-				AbstractStage stage = creation.finish(branch);
+				AbstractStage stage = createStage(creation, branch);
 				if (creation.isEndingStage()) {
 					StagesGUI newGUI = creation.getLeadingBranch();
-					QuestBranch newBranch = null;
+					QuestBranchImplementation newBranch = null;
 					if (!newGUI.isEmpty()){
-						newBranch = new QuestBranch(branch.getBranchesManager());
+						newBranch = new QuestBranchImplementation(branch.getBranchesManager());
 						branch.getBranchesManager().addBranch(newBranch);
 						failure |= loadBranch(newBranch, newGUI);
 					}
@@ -273,10 +269,17 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			}catch (Exception ex) {
 				failure = true;
 				Lang.ERROR_OCCURED.send(p, " lineToStage");
-				BeautyQuests.logger.severe("An error occurred wheh creating branch from GUI.", ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred wheh creating branch from GUI.", ex);
 			}
 		}
 		return failure;
+	}
+
+	public <T extends AbstractStage> T createStage(StageCreation<T> creation, QuestBranchImplementation branch) {
+		StageControllerImplementation<T> controller = new StageControllerImplementation<>(branch, creation.getType());
+		T stage = creation.finish(controller);
+		controller.setStage(stage);
+		return stage;
 	}
 
 	private void setStagesEdited() {
@@ -313,39 +316,6 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		protected UpdatableItem(int slot) {
 			super(slot);
 		}
-	}
-
-	public static void initialize(){
-		DebugUtils.logMessage("Initlializing default quest options.");
-		
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("pool", 9, OptionQuestPool.class, OptionQuestPool::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("name", 10, OptionName.class, OptionName::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("description", 12, OptionDescription.class, OptionDescription::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("customItem", 13, OptionQuestItem.class, OptionQuestItem::new, QuestsConfiguration.getItemMaterial(), "customMaterial"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class, OptionHologramText::new, Lang.HologramText.toString()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startableFromGUI", 19, OptionStartable.class, OptionStartable::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("failOnDeath", 20, OptionFailOnDeath.class, OptionFailOnDeath::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancellable", 21, OptionCancellable.class, OptionCancellable::new, true));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("cancelActions", 22, OptionCancelRewards.class, OptionCancelRewards::new, new ArrayList<>()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class, OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class, OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class, OptionScoreboardEnabled::new, true));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28, OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new, false));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class, OptionRepeatable::new, false, "multiple"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new, QuestsConfiguration.getTimeBetween()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("visibility", 32, OptionVisibility.class, OptionVisibility::new, Arrays.asList(OptionVisibility.VisibilityLocation.values()), "hid", "hide"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endSound", 34, OptionEndSound.class, OptionEndSound::new, QuestsConfiguration.getFinishSound()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("firework", 35, OptionFirework.class, OptionFirework::new, QuestsConfiguration.getDefaultFirework()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class, OptionRequirements::new, new ArrayList<>()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class, OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startMessage", 39, OptionStartMessage.class, OptionStartMessage::new, QuestsConfiguration.getPrefix() + Lang.STARTED_QUEST.toString()));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class, OptionStarterNPC::new, null, "starterID"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endRewards", 43, OptionEndRewards.class, OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
-		QuestsAPI.registerQuestOption(new QuestOptionCreator<>("endMsg", 44, OptionEndMessage.class, OptionEndMessage::new, QuestsConfiguration.getPrefix() + Lang.FINISHED_BASE.toString()));
 	}
 	
 }

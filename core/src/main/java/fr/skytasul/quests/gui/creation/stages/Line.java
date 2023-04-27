@@ -3,11 +3,10 @@ package fr.skytasul.quests.gui.creation.stages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.utils.types.NumberedList;
-import fr.skytasul.quests.utils.types.Pair;
 
 public class Line {
 	

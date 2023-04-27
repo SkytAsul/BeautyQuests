@@ -6,15 +6,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionObject;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
-import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.Utils;
 
 public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator> implements QuestDescriptionProvider {
 	
@@ -30,7 +30,7 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 	
 	@Override
 	protected QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getObjectsRegistry() {
-		return QuestsAPI.getRequirements();
+		return QuestsAPI.getAPI().getRequirements();
 	}
 	
 	@Override
@@ -52,7 +52,7 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		if (!context.getPlayerAccount().isCurrent()) return null;
 		if (!context.getDescriptionOptions().showRequirements()) return null;
-		if (context.getCategory() != Category.NOT_STARTED) return null;
+		if (context.getCategory() != PlayerListCategory.NOT_STARTED) return null;
 		
 		List<String> requirements = getValue().stream()
 				.map(x -> {

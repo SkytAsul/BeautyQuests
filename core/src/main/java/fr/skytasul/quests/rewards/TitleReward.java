@@ -36,7 +36,7 @@ public class TitleReward extends AbstractReward {
 			
 			title = newTitle;
 			event.reopenGUI();
-		}).edit(title).create(event.getPlayer());
+		}).edit(title).open(event.getPlayer());
 	}
 	
 	@Override

@@ -8,23 +8,23 @@ import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StageMelt extends AbstractItemStage {
 	
-	public StageMelt(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
+	public StageMelt(StageController controller, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
 		super(branch, items, comparisons);
 	}
 	
-	public StageMelt(QuestBranch branch, ConfigurationSection section) {
+	public StageMelt(StageController controller, ConfigurationSection section) {
 		super(branch, section);
 	}
 	
@@ -34,11 +34,11 @@ public class StageMelt extends AbstractItemStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_MELT.format(super.descriptionLine(acc, source));
 	}
 	
-	public static StageMelt deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageMelt deserialize(ConfigurationSection section, StageController controller) {
 		return new StageMelt(branch, section);
 	}
 
@@ -56,7 +56,7 @@ public class StageMelt extends AbstractItemStage {
 		}
 		
 		@Override
-		protected StageMelt finishStage(QuestBranch branch, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
+		protected StageMelt finishStage(StageController controller, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
 			return new StageMelt(branch, items, comparisons);
 		}
 		

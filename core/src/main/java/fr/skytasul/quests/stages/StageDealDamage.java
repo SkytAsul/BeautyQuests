@@ -16,21 +16,21 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.mobs.Mob;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.mobs.MobSelectionGUI;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.mobs.Mob;
 
 @SuppressWarnings ("rawtypes")
 public class StageDealDamage extends AbstractStage {
@@ -40,8 +40,8 @@ public class StageDealDamage extends AbstractStage {
 	
 	private final String targetMobsString;
 	
-	public StageDealDamage(QuestBranch branch, double damage, List<Mob> targetMobs) {
-		super(branch);
+	public StageDealDamage(StageController controller, double damage, List<Mob> targetMobs) {
+		super(controller);
 		this.damage = damage;
 		this.targetMobs = targetMobs;
 		
@@ -87,12 +87,12 @@ public class StageDealDamage extends AbstractStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return (targetMobs == null || targetMobs.isEmpty() ? Lang.SCOREBOARD_DEAL_DAMAGE_ANY : Lang.SCOREBOARD_DEAL_DAMAGE_MOBS).format(descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Object[] { (Supplier<String>) () -> Integer.toString(super.<Double>getData(acc, "amount").intValue()), targetMobsString };
 	}
 	
@@ -103,7 +103,7 @@ public class StageDealDamage extends AbstractStage {
 			section.set("targetMobs", targetMobs.stream().map(Mob::serialize).collect(Collectors.toList()));
 	}
 	
-	public static StageDealDamage deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageDealDamage deserialize(ConfigurationSection section, StageController controller) {
 		return new StageDealDamage(branch,
 				section.getDouble("damage"),
 				section.contains("targetMobs") ? section.getMapList("targetMobs").stream().map(map -> Mob.deserialize((Map) map)).collect(Collectors.toList()) : null);
@@ -125,7 +125,7 @@ public class StageDealDamage extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, false), newDamage -> {
 					setDamage(newDamage);
 					reopenGUI(p, false);
-				}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).enter();
+				}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).start();
 			});
 			
 			line.setItem(SLOT_MOBS, ItemUtils.item(XMaterial.BLAZE_SPAWN_EGG, Lang.stageDealDamageMobs.toString(), QuestOption.formatNullableValue(Lang.EntityTypeAny.toString(), true)), (p, item) -> {
@@ -134,7 +134,7 @@ public class StageDealDamage extends AbstractStage {
 					@Override
 					public void finish(List<Mob> objects) {
 						setTargetMobs(objects.isEmpty() ? null : objects);
-						reopenGUI(p, true);
+						reopenGUI(player, true);
 					}
 					
 					@Override
@@ -144,10 +144,10 @@ public class StageDealDamage extends AbstractStage {
 					
 					@Override
 					public void createObject(Function<Mob, ItemStack> callback) {
-						new MobSelectionGUI(callback::apply).create(p);
+						new MobSelectionGUI(callback::apply).open(player);
 					}
 					
-				}.create(p);
+				}.open(p);
 			});
 		}
 		
@@ -176,11 +176,11 @@ public class StageDealDamage extends AbstractStage {
 			new TextEditor<>(p, removeAndReopen(p, false), newDamage -> {
 				setDamage(newDamage);
 				reopenGUI(p, false);
-			}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).enter();
+			}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).start();
 		}
 		
 		@Override
-		protected StageDealDamage finishStage(QuestBranch branch) {
+		protected StageDealDamage finishStage(StageController controller) {
 			return new StageDealDamage(branch, damage, targetMobs);
 		}
 		

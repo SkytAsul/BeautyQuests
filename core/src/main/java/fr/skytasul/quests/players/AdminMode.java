@@ -8,9 +8,9 @@ import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ParticleEffect;
-import fr.skytasul.quests.utils.nms.NMS;
 
 public class AdminMode {
 
@@ -20,7 +20,7 @@ public class AdminMode {
 	private static ParticleEffect leaveParticle;
 	
 	static {
-		if (NMS.getMCVersion() >= 9) {
+		if (MinecraftVersion.MAJOR >= 9) {
 			enterParticle = new ParticleEffect(Particle.FLAME, null, null);
 			leaveParticle = new ParticleEffect(Particle.SMOKE_NORMAL, null, null);
 		}
@@ -29,18 +29,18 @@ public class AdminMode {
 	public static void toggle(CommandSender sender){
 		if (senders.add(sender)) {
 			Lang.ADMIN_MODE_ENTERED.send(sender);
-			if (sender instanceof Player && NMS.getMCVersion() >= 9)
+			if (sender instanceof Player && MinecraftVersion.MAJOR >= 9)
 				enterParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}else {
 			senders.remove(sender);
 			Lang.ADMIN_MODE_LEFT.send(sender);
-			if (sender instanceof Player && NMS.getMCVersion() >= 9 && senders.stream().anyMatch(Player.class::isInstance))
+			if (sender instanceof Player && MinecraftVersion.MAJOR >= 9 && senders.stream().anyMatch(Player.class::isInstance))
 				leaveParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}
 	}
 	
 	public static void broadcast(String message){
-		BeautyQuests.getInstance().getLoggerHandler().write("[ADMIN]: " + message);
+		BeautyQuests.getInstance().getLoggerExpanded().getHandler().write("[ADMIN]: " + message);
 		for (CommandSender p : senders){
 			p.sendMessage("§e" + message);
 		}

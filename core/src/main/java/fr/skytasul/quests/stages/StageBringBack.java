@@ -12,16 +12,16 @@ import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class StageBringBack extends StageNPC{
 	
@@ -33,8 +33,8 @@ public class StageBringBack extends StageNPC{
 	protected final String splitted;
 	protected final String line;
 	
-	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
-		super(branch);
+	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
+		super(controller);
 		this.customMessage = customMessage;
 		this.comparisons = comparisons;
 		
@@ -46,15 +46,15 @@ public class StageBringBack extends StageNPC{
 
 		String[] array = new String[items.length]; // create messages on beginning
 		for (int i = 0; i < array.length; i++){
-			array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT));
+			array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT));
 		}
-		splitted = Utils.descriptionLines(Source.FORCESPLIT, array);
-		if (QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT)){
+		splitted = Utils.descriptionLines(DescriptionSource.FORCESPLIT, array);
+		if (QuestsConfiguration.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT)){
 			for (int i = 0; i < array.length; i++){
 				array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), false);
 			}
 		}
-		line = Utils.descriptionLines(Source.FORCELINE, array);
+		line = Utils.descriptionLines(DescriptionSource.FORCELINE, array);
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -92,12 +92,12 @@ public class StageBringBack extends StageNPC{
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfiguration.splitDescription(source) ? splitted : line), npcName());
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
+	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source){
 		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
 	}
 
@@ -146,7 +146,7 @@ public class StageBringBack extends StageNPC{
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 	
-	public static StageBringBack deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageBringBack deserialize(ConfigurationSection section, StageController controller) {
 		ItemStack[] items = section.getList("items").toArray(new ItemStack[0]);
 		String customMessage = section.getString("customMessage", null);
 		ItemComparisonMap comparisons;
@@ -175,19 +175,19 @@ public class StageBringBack extends StageNPC{
 				new ItemsGUI(items -> {
 					setItems(items);
 					reopenGUI(p, true);
-				}, items).create(p);
+				}, items).open(p);
 			});
 			line.setItem(9, stageMessage, (p, item) -> {
 				new TextEditor<String>(p, () -> reopenGUI(p, false), x -> {
 					setMessage(x);
 					reopenGUI(p, false);
-				}).passNullIntoEndConsumer().enter();
+				}).passNullIntoEndConsumer().start();
 			});
 			line.setItem(10, stageComparison, (p, item) -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 		}
 		
@@ -211,7 +211,7 @@ public class StageBringBack extends StageNPC{
 			new ItemsGUI(items -> {
 				setItems(items);
 				super.start(p);
-			}, Collections.emptyList()).create(p);
+			}, Collections.emptyList()).open(p);
 		}
 
 		@Override
@@ -231,7 +231,7 @@ public class StageBringBack extends StageNPC{
 		}
 		
 		@Override
-		protected StageBringBack createStage(QuestBranch branch) {
+		protected StageBringBack createStage(StageController controller) {
 			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message, comparisons);
 		}
 		

@@ -6,16 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityTameEvent;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 
 public class StageTame extends AbstractEntityStage {
 	
-	public StageTame(QuestBranch branch, EntityType entity, int amount) {
+	public StageTame(StageController controller, EntityType entity, int amount) {
 		super(branch, entity, amount);
 	}
 	
@@ -28,11 +28,11 @@ public class StageTame extends AbstractEntityStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_TAME.format(getMobsLeft(acc));
 	}
 	
-	public static StageTame deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageTame deserialize(ConfigurationSection section, StageController controller) {
 		String type = section.getString("entityType");
 		return new StageTame(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
@@ -49,7 +49,7 @@ public class StageTame extends AbstractEntityStage {
 		}
 		
 		@Override
-		protected StageTame finishStage(QuestBranch branch) {
+		protected StageTame finishStage(StageController controller) {
 			return new StageTame(branch, entity, amount);
 		}
 		

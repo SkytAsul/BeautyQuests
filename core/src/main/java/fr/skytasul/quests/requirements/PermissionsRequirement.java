@@ -9,13 +9,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
 
 public class PermissionsRequirement extends AbstractRequirement {
 
@@ -60,23 +60,23 @@ public class PermissionsRequirement extends AbstractRequirement {
 			
 			@Override
 			public void createObject(Function<Permission, ItemStack> callback) {
-				Lang.CHOOSE_PERM_REQUIRED.send(p);
-				new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
+				Lang.CHOOSE_PERM_REQUIRED.send(player);
+				new TextEditor<String>(player, this::reopen, obj -> {
 					callback.apply(Permission.fromString(obj));
-				}).useStrippedMessage().enter();
+				}).useStrippedMessage().start();
 			}
 			
 			@Override
 			public void finish(List<Permission> objects) {
 				permissions = objects;
-				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor<String>(p, event::reopenGUI, obj -> {
+				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(player);
+				new TextEditor<String>(player, event::reopenGUI, obj -> {
 					setCustomReason(obj);
 					event.reopenGUI();
-				}).passNullIntoEndConsumer().enter();
+				}).passNullIntoEndConsumer().start();
 			}
 			
-		}.create(event.getPlayer());
+		}.open(event.getPlayer());
 	}
 	
 	@Override

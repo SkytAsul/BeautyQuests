@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.types.Permission;
 
 public class PermissionReward extends AbstractReward {
@@ -48,7 +48,7 @@ public class PermissionReward extends AbstractReward {
 		new PermissionListGUI(permissions, permissions -> {
 			PermissionReward.this.permissions = permissions;
 			event.reopenGUI();
-		}).create(event.getPlayer());
+		}).open(event.getPlayer());
 	}
 	
 	@Override

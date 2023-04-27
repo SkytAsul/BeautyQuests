@@ -11,19 +11,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 
-public class OptionQuestPool extends QuestOption<QuestPool> {
+public class OptionQuestPool extends QuestOption<QuestPoolImplementation> {
 	
 	@Override
-	public void attach(Quest quest) {
+	public void attach(QuestImplementation quest) {
 		super.attach(quest);
 		if (getValue() != null) getValue().addQuest(quest);
 	}
@@ -36,7 +36,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	
 	@Override
 	public Object save() {
-		return getValue().getID();
+		return getValue().getId();
 	}
 	
 	@Override
@@ -45,7 +45,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	}
 	
 	@Override
-	public QuestPool cloneValue(QuestPool value) {
+	public QuestPoolImplementation cloneValue(QuestPoolImplementation value) {
 		return value;
 	}
 	
@@ -53,7 +53,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 		List<String> lore = new ArrayList<>(5);
 		lore.add(formatDescription(Lang.questPoolLore.toString()));
 		lore.add("");
-		lore.add(formatValue(getValue() == null ? null : "#" + getValue().getID()));
+		lore.add(formatValue(getValue() == null ? null : "#" + getValue().getId()));
 		if (hasCustomValue()) {
 			lore.add("");
 			lore.add("§8" + Lang.ClickShiftRight.toString() + " > §d" + Lang.Reset.toString());
@@ -73,26 +73,26 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
 		}else {
-			new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN, BeautyQuests.getInstance().getPoolsManager().getPools(), list -> gui.reopen(p), null) {
+			new PagedGUI<QuestPoolImplementation>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN, BeautyQuests.getInstance().getPoolsManager().getPools(), list -> gui.reopen(p), null) {
 				
 				@Override
-				public ItemStack getItemStack(QuestPool object) {
+				public ItemStack getItemStack(QuestPoolImplementation object) {
 					return object.getItemStack(Lang.poolChoose.toString());
 				}
 				
 				@Override
-				public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
+				public void click(QuestPoolImplementation existing, ItemStack poolItem, ClickType click) {
 					setValue(existing);
 					ItemUtils.lore(item, getLore());
-					gui.reopen(p);
+					gui.reopen(player);
 				}
 				
 				@Override
 				public CloseBehavior onClose(Player p, Inventory inv) {
 					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> gui.reopen(p));
-					return CloseBehavior.NOTHING;
+					return StandardCloseBehavior.NOTHING;
 				}
-			}.create(p);
+			}.open(p);
 		}
 	}
 	

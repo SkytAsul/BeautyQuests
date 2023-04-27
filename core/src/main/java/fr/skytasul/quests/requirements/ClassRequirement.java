@@ -11,14 +11,14 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
 public class ClassRequirement extends AbstractRequirement {
@@ -87,7 +87,7 @@ public class ClassRequirement extends AbstractRequirement {
 					public void click(RPGClass existing, ItemStack item, ClickType clickType) {
 						callback.apply(existing);
 					}
-				}.create(p);
+				}.open(player);
 			}
 			
 			@Override
@@ -96,7 +96,7 @@ public class ClassRequirement extends AbstractRequirement {
 				event.reopenGUI();
 			}
 			
-		}.create(event.getPlayer());
+		}.open(event.getPlayer());
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class ClassRequirement extends AbstractRequirement {
 		for (String s : section.getStringList("classes")) {
 			RPGClass classe = com.sucy.skill.SkillAPI.getClasses().get(s.toLowerCase());
 			if (classe == null) {
-				BeautyQuests.getInstance().getLogger().warning("Class with name " + s + " no longer exists.");
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Class with name " + s + " no longer exists.");
 				continue;
 			}
 			classes.add(classe);

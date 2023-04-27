@@ -11,19 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.ColorParser;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.ColorParser;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
-import fr.skytasul.quests.utils.nms.NMS;
 
-public class ParticleEffectGUI implements CustomInventory {
+public class ParticleEffectGUI extends CustomInventory {
 	
 	private static final int SLOT_SHAPE = 1;
 	private static final int SLOT_PARTICLE = 3;
@@ -33,7 +35,7 @@ public class ParticleEffectGUI implements CustomInventory {
 	
 	static final List<Particle> PARTICLES = Arrays.stream(Particle.values()).filter(particle -> {
 		if (particle.getDataType() == Void.class) return true;
-		if (NMS.getMCVersion() >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
+		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
 		return false;
 	}).collect(Collectors.toList());
 	
@@ -61,28 +63,30 @@ public class ParticleEffectGUI implements CustomInventory {
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		if (inv == null) {
-			inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_PARTICLE_EFFECT.toString());
-			
-			inv.setItem(SLOT_SHAPE, ItemUtils.item(XMaterial.FIREWORK_STAR, Lang.particle_shape.toString(), Lang.optionValue.format(shape)));
-			inv.setItem(SLOT_PARTICLE, ItemUtils.item(XMaterial.PAPER, Lang.particle_type.toString(), Lang.optionValue.format(particle)));
-			if (ParticleEffect.canHaveColor(particle)) setColorItem();
-			
-			inv.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
-			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
-		}
-		return inv = p.openInventory(inv).getTopInventory();
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 9, Lang.INVENTORY_PARTICLE_EFFECT.toString());
+	}
+
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		inventory.setItem(SLOT_SHAPE,
+				ItemUtils.item(XMaterial.FIREWORK_STAR, Lang.particle_shape.toString(), Lang.optionValue.format(shape)));
+		inventory.setItem(SLOT_PARTICLE,
+				ItemUtils.item(XMaterial.PAPER, Lang.particle_type.toString(), Lang.optionValue.format(particle)));
+		if (ParticleEffect.canHaveColor(particle))
+			setColorItem();
+
+		inventory.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
+		inventory.setItem(SLOT_FINISH, ItemUtils.itemDone);
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(() -> end.accept(null));
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return new DelayCloseBehavior(() -> end.accept(null));
 	}
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot) {
 		
 		case SLOT_SHAPE:
@@ -103,8 +107,8 @@ public class ParticleEffectGUI implements CustomInventory {
 						inv.setItem(SLOT_COLOR, null);
 					}
 				}
-				ParticleEffectGUI.this.create(p);
-			}).allowCancel().create(p);
+				ParticleEffectGUI.this.open(p);
+			}).allowCancel().open(p);
 			break;
 		
 		case SLOT_COLOR:
@@ -115,7 +119,7 @@ public class ParticleEffectGUI implements CustomInventory {
 					color = newColor;
 					ItemUtils.lore(current, getColorLore());
 					reopen.run();
-				}, ColorParser.PARSER).enter();
+				}, ColorParser.PARSER).start();
 			}
 			break;
 		

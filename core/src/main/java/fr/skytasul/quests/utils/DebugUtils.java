@@ -3,17 +3,13 @@ package fr.skytasul.quests.utils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
 
 public class DebugUtils {
 
 	private DebugUtils() {}
 	
 	private static Map<String, Long> errors = new HashMap<>();
-	
-	public static void logMessage(String msg){
-		BeautyQuests.getInstance().getLoggerHandler().write(msg, "DEBUG");
-	}
 	
 	public static String stackTraces(int from, int to){
 		StringJoiner joiner = new StringJoiner(" -> ");
@@ -28,7 +24,7 @@ public class DebugUtils {
 	public static void printError(String errorMsg, String typeID, int seconds) {
 		Long time = errors.get(typeID);
 		if (time == null || time.longValue() + seconds * 1000 < System.currentTimeMillis()) {
-			BeautyQuests.logger.warning(errorMsg);
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(errorMsg);
 			errors.put(typeID, System.currentTimeMillis());
 		}
 	}

@@ -10,17 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class StagePlayTime extends AbstractStage {
 
@@ -28,8 +29,8 @@ public class StagePlayTime extends AbstractStage {
 	
 	private Map<PlayerAccount, BukkitTask> tasks = new HashMap<>();
 	
-	public StagePlayTime(QuestBranch branch, long ticks) {
-		super(branch);
+	public StagePlayTime(StageController controller, long ticks) {
+		super(controller);
 		this.playTicks = ticks;
 	}
 	
@@ -38,12 +39,12 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_PLAY_TIME.format(descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, Source source) {
+	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Supplier[] { () -> Utils.millisToHumanString(getRemaining(acc) * 50L) };
 	}
 	
@@ -73,7 +74,7 @@ public class StagePlayTime extends AbstractStage {
 			task.cancel();
 			updateObjective(acc, null, "remainingTime", getRemaining(acc));
 		}else {
-			BeautyQuests.logger.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + acc.getName());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + acc.getName());
 		}
 	}
 	
@@ -93,8 +94,8 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
-	public void end(PlayerAccount acc) {
-		super.end(acc);
+	public void ended(PlayerAccount acc) {
+		super.ended(acc);
 		tasks.remove(acc).cancel();
 	}
 	
@@ -110,7 +111,7 @@ public class StagePlayTime extends AbstractStage {
 		section.set("playTicks", playTicks);
 	}
 	
-	public static StagePlayTime deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StagePlayTime deserialize(ConfigurationSection section, StageController controller) {
 		return new StagePlayTime(branch, section.getLong("playTicks"));
 	}
 	
@@ -126,7 +127,7 @@ public class StagePlayTime extends AbstractStage {
 				new TextEditor<>(p, () -> reopenGUI(p, false), obj -> {
 					setTicks(obj);
 					reopenGUI(p, false);
-				}, MinecraftTimeUnit.TICK.getParser()).enter();
+				}, MinecraftTimeUnit.TICK.getParser()).start();
 			});
 		}
 		
@@ -142,7 +143,7 @@ public class StagePlayTime extends AbstractStage {
 			new TextEditor<>(p, removeAndReopen(p, false), obj -> {
 				setTicks(obj);
 				reopenGUI(p, false);
-			}, MinecraftTimeUnit.TICK.getParser()).enter();
+			}, MinecraftTimeUnit.TICK.getParser()).start();
 		}
 		
 		@Override
@@ -152,7 +153,7 @@ public class StagePlayTime extends AbstractStage {
 		}
 		
 		@Override
-		public StagePlayTime finishStage(QuestBranch branch) {
+		public StagePlayTime finishStage(StageController controller) {
 			return new StagePlayTime(branch, ticks);
 		}
 		

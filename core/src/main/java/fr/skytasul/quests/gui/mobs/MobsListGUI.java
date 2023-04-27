@@ -9,14 +9,14 @@ import java.util.function.Function;
 import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
-import fr.skytasul.quests.api.mobs.Mob;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.mobs.Mob;
+import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.CountableObject;
 import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
@@ -39,28 +39,28 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 	public void clickObject(MutableCountableObject<Mob<?>> mob, ItemStack item, ClickType click) {
 		super.clickObject(mob, item, click);
 		if (click == ClickType.SHIFT_LEFT) {
-			Lang.MOB_NAME.send(p);
-			new TextEditor<>(p, super::reopen, name -> {
+			Lang.MOB_NAME.send(player);
+			new TextEditor<>(player, super::reopen, name -> {
 				mob.getObject().setCustomName((String) name);
 				setItems();
 				reopen();
-			}).passNullIntoEndConsumer().enter();
+			}).passNullIntoEndConsumer().start();
 		} else if (click == ClickType.LEFT) {
-			Lang.MOB_AMOUNT.send(p);
-			new TextEditor<>(p, super::reopen, amount -> {
+			Lang.MOB_AMOUNT.send(player);
+			new TextEditor<>(player, super::reopen, amount -> {
 				mob.setAmount(amount);
 				setItems();
 				reopen();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 		} else if (click == ClickType.SHIFT_RIGHT) {
 			if (mob.getObject().getFactory() instanceof LeveledMobFactory) {
-				new TextEditor<>(p, super::reopen, level -> {
+				new TextEditor<>(player, super::reopen, level -> {
 					mob.getObject().setMinLevel(level);
 					setItems();
 					reopen();
-				}, new NumberParser<>(Double.class, true, false)).enter();
+				}, new NumberParser<>(Double.class, true, false)).start();
 			} else {
-				Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+				QuestUtils.playPluginSound(player.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
 			}
 		} else if (click == ClickType.RIGHT) {
 			remove(mob);
@@ -74,7 +74,7 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 				reopen();
 			else
 				callback.apply(CountableObject.createMutable(UUID.randomUUID(), mob, 1));
-		}).create(p);
+		}).open(player);
 	}
 
 	@Override

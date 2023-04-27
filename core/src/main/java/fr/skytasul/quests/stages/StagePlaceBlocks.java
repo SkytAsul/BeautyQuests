@@ -9,25 +9,25 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	
-	public StagePlaceBlocks(QuestBranch branch, List<CountableObject<BQBlock>> blocks) {
+	public StagePlaceBlocks(StageController controller, List<CountableObject<BQBlock>> blocks) {
 		super(branch, blocks);
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Lang.SCOREBOARD_PLACE.format(super.descriptionLine(acc, source));
 	}
 	
@@ -41,7 +41,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		}
 	}
 	
-	public static StagePlaceBlocks deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StagePlaceBlocks deserialize(ConfigurationSection section, StageController controller) {
 		StagePlaceBlocks stage = new StagePlaceBlocks(branch, new ArrayList<>());
 		stage.deserialize(section);
 		return stage;
@@ -59,7 +59,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		}
 		
 		@Override
-		public StagePlaceBlocks finishStage(QuestBranch branch) {
+		public StagePlaceBlocks finishStage(StageController controller) {
 			return new StagePlaceBlocks(branch, getImmutableBlocks());
 		}
 	}

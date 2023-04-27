@@ -15,13 +15,12 @@ import org.mineacademy.boss.api.BossAPI;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 import org.mineacademy.boss.model.Boss;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.MinecraftNames;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.Utils;
 
 public class BQBoss implements MobFactory<Boss> {
 
@@ -46,10 +45,10 @@ public class BQBoss implements MobFactory<Boss> {
 
 			@Override
 			public void click(Boss existing, ItemStack item, ClickType clickType) {
-				Inventories.closeAndExit(p);
+				close();
 				run.accept(existing);
 			}
-		}.create(p);
+		}.open(p);
 	}
 
 	@Override

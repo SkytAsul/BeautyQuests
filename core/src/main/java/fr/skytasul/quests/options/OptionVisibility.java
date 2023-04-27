@@ -14,20 +14,21 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.options.OptionVisibility.VisibilityLocation;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
-public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
+public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>> {
 	
 	@Override
 	public Object save() {
-		return getValue().stream().map(VisibilityLocation::name).collect(Collectors.toList());
+		return getValue().stream().map(QuestVisibilityLocation::name).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -35,17 +36,17 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 		if (config.isBoolean(key)) {
 			setValue(Collections.emptyList()); // migration from before 0.20, where it was the "hide" option
 		}else {
-			setValue(config.getStringList(key).stream().map(VisibilityLocation::valueOf).collect(Collectors.toList()));
+			setValue(config.getStringList(key).stream().map(QuestVisibilityLocation::valueOf).collect(Collectors.toList()));
 		}
 	}
 	
 	@Override
-	public List<VisibilityLocation> cloneValue(List<VisibilityLocation> value) {
+	public List<QuestVisibilityLocation> cloneValue(List<QuestVisibilityLocation> value) {
 		return new ArrayList<>(value);
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.optionVisibilityLore.toString()), "", formatValue(getValue().stream().map(VisibilityLocation::getName).collect(Collectors.joining(", "))) };
+		return new String[] { formatDescription(Lang.optionVisibilityLore.toString()), "", formatValue(getValue().stream().map(QuestVisibilityLocation::getName).collect(Collectors.joining(", "))) };
 	}
 	
 	@Override
@@ -58,12 +59,12 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 		new VisibilityGUI(() -> {
 			ItemUtils.lore(item, getLore());
 			gui.reopen(p);
-		}).create(p);
+		}).open(p);
 	}
 	
-	class VisibilityGUI implements CustomInventory {
+	class VisibilityGUI extends CustomInventory {
 		
-		private EnumMap<VisibilityLocation, Boolean> locations = new EnumMap<>(VisibilityLocation.class);
+		private EnumMap<QuestVisibilityLocation, Boolean> locations = new EnumMap<>(QuestVisibilityLocation.class);
 		private Runnable reopen;
 		
 		public VisibilityGUI(Runnable reopen) {
@@ -75,7 +76,7 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 			Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_VISIBILITY.toString());
 			
 			for (int i = 0; i < 4; i++) {
-				VisibilityLocation loc = VisibilityLocation.values()[i];
+				QuestVisibilityLocation loc = QuestVisibilityLocation.values()[i];
 				boolean visible = getValue().contains(loc);
 				locations.put(loc, visible);
 				inv.setItem(i, ItemUtils.itemSwitch(loc.getName(), visible));
@@ -86,9 +87,9 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 		}
 		
 		@Override
-		public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+		public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 			if (slot >= 0 && slot < 4) {
-				locations.put(VisibilityLocation.values()[slot], ItemUtils.toggle(current));
+				locations.put(QuestVisibilityLocation.values()[slot], ItemUtils.toggle(current));
 			}else if (slot == 4) {
 				setValue(locations.entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList()));
 				reopen.run();
@@ -97,27 +98,8 @@ public class OptionVisibility extends QuestOption<List<VisibilityLocation>> {
 		}
 		
 		@Override
-		public CloseBehavior onClose(Player p, Inventory inv) {
-			Utils.runSync(reopen);
-			return CloseBehavior.NOTHING;
-		}
-		
-	}
-	
-	public enum VisibilityLocation {
-		TAB_NOT_STARTED(Lang.visibility_notStarted.toString()),
-		TAB_IN_PROGRESS(Lang.visibility_inProgress.toString()),
-		TAB_FINISHED(Lang.visibility_finished.toString()),
-		MAPS(Lang.visibility_maps.toString());
-		
-		private final String name;
-		
-		private VisibilityLocation(String name) {
-			this.name = name;
-		}
-		
-		public String getName() {
-			return name;
+		public CloseBehavior onClose(Player p) {
+			return new DelayCloseBehavior(reopen);
 		}
 		
 	}

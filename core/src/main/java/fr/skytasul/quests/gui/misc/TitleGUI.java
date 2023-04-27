@@ -7,18 +7,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.utils.types.Title;
 
-public class TitleGUI implements CustomInventory {
+public class TitleGUI extends CustomInventory {
 	
 	private static final int SLOT_TITLE = 0;
 	private static final int SLOT_SUBTITLE = 1;
@@ -87,17 +89,20 @@ public class TitleGUI implements CustomInventory {
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		inv = Bukkit.createInventory(null, 9, Lang.INVENTORY_EDIT_TITLE.toString());
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 9, Lang.INVENTORY_EDIT_TITLE.toString());
+	}
+
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		inventory.setItem(SLOT_TITLE, ItemUtils.item(XMaterial.NAME_TAG, Lang.title_title.toString()));
+		inventory.setItem(SLOT_SUBTITLE, ItemUtils.item(XMaterial.NAME_TAG, Lang.title_subtitle.toString()));
+		inventory.setItem(SLOT_FADE_IN, ItemUtils.item(XMaterial.CLOCK, Lang.title_fadeIn.toString()));
+		inventory.setItem(SLOT_STAY, ItemUtils.item(XMaterial.CLOCK, Lang.title_stay.toString()));
+		inventory.setItem(SLOT_FADE_OUT, ItemUtils.item(XMaterial.CLOCK, Lang.title_fadeOut.toString()));
 		
-		inv.setItem(SLOT_TITLE, ItemUtils.item(XMaterial.NAME_TAG, Lang.title_title.toString()));
-		inv.setItem(SLOT_SUBTITLE, ItemUtils.item(XMaterial.NAME_TAG, Lang.title_subtitle.toString()));
-		inv.setItem(SLOT_FADE_IN, ItemUtils.item(XMaterial.CLOCK, Lang.title_fadeIn.toString()));
-		inv.setItem(SLOT_STAY, ItemUtils.item(XMaterial.CLOCK, Lang.title_stay.toString()));
-		inv.setItem(SLOT_FADE_OUT, ItemUtils.item(XMaterial.CLOCK, Lang.title_fadeOut.toString()));
-		
-		inv.setItem(7, ItemUtils.itemCancel);
-		inv.setItem(8, ItemUtils.itemDone.toMutableStack());
+		inventory.setItem(7, ItemUtils.itemCancel);
+		inventory.setItem(8, ItemUtils.itemDone.toMutableStack());
 		
 		// updating lores
 		setTitle(title);
@@ -106,35 +111,32 @@ public class TitleGUI implements CustomInventory {
 		setStay(stay);
 		setFadeOut(fadeOut);
 		updateFinishState();
-		
-		inv = p.openInventory(inv).getTopInventory();
-		return inv;
 	}
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player player, ItemStack current, int slot, ClickType click) {
 		switch (slot) {
 		case SLOT_TITLE:
-			startStringEditor(p, Lang.TITLE_TITLE.toString(), this::setTitle);
+			startStringEditor(player, Lang.TITLE_TITLE.toString(), this::setTitle);
 			break;
 		case SLOT_SUBTITLE:
-			startStringEditor(p, Lang.TITLE_SUBTITLE.toString(), this::setSubtitle);
+			startStringEditor(player, Lang.TITLE_SUBTITLE.toString(), this::setSubtitle);
 			break;
 		case SLOT_FADE_IN:
-			startIntEditor(p, Lang.TITLE_FADEIN.toString(), this::setFadeIn);
+			startIntEditor(player, Lang.TITLE_FADEIN.toString(), this::setFadeIn);
 			break;
 		case SLOT_STAY:
-			startIntEditor(p, Lang.TITLE_STAY.toString(), this::setStay);
+			startIntEditor(player, Lang.TITLE_STAY.toString(), this::setStay);
 			break;
 		case SLOT_FADE_OUT:
-			startIntEditor(p, Lang.TITLE_FADEOUT.toString(), this::setFadeOut);
+			startIntEditor(player, Lang.TITLE_FADEOUT.toString(), this::setFadeOut);
 			break;
 		case 7:
-			Inventories.closeAndExit(p);
+			close(player);
 			end.accept(null);
 			break;
 		case 8:
-			Inventories.closeAndExit(p);
+			close(player);
 			end.accept(new Title(title, subtitle, fadeIn, stay, fadeOut));
 			break;
 		default:
@@ -144,30 +146,29 @@ public class TitleGUI implements CustomInventory {
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(() -> end.accept(null));
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return new DelayCloseBehavior(() -> end.accept(null));
 	}
 
 	private void startStringEditor(Player p, String helpMsg, Consumer<String> setter) {
-		Utils.sendMessage(p, helpMsg);
+		MessageUtils.sendPrefixedMessage(p, helpMsg);
 		new TextEditor<String>(p, () -> {
 			p.openInventory(inv);
 		}, msg -> {
 			setter.accept(msg);
 			updateFinishState();
 			p.openInventory(inv);
-		}).passNullIntoEndConsumer().enter();
+		}).passNullIntoEndConsumer().start();
 	}
 	
 	private void startIntEditor(Player p, String helpMsg, Consumer<Integer> setter) {
-		Utils.sendMessage(p, helpMsg);
+		MessageUtils.sendPrefixedMessage(p, helpMsg);
 		new TextEditor<>(p, () -> {
 			p.openInventory(inv);
 		}, msg -> {
 			setter.accept(msg);
 			p.openInventory(inv);
-		}, NumberParser.INTEGER_PARSER_POSITIVE).enter();
+		}, NumberParser.INTEGER_PARSER_POSITIVE).start();
 	}
 	
 }

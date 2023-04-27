@@ -6,16 +6,16 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityBreedEvent;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 
 public class StageBreed extends AbstractEntityStage {
 	
-	public StageBreed(QuestBranch branch, EntityType entity, int amount) {
+	public StageBreed(StageController controller, EntityType entity, int amount) {
 		super(branch, entity, amount);
 	}
 	
@@ -28,11 +28,11 @@ public class StageBreed extends AbstractEntityStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_BREED.format(getMobsLeft(acc));
 	}
 
-	public static StageBreed deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageBreed deserialize(ConfigurationSection section, StageController controller) {
 		String type = section.getString("entityType");
 		return new StageBreed(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
@@ -49,7 +49,7 @@ public class StageBreed extends AbstractEntityStage {
 		}
 		
 		@Override
-		protected StageBreed finishStage(QuestBranch branch) {
+		protected StageBreed finishStage(StageController controller) {
 			return new StageBreed(branch, entity, amount);
 		}
 		

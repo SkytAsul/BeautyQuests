@@ -17,21 +17,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.mobs.Mob;
+import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.compatibility.mobs.CompatMobDeathEvent;
+import fr.skytasul.quests.mobs.Mob;
 import fr.skytasul.quests.utils.types.CountableObject;
 import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
@@ -40,7 +40,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 
 	private boolean shoot = false;
 	
-	public StageMobs(QuestBranch branch, List<CountableObject<Mob<?>>> mobs) {
+	public StageMobs(StageController controller, List<CountableObject<Mob<?>>> mobs) {
 		super(branch, mobs);
 	}
 
@@ -53,7 +53,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	}
 	
 	@EventHandler
-	public void onMobKilled(CompatMobDeathEvent e){
+	public void onMobKilled(BQMobDeathEvent e){
 		if (shoot && e.getBukkitEntity() != null && e.getBukkitEntity().getLastDamageCause() != null
 				&& e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE)
 			return;
@@ -82,7 +82,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
 		return Lang.SCOREBOARD_MOBS.format(super.descriptionLine(acc, source));
 	}
 	
@@ -90,7 +90,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	public void start(PlayerAccount acc) {
 		super.start(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
-			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), (Object[]) super.descriptionFormat(acc, Source.FORCELINE));
+			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), (Object[]) super.descriptionFormat(acc, DescriptionSource.FORCELINE));
 		}
 	}
 
@@ -139,11 +139,11 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 				})
 				.filter(Objects::nonNull)
 				.sorted(Comparator.comparing(Entry::getValue))
-				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
+				.<Located>map(entry -> Located.LocatedEntity.open(entry.getKey()))
 				.spliterator();
 	}
 	
-	public static StageMobs deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageMobs deserialize(ConfigurationSection section, StageController controller) {
 		StageMobs stage = new StageMobs(branch, new ArrayList<>());
 		stage.deserialize(section);
 
@@ -163,7 +163,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 				new MobsListGUI(mobs, newMobs -> {
 					setMobs(newMobs);
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 			line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), shoot), (p, item) -> setShoot(ItemUtils.toggle(item)));
 		}
@@ -186,11 +186,11 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 			new MobsListGUI(Collections.emptyList(), newMobs -> {
 				setMobs(newMobs);
 				reopenGUI(p, true);
-			}).create(p);
+			}).open(p);
 		}
 
 		@Override
-		public StageMobs finishStage(QuestBranch branch) {
+		public StageMobs finishStage(StageController controller) {
 			StageMobs stage = new StageMobs(branch,
 					mobs.stream().map(MutableCountableObject::toImmutable).collect(Collectors.toList()));
 			stage.setShoot(shoot);

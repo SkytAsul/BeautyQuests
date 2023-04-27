@@ -1,9 +1,8 @@
 package fr.skytasul.quests.gui.creation;
 
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.gui.Inventories;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
-import fr.skytasul.quests.structure.Quest;
 
 public class QuestCreationSession {
 	
@@ -57,12 +56,12 @@ public class QuestCreationSession {
 	
 	public void openMainGUI(Player p) {
 		if (mainGUI == null) mainGUI = new StagesGUI(this);
-		Inventories.create(p, mainGUI);
+		mainGUI.open(p);
 	}
 	
 	public void openFinishGUI(Player p) {
 		if (finishGUI == null) finishGUI = new FinishGUI(this);
-		Inventories.create(p, finishGUI);
+		finishGUI.open(p);
 	}
 	
 }

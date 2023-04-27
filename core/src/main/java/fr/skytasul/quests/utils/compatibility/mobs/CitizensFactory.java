@@ -10,11 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
+import fr.skytasul.quests.api.editors.CancellableEditor;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.editors.CancellableEditor;
-import fr.skytasul.quests.gui.npc.SelectGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -30,29 +29,32 @@ public class CitizensFactory implements MobFactory<NPC> {
 
 	@Override
 	public ItemStack getFactoryItem() {
-		return SelectGUI.selectNPC;
+		return NpcSelectGUI.selectNPC;
 	}
 
 	@Override
 	public void itemClick(Player p, Consumer<NPC> run) {
 		Lang.SELECT_KILL_NPC.send(p);
+		// we cannot use the SelectNPC editor as it uses the BQNPCManager
+		// and if it is registered to another NPC plugin it wouldn't work
 		new CancellableEditor(p, () -> run.accept(null)) {
-			
-			@EventHandler (priority = EventPriority.LOW)
+
+			@EventHandler(priority = EventPriority.LOW)
 			private void onNPCClick(NPCRightClickEvent e) {
-				if (e.getClicker() != p) return;
+				if (e.getClicker() != player)
+					return;
 				e.setCancelled(true);
-				leave(e.getClicker());
+				stop();
 				run.accept(e.getNPC());
 			}
-			
+
 			@Override
 			public void begin() {
 				super.begin();
-				Utils.sendMessage(p, Lang.NPC_EDITOR_ENTER.toString());
+				Lang.NPC_EDITOR_ENTER.send(p);
 			}
-			
-		}.enter();
+
+		}.start();
 	}
 
 	@Override

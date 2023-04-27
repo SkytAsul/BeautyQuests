@@ -4,13 +4,14 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.editors.WaitClick;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.WaitClick;
-import fr.skytasul.quests.gui.npc.NPCGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcCreateGUI;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -24,8 +25,8 @@ public class TeleportationReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		Utils.runOrSync(() -> p.teleport(teleportation));
+	public List<String> give(Player player) {
+		QuestUtils.runOrSync(() -> player.teleport(teleportation));
 		return null;
 	}
 
@@ -43,10 +44,10 @@ public class TeleportationReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.MOVE_TELEPORT_POINT.send(event.getPlayer());
-		new WaitClick(event.getPlayer(), event::cancel, NPCGUI.validMove.clone(), () -> {
+		new WaitClick(event.getPlayer(), event::cancel, NpcCreateGUI.validMove.clone(), () -> {
 			teleportation = event.getPlayer().getLocation();
 			event.reopenGUI();
-		}).enter();
+		}).start();
 	}
 	
 	@Override

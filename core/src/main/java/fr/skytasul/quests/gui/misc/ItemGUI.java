@@ -8,13 +8,15 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.ItemUtils;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
-public class ItemGUI implements CustomInventory {
+public class ItemGUI extends CustomInventory {
 
 	private Consumer<ItemStack> end;
 	private Runnable cancel;
@@ -25,30 +27,32 @@ public class ItemGUI implements CustomInventory {
 	}
 	
 	@Override
-	public Inventory open(Player p){
-		Inventory inv = Bukkit.createInventory(null, InventoryType.DROPPER, Lang.INVENTORY_ITEM.toString());
-		
-		ItemStack separator = ItemUtils.itemSeparator(DyeColor.LIGHT_BLUE);
-		for (int i = 0; i < 9; i++){
-			if (i == 4){
-				inv.setItem(i, ItemsGUI.none);
-			}else inv.setItem(i, separator);
-		}
-		
-		return p.openInventory(inv).getTopInventory();
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, InventoryType.DROPPER, Lang.INVENTORY_ITEM.toString());
 	}
 
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		ItemStack separator = ItemUtils.itemSeparator(DyeColor.LIGHT_BLUE);
+		for (int i = 0; i < 9; i++){
+			if (i == 4){
+				inventory.setItem(i, ItemsGUI.none);
+			} else
+				inventory.setItem(i, separator);
+		}
+	}
+
+	@Override
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot != 4) return true;
 		new ItemCreatorGUI((obj) -> {
 			end.accept(obj);
-		}, false).create(p);
+		}, false).open(p);
 		return true;
 	}
 	
 	@Override
-	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){
+	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) {
 		if (slot != 4) return true;
 		p.setItemOnCursor(null);
 		end.accept(cursor);
@@ -56,9 +60,8 @@ public class ItemGUI implements CustomInventory {
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(cancel);
-		return CloseBehavior.NOTHING;
+	public CloseBehavior onClose(Player p) {
+		return new DelayCloseBehavior(cancel);
 	}
 
 }

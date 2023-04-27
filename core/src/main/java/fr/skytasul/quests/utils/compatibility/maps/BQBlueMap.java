@@ -2,12 +2,11 @@ package fr.skytasul.quests.utils.compatibility.maps;
 
 import java.util.function.Consumer;
 import org.bukkit.Location;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.DebugUtils;
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.BlueMapWorld;
@@ -35,12 +34,12 @@ public class BQBlueMap extends AbstractMapIntegration {
 						.defaultHidden(false)
 						.toggleable(true)
 						.build();
-				DebugUtils.logMessage("Enabled BlueMap integration.");
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Enabled BlueMap integration.");
 				
 				initializeQuests.run();
 			}catch (Exception e) {
-				BeautyQuests.logger.severe("An error occurred while loading BlueMap integration.", e);
-				QuestsAPI.unregisterQuestsHandler(this);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading BlueMap integration.", e);
+				QuestsAPI.getAPI().unregisterQuestsHandler(this);
 			}
 		});
 	}
@@ -64,10 +63,10 @@ public class BQBlueMap extends AbstractMapIntegration {
 							.icon(QuestsConfiguration.dynmapMarkerIcon(), 0, 0)
 							.position(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ())
 							.build();
-					set.getMarkers().put("qu_" + quest.getID() + "_" + i++, marker);
+					set.getMarkers().put("qu_" + quest.getId() + "_" + i++, marker);
 					map.getMarkerSets().putIfAbsent(MARKERSET_ID, set);
 				}
-				DebugUtils.logMessage("Added " + i + " BlueMap markers for quest " + quest.getID());
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Added " + i + " BlueMap markers for quest " + quest.getId());
 			});
 		});
 	}
@@ -78,7 +77,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 			Location lc = quest.getOptionValueOrDef(OptionStarterNPC.class).getLocation();
 			api.getWorld(lc.getWorld()).map(BlueMapWorld::getMaps).ifPresent(maps -> {
 				for (int i = 0; i < maps.size(); i++) {
-					set.getMarkers().remove("qu_" + quest.getID() + "_" + i);
+					set.getMarkers().remove("qu_" + quest.getId() + "_" + i);
 				}
 			});
 		});

@@ -11,12 +11,13 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.CustomInventory.CloseBehavior;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class ItemsGUI implements CustomInventory {
 	
@@ -66,8 +67,8 @@ public class ItemsGUI implements CustomInventory {
 		if (none.equals(current)){
 			inv.setItem(slot, cursor);
 			Utils.runSync(() -> {
-				p.setItemOnCursor(null);
-				addItem(p, cursor, slot);
+				player.setItemOnCursor(null);
+				addItem(player, cursor, slot);
 			});
 			return true;
 		}else Utils.runSync(() -> items.put(slot, inv.getItem(slot)));
@@ -86,7 +87,7 @@ public class ItemsGUI implements CustomInventory {
 						Inventories.put(p, this, inv);
 						p.openInventory(inv);
 					}
-				}, true).create(p);
+				}, true).open(p);
 			}else {
 				if (click.isLeftClick() || (click.isRightClick() && current.getAmount() == 1)) {
 					Utils.runSync(() -> {
@@ -102,7 +103,7 @@ public class ItemsGUI implements CustomInventory {
 
 	@Override
 	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REOPEN;
+		return StandardCloseBehavior.REOPEN;
 	}
 
 }

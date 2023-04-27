@@ -9,6 +9,7 @@ import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -127,7 +128,7 @@ public class ParticleEffect {
 	}
 	
 	public static boolean canHaveColor(Particle particle) {
-		if (NMS.getMCVersion() >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
+		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
 		return particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
 	}
 	
@@ -147,7 +148,7 @@ public class ParticleEffect {
 			if (particle == Particle.NOTE) {
 				colored = true;
 				dustColored = false;
-			}else if (NMS.getMCVersion() >= 13) {
+			}else if (MinecraftVersion.MAJOR >= 13) {
 				if (particle.getDataType() == Post1_13.getDustOptionClass()) {
 					colored = true;
 					dustColored = true;

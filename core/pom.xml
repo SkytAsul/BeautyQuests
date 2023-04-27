@@ -48,28 +48,10 @@
 							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>revxrsal.commands</pattern>
-							<shadedPattern>fr.skytasul.quests.commands.revxrsal</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>com.zaxxer.hikari</pattern>
 							<shadedPattern>fr.skytasul.quests.utils.hikari</shadedPattern>
 						</relocation>
-						<relocation>
-							<pattern>com.cryptomorin.xseries</pattern>
-							<shadedPattern>fr.skytasul.quests.utils</shadedPattern>
-						</relocation>
 					</relocations>
-					<filters>
-					   <filter>
-					       <artifact>com.github.cryptomorin:XSeries</artifact>
-					       <includes>
-					           <include>com/cryptomorin/xseries/XMaterial*</include>
-					           <include>com/cryptomorin/xseries/XBlock*</include>
-					           <include>com/cryptomorin/xseries/XPotion*</include>
-					       </includes>
-					   </filter>
-					</filters>
 				</configuration>
 				<executions>
 					<execution>
@@ -165,12 +147,25 @@
 	</repositories>
 
 	<dependencies>
+	   <dependency>
+	       <groupId>fr.skytasul</groupId>
+	       <artifactId>beautyquests-api</artifactId>
+	       <version>${project.version}</version>
+	       <scope>provided</scope>
+	   </dependency>
+	   
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
 			<version>24.0.0</version>
 			<scope>provided</scope>
 		</dependency>
+		
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version> <!-- For Java 8 compatibility -->
+        </dependency>
 
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
@@ -178,6 +173,7 @@
 			<version>1.19.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizens-main</artifactId>
@@ -321,26 +317,6 @@
 			<artifactId>api-itemsadder</artifactId>
 			<version>3.2.5</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.Revxrsal.Lamp</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>3.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.Revxrsal.Lamp</groupId>
-			<artifactId>common</artifactId>
-			<version>3.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>4.0.3</version> <!-- For Java 8 compatibility -->
-		</dependency>
-		<dependency>
-			<groupId>com.github.cryptomorin</groupId>
-			<artifactId>XSeries</artifactId>
-			<version>9.3.1</version>
 		</dependency>
 
 		<!-- Local JARs -->

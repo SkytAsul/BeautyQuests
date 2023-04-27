@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.checkers.MaterialParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.MaterialParser;
-import fr.skytasul.quests.gui.ItemUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 
 public class OptionQuestItem extends QuestOption<ItemStack> {
 	
@@ -71,12 +71,12 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 				gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
 			}
 			gui.reopen(p);
-		}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().enter();
+		}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().start();
 	}
 	
 	@Override
 	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot) {
-		Utils.runSync(() -> p.setItemOnCursor(null));
+		Utils.runSync(() -> player.setItemOnCursor(null));
 		setValue(cursor);
 		ItemUtils.nameAndLore(cursor, Lang.customMaterial.toString(), getLore());
 		return false;

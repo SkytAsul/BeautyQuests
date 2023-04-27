@@ -8,13 +8,13 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.gui.npc.SelectGUI;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
 public class OptionStarterNPC extends QuestOption<BQNPC> {
 	
@@ -29,7 +29,7 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(QuestsAPI.getNPCsManager().getById(config.getInt(key)));
+		setValue(QuestsAPI.getAPI().getNPCsManager().getById(config.getInt(key)));
 	}
 	
 	@Override
@@ -53,11 +53,11 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		new SelectGUI(() -> gui.reopen(p), npc -> {
+		new NpcSelectGUI(() -> gui.reopen(p), npc -> {
 			setValue(npc);
 			ItemUtils.lore(item, getLore(gui));
 			gui.reopen(p);
-		}).setNullable().create(p);
+		}).setNullable().open(p);
 	}
 	
 	@Override

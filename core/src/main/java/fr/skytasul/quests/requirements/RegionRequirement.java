@@ -4,14 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class RegionRequirement extends AbstractRequirement {
@@ -34,7 +33,7 @@ public class RegionRequirement extends AbstractRequirement {
 		this.regionName = regionName;
 		if (worldName != null) {
 			region = BQWorldGuard.getInstance().getRegion(regionName, Bukkit.getWorld(worldName));
-			if (region == null) BeautyQuests.logger.warning("Region " + regionName + " no longer exist in world " + worldName);
+			if (region == null) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Region " + regionName + " no longer exist in world " + worldName);
 		}
 	}
 	
@@ -58,10 +57,10 @@ public class RegionRequirement extends AbstractRequirement {
 				this.regionName = region.getId();
 				event.reopenGUI();
 			}else {
-				Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
+				Lang.REGION_DOESNT_EXIST.send(p);
 				event.remove();
 			}
-		}).useStrippedMessage().enter();
+		}).useStrippedMessage().start();
 	}
 	
 	@Override

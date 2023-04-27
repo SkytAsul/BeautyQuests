@@ -7,28 +7,32 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.localization.Lang;
 
-public class BranchesGUI implements CustomInventory { // WIP
+public class BranchesGUI extends CustomInventory { // WIP
 	
 	private Branch main = new Branch(null);
-	
-	private Inventory inv;
 	
 	private Branch shown;
 	private int xOffset = 0;
 	
 	@Override
-	public Inventory open(Player p) {
-		inv = Bukkit.createInventory(null, 54, "Branches");
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 54, "Branches");
+	}
+
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		inventory.setItem(49, ItemUtils.item(XMaterial.DIAMOND_BLOCK, "§bBack one branch"));
 		
-		inv.setItem(49, ItemUtils.item(XMaterial.DIAMOND_BLOCK, "§bBack one branch"));
-		
-		inv.setItem(52, ItemUtils.item(XMaterial.ARROW, "§aScroll left"));
-		inv.setItem(53, ItemUtils.item(XMaterial.ARROW, "§aScroll right"));
+		inventory.setItem(52, ItemUtils.item(XMaterial.ARROW, "§aScroll left"));
+		inventory.setItem(53, ItemUtils.item(XMaterial.ARROW, "§aScroll right"));
 		
 		main.things.add(new Thing());
 		main.things.add(new Thing());
@@ -44,8 +48,6 @@ public class BranchesGUI implements CustomInventory { // WIP
 		main.choices.add(branch);
 		
 		setBranch(main);
-		
-		return p.openInventory(inv).getTopInventory();
 	}
 	
 	public void refresh() {
@@ -55,7 +57,7 @@ public class BranchesGUI implements CustomInventory { // WIP
 	private void setBranch(Branch branch) {
 		this.shown = branch;
 		for (int i = 0; i < 45; i++) {
-			inv.clear(i);
+			getInventory().clear(i);
 		}
 		
 		int y = 2;
@@ -73,11 +75,13 @@ public class BranchesGUI implements CustomInventory { // WIP
 		}
 		for (int i = xOffset; i < to; i++) {
 			IThing thing = branch.things.get(i);
-			inv.setItem(start + i - xOffset, thing.getItem(i == to - 1 ? branch.choices.isEmpty() ? ThingType.END : ThingType.BRANCHING : ThingType.NORMAL));
+			getInventory().setItem(start + i - xOffset, thing.getItem(
+					i == to - 1 ? branch.choices.isEmpty() ? ThingType.END : ThingType.BRANCHING : ThingType.NORMAL));
 		}
 		if (!showBranches) return;
 		if (branch.choices.isEmpty()) { // no branch at the end
-			inv.setItem(start + to - xOffset, ItemUtils.item(XMaterial.SLIME_BALL, "§eCreate next thing", "§8> LEFT CLICK : §7Create normal thing", "§8> RIGHT CLICK : §7Create choices"));
+			getInventory().setItem(start + to - xOffset, ItemUtils.item(XMaterial.SLIME_BALL, "§eCreate next thing",
+					"§8> LEFT CLICK : §7Create normal thing", "§8> RIGHT CLICK : §7Create choices"));
 		}else {
 			int i = 0;
 			for (Branch endBranch : branch.choices) {
@@ -85,7 +89,7 @@ public class BranchesGUI implements CustomInventory { // WIP
 				i++;
 			}
 			for (; i < 5; i++) {
-				inv.setItem(i * 9 + to - xOffset, ItemUtils.item(XMaterial.SLIME_BALL, "§6Create choice"));
+				getInventory().setItem(i * 9 + to - xOffset, ItemUtils.item(XMaterial.SLIME_BALL, "§6Create choice"));
 			}
 		}
 	}
@@ -95,7 +99,7 @@ public class BranchesGUI implements CustomInventory { // WIP
 	}
 	
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 52) {
 			if (xOffset > 0) {
 				xOffset--;
@@ -151,8 +155,8 @@ public class BranchesGUI implements CustomInventory { // WIP
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REMOVE;
 	}
 	
 	static class Branch {

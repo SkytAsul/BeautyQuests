@@ -1,10 +1,10 @@
 package fr.skytasul.quests.requirements;
 
 import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
-import fr.skytasul.quests.utils.ComparisonMethod;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.ComparisonMethod;
 import fr.skytasul.quests.utils.compatibility.McCombatLevel;
 
 public class McCombatLevelRequirement extends TargetNumberRequirement {

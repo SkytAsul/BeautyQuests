@@ -10,22 +10,22 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.misc.DamageCausesGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 
 public class StageDeath extends AbstractStage {
 	
 	private List<DamageCause> causes;
 	
-	public StageDeath(QuestBranch branch, List<DamageCause> causes) {
-		super(branch);
+	public StageDeath(StageController controller, List<DamageCause> causes) {
+		super(controller);
 		this.causes = causes;
 	}
 	
@@ -44,7 +44,7 @@ public class StageDeath extends AbstractStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
+	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_DIE.toString();
 	}
 	
@@ -53,7 +53,7 @@ public class StageDeath extends AbstractStage {
 		if (!causes.isEmpty()) section.set("causes", causes.stream().map(DamageCause::name).collect(Collectors.toList()));
 	}
 	
-	public static StageDeath deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageDeath deserialize(ConfigurationSection section, StageController controller) {
 		List<DamageCause> causes;
 		if (section.contains("causes")) {
 			causes = section.getStringList("causes").stream().map(DamageCause::valueOf).collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class StageDeath extends AbstractStage {
 				new DamageCausesGUI(causes, newCauses -> {
 					setCauses(newCauses);
 					reopenGUI(p, true);
-				}).create(p);
+				}).open(p);
 			});
 		}
 		
@@ -98,7 +98,7 @@ public class StageDeath extends AbstractStage {
 		}
 		
 		@Override
-		protected StageDeath finishStage(QuestBranch branch) {
+		protected StageDeath finishStage(StageController controller) {
 			return new StageDeath(branch, causes);
 		}
 		

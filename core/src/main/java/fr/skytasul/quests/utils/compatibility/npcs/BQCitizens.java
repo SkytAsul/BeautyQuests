@@ -10,8 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration.ClickType;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
 import net.citizensnpcs.Settings;
@@ -67,13 +67,13 @@ public class BQCitizens extends BQNPCsManager {
 	
 	@EventHandler
 	public void onCitizensReload(CitizensReloadEvent e) {
-		BeautyQuests.logger.warning("Citizens has been reloaded whereas it is highly not recommended for plugins compatibilities. Unexpected behaviors may happen.");
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Citizens has been reloaded whereas it is highly not recommended for plugins compatibilities. Unexpected behaviors may happen.");
 		npcs.forEach((id, npc) -> {
 			if (npc instanceof BQCitizensNPC) {
 				BQCitizensNPC bqnpc = (BQCitizensNPC) npc;
 				NPC cnpc = CitizensAPI.getNPCRegistry().getById(id);
 				if (cnpc == null) {
-					BeautyQuests.logger.warning("Unable to find NPC with ID " + id + " after a Citizens reload.");
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unable to find NPC with ID " + id + " after a Citizens reload.");
 				}else {
 					bqnpc.npc = cnpc;
 				}

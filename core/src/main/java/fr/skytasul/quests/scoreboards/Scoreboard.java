@@ -17,22 +17,23 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.gui.quests.PlayerListGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.players.PlayersManager;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.ChatUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.nms.NMS;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.ChatColorUtils;
+import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
 
 public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
-	private static final int maxLength = NMS.getMCVersion() >= 13 ? 1024 : 30;
+	private static final int maxLength = MinecraftVersion.MAJOR >= 13 ? 1024 : 30;
 	
 	private PlayerAccount acc;
 	private Player p;
@@ -57,7 +58,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(new Line(line));
 		}
 
-		launched = QuestsAPI.getQuests().getQuestsStarted(acc, false, true);
+		launched = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 		
@@ -186,7 +187,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
 			if (errorWhenUnknown) {
-				launched = QuestsAPI.getQuests().getQuestsStarted(acc, false, true);
+				launched = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
 				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 			}else return;
 		}
@@ -220,7 +221,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					break;
 				}
 			}catch (Exception ex) {
-				BeautyQuests.logger.warning("An error occured while refreshing scoreboard line " + i + " for " + p.getName(), ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error occured while refreshing scoreboard line " + i + " for " + p.getName(), ex);
 				linesStrings.add("§c§lline error");
 			}
 		}
@@ -306,11 +307,11 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					lines = Collections.emptyList();
 					lastValue = null;
 				} else {
-					text = Utils.finalFormat(p, text, true);
+					text = MessageUtils.finalFormat(p, text, true);
 					if (text.equals(lastValue))
 						return false;
 
-					lines = ChatUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
+					lines = ChatColorUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
 
 					lastValue = text;
 				}
@@ -360,7 +361,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 						if (optionalDescription.isPresent()) {
 							if (lazyContext == null)
 								lazyContext = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(),
-										shown, acc, PlayerListGUI.Category.IN_PROGRESS, Source.SCOREBOARD);
+										shown, acc, PlayerListCategory.IN_PROGRESS, DescriptionSource.SCOREBOARD);
 							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
 						} else {
 							if (manager.hideUnknownQuestPlaceholders()) {

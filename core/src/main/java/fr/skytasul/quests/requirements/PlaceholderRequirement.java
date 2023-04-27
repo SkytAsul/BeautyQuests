@@ -3,16 +3,15 @@ package fr.skytasul.quests.requirements;
 import java.math.BigDecimal;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.utils.ComparisonMethod;
-import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.ComparisonMethod;
+import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -53,13 +52,14 @@ public class PlaceholderRequirement extends AbstractRequirement {
 				if (signum == 1) return comparison == ComparisonMethod.GREATER || comparison == ComparisonMethod.GREATER_OR_EQUAL;
 				if (signum == -1) return comparison == ComparisonMethod.LESS || comparison == ComparisonMethod.LESS_OR_EQUAL;
 			}catch (NumberFormatException e) {
-				BeautyQuests.logger.severe("Cannot parse placeholder " + rawPlaceholder + " for player " + p.getName() + ": got " + request + ", which is not a number. (" + debugName() + ")");
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot parse placeholder " + rawPlaceholder + " for player " + p.getName() + ": got " + request + ", which is not a number. (" + debugName() + ")");
 			}
 			return false;
 		}
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);
 		String value = this.value;
-		if (parseValue) value = Utils.finalFormat(p, value, true);
+		if (parseValue)
+			value = MessageUtils.finalFormat(p, value, true);
 		return value.equals(request);
 	}
 	
@@ -79,16 +79,16 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (index == -1) {
 			hook = null;
 			params = placeholder;
-			BeautyQuests.logger.warning("Usage of invalid placeholder " + placeholder);
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Usage of invalid placeholder " + placeholder);
 		}else {
 			String identifier = placeholder.substring(0, index);
 			hook = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(identifier);
 			params = placeholder.substring(index + 1);
 			if (hook == null) {
-				BeautyQuests.logger.warning("Cannot find PlaceholderAPI expansion for " + rawPlaceholder);
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot find PlaceholderAPI expansion for " + rawPlaceholder);
 				QuestsPlaceholders.waitForExpansion(identifier, expansion -> {
 					hook = expansion;
-					DebugUtils.logMessage("Found " + rawPlaceholder + " from callback");
+					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Found " + rawPlaceholder + " from callback");
 				});
 			}
 		}
@@ -148,12 +148,12 @@ public class PlaceholderRequirement extends AbstractRequirement {
 					new TextEditor<>(event.getPlayer(), null, comp -> {
 						this.comparison = comp == null ? ComparisonMethod.EQUALS : comp;
 						event.reopenGUI();
-					}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().enter();
+					}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().start();
 				}catch (NumberFormatException __) {
 					event.reopenGUI();
 				}
-			}).enter();
-		}).useStrippedMessage().enter();
+			}).start();
+		}).useStrippedMessage().start();
 	}
 	
 	@Override

@@ -19,7 +19,8 @@ import java.util.logging.LogRecord;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
 
 public class LoggerHandler extends Handler implements ILoggerHandler {
 
