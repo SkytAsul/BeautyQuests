@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
@@ -38,7 +38,7 @@ public class PlayersManagerYAML extends PlayersManager {
 	private final Cache<Integer, PlayerAccount> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 	
 	protected final Map<Integer, PlayerAccount> loadedAccounts = new HashMap<>();
-	private final Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Integer, String> identifiersIndex = new ConcurrentHashMap<>();
 	
 	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 	

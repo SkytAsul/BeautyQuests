@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -327,7 +328,7 @@ public class Utils{
 		return msg;
 	}
 	
-	private static final Map<Integer, Pattern> REPLACEMENT_PATTERNS = new HashMap<>();
+	private static final Map<Integer, Pattern> REPLACEMENT_PATTERNS = new ConcurrentHashMap<>();
 	private static final Pattern RESET_PATTERN = Pattern.compile("§[rR]");
 	
 	public static String format(@NotNull String msg, int i, @NotNull Supplier<Object> replace) {
