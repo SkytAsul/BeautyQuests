@@ -61,14 +61,14 @@
 						</relocation>
 					</relocations>
 					<filters>
-					   <filter>
-					       <artifact>com.github.cryptomorin:XSeries</artifact>
-					       <includes>
-					           <include>com/cryptomorin/xseries/XMaterial*</include>
-					           <include>com/cryptomorin/xseries/XBlock*</include>
-					           <include>com/cryptomorin/xseries/XPotion*</include>
-					       </includes>
-					   </filter>
+						<filter>
+							<artifact>com.github.cryptomorin:XSeries</artifact>
+							<includes>
+								<include>com/cryptomorin/xseries/XMaterial*</include>
+								<include>com/cryptomorin/xseries/XBlock*</include>
+								<include>com/cryptomorin/xseries/XPotion*</include>
+							</includes>
+						</filter>
 					</filters>
 				</configuration>
 				<executions>
@@ -162,6 +162,11 @@
 			<id>bg-repo</id>
 			<url>https://repo.bg-software.com/repository/api/</url>
 		</repository>
+		<repository>
+			<id>phoenix</id>
+			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -272,6 +277,18 @@
 			<groupId>com.github.promcteam</groupId>
 			<artifactId>proskillapi</artifactId>
 			<version>1.1.7.0.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.Indyuce</groupId>
+			<artifactId>MMOItems-API</artifactId>
+			<version>6.9.4-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency> <!-- Required for MMOItems-API to compile -->
+			<groupId>io.lumine</groupId>
+			<artifactId>MythicLib-dist</artifactId>
+			<version>1.5.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -28,6 +28,7 @@ import fr.skytasul.quests.rewards.MoneyReward;
 import fr.skytasul.quests.rewards.PermissionReward;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.utils.compatibility.items.BQMMOItems;
 import fr.skytasul.quests.utils.compatibility.maps.BQBlueMap;
 import fr.skytasul.quests.utils.compatibility.maps.BQDynmap;
 import fr.skytasul.quests.utils.compatibility.mobs.BQAdvancedSpawners;
@@ -133,6 +134,8 @@ public class DependenciesManager implements Listener {
 	public static final BQDependency WildStacker = new BQDependency("WildStacker", BQWildStacker::initialize);
 	public static final BQDependency ItemsAdder =
 			new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload);
+	public static final BQDependency MMOItems =
+			new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload);
 	
 	//public static final BQDependency par = new BQDependency("Parties");
 	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
@@ -153,7 +156,7 @@ public class DependenciesManager implements Listener {
 				skapi, jobs, fac, mmo, mclvl, // rewards and requirements
 				dyn, BlueMap, // maps
 				cmi, holod2, holod3, decentholograms, // holograms
-				ItemsAdder // items
+				ItemsAdder, MMOItems // items
 				));
 	}
 	
