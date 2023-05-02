@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
@@ -87,13 +87,13 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	@Override
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
-		if (QuestsConfiguration.handleGPS() && gps) GPS.launchCompass(p, lc);
+		if (QuestsConfigurationImplementation.handleGPS() && gps) GPS.launchCompass(p, lc);
 	}
 	
 	@Override
 	public void leaves(PlayerAccount acc, Player p) {
 		super.leaves(acc, p);
-		if (QuestsConfiguration.handleGPS() && gps) GPS.stopCompass(p);
+		if (QuestsConfigurationImplementation.handleGPS() && gps) GPS.stopCompass(p);
 	}
 	
 	@Override
@@ -101,7 +101,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		super.start(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
-			if (QuestsConfiguration.handleGPS() && gps) GPS.launchCompass(p, lc);
+			if (QuestsConfigurationImplementation.handleGPS() && gps) GPS.launchCompass(p, lc);
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		super.ended(acc);
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
-			if (QuestsConfiguration.handleGPS() && gps) GPS.stopCompass(p);
+			if (QuestsConfigurationImplementation.handleGPS() && gps) GPS.stopCompass(p);
 		}
 	}
 	
@@ -172,7 +172,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 				}, PatternParser.PARSER).passNullIntoEndConsumer().start();
 			});
 			
-			if (QuestsConfiguration.handleGPS()) line.setItem(SLOT_GPS, ItemUtils.itemSwitch(Lang.stageGPS.toString(), gps), (p, item) -> setGPS(ItemUtils.toggle(item)), true, true);
+			if (QuestsConfigurationImplementation.handleGPS()) line.setItem(SLOT_GPS, ItemUtils.itemSwitch(Lang.stageGPS.toString(), gps), (p, item) -> setGPS(ItemUtils.toggleSwitch(item)), true, true);
 		}
 		
 		public void setLocation(Location location) {
@@ -193,7 +193,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		public void setGPS(boolean gps) {
 			if (this.gps != gps) {
 				this.gps = gps;
-				if (QuestsConfiguration.handleGPS()) line.editItem(SLOT_GPS, ItemUtils.set(line.getItem(SLOT_GPS), gps));
+				if (QuestsConfigurationImplementation.handleGPS()) line.editItem(SLOT_GPS, ItemUtils.setSwitch(line.getItem(SLOT_GPS), gps));
 			}
 		}
 		

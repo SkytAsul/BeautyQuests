@@ -14,7 +14,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -62,7 +63,7 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 		}).open(p);
 	}
 	
-	class VisibilityGUI extends CustomInventory {
+	class VisibilityGUI extends Gui {
 		
 		private EnumMap<QuestVisibilityLocation, Boolean> locations = new EnumMap<>(QuestVisibilityLocation.class);
 		private Runnable reopen;
@@ -87,9 +88,9 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 		}
 		
 		@Override
-		public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+		public void onClick(GuiClickEvent event) {
 			if (slot >= 0 && slot < 4) {
-				locations.put(QuestVisibilityLocation.values()[slot], ItemUtils.toggle(current));
+				locations.put(QuestVisibilityLocation.values()[slot], ItemUtils.toggleSwitch(current));
 			}else if (slot == 4) {
 				setValue(locations.entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList()));
 				reopen.run();

@@ -151,7 +151,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			line.setItem(7, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
-			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegionExit.toString(), exit), (p, item) -> setExit(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegionExit.toString(), exit), (p, item) -> setExit(ItemUtils.toggleSwitch(item)));
 		}
 		
 		public void setRegion(String regionName, String worldName) {
@@ -163,7 +163,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		public void setExit(boolean exit) {
 			if (this.exit != exit) {
 				this.exit = exit;
-				line.editItem(6, ItemUtils.set(line.getItem(6), exit));
+				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), exit));
 			}
 		}
 

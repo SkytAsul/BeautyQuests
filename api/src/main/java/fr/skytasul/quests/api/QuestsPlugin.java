@@ -2,7 +2,6 @@ package fr.skytasul.quests.api;
 
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;

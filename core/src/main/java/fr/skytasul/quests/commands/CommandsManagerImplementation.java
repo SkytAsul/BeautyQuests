@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.CommandsManager;
@@ -36,7 +36,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 	
 	public CommandsManagerImplementation() {
 		handler = BukkitCommandHandler.create(BeautyQuests.getInstance());
-		handler.setMessagePrefix(QuestsConfiguration.getPrefix());
+		handler.setMessagePrefix(QuestsConfigurationImplementation.getPrefix());
 		handler.failOnTooManyArguments();
 		
 		handler.registerValueResolver(Quest.class, context -> {

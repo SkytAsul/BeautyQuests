@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface GuiManager {
 
-	void open(@NotNull Player player, @NotNull CustomInventory inventory);
+	void open(@NotNull Player player, @NotNull Gui inventory);
 
 	void closeAndExit(@NotNull Player player);
 
@@ -17,6 +17,6 @@ public interface GuiManager {
 	boolean hasGuiOpened(@NotNull Player player);
 
 	@Nullable
-	CustomInventory getOpenedGui(@NotNull Player player);
+	Gui getOpenedGui(@NotNull Player player);
 
 }

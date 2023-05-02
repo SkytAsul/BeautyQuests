@@ -11,8 +11,8 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
-import fr.skytasul.quests.api.gui.layout.Button;
-import fr.skytasul.quests.api.gui.layout.ClickEvent;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
+import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -95,26 +95,26 @@ public class RequirementDependentReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		LayoutedGUI.newBuilder()
 				.addButton(0,
-						Button.create(XMaterial.NETHER_STAR, () -> "§b" + Lang.requirements.format(requirements.size()),
+						LayoutedButton.create(XMaterial.NETHER_STAR, () -> "§b" + Lang.requirements.format(requirements.size()),
 								Collections.emptyList(), this::editRequirements))
 				.addButton(1,
-						Button.create(XMaterial.CHEST, () -> "§a" + Lang.rewards.format(rewards.size()),
+						LayoutedButton.create(XMaterial.CHEST, () -> "§a" + Lang.rewards.format(rewards.size()),
 								Collections.emptyList(), this::editRewards))
-				.addButton(4, Button.create(ItemUtils.itemDone, __ -> event.reopenGUI()))
+				.addButton(4, LayoutedButton.create(ItemUtils.itemDone, __ -> event.reopenGUI()))
 				.setName(Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString())
 				.setCloseBehavior(StandardCloseBehavior.REOPEN)
 				.build()
 				.open(event.getPlayer());
 	}
 	
-	private void editRequirements(ClickEvent event) {
+	private void editRequirements(LayoutedClickEvent event) {
 		QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.OTHER, newRequirements -> {
 			RequirementDependentReward.this.requirements = newRequirements;
 			event.refreshItemReopen();
 		}, requirements).open(event.getPlayer());
 	}
 
-	private void editRewards(ClickEvent event) {
+	private void editRewards(LayoutedClickEvent event) {
 		QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.OTHER, newRewards -> {
 			RequirementDependentReward.this.rewards = newRewards;
 			event.refreshItemReopen();

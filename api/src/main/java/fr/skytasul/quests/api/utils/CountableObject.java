@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.types;
+package fr.skytasul.quests.api.utils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public interface CountableObject<T> {
 
 	}
 
-	static <T> @NotNull CountableObject<T> create(@NotNull UUID uuid, @NotNull T object, int amount) {
+	static <T> fr.skytasul.quests.api.utils.CountableObject<T> create(@NotNull UUID uuid, @NotNull T object, int amount) {
 		return new DummyCountableObject<>(uuid, object, amount);
 	}
 

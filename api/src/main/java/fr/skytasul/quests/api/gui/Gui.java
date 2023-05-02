@@ -1,16 +1,14 @@
 package fr.skytasul.quests.api.gui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 
-public abstract class CustomInventory {
+public abstract class Gui {
 
 	private @Nullable Inventory inventory;
 
@@ -76,26 +74,9 @@ public abstract class CustomInventory {
 	/**
 	 * Called when clicking on an item
 	 * 
-	 * @param player Player who clicked
-	 * @param current Item clicked
-	 * @param slot Slot of item clicked
-	 * @param click Type of click
-	 * @return Cancel click
+	 * @param event object containing informations about click action
 	 */
-	public abstract boolean onClick(@NotNull Player player, @NotNull ItemStack current, int slot, @NotNull ClickType click);
-	
-	/**
-	 * Called when clicking on an item <b>with something on the cursor</b>
-	 * 
-	 * @param player Player who clicked
-	 * @param current Item clicked
-	 * @param cursor Item on the cursor when click
-	 * @param slot Slot of item clicked
-	 * @return Cancel click
-	 */
-	public boolean onClickCursor(@NotNull Player player, @NotNull ItemStack current, @NotNull ItemStack cursor, int slot) {
-		return true;
-	}
+	public abstract void onClick(@NotNull GuiClickEvent event);
 	
 	/**
 	 * Called when closing the inventory

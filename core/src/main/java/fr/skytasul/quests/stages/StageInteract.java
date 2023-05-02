@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.WaitBlockClick;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -30,10 +30,10 @@ import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.utils.types.BQBlock;
 import fr.skytasul.quests.utils.types.BQLocation;
 
 @LocatableType (types = { LocatedType.BLOCK, LocatedType.OTHER })
@@ -153,13 +153,13 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 
-			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), (p, item) -> setLeftClick(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), (p, item) -> setLeftClick(ItemUtils.toggleSwitch(item)));
 		}
 		
 		public void setLeftClick(boolean leftClick) {
 			if (this.leftClick != leftClick) {
 				this.leftClick = leftClick;
-				line.editItem(6, ItemUtils.set(line.getItem(6), leftClick));
+				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), leftClick));
 			}
 		}
 
@@ -224,7 +224,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 			}else return new StageInteract(branch, leftClick, block);
 		}
 		
-		private class ChooseActionGUI implements CustomInventory {
+		private class ChooseActionGUI implements Gui {
 			
 			private Runnable cancel, location, type;
 			

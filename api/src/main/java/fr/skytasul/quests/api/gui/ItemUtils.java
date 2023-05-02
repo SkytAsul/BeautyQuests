@@ -17,14 +17,16 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import net.md_5.bungee.api.ChatColor;
 
-public class ItemUtils {
+public final class ItemUtils {
+
+	private ItemUtils() {}
 	
 	private static final int LORE_LINE_LENGTH = 40;
 	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
@@ -309,13 +311,15 @@ public class ItemUtils {
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
 	 * @see #itemNextPage
 	 */
-	public static final ImmutableItemStack itemLaterPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.laterPage.toString()));
+	public static final ImmutableItemStack itemLaterPage = new ImmutableItemStack(
+			item(QuestsConfiguration.getConfig().getQuestsConfig().pageItem(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
 	 * @see #itemLaterPage
 	 */
-	public static final ImmutableItemStack itemNextPage = new ImmutableItemStack(item(QuestsConfiguration.getPageMaterial(), Lang.nextPage.toString()));
+	public static final ImmutableItemStack itemNextPage = new ImmutableItemStack(
+			item(QuestsConfiguration.getConfig().getQuestsConfig().pageItem(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier
@@ -364,21 +368,21 @@ public class ItemUtils {
 	 * @param itemSwitch switch item
 	 * @return new state of the switch
 	 */
-	public static boolean toggle(ItemStack itemSwitch){
+	public static boolean toggleSwitch(ItemStack itemSwitch){
 		String name = getName(itemSwitch);
 		boolean toggled = name.charAt(1) != 'a'; // toggling
-		set(itemSwitch, toggled);
+		setSwitch(itemSwitch, toggled);
 		return toggled;
 	}
 	
 	/**
 	 * Set the state of a switch item, created with {@link #itemSwitch(String, boolean, String...)}
-	 * @see #toggle(ItemStack)
+	 * @see #toggleSwitch(ItemStack)
 	 * @param itemSwitch switch item
 	 * @param enable new state of the switch
 	 * @return same state
 	 */
-	public static ItemStack set(ItemStack itemSwitch, boolean enable) {
+	public static ItemStack setSwitch(ItemStack itemSwitch, boolean enable) {
 		if (itemSwitch == null) return null;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));

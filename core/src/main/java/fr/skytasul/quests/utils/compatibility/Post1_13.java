@@ -10,7 +10,7 @@ import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.utils.types.BQBlock;
+import fr.skytasul.quests.api.utils.BQBlock;
 
 public class Post1_13 {
 

@@ -21,10 +21,11 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
@@ -38,15 +39,15 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	protected final @NotNull EntityType entity;
 	protected final int amount;
 
-	protected AbstractEntityStage(@NotNull QuestBranch branch, @NotNull EntityType entity, int amount) {
-		super(branch);
+	protected AbstractEntityStage(@NotNull StageController controller, @NotNull EntityType entity, int amount) {
+		super(controller);
 		this.entity = entity;
 		this.amount = amount;
 	}
 	
 	protected void event(@NotNull Player p, @NotNull EntityType type) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
+		if (hasStarted(p) && canUpdate(p)) {
 			if (entity == null || type.equals(entity)) {
 				Integer playerAmount = getPlayerAmount(acc);
 				if (playerAmount == null) {
@@ -54,7 +55,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 				}else if (playerAmount.intValue() <= 1) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", playerAmount.intValue() - 1);
+					updateObjective(p, "amount", playerAmount.intValue() - 1);
 				}
 			}
 		}
@@ -65,7 +66,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
-	protected void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
+	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", amount);
 	}
@@ -84,7 +85,8 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 	
 	@Override
-	protected @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull Source source) {
+	public @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc,
+			@NotNull DescriptionSource source) {
 		return new Supplier[] { () -> getMobsLeft(acc) };
 	}
 	
@@ -106,7 +108,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 				})
 				.filter(Objects::nonNull)
 				.sorted(Comparator.comparing(Entry::getValue))
-				.<Located>map(entry -> Located.LocatedEntity.open(entry.getKey()))
+				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
 				.spliterator();
 	}
 	

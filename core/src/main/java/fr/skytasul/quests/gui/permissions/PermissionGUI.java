@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -12,14 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.WorldParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.utils.types.Permission;
 
-public class PermissionGUI extends CustomInventory {
+public class PermissionGUI extends Gui {
 
 	private String perm, world = null;
 	private boolean take = false;
@@ -52,7 +52,7 @@ public class PermissionGUI extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot) {
 		case 0:
 			Lang.CHOOSE_PERM_REWARD.send(p);
@@ -73,7 +73,7 @@ public class PermissionGUI extends CustomInventory {
 			}, new WorldParser()).start();
 			break;
 		case 2:
-			take = ItemUtils.toggle(current);
+			take = ItemUtils.toggleSwitch(current);
 			break;
 		case 4:
 			if (current.getType() == Material.COAL) break;

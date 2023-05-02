@@ -7,7 +7,7 @@ import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.quests.Quest;
 import net.md_5.bungee.api.ChatColor;
@@ -19,21 +19,21 @@ public class BQDynmap extends AbstractMapIntegration {
 	
 	@Override
 	public boolean isEnabled() {
-		return QuestsConfiguration.dynmapMarkerIcon() != null && !QuestsConfiguration.dynmapMarkerIcon().isEmpty();
+		return QuestsConfigurationImplementation.dynmapMarkerIcon() != null && !QuestsConfigurationImplementation.dynmapMarkerIcon().isEmpty();
 	}
 
 	@Override
 	protected void initializeMarkers(Runnable initializeQuests) {
 		DynmapAPI dynmap = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
 		MarkerAPI api = dynmap.getMarkerAPI();
-		icon = api.getMarkerIcon(QuestsConfiguration.dynmapMarkerIcon());
+		icon = api.getMarkerIcon(QuestsConfigurationImplementation.dynmapMarkerIcon());
 		
 		markers = api.getMarkerSet("beautyquests.markerset");
 		if (markers == null){
-			markers = api.createMarkerSet("beautyquests.markerset", QuestsConfiguration.dynmapSetName(), null, false);
-		}else markers.setMarkerSetLabel(QuestsConfiguration.dynmapSetName());
+			markers = api.createMarkerSet("beautyquests.markerset", QuestsConfigurationImplementation.dynmapSetName(), null, false);
+		}else markers.setMarkerSetLabel(QuestsConfigurationImplementation.dynmapSetName());
 		
-		markers.setMinZoom(QuestsConfiguration.dynmapMinimumZoom());
+		markers.setMinZoom(QuestsConfigurationImplementation.dynmapMinimumZoom());
 		markers.setHideByDefault(false);
 		markers.setDefaultMarkerIcon(icon);
 		

@@ -50,11 +50,11 @@ public class Line {
 	public int setItem(int slot, ItemStack is, StageRunnable click, boolean override, boolean refresh) {
 		Pair<ItemStack, StageRunnable> en = new Pair<>(is, click);
 		if (override){
-			items.set(slot, en);
+			items.setSwitch(slot, en);
 		}else {
 			if (items.get(slot) != null){
 				slot = items.add(en);
-			}else items.set(slot, en);
+			}else items.setSwitch(slot, en);
 		}
 		if (items.getLast() <= 8) {
 			maxPage = 1;
@@ -78,7 +78,7 @@ public class Line {
 	public void editItem(int slot, ItemStack newItem, boolean refresh) {
 		Pair<ItemStack, StageRunnable> last = items.get(slot);
 		if (last == null) return;
-		items.set(slot, new Pair<>(newItem, last.getValue()));
+		items.setSwitch(slot, new Pair<>(newItem, last.getValue()));
 		if (refresh) {
 			setItems(activePage);
 		}

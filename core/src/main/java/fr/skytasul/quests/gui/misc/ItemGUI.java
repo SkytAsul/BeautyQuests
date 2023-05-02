@@ -4,19 +4,19 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 
-public class ItemGUI extends CustomInventory {
+public class ItemGUI extends Gui {
 
 	private Consumer<ItemStack> end;
 	private Runnable cancel;
@@ -43,7 +43,7 @@ public class ItemGUI extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		if (slot != 4) return true;
 		new ItemCreatorGUI((obj) -> {
 			end.accept(obj);

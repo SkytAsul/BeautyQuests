@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -46,12 +46,12 @@ public class StageBringBack extends StageNPC{
 
 		String[] array = new String[items.length]; // create messages on beginning
 		for (int i = 0; i < array.length; i++){
-			array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT));
+			array[i] = QuestsConfigurationImplementation.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfigurationImplementation.getItemAmountColor(), QuestsConfigurationImplementation.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT));
 		}
 		splitted = Utils.descriptionLines(DescriptionSource.FORCESPLIT, array);
-		if (QuestsConfiguration.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT)){
+		if (QuestsConfigurationImplementation.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT)){
 			for (int i = 0; i < array.length; i++){
-				array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), false);
+				array[i] = QuestsConfigurationImplementation.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfigurationImplementation.getItemAmountColor(), false);
 			}
 		}
 		line = Utils.descriptionLines(DescriptionSource.FORCELINE, array);
@@ -93,12 +93,12 @@ public class StageBringBack extends StageNPC{
 
 	@Override
 	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfiguration.splitDescription(source) ? splitted : line), npcName());
+		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfigurationImplementation.splitDescription(source) ? splitted : line), npcName());
 	}
 	
 	@Override
 	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source){
-		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
+		return new String[]{QuestsConfigurationImplementation.splitDescription(source) ? splitted : line, npcName()};
 	}
 
 	@Override

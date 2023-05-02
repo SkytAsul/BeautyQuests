@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
@@ -279,7 +279,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public boolean testRequirements(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (!testQuestLimit(p, acc, sendMessage)) return false;
-		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfiguration.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
+		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class) || (QuestsConfigurationImplementation.isRequirementReasonSentOnMultipleQuests() || getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		return QuestUtils.testRequirements(p, getOptionValueOrDef(OptionRequirements.class), sendMessage);
 	}
 	
@@ -296,8 +296,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (playerMaxLaunchedQuestOpt.isPresent()) {
 			playerMaxLaunchedQuest = playerMaxLaunchedQuestOpt.getAsInt();
 		}else {
-			if (QuestsConfiguration.getMaxLaunchedQuests() == 0) return true;
-			playerMaxLaunchedQuest = QuestsConfiguration.getMaxLaunchedQuests();
+			if (QuestsConfigurationImplementation.getMaxLaunchedQuests() == 0) return true;
+			playerMaxLaunchedQuest = QuestsConfigurationImplementation.getMaxLaunchedQuests();
 		}
 		if (QuestsAPI.getAPI().getQuestsManager().getStartedSize(acc) >= playerMaxLaunchedQuest) {
 			if (sendMessage)
@@ -372,7 +372,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return CompletableFuture.completedFuture(false);
 
 		String confirm;
-		if (QuestsConfiguration.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
+		if (QuestsConfigurationImplementation.questConfirmGUI() && !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
 			CompletableFuture<Boolean> future = new CompletableFuture<>();
 			ConfirmGUI.confirm(() -> {
 				start(p);

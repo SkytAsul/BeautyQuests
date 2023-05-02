@@ -71,7 +71,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	/* --------- Storage --------- */
 	
 	private String lastVersion;
-	private QuestsConfiguration config;
+	private QuestsConfigurationImplementation config;
 
 	private String loadedLanguage;
 
@@ -275,14 +275,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 	
 	private void launchSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0 && saveTask == null) {
-			int cycle = QuestsConfiguration.saveCycle * 60 * 20;
+		if (config.saveCycle > 0 && saveTask == null) {
+			int cycle = config.saveCycle * 60 * 20;
 			saveTask = new BukkitRunnable() {
 				@Override
 				public void run() {
 					try {
 						saveAllConfig(false);
-						if (QuestsConfiguration.saveCycleMessage) logger.info("Datas saved ~ periodic save");
+						if (config.saveCycleMessage)
+							logger.info("Datas saved ~ periodic save");
 					}catch (Exception e) {
 						logger.severe("Error when saving!", e);
 					}
@@ -293,7 +294,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 	
 	private void stopSaveCycle(){
-		if (QuestsConfiguration.saveCycle > 0 && saveTask != null){
+		if (config.saveCycle > 0 && saveTask != null) {
 			saveTask.cancel();
 			saveTask = null;
 			logger.info("Periodic saves task stopped.");
@@ -370,7 +371,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			File configFile = new File(getDataFolder(), "config.yml");
-			config = new QuestsConfiguration(this);
+			config = new QuestsConfigurationImplementation(this);
 			if (config.update()) {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
@@ -459,7 +460,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		dependencies.lockDependencies();
 		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
 		
-		if (scoreboards == null && QuestsConfiguration.showScoreboards()) {
+		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
 			if (!scFile.exists()) saveResource("scoreboard.yml", true);
 			scoreboards = new ScoreboardManager(scFile);
@@ -487,9 +488,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
 		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
 		
-		if (QuestsConfiguration.firstQuestID != -1) {
+		if (config.firstQuestID != -1) {
 			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
-			QuestImplementation quest = quests.getQuest(QuestsConfiguration.firstQuestID);
+			QuestImplementation quest = quests.getQuest(config.firstQuestID);
 			if (quest != null) {
 				if (quest.hasOption(OptionAutoQuest.class)) {
 					OptionAutoQuest option = quest.getOption(OptionAutoQuest.class);
@@ -563,7 +564,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	/* ---------- Backups ---------- */
 	
 	public boolean createFolderBackup(Path backup) {
-		if (!QuestsConfiguration.backups) return false;
+		if (!config.backups)
+			return false;
 		logger.info("Creating quests backup...");
 		Path backupDir = backup.resolve("quests");
 		Path saveFolderPath = saveFolder.toPath();
@@ -586,7 +588,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 	
 	public boolean createDataBackup(Path backup) {
-		if (!QuestsConfiguration.backups) return false;
+		if (!config.backups)
+			return false;
 		logger.info("Creating data backup...");
 		try{
 			Path target = backup.resolve("data.yml");
@@ -604,7 +607,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 	
 	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
-		if (!QuestsConfiguration.backups) return false;
+		if (!config.backups)
+			return false;
 		
 		logger.info("Creating player datas backup...");
 		Path backupDir = backup.resolve("players");
@@ -628,7 +632,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	public boolean createQuestBackup(Path file, String msg) {
-		if (!QuestsConfiguration.backups) return false;
+		if (!config.backups)
+			return false;
 		logger.info("Creating single quest backup...");
 		try{
 			Path target = Paths.get(file.toString() + "-backup" + format.format(new Date()) + ".yml");
@@ -727,7 +732,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	@Override
 	public @NotNull String getPrefix() {
-		return QuestsConfiguration.getPrefix();
+		return config.getPrefix();
 	}
 
 	@Override
@@ -736,7 +741,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 	
 	@Override
-	public @NotNull QuestsConfiguration getConfiguration() {
+	public @NotNull QuestsConfigurationImplementation getConfiguration() {
 		return config;
 	}
 	

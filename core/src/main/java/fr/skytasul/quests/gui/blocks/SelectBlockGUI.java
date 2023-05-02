@@ -17,15 +17,15 @@ import fr.skytasul.quests.api.editors.checkers.MaterialParser;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
-import fr.skytasul.quests.api.gui.layout.Button;
-import fr.skytasul.quests.api.gui.layout.ClickEvent;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
+import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
-import fr.skytasul.quests.utils.types.BQBlock;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
@@ -42,14 +42,14 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		this.run = run;
 
 		if (allowAmount)
-			buttons.put(1, Button.create(XMaterial.REDSTONE, () -> Lang.Amount.format(amount), Collections.emptyList(),
+			buttons.put(1, LayoutedButton.create(XMaterial.REDSTONE, () -> Lang.Amount.format(amount), Collections.emptyList(),
 					this::amountClick));
-		buttons.put(2, Button.create(XMaterial.NAME_TAG, Lang.blockName.toString(),
+		buttons.put(2, LayoutedButton.create(XMaterial.NAME_TAG, Lang.blockName.toString(),
 				Arrays.asList(QuestOption.formatNullableValue(customName, customName == null)), this::nameClick));
-		buttons.put(4, new Button() {
+		buttons.put(4, new LayoutedButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				typeClick(event);
 			}
 
@@ -67,7 +67,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 		});
 		if (MinecraftVersion.MAJOR >= 13) {
-			buttons.put(5, Button.create(() -> {
+			buttons.put(5, LayoutedButton.create(() -> {
 				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
 						QuestOption.formatNullableValue(blockData, blockData == null));
 				if (blockData != null)
@@ -75,7 +75,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 				return item;
 			}, this::dataClick));
 
-			buttons.put(6, Button.create(() -> {
+			buttons.put(6, LayoutedButton.create(() -> {
 				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockTag.toString(),
 						QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
 						QuestOption.formatNullableValue(tag, tag == null));
@@ -85,10 +85,10 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			}, this::tagClick));
 		}
 
-		buttons.put(8, Button.create(ItemUtils.itemDone, this::doneClick));
+		buttons.put(8, LayoutedButton.create(ItemUtils.itemDone, this::doneClick));
 	}
 
-	private void amountClick(ClickEvent event) {
+	private void amountClick(LayoutedClickEvent event) {
 		Lang.BLOCKS_AMOUNT.send(event.getPlayer());
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			amount = obj;
@@ -96,7 +96,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}
 
-	private void nameClick(ClickEvent event) {
+	private void nameClick(LayoutedClickEvent event) {
 		Lang.BLOCK_NAME.send(event.getPlayer());
 		new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 			customName = obj;
@@ -104,7 +104,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}).passNullIntoEndConsumer().start();
 	}
 
-	private void typeClick(ClickEvent event) {
+	private void typeClick(LayoutedClickEvent event) {
 		Lang.BLOCK_NAME.send(event.getPlayer());
 		new TextEditor<>(event.getPlayer(), event::reopen, type -> {
 			this.type = type;
@@ -120,7 +120,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}, MaterialParser.BLOCK_PARSER).start();
 	}
 
-	private void dataClick(ClickEvent event) {
+	private void dataClick(LayoutedClickEvent event) {
 		Lang.BLOCK_DATA.send(event.getPlayer(),
 				String.join(", ", NMS.getNMS().getAvailableBlockProperties(type.parseMaterial())));
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
@@ -139,7 +139,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}).useStrippedMessage().start();
 	}
 
-	private void tagClick(ClickEvent event) {
+	private void tagClick(LayoutedClickEvent event) {
 		Lang.BLOCK_TAGS.send(event.getPlayer(), String.join(", ", NMS.getNMS().getAvailableBlockTags()));
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			NamespacedKey key = NamespacedKey.fromString((String) obj);
@@ -154,7 +154,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}).useStrippedMessage().start();
 	}
 
-	private void doneClick(ClickEvent event) {
+	private void doneClick(LayoutedClickEvent event) {
 		event.close();
 		BQBlock block;
 		if (blockData != null) {

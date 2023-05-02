@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
@@ -134,8 +134,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				List<String> msg = lines.get(i);
 				boolean last = i + 1 == lines.size();
 				boolean pageFull = !page.lines.isEmpty() && page.lines.size() + msg.size() > MAX_LINES;
-				if (QuestsConfiguration.getDialogsConfig().getMaxMessagesPerHistoryPage() > 0)
-					pageFull |= messagesInPage >= QuestsConfiguration.getDialogsConfig().getMaxMessagesPerHistoryPage();
+				if (QuestsConfigurationImplementation.getDialogsConfig().getMaxMessagesPerHistoryPage() > 0)
+					pageFull |= messagesInPage >= QuestsConfigurationImplementation.getDialogsConfig().getMaxMessagesPerHistoryPage();
 
 				if (last || pageFull) {
 					// means the page currently in writing must be flushed

@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.types;
+package fr.skytasul.quests.api.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,7 +14,6 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public abstract class BQBlock {
@@ -81,7 +80,7 @@ public abstract class BQBlock {
 	}
 	
 	public static @NotNull Spliterator<Locatable.@NotNull Located> getNearbyBlocks(
-			@NotNull Locatable.MultipleLocatable.NearbyFetcher fetcher, @NotNull Collection<@NotNull BQBlock> types) {
+			@NotNull Locatable.MultipleLocatable.NearbyFetcher fetcher, @NotNull Collection<fr.skytasul.quests.api.utils.BQBlock> types) {
 		if (!fetcher.isTargeting(LocatedType.BLOCK)) return Spliterators.emptySpliterator();
 		
 		int minY = (int) Math.max(fetcher.getCenter().getWorld().getMinHeight(), fetcher.getCenter().getY() - fetcher.getMaxDistance());

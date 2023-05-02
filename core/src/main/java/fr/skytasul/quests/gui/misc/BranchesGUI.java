@@ -4,18 +4,18 @@ import java.util.LinkedList;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 
-public class BranchesGUI extends CustomInventory { // WIP
+public class BranchesGUI extends Gui { // WIP
 	
 	private Branch main = new Branch(null);
 	
@@ -99,7 +99,7 @@ public class BranchesGUI extends CustomInventory { // WIP
 	}
 	
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		if (slot == 52) {
 			if (xOffset > 0) {
 				xOffset--;

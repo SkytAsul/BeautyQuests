@@ -12,7 +12,7 @@ public abstract class StageOption<T extends AbstractStage> extends SerializableO
 	private final @NotNull Class<T> stageClass;
 	
 	protected StageOption(@NotNull Class<T> stageClass) {
-		super(QuestsAPI.getStages()
+		super(QuestsAPI.getAPI().getStages()
 				.getType(stageClass)
 				.orElseThrow(() -> new IllegalArgumentException(stageClass.getName() + "has not been registered as a stage type via the API."))
 				.getOptionsRegistry());

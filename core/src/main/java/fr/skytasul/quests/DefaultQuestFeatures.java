@@ -102,7 +102,7 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(
 				new QuestOptionCreator<>("description", 12, OptionDescription.class, OptionDescription::new, null));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("customItem", 13, OptionQuestItem.class,
-				OptionQuestItem::new, QuestsConfiguration.getItemMaterial(), "customMaterial"));
+				OptionQuestItem::new, QuestsConfigurationImplementation.getItemMaterial(), "customMaterial"));
 		QuestsAPI.getAPI().registerQuestOption(
 				new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class,
@@ -118,9 +118,9 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("cancelActions", 22, OptionCancelRewards.class,
 				OptionCancelRewards::new, new ArrayList<>()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class,
-				OptionHologramLaunch::new, QuestsConfiguration.getHoloLaunchItem()));
+				OptionHologramLaunch::new, QuestsConfigurationImplementation.getHoloLaunchItem()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class,
-				OptionHologramLaunchNo::new, QuestsConfiguration.getHoloLaunchNoItem()));
+				OptionHologramLaunchNo::new, QuestsConfigurationImplementation.getHoloLaunchNoItem()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class,
 				OptionScoreboardEnabled::new, true));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28,
@@ -130,19 +130,19 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class,
 				OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new,
-				QuestsConfiguration.getTimeBetween()));
+				QuestsConfigurationImplementation.getTimeBetween()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("visibility", 32, OptionVisibility.class,
 				OptionVisibility::new, Arrays.asList(QuestVisibilityLocation.values()), "hid", "hide"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("endSound", 34, OptionEndSound.class,
-				OptionEndSound::new, QuestsConfiguration.getFinishSound()));
+				OptionEndSound::new, QuestsConfigurationImplementation.getFinishSound()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("firework", 35, OptionFirework.class,
-				OptionFirework::new, QuestsConfiguration.getDefaultFirework()));
+				OptionFirework::new, QuestsConfigurationImplementation.getDefaultFirework()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("requirements", 36, OptionRequirements.class,
 				OptionRequirements::new, new ArrayList<>()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("startRewards", 38, OptionStartRewards.class,
 				OptionStartRewards::new, new ArrayList<>(), "startRewardsList"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("startMessage", 39, OptionStartMessage.class,
-				OptionStartMessage::new, QuestsConfiguration.getPrefix() + Lang.STARTED_QUEST.toString()));
+				OptionStartMessage::new, QuestsConfigurationImplementation.getPrefix() + Lang.STARTED_QUEST.toString()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class,
 				OptionStarterNPC::new, null, "starterID"));
 		QuestsAPI.getAPI().registerQuestOption(
@@ -150,7 +150,7 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("endRewards", 43, OptionEndRewards.class,
 				OptionEndRewards::new, new ArrayList<>(), "rewardsList"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("endMsg", 44, OptionEndMessage.class,
-				OptionEndMessage::new, QuestsConfiguration.getPrefix() + Lang.FINISHED_BASE.toString()));
+				OptionEndMessage::new, QuestsConfigurationImplementation.getPrefix() + Lang.FINISHED_BASE.toString()));
 	}
 
 	public static void registerRewards() {

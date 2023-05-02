@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,8 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
-public class NpcCreateGUI extends CustomInventory {
+public class NpcCreateGUI extends Gui {
 
 	private static final ItemStack nameItem = ItemUtils.item(XMaterial.NAME_TAG, Lang.name.toString());
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
@@ -75,7 +75,7 @@ public class NpcCreateGUI extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot){
 		
 		case 0:

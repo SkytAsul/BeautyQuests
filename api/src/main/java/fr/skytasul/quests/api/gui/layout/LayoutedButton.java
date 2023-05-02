@@ -9,11 +9,11 @@ import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 
-public interface Button extends ClickHandler {
+public interface LayoutedButton extends LayoutedClickHandler {
 
 	public void place(@NotNull Inventory inventory, int slot);
 
-	interface ItemButton extends Button {
+	interface ItemButton extends LayoutedButton {
 
 		public @Nullable ItemStack getItem();
 
@@ -24,12 +24,12 @@ public interface Button extends ClickHandler {
 
 	}
 
-	public static @NotNull Button create(@NotNull XMaterial material, @Nullable String name, @Nullable List<String> lore,
-			@NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@NotNull XMaterial material, @Nullable String name, @Nullable List<String> lore,
+			@NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -41,12 +41,12 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@NotNull XMaterial material, @Nullable String name,
-			@NotNull Supplier<@Nullable List<String>> lore, @NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@NotNull XMaterial material, @Nullable String name,
+			@NotNull Supplier<@Nullable List<String>> lore, @NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -58,12 +58,12 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@NotNull XMaterial material, @NotNull Supplier<@Nullable String> name,
-			@NotNull Supplier<@Nullable List<String>> lore, @NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@NotNull XMaterial material, @NotNull Supplier<@Nullable String> name,
+			@NotNull Supplier<@Nullable List<String>> lore, @NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -75,12 +75,12 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@NotNull XMaterial material, @NotNull Supplier<@Nullable String> name,
-			@Nullable List<String> lore, @NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@NotNull XMaterial material, @NotNull Supplier<@Nullable String> name,
+			@Nullable List<String> lore, @NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -92,13 +92,13 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@NotNull Supplier<@NotNull XMaterial> material,
+	public static @NotNull LayoutedButton create(@NotNull Supplier<@NotNull XMaterial> material,
 			@NotNull Supplier<@Nullable String> name, @NotNull Supplier<@Nullable List<String>> lore,
-			@NotNull ClickHandler click) {
+			@NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -110,11 +110,11 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@NotNull Supplier<@Nullable ItemStack> item, @NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@NotNull Supplier<@Nullable ItemStack> item, @NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 
@@ -126,11 +126,11 @@ public interface Button extends ClickHandler {
 		};
 	}
 
-	public static @NotNull Button create(@Nullable ItemStack item, @NotNull ClickHandler click) {
+	public static @NotNull LayoutedButton create(@Nullable ItemStack item, @NotNull LayoutedClickHandler click) {
 		return new ItemButton() {
 
 			@Override
-			public void click(@NotNull ClickEvent event) {
+			public void click(@NotNull LayoutedClickEvent event) {
 				click.click(event);
 			}
 

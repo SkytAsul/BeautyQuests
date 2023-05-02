@@ -100,7 +100,7 @@ public class Dialog implements Cloneable {
 		NumberedList<Message> tmpMessages = new NumberedList<>();
 		for (Map<?, ?> msg : section.getMapList("msgs")) {
 			int id = (int) msg.get("id");
-			tmpMessages.set(id, Message.deserialize((Map<String, Object>) msg.get("message")));
+			tmpMessages.setSwitch(id, Message.deserialize((Map<String, Object>) msg.get("message")));
 		}
 		Dialog di = new Dialog(tmpMessages.toList());
 		if (section.contains("npcName")) di.npcName = section.getString("npcName");

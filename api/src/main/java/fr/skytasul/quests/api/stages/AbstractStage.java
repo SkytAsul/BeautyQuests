@@ -8,7 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.quests.Quest;
@@ -91,7 +91,7 @@ public abstract class AbstractStage {
 	}
 	
 	public boolean sendStartMessage(){
-		return startMessage == null && QuestsConfiguration.sendStageStartMessage();
+		return startMessage == null && QuestsConfiguration.getConfig().getQuestsConfig().playerStageStartMessage();
 	}
 	
 	public boolean hasAsyncEnd() {

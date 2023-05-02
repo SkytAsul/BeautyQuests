@@ -3,15 +3,15 @@ package fr.skytasul.quests.api.gui.templates;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 
-public abstract class ChooseGUI<T> extends CustomInventory {
+public abstract class ChooseGUI<T> extends Gui {
 
 	private List<T> available;
 	
@@ -32,9 +32,8 @@ public abstract class ChooseGUI<T> extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(Player player, ItemStack current, int slot, ClickType click) {
-		finish(available.get(slot));
-		return true;
+	public void onClick(GuiClickEvent event) {
+		finish(available.get(event.getSlot()));
 	}
 	
 	@Override

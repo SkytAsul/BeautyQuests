@@ -15,10 +15,10 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
+import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.mobs.Mob;
 import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.types.CountableObject;
-import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 

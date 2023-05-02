@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
@@ -63,8 +63,8 @@ public class DialogRunnerImplementation implements DialogRunner {
 	
 	@Override
 	public boolean canContinue(Player p) {
-		if (npc == null || QuestsConfiguration.getDialogsConfig().getMaxDistance() == 0) return true;
-		return p.getLocation().distanceSquared(npc.getLocation()) <= QuestsConfiguration.getDialogsConfig().getMaxDistanceSquared();
+		if (npc == null || QuestsConfigurationImplementation.getDialogsConfig().getMaxDistance() == 0) return true;
+		return p.getLocation().distanceSquared(npc.getLocation()) <= QuestsConfigurationImplementation.getDialogsConfig().getMaxDistanceSquared();
 	}
 	
 	private void end(Player p) {
@@ -79,7 +79,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 	
 	@Override
 	public TestResult onClick(Player p) {
-		if (QuestsConfiguration.getDialogsConfig().isClickDisabled()) {
+		if (QuestsConfigurationImplementation.getDialogsConfig().isClickDisabled()) {
 			PlayerStatus status = players.get(p);
 			if (status != null && status.task != null) return TestResult.DENY;
 		}

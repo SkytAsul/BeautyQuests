@@ -23,6 +23,7 @@ import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
@@ -49,7 +50,8 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
-		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
+		if (!QuestsConfiguration.getConfig().getQuestsConfig().getNpcClicks().contains(e.getClick()))
+			return;
 		
 		Player p = e.getPlayer();
 		BQNPC npc = e.getNPC();
@@ -132,7 +134,7 @@ public class QuestsListener implements Listener{
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
 		// for timing purpose
 
-		if (BeautyQuests.getInstance().loaded && !QuestsConfiguration.hookAccounts()) {
+		if (BeautyQuests.getInstance().loaded && !QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
 			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}
 	}
@@ -141,7 +143,7 @@ public class QuestsListener implements Listener{
 	public void onQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " left the server"); // for timing purpose
-		if (!QuestsConfiguration.hookAccounts()) {
+		if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
 			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
 		}
 	}

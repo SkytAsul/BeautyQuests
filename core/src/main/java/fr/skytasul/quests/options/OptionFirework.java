@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
@@ -91,7 +91,7 @@ public class OptionFirework extends QuestOption<FireworkMeta> {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return QuestsConfiguration.doFireworks();
+		return QuestsConfigurationImplementation.doFireworks();
 	}
 	
 }

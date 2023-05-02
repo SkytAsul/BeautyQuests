@@ -15,7 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -360,7 +360,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 								.findFirst();
 						if (optionalDescription.isPresent()) {
 							if (lazyContext == null)
-								lazyContext = new QuestDescriptionContext(QuestsConfiguration.getQuestDescription(),
+								lazyContext = new QuestDescriptionContext(QuestsConfigurationImplementation.getQuestDescription(),
 										shown, acc, PlayerListCategory.IN_PROGRESS, DescriptionSource.SCOREBOARD);
 							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
 						} else {

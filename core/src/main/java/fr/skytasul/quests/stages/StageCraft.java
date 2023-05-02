@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -135,12 +135,12 @@ public class StageCraft extends AbstractStage {
 
 	@Override
 	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
+		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
 	}
 
 	@Override
 	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
+		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
 	}
 	
 	@Override

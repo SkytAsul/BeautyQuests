@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -70,12 +70,12 @@ public class StageBucket extends AbstractStage {
 
 	@Override
 	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false));
+		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), amount, false));
 	}
 
 	@Override
 	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfiguration.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
+		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
 	}
 
 	@Override

@@ -4,14 +4,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
 
-public class ClickEvent {
+public class LayoutedClickEvent {
 
 	private final @NotNull Player player;
 	private final @NotNull LayoutedGUI gui;
 	private final int slot;
 	private final @NotNull ClickType click;
 
-	public ClickEvent(@NotNull Player player, @NotNull LayoutedGUI gui, int slot, @NotNull ClickType click) {
+	public LayoutedClickEvent(@NotNull Player player, @NotNull LayoutedGUI gui, int slot, @NotNull ClickType click) {
 		this.player = player;
 		this.gui = gui;
 		this.slot = slot;

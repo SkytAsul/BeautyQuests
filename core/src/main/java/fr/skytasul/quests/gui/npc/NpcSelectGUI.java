@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.SelectNPC;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
-import fr.skytasul.quests.api.gui.layout.Button;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI.Builder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -23,24 +23,24 @@ public final class NpcSelectGUI {
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 
-	public static @NotNull CustomInventory select(@NotNull Runnable cancel, @NotNull Consumer<@NotNull BQNPC> end) {
+	public static @NotNull Gui select(@NotNull Runnable cancel, @NotNull Consumer<@NotNull BQNPC> end) {
 		return select(cancel, end, false);
 	}
 
-	public static @NotNull CustomInventory selectNullable(@NotNull Runnable cancel,
+	public static @NotNull Gui selectNullable(@NotNull Runnable cancel,
 			@NotNull Consumer<@Nullable BQNPC> end) {
 		return select(cancel, end, true);
 	}
 
-	private static CustomInventory select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
+	private static Gui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
 			boolean nullable) {
-		Builder builder = LayoutedGUI.newBuilder().addButton(1, Button.create(createNPC, event -> {
+		Builder builder = LayoutedGUI.newBuilder().addButton(1, LayoutedButton.create(createNPC, event -> {
 			new NpcCreateGUI(end, event::reopen).open(event.getPlayer());
-		})).addButton(3, Button.create(selectNPC, event -> {
+		})).addButton(3, LayoutedButton.create(selectNPC, event -> {
 			new SelectNPC(event.getPlayer(), event::reopen, end).start();
 		}));
 		if (nullable)
-			builder.addButton(2, Button.create(ItemUtils.itemNone, event -> {
+			builder.addButton(2, LayoutedButton.create(ItemUtils.itemNone, event -> {
 				event.close();
 				end.accept(null);
 			}));

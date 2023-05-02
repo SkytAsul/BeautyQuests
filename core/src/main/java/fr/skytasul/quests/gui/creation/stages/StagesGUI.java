@@ -11,7 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
@@ -26,7 +26,7 @@ import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 
-public class StagesGUI implements CustomInventory {
+public class StagesGUI implements Gui {
 
 	private static final int SLOT_FINISH = 52;
 	

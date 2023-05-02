@@ -110,9 +110,9 @@ public class StageChat extends AbstractStage{
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(PLACEHOLDERS_SLOT, ItemUtils.itemSwitch(Lang.placeholders.toString(), placeholders), (p, item) -> setPlaceholders(ItemUtils.toggle(item)));
-			line.setItem(IGNORE_CASE_SLOT, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), ignoreCase), (p, item) -> setIgnoreCase(ItemUtils.toggle(item)));
-			line.setItem(CANCEL_EVENT_SLOT, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), cancel), (p, item) -> setCancel(ItemUtils.toggle(item)));
+			line.setItem(PLACEHOLDERS_SLOT, ItemUtils.itemSwitch(Lang.placeholders.toString(), placeholders), (p, item) -> setPlaceholders(ItemUtils.toggleSwitch(item)));
+			line.setItem(IGNORE_CASE_SLOT, ItemUtils.itemSwitch(Lang.ignoreCase.toString(), ignoreCase), (p, item) -> setIgnoreCase(ItemUtils.toggleSwitch(item)));
+			line.setItem(CANCEL_EVENT_SLOT, ItemUtils.itemSwitch(Lang.cancelEvent.toString(), cancel), (p, item) -> setCancel(ItemUtils.toggleSwitch(item)));
 			line.setItem(MESSAGE_SLOT, ItemUtils.item(XMaterial.PLAYER_HEAD, Lang.editMessage.toString()), (p, item) -> launchEditor(p));
 		}
 		
@@ -124,21 +124,21 @@ public class StageChat extends AbstractStage{
 		public void setPlaceholders(boolean placeholders) {
 			if (this.placeholders != placeholders) {
 				this.placeholders = placeholders;
-				line.editItem(PLACEHOLDERS_SLOT, ItemUtils.set(line.getItem(PLACEHOLDERS_SLOT), placeholders));
+				line.editItem(PLACEHOLDERS_SLOT, ItemUtils.setSwitch(line.getItem(PLACEHOLDERS_SLOT), placeholders));
 			}
 		}
 		
 		public void setIgnoreCase(boolean ignoreCase) {
 			if (this.ignoreCase != ignoreCase) {
 				this.ignoreCase = ignoreCase;
-				line.editItem(IGNORE_CASE_SLOT, ItemUtils.set(line.getItem(IGNORE_CASE_SLOT), ignoreCase));
+				line.editItem(IGNORE_CASE_SLOT, ItemUtils.setSwitch(line.getItem(IGNORE_CASE_SLOT), ignoreCase));
 			}
 		}
 		
 		public void setCancel(boolean cancel) {
 			if (this.cancel != cancel) {
 				this.cancel = cancel;
-				line.editItem(CANCEL_EVENT_SLOT, ItemUtils.set(line.getItem(CANCEL_EVENT_SLOT), cancel));
+				line.editItem(CANCEL_EVENT_SLOT, ItemUtils.setSwitch(line.getItem(CANCEL_EVENT_SLOT), cancel));
 			}
 		}
 

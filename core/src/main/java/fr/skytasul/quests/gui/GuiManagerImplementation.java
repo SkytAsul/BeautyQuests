@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -28,11 +28,11 @@ import fr.skytasul.quests.utils.QuestUtils;
 
 public class GuiManagerImplementation implements GuiManager, Listener {
 
-	private Map<Player, CustomInventory> players = new HashMap<>();
+	private Map<Player, Gui> players = new HashMap<>();
 	private boolean dismissClose = false;
 
 	@Override
-	public void open(@NotNull Player player, @NotNull CustomInventory inventory) {
+	public void open(@NotNull Player player, @NotNull Gui inventory) {
 		try {
 			closeWithoutExit(player);
 			QuestsPlugin.getPlugin().getLoggerExpanded()
@@ -74,7 +74,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 	}
 
 	@Override
-	public @Nullable CustomInventory getOpenedGui(@NotNull Player player) {
+	public @Nullable Gui getOpenedGui(@NotNull Player player) {
 		return players.get(player);
 	}
 
@@ -89,7 +89,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			return;
 		Player player = (Player) event.getPlayer();
 
-		CustomInventory gui = players.get(player);
+		Gui gui = players.get(player);
 		if (gui == null)
 			return;
 
@@ -125,7 +125,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			return;
 		Player player = (Player) event.getWhoClicked();
 
-		CustomInventory gui = players.get(player);
+		Gui gui = players.get(player);
 		if (gui == null)
 			return;
 
@@ -151,7 +151,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			if (event.getCursor().getType() == Material.AIR) {
 				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
 					return;
-				if (gui.onClick(player, event.getCurrentItem(), event.getSlot(), click))
+				if (gui.onClick(null))
 					event.setCancelled(true);
 			} else {
 				if (gui.onClickCursor(player, event.getCurrentItem(), event.getCursor(),
@@ -182,7 +182,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 		}
 	}
 
-	private void ensureSameInventory(CustomInventory gui, Inventory inventory) {
+	private void ensureSameInventory(Gui gui, Inventory inventory) {
 		if (gui.getInventory() != inventory)
 			throw new IllegalStateException(
 					"The inventory opened by the player is not the same as the one registered by the plugin");

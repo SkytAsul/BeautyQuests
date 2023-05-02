@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -17,11 +16,12 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
 import fr.skytasul.quests.api.editors.checkers.MaterialParser;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 
-public class ItemCreatorGUI extends CustomInventory {
+public class ItemCreatorGUI extends Gui {
 
 	private Player p;
 	private Consumer<ItemStack> run;
@@ -72,7 +72,7 @@ public class ItemCreatorGUI extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot){
 		case 0:
 			Lang.CHOOSE_ITEM_TYPE.send(p);
@@ -92,7 +92,7 @@ public class ItemCreatorGUI extends CustomInventory {
 			break;
 		
 		case 2:
-			flags = ItemUtils.toggle(current);
+			flags = ItemUtils.toggleSwitch(current);
 			refresh();
 			break;
 

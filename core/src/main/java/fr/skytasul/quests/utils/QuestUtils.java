@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -49,7 +49,7 @@ public class QuestUtils {
 	}
 
 	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
-		if (!QuestsConfiguration.playSounds())
+		if (!QuestsConfigurationImplementation.playSounds())
 			return;
 		if ("none".equals(sound))
 			return;
@@ -62,7 +62,7 @@ public class QuestUtils {
 	}
 
 	public static void playPluginSound(Location lc, String sound, float volume) {
-		if (!QuestsConfiguration.playSounds())
+		if (!QuestsConfigurationImplementation.playSounds())
 			return;
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
@@ -75,15 +75,15 @@ public class QuestUtils {
 	public static String descriptionLines(DescriptionSource source, String... elements) {
 		if (elements.length == 0)
 			return Lang.Unknown.toString();
-		if (QuestsConfiguration.splitDescription(source) && (!QuestsConfiguration.inlineAlone() || elements.length > 1)) {
-			return QuestsConfiguration.getDescriptionItemPrefix()
-					+ Utils.buildFromArray(elements, 0, QuestsConfiguration.getDescriptionItemPrefix());
+		if (QuestsConfigurationImplementation.splitDescription(source) && (!QuestsConfigurationImplementation.inlineAlone() || elements.length > 1)) {
+			return QuestsConfigurationImplementation.getDescriptionItemPrefix()
+					+ Utils.buildFromArray(elements, 0, QuestsConfigurationImplementation.getDescriptionItemPrefix());
 		}
-		return MessageUtils.itemsToFormattedString(elements, QuestsConfiguration.getItemAmountColor());
+		return MessageUtils.itemsToFormattedString(elements, QuestsConfigurationImplementation.getItemAmountColor());
 	}
 
 	public static void spawnFirework(Location lc, FireworkMeta meta) {
-		if (!QuestsConfiguration.doFireworks() || meta == null)
+		if (!QuestsConfigurationImplementation.doFireworks() || meta == null)
 			return;
 		runOrSync(() -> {
 			Consumer<Firework> fwConsumer = fw -> {

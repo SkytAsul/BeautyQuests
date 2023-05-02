@@ -35,7 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -112,7 +112,8 @@ public class Utils{
 		String string = name;
 		if (remaining > 1 || showXOne) {
 			string += "§r" + amountColor + " "
-					+ Utils.format(QuestsConfiguration.getDescriptionAmountFormat(), remaining, done, total, percentage);
+					+ MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitAmountFormat(),
+							remaining, done, total, percentage);
 		}
 		return string;
 	}

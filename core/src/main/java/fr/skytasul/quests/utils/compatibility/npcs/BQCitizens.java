@@ -10,10 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.NpcClickType;
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensReloadEvent;
@@ -50,13 +50,13 @@ public class BQCitizens extends BQNPCsManager {
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCRightClick(NPCRightClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? ClickType.SHIFT_RIGHT : ClickType.RIGHT);
+		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? NpcClickType.SHIFT_RIGHT : NpcClickType.RIGHT);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCLeftClick(NPCLeftClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? ClickType.SHIFT_LEFT : ClickType.LEFT);
+		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? NpcClickType.SHIFT_LEFT : NpcClickType.LEFT);
 	}
 	
 	@EventHandler

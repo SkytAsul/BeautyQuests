@@ -8,14 +8,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.ColorParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -25,7 +24,7 @@ import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
-public class ParticleEffectGUI extends CustomInventory {
+public class ParticleEffectGUI extends Gui {
 	
 	private static final int SLOT_SHAPE = 1;
 	private static final int SLOT_PARTICLE = 3;
@@ -86,7 +85,7 @@ public class ParticleEffectGUI extends CustomInventory {
 	}
 	
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot) {
 		
 		case SLOT_SHAPE:

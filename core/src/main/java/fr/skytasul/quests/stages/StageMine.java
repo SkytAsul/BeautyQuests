@@ -18,7 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import com.cryptomorin.xseries.XMaterial;
 import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -30,9 +30,9 @@ import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.BQBlock;
+import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.utils.types.BQBlock;
-import fr.skytasul.quests.utils.types.CountableObject;
 
 @LocatableType (types = LocatedType.BLOCK)
 public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable {
@@ -63,7 +63,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		if (branch.hasStageLaunched(acc, this)){
 			for (Block block : e.getBlocks()) {
 				if (placeCancelled) {
-					if (QuestsConfiguration.usePlayerBlockTracker()) {
+					if (QuestsConfigurationImplementation.usePlayerBlockTracker()) {
 						if (PlayerBlockTracker.isTracked(block)) return;
 					} else {
 						if (block.hasMetadata("playerInStage")) {
@@ -79,7 +79,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
-		if (QuestsConfiguration.usePlayerBlockTracker())
+		if (QuestsConfigurationImplementation.usePlayerBlockTracker())
 			return;
 
 		if (e.isCancelled() || !placeCancelled) return;
@@ -126,7 +126,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		public Creator(Line line, boolean ending) {
 			super(line, ending);
 			
-			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), (p, item) -> setPrevent(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), (p, item) -> setPrevent(ItemUtils.toggleSwitch(item)));
 		}
 		
 		@Override
@@ -137,7 +137,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		public void setPrevent(boolean prevent) {
 			if (this.prevent != prevent) {
 				this.prevent = prevent;
-				line.editItem(6, ItemUtils.set(line.getItem(6), prevent));
+				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), prevent));
 			}
 		}
 

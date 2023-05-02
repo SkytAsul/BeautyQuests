@@ -2,17 +2,17 @@ package fr.skytasul.quests.api.gui.close;
 
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 
 public class OpenCloseBehavior implements CloseBehavior {
 
-	private final @NotNull CustomInventory other;
+	private final @NotNull Gui other;
 
-	public OpenCloseBehavior(@NotNull CustomInventory other) {
+	public OpenCloseBehavior(@NotNull Gui other) {
 		this.other = Objects.requireNonNull(other);
 	}
 
-	public @NotNull CustomInventory getOther() {
+	public @NotNull Gui getOther() {
 		return other;
 	}
 

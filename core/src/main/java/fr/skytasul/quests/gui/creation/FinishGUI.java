@@ -13,7 +13,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -32,7 +32,7 @@ import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
 
-public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomInventory {
+public class FinishGUI extends UpdatableOptionSet<Updatable> implements Gui {
 
 	private final QuestCreationSession session;
 
@@ -145,7 +145,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 		return inv;
 	}
 
-	public CustomInventory reopen(Player p){
+	public Gui reopen(Player p){
 		Inventories.put(p, this, inv);
 		p.openInventory(inv);
 		return this;
@@ -290,7 +290,7 @@ public class FinishGUI extends UpdatableOptionSet<Updatable> implements CustomIn
 			
 			@Override
 			public void click(Player p, ItemStack item, ClickType click) {
-				keepPlayerDatas = ItemUtils.toggle(item);
+				keepPlayerDatas = ItemUtils.toggleSwitch(item);
 				done.update();
 			}
 			

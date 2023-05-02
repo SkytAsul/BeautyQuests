@@ -1,9 +1,8 @@
 package fr.skytasul.quests;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,12 +15,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import com.google.common.collect.Sets;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.MinecraftNames;
@@ -33,86 +34,53 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
-public class QuestsConfiguration {
+public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
-	private static int timer = 5;
-	private static String minecraftTranslationsFile = null;
-	private static int maxLaunchedQuests = 0;
-	private static boolean sounds = true;
-	private static boolean fireworks = true;
-	private static boolean gps = false;
-	private static boolean skillAPIoverride = true;
-	private static boolean scoreboard = true;
-	private static String finishSound = "ENTITY_PLAYER_LEVELUP";
-	private static String nextStageSound = "ITEM_FIRECHARGE_USE";
-	private static ItemStack item = XMaterial.BOOK.parseItem();
-	private static XMaterial pageItem = XMaterial.ARROW;
-	private static int startParticleDistance, startParticleDistanceSquared;
-	private static int requirementUpdateTime;
-	private static boolean enablePrefix = true;
-	private static double hologramsHeight = 0.0;
-	private static boolean disableTextHologram = false;
-	private static boolean showCustomHologramName = true;
-	private static boolean mobsProgressBar = false;
-	private static int progressBarTimeoutSeconds = 15;
-	private static boolean hookAcounts = false;
-	private static boolean usePlayerBlockTracker = false;
-	private static ParticleEffect particleStart;
-	private static ParticleEffect particleTalk;
-	private static ParticleEffect particleNext;
-	private static boolean sendUpdate = true;
-	private static boolean stageStart = true;
-	private static boolean questConfirmGUI = false;
-	private static Collection<ClickType> npcClicks = Arrays.asList(ClickType.RIGHT, ClickType.SHIFT_RIGHT);
-	private static boolean skipNpcGuiIfOnlyOneQuest = true;
-	private static String dSetName = "Quests";
-	private static String dIcon = "bookshelf";
-	private static int dMinZoom = 0;
-	// stageDescription
-	private static String itemNameColor;
-	private static String itemAmountColor;
-	private static String stageDescriptionFormat = "§8({0}/{1}) §e{2}";
-	private static String descPrefix = "{nl}§e- §6";
-	private static String descAmountFormat = "x{0}";
-	private static boolean descXOne = true;
-	private static boolean inlineAlone = true;
-	private static List<DescriptionSource> descSources = new ArrayList<>();
-	private static boolean requirementReasonOnMultipleQuests = true;
-	private static boolean stageEndRewardsMessage = true;
-	private static QuestDescription questDescription;
-	
-	private static ItemStack holoLaunchItem = null;
-	private static ItemStack holoLaunchNoItem = null;
-	private static ItemStack holoTalkItem = null;
-	
-	private static FireworkMeta defaultFirework = null;
+	public static QuestsConfigurationImplementation getConfiguration() {
+		return BeautyQuests.getInstance().getConfiguration();
+	}
 
-	static boolean backups = true;
+	private String minecraftTranslationsFile = null;
+	private boolean gps = false;
+	private boolean skillAPIoverride = true;
+	private boolean enablePrefix = true;
+	private double hologramsHeight = 0.0;
+	private boolean disableTextHologram = false;
+	private boolean showCustomHologramName = true;
+	private boolean hookAcounts = false;
+	private boolean usePlayerBlockTracker = false;
+	private ParticleEffect particleStart;
+	private ParticleEffect particleTalk;
+	private ParticleEffect particleNext;
+	private String dSetName = "Quests";
+	private String dIcon = "bookshelf";
+	private int dMinZoom = 0;
+	private QuestDescription questDescription;
 	
-	static boolean saveCycleMessage = true;
-	static int saveCycle = 15;
-	static int firstQuestID = -1; // changed in 0.19, TODO
+	private ItemStack holoLaunchItem = null;
+	private ItemStack holoLaunchNoItem = null;
+	private ItemStack holoTalkItem = null;
+	
+	private FireworkMeta defaultFirework = null;
+
+	boolean backups = true;
+	
+	boolean saveCycleMessage = true;
+	int saveCycle = 15;
+	int firstQuestID = -1; // changed in 0.19, TODO
 	
 	private FileConfiguration config;
+	private QuestsConfig quests;
 	private DialogsConfig dialogs;
 	private QuestsMenuConfig menu;
+	private StageDescriptionConfig stageDescription;
 	
-	QuestsConfiguration(BeautyQuests plugin) {
+	QuestsConfigurationImplementation(BeautyQuests plugin) {
 		config = plugin.getConfig();
+		quests = new QuestsConfig();
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
-	}
-	
-	public FileConfiguration getConfig() {
-		return config;
-	}
-	
-	public DialogsConfig getDialogs() {
-		return dialogs;
-	}
-	
-	public QuestsMenuConfig getQuestsMenu() {
-		return menu;
+		stageDescription = new StageDescriptionConfig();
 	}
 	
 	boolean update() {
@@ -126,56 +94,19 @@ public class QuestsConfiguration {
 		backups = config.getBoolean("backups", true);
 		if (!backups) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
 		
-		timer = config.getInt("redoMinuts");
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
-		if (isMinecraftTranslationsEnabled()) {
+		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
-		}
+		quests.init();
 		dialogs.init();
 		menu.init();
-		
+		stageDescription.init();
+
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		firstQuestID = config.getInt("firstQuest", -1);
-		maxLaunchedQuests = config.getInt("maxLaunchedQuests");
-		sendUpdate = config.getBoolean("playerQuestUpdateMessage");
-		stageStart = config.getBoolean("playerStageStartMessage");
-		questConfirmGUI = config.getBoolean("questConfirmGUI");
-		sounds = config.getBoolean("sounds");
-		fireworks = config.getBoolean("fireworks");
 		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
 		skillAPIoverride = config.getBoolean("skillAPIoverride");
-		scoreboard = config.getBoolean("scoreboards");
-		if (config.isItemStack("item")) {
-			item = config.getItemStack("item");
-		}else if (config.isString("item")) {
-			item = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
-		}else item = XMaterial.BOOK.parseItem();
-		item = ItemUtils.clearVisibleAttributes(item);
-		if (config.contains("pageItem")) pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-		if (pageItem == null) pageItem = XMaterial.ARROW;
-		startParticleDistance = config.getInt("startParticleDistance");
-		startParticleDistanceSquared = startParticleDistance * startParticleDistance;
-		requirementUpdateTime = config.getInt("requirementUpdateTime");
-		requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
-		stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
-		mobsProgressBar = config.getBoolean("mobsProgressBar");
-		progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
-		try {
-			if (config.isString("npcClick")) {
-				String click = config.getString("npcClick");
-				npcClicks = Arrays.asList(click.equals("ANY") ? ClickType.values() : new ClickType[] { ClickType.valueOf(click.toUpperCase()) });
-			}else {
-				npcClicks = config.getStringList("npcClick")
-						.stream()
-						.map(String::toUpperCase)
-						.map(ClickType::valueOf)
-						.collect(Collectors.toList());
-			}
-		}catch (IllegalArgumentException ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
-		}
-		skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
@@ -190,24 +121,6 @@ public class QuestsConfiguration {
 		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
-		finishSound = loadSound("finishSound");
-		nextStageSound = loadSound("nextStageSound");
-		
-		// stageDescription
-		itemNameColor = config.getString("itemNameColor");
-		itemAmountColor = config.getString("itemAmountColor");
-		stageDescriptionFormat = config.getString("stageDescriptionFormat");
-		descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
-		descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
-		descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
-		inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
-		for (String s : config.getStringList("stageDescriptionItemsSplit.sources")){
-			try{
-				descSources.add(DescriptionSource.valueOf(s));
-			}catch (IllegalArgumentException ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of description splitted sources failed : source " + s + " does not exist");
-			}
-		}
 		
 		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
@@ -297,237 +210,295 @@ public class QuestsConfiguration {
 		return false;
 	}
 
-	public static String getPrefix(){
+	public FileConfiguration getConfig() {
+		return config;
+	}
+
+	@Override
+	public @NotNull Quests getQuestsConfig() {
+		return quests;
+	}
+
+	@Override
+	public @NotNull DialogsConfig getDialogsConfig() {
+		return dialogs;
+	}
+
+	@Override
+	public @NotNull QuestsMenuConfig getQuestsMenuConfig() {
+		return menu;
+	}
+
+	@Override
+	public @NotNull StageDescriptionConfig getStageDescriptionConfig() {
+		return stageDescription;
+	}
+
+	public String getPrefix() {
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
 	}
 
-	public static int getTimeBetween(){
-		return timer;
-	}
-	
-	public static int getMaxLaunchedQuests() {
-		return maxLaunchedQuests;
-	}
-
-	public static boolean sendQuestUpdateMessage(){
-		return sendUpdate;
-	}
-
-	public static boolean sendStageStartMessage(){
-		return stageStart;
-	}
-
-	public static boolean questConfirmGUI(){
-		return questConfirmGUI;
-	}
-	
-	public static boolean playSounds(){
-		return sounds;
-	}
-
-	public static boolean doFireworks(){
-		return fireworks;
-	}
-	
-	public static boolean showMobsProgressBar() {
-		return mobsProgressBar && QuestsAPI.getAPI().hasBossBarManager();
-	}
-	
-	public static int getProgressBarTimeout(){
-		return progressBarTimeoutSeconds;
-	}
-	
-	public static Collection<ClickType> getNPCClicks() {
-		return npcClicks;
-	}
-	
-	public static boolean skipNpcGuiIfOnlyOneQuest() {
-		return skipNpcGuiIfOnlyOneQuest;
-	}
-
-	public static boolean handleGPS(){
+	public boolean handleGPS() {
 		return gps;
 	}
 	
-	public static boolean xpOverridedSkillAPI(){
+	public boolean xpOverridedSkillAPI() {
 		return skillAPIoverride;
 	}
-
-	public static boolean showScoreboards(){
-		return scoreboard;
-	}
-
-	public static ItemStack getItemMaterial() {
-		return item;
-	}
 	
-	public static XMaterial getPageMaterial(){
-		return  pageItem;
-	}
-	
-	public static int getRequirementUpdateTime() {
-		return requirementUpdateTime;
-	}
-	
-	public static boolean isRequirementReasonSentOnMultipleQuests() {
-		return requirementReasonOnMultipleQuests;
-	}
-	
-	public static boolean hasStageEndRewardsMessage() {
-		return stageEndRewardsMessage;
-	}
-
-	public static int getStartParticleDistance() {
-		return startParticleDistance;
-	}
-
-	public static int getStartParticleDistanceSquared() {
-		return startParticleDistanceSquared;
-	}
-	
-	public static boolean isTextHologramDisabled(){
+	public boolean isTextHologramDisabled() {
 		return disableTextHologram;
 	}
 	
-	public static String getItemAmountColor() {
-		return itemAmountColor;
-	}
-	
-	public static String getStageDescriptionFormat() {
-		return stageDescriptionFormat;
-	}
-	
-	public static String getItemNameColor() {
-		return itemNameColor;
-	}
-	
-	public static boolean showStartParticles(){
+	public boolean showStartParticles() {
 		return particleStart != null;
 	}
 	
-	public static ParticleEffect getParticleStart() {
+	public ParticleEffect getParticleStart() {
 		return particleStart;
 	}
 	
-	public static boolean showTalkParticles(){
+	public boolean showTalkParticles() {
 		return particleTalk != null;
 	}
 	
-	public static ParticleEffect getParticleTalk() {
+	public ParticleEffect getParticleTalk() {
 		return particleTalk;
 	}
 	
-	public static boolean showNextParticles(){
+	public boolean showNextParticles() {
 		return particleNext != null;
 	}
 	
-	public static ParticleEffect getParticleNext() {
+	public ParticleEffect getParticleNext() {
 		return particleNext;
 	}
 	
-	public static double getHologramsHeight(){
+	public double getHologramsHeight() {
 		return hologramsHeight;
 	}
 	
-	public static boolean isCustomHologramNameShown(){
+	public boolean isCustomHologramNameShown() {
 		return showCustomHologramName;
 	}
 
-	public static ItemStack getHoloLaunchItem(){
+	public ItemStack getHoloLaunchItem() {
 		return holoLaunchItem;
 	}
 
-	public static ItemStack getHoloLaunchNoItem(){
+	public ItemStack getHoloLaunchNoItem() {
 		return holoLaunchNoItem;
 	}
 
-	public static ItemStack getHoloTalkItem(){
+	public ItemStack getHoloTalkItem() {
 		return holoTalkItem;
 	}
 	
-	public static FireworkMeta getDefaultFirework() {
+	public FireworkMeta getDefaultFirework() {
 		return defaultFirework;
 	}
 	
-	public static boolean hookAccounts(){
+	public boolean hookAccounts() {
 		return hookAcounts;
 	}
 	
-	public static boolean usePlayerBlockTracker() {
+	public boolean usePlayerBlockTracker() {
 		return usePlayerBlockTracker;
 	}
 
-	public static String dynmapSetName(){
+	public String dynmapSetName() {
 		return dSetName;
 	}
 	
-	public static String dynmapMarkerIcon(){
+	public String dynmapMarkerIcon() {
 		return dIcon;
 	}
 	
-	public static int dynmapMinimumZoom(){
+	public int dynmapMinimumZoom() {
 		return dMinZoom;
 	}
 	
-	public static boolean isMinecraftTranslationsEnabled() {
+	public boolean isMinecraftTranslationsEnabled() {
 		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
 	
-	public static String getDescriptionItemPrefix(){
-		return descPrefix;
-	}
-	
-	public static String getDescriptionAmountFormat() {
-		return descAmountFormat;
-	}
-	
-	public static boolean showDescriptionItemsXOne(DescriptionSource source){
-		return splitDescription(source) && descXOne;
-	}
-	
-	public static boolean inlineAlone() {
-		return inlineAlone;
-	}
-
-	public static boolean splitDescription(DescriptionSource source){
-		if (source == DescriptionSource.FORCESPLIT) return true;
-		if (source == DescriptionSource.FORCELINE) return false;
-		return descSources.contains(source);
-	}
-	
-	public static QuestDescription getQuestDescription() {
+	public QuestDescription getQuestDescription() {
 		return questDescription;
 	}
 	
-	public static String getFinishSound(){
-		return finishSound;
-	}
-	
-	public static String getNextStageSound() {
-		return nextStageSound;
-	}
-	
-	public static DialogsConfig getDialogsConfig() {
-		return BeautyQuests.getInstance().getConfiguration().dialogs;
-	}
-	
-	public static QuestsMenuConfig getMenuConfig() {
-		return BeautyQuests.getInstance().getConfiguration().menu;
-	}
-	
-	public enum ClickType {
-		RIGHT, SHIFT_RIGHT, LEFT, SHIFT_LEFT;
-		
-		public static ClickType of(boolean left, boolean shift) {
-			if (left) {
-				return shift ? SHIFT_LEFT : LEFT;
-			}else {
-				return shift ? SHIFT_RIGHT : RIGHT;
+	public class QuestsConfig implements QuestsConfiguration.Quests {
+
+		private int defaultTimer = 5;
+		private int maxLaunchedQuests = 0;
+		private boolean scoreboards = true;
+		private boolean sounds = true;
+		private boolean fireworks = true;
+		private String finishSound = "ENTITY_PLAYER_LEVELUP";
+		private String nextStageSound = "ITEM_FIRECHARGE_USE";
+		private ItemStack defaultQuestItem = XMaterial.BOOK.parseItem();
+		private XMaterial pageItem = XMaterial.ARROW;
+		private int startParticleDistance;
+		private int requirementUpdateTime;
+		private boolean sendUpdate = true;
+		private boolean stageStart = true;
+		private boolean questConfirmGUI = false;
+		private Collection<NpcClickType> npcClicks = Arrays.asList(NpcClickType.RIGHT, NpcClickType.SHIFT_RIGHT);
+		private boolean skipNpcGuiIfOnlyOneQuest = true;
+		private boolean mobsProgressBar = false;
+		private int progressBarTimeoutSeconds = 15;
+		private boolean requirementReasonOnMultipleQuests = true;
+		private boolean stageEndRewardsMessage = true;
+
+		private void init() {
+			defaultTimer = config.getInt("redoMinuts");
+			maxLaunchedQuests = config.getInt("maxLaunchedQuests");
+			scoreboards = config.getBoolean("scoreboards");
+			sendUpdate = config.getBoolean("playerQuestUpdateMessage");
+			stageStart = config.getBoolean("playerStageStartMessage");
+			questConfirmGUI = config.getBoolean("questConfirmGUI");
+			sounds = config.getBoolean("sounds");
+			fireworks = config.getBoolean("fireworks");
+			if (config.isItemStack("item")) {
+				defaultQuestItem = config.getItemStack("item");
+			} else if (config.isString("item")) {
+				defaultQuestItem = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
+			} else
+				defaultQuestItem = XMaterial.BOOK.parseItem();
+			defaultQuestItem = ItemUtils.clearVisibleAttributes(defaultQuestItem);
+			if (config.contains("pageItem"))
+				pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
+			if (pageItem == null)
+				pageItem = XMaterial.ARROW;
+			startParticleDistance = config.getInt("startParticleDistance");
+			requirementUpdateTime = config.getInt("requirementUpdateTime");
+			finishSound = loadSound("finishSound");
+			nextStageSound = loadSound("nextStageSound");
+			try {
+				if (config.isString("npcClick")) {
+					String click = config.getString("npcClick");
+					npcClicks = Arrays.asList(click.equals("ANY") ? NpcClickType.values()
+							: new NpcClickType[] {NpcClickType.valueOf(click.toUpperCase())});
+				} else {
+					npcClicks = config.getStringList("npcClick")
+							.stream()
+							.map(String::toUpperCase)
+							.map(NpcClickType::valueOf)
+							.collect(Collectors.toList());
+				}
+			} catch (IllegalArgumentException ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
+			skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
+			mobsProgressBar = config.getBoolean("mobsProgressBar");
+			progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
+			requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
+			stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		}
+
+		@Override
+		public int getDefaultTimer() {
+			return defaultTimer;
+		}
+
+		@Override
+		public int maxLaunchedQuests() {
+			return maxLaunchedQuests;
+		}
+
+		@Override
+		public boolean scoreboards() {
+			return scoreboards;
+		}
+
+		@Override
+		public boolean playerQuestUpdateMessage() {
+			return sendUpdate;
+		}
+
+		@Override
+		public boolean playerStageStartMessage() {
+			return stageStart;
+		}
+
+		@Override
+		public boolean questConfirmGUI() {
+			return questConfirmGUI;
+		}
+
+		@Override
+		public boolean sounds() {
+			return sounds;
+		}
+
+		@Override
+		public String finishSound() {
+			return finishSound;
+		}
+
+		@Override
+		public String nextStageSound() {
+			return nextStageSound;
+		}
+
+		@Override
+		public boolean fireworks() {
+			return fireworks;
+		}
+
+		@Override
+		public boolean mobsProgressBar() {
+			return mobsProgressBar && QuestsAPI.getAPI().hasBossBarManager();
+		}
+
+		@Override
+		public int progressBarTimeoutSeconds() {
+			return progressBarTimeoutSeconds;
+		}
+
+		@Override
+		public Collection<NpcClickType> getNpcClicks() {
+			return npcClicks;
+		}
+
+		@Override
+		public boolean skipNpcGuiIfOnlyOneQuest() {
+			return skipNpcGuiIfOnlyOneQuest;
+		}
+
+		@Override
+		public ItemStack getDefaultQuestItem() {
+			return defaultQuestItem;
+		}
+
+		@Override
+		public XMaterial getPageMaterial() {
+			return pageItem;
+		}
+
+		@Override
+		public double startParticleDistance() {
+			return startParticleDistance;
+		}
+
+		@Override
+		public int requirementUpdateTime() {
+			return requirementUpdateTime;
+		}
+
+		@Override
+		public boolean requirementReasonOnMultipleQuests() {
+			return requirementReasonOnMultipleQuests;
+		}
+
+		@Override
+		public boolean stageEndRewardsMessage() {
+			return stageEndRewardsMessage;
+		}
+
 	}
-	
-	public class DialogsConfig {
+
+	public class DialogsConfig implements QuestsConfiguration.Dialogs {
 		
 		private boolean inActionBar = false;
 		private int defaultTime = 100;
@@ -571,49 +542,59 @@ public class QuestsConfiguration {
 			defaultNPCSound = config.getString("defaultNPCSound");
 		}
 		
+		@Override
 		public boolean sendInActionBar() {
 			return inActionBar;
 		}
 		
+		@Override
 		public int getDefaultTime() {
 			return defaultTime;
 		}
 		
+		@Override
 		public boolean isSkippableByDefault() {
 			return defaultSkippable;
 		}
 		
+		@Override
 		public boolean isClickDisabled() {
 			return disableClick;
 		}
 		
+		@Override
 		public boolean isHistoryEnabled() {
 			return history;
 		}
 		
+		@Override
 		public int getMaxMessagesPerHistoryPage() {
 			return maxMessagesPerHistoryPage;
 		}
 
+		@Override
 		public int getMaxDistance() {
 			return maxDistance;
 		}
 		
+		@Override
 		public int getMaxDistanceSquared() {
 			return maxDistanceSquared;
 		}
 		
+		@Override
 		public String getDefaultPlayerSound() {
 			return defaultPlayerSound;
 		}
 		
+		@Override
 		public String getDefaultNPCSound() {
 			return defaultNPCSound;
 		}
 		
 	}
 	
-	public class QuestsMenuConfig {
+	public class QuestsMenuConfig implements QuestsConfiguration.QuestsMenu {
 		
 		private Set<PlayerListCategory> tabs;
 		private boolean openNotStartedTabWhenEmpty = true;
@@ -638,24 +619,110 @@ public class QuestsConfiguration {
 			tabs = config.getStringList("enabledTabs").stream().map(PlayerListCategory::fromString).collect(Collectors.toSet());
 			if (tabs.isEmpty()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Quests Menu must have at least one enabled tab.");
-				tabs = Sets.newHashSet(PlayerListCategory.values());
+				tabs = EnumSet.allOf(PlayerListCategory.class);
 			}
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		}
 		
+		@Override
 		public boolean isNotStartedTabOpenedWhenEmpty() {
 			return openNotStartedTabWhenEmpty;
 		}
 		
+		@Override
 		public boolean allowPlayerCancelQuest() {
 			return allowPlayerCancelQuest;
 		}
 		
+		@Override
 		public Set<PlayerListCategory> getEnabledTabs() {
 			return tabs;
 		}
 		
 	}
 	
+	public class StageDescriptionConfig implements QuestsConfiguration.StageDescription {
+
+		private String itemNameColor;
+		private String itemAmountColor;
+		private String stageDescriptionFormat = "§8({0}/{1}) §e{2}";
+		private String descPrefix = "{nl}§e- §6";
+		private String descAmountFormat = "x{0}";
+		private boolean descXOne = true;
+		private boolean inlineAlone = true;
+		private Set<DescriptionSource> descSources = EnumSet.noneOf(DescriptionSource.class);
+
+		private void init() {
+			itemNameColor = config.getString("itemNameColor");
+			itemAmountColor = config.getString("itemAmountColor");
+			stageDescriptionFormat = config.getString("stageDescriptionFormat");
+			descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
+			descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
+			descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
+			inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
+			for (String s : config.getStringList("stageDescriptionItemsSplit.sources")) {
+				try {
+					descSources.add(DescriptionSource.valueOf(s));
+				} catch (IllegalArgumentException ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded()
+							.warning("Loading of description splitted sources failed : source " + s + " does not exist");
+				}
+			}
+		}
+
+		@Override
+		public String getStageDescriptionFormat() {
+			return stageDescriptionFormat;
+		}
+
+		@Override
+		public String getItemNameColor() {
+			return itemNameColor;
+		}
+
+		@Override
+		public String getItemAmountColor() {
+			return itemAmountColor;
+		}
+
+		@Override
+		public String getSplitPrefix() {
+			return descPrefix;
+		}
+
+		@Override
+		public String getSplitAmountFormat() {
+			return descAmountFormat;
+		}
+
+		@Override
+		public boolean isAloneSplitAmountShown() {
+			return descXOne;
+		}
+
+		@Override
+		public boolean isAloneSplitInlined() {
+			return inlineAlone;
+		}
+
+		@Override
+		public Set<DescriptionSource> getSplitSources() {
+			return descSources;
+		}
+
+		public boolean showDescriptionItemsXOne(DescriptionSource source) {
+			return splitDescription(source) && descXOne;
+		}
+
+		public boolean splitDescription(DescriptionSource source) {
+			if (source == DescriptionSource.FORCESPLIT)
+				return true;
+			if (source == DescriptionSource.FORCELINE)
+				return false;
+			return descSources.contains(source);
+		}
+
+	}
+
 }

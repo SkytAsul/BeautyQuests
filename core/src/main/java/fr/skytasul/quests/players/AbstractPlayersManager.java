@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
@@ -96,11 +96,11 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	}
 
 	protected @NotNull AbstractAccount createAbstractAccount(@NotNull Player p) {
-		return QuestsConfiguration.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
+		return QuestsConfigurationImplementation.hookAccounts() ? Accounts.getPlayerAccount(p) : new UUIDAccount(p.getUniqueId());
 	}
 
 	protected @NotNull String getIdentifier(@NotNull OfflinePlayer p) {
-		if (QuestsConfiguration.hookAccounts()) {
+		if (QuestsConfigurationImplementation.hookAccounts()) {
 			if (!p.isOnline())
 				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
 			return "Hooked|" + Accounts.getPlayerCurrentIdentifier(p.getPlayer());
@@ -110,7 +110,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 	protected @Nullable AbstractAccount createAccountFromIdentifier(@NotNull String identifier) {
 		if (identifier.startsWith("Hooked|")){
-			if (!QuestsConfiguration.hookAccounts()) throw new MissingDependencyException("AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
+			if (!QuestsConfigurationImplementation.hookAccounts()) throw new MissingDependencyException("AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
 			String nidentifier = identifier.substring(7);
 			try{
 				return Accounts.getAccountFromIdentifier(nidentifier);
@@ -120,7 +120,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		}else {
 			try{
 				UUID uuid = UUID.fromString(identifier);
-				if (QuestsConfiguration.hookAccounts()){
+				if (QuestsConfigurationImplementation.hookAccounts()){
 					try{
 						return Accounts.createAccountFromUUID(uuid);
 					}catch (UnsupportedOperationException ex){

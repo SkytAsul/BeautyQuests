@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
 import fr.skytasul.quests.api.localization.Lang;
@@ -28,7 +28,7 @@ public class XPReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player p) {
-		if (DependenciesManager.skapi.isEnabled() && QuestsConfiguration.xpOverridedSkillAPI()) {
+		if (DependenciesManager.skapi.isEnabled() && QuestsConfigurationImplementation.xpOverridedSkillAPI()) {
 			SkillAPI.giveExp(p, exp);
 		}else p.giveExp(exp);
 		return Arrays.asList(exp + " " + Lang.Exp.toString());

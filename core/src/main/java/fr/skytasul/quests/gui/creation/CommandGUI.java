@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
-import fr.skytasul.quests.api.gui.CustomInventory.CloseBehavior;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.Gui.CloseBehavior;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.Utils;
@@ -19,7 +19,7 @@ import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.types.Command;
 
-public class CommandGUI implements CustomInventory {
+public class CommandGUI implements Gui {
 	
 	private static final int SLOT_COMMAND = 1;
 	private static final int SLOT_CONSOLE = 3;
@@ -63,8 +63,8 @@ public class CommandGUI implements CustomInventory {
 			this.console = cmd.console;
 			this.parse = cmd.parse;
 			this.delay = cmd.delay;
-			if (inv != null && console) ItemUtils.set(inv.getItem(SLOT_CONSOLE), true);
-			if (inv != null && parse) ItemUtils.set(inv.getItem(SLOT_PARSE), true);
+			if (inv != null && console) ItemUtils.setSwitch(inv.getItem(SLOT_CONSOLE), true);
+			if (inv != null && parse) ItemUtils.setSwitch(inv.getItem(SLOT_PARSE), true);
 			if (inv != null) inv.getItem(SLOT_FINISH).setType(Material.DIAMOND);
 		}
 		return this;
@@ -83,11 +83,11 @@ public class CommandGUI implements CustomInventory {
 			break;
 			
 		case SLOT_CONSOLE:
-			console = ItemUtils.toggle(current);
+			console = ItemUtils.toggleSwitch(current);
 			break;
 			
 		case SLOT_PARSE:
-			parse = ItemUtils.toggle(current);
+			parse = ItemUtils.toggleSwitch(current);
 			break;
 		
 		case SLOT_DELAY:

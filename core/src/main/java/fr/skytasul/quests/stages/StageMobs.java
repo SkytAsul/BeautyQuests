@@ -29,11 +29,11 @@ import fr.skytasul.quests.api.stages.types.AbstractCountableStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.mobs.Mob;
-import fr.skytasul.quests.utils.types.CountableObject;
-import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 @LocatableType (types = LocatedType.ENTITY)
 public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable {
@@ -165,7 +165,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 					reopenGUI(p, true);
 				}).open(p);
 			});
-			line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), shoot), (p, item) -> setShoot(ItemUtils.toggle(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), shoot), (p, item) -> setShoot(ItemUtils.toggleSwitch(item)));
 		}
 		
 		public void setMobs(List<MutableCountableObject<Mob<?>>> mobs) {
@@ -176,7 +176,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		public void setShoot(boolean shoot) {
 			if (this.shoot != shoot) {
 				this.shoot = shoot;
-				line.editItem(6, ItemUtils.set(line.getItem(6), shoot));
+				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), shoot));
 			}
 		}
 		

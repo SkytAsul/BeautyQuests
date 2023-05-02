@@ -10,18 +10,18 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.utils.BQBlock;
+import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
-import fr.skytasul.quests.utils.types.BQBlock;
-import fr.skytasul.quests.utils.types.CountableObject;
-import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> {
 	
-	protected AbstractCountableBlockStage(@NotNull QuestBranch branch,
+	protected AbstractCountableBlockStage(@NotNull StageController controller,
 			@NotNull List<@NotNull CountableObject<BQBlock>> objects) {
-		super(branch, objects);
+		super(controller, objects);
 	}
 
 	@Override

@@ -11,15 +11,15 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.CustomInventory;
-import fr.skytasul.quests.api.gui.CustomInventory.CloseBehavior;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.Gui.CloseBehavior;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.misc.ItemCreatorGUI;
 
-public class ItemsGUI implements CustomInventory {
+public class ItemsGUI implements Gui {
 	
 	public static ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
 	

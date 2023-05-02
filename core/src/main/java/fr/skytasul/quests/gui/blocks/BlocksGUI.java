@@ -10,9 +10,9 @@ import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.utils.types.BQBlock;
-import fr.skytasul.quests.utils.types.CountableObject;
-import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
+import fr.skytasul.quests.api.utils.BQBlock;
+import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 
 public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 

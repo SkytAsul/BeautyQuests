@@ -42,7 +42,7 @@ public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	@Override
 	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
 		setValue(!getValue());
-		ItemUtils.set(item, getValue());
+		ItemUtils.setSwitch(item, getValue());
 	}
 	
 }

@@ -29,7 +29,7 @@ public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 
 	@Override
 	public void click(ItemComparison existing, ItemStack item, ClickType clickType) {
-		ItemUtils.set(item, comparisons.toggle(existing));
+		ItemUtils.setSwitch(item, comparisons.toggle(existing));
 	}
 
 }

@@ -6,9 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
@@ -17,7 +15,8 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.DurationParser;
 import fr.skytasul.quests.api.editors.checkers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -27,7 +26,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
-public class PoolEditGUI extends CustomInventory {
+public class PoolEditGUI extends Gui {
 	
 	private static final int SLOT_NPC = 1;
 	private static final int SLOT_HOLOGRAM = 2;
@@ -122,7 +121,7 @@ public class PoolEditGUI extends CustomInventory {
 	}
 	
 	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot) {
 		case SLOT_NPC:
 			NpcSelectGUI.select(() -> reopen(p), npc -> {
@@ -165,10 +164,10 @@ public class PoolEditGUI extends CustomInventory {
 			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).start();
 			break;
 		case SLOT_REDO:
-			redoAllowed = ItemUtils.toggle(current);
+			redoAllowed = ItemUtils.toggleSwitch(current);
 			break;
 		case SLOT_DUPLICATE:
-			avoidDuplicates = ItemUtils.toggle(current);
+			avoidDuplicates = ItemUtils.toggleSwitch(current);
 			break;
 		case SLOT_REQUIREMENTS:
 			QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.POOL, requirements -> {

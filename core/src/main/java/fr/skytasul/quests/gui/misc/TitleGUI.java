@@ -4,14 +4,14 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -20,7 +20,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.utils.types.Title;
 
-public class TitleGUI extends CustomInventory {
+public class TitleGUI extends Gui {
 	
 	private static final int SLOT_TITLE = 0;
 	private static final int SLOT_SUBTITLE = 1;
@@ -114,7 +114,7 @@ public class TitleGUI extends CustomInventory {
 	}
 	
 	@Override
-	public boolean onClick(Player player, ItemStack current, int slot, ClickType click) {
+	public void onClick(GuiClickEvent event) {
 		switch (slot) {
 		case SLOT_TITLE:
 			startStringEditor(player, Lang.TITLE_TITLE.toString(), this::setTitle);

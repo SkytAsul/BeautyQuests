@@ -16,7 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.LevenshteinComparator;
@@ -27,7 +28,7 @@ import fr.skytasul.quests.api.utils.LevenshteinComparator;
  *
  * @param <T> type of objects stocked in the inventory
  */
-public abstract class PagedGUI<T> extends CustomInventory {
+public abstract class PagedGUI<T> extends Gui {
 
 	private static ItemStack itemSearch = ItemUtils.item(XMaterial.COMPASS, Lang.search.toString());
 
@@ -157,10 +158,10 @@ public abstract class PagedGUI<T> extends CustomInventory {
 
 	
 	@Override
-	public boolean onClick(Player player, ItemStack current, int slot, ClickType click) {
-		switch (slot % 9){
+	public void onClick(GuiClickEvent event) {
+		switch (event.getSlot() % 9) {
 		case 8:
-			int barSlot = (slot - 8) / 9;
+			int barSlot = (event.getSlot() - 8) / 9;
 			switch (barSlot){
 			case 0:
 				if (page == 0) break;
@@ -193,12 +194,11 @@ public abstract class PagedGUI<T> extends CustomInventory {
 			break;
 			
 		default:
-			int line = (int) Math.floor(slot * 1D / 9D);
-			int objectSlot = slot - line*2 + page*35;
-			click(objects.get(objectSlot), current, click);
+			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
+			int objectSlot = event.getSlot() - line * 2 + page * 35;
+			click(objects.get(objectSlot), event.getClicked(), event.getClick());
 			//inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
-		return true;
 	}
 	
 	public final void reopen() {

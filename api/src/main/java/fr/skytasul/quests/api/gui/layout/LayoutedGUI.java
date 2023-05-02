@@ -6,23 +6,22 @@ import java.util.Objects;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.gui.CustomInventory;
+import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 
-public abstract class LayoutedGUI extends CustomInventory {
+public abstract class LayoutedGUI extends Gui {
 
 	protected final @Nullable String name;
-	protected final @NotNull Map<Integer, Button> buttons;
+	protected final @NotNull Map<Integer, LayoutedButton> buttons;
 	protected final @NotNull CloseBehavior closeBehavior;
 
-	protected LayoutedGUI(@Nullable String name, @NotNull Map<Integer, Button> buttons,
+	protected LayoutedGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
 			@NotNull CloseBehavior closeBehavior) {
 		this.name = name;
 		this.buttons = buttons;
@@ -35,21 +34,19 @@ public abstract class LayoutedGUI extends CustomInventory {
 	}
 
 	@Override
-	public boolean onClick(@NotNull Player player, @NotNull ItemStack current, int slot, @NotNull ClickType click) {
-		Button button = buttons.get(slot);
+	public void onClick(GuiClickEvent event) {
+		LayoutedButton button = buttons.get(event.getSlot());
 		if (button == null)
-			return true;
+			return;
 
-		ClickEvent event = new ClickEvent(player, this, slot, click);
-		button.click(event);
-		return true;
+		button.click(new LayoutedClickEvent(event.getPlayer(), this, event.getSlot(), event.getClick()));
 	}
 
 	public void refresh(int slot) {
 		if (getInventory() == null)
 			return;
 
-		Button button = buttons.get(slot);
+		LayoutedButton button = buttons.get(slot);
 		if (button == null)
 			return;
 
@@ -69,7 +66,7 @@ public abstract class LayoutedGUI extends CustomInventory {
 
 		private final int rows;
 
-		protected LayoutedRowsGUI(@Nullable String name, @NotNull Map<Integer, Button> buttons,
+		protected LayoutedRowsGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
 				@NotNull CloseBehavior closeBehavior, int rows) {
 			super(name, buttons, closeBehavior);
 			Validate.isTrue(rows >= 1);
@@ -87,7 +84,7 @@ public abstract class LayoutedGUI extends CustomInventory {
 
 		private @NotNull InventoryType type;
 
-		protected LayoutedTypeGUI(@Nullable String name, @NotNull Map<Integer, Button> buttons,
+		protected LayoutedTypeGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
 				@NotNull CloseBehavior closeBehavior, @NotNull InventoryType type) {
 			super(name, buttons, closeBehavior);
 			this.type = Objects.requireNonNull(type);
@@ -102,7 +99,7 @@ public abstract class LayoutedGUI extends CustomInventory {
 
 	public static class Builder {
 
-		private final Map<Integer, Button> buttons = new HashMap<>();
+		private final Map<Integer, LayoutedButton> buttons = new HashMap<>();
 		private @Nullable Integer rows = null;
 		private @Nullable InventoryType type = null;
 		private @Nullable String name = null;
@@ -110,7 +107,7 @@ public abstract class LayoutedGUI extends CustomInventory {
 
 		private Builder() {}
 
-		public @NotNull Builder addButton(int slot, @NotNull Button button) {
+		public @NotNull Builder addButton(int slot, @NotNull LayoutedButton button) {
 			Validate.isTrue(!buttons.containsKey(slot));
 			buttons.put(slot, button);
 			return this;

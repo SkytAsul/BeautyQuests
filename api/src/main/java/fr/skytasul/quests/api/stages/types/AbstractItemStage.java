@@ -16,24 +16,26 @@ import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
 import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.utils.types.CountableObject;
 
 public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack> {
 	
 	protected final @NotNull ItemComparisonMap comparisons;
 
-	protected AbstractItemStage(@NotNull QuestBranch branch, @NotNull List<@NotNull CountableObject<ItemStack>> objects,
+	protected AbstractItemStage(@NotNull StageController controller,
+			@NotNull List<@NotNull CountableObject<ItemStack>> objects,
 			ItemComparisonMap comparisons) {
-		super(branch, objects);
+		super(controller, objects);
 		this.comparisons = comparisons;
 	}
 	
-	protected AbstractItemStage(@NotNull QuestBranch branch, @NotNull ConfigurationSection section) {
-		super(branch, new ArrayList<>());
+	protected AbstractItemStage(@NotNull StageController controller, @NotNull ConfigurationSection section) {
+		super(controller, new ArrayList<>());
 		
 		if (section.contains("itemComparisons")) {
 			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));

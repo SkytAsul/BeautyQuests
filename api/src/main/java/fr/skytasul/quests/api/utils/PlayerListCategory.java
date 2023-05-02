@@ -3,7 +3,6 @@ package fr.skytasul.quests.api.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
 
 public enum PlayerListCategory {
@@ -41,10 +40,6 @@ public enum PlayerListCategory {
 
 	public @NotNull String getName() {
 		return name;
-	}
-
-	public boolean isEnabled() {
-		return QuestsConfiguration.getMenuConfig().getEnabledTabs().contains(this);
 	}
 	
 	public static @Nullable PlayerListCategory fromString(@NotNull String name) {

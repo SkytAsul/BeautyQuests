@@ -2,7 +2,7 @@ package fr.skytasul.quests.utils.compatibility.maps;
 
 import java.util.function.Consumer;
 import org.bukkit.Location;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.quests.Quest;
@@ -22,7 +22,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 	
 	@Override
 	public boolean isEnabled() {
-		return QuestsConfiguration.dynmapMarkerIcon() != null && !QuestsConfiguration.dynmapMarkerIcon().isEmpty();
+		return QuestsConfigurationImplementation.dynmapMarkerIcon() != null && !QuestsConfigurationImplementation.dynmapMarkerIcon().isEmpty();
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 		BlueMapAPI.onEnable(enableConsumer = api -> {
 			try {
 				set = MarkerSet.builder()
-						.label(QuestsConfiguration.dynmapSetName())
+						.label(QuestsConfigurationImplementation.dynmapSetName())
 						.defaultHidden(false)
 						.toggleable(true)
 						.build();
@@ -60,7 +60,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 				for (BlueMapMap map : maps) {
 					POIMarker marker = POIMarker.toBuilder()
 							.label(quest.getName())
-							.icon(QuestsConfiguration.dynmapMarkerIcon(), 0, 0)
+							.icon(QuestsConfigurationImplementation.dynmapMarkerIcon(), 0, 0)
 							.position(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ())
 							.build();
 					set.getMarkers().put("qu_" + quest.getId() + "_" + i++, marker);

@@ -18,18 +18,18 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.utils.types.CountableObject;
-import fr.skytasul.quests.utils.types.CountableObject.MutableCountableObject;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage {
 
@@ -39,21 +39,11 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	private boolean barsEnabled = false;
 	private int cachedSize = 0;
 
-	protected AbstractCountableStage(@NotNull QuestBranch branch, @NotNull List<@NotNull CountableObject<T>> objects) {
-		super(branch);
+	protected AbstractCountableStage(@NotNull StageController controller,
+			@NotNull List<@NotNull CountableObject<T>> objects) {
+		super(controller);
 		this.objects = objects;
 		calculateSize();
-	}
-
-	@Deprecated
-	protected AbstractCountableStage(QuestBranch branch, Map<Integer, Entry<T, Integer>> objects) {
-		this(branch, objects.keySet().stream().sorted().map(index -> {
-			Entry<T, Integer> entry = objects.get(index);
-			return CountableObject.open(uuidFromLegacyIndex(index), entry.getKey(), entry.getValue());
-		}).collect(Collectors.toList()));
-
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("The stage " + getType().getName()
-				+ " uses an outdated way to store player datas. Please notice its author.");
 	}
 
 	public @NotNull List<@NotNull CountableObject<T>> getObjects() {
@@ -150,7 +140,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	protected void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
+	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("remaining", objects.stream()
 				.collect(Collectors.toMap(object -> object.getUUID().toString(), CountableObject::getAmount)));
@@ -204,8 +194,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	public void start(@NotNull PlayerAccount acc) {
-		super.start(acc);
+	public void started(@NotNull PlayerAccount acc) {
+		super.started(acc);
 		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
 	}
 
@@ -222,16 +212,16 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	public void joins(@NotNull PlayerAccount acc, @NotNull Player p) {
-		super.joins(acc, p);
-		Map<UUID, Integer> remainings = getPlayerRemainings(acc, true);
+	public void joined(@NotNull Player p) {
+		super.joined(p);
+		Map<UUID, Integer> remainings = getPlayerRemainings(PlayersManager.getPlayerAccount(p), true);
 		if (remainings == null) return;
 		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
 	}
 	
 	@Override
-	public void leaves(@NotNull PlayerAccount acc, @NotNull Player p) {
-		super.leaves(acc, p);
+	public void left(@NotNull Player p) {
+		super.left(p);
 		removeBar(p);
 	}
 
@@ -262,13 +252,6 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected abstract @NotNull Object serialize(@NotNull T object);
 
 	protected abstract @NotNull T deserialize(@NotNull Object object);
-
-	/**
-	 * @deprecated for removal, {@link #serialize(ConfigurationSection)} should be used instead.
-	 */
-	@Override
-	@Deprecated
-	protected void serialize(Map<String, Object> map) {}
 	
 	@Override
 	protected void serialize(@NotNull ConfigurationSection section) {
@@ -278,18 +261,6 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			objectSection.set("amount", obj.getAmount());
 			objectSection.set("object", serialize(obj.getObject()));
 		}
-
-		Map<String, Object> serialized = new HashMap<>();
-		serialize(serialized);
-		Utils.setConfigurationSectionContent(section, serialized);
-	}
-	
-	/**
-	 * @deprecated for removal, {@link #deserialize(ConfigurationSection)} should be used instead.
-	 */
-	@Deprecated
-	protected void deserialize(Map<String, Object> serializedDatas) {
-		deserialize(Utils.createConfigurationSection(serializedDatas));
 	}
 
 	protected void deserialize(@NotNull ConfigurationSection section) {
@@ -306,7 +277,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				ConfigurationSection objectSection = objectsSection.getConfigurationSection(key);
 				Object serialized = objectSection.get("object");
 				if (serialized instanceof ConfigurationSection) serialized = ((ConfigurationSection) serialized).getValues(false);
-				objects.add(CountableObject.open(uuid, deserialize(serialized), objectSection.getInt("amount")));
+				objects.add(CountableObject.create(uuid, deserialize(serialized), objectSection.getInt("amount")));
 			}
 		}
 
@@ -338,7 +309,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			}else if (cachedSize % 6 == 0) {
 				style = BarStyle.SEGMENTED_6;
 			}else style = BarStyle.SOLID;
-			bar = QuestsAPI.getBossBarManager().buildBossBar(Lang.MobsProgression.format(branch.getQuest().getName(), 100, 100), BarColor.YELLOW, style);
+			bar = QuestsAPI.getAPI().getBossBarManager()
+					.buildBossBar(Lang.MobsProgression.format(getQuest().getName(), 100, 100), BarColor.YELLOW, style);
 			update(amount);
 		}
 
@@ -351,7 +323,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			if (amount >= 0 && amount <= cachedSize) {
 				bar.setProgress((double) (cachedSize - amount) / (double) cachedSize);
 			}else QuestsPlugin.getPlugin().getLoggerExpanded().warning("Amount of objects superior to max objects in " + AbstractCountableStage.this.toString() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
-			bar.setTitle(Lang.MobsProgression.format(branch.getQuest().getName(), cachedSize - amount, cachedSize));
+			bar.setTitle(Lang.MobsProgression.format(getQuest().getName(), cachedSize - amount, cachedSize));
 			bar.addPlayer(p);
 			timer();
 		}
@@ -359,7 +331,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		private void timer() {
 			if (QuestsConfiguration.getProgressBarTimeout() <= 0) return;
 			if (timer != null) timer.cancel();
-			timer = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
 				bar.removePlayer(player);
 				timer = null;
 			}, QuestsConfiguration.getProgressBarTimeout() * 20L);

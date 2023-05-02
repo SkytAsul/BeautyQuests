@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -75,24 +75,24 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 					tmp.add(p);
 				}
 				
-				if (QuestsConfiguration.getHoloTalkItem() != null && QuestsAPI.getAPI().hasHologramsManager() && QuestsAPI.getAPI().getHologramsManager().supportItems() && QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
+				if (QuestsConfigurationImplementation.getHoloTalkItem() != null && QuestsAPI.getAPI().hasHologramsManager() && QuestsAPI.getAPI().getHologramsManager().supportItems() && QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
 					if (hologram == null) createHoloLaunch();
 					hologram.setPlayersVisible(tmp);
 					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));
 				}
 				
-				if (QuestsConfiguration.showTalkParticles()) {
+				if (QuestsConfigurationImplementation.showTalkParticles()) {
 					if (tmp.isEmpty()) return;
-					QuestsConfiguration.getParticleTalk().send(en, tmp);
+					QuestsConfigurationImplementation.getParticleTalk().send(en, tmp);
 				}
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);
 	}
 	
 	private void createHoloLaunch(){
-		ItemStack item = QuestsConfiguration.getHoloTalkItem();
+		ItemStack item = QuestsConfigurationImplementation.getHoloTalkItem();
 		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getLocation(), false);
-		if (QuestsConfiguration.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+		if (QuestsConfigurationImplementation.isCustomHologramNameShown() && item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			hologram.appendTextLine(item.getItemMeta().getDisplayName());
 		hologram.appendItem(item);
 	}
@@ -178,7 +178,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void onClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getNPC() != npc) return;
-		if (!QuestsConfiguration.getNPCClicks().contains(e.getClick())) return;
+		if (!QuestsConfigurationImplementation.getNPCClicks().contains(e.getClick())) return;
 		Player p = e.getPlayer();
 
 		e.setCancelled(dialogRunner.onClick(p).shouldCancel());
@@ -196,7 +196,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void joins(PlayerAccount acc, Player p) {
 		super.joins(acc, p);
 		cachePlayer(p);
-		if (QuestsConfiguration.handleGPS() && !hide) GPS.launchCompass(p, npc.getLocation());
+		if (QuestsConfigurationImplementation.handleGPS() && !hide) GPS.launchCompass(p, npc.getLocation());
 	}
 
 	private void cachePlayer(Player p) {
@@ -210,7 +210,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 	
 	private void uncacheAll() {
-		if (QuestsConfiguration.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
+		if (QuestsConfigurationImplementation.handleGPS() && !hide) cached.forEach(GPS::stopCompass);
 		if (npc != null) cached.forEach(p -> npc.removeHiddenForPlayer(p, this));
 	}
 	
@@ -218,7 +218,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void leaves(PlayerAccount acc, Player p) {
 		super.leaves(acc, p);
 		uncachePlayer(p);
-		if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
+		if (QuestsConfigurationImplementation.handleGPS() && !hide) GPS.stopCompass(p);
 		if (dialogRunner != null) dialogRunner.removePlayer(p);
 	}
 	
@@ -228,7 +228,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cachePlayer(p);
-			if (QuestsConfiguration.handleGPS() && npc != null) GPS.launchCompass(p, npc.getLocation());
+			if (QuestsConfigurationImplementation.handleGPS() && npc != null) GPS.launchCompass(p, npc.getLocation());
 		}
 	}
 	
@@ -239,7 +239,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			Player p = acc.getPlayer();
 			if (dialogRunner != null) dialogRunner.removePlayer(p);
 			uncachePlayer(p);
-			if (QuestsConfiguration.handleGPS() && !hide) GPS.stopCompass(p);
+			if (QuestsConfigurationImplementation.handleGPS() && !hide) GPS.stopCompass(p);
 		}
 	}
 	
@@ -255,7 +255,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	@Override
 	public void load(){
 		super.load();
-		if (QuestsConfiguration.showTalkParticles() || QuestsConfiguration.getHoloTalkItem() != null){
+		if (QuestsConfigurationImplementation.showTalkParticles() || QuestsConfigurationImplementation.getHoloTalkItem() != null){
 			if (!hide) launchRefreshTask();
 		}
 	}
@@ -309,7 +309,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 				}, dialog == null ? dialog = new Dialog() : dialog).start();
 			}, true, true);
 			
-			line.setItem(SLOT_HIDE, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggle(item)), true, true);
+			line.setItem(SLOT_HIDE, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), (p, item) -> setHidden(ItemUtils.toggleSwitch(item)), true, true);
 		}
 		
 		public void setNPCId(int npcID) {
@@ -325,7 +325,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		public void setHidden(boolean hidden) {
 			if (this.hidden != hidden) {
 				this.hidden = hidden;
-				line.editItem(SLOT_HIDE, ItemUtils.set(line.getItem(SLOT_HIDE), hidden));
+				line.editItem(SLOT_HIDE, ItemUtils.setSwitch(line.getItem(SLOT_HIDE), hidden));
 			}
 		}
 

@@ -14,8 +14,8 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
+import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.utils.types.CountableObject;
 
 public class StageEatDrink extends AbstractItemStage {
 	

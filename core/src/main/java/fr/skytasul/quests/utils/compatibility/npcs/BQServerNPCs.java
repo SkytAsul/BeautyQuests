@@ -11,9 +11,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import fr.skytasul.quests.QuestsConfiguration.ClickType;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.NpcClickType;
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
 import io.github.znetworkw.znpcservers.npc.NPC;
@@ -69,7 +69,7 @@ public class BQServerNPCs extends BQNPCsManager {
 	
 	@EventHandler
 	public void onInteract(NPCInteractEvent e) {
-		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), ClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
+		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), NpcClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
 	}
 	
 	public static class BQServerNPC extends BQNPC {
