@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.utils.ChatUtils;
 import fr.skytasul.quests.utils.Lang;
@@ -37,6 +38,10 @@ public class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack item(XMaterial type, String name, String... lore) {
+		if (!type.isSupported()) {
+			BeautyQuests.logger.warning("Trying to create an item for an unsupported material " + type.name());
+			type = XMaterial.SPONGE;
+		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		im.addItemFlags(ItemFlag.values());
@@ -52,6 +57,10 @@ public class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack item(XMaterial type, String name, List<String> lore) {
+		if (!type.isSupported()) {
+			BeautyQuests.logger.warning("Trying to create an item for an unsupported material " + type.name());
+			type = XMaterial.SPONGE;
+		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		im.addItemFlags(ItemFlag.values());

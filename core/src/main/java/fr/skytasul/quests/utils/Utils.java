@@ -583,7 +583,8 @@ public class Utils{
 	public static XMaterial mobItem(EntityType type) {
 		if (type == null) return XMaterial.SPONGE;
 		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
-		if (material.isPresent()) return material.get();
+		if (material.isPresent() && material.get().isSupported())
+			return material.get();
 		if (type == EntityType.WITHER) return XMaterial.WITHER_SKELETON_SKULL;
 		if (type == EntityType.IRON_GOLEM) return XMaterial.IRON_BLOCK;
 		if (type == EntityType.SNOWMAN) return XMaterial.SNOW_BLOCK;
