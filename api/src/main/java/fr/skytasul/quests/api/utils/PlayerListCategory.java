@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
 
 public enum PlayerListCategory {
@@ -42,6 +43,10 @@ public enum PlayerListCategory {
 		return name;
 	}
 	
+	public boolean isEnabled() {
+		return QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs().contains(this);
+	}
+
 	public static @Nullable PlayerListCategory fromString(@NotNull String name) {
 		try {
 			return PlayerListCategory.valueOf(name.toUpperCase());

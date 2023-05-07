@@ -13,8 +13,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
@@ -64,14 +64,16 @@ public class PlayerListGUI extends Gui {
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		
-		for (PlayerListCategory enabledCat : QuestsConfigurationImplementation.getMenuConfig().getEnabledTabs()) {
+		for (PlayerListCategory enabledCat : QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs()) {
 			setBarItem(enabledCat.getSlot(),
 					ItemUtils.item(enabledCat.getMaterial(), UNSELECTED_PREFIX + enabledCat.getName()));
 		}
 
 		if (PlayerListCategory.IN_PROGRESS.isEnabled()) {
 			setCategory(PlayerListCategory.IN_PROGRESS);
-			if (quests.isEmpty() && QuestsConfigurationImplementation.getMenuConfig().isNotStartedTabOpenedWhenEmpty() && PlayerListCategory.NOT_STARTED.isEnabled()) setCategory(PlayerListCategory.NOT_STARTED);
+			if (quests.isEmpty() && QuestsConfiguration.getConfig().getQuestsMenuConfig().isNotStartedTabOpenedWhenEmpty()
+					&& PlayerListCategory.NOT_STARTED.isEnabled())
+				setCategory(PlayerListCategory.NOT_STARTED);
 		}else if (PlayerListCategory.NOT_STARTED.isEnabled()) {
 			setCategory(PlayerListCategory.NOT_STARTED);
 		}else setCategory(PlayerListCategory.FINISHED);
@@ -101,8 +103,10 @@ public class PlayerListGUI extends Gui {
 		
 		case FINISHED:
 			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(acc, hide), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfigurationImplementation.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription();
-				if (QuestsConfigurationImplementation.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
+						qu, acc, cat, DescriptionSource.MENU).formatDescription();
+				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
+						&& acc.getQuestDatas(qu).hasFlowDialogs()) {
 					if (!lore.isEmpty()) lore.add(null);
 					lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
 				}
@@ -112,10 +116,13 @@ public class PlayerListGUI extends Gui {
 		
 		case IN_PROGRESS:
 			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, true, false), qu -> {
-				List<String> lore = new QuestDescriptionContext(QuestsConfigurationImplementation.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription();
+				List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
+						qu, acc, cat, DescriptionSource.MENU).formatDescription();
 				
-				boolean hasDialogs = QuestsConfigurationImplementation.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs();
-				boolean cancellable = QuestsConfigurationImplementation.getMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
+				boolean hasDialogs = QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
+						&& acc.getQuestDatas(qu).hasFlowDialogs();
+				boolean cancellable =
+						QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest() && qu.isCancellable();
 				if (cancellable || hasDialogs) {
 					if (!lore.isEmpty()) lore.add(null);
 					if (cancellable) lore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
@@ -129,7 +136,9 @@ public class PlayerListGUI extends Gui {
 			displayQuests(QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, hide, true).stream()
 					.filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.canStart(acc.getPlayer(), false))
 					.collect(Collectors.toList()), qu -> {
-				return createQuestItem(qu, new QuestDescriptionContext(QuestsConfigurationImplementation.getQuestDescription(), qu, acc, cat, DescriptionSource.MENU).formatDescription());
+						return createQuestItem(qu,
+								new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(), qu,
+										acc, cat, DescriptionSource.MENU).formatDescription());
 			});
 			break;
 
@@ -189,9 +198,9 @@ public class PlayerListGUI extends Gui {
 	
 	@Override
 	public void onClick(GuiClickEvent event) {
-		switch (slot % 9){
+		switch (event.getSlot() % 9) {
 		case 8:
-			int barSlot = (slot - 8) / 9;
+				int barSlot = (event.getSlot() - 8) / 9;
 			switch (barSlot){
 			case 0:
 				if (page == 0) break;
@@ -217,33 +226,34 @@ public class PlayerListGUI extends Gui {
 			break;
 			
 		default:
-			int id = (int) (slot - (Math.floor(slot * 1D / 9D) * 2) + page * 35);
+			int id = (int) (event.getSlot() - (Math.floor(event.getSlot() * 1D / 9D) * 2) + page * 35);
 			Quest qu = quests.get(id);
 			if (cat == PlayerListCategory.NOT_STARTED) {
 				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
 				if (!acc.isCurrent()) break;
 				Player target = acc.getPlayer();
 				if (qu.canStart(target, true)) {
-					p.closeInventory();
+					event.close();
 					qu.attemptStart(target);
 				}
 			}else {
-				if (click.isRightClick()) {
-					if (QuestsConfigurationImplementation.getDialogsConfig().isHistoryEnabled() && acc.getQuestDatas(qu).hasFlowDialogs()) {
-						QuestUtils.playPluginSound(p, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-						new DialogHistoryGUI(acc, qu, () -> reopen(p)).open(p);
+				if (event.getClick().isRightClick()) {
+					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
+							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+						QuestUtils.playPluginSound(event.getPlayer(), "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+						new DialogHistoryGUI(acc, qu, event::reopen).open(event.getPlayer());
 					}
-				}else if (click.isLeftClick()) {
-					if (QuestsConfigurationImplementation.getMenuConfig().allowPlayerCancelQuest() && cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
-						ConfirmGUI.confirm(() -> qu.cancelPlayer(acc), () -> reopen(p),
-								Lang.INDICATION_CANCEL.format(qu.getName())).open(p);
+				} else if (event.getClick().isLeftClick()) {
+					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
+							&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
+						ConfirmGUI.confirm(() -> qu.cancelPlayer(acc), event::reopen,
+								Lang.INDICATION_CANCEL.format(qu.getName())).open(event.getPlayer());
 					}
 				}
 			}
 			break;
 			
 		}
-		return true;
 	}
 	
 	@Override

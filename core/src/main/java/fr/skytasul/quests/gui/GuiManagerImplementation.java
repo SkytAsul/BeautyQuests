@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -148,16 +149,14 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 
 			ensureSameInventory(gui, event.getClickedInventory());
 
-			if (event.getCursor().getType() == Material.AIR) {
-				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
-					return;
-				if (gui.onClick(null))
-					event.setCancelled(true);
-			} else {
-				if (gui.onClickCursor(player, event.getCurrentItem(), event.getCursor(),
-						event.getSlot()))
-					event.setCancelled(true);
-			}
+			if (event.getCursor().getType() == Material.AIR
+					&& (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR))
+				return;
+
+			GuiClickEvent guiEvent = new GuiClickEvent(player, gui, event.getCurrentItem(), event.getCursor(),
+					event.getSlot(), event.getClick());
+			gui.onClick(guiEvent);
+			event.setCancelled(guiEvent.isCancelled());
 		} catch (Exception ex) {
 			event.setCancelled(true);
 			Lang.ERROR_OCCURED.send(player, ex.getMessage() + " in " + gui.getClass().getSimpleName());

@@ -55,7 +55,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private String dSetName = "Quests";
 	private String dIcon = "bookshelf";
 	private int dMinZoom = 0;
-	private QuestDescription questDescription;
 	
 	private ItemStack holoLaunchItem = null;
 	private ItemStack holoLaunchNoItem = null;
@@ -74,6 +73,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private DialogsConfig dialogs;
 	private QuestsMenuConfig menu;
 	private StageDescriptionConfig stageDescription;
+	private QuestDescriptionConfig questDescription;
 	
 	QuestsConfigurationImplementation(BeautyQuests plugin) {
 		config = plugin.getConfig();
@@ -81,6 +81,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
 		stageDescription = new StageDescriptionConfig();
+		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
 	}
 	
 	boolean update() {
@@ -101,6 +102,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		dialogs.init();
 		menu.init();
 		stageDescription.init();
+		questDescription.init();
 
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
@@ -121,8 +123,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
-		
-		questDescription = new QuestDescription(config.getConfigurationSection("questDescription"));
 		
 		if (MinecraftVersion.MAJOR >= 9) {
 			particleStart = loadParticles(config, "start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
@@ -232,6 +232,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	@Override
 	public @NotNull StageDescriptionConfig getStageDescriptionConfig() {
 		return stageDescription;
+	}
+
+	@Override
+	public @NotNull QuestDescriptionConfig getQuestDescriptionConfig() {
+		return questDescription;
 	}
 
 	public String getPrefix() {
@@ -721,6 +726,57 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			if (source == DescriptionSource.FORCELINE)
 				return false;
 			return descSources.contains(source);
+		}
+
+	}
+
+	public class QuestDescriptionConfig implements QuestDescription {
+
+		private boolean requirements;
+		private String requirementsValid;
+		private String requirementsInvalid;
+
+		private boolean rewards;
+		private String rewardsFormat;
+
+		private final ConfigurationSection config;
+
+		public QuestDescriptionConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private void init() {
+			requirements = config.getBoolean("requirements.display");
+			requirementsValid = config.getString("requirements.valid");
+			requirementsInvalid = config.getString("requirements.invalid");
+
+			rewards = config.getBoolean("rewards.display");
+			rewardsFormat = config.getString("rewards.format");
+		}
+
+		@Override
+		public boolean showRewards() {
+			return rewards;
+		}
+
+		@Override
+		public String getRewardsFormat() {
+			return rewardsFormat;
+		}
+
+		@Override
+		public boolean showRequirements() {
+			return requirements;
+		}
+
+		@Override
+		public String getRequirementsValid() {
+			return requirementsValid;
+		}
+
+		@Override
+		public String getRequirementsInvalid() {
+			return requirementsInvalid;
 		}
 
 	}

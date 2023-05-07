@@ -9,16 +9,18 @@ import org.jetbrains.annotations.Nullable;
 public class GuiClickEvent {
 
 	private final @NotNull Player player;
+	private final @NotNull Gui gui;
 	private final @Nullable ItemStack clicked;
 	private final @Nullable ItemStack cursor;
 	private final int slot;
 	private final @NotNull ClickType click;
 
-	private boolean cancelled;
+	private boolean cancelled = true;
 
-	public GuiClickEvent(@NotNull Player player, @Nullable ItemStack clicked, @Nullable ItemStack cursor, int slot,
-			@NotNull ClickType click) {
+	public GuiClickEvent(@NotNull Player player, @NotNull Gui gui, @Nullable ItemStack clicked, @Nullable ItemStack cursor,
+			int slot, @NotNull ClickType click) {
 		this.player = player;
+		this.gui = gui;
 		this.clicked = clicked;
 		this.cursor = cursor;
 		this.slot = slot;
@@ -27,6 +29,10 @@ public class GuiClickEvent {
 
 	public @NotNull Player getPlayer() {
 		return player;
+	}
+	
+	public @NotNull Gui getGui() {
+		return gui;
 	}
 
 	public @Nullable ItemStack getClicked() {
@@ -55,6 +61,14 @@ public class GuiClickEvent {
 
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public void reopen() {
+		gui.reopen(player);
+	}
+
+	public void close() {
+		gui.close(player);
 	}
 
 }

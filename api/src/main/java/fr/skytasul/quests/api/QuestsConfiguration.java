@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 
 public interface QuestsConfiguration {
@@ -26,6 +27,9 @@ public interface QuestsConfiguration {
 
 	@NotNull
 	StageDescription getStageDescriptionConfig();
+
+	@NotNull
+	QuestDescription getQuestDescriptionConfig();
 
 	interface Quests {
 
