@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +16,15 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
 import fr.skytasul.quests.api.editors.checkers.MaterialParser;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 
-public class ItemCreatorGUI extends Gui {
+public class ItemCreatorGUI extends AbstractGui {
 
-	private Player p;
 	private Consumer<ItemStack> run;
 	private boolean allowCancel;
-	
-	public ItemCreatorGUI(Consumer<ItemStack> end, boolean allowCancel){
-		run = end;
-		this.allowCancel = allowCancel;
-	}
 
 	private XMaterial type;
 	private int amount = 1;
@@ -38,10 +32,14 @@ public class ItemCreatorGUI extends Gui {
 	private List<String> lore = new ArrayList<>();
 	private boolean quest = false;
 	private boolean flags = false;
-	
+
+	public ItemCreatorGUI(Consumer<ItemStack> end, boolean allowCancel) {
+		run = end;
+		this.allowCancel = allowCancel;
+	}
+
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
-		this.p = player;
 		return Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
 	}
 
@@ -59,12 +57,8 @@ public class ItemCreatorGUI extends Gui {
 		inventory.getItem(17).setType(Material.COAL);
 	}
 
-	private void reopen() {
-		reopen(p);
-	}
-
-	private void refresh(){
-		if (type != null){
+	private void refresh() {
+		if (type != null) {
 			getInventory().setItem(13, build());
 			if (getInventory().getItem(17).getType() != Material.DIAMOND)
 				getInventory().getItem(17).setType(Material.DIAMOND);
@@ -73,87 +67,91 @@ public class ItemCreatorGUI extends Gui {
 
 	@Override
 	public void onClick(GuiClickEvent event) {
-		switch (slot){
-		case 0:
-			Lang.CHOOSE_ITEM_TYPE.send(p);
-			new TextEditor<>(p, this::reopen, obj -> {
-				type = obj;
-				reopen();
-			}, MaterialParser.ITEM_PARSER).start();
-			break;
+		switch (event.getSlot()) {
+			case 0:
+				Lang.CHOOSE_ITEM_TYPE.send(event.getPlayer());
+				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
+					type = obj;
+					event.reopen();
+				}, MaterialParser.ITEM_PARSER).start();
+				break;
 
-		case 1:
-			Lang.CHOOSE_ITEM_AMOUNT.send(p);
-			new TextEditor<>(p, this::reopen, obj -> {
-				amount = /*Math.min(obj, 64)*/ obj;
-				ItemUtils.name(current, Lang.Amount.format(amount));
-				reopen();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
-			break;
-		
-		case 2:
-			flags = ItemUtils.toggleSwitch(current);
-			refresh();
-			break;
+			case 1:
+				Lang.CHOOSE_ITEM_AMOUNT.send(event.getPlayer());
+				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
+					amount = /* Math.min(obj, 64) */ obj;
+					ItemUtils.name(event.getClicked(), Lang.Amount.format(amount));
+					event.reopen();
+				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+				break;
 
-		case 3:
-			Lang.CHOOSE_ITEM_NAME.send(p);
-			new TextEditor<String>(p, this::reopen, obj -> {
-				name = obj;
-				reopen();
-			}).start();
-			break;
+			case 2:
+				flags = ItemUtils.toggleSwitch(event.getClicked());
+				refresh();
+				break;
 
-		case 4:
-			Lang.CHOOSE_ITEM_LORE.send(p);
-			new TextListEditor(p, list -> {
-				lore = list;
-				reopen();
-			}, lore).start();
-			break;
+			case 3:
+				Lang.CHOOSE_ITEM_NAME.send(event.getPlayer());
+				new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
+					name = obj;
+					event.reopen();
+				}).start();
+				break;
 
-		case 6:
-			if (!quest){
-				ItemUtils.name(current, Lang.itemQuest.toString() + " §a" + Lang.Yes.toString());
-				quest = true;
-			}else {
-				ItemUtils.name(current, Lang.itemQuest.toString() + " §c" + Lang.No.toString());
-				quest = false;
-			}
-			refresh();
-			break;
+			case 4:
+				Lang.CHOOSE_ITEM_LORE.send(event.getPlayer());
+				new TextListEditor(event.getPlayer(), list -> {
+					lore = list;
+					event.reopen();
+				}, lore).start();
+				break;
 
-		case 8:
-			close(p);
-			run.accept(null);
-			break;
+			case 6:
+				if (!quest) {
+					ItemUtils.name(event.getClicked(), Lang.itemQuest.toString() + " §a" + Lang.Yes.toString());
+					quest = true;
+				} else {
+					ItemUtils.name(event.getClicked(), Lang.itemQuest.toString() + " §c" + Lang.No.toString());
+					quest = false;
+				}
+				refresh();
+				break;
 
-		case 17: //VALIDATE
-			if (current.getType() == Material.DIAMOND){
-				close(p);
-				run.accept(build());
-			}
-			break;
+			case 8:
+				close(event.getPlayer());
+				run.accept(null);
+				break;
 
-		case 13: //GIVE
-			if (type != null) p.getOpenInventory().setCursor(build());
-			break;
+			case 17: // VALIDATE
+				if (event.getClicked().getType() == Material.DIAMOND) {
+					close(event.getPlayer());
+					run.accept(build());
+				}
+				break;
+
+			case 13: // GIVE
+				if (type != null)
+					event.getPlayer().getOpenInventory().setCursor(build());
+				break;
 
 		}
-		return true;
 	}
 
-	private ItemStack build(){
+	private ItemStack build() {
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
-		if (name != null) im.setDisplayName(name);
-		if (flags) im.addItemFlags(ItemFlag.values());
+		if (name != null)
+			im.setDisplayName(name);
+		if (flags)
+			im.addItemFlags(ItemFlag.values());
 		is.setItemMeta(im);
 		is.setAmount(amount);
 
-		if (lore != null) ItemUtils.lore(is, lore);
+		if (lore != null)
+			ItemUtils.lore(is, lore);
 
-		if (quest) ItemUtils.loreAdd(is, " ", Lang.QuestItemLore.toString());
+		if (quest)
+			ItemUtils.loreAdd(is, " ", Lang.QuestItemLore.toString());
 		return is;
 	}
 

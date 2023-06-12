@@ -16,8 +16,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.gui.misc.ItemGUI;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import fr.skytasul.quests.gui.items.ItemGUI;
 
 public class EquipmentRequirement extends AbstractRequirement {
 	

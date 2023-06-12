@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import fr.skytasul.quests.api.options.UpdatableOptionSet.Updatable;
 
 @SuppressWarnings ("rawtypes")
-public abstract class UpdatableOptionSet<U extends Updatable> implements OptionSet {
+public class UpdatableOptionSet implements OptionSet {
 	
 	private Map<Class<? extends QuestOption<?>>, OptionWrapper> options = new HashMap<>();
 	
@@ -17,8 +16,8 @@ public abstract class UpdatableOptionSet<U extends Updatable> implements OptionS
 		return options.values().stream().map(wrapper -> wrapper.option).iterator();
 	}
 	
-	protected void addOption(QuestOption option, U updatable) {
-		options.put((Class<? extends QuestOption<?>>) option.getClass(), new OptionWrapper(option, updatable));
+	public void addOption(QuestOption option, Runnable update) {
+		options.put((Class<? extends QuestOption<?>>) option.getClass(), new OptionWrapper(option, update));
 	}
 	
 	@Override
@@ -31,32 +30,29 @@ public abstract class UpdatableOptionSet<U extends Updatable> implements OptionS
 		return options.containsKey(clazz);
 	}
 	
-	protected OptionWrapper getWrapper(Class<? extends QuestOption<?>> optionClass) {
+	public OptionWrapper getWrapper(Class<? extends QuestOption<?>> optionClass) {
 		return options.get(optionClass);
 	}
 	
-	protected void calculateDependencies() {
+	public void calculateDependencies() {
+		options.values().forEach(wrapper -> wrapper.dependent.clear());
 		for (OptionWrapper wrapper : options.values()) {
 			for (Class<? extends QuestOption<?>> requiredOptionClass : wrapper.option.getRequiredQuestOptions()) {
-				options.get(requiredOptionClass).dependent.add(wrapper.updatable);
+				options.get(requiredOptionClass).dependent.add(wrapper.update);
 			}
 		}
 	}
 	
 	public class OptionWrapper {
 		public final QuestOption option;
-		public final U updatable;
-		public final List<U> dependent = new ArrayList<>();
+		public final Runnable update;
+		public final List<Runnable> dependent = new ArrayList<>();
 		
-		public OptionWrapper(QuestOption option, U updatable) {
+		public OptionWrapper(QuestOption option, Runnable update) {
 			this.option = option;
-			this.updatable = updatable;
-			option.setValueUpdaterListener(() -> dependent.forEach(U::update));
+			this.update = update;
+			option.setValueUpdaterListener(() -> dependent.forEach(Runnable::run));
 		}
-	}
-	
-	public interface Updatable {
-		void update();
 	}
 	
 }

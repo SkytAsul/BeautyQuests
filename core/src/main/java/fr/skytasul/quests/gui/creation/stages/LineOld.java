@@ -4,11 +4,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.utils.types.NumberedList;
 
-public class Line {
+public class LineOld {
 	
 	public final StagesGUI gui;
 	protected int line = 0;
@@ -20,7 +20,7 @@ public class Line {
 
 	public StageCreation<?> creation = null;
 	
-	protected Line(int line, StagesGUI gui) {
+	protected LineOld(int line, StagesGUI gui) {
 		this.gui = gui;
 		this.line = line;
 	}

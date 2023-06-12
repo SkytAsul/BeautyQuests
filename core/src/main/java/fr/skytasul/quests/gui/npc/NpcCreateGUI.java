@@ -11,7 +11,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
-public class NpcCreateGUI extends Gui {
+public class NpcCreateGUI extends AbstractGui {
 
 	private static final ItemStack nameItem = ItemUtils.item(XMaterial.NAME_TAG, Lang.name.toString());
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
@@ -76,53 +76,52 @@ public class NpcCreateGUI extends Gui {
 
 	@Override
 	public void onClick(GuiClickEvent event) {
-		switch (slot){
+		switch (event.getSlot()) {
 		
 		case 0:
-			new WaitClick(p, () -> reopen(p), validMove.clone(), () -> reopen(p)).start();
+				new WaitClick(event.getPlayer(), event::reopen, validMove.clone(), event::reopen).start();
 			break;
 
 		case 1:
-			Lang.NPC_NAME.send(p);
-			new TextEditor<String>(p, () -> reopen(p), obj -> {
+			Lang.NPC_NAME.send(event.getPlayer());
+			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 				setName(obj);
-				reopen(p);
+				event.reopen();
 			}).start();
 			break;
 
 		case 3:
-			Lang.NPC_SKIN.send(p);
-			new TextEditor<String>(p, () -> reopen(p), obj -> {
+			Lang.NPC_SKIN.send(event.getPlayer());
+			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 				if (obj != null) setSkin(obj);
-				reopen(p);
+				event.reopen();
 			}).useStrippedMessage().start();
 			break;
 			
 		case 5:
 			new EntityTypeGUI(en -> {
 				setType(en);
-				reopen(p);
-			}, x -> x != null && QuestsAPI.getAPI().getNPCsManager().isValidEntityType(x)).open(p);
+				event.reopen();
+			}, x -> x != null && QuestsAPI.getAPI().getNPCsManager().isValidEntityType(x)).open(event.getPlayer());
 			break;
 			
 		case 7:
-			close(p);
+			event.close();
 			cancel.run();
 			break;
 			
 		case 8:
-			close(p);
+			event.close();
 			try {
-				end.accept(QuestsAPI.getAPI().getNPCsManager().createNPC(p.getLocation(), en, name, skin));
+				end.accept(QuestsAPI.getAPI().getNPCsManager().createNPC(event.getPlayer().getLocation(), en, name, skin));
 			}catch (Exception ex) {
 				ex.printStackTrace();
-				Lang.ERROR_OCCURED.send(p, "npc creation " + ex.getMessage());
+				Lang.ERROR_OCCURED.send(event.getPlayer(), "npc creation " + ex.getMessage());
 				cancel.run();
 			}
 			break;
 		
 		}
-		return true;
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -31,7 +31,7 @@ import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
-public class PlayerListGUI extends Gui {
+public class PlayerListGUI extends AbstractGui {
 
 	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";

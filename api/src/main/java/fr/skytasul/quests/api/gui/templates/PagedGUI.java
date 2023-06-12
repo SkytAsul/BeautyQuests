@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -28,7 +28,7 @@ import fr.skytasul.quests.api.utils.LevenshteinComparator;
  *
  * @param <T> type of objects stocked in the inventory
  */
-public abstract class PagedGUI<T> extends Gui {
+public abstract class PagedGUI<T> extends AbstractGui {
 
 	private static ItemStack itemSearch = ItemUtils.item(XMaterial.COMPASS, Lang.search.toString());
 

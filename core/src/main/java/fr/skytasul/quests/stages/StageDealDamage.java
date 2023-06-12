@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
@@ -27,8 +28,9 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.gui.mobs.MobSelectionGUI;
 import fr.skytasul.quests.mobs.Mob;
 
@@ -54,7 +56,8 @@ public class StageDealDamage extends AbstractStage {
 	}
 	
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+		super.initPlayerDatas(acc, datas);
 		datas.put("amount", damage);
 	}
 	
@@ -74,25 +77,25 @@ public class StageDealDamage extends AbstractStage {
 		
 		PlayerAccount account = PlayersManager.getPlayerAccount(player);
 		
-		if (!branch.hasStageLaunched(account, this)) return;
-		if (!canUpdate(player)) return;
+		if (!hasStarted(player) || !canUpdate(player))
+			return;
 		
 		double amount = getData(account, "amount");
 		amount -= event.getFinalDamage();
 		if (amount <= 0) {
 			finishStage(player);
 		}else {
-			updateObjective(account, player, "amount", amount);
+			updateObjective(player, "amount", amount);
 		}
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return (targetMobs == null || targetMobs.isEmpty() ? Lang.SCOREBOARD_DEAL_DAMAGE_ANY : Lang.SCOREBOARD_DEAL_DAMAGE_MOBS).format(descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
+	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Object[] { (Supplier<String>) () -> Integer.toString(super.<Double>getData(acc, "amount").intValue()), targetMobsString };
 	}
 	
@@ -104,7 +107,7 @@ public class StageDealDamage extends AbstractStage {
 	}
 	
 	public static StageDealDamage deserialize(ConfigurationSection section, StageController controller) {
-		return new StageDealDamage(branch,
+		return new StageDealDamage(controller,
 				section.getDouble("damage"),
 				section.contains("targetMobs") ? section.getMapList("targetMobs").stream().map(map -> Mob.deserialize((Map) map)).collect(Collectors.toList()) : null);
 	}
@@ -117,24 +120,29 @@ public class StageDealDamage extends AbstractStage {
 		private double damage;
 		private List<Mob> targetMobs;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageDealDamage> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(SLOT_DAMAGE, ItemUtils.item(XMaterial.REDSTONE, Lang.stageDealDamageValue.toString()), (p, item) -> {
-				Lang.DAMAGE_AMOUNT.send(p);
-				new TextEditor<>(p, () -> reopenGUI(p, false), newDamage -> {
+			line.setItem(SLOT_DAMAGE, ItemUtils.item(XMaterial.REDSTONE, Lang.stageDealDamageValue.toString()), event -> {
+				Lang.DAMAGE_AMOUNT.send(event.getPlayer());
+				new TextEditor<>(event.getPlayer(), event::reopen, newDamage -> {
 					setDamage(newDamage);
-					reopenGUI(p, false);
+					event.reopen();
 				}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).start();
 			});
 			
-			line.setItem(SLOT_MOBS, ItemUtils.item(XMaterial.BLAZE_SPAWN_EGG, Lang.stageDealDamageMobs.toString(), QuestOption.formatNullableValue(Lang.EntityTypeAny.toString(), true)), (p, item) -> {
+			line.setItem(SLOT_MOBS, ItemUtils.item(XMaterial.BLAZE_SPAWN_EGG, Lang.stageDealDamageMobs.toString(), QuestOption.formatNullableValue(Lang.EntityTypeAny.toString(), true)), event -> {
 				new ListGUI<Mob>(Lang.stageDealDamageMobs.toString(), DyeColor.RED, targetMobs == null ? Collections.emptyList() : targetMobs) {
 					
 					@Override
 					public void finish(List<Mob> objects) {
 						setTargetMobs(objects.isEmpty() ? null : objects);
-						reopenGUI(player, true);
+						event.reopen();
 					}
 					
 					@Override
@@ -147,19 +155,21 @@ public class StageDealDamage extends AbstractStage {
 						new MobSelectionGUI(callback::apply).open(player);
 					}
 					
-				}.open(p);
+				}.open(event.getPlayer());
 			});
 		}
 		
 		public void setDamage(double damage) {
 			this.damage = damage;
-			line.editItem(SLOT_DAMAGE, ItemUtils.lore(line.getItem(SLOT_DAMAGE), QuestOption.formatNullableValue(Double.toString(damage))));
+			getLine().refreshItem(SLOT_DAMAGE,
+					item -> ItemUtils.lore(item, QuestOption.formatNullableValue(Double.toString(damage))));
 		}
 		
 		public void setTargetMobs(List<Mob> targetMobs) {
 			this.targetMobs = targetMobs;
 			boolean noMobs = targetMobs == null || targetMobs.isEmpty();
-			line.editItem(SLOT_MOBS, ItemUtils.lore(line.getItem(SLOT_MOBS), QuestOption.formatNullableValue(getTargetMobsString(targetMobs), noMobs)));
+			getLine().refreshItem(SLOT_MOBS,
+					item -> ItemUtils.lore(item, QuestOption.formatNullableValue(getTargetMobsString(targetMobs), noMobs)));
 		}
 		
 		@Override
@@ -173,15 +183,15 @@ public class StageDealDamage extends AbstractStage {
 		public void start(Player p) {
 			super.start(p);
 			Lang.DAMAGE_AMOUNT.send(p);
-			new TextEditor<>(p, removeAndReopen(p, false), newDamage -> {
+			new TextEditor<>(p, context::removeAndReopenGui, newDamage -> {
 				setDamage(newDamage);
-				reopenGUI(p, false);
+				context.reopenGui();
 			}, NumberParser.DOUBLE_PARSER_STRICT_POSITIVE).start();
 		}
 		
 		@Override
 		protected StageDealDamage finishStage(StageController controller) {
-			return new StageDealDamage(branch, damage, targetMobs);
+			return new StageDealDamage(controller, damage, targetMobs);
 		}
 		
 	}

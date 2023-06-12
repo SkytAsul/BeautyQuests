@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.sound.sampled.Line;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,9 +14,10 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.creation.ItemsGUI;
@@ -82,20 +82,25 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		private @NotNull List<ItemStack> items;
 		private @NotNull ItemComparisonMap comparisons = new ItemComparisonMap();
 		
-		protected Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<T> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(6, getEditItem().clone(), (p, item) -> {
+			line.setItem(6, getEditItem().clone(), event -> {
 				new ItemsGUI(items -> {
 					setItems(items);
 					reopenGUI(player, true);
-				}, items).open(player);
+				}, items).open(event.getPlayer());
 			});
-			line.setItem(7, stageComparison.clone(), (p, item) -> {
+			line.setItem(7, stageComparison.clone(), event -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
 					reopenGUI(player, true);
-				}).open(player);
+				}).open(event.getPlayer());
 			});
 		}
 		
@@ -103,12 +108,13 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(Lang.AmountItems.format(this.items.size()))));
+			getLine().refreshItemLore(6, Lang.optionValue.format(Lang.AmountItems.format(this.items.size())));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
+			getLine().refreshItemLore(7,
+					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size())));
 		}
 		
 		@Override
@@ -116,7 +122,7 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 			super.start(p);
 			new ItemsGUI(items -> {
 				setItems(items);
-				reopenGUI(player, true);
+				context.reopenGui();
 			}, Collections.emptyList()).open(p);
 		}
 		
@@ -132,18 +138,18 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		}
 		
 		@Override
-		public final T finishStage(QuestBranch branch) {
+		public final T finishStage(StageController controller) {
 			List<CountableObject<ItemStack>> itemsMap = new ArrayList<>();
 			for (int i = 0; i < items.size(); i++) {
 				ItemStack item = items.get(i);
 				int amount = item.getAmount();
 				item.setAmount(1);
-				itemsMap.add(CountableObject.open(new UUID(item.hashCode(), 2478), item, amount));
+				itemsMap.add(CountableObject.create(new UUID(item.hashCode(), 2478), item, amount));
 			}
-			return finishStage(branch, itemsMap, comparisons);
+			return finishStage(controller, itemsMap, comparisons);
 		}
 		
-		protected abstract T finishStage(@NotNull QuestBranch branch,
+		protected abstract T finishStage(@NotNull StageController controller,
 				@NotNull List<@NotNull CountableObject<ItemStack>> items, @NotNull ItemComparisonMap comparisons);
 		
 	}

@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
 import fr.skytasul.quests.gui.misc.ItemGUI;
 
 public abstract class QuestOptionItem extends QuestOption<ItemStack> {
@@ -56,7 +55,7 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 				lore.add(Lang.defaultValue.toString());
 			}
 			lore.add("");
-			lore.add(Lang.RemoveMid.toString());
+			lore.add("§8" + Lang.ClickShiftRight.toString() + " > §7" + Lang.Remove.toString());
 		}
 		
 		return lore;
@@ -72,16 +71,16 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		if (click == ClickType.MIDDLE) {
+	public void click(QuestCreationGuiClickEvent event) {
+		if (event.getClick() == ClickType.SHIFT_RIGHT) {
 			setValue(null);
-			gui.inv.setItem(slot, getItemStack(null));
+			event.getGui().updateOptionItem(this);
 		}else {
 			new ItemGUI(is -> {
 				setValue(is);
 				gui.inv.setItem(slot, getItemStack(null));
 				gui.reopen(player);
-			}, () -> gui.reopen(player)).open(p);
+			}, event::reopen).open(event.getPlayer());
 		}
 	}
 	

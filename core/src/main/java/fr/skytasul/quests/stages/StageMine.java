@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
@@ -26,13 +27,14 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.gui.creation.stages.Line;
 
 @LocatableType (types = LocatedType.BLOCK)
 public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable {
@@ -40,7 +42,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	private boolean placeCancelled;
 	
 	public StageMine(StageController controller, List<CountableObject<BQBlock>> blocks) {
-		super(branch, blocks);
+		super(controller, blocks);
 	}
 	
 	public boolean isPlaceCancelled() {
@@ -59,35 +61,38 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this)){
-			for (Block block : e.getBlocks()) {
-				if (placeCancelled) {
-					if (QuestsConfigurationImplementation.usePlayerBlockTracker()) {
-						if (PlayerBlockTracker.isTracked(block)) return;
-					} else {
-						if (block.hasMetadata("playerInStage")) {
-							if (block.getMetadata("playerInStage").get(0).asString().equals(p.getName()))
-								return;
-						}
+		if (!hasStarted(p))
+			return;
+
+		for (Block block : e.getBlocks()) {
+			if (placeCancelled) {
+				if (QuestsConfigurationImplementation.getConfiguration().usePlayerBlockTracker()) {
+					if (PlayerBlockTracker.isTracked(block))
+						return;
+				} else {
+					if (block.hasMetadata("playerInStage")
+							&& (block.getMetadata("playerInStage").get(0).asString().equals(p.getName()))) {
+						return;
 					}
 				}
-				if (event(acc, p, block, 1)) return;
 			}
+			if (event(p, block, 1))
+				return;
 		}
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
-		if (QuestsConfigurationImplementation.usePlayerBlockTracker())
+		if (QuestsConfigurationImplementation.getConfiguration().usePlayerBlockTracker())
+			return;
+		if (e.isCancelled() || !placeCancelled)
 			return;
 
-		if (e.isCancelled() || !placeCancelled) return;
 		Player p = e.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (!branch.hasStageLaunched(acc, this)) return;
+		if (!hasStarted(p))
+			return;
 
-		Map<UUID, Integer> playerBlocks = getPlayerRemainings(acc, true);
+		Map<UUID, Integer> playerBlocks = getPlayerRemainings(PlayersManager.getPlayerAccount(p), true);
 		if (playerBlocks == null) return;
 		for (UUID id : playerBlocks.keySet()) {
 			Optional<CountableObject<BQBlock>> object = getObject(id);
@@ -112,7 +117,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	}
 	
 	public static StageMine deserialize(ConfigurationSection section, StageController controller) {
-		StageMine stage = new StageMine(branch, new ArrayList<>());
+		StageMine stage = new StageMine(controller, new ArrayList<>());
 		stage.deserialize(section);
 
 		if (section.contains("placeCancelled")) stage.placeCancelled = section.getBoolean("placeCancelled");
@@ -123,10 +128,15 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		
 		private boolean prevent = false;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageMine> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), (p, item) -> setPrevent(ItemUtils.toggleSwitch(item)));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), event -> setPrevent(!prevent));
 		}
 		
 		@Override
@@ -137,7 +147,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		public void setPrevent(boolean prevent) {
 			if (this.prevent != prevent) {
 				this.prevent = prevent;
-				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), prevent));
+				getLine().refreshItem(6, item -> ItemUtils.setSwitch(item, prevent));
 			}
 		}
 
@@ -149,7 +159,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		
 		@Override
 		public StageMine finishStage(StageController controller) {
-			StageMine stage = new StageMine(branch, getImmutableBlocks());
+			StageMine stage = new StageMine(controller, getImmutableBlocks());
 			stage.setPlaceCancelled(prevent);
 			return stage;
 		}

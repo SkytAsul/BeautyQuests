@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -63,7 +63,8 @@ public class ChooseQuestGUI extends PagedGUI<Quest> {
 		if (quests.isEmpty()) {
 			if (cancel != null)
 				cancel.run();
-		} else if (quests.size() == 1 && canSkip && QuestsConfigurationImplementation.skipNpcGuiIfOnlyOneQuest()) {
+		} else if (quests.size() == 1 && canSkip
+				&& QuestsConfiguration.getConfig().getQuestsConfig().skipNpcGuiIfOnlyOneQuest()) {
 			run.accept(quests.iterator().next());
 		} else {
 			ChooseQuestGUI gui = new ChooseQuestGUI(quests, run, cancel);

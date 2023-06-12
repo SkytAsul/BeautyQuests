@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable;
 
 /**
  * This interface indicates that an object can provide some locations on demand.
@@ -67,7 +66,7 @@ public interface Locatable {
 		 * having something else changed in the game state would return the same value.
 		 * @return the located object
 		 */
-		@NotNull
+		@Nullable
 		Located getLocated();
 		
 	}
@@ -84,7 +83,7 @@ public interface Locatable {
 		 * @param fetcher describes the region from where the targets must be found
 		 * @return a Spliterator which allows iterating through the targets
 		 */
-		@NotNull
+		@Nullable
 		Spliterator<@NotNull Located> getNearbyLocated(@NotNull NearbyFetcher fetcher);
 		
 		/**

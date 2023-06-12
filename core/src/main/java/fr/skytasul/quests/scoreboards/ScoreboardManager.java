@@ -18,7 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
@@ -92,7 +92,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 	
 	public void create(Player p){
-		if (!QuestsConfigurationImplementation.showScoreboards()) return;
+		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
+			return;
 		removePlayerScoreboard(p);
 		
 		Scoreboard scoreboard = new Scoreboard(p, this);
@@ -104,7 +105,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	
 	@Override
 	public void load() {
-		if (!QuestsConfigurationImplementation.showScoreboards()) return;
+		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
+			return;
 		
 		try {
 			new FastBoard(null); // trigger class initialization

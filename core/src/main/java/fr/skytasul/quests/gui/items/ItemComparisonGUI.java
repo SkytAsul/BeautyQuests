@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.items;
 
 import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.ClickType;

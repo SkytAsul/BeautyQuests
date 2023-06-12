@@ -2,8 +2,6 @@ package fr.skytasul.quests.options;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -12,8 +10,8 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class OptionQuestItem extends QuestOption<ItemStack> {
 	
@@ -54,32 +52,31 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		Lang.QUEST_MATERIAL.send(p);
-		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
-			if (obj == null) {
-				resetValue();
-			}else {
-				setValue(obj.parseItem());
-			}
-			gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
-			ItemStack setItem = gui.inv.getItem(slot);
-			if (setItem == null || setItem.getType() == Material.AIR) {
-				// means that the material cannot be treated as an inventory item (ex: fire)
-				resetValue();
-				Lang.INVALID_ITEM_TYPE.send(p);
-				gui.inv.setItem(slot, ItemUtils.nameAndLore(getValue().clone(), Lang.customMaterial.toString(), getLore()));
-			}
-			gui.reopen(p);
-		}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().start();
-	}
-	
-	@Override
-	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot) {
-		Utils.runSync(() -> player.setItemOnCursor(null));
-		setValue(cursor);
-		ItemUtils.nameAndLore(cursor, Lang.customMaterial.toString(), getLore());
-		return false;
+	public void click(QuestCreationGuiClickEvent event) {
+		if (event.hasCursor()) {
+			QuestUtils.runSync(() -> event.getPlayer().setItemOnCursor(null));
+			setValue(event.getCursor());
+			ItemUtils.nameAndLore(event.getCursor(), Lang.customMaterial.toString(), getLore());
+			event.setCancelled(false);
+		} else {
+			Lang.QUEST_MATERIAL.send(event.getPlayer());
+			new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
+				if (obj == null) {
+					resetValue();
+				} else {
+					setValue(obj.parseItem());
+				}
+				event.getGui().updateOptionItem(this);
+				ItemStack setItem = event.getGui().getInventory().getItem(event.getSlot());
+				if (setItem == null || setItem.getType() == Material.AIR) {
+					// means that the material cannot be treated as an inventory item (ex: fire)
+					resetValue();
+					Lang.INVALID_ITEM_TYPE.send(event.getPlayer());
+					event.getGui().updateOptionItem(this);
+				}
+				event.reopen();
+			}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().start();
+		}
 	}
 	
 }

@@ -8,14 +8,13 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
-import javax.sound.sampled.Line;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
@@ -26,12 +25,13 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
 @LocatableType (types = LocatedType.ENTITY)
 public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable {
@@ -81,7 +81,10 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		Integer playerAmount = getPlayerAmount(acc);
 		if (playerAmount == null) return "§cerror: no datas";
 		
-		return Utils.getStringFromNameAndAmount(entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity), QuestsConfiguration.getItemAmountColor(), playerAmount, amount, false);
+		return Utils.getStringFromNameAndAmount(
+				entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity),
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), playerAmount, amount,
+				false);
 	}
 	
 	@Override
@@ -117,34 +120,38 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		protected EntityType entity = null;
 		protected int amount = 1;
 		
-		protected AbstractCreator(Line line, boolean ending) {
-			super(line, ending);
+		protected AbstractCreator(@NotNull StageCreationContext<T> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(6, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), (p, item) -> {
+			line.setItem(6, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), event -> {
 				new EntityTypeGUI(x -> {
 					setEntity(x);
-					reopenGUI(player, true);
-				}, x -> x == null ? canBeAnyEntity() : canUseEntity(x)).open(player);
+					event.reopen();
+				}, x -> x == null ? canBeAnyEntity() : canUseEntity(x)).open(event.getPlayer());
 			});
 			
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)), (p, item) -> {
-				new TextEditor<>(player, () -> {
-					reopenGUI(player, false);
-				}, x -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)), event -> {
+				new TextEditor<>(event.getPlayer(), event::reopen, x -> {
 					setAmount(x);
-					reopenGUI(player, false);
+					event.reopen();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			});
 		}
 		
 		public void setEntity(EntityType entity) {
 			this.entity = entity;
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.optionValue.format(entity == null ? Lang.EntityTypeAny.toString() : entity.name())));
+			getLine().refreshItemLore(6,
+					Lang.optionValue.format(entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
 		}
 		
 		public void setAmount(int amount) {
 			this.amount = amount;
-			line.editItem(7, ItemUtils.name(line.getItem(7), Lang.Amount.format(amount)));
+			getLine().refreshItemName(7, Lang.Amount.format(amount));
 		}
 		
 		@Override

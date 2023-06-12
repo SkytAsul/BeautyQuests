@@ -9,8 +9,9 @@ import java.util.Map.Entry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -18,10 +19,13 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import fr.skytasul.quests.gui.items.ItemsGUI;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class StageBringBack extends StageNPC{
 	
@@ -46,15 +50,22 @@ public class StageBringBack extends StageNPC{
 
 		String[] array = new String[items.length]; // create messages on beginning
 		for (int i = 0; i < array.length; i++){
-			array[i] = QuestsConfigurationImplementation.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfigurationImplementation.getItemAmountColor(), QuestsConfigurationImplementation.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT));
+			array[i] = QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemNameColor()
+					+ Utils.getStringFromItemStack(items[i],
+							QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(),
+							QuestsConfiguration.getConfig().getStageDescriptionConfig()
+									.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT));
 		}
-		splitted = Utils.descriptionLines(DescriptionSource.FORCESPLIT, array);
-		if (QuestsConfigurationImplementation.showDescriptionItemsXOne(DescriptionSource.FORCESPLIT)){
+		splitted = QuestUtils.descriptionLines(DescriptionSource.FORCESPLIT, array);
+		if (QuestsConfiguration.getConfig().getStageDescriptionConfig()
+				.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT)) {
 			for (int i = 0; i < array.length; i++){
-				array[i] = QuestsConfigurationImplementation.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfigurationImplementation.getItemAmountColor(), false);
+				array[i] = QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemNameColor() + Utils
+						.getStringFromItemStack(items[i],
+								QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), false);
 			}
 		}
-		line = Utils.descriptionLines(DescriptionSource.FORCELINE, array);
+		line = QuestUtils.descriptionLines(DescriptionSource.FORCELINE, array);
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -73,7 +84,7 @@ public class StageBringBack extends StageNPC{
 	public void sendNeedMessage(Player p) {
 		String message = getMessage();
 		if (message != null && !message.isEmpty() && !message.equals("none"))
-			Lang.NpcText.sendWP(p, npcName(), Utils.format(message, line), 1, 1);
+			Lang.NpcText.sendWP(p, npcName(), MessageUtils.format(message, line), 1, 1);
 	}
 	
 	public void removeItems(Player p){
@@ -93,17 +104,23 @@ public class StageBringBack extends StageNPC{
 
 	@Override
 	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfigurationImplementation.splitDescription(source) ? splitted : line), npcName());
+		return MessageUtils.format(Lang.SCOREBOARD_ITEMS.toString() + " "
+				+ (QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitSources().contains(source) ? splitted
+						: line),
+				npcName());
 	}
 	
 	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source){
-		return new String[]{QuestsConfigurationImplementation.splitDescription(source) ? splitted : line, npcName()};
+	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
+		return new String[] {
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitSources().contains(source) ? splitted
+						: line,
+				npcName()};
 	}
 
 	@Override
-	public void start(PlayerAccount acc) {
-		super.start(acc);
+	public void started(PlayerAccount acc) {
+		super.started(acc);
 		if (acc.isCurrent() && sendStartMessage())
 			sendNeedMessage(acc.getPlayer());
 	}
@@ -153,7 +170,7 @@ public class StageBringBack extends StageNPC{
 		if (section.contains("itemComparisons")) {
 			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));
 		}else comparisons = new ItemComparisonMap();
-		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
+		StageBringBack st = new StageBringBack(controller, items, customMessage, comparisons);
 		st.loadDatas(section);
 		return st;
 	}
@@ -168,42 +185,51 @@ public class StageBringBack extends StageNPC{
 		protected String message = null;
 		protected ItemComparisonMap comparisons = new ItemComparisonMap();
 		
-		public AbstractCreator(Line line, boolean ending) {
-			super(line, ending);
+		protected AbstractCreator(@NotNull StageCreationContext<T> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(5, stageItems, (p, item) -> {
+			line.setItem(5, stageItems, event -> {
 				new ItemsGUI(items -> {
 					setItems(items);
-					reopenGUI(p, true);
-				}, items).open(p);
+					event.reopen();
+				}, items).open(event.getPlayer());
 			});
-			line.setItem(9, stageMessage, (p, item) -> {
-				new TextEditor<String>(p, () -> reopenGUI(p, false), x -> {
+			line.setItem(9, stageMessage, event -> {
+				new TextEditor<String>(event.getPlayer(), event::reopen, x -> {
 					setMessage(x);
-					reopenGUI(p, false);
+					event.reopen();
 				}).passNullIntoEndConsumer().start();
 			});
-			line.setItem(10, stageComparison, (p, item) -> {
+			line.setItem(10, stageComparison, event -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
-					reopenGUI(p, true);
-				}).open(p);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(Lang.AmountItems.format(this.items.size()))));
+			getLine().refreshItemLore(5, Lang.optionValue.format(Lang.AmountItems.format(this.items.size())));
 		}
 		
 		public void setMessage(String message) {
 			this.message = message;
-			line.editItem(9, ItemUtils.lore(line.getItem(9), message == null ? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(message)));
+			getLine().refreshItemLore(9,
+					message == null
+							? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString()
+							: Lang.optionValue.format(message));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
+			getLine().refreshItemLore(10,
+					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size())));
 		}
 		
 		@Override
@@ -226,13 +252,13 @@ public class StageBringBack extends StageNPC{
 	
 	public static class Creator extends AbstractCreator<StageBringBack> {
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageBringBack> context) {
+			super(context);
 		}
-		
+
 		@Override
 		protected StageBringBack createStage(StageController controller) {
-			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message, comparisons);
+			return new StageBringBack(controller, items.toArray(new ItemStack[0]), message, comparisons);
 		}
 		
 	}

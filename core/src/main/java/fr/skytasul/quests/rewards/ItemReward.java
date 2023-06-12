@@ -11,7 +11,7 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.ItemsGUI;
+import fr.skytasul.quests.gui.items.ItemsGUI;
 
 public class ItemReward extends AbstractReward {
 

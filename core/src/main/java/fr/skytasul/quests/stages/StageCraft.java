@@ -10,8 +10,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -21,11 +22,12 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.gui.misc.ItemGUI;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import fr.skytasul.quests.gui.items.ItemGUI;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -49,14 +51,12 @@ public class StageCraft extends AbstractStage {
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		
-		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && branch.hasStageLaunched(acc, this) && canUpdate(p, true)) {
-			int amount = getPlayerAmount(acc) - event.getItemAmount();
+		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasStarted(p) && canUpdate(p, true)) {
+			int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
 			if (amount <= 0) {
 				finishStage(p);
 			}else {
-				updateObjective(acc, p, "amount", amount);
+				updateObjective(p, "amount", amount);
 			}
 		}
 	}
@@ -64,8 +64,7 @@ public class StageCraft extends AbstractStage {
 	@EventHandler
 	public void onCraft(BQCraftEvent event) {
 		Player p = event.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
+		if (hasStarted(p) && canUpdate(p)) {
 			ItemStack item = event.getResult();
 			if (comparisons.isSimilar(result, item)) {
 				
@@ -112,18 +111,18 @@ public class StageCraft extends AbstractStage {
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				int amount = getPlayerAmount(acc) - recipeAmount;
+				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
 				if (amount <= 0) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", amount);
+					updateObjective(p, "amount", amount);
 				}
 			}
 		}
 	}
 	
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", result.getAmount());
 	}
@@ -134,13 +133,17 @@ public class StageCraft extends AbstractStage {
 	}
 
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false));
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true),
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
+				result.getAmount(), false));
 	}
 
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), result.getAmount(), false) };
+	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
+		return new Supplier[] {() -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true),
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
+				result.getAmount(), false)};
 	}
 	
 	@Override
@@ -151,7 +154,7 @@ public class StageCraft extends AbstractStage {
 	}
 	
 	public static StageCraft deserialize(ConfigurationSection section, StageController controller) {
-		return new StageCraft(branch, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
+		return new StageCraft(controller, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
 	}
 
 	public static int fits(ItemStack stack, Inventory inv) {
@@ -173,31 +176,38 @@ public class StageCraft extends AbstractStage {
 		private ItemStack item;
 		private ItemComparisonMap comparisons = new ItemComparisonMap();
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageCraft> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(ITEM_SLOT, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), (p, item) -> {
+			line.setItem(ITEM_SLOT, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), event -> {
 				new ItemGUI((is) -> {
 					setItem(is);
-					reopenGUI(p, true);
-				}, () -> reopenGUI(p, true)).open(p);
+					event.reopen();
+				}, event::reopen).open(event.getPlayer());
 			});
-			line.setItem(COMPARISONS_SLOT, ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString()), (p, item) -> {
+			line.setItem(COMPARISONS_SLOT, ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString()), event -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
-					reopenGUI(p, true);
-				}).open(p);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
 
 		public void setItem(ItemStack item) {
 			this.item = item;
-			line.editItem(ITEM_SLOT, ItemUtils.lore(line.getItem(ITEM_SLOT), Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
+			getLine().refreshItem(ITEM_SLOT,
+					item2 -> ItemUtils.lore(item2, Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(COMPARISONS_SLOT, ItemUtils.lore(line.getItem(COMPARISONS_SLOT), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
+			getLine().refreshItem(COMPARISONS_SLOT, item -> ItemUtils.lore(item,
+					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
 		}
 
 		@Override
@@ -205,8 +215,8 @@ public class StageCraft extends AbstractStage {
 			super.start(p);
 			new ItemGUI(is -> {
 				setItem(is);
-				reopenGUI(p, true);
-			}, removeAndReopen(p, true)).open(p);
+				context.reopenGui();
+			}, context::removeAndReopenGui).open(p);
 		}
 
 		@Override
@@ -218,7 +228,7 @@ public class StageCraft extends AbstractStage {
 		
 		@Override
 		public StageCraft finishStage(StageController controller) {
-			return new StageCraft(branch, item, comparisons);
+			return new StageCraft(controller, item, comparisons);
 		}
 	}
 

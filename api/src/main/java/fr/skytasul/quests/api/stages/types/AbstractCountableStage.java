@@ -18,11 +18,12 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
-import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -92,7 +93,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 				newRemaining.put(uuid, amount);
 				dataMap.put(uuid.toString(), amount);
 			});
-			updateObjective(acc, acc.getPlayer(), "remaining", dataMap);
+			if (acc.isCurrent())
+				updateObjective(acc.getPlayer(), "remaining", dataMap);
 			return newRemaining;
 		} else if (object instanceof String) {
 			// datas stored as string
@@ -102,28 +104,28 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			throw new UnsupportedOperationException(object.getClass().getName());
 	}
 
-	protected void updatePlayerRemaining(@NotNull PlayerAccount acc, @NotNull Player player,
-			@NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
-		updateObjective(acc, player, "remaining", remaining.entrySet().stream()
+	protected void updatePlayerRemaining(@NotNull Player player, @NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
+		updateObjective(player, "remaining", remaining.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
 	}
 
 	protected void calculateSize() {
 		cachedSize = objects.stream().mapToInt(CountableObject::getAmount).sum();
-		barsEnabled = QuestsConfiguration.showMobsProgressBar() && cachedSize > 0;
+		barsEnabled = QuestsConfiguration.getConfig().getQuestsConfig().mobsProgressBar() && cachedSize > 0;
 	}
 
 	@Override
-	protected @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull Source source) {
+	public @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		return Utils.descriptionLines(source, buildRemainingArray(acc, source));
 	}
 
 	@Override
-	protected @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull Source source) {
-		return new Supplier[] { () -> Utils.descriptionLines(source, buildRemainingArray(acc, source)) };
+	public @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc,
+			@NotNull DescriptionSource source) {
+		return new Supplier[] {() -> Utils.descriptionLines(source, buildRemainingArray(acc, source))};
 	}
 
-	private @NotNull String @NotNull [] buildRemainingArray(@NotNull PlayerAccount acc, @NotNull Source source) {
+	private @NotNull String @NotNull [] buildRemainingArray(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
 		if (playerAmounts == null) return new String[] { "§4§lerror" };
 		String[] elements = new String[playerAmounts.size()];
@@ -156,10 +158,11 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	 * @param amount amount completed
 	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
 	 */
-	public boolean event(@NotNull PlayerAccount acc, @NotNull Player p, @UnknownNullability Object object, int amount) {
+	public boolean event(@NotNull Player p, @UnknownNullability Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		if (!canUpdate(p)) return true;
 
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		for (CountableObject<T> countableObject : objects) {
 			if (objectApplies(countableObject.getObject(), object)) {
 				Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
@@ -185,7 +188,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
 					}
 
-					updatePlayerRemaining(acc, p, playerAmounts);
+					updatePlayerRemaining(p, playerAmounts);
 					return false;
 				}
 			}
@@ -329,12 +332,15 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		}
 
 		private void timer() {
-			if (QuestsConfiguration.getProgressBarTimeout() <= 0) return;
-			if (timer != null) timer.cancel();
+			if (QuestsConfiguration.getConfig().getQuestsConfig().progressBarTimeoutSeconds() <= 0)
+				return;
+			if (timer != null)
+				timer.cancel();
+
 			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
-				bar.removePlayer(player);
+				bar.removePlayer(p);
 				timer = null;
-			}, QuestsConfiguration.getProgressBarTimeout() * 20L);
+			}, QuestsConfiguration.getConfig().getQuestsConfig().progressBarTimeoutSeconds() * 20L);
 		}
 	}
 

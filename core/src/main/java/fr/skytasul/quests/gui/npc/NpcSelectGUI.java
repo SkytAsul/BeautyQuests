@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.SelectNPC;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -23,16 +23,16 @@ public final class NpcSelectGUI {
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 
-	public static @NotNull Gui select(@NotNull Runnable cancel, @NotNull Consumer<@NotNull BQNPC> end) {
+	public static @NotNull AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<@NotNull BQNPC> end) {
 		return select(cancel, end, false);
 	}
 
-	public static @NotNull Gui selectNullable(@NotNull Runnable cancel,
+	public static @NotNull AbstractGui selectNullable(@NotNull Runnable cancel,
 			@NotNull Consumer<@Nullable BQNPC> end) {
 		return select(cancel, end, true);
 	}
 
-	private static Gui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
+	private static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
 			boolean nullable) {
 		Builder builder = LayoutedGUI.newBuilder().addButton(1, LayoutedButton.create(createNPC, event -> {
 			new NpcCreateGUI(end, event::reopen).open(event.getPlayer());

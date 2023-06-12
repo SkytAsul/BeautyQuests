@@ -10,12 +10,12 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 
-public abstract class LayoutedGUI extends Gui {
+public abstract class LayoutedGUI extends AbstractGui {
 
 	protected final @Nullable String name;
 	protected final @NotNull Map<Integer, LayoutedButton> buttons;
@@ -34,12 +34,13 @@ public abstract class LayoutedGUI extends Gui {
 	}
 
 	@Override
-	public void onClick(GuiClickEvent event) {
+	public final void onClick(GuiClickEvent event) {
 		LayoutedButton button = buttons.get(event.getSlot());
-		if (button == null)
+		if (button == null || !button.isValid())
 			return;
 
-		button.click(new LayoutedClickEvent(event.getPlayer(), this, event.getSlot(), event.getClick()));
+		button.click(new LayoutedClickEvent(event.getPlayer(), this, event.getClicked(), event.getCursor(), event.getSlot(),
+				event.getClick()));
 	}
 
 	public void refresh(int slot) {
@@ -47,10 +48,21 @@ public abstract class LayoutedGUI extends Gui {
 			return;
 
 		LayoutedButton button = buttons.get(slot);
-		if (button == null)
+		if (button == null || !button.isValid()) {
+			getInventory().setItem(slot, null);
+		} else {
+			button.place(getInventory(), slot);
+		}
+	}
+
+	public void refresh(@NotNull LayoutedButton button) {
+		if (getInventory() == null)
 			return;
 
-		button.place(getInventory(), slot);
+		buttons.forEach((slot, otherButton) -> {
+			if (otherButton.equals(button))
+				refresh(slot);
+		});
 	}
 
 	@Override
@@ -74,7 +86,7 @@ public abstract class LayoutedGUI extends Gui {
 		}
 
 		@Override
-		protected Inventory instanciate(@NotNull Player player) {
+		protected final Inventory instanciate(@NotNull Player player) {
 			return Bukkit.createInventory(null, rows, name);
 		}
 
@@ -91,7 +103,7 @@ public abstract class LayoutedGUI extends Gui {
 		}
 
 		@Override
-		protected Inventory instanciate(@NotNull Player player) {
+		protected final Inventory instanciate(@NotNull Player player) {
 			return Bukkit.createInventory(null, type, name);
 		}
 

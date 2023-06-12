@@ -3,8 +3,6 @@ package fr.skytasul.quests.options;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -13,7 +11,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
 public class OptionStarterNPC extends QuestOption<BQNPC> {
@@ -52,18 +50,19 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		new NpcSelectGUI(() -> gui.reopen(p), npc -> {
+	public void click(QuestCreationGuiClickEvent event) {
+		NpcSelectGUI.selectNullable(event::reopen, npc -> {
 			setValue(npc);
-			ItemUtils.lore(item, getLore(gui));
-			gui.reopen(p);
-		}).setNullable().open(p);
+			ItemUtils.lore(event.getClicked(), getLore(event.getGui().getOptionSet()));
+			event.reopen();
+		}).open(event.getPlayer());
 	}
 	
 	@Override
-	public void updatedDependencies(OptionSet options, ItemStack item) {
-		super.updatedDependencies(options, item);
-		ItemUtils.lore(item, getLore(options));
+	public void onDependenciesUpdated(OptionSet options) {
+		super.onDependenciesUpdated(options);
+		// ItemUtils.lore(item, getLore(options));
+		// TODO wtf ?
 	}
-	
+
 }

@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
@@ -19,13 +20,13 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MessageUtils;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
@@ -117,7 +118,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 						.add(region.getMinimumPoint())) // midpoint
 					.add(0.5, 0.5, 0.5);
 			
-			center = Locatable.Located.open(centerLoc);
+			center = Locatable.Located.create(centerLoc);
 			lastCenter = System.currentTimeMillis();
 		}
 		return center;
@@ -139,7 +140,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 	
 	public static StageArea deserialize(ConfigurationSection section, StageController controller) {
-		return new StageArea(branch, section.getString("region"), section.getString("world"), section.getBoolean("exit", false));
+		return new StageArea(controller, section.getString("region"), section.getString("world"), section.getBoolean("exit", false));
 	}
 
 	public static class Creator extends StageCreation<StageArea> {
@@ -148,38 +149,47 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		private String regionName;
 		private String worldName;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
-			line.setItem(7, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()), (p, item) -> launchRegionEditor(p, false), true, true);
-			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegionExit.toString(), exit), (p, item) -> setExit(ItemUtils.toggleSwitch(item)));
+		public Creator(@NotNull StageCreationContext<StageArea> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
+			line.setItem(7, ItemUtils.item(XMaterial.PAPER, Lang.stageRegion.toString()),
+					event -> launchRegionEditor(event.getPlayer(), false));
+			line.setItem(6, ItemUtils.itemSwitch(Lang.stageRegionExit.toString(), exit), event -> setExit(!exit));
 		}
 		
 		public void setRegion(String regionName, String worldName) {
 			this.regionName = regionName;
 			this.worldName = worldName;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(regionName + " (" + worldName + ")")));
+			getLine().refreshItemLore(7, Lang.optionValue.format(regionName + " (" + worldName + ")"));
 		}
 		
 		public void setExit(boolean exit) {
 			if (this.exit != exit) {
 				this.exit = exit;
-				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), exit));
+				getLine().refreshItem(6, item -> ItemUtils.setSwitch(item, exit));
 			}
 		}
 
 		private void launchRegionEditor(Player p, boolean first) {
-			Utils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
+			MessageUtils.sendPrefixedMessage(p,
+					Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
 			new TextEditor<String>(p, () -> {
-				if (first) remove();
-				reopenGUI(p, false);
+				if (first)
+					context.remove();
+				context.reopenGui();
 			}, obj -> {
 				if (BQWorldGuard.getInstance().regionExists(obj, p.getWorld())) {
 					setRegion(obj, p.getWorld().getName());
 				}else {
-					Utils.sendMessage(p, Lang.REGION_DOESNT_EXIST.toString());
-					if (first) remove();
+					MessageUtils.sendPrefixedMessage(p, Lang.REGION_DOESNT_EXIST.toString());
+					if (first)
+						context.remove();
 				}
-				reopenGUI(p, false);
+				context.reopenGui();
 			}).useStrippedMessage().start();
 		}
 		
@@ -198,7 +208,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		
 		@Override
 		public StageArea finishStage(StageController controller) {
-			return new StageArea(branch, regionName, worldName, exit);
+			return new StageArea(controller, regionName, worldName, exit);
 		}
 	}
 

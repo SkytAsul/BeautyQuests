@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.StageHandler;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
 
 public abstract class StageOption<T extends AbstractStage> extends SerializableObject implements StageHandler {
 	

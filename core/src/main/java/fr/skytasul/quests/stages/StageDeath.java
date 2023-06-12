@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -16,8 +17,9 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
-import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.gui.misc.DamageCausesGUI;
 
 public class StageDeath extends AbstractStage {
@@ -44,7 +46,7 @@ public class StageDeath extends AbstractStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_DIE.toString();
 	}
 	
@@ -60,7 +62,7 @@ public class StageDeath extends AbstractStage {
 		}else {
 			causes = Collections.emptyList();
 		}
-		return new StageDeath(branch, causes);
+		return new StageDeath(controller, causes);
 	}
 	
 	public static class Creator extends StageCreation<StageDeath> {
@@ -69,20 +71,26 @@ public class StageDeath extends AbstractStage {
 		
 		private List<DamageCause> causes;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageDeath> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(CAUSES_SLOT, ItemUtils.item(XMaterial.SKELETON_SKULL, Lang.stageDeathCauses.toString()), (p, item) -> {
+			line.setItem(CAUSES_SLOT, ItemUtils.item(XMaterial.SKELETON_SKULL, Lang.stageDeathCauses.toString()), event -> {
 				new DamageCausesGUI(causes, newCauses -> {
 					setCauses(newCauses);
-					reopenGUI(p, true);
-				}).open(p);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
 		
 		public void setCauses(List<DamageCause> causes) {
 			this.causes = causes;
-			line.editItem(CAUSES_SLOT, ItemUtils.lore(line.getItem(CAUSES_SLOT), Lang.optionValue.format(causes.isEmpty() ? Lang.stageDeathCauseAny : Lang.stageDeathCausesSet.format(causes.size()))));
+			getLine().refreshItem(CAUSES_SLOT, item -> ItemUtils.lore(item, Lang.optionValue
+					.format(causes.isEmpty() ? Lang.stageDeathCauseAny : Lang.stageDeathCausesSet.format(causes.size()))));
 		}
 		
 		@Override
@@ -99,7 +107,7 @@ public class StageDeath extends AbstractStage {
 		
 		@Override
 		protected StageDeath finishStage(StageController controller) {
-			return new StageDeath(branch, causes);
+			return new StageDeath(controller, causes);
 		}
 		
 	}

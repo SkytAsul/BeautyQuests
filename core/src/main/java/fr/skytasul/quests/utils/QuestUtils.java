@@ -1,7 +1,5 @@
 package fr.skytasul.quests.utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -13,12 +11,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
@@ -98,49 +92,6 @@ public class QuestUtils {
 				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
 			}
 		});
-	}
-
-	public static List<String> giveRewards(Player p, List<AbstractReward> rewards) throws InterruptingBranchException {
-		InterruptingBranchException interrupting = null;
-
-		List<String> msg = new ArrayList<>();
-		for (AbstractReward rew : rewards) {
-			try {
-				List<String> messages = rew.give(p);
-				if (messages != null)
-					msg.addAll(messages);
-			} catch (InterruptingBranchException ex) {
-				if (interrupting != null) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Interrupting the same branch via rewards twice!");
-				} else {
-					interrupting = ex;
-				}
-			} catch (Throwable e) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving reward " + rew.getName() + " to " + p.getName(), e);
-			}
-		}
-
-		if (interrupting != null)
-			throw interrupting;
-		return msg;
-	}
-
-	public static boolean testRequirements(Player p, List<AbstractRequirement> requirements, boolean message) {
-		for (AbstractRequirement requirement : requirements) {
-			try {
-				if (!requirement.test(p)) {
-					if (message && !requirement.sendReason(p))
-						continue; // means a reason has not yet been sent
-					return false;
-				}
-			} catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Cannot test requirement " + requirement.getClass().getSimpleName() + " for player " + p.getName(),
-						ex);
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

@@ -22,7 +22,7 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -38,12 +38,12 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	private final boolean redoAllowed;
 	private final long timeDiff;
 	private final boolean avoidDuplicates;
-	private final List<AbstractRequirement> requirements;
+	private final RequirementList requirements;
 	
 	BQNPC npc;
 	List<Quest> quests = new ArrayList<>();
 	
-	QuestPoolImplementation(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, List<AbstractRequirement> requirements) {
+	QuestPoolImplementation(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
 		this.id = id;
 		this.npcID = npcID;
 		this.hologram = hologram;
@@ -105,7 +105,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 	
 	@Override
-	public List<AbstractRequirement> getRequirements() {
+	public RequirementList getRequirements() {
 		return requirements;
 	}
 	
@@ -226,7 +226,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	private CompletableFuture<PoolGiveResult> giveOne(Player p, PlayerAccount acc, PlayerPoolDatas datas,
 			boolean hadOne) {
-		if (!QuestUtils.testRequirements(p, requirements, !hadOne))
+		if (!requirements.testPlayer(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));
 
 		List<Quest> notCompleted = avoidDuplicates ? quests.stream()
@@ -304,12 +304,15 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		config.set("timeDiff", timeDiff);
 		config.set("npcID", npcID);
 		config.set("avoidDuplicates", avoidDuplicates);
-		if (!requirements.isEmpty()) config.set("requirements", SerializableObject.serializeList(requirements));
+		if (!requirements.isEmpty())
+			config.set("requirements", requirements.serialize());
 	}
 	
 	public static QuestPoolImplementation deserialize(int id, ConfigurationSection config) {
-		List<AbstractRequirement> requirements = SerializableObject.deserializeList(config.getMapList("requirements"), AbstractRequirement::deserialize);
-		return new QuestPoolImplementation(id, config.getInt("npcID"), config.getString("hologram"), config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"), config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true), requirements);
+		return new QuestPoolImplementation(id, config.getInt("npcID"), config.getString("hologram"),
+				config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"),
+				config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true),
+				RequirementList.deserialize(config.getMapList("requirements")));
 	}
 	
 	private static class PoolGiveResult {

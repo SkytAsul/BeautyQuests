@@ -1,11 +1,9 @@
 package fr.skytasul.quests.api.options;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
 public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	
@@ -40,9 +38,9 @@ public abstract class QuestOptionBoolean extends QuestOption<Boolean> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
+	public void click(QuestCreationGuiClickEvent event) {
 		setValue(!getValue());
-		ItemUtils.setSwitch(item, getValue());
+		ItemUtils.setSwitch(event.getClicked(), getValue());
 	}
 	
 }

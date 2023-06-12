@@ -3,15 +3,15 @@ package fr.skytasul.quests.api.stages.types;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.sound.sampled.Line;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
@@ -49,14 +49,19 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 		
 		protected List<MutableCountableObject<BQBlock>> blocks;
 		
-		protected AbstractCreator(Line line, boolean ending) {
-			super(line, ending);
+		protected AbstractCreator(@NotNull StageCreationContext<T> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(getBlocksSlot(), getBlocksItem(), (p, item) -> {
+			line.setItem(getBlocksSlot(), getBlocksItem(), event -> {
 				new BlocksGUI(blocks, obj -> {
 					setBlocks(obj);
-					reopenGUI(player, true);
-				}).open(player);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
 		
@@ -72,7 +77,7 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 		
 		public void setBlocks(List<MutableCountableObject<BQBlock>> blocks) {
 			this.blocks = blocks;
-			line.editItem(getBlocksSlot(), ItemUtils.lore(line.getItem(getBlocksSlot()), Lang.optionValue.format(blocks.size() + " blocks")));
+			getLine().refreshItemLore(getBlocksSlot(), Lang.optionValue.format(blocks.size() + " blocks"));
 		}
 		
 		@Override
@@ -80,7 +85,7 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 			super.start(p);
 			new BlocksGUI(Collections.emptyList(), obj -> {
 				setBlocks(obj);
-				reopenGUI(player, true);
+				context.reopenGui();
 			}).open(p);
 		}
 		

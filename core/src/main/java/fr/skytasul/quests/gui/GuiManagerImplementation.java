@@ -38,7 +38,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			closeWithoutExit(player);
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.debug(player.getName() + " has opened inventory " + inventory.getClass().getName() + ".");
-			inventory.open(player);
+			inventory.showInternal(player);
 			players.put(player, inventory);
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe(

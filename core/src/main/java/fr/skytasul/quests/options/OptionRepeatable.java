@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.structure.QuestImplementation;
 
 public class OptionRepeatable extends QuestOptionBoolean implements QuestDescriptionProvider {
 	
@@ -25,10 +26,11 @@ public class OptionRepeatable extends QuestOptionBoolean implements QuestDescrip
 		if (context.getCategory() != PlayerListCategory.FINISHED) return null;
 		
 		List<String> lore = new ArrayList<>(4);
-		if (context.getQuest().testTimer(context.getPlayerAccount(), false)) {
+		QuestImplementation quest = (QuestImplementation) context.getQuest();
+		if (quest.testTimer(context.getPlayerAccount(), false)) {
 			lore.add(Lang.canRedo.toString());
 		}else {
-			lore.add(Lang.timeWait.format(context.getQuest().getTimeLeft(context.getPlayerAccount())));
+			lore.add(Lang.timeWait.format(quest.getTimeLeft(context.getPlayerAccount())));
 		}
 		lore.add(null);
 		lore.add(Lang.timesFinished.format(context.getQuestDatas().getTimesFinished()));

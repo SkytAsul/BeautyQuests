@@ -4,10 +4,8 @@ import java.util.Objects;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +13,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
 public abstract class QuestOption<T> implements Cloneable {
 	
@@ -118,17 +116,11 @@ public abstract class QuestOption<T> implements Cloneable {
 		return true;
 	}
 	
-	public void updatedDependencies(@NotNull OptionSet options, @NotNull ItemStack item) {}
+	public void onDependenciesUpdated(@NotNull OptionSet options/* , @NotNull ItemStack item TODO wtf */) {}
 	
 	public abstract @NotNull ItemStack getItemStack(@NotNull OptionSet options);
 	
-	public abstract void click(@NotNull FinishGUI gui, @NotNull Player p, @NotNull ItemStack item, int slot,
-			@NotNull ClickType click);
-	
-	public boolean clickCursor(@NotNull FinishGUI gui, @NotNull Player p, @NotNull ItemStack item, @NotNull ItemStack cursor,
-			int slot) {
-		return true;
-	}
+	public abstract void click(@NotNull QuestCreationGuiClickEvent event);
 	
 	public @NotNull String formatValue(@Nullable String valueString) {
 		return formatNullableValue(valueString, !hasCustomValue());

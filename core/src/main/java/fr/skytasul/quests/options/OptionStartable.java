@@ -26,7 +26,7 @@ public class OptionStartable extends QuestOptionBoolean implements QuestDescript
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		if (context.getCategory() != PlayerListCategory.NOT_STARTED || !context.getPlayerAccount().isCurrent()) return null;
-		return context.getQuest().isLauncheable(context.getPlayerAccount().getPlayer(), context.getPlayerAccount(), false) ? STARTABLE : NOT_STARTABLE;
+		return context.getQuest().canStart(context.getPlayerAccount().getPlayer(), false) ? STARTABLE : NOT_STARTABLE;
 	}
 	
 	@Override

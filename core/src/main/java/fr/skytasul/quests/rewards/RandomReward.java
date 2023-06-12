@@ -16,19 +16,21 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import fr.skytasul.quests.api.rewards.RewardList;
 
 public class RandomReward extends AbstractReward {
 	
-	private List<AbstractReward> rewards;
+	private RewardList rewards;
 	private int min, max;
 	
 	public RandomReward() {
-		this(null, new ArrayList<>(), 1, 1);
+		this(null, new RewardList(), 1, 1);
 	}
 	
-	public RandomReward(String customDescription, List<AbstractReward> rewards, int min, int max) {
+	public RandomReward(String customDescription, RewardList rewards, int min, int max) {
 		super(customDescription);
 		this.rewards = rewards;
 		this.min = min;
@@ -44,7 +46,19 @@ public class RandomReward extends AbstractReward {
 	}
 	
 	@Override
-	public List<String> give(Player p) {
+	public void attach(Quest quest) {
+		super.attach(quest);
+		rewards.attachQuest(quest);
+	}
+
+	@Override
+	public void detach() {
+		super.detach();
+		rewards.forEach(AbstractReward::detach);
+	}
+
+	@Override
+	public List<String> give(Player p) throws InterruptingBranchException {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int amount = min == max ? min : random.nextInt(min, max + 1);
 		
@@ -57,6 +71,8 @@ public class RandomReward extends AbstractReward {
 			try {
 				List<String> messages = reward.give(p);
 				if (messages != null) msg.addAll(messages);
+			} catch (InterruptingBranchException ex) {
+				throw ex;
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
 			}
@@ -72,7 +88,7 @@ public class RandomReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new RandomReward(getCustomDescription(), new ArrayList<>(rewards), min, max);
+		return new RandomReward(getCustomDescription(), new RewardList(rewards), min, max);
 	}
 	
 	@Override
@@ -97,7 +113,7 @@ public class RandomReward extends AbstractReward {
 	public void itemClick(QuestObjectClickEvent event) {
 		if (event.isInCreation() || event.getClick().isLeftClick()) {
 			QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
-				this.rewards = rewards;
+				this.rewards = new RewardList(rewards);
 				event.reopenGUI();
 			}, rewards).open(event.getPlayer());
 		}else if (event.getClick().isRightClick()) {
@@ -115,7 +131,7 @@ public class RandomReward extends AbstractReward {
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
-		section.set("rewards", SerializableObject.serializeList(rewards));
+		section.set("rewards", rewards.serialize());
 		section.set("min", min);
 		section.set("max", max);
 	}
@@ -123,7 +139,7 @@ public class RandomReward extends AbstractReward {
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
-		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
+		rewards = RewardList.deserialize(section.getMapList("rewards"));
 		setMinMax(section.getInt("min"), section.getInt("max"));
 	}
 	

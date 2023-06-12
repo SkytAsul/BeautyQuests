@@ -2,28 +2,28 @@ package fr.skytasul.quests.options;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.OpenCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.structure.QuestImplementation;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
-public class OptionQuestPool extends QuestOption<QuestPoolImplementation> {
+public class OptionQuestPool extends QuestOption<QuestPool> {
 	
 	@Override
-	public void attach(QuestImplementation quest) {
+	public void attach(Quest quest) {
 		super.attach(quest);
 		if (getValue() != null) getValue().addQuest(quest);
 	}
@@ -45,7 +45,7 @@ public class OptionQuestPool extends QuestOption<QuestPoolImplementation> {
 	}
 	
 	@Override
-	public QuestPoolImplementation cloneValue(QuestPoolImplementation value) {
+	public QuestPool cloneValue(QuestPool value) {
 		return value;
 	}
 	
@@ -67,32 +67,31 @@ public class OptionQuestPool extends QuestOption<QuestPoolImplementation> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		if (click == ClickType.SHIFT_RIGHT) {
+	public void click(QuestCreationGuiClickEvent event) {
+		if (event.getClick() == ClickType.SHIFT_RIGHT) {
 			setValue(null);
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
+			ItemUtils.lore(event.getClicked(), getLore());
 		}else {
-			new PagedGUI<QuestPoolImplementation>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN, BeautyQuests.getInstance().getPoolsManager().getPools(), list -> gui.reopen(p), null) {
+			new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN,
+					BeautyQuests.getInstance().getPoolsManager().getPools(), list -> event.reopen(), null) {
 				
 				@Override
-				public ItemStack getItemStack(QuestPoolImplementation object) {
+				public ItemStack getItemStack(QuestPool object) {
 					return object.getItemStack(Lang.poolChoose.toString());
 				}
 				
 				@Override
-				public void click(QuestPoolImplementation existing, ItemStack poolItem, ClickType click) {
+				public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
 					setValue(existing);
-					ItemUtils.lore(item, getLore());
-					gui.reopen(player);
+					ItemUtils.lore(event.getClicked(), getLore());
+					event.reopen();
 				}
 				
 				@Override
-				public CloseBehavior onClose(Player p, Inventory inv) {
-					Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> gui.reopen(p));
-					return StandardCloseBehavior.NOTHING;
+				public CloseBehavior onClose(Player p) {
+					return new OpenCloseBehavior(event.getGui());
 				}
-			}.open(p);
+			}.open(event.getPlayer());
 		}
 	}
 	

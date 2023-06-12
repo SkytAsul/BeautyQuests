@@ -1,12 +1,11 @@
 package fr.skytasul.quests.api.options;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.objects.QuestObject;
@@ -14,10 +13,11 @@ import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.gui.creation.FinishGUI;
 
-public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>> extends QuestOption<List<T>> {
+public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>, L extends List<T>>
+		extends QuestOption<L> {
 	
 	@Override
 	public void attach(Quest quest) {
@@ -32,7 +32,7 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	}
 	
 	@Override
-	public void setValue(List<T> value) {
+	public void setValue(L value) {
 		if (getValue() != null && getAttachedQuest() != null) detachObjects();
 		super.setValue(value);
 		if (getValue() != null && getAttachedQuest() != null) attachObjects();
@@ -57,12 +57,7 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		getValue().addAll(QuestObject.deserializeList(config.getMapList(key), this::deserialize));
-	}
-	
-	@Override
-	public List<T> cloneValue(List<T> value) {
-		return new ArrayList<>(value);
+		getValue().addAll(SerializableObject.deserializeList(config.getMapList(key), this::deserialize));
 	}
 	
 	protected abstract T deserialize(Map<String, Object> map);
@@ -71,6 +66,13 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	
 	protected abstract QuestObjectsRegistry<T, C> getObjectsRegistry();
 	
+	protected abstract L instanciate(Collection<T> objects);
+
+	@Override
+	public @Nullable L cloneValue(@Nullable L value) {
+		return instanciate(value);
+	}
+
 	protected String[] getLore() {
 		String count = "§7" + getSizeString(getValue().size());
 		if (getItemDescription() == null) return new String[] { count };
@@ -83,12 +85,12 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
+	public void click(QuestCreationGuiClickEvent event) {
 		getObjectsRegistry().createGUI(QuestObjectLocation.QUEST, objects -> {
-			setValue(objects);
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
-		}, getValue()).open(p);
+			setValue(instanciate(objects));
+			ItemUtils.lore(event.getClicked(), getLore());
+			event.reopen();
+		}, getValue()).open(event.getPlayer());
 	}
 	
 	public abstract XMaterial getItemMaterial();

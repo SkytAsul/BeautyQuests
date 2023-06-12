@@ -42,6 +42,10 @@ public class QuestOptionCreator<D, T extends QuestOption<D>> {
 		return prevSlot == preferedSlot ? prevSlot + 1 : preferedSlot;
 	}
 	
+	public static int getLastSlot() {
+		return creators.values().stream().mapToInt(creator -> creator.slot).max().getAsInt();
+	}
+
 	public boolean applies(@NotNull String key) {
 		return id.equals(key) || Arrays.stream(oldNames).anyMatch(key::equals);
 	}

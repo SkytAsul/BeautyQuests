@@ -1,11 +1,12 @@
 package fr.skytasul.quests.api.stages;
 
-import javax.sound.sampled.Line;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.serializable.SerializableRegistry;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.options.StageOption;
 
 public class StageType<T extends AbstractStage> {
@@ -73,7 +74,7 @@ public class StageType<T extends AbstractStage> {
 	public static interface StageCreationSupplier<T extends AbstractStage> {
 		
 		@NotNull
-		StageCreation<T> supply(@NotNull Line line, boolean endingStage);
+		StageCreation<T> supply(@NotNull StageCreationContext<T> context);
 		
 	}
 	

@@ -2,8 +2,6 @@ package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.DialogEditor;
@@ -14,13 +12,13 @@ import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.types.Dialogable;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
 	
-	private DialogRunner runner;
+	private DialogRunnerImplementation runner;
 	
 	public OptionStartDialog() {
 		super(OptionStarterNPC.class);
@@ -49,7 +47,9 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	}
 	
 	private String[] getLore() {
-		return new String[] { formatDescription(Lang.startDialogLore.toString()), "", getValue() == null ? Lang.NotSet.toString() : "§7" + Lang.AmountDialogLines.format(getValue().messages.size()) };
+		return new String[] {formatDescription(Lang.startDialogLore.toString()), "",
+				getValue() == null ? Lang.NotSet.toString()
+						: "§7" + Lang.AmountDialogLines.format(getValue().getMessages().size())};
 	}
 	
 	@Override
@@ -58,12 +58,12 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	}
 
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		Utils.sendMessage(p, Lang.NPC_TEXT.toString());
+	public void click(QuestCreationGuiClickEvent event) {
+		Lang.NPC_TEXT.send(event.getPlayer());
 		if (getValue() == null) setValue(new Dialog());
-		new DialogEditor(p, () -> {
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
+		new DialogEditor(event.getPlayer(), () -> {
+			ItemUtils.lore(event.getClicked(), getLore());
+			event.reopen();
 		}, getValue()).start();
 	}
 	
@@ -89,7 +89,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	@Override
 	public DialogRunner getDialogRunner() {
 		if (runner == null) {
-			runner = new DialogRunner(getValue(), getNPC());
+			runner = new DialogRunnerImplementation(getValue(), getNPC());
 			runner.addEndAction(p -> getAttachedQuest().attemptStart(p));
 		}
 		return runner;

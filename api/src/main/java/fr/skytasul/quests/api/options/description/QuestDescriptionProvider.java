@@ -9,7 +9,7 @@ public interface QuestDescriptionProvider {
 	
 	public static final Comparator<QuestDescriptionProvider> COMPARATOR = Comparator.comparingDouble(QuestDescriptionProvider::getDescriptionPriority);
 	
-	@NotNull
+	@Nullable
 	List<@Nullable String> provideDescription(@NotNull QuestDescriptionContext context);
 	
 	@NotNull

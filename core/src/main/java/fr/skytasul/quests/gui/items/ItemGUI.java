@@ -1,4 +1,4 @@
-package fr.skytasul.quests.gui.misc;
+package fr.skytasul.quests.gui.items;
 
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -8,15 +8,15 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.gui.creation.ItemsGUI;
+import fr.skytasul.quests.utils.QuestUtils;
 
-public class ItemGUI extends Gui {
+public class ItemGUI extends AbstractGui {
 
 	private Consumer<ItemStack> end;
 	private Runnable cancel;
@@ -44,19 +44,15 @@ public class ItemGUI extends Gui {
 
 	@Override
 	public void onClick(GuiClickEvent event) {
-		if (slot != 4) return true;
-		new ItemCreatorGUI((obj) -> {
-			end.accept(obj);
-		}, false).open(p);
-		return true;
-	}
-	
-	@Override
-	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) {
-		if (slot != 4) return true;
-		p.setItemOnCursor(null);
-		end.accept(cursor);
-		return false;
+		if (event.getSlot() == 4) {
+			if (event.hasCursor()) {
+				event.getPlayer().setItemOnCursor(null);
+				event.setCancelled(false);
+				QuestUtils.runSync(() -> end.accept(event.getCursor()));
+			} else {
+				new ItemCreatorGUI(end, false).open(event.getPlayer());
+			}
+		}
 	}
 	
 	@Override

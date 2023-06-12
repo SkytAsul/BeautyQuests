@@ -1,5 +1,6 @@
 package fr.skytasul.quests.options;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,10 +14,12 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
+import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.api.utils.Utils;
 
-public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator> implements QuestDescriptionProvider {
+public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator, RequirementList>
+		implements QuestDescriptionProvider {
 	
 	@Override
 	protected AbstractRequirement deserialize(Map<String, Object> map) {
@@ -33,6 +36,11 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 		return QuestsAPI.getAPI().getRequirements();
 	}
 	
+	@Override
+	protected RequirementList instanciate(Collection<AbstractRequirement> objects) {
+		return new RequirementList(objects);
+	}
+
 	@Override
 	public XMaterial getItemMaterial() {
 		return XMaterial.NETHER_STAR;
@@ -57,7 +65,10 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 		List<String> requirements = getValue().stream()
 				.map(x -> {
 					String description = x.getDescription(context.getPlayerAccount().getPlayer());
-					if (description != null) description = Utils.format(x.test(context.getPlayerAccount().getPlayer()) ? context.getDescriptionOptions().getRequirementsValid() : context.getDescriptionOptions().getRequirementsInvalid(), description);
+					if (description != null)
+						description = MessageUtils.format(x.test(context.getPlayerAccount().getPlayer())
+								? context.getDescriptionOptions().getRequirementsValid()
+								: context.getDescriptionOptions().getRequirementsInvalid(), description);
 					return description;
 				})
 				.filter(Objects::nonNull)

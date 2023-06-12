@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
 public abstract class QuestOptionString extends QuestOption<String> {
 	
@@ -48,25 +47,24 @@ public abstract class QuestOptionString extends QuestOption<String> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		sendIndication(p);
+	public void click(QuestCreationGuiClickEvent event) {
+		sendIndication(event.getPlayer());
 		if (isMultiline()) {
 			List<String> splitText = getValue() == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(getValue().split("\\{nl\\}")));
-			new TextListEditor(p, list -> {
+			new TextListEditor(event.getPlayer(), list -> {
 				setValue(list.stream().collect(Collectors.joining("{nl}")));
-				ItemUtils.lore(item, getLore());
-				gui.reopen(p);
+				ItemUtils.lore(event.getClicked(), getLore());
+				event.reopen();
 			}, splitText).start();
 		}else {
-			new TextEditor<String>(p, () -> gui.reopen(p), obj -> {
-				setValue(obj);
-				ItemUtils.lore(item, getLore());
-				gui.reopen(p);
-			}, () -> {
-				resetValue();
-				ItemUtils.lore(item, getLore());
-				gui.reopen(p);
-			}).start();
+			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
+				if (obj == null)
+					resetValue();
+				else
+					setValue(obj);
+				ItemUtils.lore(event.getClicked(), getLore());
+				event.reopen();
+			}).passNullIntoEndConsumer().start();
 		}
 	}
 	

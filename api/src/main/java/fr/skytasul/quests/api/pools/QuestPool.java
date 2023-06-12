@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementList;
 
 public interface QuestPool {
 
@@ -27,7 +27,7 @@ public interface QuestPool {
 
 	boolean doAvoidDuplicates();
 
-	List<AbstractRequirement> getRequirements();
+	RequirementList getRequirements();
 
 	List<Quest> getQuests();
 

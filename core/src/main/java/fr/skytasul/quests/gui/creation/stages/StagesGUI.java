@@ -9,34 +9,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageCreation;
 import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
-import fr.skytasul.quests.gui.creation.stages.StageRunnable.StageRunnableClick;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 
-public class StagesGUI implements Gui {
+public class StagesGUI extends AbstractGui {
 
 	private static final int SLOT_FINISH = 52;
 	
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
 	private static final ItemStack notDone = ItemUtils.lore(ItemUtils.itemNotDone.clone(), Lang.cantFinish.toString());
-	
-	public static final ItemStack ending = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
-	public static final ItemStack descMessage = ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
-	public static final ItemStack startMessage = ItemUtils.item(XMaterial.FEATHER, Lang.startMsg.toString());
-	public static final ItemStack validationRequirements = ItemUtils.item(XMaterial.NETHER_STAR, Lang.validationRequirements.toString(), QuestOption.formatDescription(Lang.validationRequirementsLore.toString()));
 	
 	private List<Line> lines = new ArrayList<>();
 	
@@ -57,161 +51,57 @@ public class StagesGUI implements Gui {
 	}
 	
 	@Override
-	public Inventory open(Player p) {
-		if (inv == null){
-			inv = Bukkit.createInventory(null, 54, Lang.INVENTORY_STAGES.toString());
-
-			page = 0;
-			for (int i = 0; i < 20; i++) lines.add(new Line(i, this));
-			setStageCreate(lines.get(0), false);
-			setStageCreate(lines.get(15), true);
-
-			inv.setItem(45, ItemUtils.itemLaterPage);
-			inv.setItem(50, ItemUtils.itemNextPage);
-
-			inv.setItem(SLOT_FINISH, isEmpty() ? notDone : ItemUtils.itemDone);
-			inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel : ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
-			refresh();
-			
-			if (session.isEdition() && this == session.getMainGUI()) {
-				editBranch(session.getQuestEdited().getBranchesManager().getBranch(0));
-				inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
-			}
-		}
-
-		if (p != null) inv = p.openInventory(inv).getTopInventory();
-		return inv;
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 54, Lang.INVENTORY_STAGES.toString());
 	}
 
-	/**
-	 * Get the StagesGUI, open it for player if specified, and re implement the player in the inventories system if on true
-	 * @param p player to open (can be null)
-	 * @param reImplement re implement the player in the inventories system
-	 * @return this StagesGUI
-	 */
-	public StagesGUI reopen(Player p, boolean reImplement){
-		if (p != null){
-			if (reImplement) Inventories.put(p, this, inv);
-			p.openInventory(inv);
-		}
-		return this;
-	}
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		page = 0;
+		for (int i = 0; i < 20; i++)
+			lines.add(new Line(i, i >= 15));
+		lines.get(0).setCreationState();
+		lines.get(15).setCreationState();
 
-	private void setStageCreate(Line line, boolean branches){
-		line.removeItems();
-		line.setItem(0, stageCreate.clone(), (p, item) -> {
-			line.setItem(0, null, null, true, false);
-			int i = 0;
-			for (StageType<?> type : QuestsAPI.getAPI().getStages()) {
-				if (type.isValid()) {
-					line.setItem(++i, type.getItem(), (p1, item1) -> {
-						runClick(line, type, branches).start(p1);
-					}, true, false);
-				}
-			}
-			line.setItems(0);
-		});
-		line.setItems(0);
+		inv.setItem(45, ItemUtils.itemLaterPage);
+		inv.setItem(50, ItemUtils.itemNextPage);
+
+		inv.setItem(SLOT_FINISH, isEmpty() ? notDone : ItemUtils.itemDone);
+		inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel
+				: ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
+		refresh();
+
+		if (session.isEdition() && this == session.getStagesGUI()) {
+			editBranch(session.getQuestEdited().getBranchesManager().getBranch(0));
+			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
+		}
 	}
 
 	private String[] getLineManageLore(int line) {
 		return new String[] {
 				"§7" + Lang.ClickRight + "/" + Lang.ClickLeft + " > §c" + Lang.stageRemove.toString(),
 				line == 0 || line == 15 ? ("§8" + Lang.ClickShiftRight + " > " + Lang.stageUp) : "§7" + Lang.ClickShiftRight + " > §e" + Lang.stageUp,
-				line == 14 || line == 19 || !isActiveLine(getLine(line + 1)) ? ("§8" + Lang.ClickShiftLeft + " > " + Lang.stageDown) : "§7" + Lang.ClickShiftLeft + " > §e" + Lang.stageDown };
-	}
-	
-	private void updateLineManageLore(Line line) {
-		line.editItem(0, ItemUtils.lore(line.getItem(0), getLineManageLore(line.getLine())));
-	}
-	
-	private StageCreation<?> runClick(Line line, StageType<?> type, boolean branches) {
-		line.removeItems();
-		StageCreation<?> creation = type.getCreationSupplier().supply(line, branches);
-		line.creation = creation;
-		creation.setup((StageType) type);
-		
-		inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
-
-		int maxStages = branches ? 20 : 15;
-		ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type.getName()), getLineManageLore(line.getLine()));
-		line.setItem(0, manageItem, new StageRunnableClick() {
-			@Override
-			public void run(Player p, ItemStack item, ClickType click) {
-				if (click == ClickType.LEFT || click == ClickType.RIGHT) {
-					line.creation = null;
-					int lineID = line.getLine();
-					if (lineID != maxStages - 1) {
-						line.removeItems();
-						for (int i = line.getLine() + 1; i < maxStages; i++) {
-							Line exLine = getLine(i);
-							exLine.changeLine(i - 1);
-							if (!isActiveLine(exLine)) {
-								if (exLine.isEmpty()) {
-									setStageCreate(exLine, branches);
-								}else {
-									line.line = exLine.getLine() + 1;
-								}
-								break;
-							}
-						}
-						if (lineID == 0 || lineID == 15) updateLineManageLore(getLine(lineID));
-					}else setStageCreate(line, branches);
-					if (lineID != 0 && lineID != 15) updateLineManageLore(getLine(lineID - 1));
-					if (isEmpty()) inv.setItem(SLOT_FINISH, notDone);
-				}else if (click == ClickType.SHIFT_LEFT) {
-					if (line.getLine() != 14 && line.getLine() != 19) {
-						Line down = getLine(line.getLine() + 1);
-						if (isActiveLine(down)) {
-							down.exchangeLines(line);
-							updateLineManageLore(line);
-							updateLineManageLore(down);
-						}
-					}
-				}else if (click == ClickType.SHIFT_RIGHT) {
-					if (line.getLine() != 0 && line.getLine() != 15) {
-						Line up = getLine(line.getLine() - 1);
-						up.exchangeLines(line);
-						updateLineManageLore(line);
-						updateLineManageLore(up);
-					}
-				}
-			}
-		});
-
-		if (line.getLine() != maxStages - 1) {
-			Line next = getLine(line.getLine() + 1);
-			if (!isActiveLine(next)) setStageCreate(next, branches);
-		}
-		
-		if (branches){
-			if (creation.getLeadingBranch() == null) creation.setLeadingBranch(new StagesGUI(session, this));
-			line.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()), (p, item) -> Inventories.open(p, creation.getLeadingBranch()));
-		}
-		
-		if (line.getLine() != 0 && line.getLine() != 15) updateLineManageLore(getLine(line.getLine() - 1));
-		
-		return creation;
+				line == 14 || line == 19 || !getLine(line + 1).isActive()
+						? ("§8" + Lang.ClickShiftLeft + " > " + Lang.stageDown)
+						: "§7" + Lang.ClickShiftLeft + " > §e" + Lang.stageDown};
 	}
 
-	private boolean isActiveLine(Line line) {
-		return line.creation != null;
-	}
-
-	public Line getLine(int id){
-		for (Line l : lines){
-			if (l.getLine() == id) return l;
+	public Line getLine(int id) {
+		for (Line l : lines) {
+			if (l.lineId == id)
+				return l;
 		}
 		return null;
 	}
 	
 	public boolean isEmpty(){
 		if (lines.isEmpty()) return true; // if this StagesGUI has never been opened
-		return !isActiveLine(getLine(0)) && !isActiveLine(getLine(15));
+		return !getLine(0).isActive() && !getLine(15).isActive();
 	}
 	
 	public void deleteStageLine(Line line) {
-		if (isActiveLine(line)) line.execute(0, null, null, ClickType.RIGHT); // item and player not used for deletion item
+		if (line.isActive())
+			line.remove();
 	}
 
 	@Override
@@ -251,7 +141,7 @@ public class StagesGUI implements Gui {
 			}
 		}else {
 			session.setStagesEdited();
-			Line line = getLine((slot - slot % 9)/9 +5*page);
+			Line line = getLine((slot - slot % 9) / 9 + 5 * page);
 			line.click(slot - (line.getLine() - page * 5) * 9, p, current, click);
 		}
 		return true;
@@ -304,6 +194,175 @@ public class StagesGUI implements Gui {
 			line.setItems(0);
 			i++;
 		}
+	}
+
+	class Line {
+
+		StageLineImplementation lineObj;
+		int lineId;
+		StageCreationContextImplementation<?> context;
+		boolean ending;
+
+		Line(int lineId, boolean ending) {
+			this.lineId = lineId;
+			this.lineObj = new StageLineImplementation(this);
+		}
+
+		boolean isActive() {
+			return context != null;
+		}
+
+		void setCreationState() {
+			lineObj.clearItems();
+			lineObj.setItem(0, stageCreate.clone(), event -> setSelectionState());
+		}
+
+		void setSelectionState() {
+			lineObj.clearItems();
+			int i = 0;
+			for (StageType<?> type : QuestsAPI.getAPI().getStages()) {
+				lineObj.setItem(++i, type.getItem(), event -> {
+					setStageCreation(event.getPlayer(), type);
+				});
+			}
+		}
+
+		<T extends AbstractStage> void setStageCreation(Player p, StageType<T> type) {
+			lineObj.clearItems();
+
+			context = new StageCreationContextImplementation<>(lineObj, type, ending);
+			context.setCreation(
+					(StageCreation) type.getCreationSupplier().supply((@NotNull StageCreationContext<T>) context));
+
+			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
+
+			int maxStages = ending ? 20 : 15;
+			ItemStack manageItem =
+					ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type.getName()), getLineManageLore(lineId));
+			lineObj.setItem(0, manageItem, event -> {
+				switch (event.getClick()) {
+					case LEFT:
+					case RIGHT:
+						remove();
+						break;
+					case SHIFT_LEFT:
+						descend();
+						break;
+					case SHIFT_RIGHT:
+						ascend();
+						break;
+					default:
+						break;
+				}
+			});
+
+			if (lineId != maxStages - 1) {
+				Line next = getLine(lineId + 1);
+				if (!next.isActive())
+					next.setCreationState();
+			}
+
+			if (ending) {
+				if (context.getEndingBranch() == null)
+					context.setEndingBranch(new StagesGUI(session, StagesGUI.this));
+				lineObj.setItem(14, ItemUtils.item(XMaterial.FILLED_MAP, Lang.newBranch.toString()),
+						event -> context.getEndingBranch().open(event.getPlayer()));
+			}
+
+			if (lineId != 0 && lineId != 15)
+				getLine(lineId - 1).updateLineManageLore();
+
+			context.getCreation().start(p);
+		}
+
+		void updateLineManageLore() {
+			lineObj.refreshItemLore(0, getLineManageLore(lineId));
+		}
+
+		boolean isFirst() {
+			return lineId == 0 || lineId == 15;
+		}
+
+		boolean isLast() {
+			return lineId == 14 || lineId == 19;
+		}
+
+		void remove() {
+			context = null;
+			int maxStages = ending ? 20 : 15;
+			if (lineId != maxStages - 1) {
+				lineObj.clearItems();
+
+				int oldId = lineId;
+				Line lastLine = this;
+				for (int i = lineId + 1; i < maxStages; i++) {
+					Line nextLine = getLine(i);
+					nextLine.exchangeLines(lastLine);
+					lastLine = nextLine;
+					if (!nextLine.isActive()) {
+						if (nextLine.lineObj.isEmpty())
+							nextLine.setCreationState();
+						break;
+					}
+				}
+				if (oldId == 0 || oldId == 15)
+					getLine(oldId).updateLineManageLore();
+			} else
+				setCreationState();
+			if (!isFirst())
+				getLine(lineId - 1).updateLineManageLore();
+			if (isEmpty())
+				inv.setItem(SLOT_FINISH, notDone);
+		}
+
+		void descend() {
+			if (!isLast()) {
+				Line down = getLine(lineId + 1);
+				if (down.isActive()) {
+					down.exchangeLines(this);
+					updateLineManageLore();
+					down.updateLineManageLore();
+				}
+			}
+		}
+
+		void ascend() {
+			if (!isFirst()) {
+				Line up = getLine(lineId - 1);
+				up.exchangeLines(this);
+				updateLineManageLore();
+				up.updateLineManageLore();
+			}
+		}
+
+		void exchangeLines(Line other) {
+			if (other == null || other == this)
+				return;
+			int newLine = other.lineId;
+
+			other.lineId = lineId;
+			other.lineObj.refresh();
+
+			lineId = newLine;
+			lineObj.refresh();
+		}
+
+		int getRawSlot(int lineSlot) {
+			return lineId * 9 - page * 5 + lineSlot;
+		}
+
+		public boolean isShown() {
+			return lineId >= page * 5 && lineId < (page + 1) * 5;
+		}
+
+		public void setItem(int lineSlot, ItemStack item) {
+			getInventory().setItem(getRawSlot(lineSlot), item);
+		}
+
+		public ItemStack getItem(int lineSlot) {
+			return getInventory().getItem(getRawSlot(lineSlot));
+		}
+
 	}
 
 }

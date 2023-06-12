@@ -11,7 +11,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionString;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.MessageUtils;
 
 public class OptionDescription extends QuestOptionString implements QuestDescriptionProvider {
 	
@@ -55,7 +55,8 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		List<String> description = cachedDescription.getIfPresent(context);
 		if (description == null) {
-			description = Arrays.asList("§7" + Utils.finalFormat(context.getPlayerAccount().getPlayer(), getValue(), true));
+			description =
+					Arrays.asList("§7" + MessageUtils.finalFormat(context.getPlayerAccount().getPlayer(), getValue(), true));
 			cachedDescription.put(context, description);
 		}
 		return description;

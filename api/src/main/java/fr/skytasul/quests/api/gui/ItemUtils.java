@@ -312,14 +312,14 @@ public final class ItemUtils {
 	 * @see #itemNextPage
 	 */
 	public static final ImmutableItemStack itemLaterPage = new ImmutableItemStack(
-			item(QuestsConfiguration.getConfig().getQuestsConfig().pageItem(), Lang.laterPage.toString()));
+			item(QuestsConfiguration.getConfig().getQuestsConfig().getPageMaterial(), Lang.laterPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.nextPage</i> and material : <i>pageItem</i>
 	 * @see #itemLaterPage
 	 */
 	public static final ImmutableItemStack itemNextPage = new ImmutableItemStack(
-			item(QuestsConfiguration.getConfig().getQuestsConfig().pageItem(), Lang.nextPage.toString()));
+			item(QuestsConfiguration.getConfig().getQuestsConfig().getPageMaterial(), Lang.nextPage.toString()));
 
 	/**
 	 * Immutable ItemStack instance with name : <i>inv.cancel</i> and material : barrier

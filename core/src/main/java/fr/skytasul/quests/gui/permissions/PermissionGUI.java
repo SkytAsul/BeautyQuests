@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.WorldParser;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -19,7 +19,7 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.utils.types.Permission;
 
-public class PermissionGUI extends Gui {
+public class PermissionGUI extends AbstractGui {
 
 	private String perm, world = null;
 	private boolean take = false;
@@ -53,34 +53,34 @@ public class PermissionGUI extends Gui {
 
 	@Override
 	public void onClick(GuiClickEvent event) {
-		switch (slot) {
+		switch (event.getSlot()) {
 		case 0:
-			Lang.CHOOSE_PERM_REWARD.send(p);
-			new TextEditor<String>(p, () -> reopen(p), x -> {
+				Lang.CHOOSE_PERM_REWARD.send(event.getPlayer());
+				new TextEditor<String>(event.getPlayer(), event::reopen, x -> {
 				getInventory().getItem(4).setType(Material.DIAMOND);
-				updatePerm(p, x);
+					updatePerm(event.getPlayer(), x);
 			}, () -> {
 				getInventory().getItem(4).setType(Material.COAL);
-				updatePerm(p, null);
+					updatePerm(event.getPlayer(), null);
 			}).useStrippedMessage().start();
 			break;
 		case 1:
-			Lang.CHOOSE_PERM_WORLD.send(p);
-			new TextEditor<>(p, () -> reopen(p), worldS -> {
-				updateWorld(p, worldS.getName());
+			Lang.CHOOSE_PERM_WORLD.send(event.getPlayer());
+			new TextEditor<>(event.getPlayer(), event::reopen, worldS -> {
+				updateWorld(event.getPlayer(), worldS.getName());
 			}, () -> {
-				updateWorld(p, null);
+				updateWorld(event.getPlayer(), null);
 			}, new WorldParser()).start();
 			break;
 		case 2:
-			take = ItemUtils.toggleSwitch(current);
+			take = ItemUtils.toggleSwitch(event.getClicked());
 			break;
 		case 4:
-			if (current.getType() == Material.COAL) break;
+			if (event.getClicked().getType() == Material.COAL)
+				break;
 			end.accept(new Permission(perm, take, world));
 			break;
 		}
-		return true;
 	}
 	
 	private void updatePerm(Player p, String perm) {

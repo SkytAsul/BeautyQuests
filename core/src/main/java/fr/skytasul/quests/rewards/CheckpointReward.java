@@ -1,6 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -13,18 +12,17 @@ import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
-import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.api.rewards.RewardList;
 
 public class CheckpointReward extends AbstractReward {
 	
-	private List<AbstractReward> actions;
+	private RewardList actions;
 	
 	public CheckpointReward() {
-		this(null, new ArrayList<>());
+		this(null, new RewardList());
 	}
 	
-	public CheckpointReward(String customDescription, List<AbstractReward> actions) {
+	public CheckpointReward(String customDescription, RewardList actions) {
 		super(customDescription);
 		this.actions = actions;
 	}
@@ -32,13 +30,13 @@ public class CheckpointReward extends AbstractReward {
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		actions.forEach(rew -> rew.attach(quest));
+		actions.attachQuest(quest);
 	}
 	
 	@Override
 	public void detach() {
 		super.detach();
-		actions.forEach(AbstractReward::detach);
+		actions.detachQuest();
 	}
 	
 	@Override
@@ -49,7 +47,7 @@ public class CheckpointReward extends AbstractReward {
 	
 	public void applies(Player p) {
 		try {
-			QuestUtils.giveRewards(p, actions);
+			actions.giveRewards(p);
 		} catch (InterruptingBranchException e) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
 		}
@@ -57,7 +55,7 @@ public class CheckpointReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new CheckpointReward(getCustomDescription(), new ArrayList<>(actions));
+		return new CheckpointReward(getCustomDescription(), new RewardList(actions));
 	}
 	
 	@Override
@@ -69,7 +67,7 @@ public class CheckpointReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		QuestsAPI.getAPI().getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
-			actions = rewards;
+			actions = new RewardList(rewards);
 			event.reopenGUI();
 		}, actions, null).open(event.getPlayer());
 	}
@@ -77,13 +75,13 @@ public class CheckpointReward extends AbstractReward {
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
-		section.set("actions", SerializableObject.serializeList(actions));
+		section.set("actions", actions.serialize());
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
-		actions = SerializableObject.deserializeList(section.getMapList("actions"), AbstractReward::deserialize);
+		actions = RewardList.deserialize(section.getMapList("actions"));
 	}
 	
 }

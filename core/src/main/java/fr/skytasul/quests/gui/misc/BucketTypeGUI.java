@@ -1,14 +1,14 @@
-package fr.skytasul.quests.gui.creation;
+package fr.skytasul.quests.gui.misc;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.ChooseGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.stages.StageBucket.BucketType;
 
 public class BucketTypeGUI extends ChooseGUI<BucketType>{
@@ -38,9 +38,8 @@ public class BucketTypeGUI extends ChooseGUI<BucketType>{
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		Utils.runSync(cancel);
-		return StandardCloseBehavior.NOTHING;
+	public CloseBehavior onClose(Player p) {
+		return new DelayCloseBehavior(cancel);
 	}
 	
 }

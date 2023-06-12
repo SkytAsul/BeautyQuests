@@ -1,6 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -20,22 +19,22 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
-import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.api.rewards.RewardList;
 
 public class RequirementDependentReward extends AbstractReward {
 	
-	private List<AbstractRequirement> requirements;
-	private List<AbstractReward> rewards;
+	private RequirementList requirements;
+	private RewardList rewards;
 	
 	public RequirementDependentReward() {
-		this(null, new ArrayList<>(), new ArrayList<>());
+		this(null, new RequirementList(), new RewardList());
 	}
 	
-	public RequirementDependentReward(String customDescription, List<AbstractRequirement> requirements,
-			List<AbstractReward> rewards) {
+	public RequirementDependentReward(String customDescription, RequirementList requirements,
+			RewardList rewards) {
 		super(customDescription);
 		this.requirements = requirements;
 		this.rewards = rewards;
@@ -44,8 +43,8 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		requirements.forEach(req -> req.attach(quest));
-		rewards.forEach(rew -> rew.attach(quest));
+		requirements.attachQuest(quest);
+		rewards.attachQuest(quest);
 	}
 	
 	@Override
@@ -58,7 +57,7 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	public List<String> give(Player p) throws InterruptingBranchException {
 		if (requirements.stream().allMatch(requirement -> requirement.test(p)))
-			return QuestUtils.giveRewards(p, rewards);
+			return rewards.giveRewards(p);
 		return null;
 	}
 	
@@ -69,8 +68,8 @@ public class RequirementDependentReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new RequirementDependentReward(getCustomDescription(), new ArrayList<>(requirements),
-				new ArrayList<>(rewards));
+		return new RequirementDependentReward(getCustomDescription(), new RequirementList(requirements),
+				new RewardList(rewards));
 	}
 	
 	@Override
@@ -109,14 +108,14 @@ public class RequirementDependentReward extends AbstractReward {
 	
 	private void editRequirements(LayoutedClickEvent event) {
 		QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.OTHER, newRequirements -> {
-			RequirementDependentReward.this.requirements = newRequirements;
+			requirements = new RequirementList(newRequirements);
 			event.refreshItemReopen();
 		}, requirements).open(event.getPlayer());
 	}
 
 	private void editRewards(LayoutedClickEvent event) {
 		QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.OTHER, newRewards -> {
-			RequirementDependentReward.this.rewards = newRewards;
+			rewards = new RewardList(newRewards);
 			event.refreshItemReopen();
 		}, rewards).open(event.getPlayer());
 	}
@@ -124,15 +123,15 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
-		section.set("requirements", SerializableObject.serializeList(requirements));
-		section.set("rewards", SerializableObject.serializeList(rewards));
+		section.set("requirements", requirements.serialize());
+		section.set("rewards", rewards.serialize());
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
-		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
-		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
+		requirements = RequirementList.deserialize(section.getMapList("requirements"));
+		rewards = RewardList.deserialize(section.getMapList("rewards"));
 	}
 	
 }

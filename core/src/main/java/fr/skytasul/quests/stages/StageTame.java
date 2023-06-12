@@ -6,17 +6,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
-import fr.skytasul.quests.gui.creation.stages.Line;
 
 public class StageTame extends AbstractEntityStage {
 	
 	public StageTame(StageController controller, EntityType entity, int amount) {
-		super(branch, entity, amount);
+		super(controller, entity, amount);
 	}
 	
 	@EventHandler
@@ -28,19 +29,19 @@ public class StageTame extends AbstractEntityStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_TAME.format(getMobsLeft(acc));
 	}
 	
 	public static StageTame deserialize(ConfigurationSection section, StageController controller) {
 		String type = section.getString("entityType");
-		return new StageTame(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
+		return new StageTame(controller, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
 	
 	public static class Creator extends AbstractEntityStage.AbstractCreator<StageTame> {
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageTame> context) {
+			super(context);
 		}
 		
 		@Override
@@ -50,7 +51,7 @@ public class StageTame extends AbstractEntityStage {
 		
 		@Override
 		protected StageTame finishStage(StageController controller) {
-			return new StageTame(branch, entity, amount);
+			return new StageTame(controller, entity, amount);
 		}
 		
 	}

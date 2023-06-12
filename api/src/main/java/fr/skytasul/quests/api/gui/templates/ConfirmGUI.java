@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.Gui;
+import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickHandler;
@@ -18,12 +18,12 @@ public final class ConfirmGUI {
 
 	private ConfirmGUI() {}
 
-	public static Gui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
+	public static AbstractGui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
 			@Nullable String @Nullable... lore) {
 		return confirm(yes, no, indication, lore == null ? null : Arrays.asList(lore));
 	}
 
-	public static Gui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
+	public static AbstractGui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
 			@Nullable List<@Nullable String> lore) {
 		return LayoutedGUI.newBuilder()
 				.addButton(1,

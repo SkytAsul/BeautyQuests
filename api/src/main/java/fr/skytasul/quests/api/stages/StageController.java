@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 
 public interface StageController {
@@ -19,10 +18,6 @@ public interface StageController {
 	public void finishStage(@NotNull Player player);
 
 	public boolean hasStarted(@NotNull PlayerAccount acc);
-
-	public default boolean hasStarted(@NotNull Player player) {
-		return hasStarted(PlayersManager.getPlayerAccount(player));
-	}
 
 	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue);
 

@@ -1,6 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -8,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -17,17 +17,19 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.stages.Line;
 
 public class StagePlayTime extends AbstractStage {
 
 	private final long playTicks;
 	
-	private Map<PlayerAccount, BukkitTask> tasks = new HashMap<>();
+	private Map<Player, BukkitTask> tasks = new HashMap<>();
 	
 	public StagePlayTime(StageController controller, long ticks) {
 		super(controller);
@@ -39,12 +41,12 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_PLAY_TIME.format(descriptionFormat(acc, source));
 	}
 	
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
+	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
 		return new Supplier[] { () -> Utils.millisToHumanString(getRemaining(acc) * 50L) };
 	}
 	
@@ -55,54 +57,62 @@ public class StagePlayTime extends AbstractStage {
 		return remaining - playedTicks;
 	}
 	
-	private void launchTask(PlayerAccount acc, Player p, long remaining) {
-		tasks.put(acc, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> branch.finishStage(p, this), remaining < 0 ? 0 : remaining));
+	private void launchTask(Player p, long remaining) {
+		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
+				remaining < 0 ? 0 : remaining));
 	}
 	
 	@Override
-	public void joins(PlayerAccount acc, Player p) {
-		super.joins(acc, p);
-		updateObjective(acc, null, "lastJoin", System.currentTimeMillis());
-		launchTask(acc, p, Utils.parseLong(getData(acc, "remainingTime")));
+	public void joined(Player p) {
+		super.joined(p);
+		updateObjective(p, "lastJoin", System.currentTimeMillis());
+		launchTask(p, Utils.parseLong(getData(p, "remainingTime")));
 	}
 	
 	@Override
-	public void leaves(PlayerAccount acc, Player p) {
-		super.leaves(acc, p);
-		BukkitTask task = tasks.remove(acc);
+	public void left(Player p) {
+		super.left(p);
+		BukkitTask task = tasks.remove(p);
 		if (task != null) {
-			task.cancel();
-			updateObjective(acc, null, "remainingTime", getRemaining(acc));
+			cancelTask(p, task);
 		}else {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + acc.getName());
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + p.getName());
 		}
+	}
+
+	private void cancelTask(Player p, BukkitTask task) {
+		task.cancel();
+		updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));
 	}
 	
 	@Override
-	public void start(PlayerAccount acc) {
-		super.start(acc);
-		if (acc.isCurrent()) {
-			launchTask(acc, acc.getPlayer(), playTicks);
-		}
+	public void started(PlayerAccount acc) {
+		super.started(acc);
+
+		if (acc.isCurrent())
+			launchTask(acc.getPlayer(), playTicks);
 	}
 	
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void ended(PlayerAccount acc) {
+		super.ended(acc);
+
+		if (acc.isCurrent())
+			tasks.remove(acc.getPlayer()).cancel();
+	}
+
+	@Override
+	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("remainingTime", playTicks);
 		datas.put("lastJoin", System.currentTimeMillis());
 	}
 	
 	@Override
-	public void ended(PlayerAccount acc) {
-		super.ended(acc);
-		tasks.remove(acc).cancel();
-	}
-	
-	@Override
 	public void unload() {
 		super.unload();
-		new ArrayList<>(tasks.keySet()).forEach(acc -> leaves(acc, null)); // prevents ConcurrentModificationException at server shutdown
+		tasks.forEach(this::cancelTask);
 		tasks.clear();
 	}
 
@@ -112,37 +122,42 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	public static StagePlayTime deserialize(ConfigurationSection section, StageController controller) {
-		return new StagePlayTime(branch, section.getLong("playTicks"));
+		return new StagePlayTime(controller, section.getLong("playTicks"));
 	}
 	
 	public static class Creator extends StageCreation<StagePlayTime> {
 		
 		private long ticks;
 
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StagePlayTime> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), (p, item) -> {
-				Lang.GAME_TICKS.send(p);
-				new TextEditor<>(p, () -> reopenGUI(p, false), obj -> {
+			line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), event -> {
+				Lang.GAME_TICKS.send(event.getPlayer());
+				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 					setTicks(obj);
-					reopenGUI(p, false);
+					event.reopen();
 				}, MinecraftTimeUnit.TICK.getParser()).start();
 			});
 		}
 		
 		public void setTicks(long ticks) {
 			this.ticks = ticks;
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(ticks + " ticks")));
+			getLine().refreshItemLore(7, Lang.optionValue.format(ticks + " ticks"));
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
 			Lang.GAME_TICKS.send(p);
-			new TextEditor<>(p, removeAndReopen(p, false), obj -> {
+			new TextEditor<>(p, context::removeAndReopenGui, obj -> {
 				setTicks(obj);
-				reopenGUI(p, false);
+				context.reopenGui();
 			}, MinecraftTimeUnit.TICK.getParser()).start();
 		}
 		
@@ -154,7 +169,7 @@ public class StagePlayTime extends AbstractStage {
 		
 		@Override
 		public StagePlayTime finishStage(StageController controller) {
-			return new StagePlayTime(branch, ticks);
+			return new StagePlayTime(controller, ticks);
 		}
 		
 	}

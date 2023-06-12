@@ -1,6 +1,5 @@
 package fr.skytasul.quests.api.stages;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,14 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
-import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.stages.options.StageOption;
-import fr.skytasul.quests.api.utils.Utils;
 
 public abstract class AbstractStage {
 	
@@ -26,11 +24,10 @@ public abstract class AbstractStage {
 	
 	private @Nullable String startMessage = null;
 	private @Nullable String customText = null;
-	private @NotNull List<@NotNull AbstractReward> rewards = new ArrayList<>();
-	private @NotNull List<@NotNull AbstractRequirement> validationRequirements = new ArrayList<>();
+	private @NotNull RewardList rewards = new RewardList();
+	private @NotNull RequirementList validationRequirements = new RequirementList();
 	
 	private @NotNull List<@NotNull StageOption> options;
-	protected boolean asyncEnd = false;
 	
 	protected AbstractStage(@NotNull StageController controller) {
 		this.controller = controller;
@@ -55,23 +52,22 @@ public abstract class AbstractStage {
 		return startMessage;
 	}
 	
-	public @NotNull List<@NotNull AbstractReward> getRewards() {
+	public @NotNull RewardList getRewards() {
 		return rewards;
 	}
 	
-	public void setRewards(@NotNull List<@NotNull AbstractReward> rewards) {
+	public void setRewards(@NotNull RewardList rewards) {
 		this.rewards = rewards;
-		rewards.forEach(reward -> reward.attach(getQuest()));
-		checkAsync();
+		rewards.attachQuest(getQuest());
 	}
 
-	public @NotNull List<@NotNull AbstractRequirement> getValidationRequirements() {
+	public @NotNull RequirementList getValidationRequirements() {
 		return validationRequirements;
 	}
 
-	public void setValidationRequirements(@NotNull List<@NotNull AbstractRequirement> validationRequirements) {
+	public void setValidationRequirements(@NotNull RequirementList validationRequirements) {
 		this.validationRequirements = validationRequirements;
-		validationRequirements.forEach(requirement -> requirement.attach(getQuest()));
+		validationRequirements.attachQuest(getQuest());
 	}
 	
 	public @NotNull List<@NotNull StageOption> getOptions() {
@@ -95,16 +91,7 @@ public abstract class AbstractStage {
 	}
 	
 	public boolean hasAsyncEnd() {
-		return asyncEnd;
-	}
-
-	private void checkAsync() {
-		for (AbstractReward rew : rewards) {
-			if (rew.isAsync()) {
-				asyncEnd = true;
-				break;
-			}
-		}
+		return rewards.hasAsync();
 	}
 
 	protected boolean canUpdate(@NotNull Player player) {
@@ -112,7 +99,7 @@ public abstract class AbstractStage {
 	}
 
 	protected boolean canUpdate(@NotNull Player player, boolean msg) {
-		return Utils.testRequirements(player, validationRequirements, msg);
+		return validationRequirements.testPlayer(player, msg);
 	}
 	
 	/**
@@ -131,7 +118,7 @@ public abstract class AbstractStage {
 	 * @see QuestBranch#hasStageLaunched(PlayerAccount, AbstractStage)
 	 */
 	protected final boolean hasStarted(@NotNull Player player) {
-		return controller.hasStarted(player);
+		return controller.hasStarted(PlayersManager.getPlayerAccount(player));
 	}
 	
 	/**
@@ -179,6 +166,10 @@ public abstract class AbstractStage {
 		controller.updateObjective(p, dataKey, dataValue);
 	}
 
+	protected <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey) {
+		return getData(PlayersManager.getPlayerAccount(p), dataKey);
+	}
+
 	protected <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
 		return controller.getData(acc, dataKey);
 	}
@@ -187,8 +178,8 @@ public abstract class AbstractStage {
 	 * Called when the stage has to be unloaded
 	 */
 	public void unload(){
-		rewards.forEach(AbstractReward::detach);
-		validationRequirements.forEach(AbstractRequirement::detach);
+		rewards.detachQuest();
+		validationRequirements.detachQuest();
 	}
 	
 	/**
@@ -205,8 +196,10 @@ public abstract class AbstractStage {
 		section.set("customText", customText);
 		if (startMessage != null) section.set("text", startMessage);
 		
-		if (!rewards.isEmpty()) section.set("rewards", SerializableObject.serializeList(rewards));
-		if (!validationRequirements.isEmpty()) section.set("requirements", SerializableObject.serializeList(validationRequirements));
+		if (!rewards.isEmpty())
+			section.set("rewards", rewards.serialize());
+		if (!validationRequirements.isEmpty())
+			section.set("requirements", validationRequirements.serialize());
 		
 		options.stream().filter(StageOption::shouldSave).forEach(option -> option.save(section.createSection("options." + option.getCreator().getID())));
 	}
@@ -217,10 +210,9 @@ public abstract class AbstractStage {
 		if (section.contains("customText"))
 			customText = section.getString("customText");
 		if (section.contains("rewards"))
-			setRewards(SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize));
+			setRewards(RewardList.deserialize(section.getMapList("rewards")));
 		if (section.contains("requirements"))
-			setValidationRequirements(SerializableObject.deserializeList(section.getMapList("requirements"),
-					AbstractRequirement::deserialize));
+			setValidationRequirements(RequirementList.deserialize(section.getMapList("requirements")));
 
 		if (section.contains("options")) {
 			ConfigurationSection optionsSection = section.getConfigurationSection("options");

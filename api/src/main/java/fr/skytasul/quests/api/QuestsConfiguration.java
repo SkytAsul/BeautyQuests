@@ -127,6 +127,10 @@ public interface QuestsConfiguration {
 
 		Set<DescriptionSource> getSplitSources();
 
+		default boolean isAloneSplitAmountShown(DescriptionSource source) {
+			return getSplitSources().contains(source) && isAloneSplitAmountShown();
+		}
+
 	}
 
 }

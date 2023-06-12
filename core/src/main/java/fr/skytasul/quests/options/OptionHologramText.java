@@ -36,7 +36,8 @@ public class OptionHologramText extends QuestOptionString {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return !QuestsConfigurationImplementation.isTextHologramDisabled() && QuestsAPI.getAPI().hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
+		return !QuestsConfigurationImplementation.getConfiguration().isTextHologramDisabled()
+				&& QuestsAPI.getAPI().hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

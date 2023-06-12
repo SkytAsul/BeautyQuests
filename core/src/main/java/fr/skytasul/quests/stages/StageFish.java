@@ -9,57 +9,57 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.gui.creation.stages.Line;
 
 public class StageFish extends AbstractItemStage {
 	
 	public StageFish(StageController controller, List<CountableObject<ItemStack>> fishes, ItemComparisonMap comparisons) {
-		super(branch, fishes, comparisons);
+		super(controller, fishes, comparisons);
 	}
 	
 	public StageFish(StageController controller, ConfigurationSection section) {
-		super(branch, section);
+		super(controller, section);
 	}
 
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFish(PlayerFishEvent e){
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
 			Player p = e.getPlayer();
-			PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 			Item item = (Item) e.getCaught();
-			if (item.isDead() || !branch.hasStageLaunched(acc, this)) return;
+			if (item.isDead() || !hasStarted(p))
+				return;
 			ItemStack fish = item.getItemStack();
-			event(acc, p, fish, fish.getAmount());
+			event(p, fish, fish.getAmount());
 		}
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return Lang.SCOREBOARD_FISH.format(super.descriptionLine(acc, source));
 	}
 	
 	public static StageFish deserialize(ConfigurationSection section, StageController controller) {
-		return new StageFish(branch, section);
+		return new StageFish(controller, section);
 	}
 
 	public static class Creator extends AbstractItemStage.Creator<StageFish> {
 		
 		private static final ItemStack editFishesItem = ItemUtils.item(XMaterial.FISHING_ROD, Lang.editFishes.toString());
-		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+
+		public Creator(@NotNull StageCreationContext<StageFish> context) {
+			super(context);
 		}
-		
+
 		@Override
 		protected ItemStack getEditItem() {
 			return editFishesItem;
@@ -67,7 +67,7 @@ public class StageFish extends AbstractItemStage {
 		
 		@Override
 		protected StageFish finishStage(StageController controller, List<CountableObject<ItemStack>> items, ItemComparisonMap comparisons) {
-			return new StageFish(branch, items, comparisons);
+			return new StageFish(controller, items, comparisons);
 		}
 		
 	}

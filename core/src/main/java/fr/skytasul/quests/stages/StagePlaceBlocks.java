@@ -8,22 +8,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.gui.creation.stages.Line;
 
 public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	
 	public StagePlaceBlocks(StageController controller, List<CountableObject<BQBlock>> blocks) {
-		super(branch, blocks);
+		super(controller, blocks);
 	}
 
 	@Override
@@ -35,22 +35,20 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	public void onPlace(BlockPlaceEvent e) {
 		if (e.isCancelled()) return;
 		Player p = e.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this)){
-			event(acc, p, e.getBlock(), 1);
-		}
+		if (hasStarted(p))
+			event(p, e.getBlock(), 1);
 	}
 	
 	public static StagePlaceBlocks deserialize(ConfigurationSection section, StageController controller) {
-		StagePlaceBlocks stage = new StagePlaceBlocks(branch, new ArrayList<>());
+		StagePlaceBlocks stage = new StagePlaceBlocks(controller, new ArrayList<>());
 		stage.deserialize(section);
 		return stage;
 	}
 
 	public static class Creator extends AbstractCountableBlockStage.AbstractCreator<StagePlaceBlocks> {
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StagePlaceBlocks> context) {
+			super(context);
 		}
 
 		@Override
@@ -60,7 +58,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		
 		@Override
 		public StagePlaceBlocks finishStage(StageController controller) {
-			return new StagePlaceBlocks(branch, getImmutableBlocks());
+			return new StagePlaceBlocks(controller, getImmutableBlocks());
 		}
 	}
 

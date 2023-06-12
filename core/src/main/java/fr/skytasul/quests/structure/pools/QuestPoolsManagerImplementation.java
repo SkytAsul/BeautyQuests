@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.options.OptionQuestPool;
 
 public class QuestPoolsManagerImplementation implements QuestPoolsManager {
@@ -61,7 +60,7 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 	public @NotNull QuestPoolImplementation createPool(@Nullable QuestPool editing, int npcID, @Nullable String hologram,
 			int maxQuests,
 			int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates,
-			@NotNull List<AbstractRequirement> requirements) {
+			@NotNull RequirementList requirements) {
 
 		if (editing != null)
 			((QuestPoolImplementation) editing).unload();

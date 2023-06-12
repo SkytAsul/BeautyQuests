@@ -2,53 +2,42 @@ package fr.skytasul.quests.api.gui.layout;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 
-public class LayoutedClickEvent {
+public class LayoutedClickEvent extends GuiClickEvent {
 
-	private final @NotNull Player player;
-	private final @NotNull LayoutedGUI gui;
-	private final int slot;
-	private final @NotNull ClickType click;
+	private @NotNull LayoutedGUI gui;
 
-	public LayoutedClickEvent(@NotNull Player player, @NotNull LayoutedGUI gui, int slot, @NotNull ClickType click) {
-		this.player = player;
+	public LayoutedClickEvent(@NotNull Player player, @NotNull LayoutedGUI gui, @Nullable ItemStack clicked,
+			@Nullable ItemStack cursor, int slot, @NotNull ClickType click) {
+		super(player, gui, clicked, cursor, slot, click);
 		this.gui = gui;
-		this.slot = slot;
-		this.click = click;
 	}
 
-	public @NotNull Player getPlayer() {
-		return player;
+	@Override
+	public void setCancelled(boolean cancelled) {
+		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public @NotNull LayoutedGUI getGui() {
 		return gui;
 	}
 
-	public int getSlot() {
-		return slot;
-	}
-
-	public @NotNull ClickType getClick() {
-		return click;
-	}
-
-	public void reopen() {
-		gui.reopen(player);
+	public void refreshItem() {
+		gui.refresh(getSlot());
 	}
 
 	public void refreshItemReopen() {
-		gui.refresh(slot);
-		gui.reopen(player);
+		gui.refresh(getSlot());
+		gui.reopen(getPlayer());
 	}
 
 	public void refreshGuiReopen() {
-		gui.reopen(player, true);
-	}
-
-	public void close() {
-		gui.close(player);
+		gui.reopen(getPlayer(), true);
 	}
 
 }

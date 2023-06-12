@@ -8,8 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.checkers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -19,10 +20,12 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.BucketTypeGUI;
-import fr.skytasul.quests.gui.creation.stages.Line;
+import fr.skytasul.quests.gui.misc.BucketTypeGUI;
 
 public class StageBucket extends AbstractStage {
 
@@ -46,14 +49,13 @@ public class StageBucket extends AbstractStage {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		Player p = e.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (branch.hasStageLaunched(acc, this) && canUpdate(p)) {
+		if (hasStarted(p) && canUpdate(p)) {
 			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
-				int amount = getPlayerAmount(acc);
+				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
-					updateObjective(acc, p, "amount", --amount);
+					updateObjective(p, "amount", --amount);
 				}
 			}
 		}
@@ -64,18 +66,22 @@ public class StageBucket extends AbstractStage {
 	}
 
 	@Override
-	protected void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		datas.put("amount", amount);
 	}
 
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), amount, false));
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(),
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
+				amount, false));
 	}
 
 	@Override
-	protected Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] { () -> Utils.getStringFromNameAndAmount(bucket.getName(), QuestsConfigurationImplementation.getItemAmountColor(), getPlayerAmount(acc), amount, false) };
+	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
+		return new Supplier[] {() -> Utils.getStringFromNameAndAmount(bucket.getName(),
+				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
+				amount, false)};
 	}
 
 	@Override
@@ -85,7 +91,7 @@ public class StageBucket extends AbstractStage {
 	}
 
 	public static StageBucket deserialize(ConfigurationSection section, StageController controller) {
-		return new StageBucket(branch, BucketType.valueOf(section.getString("bucket")), section.getInt("amount"));
+		return new StageBucket(controller, BucketType.valueOf(section.getString("bucket")), section.getInt("amount"));
 	}
 
 	public enum BucketType {
@@ -135,46 +141,50 @@ public class StageBucket extends AbstractStage {
 		private BucketType bucket;
 		private int amount;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageBucket> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
 			
-			line.setItem(6, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString()), (p, item) -> {
-				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor<>(p, () -> reopenGUI(p, true), obj -> {
+			line.setItem(6, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString()), event -> {
+				Lang.BUCKET_AMOUNT.send(event.getPlayer());
+				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 					setAmount(obj);
-					reopenGUI(p, true);
+					event.reopen();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			});
-			line.setItem(7, ItemUtils.item(XMaterial.BUCKET, Lang.editBucketType.toString()), (p, item) -> {
-				new BucketTypeGUI(() -> reopenGUI(p, true), bucket -> {
+			line.setItem(7, ItemUtils.item(XMaterial.BUCKET, Lang.editBucketType.toString()), event -> {
+				new BucketTypeGUI(event::reopen, bucket -> {
 					setBucket(bucket);
-					reopenGUI(p, true);
-				}).open(p);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
 		
 		public void setBucket(BucketType bucket) {
 			this.bucket = bucket;
-			ItemStack newItem = ItemUtils.lore(line.getItem(7), Lang.optionValue.format(bucket.getName()));
+			ItemStack newItem = ItemUtils.lore(getLine().getItem(7), Lang.optionValue.format(bucket.getName()));
 			newItem.setType(bucket.type.parseMaterial());
-			line.editItem(7, newItem);
+			getLine().refreshItem(7, newItem);
 		}
 		
 		public void setAmount(int amount) {
 			this.amount = amount;
-			line.editItem(6, ItemUtils.lore(line.getItem(6), Lang.Amount.format(amount)));
+			getLine().refreshItemLore(6, Lang.Amount.format(amount));
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			Runnable cancel = removeAndReopen(p, true);
-			new BucketTypeGUI(cancel, bucket -> {
+			new BucketTypeGUI(context::removeAndReopenGui, bucket -> {
 				setBucket(bucket);
 				Lang.BUCKET_AMOUNT.send(p);
-				new TextEditor<>(p, cancel, obj -> {
+				new TextEditor<>(p, context::removeAndReopenGui, obj -> {
 					setAmount(obj);
-					reopenGUI(p, true);
+					context.reopenGui();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			}).open(p);
 		}
@@ -188,7 +198,7 @@ public class StageBucket extends AbstractStage {
 		
 		@Override
 		public StageBucket finishStage(StageController controller) {
-			return new StageBucket(branch, bucket, amount);
+			return new StageBucket(controller, bucket, amount);
 		}
 	}
 

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.localization.Lang;
@@ -138,7 +139,8 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (datas.getStage() < 0)
 			return "§cerror: no stage set for branch " + getId();
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
-		return MessageUtils.format(QuestsConfigurationImplementation.getStageDescriptionFormat(), datas.getStage() + 1,
+		return MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getStageDescriptionFormat(),
+				datas.getStage() + 1,
 				regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
 	}
 
@@ -244,8 +246,8 @@ public class QuestBranchImplementation implements QuestBranch {
 					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 					asyncReward.add(acc);
 					try {
-						List<String> given = QuestUtils.giveRewards(p, stage.getStage().getRewards());
-						if (!given.isEmpty() && QuestsConfigurationImplementation.hasStageEndRewardsMessage())
+						List<String> given = stage.getStage().getRewards().giveRewards(p);
+						if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
 							Lang.FINISHED_OBTAIN.send(p, MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
 					} catch (InterruptingBranchException ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().debug(
@@ -263,8 +265,8 @@ public class QuestBranchImplementation implements QuestBranch {
 				}, "BQ async stage end " + p.getName()).start();
 			}else{
 				try {
-					List<String> given = QuestUtils.giveRewards(p, stage.getStage().getRewards());
-					if (!given.isEmpty() && QuestsConfigurationImplementation.hasStageEndRewardsMessage())
+					List<String> given = stage.getStage().getRewards().giveRewards(p);
+					if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
 						Lang.FINISHED_OBTAIN.send(p, MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
 					runAfter.run();
 				} catch (InterruptingBranchException ex) {
@@ -287,7 +289,8 @@ public class QuestBranchImplementation implements QuestBranch {
 			remove(acc, true);
 		}else {
 			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
-			if (QuestsConfigurationImplementation.sendQuestUpdateMessage() && p != null && questDatas.getStage() != -1)
+			if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null
+					&& questDatas.getStage() != -1)
 				Lang.QUEST_UPDATED.send(p, getQuest().getName());
 			questDatas.setStage(id);
 			if (p != null) playNextStage(p);
@@ -298,7 +301,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	
 	public void setEndingStages(@NotNull PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
-		if (QuestsConfigurationImplementation.sendQuestUpdateMessage() && p != null && launchStage)
+		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null && launchStage)
 			Lang.QUEST_UPDATED.send(p, getQuest().getName());
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		datas.setInEndingStages();
@@ -310,8 +313,10 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	private void playNextStage(@NotNull Player p) {
-		QuestUtils.playPluginSound(p.getLocation(), QuestsConfigurationImplementation.getNextStageSound(), 0.5F);
-		if (QuestsConfigurationImplementation.showNextParticles()) QuestsConfigurationImplementation.getParticleNext().send(p, Arrays.asList(p));
+		QuestUtils.playPluginSound(p.getLocation(), QuestsConfiguration.getConfig().getQuestsConfig().nextStageSound(),
+				0.5F);
+		if (QuestsConfigurationImplementation.getConfiguration().showNextParticles())
+			QuestsConfigurationImplementation.getConfiguration().getParticleNext().send(p, Arrays.asList(p));
 	}
 	
 	public void remove(){

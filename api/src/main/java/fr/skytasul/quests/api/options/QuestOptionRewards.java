@@ -1,21 +1,15 @@
 package fr.skytasul.quests.api.options;
 
+import java.util.Collection;
 import java.util.Map;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
+import fr.skytasul.quests.api.rewards.RewardList;
 
-public abstract class QuestOptionRewards extends QuestOptionObject<AbstractReward, RewardCreator> {
-
-	@Override
-	protected void attachObject(AbstractReward object) {
-		super.attachObject(object);
-		if (object.isAsync()) attachedAsyncReward(object);
-	}
-	
-	protected abstract void attachedAsyncReward(AbstractReward reward);
+public abstract class QuestOptionRewards extends QuestOptionObject<AbstractReward, RewardCreator, RewardList> {
 
 	@Override
 	protected AbstractReward deserialize(Map<String, Object> map) {
@@ -29,7 +23,12 @@ public abstract class QuestOptionRewards extends QuestOptionObject<AbstractRewar
 	
 	@Override
 	protected QuestObjectsRegistry<AbstractReward, RewardCreator> getObjectsRegistry() {
-		return QuestsAPI.getRewards();
+		return QuestsAPI.getAPI().getRewards();
 	}
 	
+	@Override
+	protected RewardList instanciate(Collection<AbstractReward> objects) {
+		return new RewardList(objects);
+	}
+
 }

@@ -2,38 +2,39 @@ package fr.skytasul.quests.stages;
 
 import java.util.Collections;
 import java.util.Spliterator;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.WaitBlockClick;
-import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
+import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.BQBlock;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
-import fr.skytasul.quests.gui.creation.stages.Line;
 import fr.skytasul.quests.utils.types.BQLocation;
 
 @LocatableType (types = { LocatedType.BLOCK, LocatedType.OTHER })
@@ -80,7 +81,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		if (locatedBlock == null) {
 			Block realBlock = lc.getMatchingBlock();
 			if (realBlock != null)
-				locatedBlock = Located.LocatedBlock.open(realBlock);
+				locatedBlock = Located.LocatedBlock.create(realBlock);
 		}
 		return locatedBlock;
 	}
@@ -118,7 +119,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	}
 	
 	@Override
-	protected String descriptionLine(PlayerAccount acc, DescriptionSource source){
+	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
 		return lc == null ? Lang.SCOREBOARD_INTERACT_MATERIAL.format(block.getName()) : Lang.SCOREBOARD_INTERACT.format(lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
 	}
 
@@ -132,7 +133,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	
 	public static StageInteract deserialize(ConfigurationSection section, StageController controller) {
 		if (section.contains("location")) {
-			return new StageInteract(branch, section.getBoolean("leftClick"), BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
+			return new StageInteract(controller, section.getBoolean("leftClick"), BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
 		}else {
 			BQBlock block;
 			if (section.contains("material")) {
@@ -140,7 +141,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 			}else {
 				block = BQBlock.fromString(section.getString("block"));
 			}
-			return new StageInteract(branch, section.getBoolean("leftClick"), block);
+			return new StageInteract(controller, section.getBoolean("leftClick"), block);
 		}
 	}
 
@@ -150,62 +151,76 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		private Location location;
 		private BQBlock block;
 		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+		public Creator(@NotNull StageCreationContext<StageInteract> context) {
+			super(context);
+		}
 
-			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), (p, item) -> setLeftClick(ItemUtils.toggleSwitch(item)));
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
+
+			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), event -> setLeftClick(!leftClick));
 		}
 		
 		public void setLeftClick(boolean leftClick) {
 			if (this.leftClick != leftClick) {
 				this.leftClick = leftClick;
-				line.editItem(6, ItemUtils.setSwitch(line.getItem(6), leftClick));
+				getLine().refreshItem(6, item -> ItemUtils.setSwitch(item, leftClick));
 			}
 		}
 
 		public void setLocation(Location location) {
 			if (this.location == null) {
-				line.setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), (p, item) -> {
-					Lang.CLICK_BLOCK.send(player);
-					new WaitBlockClick(player, () -> reopenGUI(player, false), obj -> {
+				getLine().setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), event -> {
+					Lang.CLICK_BLOCK.send(event.getPlayer());
+					new WaitBlockClick(event.getPlayer(), event::reopen, obj -> {
 						setLocation(obj);
-						reopenGUI(player, false);
+						event.reopen();
 					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
 				});
 			}
-			line.editItem(7, ItemUtils.lore(line.getItem(7), QuestOption.formatDescription(Utils.locationToString(location))));
+			getLine().refreshItem(7,
+					item -> ItemUtils.lore(item, QuestOption.formatDescription(Utils.locationToString(location))));
 			this.location = location;
 		}
 		
 		public void setMaterial(BQBlock block) {
 			if (this.block == null) {
-				line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), (p, item) -> {
+				getLine().setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), event -> {
 					new SelectBlockGUI(false, (newBlock, __) -> {
 						setMaterial(newBlock);
-						reopenGUI(player, true);
-					}).open(player);
+						event.reopen();
+					}).open(event.getPlayer());
 				});
 			}
-			line.editItem(7, ItemUtils.lore(line.getItem(7), Lang.optionValue.format(block.getName())));
+			getLine().refreshItem(7, item -> ItemUtils.lore(item, Lang.optionValue.format(block.getName())));
 			this.block = block;
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			Runnable cancel = removeAndReopen(p, true);
-			new ChooseActionGUI(cancel, () -> {
-				Lang.CLICK_BLOCK.send(p);
-				new WaitBlockClick(p, cancel, obj -> {
-					setLocation(obj);
-					reopenGUI(p, true);
-				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
-			}, () -> {
-				new SelectBlockGUI(false, (newBlock, __) -> {
-					setMaterial(newBlock);
-					reopenGUI(p, true);
-				}).open(p);
-			}).open(p);
+			LayoutedGUI.newBuilder()
+					.setInventoryType(InventoryType.HOPPER)
+					.addButton(0, LayoutedButton.create(ItemUtils.item(XMaterial.COMPASS, Lang.clickLocation.toString()),
+							event -> {
+								Lang.CLICK_BLOCK.send(p);
+								new WaitBlockClick(p, context::removeAndReopenGui, obj -> {
+									setLocation(obj);
+									context.reopenGui();
+								}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
+							}))
+					.addButton(1,
+							LayoutedButton.create(ItemUtils.item(XMaterial.STICK, Lang.clickMaterial.toString()), event -> {
+								new SelectBlockGUI(false, (newBlock, __) -> {
+									setMaterial(newBlock);
+									context.reopenGui();
+								}).open(p);
+							}))
+					.addButton(4, LayoutedButton.create(ItemUtils.itemCancel, __ -> context.removeAndReopenGui()))
+					.setCloseBehavior(StandardCloseBehavior.REOPEN)
+					.setName(Lang.INVENTORY_BLOCK_ACTION.toString())
+					.build().open(p);
 		}
 
 		@Override
@@ -220,42 +235,10 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		@Override
 		public StageInteract finishStage(StageController controller) {
 			if (location != null) {
-				return new StageInteract(branch, leftClick, new BQLocation(location));
-			}else return new StageInteract(branch, leftClick, block);
+				return new StageInteract(controller, leftClick, new BQLocation(location));
+			}else return new StageInteract(controller, leftClick, block);
 		}
 		
-		private class ChooseActionGUI implements Gui {
-			
-			private Runnable cancel, location, type;
-			
-			public ChooseActionGUI(Runnable cancel, Runnable location, Runnable type) {
-				this.cancel = cancel;
-				this.location = location;
-				this.type = type;
-			}
-			
-			@Override
-			public Inventory open(Player p) {
-				Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_BLOCK_ACTION.toString());
-				inv.setItem(0, ItemUtils.item(XMaterial.COMPASS, Lang.clickLocation.toString()));
-				inv.setItem(1, ItemUtils.item(XMaterial.STICK, Lang.clickMaterial.toString()));
-				inv.setItem(4, ItemUtils.itemCancel);
-				return p.openInventory(inv).getTopInventory();
-			}
-			
-			@Override
-			public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-				if (slot == 0) {
-					location.run();
-				}else if (slot == 1) {
-					type.run();
-				}else if (slot == 4) {
-					cancel.run();
-				}
-				return true;
-			}
-		};
-
 	}
 
 }
