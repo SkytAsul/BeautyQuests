@@ -1,29 +1,35 @@
 package fr.skytasul.quests.gui.creation.stages;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.AbstractGui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.quests.branches.EndingStage;
+import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.AbstractStage;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.stages.creation.StageGuiClickEvent;
+import fr.skytasul.quests.api.stages.creation.StageGuiClickHandler;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class StagesGUI extends AbstractGui {
 
@@ -105,7 +111,8 @@ public class StagesGUI extends AbstractGui {
 	}
 
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
+	public void onClick(@NotNull GuiClickEvent event) {
+		int slot = event.getSlot();
 		if (slot > 44) {
 			if (slot == 45) {
 				if (page > 0) {
@@ -122,77 +129,58 @@ public class StagesGUI extends AbstractGui {
 				}
 			}else if (slot == 52) {
 				if (isEmpty() && previousBranch == null) {
-					Utils.playPluginSound(p.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+					QuestUtils.playPluginSound(event.getPlayer(), "ENTITY_VILLAGER_NO", 0.6f);
 				}else {
-					session.openFinishGUI(p);
+					session.openCreationGUI(event.getPlayer());
 				}
 			}else if (slot == 53) {
 				if (previousBranch == null){ // main inventory = cancel button
 					stop = true;
-					p.closeInventory();
+					event.close();
 					if (!isEmpty()) {
 						if (!session.isEdition()) {
-							Lang.QUEST_CANCEL.send(p);
-						}else Lang.QUEST_EDIT_CANCEL.send(p);
+							Lang.QUEST_CANCEL.send(event.getPlayer());
+						} else
+							Lang.QUEST_EDIT_CANCEL.send(event.getPlayer());
 					}
 				}else { // branch inventory = previous branch button
-					Inventories.open(p, previousBranch);
+					previousBranch.open(event.getPlayer());
 				}
 			}
 		}else {
 			session.setStagesEdited();
 			Line line = getLine((slot - slot % 9) / 9 + 5 * page);
-			line.click(slot - (line.getLine() - page * 5) * 9, p, current, click);
+			StageGuiClickHandler click = line.lineObj.getClick(line.getLineSlot(slot));
+			if (click != null)
+				click.onClick(new StageGuiClickEvent(event.getPlayer(), event.getClicked(), event.getClick(), line.context));
 		}
-		return true;
 	}
 
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv){
-		if (isEmpty() || stop) return StandardCloseBehavior.REMOVE;
-		return StandardCloseBehavior.REOPEN;
+	public @NotNull CloseBehavior onClose(@NotNull Player player) {
+		return isEmpty() || stop ? StandardCloseBehavior.REMOVE : StandardCloseBehavior.REOPEN;
 	}
 
 	private void refresh() {
 		for (int i = 0; i < 3; i++) inv.setItem(i + 46, ItemUtils.item(i == page ? XMaterial.LIME_STAINED_GLASS_PANE : XMaterial.WHITE_STAINED_GLASS_PANE, Lang.regularPage.toString()));
 		inv.setItem(49, ItemUtils.item(page == 3 ? XMaterial.MAGENTA_STAINED_GLASS_PANE : XMaterial.PURPLE_STAINED_GLASS_PANE, Lang.branchesPage.toString()));
 		
-		for (Line line : lines) {
-			line.setItems(line.getActivePage());
-		}
+		lines.forEach(l -> l.lineObj.refresh());
 	}
 
 	@SuppressWarnings ("rawtypes")
-	public List<StageCreation> getStageCreations() {
-		List<StageCreation> stages = new LinkedList<>();
-		for (int i = 0; i < 20; i++) {
-			Line line = getLine(i);
-			if (isActiveLine(line)) stages.add(line.creation);
-		}
-		return stages;
+	public List<StageCreationContextImplementation> getStageCreations() {
+		return lines.stream().sorted(Comparator.comparingInt(line -> line.lineId)).filter(line -> line.isActive())
+				.map(line -> line.context).collect(Collectors.toList());
 	}
 	
 	private void editBranch(QuestBranchImplementation branch){
-		for (AbstractStage stage : branch.getRegularStages()){
-			Line line = getLine(stage.getId());
-			@SuppressWarnings ("rawtypes")
-			StageCreation creation = runClick(line, stage.getType(), false);
-			creation.edit(stage);
-			line.setItems(0);
+		for (StageController stage : branch.getRegularStages()) {
+			getLine(branch.getRegularStageId(stage)).setStageEdition(stage);
 		}
-		
-		int i = 15;
-		for (Entry<AbstractStage, QuestBranchImplementation> en : branch.getEndingStages().entrySet()){
-			Line line = getLine(i);
-			@SuppressWarnings ("rawtypes")
-			StageCreation creation = runClick(line, en.getKey().getType(), true);
-			StagesGUI gui = new StagesGUI(session, this);
-			gui.open(null); // init other GUI
-			creation.setLeadingBranch(gui);
-			if (en.getValue() != null) gui.editBranch(en.getValue());
-			creation.edit(en.getKey());
-			line.setItems(0);
-			i++;
+
+		for (EndingStage stage : branch.getEndingStages()) {
+			getLine(branch.getEndingStageId(stage.getStage())).setStageEdition(stage.getStage(), stage.getBranch());
 		}
 	}
 
@@ -222,12 +210,12 @@ public class StagesGUI extends AbstractGui {
 			int i = 0;
 			for (StageType<?> type : QuestsAPI.getAPI().getStages()) {
 				lineObj.setItem(++i, type.getItem(), event -> {
-					setStageCreation(event.getPlayer(), type);
+					setStageCreation(type).start(event.getPlayer());
 				});
 			}
 		}
 
-		<T extends AbstractStage> void setStageCreation(Player p, StageType<T> type) {
+		<T extends AbstractStage> StageCreation<T> setStageCreation(StageType<T> type) {
 			lineObj.clearItems();
 
 			context = new StageCreationContextImplementation<>(lineObj, type, ending);
@@ -272,7 +260,23 @@ public class StagesGUI extends AbstractGui {
 			if (lineId != 0 && lineId != 15)
 				getLine(lineId - 1).updateLineManageLore();
 
-			context.getCreation().start(p);
+			return (StageCreation<T>) context.getCreation();
+		}
+
+		void setStageEdition(StageController stage) {
+			setStageEdition(stage, null);
+		}
+
+		void setStageEdition(StageController stage, @Nullable QuestBranch branch) {
+			@SuppressWarnings("rawtypes")
+			StageCreation creation = setStageCreation(stage.getStageType());
+
+			if (branch != null) {
+				context.getEndingBranch().editBranch((QuestBranchImplementation) branch);
+			}
+
+			creation.edit(stage.getStage());
+			lineObj.setPage(0);
 		}
 
 		void updateLineManageLore() {
@@ -348,7 +352,11 @@ public class StagesGUI extends AbstractGui {
 		}
 
 		int getRawSlot(int lineSlot) {
-			return lineId * 9 - page * 5 + lineSlot;
+			return lineId * 9 - page * 5 * 9 + lineSlot;
+		}
+
+		int getLineSlot(int rawSlot) {
+			return rawSlot - (lineId * 9 - page * 5 * 9);
 		}
 
 		public boolean isShown() {

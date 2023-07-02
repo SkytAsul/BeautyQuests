@@ -10,7 +10,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;

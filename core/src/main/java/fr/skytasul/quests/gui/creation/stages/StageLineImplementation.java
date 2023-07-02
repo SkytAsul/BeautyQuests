@@ -96,7 +96,7 @@ public class StageLineImplementation implements StageGuiLine {
 	}
 
 	@Override
-	public StageGuiClickHandler click(int rawSlot) {
+	public StageGuiClickHandler getClick(int rawSlot) {
 		if (rawSlot == 0 && page > 0) {
 			setPage(page - 1);
 			return null;

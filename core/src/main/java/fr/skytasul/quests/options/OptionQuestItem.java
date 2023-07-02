@@ -4,8 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.MaterialParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
@@ -75,7 +75,8 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 					event.getGui().updateOptionItem(this);
 				}
 				event.reopen();
-			}, MaterialParser.ANY_PARSER).passNullIntoEndConsumer().start();
+			}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, true))
+					.passNullIntoEndConsumer().start();
 		}
 	}
 	

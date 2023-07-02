@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.editors.checkers;
+package fr.skytasul.quests.api.editors.parsers;
 
 import java.util.Arrays;
 import java.util.function.Predicate;

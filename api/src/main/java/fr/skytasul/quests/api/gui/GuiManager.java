@@ -19,4 +19,8 @@ public interface GuiManager {
 	@Nullable
 	Gui getOpenedGui(@NotNull Player player);
 
+	public @NotNull GuiFactory getFactory();
+
+	public void setFactory(@NotNull GuiFactory factory);
+
 }

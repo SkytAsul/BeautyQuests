@@ -29,10 +29,11 @@ import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.creation.StageCreation;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
+import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
@@ -180,7 +181,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 		QuestBranchImplementation mainBranch = new QuestBranchImplementation(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
-		boolean failure = loadBranch(mainBranch, session.getStagesGUI());
+		boolean failure = loadBranch(p, mainBranch, session.getStagesGUI());
 
 		QuestCreateEvent event = new QuestCreateEvent(p, qu, session.isEdition());
 		Bukkit.getPluginManager().callEvent(event);
@@ -244,18 +245,18 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 	}
 	
-	private boolean loadBranch(QuestBranchImplementation branch, StagesGUI stagesGui) {
+	private boolean loadBranch(Player p, QuestBranchImplementation branch, StagesGUI stagesGui) {
 		boolean failure = false;
-		for (StageCreation<?> creation : stagesGui.getStageCreations()) {
+		for (StageCreationContextImplementation context : stagesGui.getStageCreations()) {
 			try{
-				AbstractStage stage = createStage(creation, branch);
-				if (creation.getCreationContext().isEndingStage()) {
-					StagesGUI newGUI = creation.getCreationContext().getEndingBranch();
+				StageControllerImplementation stage = createStage(context, branch);
+				if (context.isEndingStage()) {
+					StagesGUI newGUI = context.getEndingBranch();
 					QuestBranchImplementation newBranch = null;
 					if (!newGUI.isEmpty()){
-						newBranch = new QuestBranchImplementation(branch.getBranchesManager());
-						branch.getBranchesManager().addBranch(newBranch);
-						failure |= loadBranch(newBranch, newGUI);
+						newBranch = new QuestBranchImplementation(branch.getManager());
+						branch.getManager().addBranch(newBranch);
+						failure |= loadBranch(p, newBranch, newGUI);
 					}
 					branch.addEndStage(stage, newBranch);
 				}else branch.addRegularStage(stage);
@@ -268,12 +269,12 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		return failure;
 	}
 
-	public <T extends AbstractStage> T createStage(StageCreation<T> creation, QuestBranchImplementation branch) {
-		StageControllerImplementation<T> controller =
-				new StageControllerImplementation<>(branch, creation.getCreationContext().getType());
-		T stage = creation.finish(controller);
+	public <T extends AbstractStage> StageControllerImplementation<T> createStage(StageCreationContext<T> context,
+			QuestBranchImplementation branch) {
+		StageControllerImplementation<T> controller = new StageControllerImplementation<>(branch, context.getType());
+		T stage = context.getCreation().finish(controller);
 		controller.setStage(stage);
-		return stage;
+		return controller;
 	}
 
 	private void setStagesEdited() {

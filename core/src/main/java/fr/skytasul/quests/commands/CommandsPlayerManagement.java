@@ -287,7 +287,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@Subcommand ("seePlayer")
 	@CommandPermission ("beautyquests.command.seePlayer")
 	public void seePlayer(Player actor, Player player) {
-		new PlayerListGUI(PlayersManager.getPlayerAccount(player), false).open(actor);
+		new PlayerListGUI(BeautyQuests.getInstance().getPlayersManager().getAccount(player), false).open(actor);
 	}
 	
 	@Subcommand ("start")
@@ -320,7 +320,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			return;
 		}
 		quest.start(player);
-		Lang.START_QUEST.send(sender, quest.getName(), acc.abstractAcc.getIdentifier());
+		Lang.START_QUEST.send(sender, quest.getName(), acc.getNameAndID());
 	}
 	
 	@Subcommand ("cancel")

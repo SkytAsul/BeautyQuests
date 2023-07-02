@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
+import fr.skytasul.quests.api.gui.GuiFactory;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -31,6 +32,11 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 
 	private Map<Player, Gui> players = new HashMap<>();
 	private boolean dismissClose = false;
+	private GuiFactory factory;
+
+	public GuiManagerImplementation() {
+		setFactory(new DefaultGuiFactory());
+	}
 
 	@Override
 	public void open(@NotNull Player player, @NotNull Gui inventory) {
@@ -77,6 +83,16 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 	@Override
 	public @Nullable Gui getOpenedGui(@NotNull Player player) {
 		return players.get(player);
+	}
+
+	@Override
+	public @NotNull GuiFactory getFactory() {
+		return factory;
+	}
+
+	@Override
+	public void setFactory(@NotNull GuiFactory factory) {
+		this.factory = factory;
 	}
 
 	@EventHandler

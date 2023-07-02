@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.SelectNPC;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -23,16 +22,7 @@ public final class NpcSelectGUI {
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 
-	public static @NotNull AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<@NotNull BQNPC> end) {
-		return select(cancel, end, false);
-	}
-
-	public static @NotNull AbstractGui selectNullable(@NotNull Runnable cancel,
-			@NotNull Consumer<@Nullable BQNPC> end) {
-		return select(cancel, end, true);
-	}
-
-	private static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
+	public static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
 			boolean nullable) {
 		Builder builder = LayoutedGUI.newBuilder().addButton(1, LayoutedButton.create(createNPC, event -> {
 			new NpcCreateGUI(end, event::reopen).open(event.getPlayer());

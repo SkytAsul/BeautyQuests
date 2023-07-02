@@ -43,7 +43,7 @@ public class QuestUtils {
 	}
 
 	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
-		if (!QuestsConfigurationImplementation.playSounds())
+		if (!QuestsConfigurationImplementation.getConfiguration().getQuestsConfig().sounds())
 			return;
 		if ("none".equals(sound))
 			return;
@@ -56,7 +56,7 @@ public class QuestUtils {
 	}
 
 	public static void playPluginSound(Location lc, String sound, float volume) {
-		if (!QuestsConfigurationImplementation.playSounds())
+		if (!QuestsConfigurationImplementation.getConfiguration().getQuestsConfig().sounds())
 			return;
 		try {
 			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);

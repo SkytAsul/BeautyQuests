@@ -32,6 +32,7 @@ import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
+import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -59,7 +60,7 @@ public class CommandsAdmin implements OrphanCommand {
 			
 			session.setCustomID(id);
 		}
-		session.openMainGUI(player);
+		session.openStagesGUI(player);
 	}
 	
 	@Subcommand ("edit")
@@ -67,14 +68,14 @@ public class CommandsAdmin implements OrphanCommand {
 	@OutsideEditor
 	public void edit(Player player, @Optional Quest quest) {
 		if (quest != null) {
-			new QuestCreationSession(quest).openMainGUI(player);
+			new QuestCreationSession((QuestImplementation) quest).openStagesGUI(player);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(player);
 			new SelectNPC(player, () -> {}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					ChooseQuestGUI.choose(player, npc.getQuests(), clickedQuest -> {
-						new QuestCreationSession(clickedQuest).openMainGUI(player);
+						new QuestCreationSession((QuestImplementation) clickedQuest).openStagesGUI(player);
 					}, null, false);
 				}else {
 					Lang.NPC_NOT_QUEST.send(player);

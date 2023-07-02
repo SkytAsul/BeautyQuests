@@ -12,7 +12,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
@@ -81,6 +82,9 @@ public interface QuestsAPI {
 	BossBarManager getBossBarManager();
 
 	void setBossBarManager(@NotNull BossBarManager newBossBarManager);
+
+	@NotNull
+	BQBlocksManager getBlocksManager();
 
 	void registerQuestsHandler(@NotNull QuestsHandler handler);
 

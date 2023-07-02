@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api.utils;
 
-import fr.skytasul.quests.api.editors.checkers.EnumParser;
+import fr.skytasul.quests.api.editors.parsers.EnumParser;
 import fr.skytasul.quests.api.localization.Lang;
 
 public enum ComparisonMethod {

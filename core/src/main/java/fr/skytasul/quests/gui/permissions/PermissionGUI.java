@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.WorldParser;
+import fr.skytasul.quests.api.editors.parsers.WorldParser;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;

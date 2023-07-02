@@ -17,4 +17,8 @@ public interface EditorManager {
 
 	public boolean isInEditor(@NotNull Player player);
 
+	public @NotNull EditorFactory getFactory();
+
+	public void setFactory(@NotNull EditorFactory factory);
+
 }

@@ -8,22 +8,24 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class ItemGUI extends AbstractGui {
 
 	private Consumer<ItemStack> end;
-	private Runnable cancel;
+	private boolean allowCancel;
 	
-	public ItemGUI(Consumer<ItemStack> end, Runnable cancel) {
+	public ItemGUI(Consumer<ItemStack> end, boolean allowCancel) {
 		this.end = end;
-		this.cancel = cancel;
+		this.allowCancel = allowCancel;
 	}
 	
 	@Override
@@ -50,14 +52,14 @@ public class ItemGUI extends AbstractGui {
 				event.setCancelled(false);
 				QuestUtils.runSync(() -> end.accept(event.getCursor()));
 			} else {
-				new ItemCreatorGUI(end, false).open(event.getPlayer());
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(end, false).open(event.getPlayer());
 			}
 		}
 	}
 	
 	@Override
 	public CloseBehavior onClose(Player p) {
-		return new DelayCloseBehavior(cancel);
+		return allowCancel ? new DelayCloseBehavior(() -> end.accept(null)) : StandardCloseBehavior.REOPEN;
 	}
 
 }

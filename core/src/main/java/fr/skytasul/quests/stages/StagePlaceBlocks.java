@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -17,7 +18,6 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
-import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
 
 public class StagePlaceBlocks extends AbstractCountableBlockStage {

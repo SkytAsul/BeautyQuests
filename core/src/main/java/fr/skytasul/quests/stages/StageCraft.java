@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -27,7 +28,6 @@ import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
-import fr.skytasul.quests.gui.items.ItemGUI;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -185,10 +185,11 @@ public class StageCraft extends AbstractStage {
 			super.setupLine(line);
 			
 			line.setItem(ITEM_SLOT, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), event -> {
-				new ItemGUI((is) -> {
-					setItem(is);
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(is -> {
+					if (is != null)
+						setItem(is);
 					event.reopen();
-				}, event::reopen).open(event.getPlayer());
+				}, true).open(event.getPlayer());
 			});
 			line.setItem(COMPARISONS_SLOT, ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString()), event -> {
 				new ItemComparisonGUI(comparisons, () -> {
@@ -213,7 +214,7 @@ public class StageCraft extends AbstractStage {
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new ItemGUI(is -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(is -> {
 				setItem(is);
 				context.reopenGui();
 			}, context::removeAndReopenGui).open(p);

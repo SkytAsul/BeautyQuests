@@ -776,7 +776,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public @NotNull QuestsAPI getAPI() {
+	public @NotNull QuestsAPIImplementation getAPI() {
 		return QuestsAPIImplementation.INSTANCE;
 	}
 

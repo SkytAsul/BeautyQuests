@@ -12,10 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
-import fr.skytasul.quests.api.editors.checkers.MaterialParser;
-import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -73,7 +73,7 @@ public class ItemCreatorGUI extends AbstractGui {
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 					type = obj;
 					event.reopen();
-				}, MaterialParser.ITEM_PARSER).start();
+				}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false)).start();
 				break;
 
 			case 1:

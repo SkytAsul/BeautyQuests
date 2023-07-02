@@ -41,7 +41,6 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
@@ -316,10 +315,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			super.setupLine(line);
 			
 			line.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), event -> {
-				NpcSelectGUI.select(event::reopen, newNPC -> {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, newNPC -> {
 					setNPCId(newNPC.getId());
 					event.reopen();
-				}).open(event.getPlayer());
+				}, false).open(event.getPlayer());
 			});
 			
 			line.setItem(SLOT_DIALOG, ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.stageText.toString(), Lang.NotSet.toString()), event -> {
@@ -354,10 +353,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			NpcSelectGUI.select(context::removeAndReopenGui, newNPC -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(context::removeAndReopenGui, newNPC -> {
 				setNPCId(newNPC.getId());
 				context.reopenGui();
-			}).open(p);
+			}, false).open(p);
 		}
 		
 		@Override

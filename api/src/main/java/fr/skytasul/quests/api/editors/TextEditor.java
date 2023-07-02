@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.editors;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.api.editors.checkers.AbstractParser;
+import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
 
 public class TextEditor<T> extends Editor {

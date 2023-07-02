@@ -30,7 +30,7 @@ public interface CountableObject<T> {
 
 	}
 
-	static <T> fr.skytasul.quests.api.utils.CountableObject<T> create(@NotNull UUID uuid, @NotNull T object, int amount) {
+	static <T> CountableObject<T> create(@NotNull UUID uuid, @NotNull T object, int amount) {
 		return new DummyCountableObject<>(uuid, object, amount);
 	}
 

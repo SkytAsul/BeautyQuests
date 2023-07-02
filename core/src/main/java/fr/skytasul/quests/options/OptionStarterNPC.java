@@ -6,13 +6,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
-import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
 public class OptionStarterNPC extends QuestOption<BQNPC> {
 	
@@ -51,11 +51,11 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
-		NpcSelectGUI.selectNullable(event::reopen, npc -> {
+		QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
 			setValue(npc);
 			ItemUtils.lore(event.getClicked(), getLore(event.getGui().getOptionSet()));
 			event.reopen();
-		}).open(event.getPlayer());
+		}, true).open(event.getPlayer());
 	}
 	
 	@Override

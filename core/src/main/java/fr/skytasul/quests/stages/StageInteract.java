@@ -13,7 +13,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.editors.WaitBlockClick;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
@@ -31,7 +33,6 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
@@ -90,7 +91,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		if (block == null) return null;
 		
-		return BQBlock.getNearbyBlocks(fetcher, Collections.singleton(block));
+		return QuestsAPI.getAPI().getBlocksManager().getNearbyBlocks(fetcher, Collections.singleton(block));
 	}
 	
 	@EventHandler
@@ -137,9 +138,10 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		}else {
 			BQBlock block;
 			if (section.contains("material")) {
-				block = new BQBlock.BQBlockMaterial(null, XMaterial.valueOf(section.getString("material")));
+				block = QuestsAPI.getAPI().getBlocksManager().createSimple(XMaterial.valueOf(section.getString("material")),
+						null);
 			}else {
-				block = BQBlock.fromString(section.getString("block"));
+				block = QuestsAPI.getAPI().getBlocksManager().deserialize(section.getString("block"));
 			}
 			return new StageInteract(controller, section.getBoolean("leftClick"), block);
 		}

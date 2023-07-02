@@ -10,7 +10,6 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.Subcommand;
@@ -30,7 +29,8 @@ public class CommandsPlayer implements OrphanCommand {
 		if (acc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Player " + actor.getName() + " has got no account. This is a CRITICAL issue.");
 			throw new CommandErrorException("no player datas");
-		}else new PlayerListGUI(acc).open(actor.getAsPlayer());
+		} else
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(acc).open(actor.getAsPlayer());
 	}
 	
 	@Subcommand ("checkpoint")

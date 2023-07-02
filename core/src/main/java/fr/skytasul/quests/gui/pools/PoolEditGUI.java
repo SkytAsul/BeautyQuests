@@ -9,10 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.DurationParser;
-import fr.skytasul.quests.api.editors.checkers.DurationParser.MinecraftTimeUnit;
-import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.editors.parsers.DurationParser;
+import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -22,7 +23,6 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 
 public class PoolEditGUI extends AbstractGui {
 	
@@ -122,12 +122,12 @@ public class PoolEditGUI extends AbstractGui {
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot()) {
 		case SLOT_NPC:
-				NpcSelectGUI.select(event::reopen, npc -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
 				npcID = npc.getId();
-					ItemUtils.lore(event.getClicked(), getNPCLore());
+				ItemUtils.lore(event.getClicked(), getNPCLore());
 				handleDoneButton(getInventory());
-					reopen(event.getPlayer());
-				}).open(event.getPlayer());
+				reopen(event.getPlayer());
+			}, false).open(event.getPlayer());
 			break;
 		case SLOT_HOLOGRAM:
 			Lang.POOL_HOLOGRAM_TEXT.send(event.getPlayer());

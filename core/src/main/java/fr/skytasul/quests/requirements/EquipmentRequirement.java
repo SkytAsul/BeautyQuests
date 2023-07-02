@@ -9,6 +9,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.ImmutableMap;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
@@ -17,7 +18,6 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
-import fr.skytasul.quests.gui.items.ItemGUI;
 
 public class EquipmentRequirement extends AbstractRequirement {
 	
@@ -64,13 +64,17 @@ public class EquipmentRequirement extends AbstractRequirement {
 				return;
 			}
 			
-			new ItemGUI(newItem -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(newItem -> {
+				if (newItem == null) {
+					event.cancel();
+					return;
+				}
+
 				slot = newSlot;
 				item = newItem;
 				
 				new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
-				
-			}, event::cancel).open(event.getPlayer());
+			}, true).open(event.getPlayer());
 			
 		}).allowCancel().open(event.getPlayer());
 	}

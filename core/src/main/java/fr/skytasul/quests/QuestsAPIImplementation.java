@@ -31,6 +31,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
+import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
 
 public class QuestsAPIImplementation implements QuestsAPI {
 
@@ -47,6 +48,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private BQNPCsManager npcsManager = null;
 	private AbstractHolograms<?> hologramsManager = null;
 	private BossBarManager bossBarManager = null;
+	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
 
@@ -174,6 +176,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		bossBarManager = newBossBarManager;
 		QuestsPlugin.getPlugin().getLoggerExpanded()
 				.debug("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
+	}
+
+	@Override
+	public @NotNull BQBlocksManagerImplementation getBlocksManager() {
+		return blocksManager;
 	}
 
 	@Override

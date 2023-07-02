@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.editors.checkers;
+package fr.skytasul.quests.api.editors.parsers;
 
 import java.math.BigDecimal;
 import org.bukkit.entity.Player;

@@ -20,6 +20,8 @@ import com.cryptomorin.xseries.XMaterial;
 import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -33,7 +35,6 @@ import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
 
 @LocatableType (types = LocatedType.BLOCK)
@@ -106,7 +107,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
-		return BQBlock.getNearbyBlocks(fetcher,
+		return QuestsAPI.getAPI().getBlocksManager().getNearbyBlocks(fetcher,
 				objects.stream().map(CountableObject::getObject).collect(Collectors.toList()));
 	}
 	

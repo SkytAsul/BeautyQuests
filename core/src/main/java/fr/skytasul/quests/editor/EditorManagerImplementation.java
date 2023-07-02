@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.Editor;
+import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
@@ -25,6 +26,8 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 	private final @NotNull Map<Player, Editor> players = new HashMap<>();
 	private final @Nullable BQBossBar bar;
 
+	private @NotNull EditorFactory factory;
+
 	public EditorManagerImplementation() {
 		if (QuestsAPI.getAPI().hasBossBarManager()) {
 			bar = QuestsAPI.getAPI().getBossBarManager().buildBossBar("§6Quests Editor", "YELLOW", "SOLID");
@@ -32,6 +35,8 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		} else {
 			bar = null;
 		}
+
+		setFactory(new DefaultEditorFactory());
 	}
 
 	@Override
@@ -80,6 +85,16 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 	@Override
 	public boolean isInEditor(@NotNull Player player) {
 		return players.containsKey(player);
+	}
+
+	@Override
+	public @NotNull EditorFactory getFactory() {
+		return factory;
+	}
+
+	@Override
+	public void setFactory(@NotNull EditorFactory factory) {
+		this.factory = factory;
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

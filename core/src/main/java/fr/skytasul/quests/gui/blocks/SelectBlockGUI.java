@@ -12,9 +12,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.checkers.MaterialParser;
-import fr.skytasul.quests.api.editors.checkers.NumberParser;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -22,9 +24,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
@@ -117,7 +117,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 				}
 			}
 			event.refreshGuiReopen();
-		}, MaterialParser.BLOCK_PARSER).start();
+		}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(false, true)).start();
 	}
 
 	private void dataClick(LayoutedClickEvent event) {
@@ -158,11 +158,11 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		event.close();
 		BQBlock block;
 		if (blockData != null) {
-			block = new Post1_13.BQBlockData(customName, Bukkit.createBlockData(type.parseMaterial(), blockData));
+			block = BeautyQuests.getInstance().getAPI().getBlocksManager().createBlockdata(blockData, customName);
 		} else if (tag != null) {
-			block = new Post1_13.BQBlockTag(customName, tag);
+			block = BeautyQuests.getInstance().getAPI().getBlocksManager().createTag(tag, customName);
 		} else {
-			block = new BQBlock.BQBlockMaterial(customName, type);
+			block = BeautyQuests.getInstance().getAPI().getBlocksManager().createSimple(type, customName);
 		}
 		run.accept(block, amount);
 	}

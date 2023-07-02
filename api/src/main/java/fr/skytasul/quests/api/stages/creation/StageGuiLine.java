@@ -39,6 +39,6 @@ public interface StageGuiLine {
 	void setPage(int page);
 
 	@Nullable
-	StageGuiClickHandler click(int rawSlot);
+	StageGuiClickHandler getClick(int rawSlot);
 
 }

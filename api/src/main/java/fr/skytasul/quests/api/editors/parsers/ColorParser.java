@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.editors.checkers;
+package fr.skytasul.quests.api.editors.parsers;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +12,8 @@ public class ColorParser implements AbstractParser<Color> {
 	public static final ColorParser PARSER = new ColorParser();
 	
 	private final Pattern hexPattern = Pattern.compile("^#([a-fA-F0-9]{6})$");
-	private final Pattern rgbPattern = Pattern.compile("^\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b,? ?\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b,? ?\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b$");
+	private final Pattern rgbPattern = Pattern.compile(
+			"^\\b(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\b,? ?\\b(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\b,? ?\\b(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\b$");
 	
 	private ColorParser() {}
 	

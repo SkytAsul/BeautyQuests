@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -84,7 +85,7 @@ public class ItemsGUI extends AbstractGui {
 				end.accept(items.values().stream().filter(x -> x != null).collect(Collectors.toList()));
 			}else {
 				if (event.getClicked().equals(none)) {
-					new ItemCreatorGUI(item -> {
+					QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(item -> {
 						if (item != null)
 							getInventory().setItem(event.getSlot(), item);
 						if (!addItem(event.getPlayer(), item, event.getSlot()))

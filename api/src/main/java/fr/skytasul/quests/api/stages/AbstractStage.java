@@ -94,11 +94,11 @@ public abstract class AbstractStage {
 		return rewards.hasAsync();
 	}
 
-	protected boolean canUpdate(@NotNull Player player) {
+	protected final boolean canUpdate(@NotNull Player player) {
 		return canUpdate(player, false);
 	}
 
-	protected boolean canUpdate(@NotNull Player player, boolean msg) {
+	protected final boolean canUpdate(@NotNull Player player, boolean msg) {
 		return validationRequirements.testPlayer(player, msg);
 	}
 	
@@ -162,15 +162,15 @@ public abstract class AbstractStage {
 		return null;
 	}
 	
-	public void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
+	protected final void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
 		controller.updateObjective(p, dataKey, dataValue);
 	}
 
-	protected <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey) {
+	protected final <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey) {
 		return getData(PlayersManager.getPlayerAccount(p), dataKey);
 	}
 
-	protected <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
+	protected final <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
 		return controller.getData(acc, dataKey);
 	}
 

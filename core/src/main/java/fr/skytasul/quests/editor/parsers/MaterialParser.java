@@ -1,21 +1,17 @@
-package fr.skytasul.quests.api.editors.checkers;
+package fr.skytasul.quests.editor.parsers;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public class MaterialParser implements AbstractParser<XMaterial> {
-
-	public static final MaterialParser ITEM_PARSER = new MaterialParser(true, false);
-	public static final MaterialParser BLOCK_PARSER = new MaterialParser(false, true);
-	public static final MaterialParser ANY_PARSER = new MaterialParser(false, false);
 	
 	private boolean item, block;
 	
-	@Deprecated
 	public MaterialParser(boolean item, boolean block) {
 		this.item = item;
 		this.block = block;

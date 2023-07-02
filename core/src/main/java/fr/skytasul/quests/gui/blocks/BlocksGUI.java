@@ -8,9 +8,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bukkit.DyeColor;
 import org.bukkit.inventory.ItemStack;
+import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.BQBlock;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 
