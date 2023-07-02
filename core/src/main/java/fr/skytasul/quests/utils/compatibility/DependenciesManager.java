@@ -41,12 +41,13 @@ import fr.skytasul.quests.utils.compatibility.mobs.MythicMobs5;
 import fr.skytasul.quests.utils.compatibility.npcs.BQCitizens;
 import fr.skytasul.quests.utils.compatibility.npcs.BQSentinel;
 import fr.skytasul.quests.utils.compatibility.npcs.BQServerNPCs;
+import fr.skytasul.quests.utils.compatibility.npcs.BQZNPCsPlus;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
 	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.setNPCsManager(new BQServerNPCs()), null, plugin -> {
-		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) // NOSONAR
+		if (plugin.getClass().getName().equals("io.github.gonalez.znpcs.ServersNPC")) // NOSONAR
 			return true;
 
 		BeautyQuests.logger.warning("Your version of znpcs (" + plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
@@ -58,6 +59,10 @@ public class DependenciesManager implements Listener {
 		QuestsAPI.registerMobFactory(new CitizensFactory());
 	});
 	
+	public static final BQDependency ZNPCsPlus = new BQDependency("ZNPCsPlus", () -> {
+		QuestsAPI.setNPCsManager(new BQZNPCsPlus());
+	});
+
 	public static final BQDependency vault = new BQDependency("Vault", () -> {
 		QuestsAPI.getRewards().register(new RewardCreator("moneyReward", MoneyReward.class, ItemUtils.item(XMaterial.EMERALD, Lang.rewardMoney.toString()), MoneyReward::new));
 		QuestsAPI.getRewards().register(new RewardCreator("permReward", PermissionReward.class, ItemUtils.item(XMaterial.REDSTONE_TORCH, Lang.rewardPerm.toString()), PermissionReward::new));
@@ -149,7 +154,7 @@ public class DependenciesManager implements Listener {
 	public DependenciesManager() {
 		dependencies = new ArrayList<>(Arrays.asList(
 				/*par, eboss, */
-				znpcs, citizens, // npcs
+				znpcs, citizens, ZNPCsPlus, // npcs
 				wg, gps, tokenEnchant, ultimateTimber, sentinel, PlayerBlockTracker, // other
 				mm, boss, advancedspawners, LevelledMobs, WildStacker, // mobs
 				vault, papi, acc, // hooks

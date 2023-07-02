@@ -197,9 +197,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.github.znetworkw.znpcservers</groupId>
-			<artifactId>znpcservers</artifactId>
-			<version>3.6</version>
+			<groupId>io.github.gonalez</groupId>
+			<artifactId>znpcs</artifactId>
+			<version>4.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Pyrbu</groupId>
+			<artifactId>ZNPCsPlus</artifactId>
+			<version>1.0.8</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
