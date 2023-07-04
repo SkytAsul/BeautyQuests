@@ -59,8 +59,6 @@ import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.md_5.bungee.api.ChatColor;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 /**
  * A bunch of static methods who can be useful
@@ -76,12 +74,7 @@ public class Utils{
 		int slot = p.getInventory().getHeldItemSlot();
 		ItemStack old = p.getInventory().getItem(slot);
 		p.getInventory().setItem(slot, book);
-
-		ByteBuf buf = Unpooled.buffer(256);
-		buf.setByte(0, (byte) 0);
-		buf.writerIndex(1);
-
-		NMS.getNMS().sendPacket(p, NMS.getNMS().bookPacket(buf));
+		NMS.getNMS().openBookInHand(p);
 		p.getInventory().setItem(slot, old);
 	}
 	

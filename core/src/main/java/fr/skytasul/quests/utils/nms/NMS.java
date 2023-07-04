@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.utils.ReflectUtils;
-import io.netty.buffer.ByteBuf;
 
 public abstract class NMS{
 	
@@ -34,8 +33,6 @@ public abstract class NMS{
 			}
 		}
 	}
-	
-	public abstract Object bookPacket(ByteBuf buf);
 	
 	public abstract double entityNameplateHeight(Entity en); // can be remplaced by Entity.getHeight from 1.11
 	
@@ -61,7 +58,7 @@ public abstract class NMS{
 		return craftReflect;
 	}
 	
-	public abstract void sendPacket(Player p, Object packet);
+	public abstract void openBookInHand(Player p);
 	
 	public static NMS getNMS() {
 		return nms;
