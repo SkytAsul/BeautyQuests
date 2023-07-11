@@ -177,7 +177,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		public ItemStack setMeta(ItemStack item) {
 			ItemMeta meta = item.getItemMeta();
 			meta.setLore(getCurrentPage().lines);
-			meta.setDisplayName("§8" + objects.indexOf(this) + " (" + dialogable.getNPC().getName() + "§8) - " + getCurrentPage().header);
+			meta.setDisplayName("§8" + objects.indexOf(this) + " (" + dialogable.getNPC().getNpc().getName() + "§8) - "
+					+ getCurrentPage().header);
 			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			item.setItemMeta(meta);
 			return item;

@@ -5,11 +5,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -147,15 +145,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	public void load() {
-		if (stage instanceof Listener)
-			Bukkit.getPluginManager().registerEvents((Listener) stage, QuestsPlugin.getPlugin());
+		QuestUtils.autoRegister(stage);
 		propagateStageHandlers(handler -> handler.stageLoad(this));
 		stage.load();
 	}
 
 	public void unload() {
-		if (stage instanceof Listener)
-			HandlerList.unregisterAll((Listener) stage);
+		QuestUtils.autoUnregister(stage);
 		propagateStageHandlers(handler -> handler.stageUnload(this));
 		stage.unload();
 	}

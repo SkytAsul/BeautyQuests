@@ -41,7 +41,7 @@ public interface QuestPool {
 
 	void resetPlayerTimer(PlayerAccount acc);
 
-	boolean canGive(Player p, PlayerAccount acc);
+	boolean canGive(Player p);
 
 	CompletableFuture<String> give(Player p);
 

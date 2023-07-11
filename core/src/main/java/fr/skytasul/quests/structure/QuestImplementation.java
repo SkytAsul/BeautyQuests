@@ -47,6 +47,7 @@ import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.rewards.MessageReward;
@@ -504,7 +505,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		BeautyQuests.getInstance().getQuestsManager().removeQuest(this);
 		unload();
 		if (hasOption(OptionStarterNPC.class))
-			getOptionValueOrDef(OptionStarterNPC.class).removeQuest(this);
+			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
 
 		if (!keepDatas) {
 			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(this).whenComplete(

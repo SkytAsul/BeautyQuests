@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.mcmonkey.sentinel.SentinelIntegration;
 import org.mcmonkey.sentinel.SentinelPlugin;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
-import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.api.quests.Quest;
 
 public class BQSentinel {
 	
@@ -39,14 +39,14 @@ public class BQSentinel {
 		public boolean isTarget(LivingEntity ent, String prefix, String value) {
 			switch (prefix) {
 			case "quest_in":
-				return test(ent, value, QuestImplementation::hasStarted);
+				return test(ent, value, Quest::hasStarted);
 			case "quest_finished":
-				return test(ent, value, QuestImplementation::hasFinished);
+				return test(ent, value, Quest::hasFinished);
 			}
 			return false;
 		}
 		
-		private boolean test(LivingEntity ent, String value, BiPredicate<QuestImplementation, PlayerAccountImplementation> test) {
+		private boolean test(LivingEntity ent, String value, BiPredicate<Quest, PlayerAccount> test) {
 			if (ent instanceof Player) {
 				PlayerAccount acc = PlayersManager.getPlayerAccount((Player) ent);
 				if (acc != null) {

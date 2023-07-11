@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;
+import fr.skytasul.quests.api.npcs.BqNpcManager;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 
@@ -29,6 +30,9 @@ public interface QuestsPlugin extends Plugin {
 	public void notifyLoadingFailure();
 
 	public void noticeSavingFailure();
+
+	@NotNull
+	BqNpcManager getNpcManager();
 
 	public static @NotNull QuestsPlugin getPlugin() {
 		return QuestsAPIProvider.getAPI().getPlugin();

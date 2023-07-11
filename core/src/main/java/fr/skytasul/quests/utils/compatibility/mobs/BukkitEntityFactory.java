@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
@@ -18,7 +19,7 @@ import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
-public class BukkitEntityFactory implements MobFactory<EntityType> {
+public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 
 	@Override
 	public String getID() {

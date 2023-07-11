@@ -9,10 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import fr.skytasul.quests.api.npcs.BQNPC;
-import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.BqInternalNpc;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
@@ -22,7 +23,7 @@ import io.github.znetworkw.znpcservers.npc.NPCSkin;
 import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.npc.event.NPCInteractEvent;
 
-public class BQServerNPCs extends BQNPCsManager {
+public class BQServerNPCs implements BqInternalNpcFactory {
 	
 	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
@@ -47,7 +48,7 @@ public class BQServerNPCs extends BQNPCsManager {
 	}
 	
 	@Override
-	protected BQNPC fetchNPC(int id) {
+	public BqInternalNpc fetchNPC(int id) {
 		NPC npc = NPC.find(id);
 		return npc == null ? null : new BQServerNPC(npc);
 	}
@@ -58,7 +59,7 @@ public class BQServerNPCs extends BQNPCsManager {
 	}
 	
 	@Override
-	protected BQNPC create(Location location, EntityType type, String name) {
+	public @NotNull BqInternalNpc create(Location location, EntityType type, String name) {
 		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
 		int id = ids.size();
 		while (ids.contains(id)) id++;
@@ -69,10 +70,11 @@ public class BQServerNPCs extends BQNPCsManager {
 	
 	@EventHandler
 	public void onInteract(NPCInteractEvent e) {
-		super.clickEvent(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(), NpcClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
+		npcClicked(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(),
+				NpcClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
 	}
 	
-	public static class BQServerNPC extends BQNPC {
+	public static class BQServerNPC implements BqInternalNpc {
 		
 		private final NPC npc;
 		

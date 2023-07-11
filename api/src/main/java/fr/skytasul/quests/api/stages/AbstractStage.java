@@ -17,7 +17,9 @@ import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.stages.options.StageOption;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 
+@AutoRegistered
 public abstract class AbstractStage {
 	
 	protected final @NotNull StageController controller;

@@ -123,7 +123,7 @@ public class PoolEditGUI extends AbstractGui {
 		switch (event.getSlot()) {
 		case SLOT_NPC:
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
-				npcID = npc.getId();
+				npcID = npc.getNpc().getId();
 				ItemUtils.lore(event.getClicked(), getNPCLore());
 				handleDoneButton(getInventory());
 				reopen(event.getPlayer());

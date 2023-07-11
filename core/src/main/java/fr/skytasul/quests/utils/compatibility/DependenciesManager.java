@@ -44,7 +44,8 @@ import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 
 public class DependenciesManager implements Listener {
 	
-	public static final BQDependency znpcs = new BQDependency("ServersNPC", () -> QuestsAPI.getAPI().setNPCsManager(new BQServerNPCs()), null, plugin -> {
+	public static final BQDependency znpcs =
+			new BQDependency("ServersNPC", () -> QuestsAPI.getAPI().setNpcFactory(new BQServerNPCs()), null, plugin -> {
 		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) // NOSONAR
 			return true;
 
@@ -53,7 +54,7 @@ public class DependenciesManager implements Listener {
 	});
 	
 	public static final BQDependency citizens = new BQDependency("Citizens", () -> {
-		QuestsAPI.getAPI().setNPCsManager(new BQCitizens());
+		QuestsAPI.getAPI().setNpcFactory(new BQCitizens());
 		QuestsAPI.getAPI().registerMobFactory(new CitizensFactory());
 	});
 	

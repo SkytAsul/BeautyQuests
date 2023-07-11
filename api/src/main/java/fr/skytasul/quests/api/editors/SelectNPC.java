@@ -6,13 +6,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 
 public class SelectNPC extends InventoryClear{
 	
-	private Consumer<BQNPC> run;
+	private Consumer<BqNpc> run;
 	
-	public SelectNPC(Player p, Runnable cancel, Consumer<BQNPC> end) {
+	public SelectNPC(Player p, Runnable cancel, Consumer<BqNpc> end) {
 		super(p, cancel);
 		this.run = end;
 	}

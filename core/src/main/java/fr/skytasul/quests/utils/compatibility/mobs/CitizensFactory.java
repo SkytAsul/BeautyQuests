@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.editors.CancellableEditor;
 import fr.skytasul.quests.api.localization.Lang;
@@ -20,7 +21,7 @@ import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.MobType;
 
-public class CitizensFactory implements MobFactory<NPC> {
+public class CitizensFactory implements MobFactory<NPC>, Listener {
 
 	@Override
 	public String getID() {

@@ -75,12 +75,13 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private StageDescriptionConfig stageDescription;
 	private QuestDescriptionConfig questDescription;
 	
-	QuestsConfigurationImplementation(BeautyQuests plugin) {
-		config = plugin.getConfig();
+	QuestsConfigurationImplementation(FileConfiguration config) {
+		this.config = config;
+
 		quests = new QuestsConfig();
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
-		stageDescription = new StageDescriptionConfig();
+		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stageDescriptionItemsSplit"));
 		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
 	}
 	
@@ -88,6 +89,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		boolean result = false;
 		result |= dialogs.update();
 		result |= menu.update();
+		result |= stageDescription.update();
 		return result;
 	}
 	
@@ -125,9 +127,9 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		dMinZoom = config.getInt("dynmap.minZoom");
 		
 		if (MinecraftVersion.MAJOR >= 9) {
-			particleStart = loadParticles(config, "start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
-			particleTalk = loadParticles(config, "talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
-			particleNext = loadParticles(config, "next", new ParticleEffect(Particle.SMOKE_NORMAL, ParticleShape.SPOT, null));
+			particleStart = loadParticles("start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
+			particleTalk = loadParticles("talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
+			particleNext = loadParticles("next", new ParticleEffect(Particle.SMOKE_NORMAL, ParticleShape.SPOT, null));
 		}
 
 		holoLaunchItem = loadHologram("launchItem");
@@ -169,7 +171,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 	}
 
-	private ParticleEffect loadParticles(FileConfiguration config, String name, ParticleEffect defaultParticle) {
+	private ParticleEffect loadParticles(String name, ParticleEffect defaultParticle) {
 		ParticleEffect particle = null;
 		if (config.getBoolean(name + ".enabled")) {
 			try{
@@ -658,15 +660,21 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean inlineAlone = true;
 		private Set<DescriptionSource> descSources = EnumSet.noneOf(DescriptionSource.class);
 
+		private final ConfigurationSection config;
+
+		public StageDescriptionConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+
 		private void init() {
 			itemNameColor = config.getString("itemNameColor");
 			itemAmountColor = config.getString("itemAmountColor");
-			stageDescriptionFormat = config.getString("stageDescriptionFormat");
-			descPrefix = "{nl}" + config.getString("stageDescriptionItemsSplit.prefix");
-			descAmountFormat = config.getString("stageDescriptionItemsSplit.amountFormat");
-			descXOne = config.getBoolean("stageDescriptionItemsSplit.showXOne");
-			inlineAlone = config.getBoolean("stageDescriptionItemsSplit.inlineAlone");
-			for (String s : config.getStringList("stageDescriptionItemsSplit.sources")) {
+			stageDescriptionFormat = config.getString("descriptionFormat");
+			descPrefix = "{nl}" + config.getString("prefix");
+			descAmountFormat = config.getString("amountFormat");
+			descXOne = config.getBoolean("showXOne");
+			inlineAlone = config.getBoolean("inlineAlone");
+			for (String s : config.getStringList("sources")) {
 				try {
 					descSources.add(DescriptionSource.valueOf(s));
 				} catch (IllegalArgumentException ex) {
@@ -674,6 +682,16 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 							.warning("Loading of description splitted sources failed : source " + s + " does not exist");
 				}
 			}
+		}
+
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config, config.getParent(), "itemNameColor", "itemNameColor");
+				result |= migrateEntry(config, config.getParent(), "itemAmountColor", "itemAmountColor");
+				result |= migrateEntry(config, config.getParent(), "stageDescriptionFormat", "descriptionFormat");
+			}
+			return result;
 		}
 
 		@Override

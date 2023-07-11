@@ -14,7 +14,7 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.SessionManager;
 import com.sk89q.worldguard.session.handler.Handler;
-import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.BeautyQuests;
 
 public class WorldGuardEntryHandler extends Handler {
 	
@@ -53,7 +53,7 @@ public class WorldGuardEntryHandler extends Handler {
 	@Override
 	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 		Player bukkitPlayer = BukkitAdapter.adapt(player);
-		if (!QuestsAPI.getAPI().getNPCsManager().isNPC(bukkitPlayer)) {
+		if (!BeautyQuests.getInstance().getNpcManager().getInternalFactory().isNPC(bukkitPlayer)) {
 			Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(bukkitPlayer, entered));
 			Bukkit.getPluginManager().callEvent(new WorldGuardExitEvent(bukkitPlayer, exited));
 		}

@@ -12,7 +12,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.commands.OutsideEditor;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.MessageUtils;
@@ -64,15 +64,15 @@ public class CommandsManagerImplementation implements CommandsManager {
 						.map(pool -> Integer.toString(pool.getId()))
 						.collect(Collectors.toList())));
 		
-		handler.registerValueResolver(BQNPC.class, context -> {
+		handler.registerValueResolver(BqNpc.class, context -> {
 			int id = context.popInt();
-			BQNPC npc = QuestsAPI.getAPI().getNPCsManager().getById(id);
+			BqNpc npc = QuestsPlugin.getPlugin().getNpcManager().getById(id);
 			if (npc == null)
 				throw new CommandErrorException(Lang.NPC_DOESNT_EXIST.format(id));
 			return npc;
 		});
-		handler.getAutoCompleter().registerParameterSuggestions(BQNPC.class,
-				SuggestionProvider.of(() -> QuestsAPI.getAPI().getNPCsManager().getIDs()
+		handler.getAutoCompleter().registerParameterSuggestions(BqNpc.class,
+				SuggestionProvider.of(() -> BeautyQuests.getInstance().getNpcManager().getInternalFactory().getIDs()
 						.stream()
 						.map(String::valueOf)
 						.collect(Collectors.toList())));

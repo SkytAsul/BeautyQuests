@@ -5,17 +5,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 
 public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
 	
-	private final @NotNull BQNPC npc;
+	private final @NotNull BqNpc npc;
 	private final @NotNull NpcClickType click;
 	
 	private boolean cancelled = false;
 	
-	public BQNPCClickEvent(@NotNull BQNPC npc, @NotNull Player p, @NotNull NpcClickType click) {
+	public BQNPCClickEvent(@NotNull BqNpc npc, @NotNull Player p, @NotNull NpcClickType click) {
 		super(p);
 		this.npc = npc;
 		this.click = click;
@@ -31,7 +31,7 @@ public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 	
-	public @NotNull BQNPC getNPC() {
+	public @NotNull BqNpc getNPC() {
 		return npc;
 	}
 	

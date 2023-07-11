@@ -7,11 +7,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.misc.ItemGUI;
 
 public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	
@@ -76,10 +76,10 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 			setValue(null);
 			event.getGui().updateOptionItem(this);
 		}else {
-			new ItemGUI(is -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(is -> {
 				setValue(is);
-				gui.inv.setItem(slot, getItemStack(null));
-				gui.reopen(player);
+				event.getGui().updateOptionItem(this);
+				event.reopen();
 			}, event::reopen).open(event.getPlayer());
 		}
 	}

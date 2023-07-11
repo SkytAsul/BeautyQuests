@@ -8,7 +8,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -17,7 +18,7 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
@@ -27,14 +28,14 @@ public class NpcCreateGUI extends AbstractGui {
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
-	private Consumer<BQNPC> end;
+	private Consumer<BqNpc> end;
 	private Runnable cancel;
 	
 	private EntityType en;
 	private String name;
 	private String skin;
 	
-	public NpcCreateGUI(Consumer<BQNPC> end, Runnable cancel) {
+	public NpcCreateGUI(Consumer<BqNpc> end, Runnable cancel) {
 		this.end = end;
 		this.cancel = cancel;
 	}
@@ -102,7 +103,9 @@ public class NpcCreateGUI extends AbstractGui {
 			new EntityTypeGUI(en -> {
 				setType(en);
 				event.reopen();
-			}, x -> x != null && QuestsAPI.getAPI().getNPCsManager().isValidEntityType(x)).open(event.getPlayer());
+			}, x -> x != null
+					&& BeautyQuests.getInstance().getNpcManager().getInternalFactory().isValidEntityType(x))
+							.open(event.getPlayer());
 			break;
 			
 		case 7:
@@ -113,7 +116,7 @@ public class NpcCreateGUI extends AbstractGui {
 		case 8:
 			event.close();
 			try {
-				end.accept(QuestsAPI.getAPI().getNPCsManager().createNPC(event.getPlayer().getLocation(), en, name, skin));
+				end.accept(QuestsPlugin.getPlugin().getNpcManager().createNPC(event.getPlayer().getLocation(), en, name, skin));
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				Lang.ERROR_OCCURED.send(event.getPlayer(), "npc creation " + ex.getMessage());

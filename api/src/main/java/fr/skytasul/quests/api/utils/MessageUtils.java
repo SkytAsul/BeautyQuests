@@ -11,8 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
 import net.md_5.bungee.api.ChatColor;
 
 public class MessageUtils {
@@ -115,6 +117,15 @@ public class MessageUtils {
 		}
 		output.append(msg, lastAppend, msg.length());
 		return output.toString();
+	}
+
+	public static String formatDescription(DescriptionSource source, SplittableDescriptionConfiguration configuration,
+			String... elements) {
+		if (elements.length == 0)
+			return Lang.Unknown.toString();
+		if (elements.length == 1 && configuration.isAloneSplitAmountShown(source))
+			return MessageUtils.itemsToFormattedString(elements, configuration.getItemAmountColor());
+		return String.join(configuration.getSplitPrefix(), elements);
 	}
 
 }

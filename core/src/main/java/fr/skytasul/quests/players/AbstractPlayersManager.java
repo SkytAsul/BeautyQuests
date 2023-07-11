@@ -22,7 +22,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
@@ -226,7 +225,8 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	
 	@Override
 	public @UnknownNullability PlayerAccountImplementation getAccount(@NotNull Player p) {
-		if (QuestsAPI.getAPI().getNPCsManager().isNPC(p)) return null;
+		if (BeautyQuests.getInstance().getNpcManager().getInternalFactory().isNPC(p))
+			return null;
 		if (!p.isOnline()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("(via " + DebugUtils.stackTraces(2, 5) + ")");

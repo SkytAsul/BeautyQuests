@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
-import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
@@ -64,10 +64,7 @@ public interface QuestsAPI {
 	@NotNull
 	QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards();
 
-	@NotNull
-	BQNPCsManager getNPCsManager();
-
-	void setNPCsManager(@NotNull BQNPCsManager newNpcsManager);
+	void setNpcFactory(@NotNull BqInternalNpcFactory factory);
 
 	boolean hasHologramsManager();
 

@@ -11,8 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.npcs.BQNPC;
-import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.BqInternalNpc;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
@@ -24,7 +24,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
 
-public class BQCitizens extends BQNPCsManager {
+public class BQCitizens implements BqInternalNpcFactory {
 	
 	@Override
 	public int getTimeToWaitForNPCs() {
@@ -37,7 +37,7 @@ public class BQCitizens extends BQNPCsManager {
 	}
 	
 	@Override
-	protected BQNPC fetchNPC(int id) {
+	public BqInternalNpc fetchNPC(int id) {
 		NPC npc = CitizensAPI.getNPCRegistry().getById(id);
 		return npc == null ? null : new BQCitizensNPC(npc);
 	}
@@ -50,35 +50,27 @@ public class BQCitizens extends BQNPCsManager {
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCRightClick(NPCRightClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? NpcClickType.SHIFT_RIGHT : NpcClickType.RIGHT);
+		npcClicked(e, e.getNPC().getId(), e.getClicker(),
+				e.getClicker().isSneaking() ? NpcClickType.SHIFT_RIGHT : NpcClickType.RIGHT);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCLeftClick(NPCLeftClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		super.clickEvent(e, e.getNPC().getId(), e.getClicker(), e.getClicker().isSneaking() ? NpcClickType.SHIFT_LEFT : NpcClickType.LEFT);
+		npcClicked(e, e.getNPC().getId(), e.getClicker(),
+				e.getClicker().isSneaking() ? NpcClickType.SHIFT_LEFT : NpcClickType.LEFT);
 	}
 	
 	@EventHandler
 	public void onNPCRemove(NPCRemoveEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		super.removeEvent(e.getNPC().getId());
+		npcRemoved(e.getNPC().getId());
 	}
 	
 	@EventHandler
 	public void onCitizensReload(CitizensReloadEvent e) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Citizens has been reloaded whereas it is highly not recommended for plugins compatibilities. Unexpected behaviors may happen.");
-		npcs.forEach((id, npc) -> {
-			if (npc instanceof BQCitizensNPC) {
-				BQCitizensNPC bqnpc = (BQCitizensNPC) npc;
-				NPC cnpc = CitizensAPI.getNPCRegistry().getById(id);
-				if (cnpc == null) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unable to find NPC with ID " + id + " after a Citizens reload.");
-				}else {
-					bqnpc.npc = cnpc;
-				}
-			}
-		});
+		npcsReloaded();
 	}
 	
 	@Override
@@ -87,14 +79,14 @@ public class BQCitizens extends BQNPCsManager {
 	}
 	
 	@Override
-	protected BQNPC create(Location location, EntityType type, String name) {
+	public BqInternalNpc create(Location location, EntityType type, String name) {
 		NPC npc = CitizensAPI.getNPCRegistry().createNPC(type, name);
 		if (!Settings.Setting.DEFAULT_LOOK_CLOSE.asBoolean()) npc.getOrAddTrait(LookClose.class).toggle();
 		npc.spawn(location);
 		return new BQCitizensNPC(npc);
 	}
 	
-	public static class BQCitizensNPC extends BQNPC {
+	public static class BQCitizensNPC implements BqInternalNpc {
 		
 		private NPC npc;
 		

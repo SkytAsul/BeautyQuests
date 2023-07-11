@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.boss.api.BossAPI;
@@ -22,7 +23,7 @@ import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.Utils;
 
-public class BQBoss implements MobFactory<Boss> {
+public class BQBoss implements MobFactory<Boss>, Listener {
 
 	@Override
 	public String getID() {

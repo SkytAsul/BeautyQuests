@@ -24,7 +24,7 @@ import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -47,7 +47,7 @@ import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 @LocatableType (types = LocatedType.ENTITY)
 public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
 	
-	private BQNPC npc;
+	private BqNpc npc;
 	private int npcID;
 	protected Dialog dialog = null;
 	protected DialogRunnerImplementation dialogRunner = null;
@@ -68,7 +68,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			List<Player> tmp = new ArrayList<>();
 			@Override
 			public void run() {
-				Entity en = npc.getEntity();
+				Entity en = npc.getNpc().getEntity();
 				if (en == null) return;
 				if (!en.getType().isAlive()) return;
 				Location lc = en.getLocation();
@@ -98,7 +98,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	
 	private void createHoloLaunch(){
 		ItemStack item = QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem();
-		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getLocation(), false);
+		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getNpc().getLocation(), false);
 		if (QuestsConfigurationImplementation.getConfiguration().isCustomHologramNameShown() && item.hasItemMeta()
 				&& item.getItemMeta().hasDisplayName())
 			hologram.appendTextLine(item.getItemMeta().getDisplayName());
@@ -112,7 +112,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	@Override
-	public BQNPC getNPC() {
+	public BqNpc getNPC() {
 		return npc;
 	}
 	
@@ -122,7 +122,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 	public void setNPC(int npcID) {
 		this.npcID = npcID;
-		if (npcID >= 0) this.npc = QuestsAPI.getAPI().getNPCsManager().getById(npcID);
+		if (npcID >= 0)
+			this.npc = QuestsPlugin.getPlugin().getNpcManager().getById(npcID);
 		if (npc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The NPC " + npcID + " does not exist for " + toString());
 		}else {
@@ -198,7 +199,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			return "§c§lunknown NPC " + npcID;
 		if (dialog != null && dialog.getNpcName() != null)
 			return dialog.getNpcName();
-		return npc.getName();
+		return npc.getNpc().getName();
 	}
 	
 	@Override
@@ -316,7 +317,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			
 			line.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), event -> {
 				QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, newNPC -> {
-					setNPCId(newNPC.getId());
+					setNPCId(newNPC.getNpc().getId());
 					event.reopen();
 				}, false).open(event.getPlayer());
 			});
@@ -354,7 +355,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		public void start(Player p) {
 			super.start(p);
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(context::removeAndReopenGui, newNPC -> {
-				setNPCId(newNPC.getId());
+				setNPCId(newNPC.getNpc().getId());
 				context.reopenGui();
 			}, false).open(p);
 		}

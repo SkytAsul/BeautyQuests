@@ -13,7 +13,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI.Builder;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 
 public final class NpcSelectGUI {
 
@@ -22,7 +22,7 @@ public final class NpcSelectGUI {
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 
-	public static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> end,
+	public static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BqNpc> end,
 			boolean nullable) {
 		Builder builder = LayoutedGUI.newBuilder().addButton(1, LayoutedButton.create(createNPC, event -> {
 			new NpcCreateGUI(end, event::reopen).open(event.getPlayer());

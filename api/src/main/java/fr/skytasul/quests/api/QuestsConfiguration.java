@@ -6,9 +6,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.npcs.NpcClickType;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.SplittableDescriptionConfiguration;
 
 public interface QuestsConfiguration {
 
@@ -109,27 +109,9 @@ public interface QuestsConfiguration {
 
 	}
 
-	interface StageDescription {
+	interface StageDescription extends SplittableDescriptionConfiguration {
 
 		String getStageDescriptionFormat();
-
-		String getItemNameColor();
-
-		String getItemAmountColor();
-
-		String getSplitPrefix();
-
-		String getSplitAmountFormat();
-
-		boolean isAloneSplitAmountShown();
-
-		boolean isAloneSplitInlined();
-
-		Set<DescriptionSource> getSplitSources();
-
-		default boolean isAloneSplitAmountShown(DescriptionSource source) {
-			return getSplitSources().contains(source) && isAloneSplitAmountShown();
-		}
 
 	}
 

@@ -7,7 +7,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.OptionSet;
@@ -73,7 +73,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	}
 	
 	@Override
-	public BQNPC getNPC() {
+	public BqNpc getNPC() {
 		return getAttachedQuest().getOptionValueOrDef(OptionStarterNPC.class);
 	}
 	

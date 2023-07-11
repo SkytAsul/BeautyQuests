@@ -7,15 +7,15 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.Utils;
 
 public class QuestUtils {
 
@@ -66,18 +66,8 @@ public class QuestUtils {
 		}
 	}
 
-	public static String descriptionLines(DescriptionSource source, String... elements) {
-		if (elements.length == 0)
-			return Lang.Unknown.toString();
-		if (QuestsConfigurationImplementation.splitDescription(source) && (!QuestsConfigurationImplementation.inlineAlone() || elements.length > 1)) {
-			return QuestsConfigurationImplementation.getDescriptionItemPrefix()
-					+ Utils.buildFromArray(elements, 0, QuestsConfigurationImplementation.getDescriptionItemPrefix());
-		}
-		return MessageUtils.itemsToFormattedString(elements, QuestsConfigurationImplementation.getItemAmountColor());
-	}
-
 	public static void spawnFirework(Location lc, FireworkMeta meta) {
-		if (!QuestsConfigurationImplementation.doFireworks() || meta == null)
+		if (!QuestsConfiguration.getConfig().getQuestsConfig().fireworks() || meta == null)
 			return;
 		runOrSync(() -> {
 			Consumer<Firework> fwConsumer = fw -> {
@@ -92,6 +82,26 @@ public class QuestUtils {
 				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
 			}
 		});
+	}
+
+	public static void autoRegister(Object object) {
+		if (!object.getClass().isAnnotationPresent(AutoRegistered.class))
+			throw new IllegalArgumentException("The class " + object.getClass().getName()
+					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registed as evenet listener.");
+
+		if (object instanceof Listener) {
+			Bukkit.getPluginManager().registerEvents((Listener) object, BeautyQuests.getInstance());
+		}
+	}
+
+	public static void autoUnregister(Object object) {
+		if (!object.getClass().isAnnotationPresent(AutoRegistered.class))
+			throw new IllegalArgumentException("The class " + object.getClass().getName()
+					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registed as evenet listener.");
+
+		if (object instanceof Listener) {
+			HandlerList.unregisterAll((Listener) object);
+		}
 	}
 
 }

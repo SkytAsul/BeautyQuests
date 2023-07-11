@@ -9,12 +9,12 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
-public class OptionStarterNPC extends QuestOption<BQNPC> {
+public class OptionStarterNPC extends QuestOption<BqNpc> {
 	
 	public OptionStarterNPC() {
 		super(OptionQuestPool.class);
@@ -22,16 +22,16 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 	
 	@Override
 	public Object save() {
-		return getValue().getId();
+		return getValue().getNpc().getId();
 	}
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(QuestsAPI.getAPI().getNPCsManager().getById(config.getInt(key)));
+		setValue(QuestsPlugin.getPlugin().getNpcManager().getById(config.getInt(key)));
 	}
 	
 	@Override
-	public BQNPC cloneValue(BQNPC value) {
+	public BqNpc cloneValue(BqNpc value) {
 		return value;
 	}
 	
@@ -40,7 +40,8 @@ public class OptionStarterNPC extends QuestOption<BQNPC> {
 		lore.add(formatDescription(Lang.questStarterSelectLore.toString()));
 		lore.add(null);
 		if (options != null && options.hasOption(OptionQuestPool.class) && options.getOption(OptionQuestPool.class).hasCustomValue()) lore.add(Lang.questStarterSelectPool.toString());
-		lore.add(getValue() == null ? Lang.NotSet.toString() : "§7" + getValue().getName() + " §8(" + getValue().getId() + ")");
+		lore.add(getValue() == null ? Lang.NotSet.toString()
+				: "§7" + getValue().getNpc().getName() + " §8(" + getValue().getNpc().getId() + ")");
 		return lore;
 	}
 	

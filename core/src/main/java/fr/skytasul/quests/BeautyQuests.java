@@ -46,6 +46,7 @@ import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
 import fr.skytasul.quests.gui.GuiManagerImplementation;
+import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.AbstractPlayersManager;
 import fr.skytasul.quests.players.PlayersManagerDB;
@@ -85,6 +86,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	
 	/* --------- Datas --------- */
 
+	private final @NotNull BqNpcManagerImplementation npcManager = new BqNpcManagerImplementation();
 	private @Nullable ScoreboardManager scoreboards;
 	private @Nullable QuestsManagerImplementation quests;
 	private @Nullable QuestPoolsManagerImplementation pools;
@@ -160,7 +162,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
 			
-			if (getAPI().getNPCsManager() == null) {
+			if (npcManager.getInternalFactory() == null) {
 				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
 			}
 			
@@ -191,7 +193,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						logger.severe("An error occurred while loading plugin datas.", e);
 					}
 				}
-			}.runTaskLater(this, getAPI().getNPCsManager().getTimeToWaitForNPCs());
+			}.runTaskLater(this, npcManager.getInternalFactory().getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();
@@ -371,7 +373,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			File configFile = new File(getDataFolder(), "config.yml");
-			config = new QuestsConfigurationImplementation(this);
+			config = new QuestsConfigurationImplementation(getConfig());
 			if (config.update()) {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
@@ -543,7 +545,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 		
 		if (unload){
-			getAPI().getNPCsManager().unload();
+			npcManager.unload();
 			resetDatas();
 		}
 	}
@@ -773,6 +775,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	@Override
 	public @NotNull EditorManager getEditorManager() {
 		return ensureLoaded(editorManager);
+	}
+
+	@Override
+	public @NotNull BqNpcManagerImplementation getNpcManager() {
+		return npcManager;
 	}
 
 	@Override

@@ -14,7 +14,9 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 
+@AutoRegistered
 public abstract class QuestOption<T> implements Cloneable {
 	
 	private final @NotNull QuestOptionCreator<T, QuestOption<T>> creator;

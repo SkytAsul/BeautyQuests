@@ -5,7 +5,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 
@@ -15,10 +15,10 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 	
 	private final @NotNull Dialog dialog;
 	private final @NotNull Message msg;
-	private final @NotNull BQNPC npc;
+	private final @NotNull BqNpc npc;
 	private final @NotNull Player player;
 	
-	public DialogSendMessageEvent(@NotNull Dialog dialog, @NotNull Message msg, @NotNull BQNPC npc, @NotNull Player player) {
+	public DialogSendMessageEvent(@NotNull Dialog dialog, @NotNull Message msg, @NotNull BqNpc npc, @NotNull Player player) {
 		this.dialog = dialog;
 		this.msg = msg;
 		this.npc = npc;
@@ -43,7 +43,7 @@ public class DialogSendMessageEvent extends Event implements Cancellable {
 		return msg;
 	}
 	
-	public @NotNull BQNPC getNPC() {
+	public @NotNull BqNpc getNPC() {
 		return npc;
 	}
 	

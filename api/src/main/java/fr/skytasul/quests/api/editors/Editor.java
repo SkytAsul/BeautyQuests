@@ -1,15 +1,14 @@
 package fr.skytasul.quests.api.editors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 
+@AutoRegistered
 public abstract class Editor {
 	
 	protected final @NotNull Player player;
@@ -30,9 +29,6 @@ public abstract class Editor {
 			throw new IllegalStateException("Editor already started");
 
 		started = true;
-
-		if (this instanceof Listener)
-			Bukkit.getPluginManager().registerEvents((@NotNull Listener) this, QuestsPlugin.getPlugin());
 	}
 
 	public void end() {
@@ -40,9 +36,6 @@ public abstract class Editor {
 			throw new IllegalStateException("Editor did not started");
 
 		started = false;
-
-		if (this instanceof Listener)
-			HandlerList.unregisterAll((Listener) this);
 	}
 	
 	public final void start() {

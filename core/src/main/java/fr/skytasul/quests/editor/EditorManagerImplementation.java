@@ -53,6 +53,8 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
 		editor.begin();
 
+		QuestUtils.autoRegister(editor);
+
 		if (MinecraftVersion.MAJOR > 11) {
 			player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
 		} else {
@@ -75,6 +77,8 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		if (bar != null)
 			bar.removePlayer(player);
 		editor.end();
+
+		QuestUtils.autoUnregister(editor);
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.commands.OutsideEditor;
 import fr.skytasul.quests.api.editors.SelectNPC;
 import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
@@ -29,6 +29,7 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
@@ -284,8 +285,8 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("testNPC")
 	@CommandPermission (value = "beautyquests.command.create")
 	@SecretCommand
-	public String testNPC(BukkitCommandActor actor, BQNPC npc) {
-		npc.toggleDebug();
+	public String testNPC(BukkitCommandActor actor, BqNpc npc) {
+		((BqNpcImplementation) npc).toggleDebug();
 		return npc.toString();
 	}
 	

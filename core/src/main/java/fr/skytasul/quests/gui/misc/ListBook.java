@@ -23,7 +23,8 @@ public class ListBook{
 		QuestsAPI.getAPI().getQuestsManager().getQuests().stream().sorted().forEach(qu -> {
 			StringBuilder stb = new StringBuilder(formatLine(Lang.BOOK_NAME.toString(), qu.getName())
 					+ formatLine("ID", qu.getId() + "")
-					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(), qu.getOption(OptionStarterNPC.class).getValue().getName()) : "")
+					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(),
+							qu.getOption(OptionStarterNPC.class).getValue().getNpc().getName()) : "")
 					//+ formatLine(Lang.BOOK_REWARDS.toString(), qu.getRewards().exp + " XP §3" + Lang.And.toString() + " §1" + qu.getRewards().itemsSize() + " " + Lang.Item.toString())
 					+ formatLine(Lang.BOOK_SEVERAL.toString(), (qu.isRepeatable()) ? Lang.Yes.toString() : Lang.No.toString())
 					/*+ formatLine(Lang.BOOK_LVL.toString(), "" + qu.lvlRequired)

@@ -40,9 +40,7 @@ public class CommandsPools implements OrphanCommand {
 	@Subcommand("start")
 	@CommandPermission("beautyquests.command.pools.start")
 	public void start(BukkitCommandActor actor, Player player, QuestPoolImplementation pool) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-
-		if (!pool.canGive(player, acc)) {
+		if (!pool.canGive(player)) {
 			Lang.POOL_START_ERROR.send(player, pool.getId(), player.getName());
 			return;
 		}

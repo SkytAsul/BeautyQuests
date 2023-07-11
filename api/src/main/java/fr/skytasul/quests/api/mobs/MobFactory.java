@@ -23,14 +23,16 @@ import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 
 /**
- * This class implements {@link Listener} to permit the implementation to have at least one {@link EventHandler}.
- * This event method will be used to fire the {@link #callEvent(Event, Object, Entity, Player)}.
+ * This class should implement {@link Listener} to have at least one {@link EventHandler}. This
+ * event method will be used to fire the {@link #callEvent(Event, Object, Entity, Player)}.
  * 
  * @param <T> object which should represents a mob type from whatever plugin
  */
-public abstract interface MobFactory<T> extends Listener {
+@AutoRegistered
+public abstract interface MobFactory<T> {
 
 	/**
 	 * @return internal ID of this Mob Factory

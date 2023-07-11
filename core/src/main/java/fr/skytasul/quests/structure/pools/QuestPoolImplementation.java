@@ -11,11 +11,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -24,6 +23,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
@@ -40,7 +40,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	private final boolean avoidDuplicates;
 	private final RequirementList requirements;
 	
-	BQNPC npc;
+	BqNpcImplementation npc;
 	List<Quest> quests = new ArrayList<>();
 	
 	QuestPoolImplementation(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
@@ -55,7 +55,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		this.requirements = requirements;
 		
 		if (npcID >= 0) {
-			npc = QuestsAPI.getAPI().getNPCsManager().getById(npcID);
+			npc = BeautyQuests.getInstance().getNpcManager().getById(npcID);
 			if (npc != null) {
 				npc.addPool(this);
 				return;
@@ -132,7 +132,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	@Override
 	public ItemStack getItemStack(String action) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
-				Lang.poolItemNPC.format(npcID + " (" + (npc == null ? "unknown" : npc.getName())
+				Lang.poolItemNPC.format(npcID + " (" + (npc == null ? "unknown" : npc.getNpc().getName())
 						+ ")"),
 				Lang.poolItemMaxQuests.format(maxQuests),
 				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
@@ -165,7 +165,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 	
 	@Override
-	public boolean canGive(Player p, PlayerAccount acc) {
+	public boolean canGive(Player p) {
+		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 		
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;

@@ -22,10 +22,10 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.SplittableDescriptionConfiguration;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
-import fr.skytasul.quests.utils.QuestUtils;
 
 public class StageBringBack extends StageNPC{
 	
@@ -49,23 +49,19 @@ public class StageBringBack extends StageNPC{
 		}
 
 		String[] array = new String[items.length]; // create messages on beginning
+		SplittableDescriptionConfiguration splitConfig = QuestsConfiguration.getConfig().getStageDescriptionConfig();
 		for (int i = 0; i < array.length; i++){
-			array[i] = QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemNameColor()
-					+ Utils.getStringFromItemStack(items[i],
-							QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(),
-							QuestsConfiguration.getConfig().getStageDescriptionConfig()
-									.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT));
+			array[i] = splitConfig.getItemNameColor() + Utils.getStringFromItemStack(items[i],
+					splitConfig.getItemAmountColor(), splitConfig.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT));
 		}
-		splitted = QuestUtils.descriptionLines(DescriptionSource.FORCESPLIT, array);
-		if (QuestsConfiguration.getConfig().getStageDescriptionConfig()
-				.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT)) {
-			for (int i = 0; i < array.length; i++){
-				array[i] = QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemNameColor() + Utils
-						.getStringFromItemStack(items[i],
-								QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), false);
+		splitted = MessageUtils.formatDescription(DescriptionSource.FORCESPLIT, splitConfig, array);
+		if (splitConfig.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT)) {
+			for (int i = 0; i < array.length; i++) {
+				array[i] = splitConfig.getItemNameColor()
+						+ Utils.getStringFromItemStack(items[i], splitConfig.getItemAmountColor(), false);
 			}
 		}
-		line = QuestUtils.descriptionLines(DescriptionSource.FORCELINE, array);
+		line = MessageUtils.formatDescription(DescriptionSource.FORCELINE, splitConfig, array);
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -129,7 +125,7 @@ public class StageBringBack extends StageNPC{
 	protected void initDialogRunner() {
 		super.initDialogRunner();
 		
-		getNPC().addStartablePredicate((p, acc) -> {
+		getNPC().addStartablePredicate(p -> {
 			return canUpdate(p, false) && checkItems(p, false);
 		}, this);
 		

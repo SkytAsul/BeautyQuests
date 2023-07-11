@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.utils.types.NumberedList;
 
@@ -35,7 +35,7 @@ public class Dialog implements Cloneable {
 		this.messages = messages;
 	}
 
-	public @NotNull String getNPCName(@Nullable BQNPC defaultNPC) {
+	public @NotNull String getNPCName(@Nullable BqNpc defaultNPC) {
 		if (npcName != null)
 			return npcName;
 		if (defaultNPC == null)

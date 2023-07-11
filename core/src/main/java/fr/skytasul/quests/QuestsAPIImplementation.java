@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -21,7 +19,7 @@ import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
-import fr.skytasul.quests.api.npcs.BQNPCsManager;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
@@ -32,6 +30,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class QuestsAPIImplementation implements QuestsAPI {
 
@@ -45,7 +44,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
 	private final List<MobStacker> mobStackers = new ArrayList<>();
 
-	private BQNPCsManager npcsManager = null;
 	private AbstractHolograms<?> hologramsManager = null;
 	private BossBarManager bossBarManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
@@ -67,7 +65,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void registerMobFactory(@NotNull MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
-		Bukkit.getPluginManager().registerEvents(factory, BeautyQuests.getInstance());
+		QuestUtils.autoRegister(factory);
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Mob factory registered (id: " + factory.getID() + ")");
 	}
 
@@ -121,19 +119,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @NotNull BQNPCsManager getNPCsManager() {
-		return npcsManager;
-	}
-
-	@Override
-	public void setNPCsManager(@NotNull BQNPCsManager newNpcsManager) {
-		if (npcsManager != null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(newNpcsManager.getClass().getSimpleName() + " will replace "
-					+ npcsManager.getClass().getSimpleName() + " as the new NPCs manager.");
-			HandlerList.unregisterAll(npcsManager);
-		}
-		npcsManager = newNpcsManager;
-		Bukkit.getPluginManager().registerEvents(npcsManager, BeautyQuests.getInstance());
+	public void setNpcFactory(@NotNull BqInternalNpcFactory factory) {
+		QuestsPlugin.getPlugin().getNpcManager().setInternalFactory(factory);
 	}
 
 	@Override

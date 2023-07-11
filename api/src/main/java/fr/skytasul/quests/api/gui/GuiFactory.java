@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.blocks.BQBlock;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 
@@ -36,6 +36,6 @@ public interface GuiFactory {
 			@NotNull Collection<MutableCountableObject<BQBlock>> existingBlocks);
 
 	@NotNull
-	Gui createNpcSelection(@NotNull Runnable cancel, @NotNull Consumer<BQNPC> callback, boolean nullable);
+	Gui createNpcSelection(@NotNull Runnable cancel, @NotNull Consumer<BqNpc> callback, boolean nullable);
 
 }

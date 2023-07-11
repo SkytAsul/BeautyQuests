@@ -32,7 +32,7 @@ import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
@@ -54,7 +54,7 @@ public class QuestsListener implements Listener{
 			return;
 		
 		Player p = e.getPlayer();
-		BQNPC npc = e.getNPC();
+		BqNpc npc = e.getNPC();
 		
 		if (QuestsPlugin.getPlugin().getGuiManager().hasGuiOpened(p)
 				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
@@ -89,7 +89,7 @@ public class QuestsListener implements Listener{
 		
 		Set<QuestPool> startablePools = npc.getPools().stream().filter(pool -> {
 			try {
-				return pool.canGive(p, acc);
+				return pool.canGive(p);
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An exception occured when checking requirements on the pool " + pool.getId() + " for player " + p.getName(), ex);
 				return false;
@@ -114,7 +114,8 @@ public class QuestsListener implements Listener{
 			});
 		}else if (!startablePools.isEmpty()) {
 			QuestPool pool = startablePools.iterator().next();
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.debug("NPC " + npc.getNpc().getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
 		}else {
 			if (!timer.isEmpty()) {
 				timer.get(0).testTimer(acc, true);

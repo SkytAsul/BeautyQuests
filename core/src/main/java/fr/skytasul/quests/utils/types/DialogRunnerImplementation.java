@@ -15,7 +15,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BQNPC;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
@@ -24,7 +24,7 @@ import fr.skytasul.quests.utils.DebugUtils;
 public class DialogRunnerImplementation implements DialogRunner {
 	
 	private final Dialog dialog;
-	private final BQNPC npc;
+	private final BqNpc npc;
 	
 	private List<Predicate<Player>> tests = new ArrayList<>();
 	private List<Predicate<Player>> testsCancelling = new ArrayList<>();
@@ -33,7 +33,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 	private Map<Player, PlayerStatus> players = new HashMap<>();
 	private Boolean navigationInitiallyPaused = null;
 	
-	public DialogRunnerImplementation(Dialog dialog, BQNPC npc) {
+	public DialogRunnerImplementation(Dialog dialog, BqNpc npc) {
 		this.dialog = dialog;
 		this.npc = npc;
 	}
