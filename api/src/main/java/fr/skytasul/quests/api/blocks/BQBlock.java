@@ -6,8 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public abstract class BQBlock {
+public abstract class BQBlock implements HasPlaceholders {
 
 	private final @NotNull BQBlockType type;
 	private final @Nullable String customName;
@@ -15,6 +17,8 @@ public abstract class BQBlock {
 	private @Nullable XMaterial cachedMaterial;
 	private @Nullable String cachedName;
 	
+	private @Nullable PlaceholderRegistry placeholders;
+
 	protected BQBlock(@NotNull BQBlockOptions options) {
 		this.type = options.getType();
 		this.customName = options.getCustomName();
@@ -60,4 +64,14 @@ public abstract class BQBlock {
 		return "BQBlock{" + getAsString() + "}";
 	}
 	
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry()
+					.registerIndexed("block_type", getAsString())
+					.register("block_material", getMaterial().name());
+		}
+		return placeholders;
+	}
+
 }

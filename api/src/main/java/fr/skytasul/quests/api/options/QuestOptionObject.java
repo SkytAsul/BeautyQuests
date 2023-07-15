@@ -62,7 +62,7 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	
 	protected abstract T deserialize(Map<String, Object> map);
 	
-	protected abstract String getSizeString(int size);
+	protected abstract String getSizeString();
 	
 	protected abstract QuestObjectsRegistry<T, C> getObjectsRegistry();
 	
@@ -74,7 +74,7 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	}
 
 	protected String[] getLore() {
-		String count = "§7" + getSizeString(getValue().size());
+		String count = "§7" + getSizeString();
 		if (getItemDescription() == null) return new String[] { count };
 		return new String[] { formatDescription(getItemDescription()), "", count };
 	}

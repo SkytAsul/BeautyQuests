@@ -93,6 +93,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 		return saveFolder;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public @NotNull List<Quest> getQuests() {
 		return (List) quests;

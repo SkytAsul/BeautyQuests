@@ -19,7 +19,9 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
 public class NpcCreateGUI extends AbstractGui {
@@ -58,21 +60,22 @@ public class NpcCreateGUI extends AbstractGui {
 	
 	private void setName(String name) {
 		this.name = name;
-		ItemUtils.lore(getInventory().getItem(1), Lang.optionValue.format(name));
+		ItemUtils.lore(getInventory().getItem(1), QuestOption.formatNullableValue(name));
 	}
 	
 	private void setType(EntityType type) {
 		this.en = type;
 		if (en == EntityType.PLAYER) {
-			getInventory().setItem(5, ItemUtils.skull(Lang.type.toString(), null, Lang.optionValue.format("player")));
+			getInventory().setItem(5, ItemUtils.skull(Lang.npcType.toString(), null, QuestOption.formatNullableValue("player")));
 		} else
 			getInventory().setItem(5,
-					ItemUtils.item(Utils.mobItem(en), Lang.type.toString(), Lang.optionValue.format(en.getName())));
+					ItemUtils.item(Utils.mobItem(en), Lang.npcType.toString(),
+							QuestOption.formatNullableValue(en.getName())));
 	}
 	
 	private void setSkin(String skin) {
 		this.skin = skin;
-		getInventory().setItem(3, ItemUtils.skull(Lang.skin.toString(), skin, Lang.optionValue.format(skin)));
+		getInventory().setItem(3, ItemUtils.skull(Lang.skin.toString(), skin, QuestOption.formatNullableValue(skin)));
 	}
 
 	@Override
@@ -119,7 +122,7 @@ public class NpcCreateGUI extends AbstractGui {
 				end.accept(QuestsPlugin.getPlugin().getNpcManager().createNPC(event.getPlayer().getLocation(), en, name, skin));
 			}catch (Exception ex) {
 				ex.printStackTrace();
-				Lang.ERROR_OCCURED.send(event.getPlayer(), "npc creation " + ex.getMessage());
+				DefaultErrors.sendGeneric(event.getPlayer(), "npc creation " + ex.getMessage());
 				cancel.run();
 			}
 			break;

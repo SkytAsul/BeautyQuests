@@ -3,6 +3,7 @@ package fr.skytasul.quests.rewards;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -13,6 +14,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class CheckpointReward extends AbstractReward {
 	
@@ -40,6 +42,16 @@ public class CheckpointReward extends AbstractReward {
 	}
 	
 	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("actions_amount", this::getActionsSizeString);
+	}
+
+	private @NotNull String getActionsSizeString() {
+		return Lang.actions.quickFormat("amount", actions.size());
+	}
+
+	@Override
 	public List<String> give(Player p) {
 		Lang.QUEST_CHECKPOINT.send(p);
 		return null;
@@ -61,7 +73,7 @@ public class CheckpointReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.actions.format(actions.size()));
+		loreBuilder.addDescription(getActionsSizeString());
 	}
 	
 	@Override

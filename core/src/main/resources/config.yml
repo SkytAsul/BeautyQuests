@@ -145,7 +145,7 @@ dynmap:
 
 # - Stage descriptions -
 # {0} = stage index, {1} = stage amount, {2} = stage description}
-stageDescriptionFormat: "§8({0}/{1}) §e{2}"
+stageDescriptionFormat: "§8({stage_index}/{stage_amount}) §e{stage_description}"
 # Prefix before object's name in lists (example: §6first, §6second and §6third)
 itemNameColor: "§6§o"
 # Prefix before object's amount in lists (example: first§ex2, second§ex7 and third§ex4)
@@ -170,14 +170,14 @@ questDescription:
     # Enable the requirements section for quest description
     display: true
     # How to format requirements which match the player
-    valid: §a ✔ §7{0}
+    valid: §a ✔ §7{requirement_description}
     # How to format requirements which do not match the player
-    invalid: §c ✖ §7{0}
+    invalid: §c ✖ §7{requirement_description}
   rewards:
     # Enable the rewards section for quest description
     display: true
     # How to format rewards
-    format: §7- {0}
+    format: §7- {reward_description}
 
 # - Particles configuration -
 # enabled: will the particle be shown?

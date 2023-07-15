@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 
 public class LoggerExpanded {
 	
@@ -62,7 +62,7 @@ public class LoggerExpanded {
 				}
 
 				if (sender != null)
-					Lang.ERROR_OCCURED.send(sender, friendlyErrorMessage);
+					DefaultErrors.sendGeneric(sender, friendlyErrorMessage);
 				severe(friendlyErrorMessage, ex);
 			}
 		};

@@ -18,9 +18,11 @@ import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.api.utils.AutoRegistered;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 @AutoRegistered
-public abstract class AbstractStage {
+public abstract class AbstractStage implements HasPlaceholders {
 	
 	protected final @NotNull StageController controller;
 	
@@ -30,6 +32,8 @@ public abstract class AbstractStage {
 	private @NotNull RequirementList validationRequirements = new RequirementList();
 	
 	private @NotNull List<@NotNull StageOption> options;
+
+	private @Nullable PlaceholderRegistry placeholders;
 	
 	protected AbstractStage(@NotNull StageController controller) {
 		this.controller = controller;
@@ -96,6 +100,21 @@ public abstract class AbstractStage {
 		return rewards.hasAsync();
 	}
 
+	@Override
+	public final @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry();
+			createdPlaceholdersRegistry(placeholders);
+		}
+		return placeholders;
+	}
+
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		placeholders.register("stage_type", controller.getStageType().getName());
+		placeholders.register("stage_rewards", rewards.getSizeString());
+		placeholders.register("stage_requirements", validationRequirements.getSizeString());
+	}
+
 	protected final boolean canUpdate(@NotNull Player player) {
 		return canUpdate(player, false);
 	}
@@ -153,16 +172,6 @@ public abstract class AbstractStage {
 	 * @return the progress of the stage for the player
 	 */
 	public abstract @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
-	
-	/**
-	 * Will be called only if there is a {@link #customText}
-	 * @param acc PlayerAccount who has the stage in progress
-	 * @param source source of the description request
-	 * @return all strings that can be used to format the custom description text
-	 */
-	public @Nullable Object @NotNull [] descriptionFormat(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		return null;
-	}
 	
 	protected final void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
 		controller.updateObjective(p, dataKey, dataValue);

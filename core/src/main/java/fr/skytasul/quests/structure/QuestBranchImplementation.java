@@ -26,7 +26,9 @@ import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -139,9 +141,10 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (datas.getStage() < 0)
 			return "§cerror: no stage set for branch " + getId();
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
+
 		return MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getStageDescriptionFormat(),
-				datas.getStage() + 1,
-				regularStages.size(), regularStages.get(datas.getStage()).getDescriptionLine(acc, source));
+				PlaceholderRegistry.of("stage_index", datas.getStage() + 1, "stage_amount", regularStages.size(),
+						"stage_description", regularStages.get(datas.getStage()).getDescriptionLine(acc, source)));
 	}
 
 	@Override
@@ -248,13 +251,14 @@ public class QuestBranchImplementation implements QuestBranch {
 					try {
 						List<String> given = stage.getStage().getRewards().giveRewards(p);
 						if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
-							Lang.FINISHED_OBTAIN.send(p, MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
+							Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
+									MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
 					} catch (InterruptingBranchException ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().debug(
 								"Interrupted branching in async stage end for " + p.getName() + " via " + ex.toString());
 						return;
 					}catch (Exception e) {
-						Lang.ERROR_OCCURED.send(p, "giving async rewards");
+						DefaultErrors.sendGeneric(p, "giving async rewards");
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving stage async end rewards.", e);
 					} finally {
 						// by using the try-catch, we ensure that "asyncReward#remove" is called
@@ -267,7 +271,8 @@ public class QuestBranchImplementation implements QuestBranch {
 				try {
 					List<String> given = stage.getStage().getRewards().giveRewards(p);
 					if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
-						Lang.FINISHED_OBTAIN.send(p, MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
+						Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
+								MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
 					runAfter.run();
 				} catch (InterruptingBranchException ex) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().debug(
@@ -284,14 +289,15 @@ public class QuestBranchImplementation implements QuestBranch {
 		StageControllerImplementation<?> stage = regularStages.get(id);
 		Player p = acc.getPlayer();
 		if (stage == null){
-			if (p != null) Lang.ERROR_OCCURED.send(p, " noStage");
+			if (p != null)
+				DefaultErrors.sendGeneric(p, " noStage");
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
 			remove(acc, true);
 		}else {
 			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
 			if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null
 					&& questDatas.getStage() != -1)
-				Lang.QUEST_UPDATED.send(p, getQuest().getName());
+				Lang.QUEST_UPDATED.send(p, getQuest());
 			questDatas.setStage(id);
 			if (p != null) playNextStage(p);
 			stage.start(acc);
@@ -302,7 +308,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	public void setEndingStages(@NotNull PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
 		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null && launchStage)
-			Lang.QUEST_UPDATED.send(p, getQuest().getName());
+			Lang.QUEST_UPDATED.send(p, getQuest());
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		datas.setInEndingStages();
 		for (EndingStageImplementation endStage : endStages) {

@@ -36,8 +36,9 @@ import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.options.OptionAutoQuest;
@@ -122,7 +123,8 @@ public class QuestsListener implements Listener{
 			}else if (!requirements.isEmpty()) {
 				requirements.get(0).testRequirements(p, acc, true);
 			}else {
-				npc.getPools().iterator().next().give(p).thenAccept(result -> MessageUtils.sendPrefixedMessage(p, result));
+				npc.getPools().iterator().next().give(p)
+						.thenAccept(result -> MessageUtils.sendMessage(p, result, MessageType.PREFIXED));
 			}
 			e.setCancelled(false);
 		}

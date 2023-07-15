@@ -3,7 +3,6 @@ package fr.skytasul.quests.api.options;
 import java.util.Collection;
 import java.util.Map;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
@@ -17,8 +16,8 @@ public abstract class QuestOptionRewards extends QuestOptionObject<AbstractRewar
 	}
 
 	@Override
-	protected String getSizeString(int size) {
-		return Lang.rewards.format(size);
+	protected String getSizeString() {
+		return getValue().getSizeString();
 	}
 	
 	@Override

@@ -13,8 +13,9 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 
-public interface Quest extends OptionSet, Comparable<Quest> {
+public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	int getId();
 

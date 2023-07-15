@@ -3,12 +3,14 @@ package fr.skytasul.quests.rewards;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class WaitReward extends AbstractReward {
 	
@@ -29,7 +31,17 @@ public class WaitReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescriptionAsValue(Lang.Ticks.format(delay));
+		loreBuilder.addDescriptionAsValue(getTicksString());
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("delay", this::getTicksString);
+	}
+
+	private @NotNull String getTicksString() {
+		return Lang.Ticks.quickFormat("ticks", delay);
 	}
 	
 	@Override

@@ -148,7 +148,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 						messagesInPage++;
 						added = true;
 					}
-					page.header = "§7§l" + messagesAdded + "§8 / §7§l" + Lang.dialogLines.format(messages.size());
+					page.header = "§7§l" + messagesAdded + "§8 / §7§l"
+							+ Lang.AmountDialogLines.quickFormat("amount", messages.size());
 					page.lines.addLast("  " + (pages.isEmpty() ? "§8" : "§7") + "◀ " + Lang.ClickLeft + " §8/ "
 							+ (last && !pageFull ? "§8" : "§7") + Lang.ClickRight + " ▶");
 					pages.add(page);
@@ -163,7 +164,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			}
 
 			if (!page.lines.isEmpty()) {
-				page.header = "§7§l" + messagesAdded + "§8 / §7§l" + Lang.dialogLines.format(messages.size());
+				page.header =
+						"§7§l" + messagesAdded + "§8 / §7§l" + Lang.AmountDialogLines.quickFormat("amount", messages.size());
 				page.lines.addLast(
 						"  " + (pages.isEmpty() ? "§8" : "§7") + "◀ " + Lang.ClickLeft + " §8/ " + Lang.ClickRight + " ▶");
 				pages.add(page);

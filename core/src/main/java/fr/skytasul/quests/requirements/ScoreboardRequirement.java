@@ -44,6 +44,11 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "score";
+	}
+
+	@Override
 	public void sendHelpString(Player p) {
 		Lang.CHOOSE_SCOREBOARD_TARGET.send(p);
 	}

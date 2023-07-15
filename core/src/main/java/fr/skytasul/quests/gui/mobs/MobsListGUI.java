@@ -80,7 +80,7 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 	@Override
 	public ItemStack getObjectItemStack(MutableCountableObject<Mob<?>> mob) {
 		List<String> lore = new ArrayList<>();
-		lore.add(Lang.Amount.format(mob.getAmount()));
+		lore.add(Lang.Amount.format(mob));
 		lore.addAll(mob.getObject().getDescriptiveLore());
 		lore.add("");
 		lore.add(Lang.click.toString());

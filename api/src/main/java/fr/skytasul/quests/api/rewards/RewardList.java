@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 
@@ -58,12 +59,20 @@ public class RewardList extends ArrayList<@NotNull AbstractReward> {
 		return stream().anyMatch(AbstractReward::isAsync);
 	}
 
+	public String getSizeString() {
+		return getSizeString(size());
+	}
+
 	public @NotNull List<Map<String, Object>> serialize() {
 		return SerializableObject.serializeList(this);
 	}
 
 	public static RewardList deserialize(@NotNull List<Map<?, ?>> mapList) {
 		return new RewardList(SerializableObject.deserializeList(mapList, AbstractReward::deserialize));
+	}
+
+	public static String getSizeString(int size) {
+		return Lang.rewards.quickFormat("amount", size);
 	}
 
 }

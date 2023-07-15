@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.editors.parsers;
 import java.math.BigDecimal;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 
 public class NumberParser<T extends Number> implements AbstractParser<T> {
 	
@@ -51,13 +52,13 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 			if (min != null || max != null) {
 				BigDecimal bd = new BigDecimal(msg);
 				if ((min != null && bd.compareTo(min) < 0) || (max != null && bd.compareTo(max) > 0)) {
-					Lang.NUMBER_NOT_IN_BOUNDS.send(p, min, max);
+					DefaultErrors.sendOutOfBounds(p, min, max);
 					return null;
 				}
 			}
 			return number;
 		}catch (Exception ex) {}
-		Lang.NUMBER_INVALID.send(p, msg);
+		DefaultErrors.sendInvalidNumber(p, msg);
 		return null;
 	}
 

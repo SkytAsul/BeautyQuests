@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import revxrsal.commands.annotation.Default;
@@ -28,10 +29,10 @@ public class CommandsPools implements OrphanCommand {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		if (timer) {
 			pool.resetPlayerTimer(acc);
-			Lang.POOL_RESET_TIMER.send(actor.getSender(), pool.getId(), player.getName());
+			Lang.POOL_RESET_TIMER.send(actor.getSender(), pool, acc);
 		} else {
 			pool.resetPlayer(acc).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
-				Lang.POOL_RESET_FULL.send(actor.getSender(), pool.getId(), player.getName());
+				Lang.POOL_RESET_FULL.send(actor.getSender(), pool, acc);
 			}, "An error occurred while resetting pool " + pool.getId() + " to player " + player.getName(),
 					actor.getSender()));
 		}
@@ -40,12 +41,14 @@ public class CommandsPools implements OrphanCommand {
 	@Subcommand("start")
 	@CommandPermission("beautyquests.command.pools.start")
 	public void start(BukkitCommandActor actor, Player player, QuestPoolImplementation pool) {
+		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		if (!pool.canGive(player)) {
-			Lang.POOL_START_ERROR.send(player, pool.getId(), player.getName());
+			Lang.POOL_START_ERROR.send(player, pool, acc);
 			return;
 		}
 
-		pool.give(player).thenAccept(result -> Lang.POOL_START_SUCCESS.send(player, pool.getId(), player.getName(), result));
+		pool.give(player).thenAccept(
+				result -> Lang.POOL_START_SUCCESS.send(player, pool, acc, PlaceholderRegistry.of("result", result)));
 	}
 
 }

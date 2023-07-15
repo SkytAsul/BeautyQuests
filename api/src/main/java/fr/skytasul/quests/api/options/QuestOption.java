@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.utils.AutoRegistered;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 @AutoRegistered
 public abstract class QuestOption<T> implements Cloneable {
@@ -132,13 +133,19 @@ public abstract class QuestOption<T> implements Cloneable {
 		return description == null ? null : "§8> §7" + description;
 	}
 	
-	public static @NotNull String formatNullableValue(@Nullable String valueString) {
-		return formatNullableValue(valueString, false);
+	public static @NotNull String formatNullableValue(@Nullable Object value) {
+		return formatNullableValue(value, false);
 	}
 	
-	public static @NotNull String formatNullableValue(@Nullable String valueString, boolean defaultValue) {
-		valueString = Lang.optionValue.format(valueString == null ? Lang.NotSet.toString() : valueString);
-		if (defaultValue) valueString += " " + Lang.defaultValue.toString();
+	public static @NotNull String formatNullableValue(@Nullable Object value, @NotNull Object defaultValue) {
+		return formatNullableValue(value == null ? defaultValue : value, value == null);
+	}
+
+	public static @NotNull String formatNullableValue(@Nullable Object value, boolean defaultValue) {
+		String valueString =
+				Lang.optionValue.format(PlaceholderRegistry.of("value", value == null ? Lang.NotSet.toString() : value));
+		if (defaultValue)
+			valueString += " " + Lang.defaultValue.toString();
 		return valueString;
 	}
 	

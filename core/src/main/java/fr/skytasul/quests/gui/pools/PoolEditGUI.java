@@ -71,11 +71,11 @@ public class PoolEditGUI extends AbstractGui {
 	}
 	
 	private String[] getHologramLore() {
-		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(hologram) };
+		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : QuestOption.formatNullableValue(hologram) };
 	}
 	
 	private String[] getMaxQuestsLore() {
-		return new String[] { "", Lang.optionValue.format(maxQuests) };
+		return new String[] { "", QuestOption.formatNullableValue(maxQuests) };
 	}
 	
 	private String[] getQuestsPerLaunchLore() {
@@ -83,11 +83,11 @@ public class PoolEditGUI extends AbstractGui {
 	}
 	
 	private String[] getTimeLore() {
-		return new String[] { "", Lang.optionValue.format(Utils.millisToHumanString(timeDiff)) };
+		return new String[] {"", QuestOption.formatNullableValue(Utils.millisToHumanString(timeDiff))};
 	}
 	
 	private String[] getRequirementsLore() {
-		return new String[] { "", QuestOption.formatDescription(Lang.requirements.format(requirements.size())) };
+		return new String[] {"", QuestOption.formatDescription(requirements.getSizeString())};
 	}
 	
 	private void handleDoneButton(Inventory inv) {

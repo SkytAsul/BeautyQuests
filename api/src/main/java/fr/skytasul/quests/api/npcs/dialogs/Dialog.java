@@ -7,11 +7,11 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
-import fr.skytasul.quests.utils.types.NumberedList;
+import fr.skytasul.quests.api.utils.NumberedList;
 
 public class Dialog implements Cloneable {
 
@@ -40,7 +40,7 @@ public class Dialog implements Cloneable {
 			return npcName;
 		if (defaultNPC == null)
 			return Lang.Unknown.toString();
-		return defaultNPC.getName();
+		return defaultNPC.getNpc().getName();
 	}
 	
 	public @Nullable String getNpcName() {
@@ -60,7 +60,8 @@ public class Dialog implements Cloneable {
 	}
 	
 	public boolean isSkippable() {
-		return skippable == null ? QuestsConfiguration.getDialogsConfig().isSkippableByDefault() : skippable.booleanValue();
+		return skippable == null ? QuestsConfiguration.getConfig().getDialogsConfig().isSkippableByDefault()
+				: skippable.booleanValue();
 	}
 	
 	public void setSkippable(@Nullable Boolean skippable) {
@@ -100,7 +101,7 @@ public class Dialog implements Cloneable {
 		NumberedList<Message> tmpMessages = new NumberedList<>();
 		for (Map<?, ?> msg : section.getMapList("msgs")) {
 			int id = (int) msg.get("id");
-			tmpMessages.setSwitch(id, Message.deserialize((Map<String, Object>) msg.get("message")));
+			tmpMessages.set(id, Message.deserialize((Map<String, Object>) msg.get("message")));
 		}
 		Dialog di = new Dialog(tmpMessages.toList());
 		if (section.contains("npcName")) di.npcName = section.getString("npcName");

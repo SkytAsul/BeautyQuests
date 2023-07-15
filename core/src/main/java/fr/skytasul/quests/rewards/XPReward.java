@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -11,7 +12,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 
@@ -32,7 +33,7 @@ public class XPReward extends AbstractReward {
 				&& QuestsConfigurationImplementation.getConfiguration().xpOverridedSkillAPI()) {
 			SkillAPI.giveExp(p, exp);
 		}else p.giveExp(exp);
-		return Arrays.asList(exp + " " + Lang.Exp.toString());
+		return Arrays.asList(getXpAmountString());
 	}
 
 	@Override
@@ -42,21 +43,32 @@ public class XPReward extends AbstractReward {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return exp + " " + Lang.Exp.toString();
+		return getXpAmountString();
 	}
 	
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescriptionAsValue(exp + " " + Lang.Exp.toString());
+		loreBuilder.addDescriptionAsValue(getXpAmountString());
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("xp_amount", this::getXpAmountString);
+	}
+
+	private @NotNull String getXpAmountString() {
+		return Lang.AmountXp.quickFormat("xp_amount", exp);
 	}
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		MessageUtils.sendPrefixedMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
+		Lang.XP_GAIN.send(event.getPlayer(), this);
 		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
-			MessageUtils.sendPrefixedMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
+			int old = exp;
 			exp = obj;
+			Lang.XP_EDITED.send(event.getPlayer(), PlaceholderRegistry.of("old_xp_amount", old).with(this));
 			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}

@@ -20,6 +20,7 @@ import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 
 public class PlayerAccountImplementation implements PlayerAccount {
@@ -31,6 +32,8 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	protected final Map<Integer, PlayerPoolDatasImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 	protected final int index;
+
+	private @Nullable PlaceholderRegistry placeholders;
 	
 	protected PlayerAccountImplementation(@NotNull AbstractAccount account, int index) {
 		this.abstractAcc = account;
@@ -157,6 +160,18 @@ public class PlayerAccountImplementation implements PlayerAccount {
 		additionalDatas.clear();
 	}
 	
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry()
+					.registerIndexed("player", this::getNameAndID)
+					.register("player_name", this::getName)
+					.register("account_id", index)
+					.register("account_identifier", abstractAcc::getIdentifier);
+		}
+		return placeholders;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == this)

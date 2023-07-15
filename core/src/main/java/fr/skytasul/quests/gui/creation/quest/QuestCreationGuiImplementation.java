@@ -30,8 +30,9 @@ import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
@@ -200,9 +201,8 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			}
 
 			QuestsAPI.getAPI().getQuestsManager().addQuest(qu);
-			MessageUtils.sendPrefixedMessage(p,
-					((!session.isEdition()) ? Lang.SUCCESFULLY_CREATED : Lang.SUCCESFULLY_EDITED).toString(), qu.getName(),
-					qu.getBranchesManager().getBranches().size());
+			Lang msg = session.isEdition() ? Lang.SUCCESFULLY_EDITED : Lang.SUCCESFULLY_CREATED;
+			msg.send(p, qu, PlaceholderRegistry.of("quest_branches", qu.getBranchesManager().getBranches().size()));
 			QuestUtils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("New quest created: " + qu.getName() + ", ID " + qu.getId() + ", by " + p.getName());
 			if (session.isEdition()) {
@@ -212,7 +212,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			try {
 				qu.saveToFile();
 			}catch (Exception e) {
-				Lang.ERROR_OCCURED.send(p, "initial quest save");
+				DefaultErrors.sendGeneric(p, "initial quest save");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
 			
@@ -262,7 +262,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				}else branch.addRegularStage(stage);
 			}catch (Exception ex) {
 				failure = true;
-				Lang.ERROR_OCCURED.send(p, " lineToStage");
+				DefaultErrors.sendGeneric(p, " lineToStage");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred wheh creating branch from GUI.", ex);
 			}
 		}

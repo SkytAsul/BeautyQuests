@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.function.Supplier;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,8 +15,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public interface Locale {
 	
@@ -27,24 +29,42 @@ public interface Locale {
 	@NotNull
 	String getValue();
 	
+	@NotNull
+	MessageType getType();
+
 	void setValue(@NotNull String value);
 	
-	default @NotNull String format(@Nullable Object @Nullable... replace) {
-		return MessageUtils.format(getValue(), replace);
+	default @NotNull String format(@Nullable HasPlaceholders placeholdersHolder) {
+		return MessageUtils.format(getValue(),
+				placeholdersHolder == null ? null : placeholdersHolder.getPlaceholdersRegistry());
+	}
+
+	default @NotNull String format(@NotNull HasPlaceholders @NotNull... placeholdersHolders) {
+		return format(PlaceholderRegistry.combine(placeholdersHolders));
 	}
 	
-	default @NotNull String format(@NotNull Supplier<Object> @Nullable... replace) {
-		return MessageUtils.format(getValue(), replace);
+	default @NotNull String quickFormat(@NotNull String key1, @Nullable Object value1) {
+		// TODO maybe simplfy this for optimization?
+		return format(PlaceholderRegistry.of(key1, value1));
 	}
-	
-	default void send(@NotNull CommandSender sender, @Nullable Object @Nullable... args) {
-		MessageUtils.sendPrefixedMessage(sender, getValue(), args);
+
+	default void send(@NotNull CommandSender sender) {
+		send(sender, (HasPlaceholders) null);
 	}
-	
-	default void sendWP(@NotNull CommandSender p, @Nullable Object @Nullable... args) {
-		MessageUtils.sendUnprefixedMessage(p, getValue(), args);
+
+	default void send(@NotNull CommandSender sender, @Nullable HasPlaceholders placeholdersHolder) {
+		MessageUtils.sendMessage(sender, getValue(), getType(),
+				placeholdersHolder == null ? null : placeholdersHolder.getPlaceholdersRegistry());
 	}
-	
+
+	default void send(@NotNull CommandSender sender, @NotNull HasPlaceholders @NotNull... placeholdersHolders) {
+		send(sender, PlaceholderRegistry.combine(placeholdersHolders));
+	}
+
+	default void quickSend(@NotNull CommandSender sender, @NotNull String key1, @Nullable Object value1) {
+		send(sender, PlaceholderRegistry.of(key1, value1));
+	}
+
 	public static void loadStrings(@NotNull Locale @NotNull [] locales, @NotNull YamlConfiguration defaultConfig,
 			@NotNull YamlConfiguration config) {
 		for (Locale l : locales) {

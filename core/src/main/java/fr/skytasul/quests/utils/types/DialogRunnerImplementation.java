@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.DialogSendEvent;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
@@ -63,14 +63,17 @@ public class DialogRunnerImplementation implements DialogRunner {
 	
 	@Override
 	public boolean canContinue(Player p) {
-		if (npc == null || QuestsConfigurationImplementation.getDialogsConfig().getMaxDistance() == 0) return true;
-		return p.getLocation().distanceSquared(npc.getLocation()) <= QuestsConfigurationImplementation.getDialogsConfig().getMaxDistanceSquared();
+		if (npc == null || QuestsConfiguration.getConfig().getDialogsConfig().getMaxDistance() == 0)
+			return true;
+		return p.getLocation().distanceSquared(npc.getLocation()) <= QuestsConfiguration.getConfig().getDialogsConfig()
+				.getMaxDistanceSquared();
 	}
 	
 	private void end(Player p) {
 		if (test(p) != TestResult.ALLOW) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Dialog predicates not completed for NPC " + npc.getId()
-					+ " whereas the dialog should end. This is a bug.");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Dialog predicates not completed for NPC " + npc.getNpc().getId()
+							+ " whereas the dialog should end. This is a bug.");
 			return;
 		}
 		
@@ -79,13 +82,13 @@ public class DialogRunnerImplementation implements DialogRunner {
 	
 	@Override
 	public TestResult onClick(Player p) {
-		if (QuestsConfigurationImplementation.getDialogsConfig().isClickDisabled()) {
+		if (QuestsConfiguration.getConfig().getDialogsConfig().isClickDisabled()) {
 			PlayerStatus status = players.get(p);
 			if (status != null && status.task != null) return TestResult.DENY;
 		}
 		
 		if (p.isSneaking() && dialog != null && dialog.isSkippable() && test(p) == TestResult.ALLOW) {
-			Lang.DIALOG_SKIPPED.sendWP(p);
+			Lang.DIALOG_SKIPPED.send(p);
 			removePlayer(p);
 			end(p);
 			return TestResult.ALLOW;
@@ -125,7 +128,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 						if (canContinue(p)) {
 							handleNext(p, DialogNextReason.AUTO_TIME);
 						}else {
-							Lang.DIALOG_TOO_FAR.send(p, dialog.getNPCName(npc));
+							Lang.DIALOG_TOO_FAR.quickSend(p, "npc_name", dialog.getNPCName(npc));
 							removePlayer(p);
 						}
 					}, message.getWaitTime());
@@ -194,7 +197,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 		
 		if (npc != null && navigationInitiallyPaused == null) {
 			// pause NPC walking as there is a player in dialog
-			navigationInitiallyPaused = npc.setNavigationPaused(true);
+			navigationInitiallyPaused = npc.getNpc().setNavigationPaused(true);
 		}
 		return status;
 	}
@@ -213,7 +216,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 	private void handlePlayerChanges() {
 		if (players.isEmpty() && npc != null && navigationInitiallyPaused != null) {
 			// if no more players are in dialog, resume NPC walking
-			npc.setNavigationPaused(navigationInitiallyPaused);
+			npc.getNpc().setNavigationPaused(navigationInitiallyPaused);
 			navigationInitiallyPaused = null;
 		}
 	}

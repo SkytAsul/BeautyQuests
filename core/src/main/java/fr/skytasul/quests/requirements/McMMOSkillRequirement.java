@@ -2,6 +2,7 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -9,6 +10,7 @@ import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.McMMO;
 
 public class McMMOSkillRequirement extends TargetNumberRequirement {
@@ -29,13 +31,24 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "level";
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("skill_name", () -> skillName);
+	}
+
+	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_SKILL.format(getFormattedValue(), skillName);
+		return Lang.REQUIREMENT_SKILL.format(this);
 	}
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDSkillLevel.format(Integer.toString((int) target), skillName);
+		return Lang.RDSkillLevel.format(this);
 	}
 	
 	@Override

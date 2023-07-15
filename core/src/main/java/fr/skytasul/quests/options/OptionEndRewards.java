@@ -9,8 +9,9 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionRewards;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class OptionEndRewards extends QuestOptionRewards implements QuestDescriptionProvider {
 	
@@ -42,7 +43,8 @@ public class OptionEndRewards extends QuestOptionRewards implements QuestDescrip
 				.filter(Objects::nonNull)
 				.flatMap(SPLIT_PATTERN::splitAsStream)
 				.filter(x -> !x.isEmpty())
-				.map(x -> MessageUtils.format(context.getDescriptionOptions().getRewardsFormat(), x))
+				.map(x -> MessageUtils.format(context.getDescriptionOptions().getRewardsFormat(),
+						PlaceholderRegistry.of("reward_description", x)))
 				.collect(Collectors.toList());
 		if (rewards.isEmpty()) return null;
 		

@@ -15,7 +15,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import revxrsal.commands.autocomplete.SuggestionProvider;
 import revxrsal.commands.bukkit.BukkitCommandActor;
@@ -42,7 +43,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 			int id = context.popInt();
 			Quest quest = QuestsAPI.getAPI().getQuestsManager().getQuest(id);
 			if (quest == null)
-				throw new CommandErrorException(Lang.QUEST_INVALID.format(id));
+				throw new CommandErrorException(Lang.QUEST_INVALID.quickFormat("quest_id", id));
 			return quest;
 		});
 		handler.getAutoCompleter().registerParameterSuggestions(Quest.class,
@@ -55,7 +56,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 			int id = context.popInt();
 			QuestPool pool = QuestsAPI.getAPI().getPoolsManager().getPool(id);
 			if (pool == null)
-				throw new CommandErrorException(Lang.POOL_INVALID.format(id));
+				throw new CommandErrorException(Lang.POOL_INVALID.quickFormat("pool_id", id));
 			return pool;
 		});
 		handler.getAutoCompleter().registerParameterSuggestions(QuestPool.class,
@@ -68,7 +69,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 			int id = context.popInt();
 			BqNpc npc = QuestsPlugin.getPlugin().getNpcManager().getById(id);
 			if (npc == null)
-				throw new CommandErrorException(Lang.NPC_DOESNT_EXIST.format(id));
+				throw new CommandErrorException(Lang.NPC_DOESNT_EXIST.quickFormat("npc_id", id));
 			return npc;
 		});
 		handler.getAutoCompleter().registerParameterSuggestions(BqNpc.class,
@@ -92,14 +93,15 @@ public class CommandsManagerImplementation implements CommandsManager {
 			for (Lang lang : Lang.values()) {
 				if (lang.getPath().startsWith("msg.command.help.")) {
 					String cmdKey = lang.getPath().substring(17);
-					if (cmdKey.equalsIgnoreCase(command.getName())) return lang.format(command.getPath().get(0));
+					if (cmdKey.equalsIgnoreCase(command.getName()))
+						return lang.quickFormat("label", command.getPath().get(0));
 				}
 			}
 			return null;
 		});
 		
 		handler.registerResponseHandler(String.class, (msg, actor, command) -> {
-			MessageUtils.sendPrefixedMessage(((BukkitCommandActor) actor).getSender(), msg);
+			MessageUtils.sendMessage(((BukkitCommandActor) actor).getSender(), msg, MessageType.PREFIXED);
 		});
 
 		handler.registerContextResolver(Scoreboard.class, context -> {

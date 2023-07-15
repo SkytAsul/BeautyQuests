@@ -21,7 +21,6 @@ import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
-import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
@@ -56,7 +55,7 @@ public class PlayerListGUI extends AbstractGui {
 	
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
-		return Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc.getOfflinePlayer().getName()));
+		return Bukkit.createInventory(null, 45, Lang.INVENTORY_PLAYER_LIST.format(acc));
 	}
 
 	@Override
@@ -177,7 +176,8 @@ public class PlayerListGUI extends AbstractGui {
 	}
 	
 	private ItemStack createQuestItem(Quest qu, List<String> lore) {
-		return ItemUtils.nameAndLore(qu.getQuestItem().clone(), open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu.getName(), qu.getId()) : Lang.formatNormal.format(qu.getName()), lore);
+		return ItemUtils.nameAndLore(qu.getQuestItem().clone(),
+				open.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu) : Lang.formatNormal.format(qu), lore);
 	}
 	
 	private void toggleCategorySelected() {
@@ -246,8 +246,10 @@ public class PlayerListGUI extends AbstractGui {
 				} else if (event.getClick().isLeftClick()) {
 					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 							&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
-						ConfirmGUI.confirm(() -> qu.cancelPlayer(acc), event::reopen,
-								Lang.INDICATION_CANCEL.format(qu.getName())).open(event.getPlayer());
+						QuestsPlugin.getPlugin().getGuiManager().getFactory()
+								.createConfirmation(() -> qu.cancelPlayer(acc), event::reopen,
+										Lang.INDICATION_CANCEL.format(qu))
+								.open(event.getPlayer());
 					}
 				}
 			}

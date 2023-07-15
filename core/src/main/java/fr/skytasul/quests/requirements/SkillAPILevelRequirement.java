@@ -24,8 +24,13 @@ public class SkillAPILevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "level";
+	}
+
+	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_LEVEL.format(getFormattedValue());
+		return Lang.REQUIREMENT_LEVEL.format(this);
 	}
 	
 	@Override
@@ -40,7 +45,7 @@ public class SkillAPILevelRequirement extends TargetNumberRequirement {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDLevel.format(Integer.toString((int) target));
+		return Lang.RDLevel.format(this);
 	}
 
 	@Override

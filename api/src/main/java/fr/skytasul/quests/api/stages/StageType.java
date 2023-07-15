@@ -8,8 +8,10 @@ import fr.skytasul.quests.api.serializable.SerializableRegistry;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.options.StageOption;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public class StageType<T extends AbstractStage> {
+public class StageType<T extends AbstractStage> implements HasPlaceholders {
 	
 	private final @NotNull String id;
 	private final @NotNull Class<T> clazz;
@@ -19,6 +21,7 @@ public class StageType<T extends AbstractStage> {
 	private final @NotNull StageCreationSupplier<T> creationSupplier;
 	
 	private final @NotNull SerializableRegistry<StageOption<T>, SerializableCreator<StageOption<T>>> optionsRegistry;
+	private @NotNull PlaceholderRegistry placeholders;
 	
 	/**
 	 * Creates a stage type.
@@ -70,6 +73,11 @@ public class StageType<T extends AbstractStage> {
 		return optionsRegistry;
 	}
 	
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		return PlaceholderRegistry.of("stage_type", name, "stage_type_id", id);
+	}
+
 	@FunctionalInterface
 	public static interface StageCreationSupplier<T extends AbstractStage> {
 		

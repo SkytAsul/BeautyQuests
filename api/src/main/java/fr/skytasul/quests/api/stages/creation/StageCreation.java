@@ -59,7 +59,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	
 	public void setRewards(List<AbstractReward> rewards) {
 		this.rewards = rewards;
-		getLine().refreshItemLore(1, QuestOption.formatDescription(Lang.rewards.format(rewards.size())));
+		getLine().refreshItemLore(1, QuestOption.formatDescription(RewardList.getSizeString(rewards.size())));
 	}
 	
 	public List<AbstractRequirement> getRequirements() {
@@ -67,7 +67,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	}
 	
 	public void setRequirements(List<AbstractRequirement> requirements) {
-		getLine().refreshItemLore(4, QuestOption.formatDescription(Lang.requirements.format(requirements.size())));
+		getLine().refreshItemLore(4, QuestOption.formatDescription(RequirementList.getSizeString(requirements.size())));
 		this.requirements = requirements;
 	}
 	

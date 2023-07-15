@@ -23,7 +23,7 @@ public class LevelRequirement extends TargetNumberRequirement {
 	
 	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_LEVEL.format(getFormattedValue());
+		return Lang.REQUIREMENT_LEVEL.format(this);
 	}
 	
 	@Override
@@ -37,8 +37,13 @@ public class LevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "level";
+	}
+
+	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDLevel.format(getShortFormattedValue());
+		return Lang.RDLevel.format(this);
 	}
 
 	@Override

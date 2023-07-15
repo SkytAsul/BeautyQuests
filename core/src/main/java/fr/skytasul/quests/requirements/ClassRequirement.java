@@ -56,7 +56,8 @@ public class ClassRequirement extends AbstractRequirement {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDClass.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> classes.stream().map(RPGClass::getName).iterator()));
+		return Lang.RDClass.quickFormat("classes", String.join(" " + Lang.Or.toString() + " ",
+				(Iterable<String>) () -> classes.stream().map(RPGClass::getName).iterator()));
 	}
 
 	@Override

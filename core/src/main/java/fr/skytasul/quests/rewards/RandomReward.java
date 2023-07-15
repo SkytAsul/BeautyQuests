@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -20,6 +21,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class RandomReward extends AbstractReward {
 	
@@ -55,6 +57,14 @@ public class RandomReward extends AbstractReward {
 	public void detach() {
 		super.detach();
 		rewards.forEach(AbstractReward::detach);
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("min", () -> Integer.toString(min));
+		placeholders.register("max", () -> Integer.toString(max));
+		placeholders.register("rewards_amount", () -> rewards.getSizeString());
 	}
 
 	@Override
@@ -103,7 +113,7 @@ public class RandomReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.actions.format(rewards.size()));
+		loreBuilder.addDescription(Lang.actions.quickFormat("amount", rewards.size()));
 		loreBuilder.addDescriptionRaw("§8 | min: §7" + min + "§8 | max: §7" + max);
 		loreBuilder.addClick(ClickType.LEFT, Lang.rewardRandomRewards.toString());
 		loreBuilder.addClick(ClickType.RIGHT, Lang.rewardRandomMinMax.toString());

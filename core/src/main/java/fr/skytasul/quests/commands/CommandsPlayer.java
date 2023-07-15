@@ -52,7 +52,7 @@ public class CommandsPlayer implements OrphanCommand {
 					return;
 				}
 			}
-			Lang.COMMAND_CHECKPOINT_NO.send(player, quest.getName());
+			Lang.COMMAND_CHECKPOINT_NO.send(player, quest.getPlaceholdersRegistry());
 		}else Lang.COMMAND_CHECKPOINT_NOT_STARTED.send(player);
 	}
 	

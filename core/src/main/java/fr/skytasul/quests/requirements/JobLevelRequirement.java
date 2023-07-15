@@ -2,6 +2,7 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -9,6 +10,7 @@ import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.Jobs;
 
 public class JobLevelRequirement extends TargetNumberRequirement {
@@ -41,13 +43,24 @@ public class JobLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "level";
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("job_name", () -> jobName);
+	}
+
+	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_JOB.format(getFormattedValue(), jobName);
+		return Lang.REQUIREMENT_JOB.format(this);
 	}
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDJobLevel.format(Integer.toString((int) target), jobName);
+		return Lang.RDJobLevel.format(this);
 	}
 
 	@Override

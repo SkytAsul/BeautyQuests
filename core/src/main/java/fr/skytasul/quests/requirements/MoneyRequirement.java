@@ -2,13 +2,16 @@ package fr.skytasul.quests.requirements;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.Actionnable;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
 public class MoneyRequirement extends AbstractRequirement implements Actionnable {
@@ -33,8 +36,15 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	}
 
 	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("money", Vault.format(money));
+		placeholders.register("money_raw", money);
+	}
+
+	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_MONEY.format(Vault.format(money));
+		return Lang.REQUIREMENT_MONEY.format(this);
 	}
 	
 	@Override
@@ -50,7 +60,7 @@ public class MoneyRequirement extends AbstractRequirement implements Actionnable
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.optionValue.format(money));
+		loreBuilder.addDescription(QuestOption.formatNullableValue(money));
 	}
 	
 	@Override

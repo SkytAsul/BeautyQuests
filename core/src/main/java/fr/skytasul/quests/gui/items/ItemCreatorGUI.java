@@ -46,7 +46,7 @@ public class ItemCreatorGUI extends AbstractGui {
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
 		inventory.setItem(0, ItemUtils.item(XMaterial.GRASS_BLOCK, Lang.itemType.toString()));
-		inventory.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)));
+		inventory.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.quickFormat("amount", 1)));
 		inventory.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
 		inventory.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
 		inventory.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
@@ -80,7 +80,7 @@ public class ItemCreatorGUI extends AbstractGui {
 				Lang.CHOOSE_ITEM_AMOUNT.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 					amount = /* Math.min(obj, 64) */ obj;
-					ItemUtils.name(event.getClicked(), Lang.Amount.format(amount));
+					ItemUtils.name(event.getClicked(), Lang.Amount.quickFormat("amount", amount));
 					event.reopen();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 				break;

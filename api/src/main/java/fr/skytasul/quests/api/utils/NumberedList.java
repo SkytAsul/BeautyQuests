@@ -1,4 +1,4 @@
-package fr.skytasul.quests.utils.types;
+package fr.skytasul.quests.api.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import fr.skytasul.quests.api.utils.Utils;
 
 public class NumberedList<T> implements Iterable<T>, Cloneable{
 

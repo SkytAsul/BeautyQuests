@@ -1,6 +1,5 @@
 package fr.skytasul.quests.api.gui.templates;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.event.inventory.InventoryType;
@@ -17,11 +16,6 @@ import fr.skytasul.quests.api.localization.Lang;
 public final class ConfirmGUI {
 
 	private ConfirmGUI() {}
-
-	public static AbstractGui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
-			@Nullable String @Nullable... lore) {
-		return confirm(yes, no, indication, lore == null ? null : Arrays.asList(lore));
-	}
 
 	public static AbstractGui confirm(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
 			@Nullable List<@Nullable String> lore) {

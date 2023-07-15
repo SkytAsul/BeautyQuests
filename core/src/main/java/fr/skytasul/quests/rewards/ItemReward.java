@@ -2,15 +2,18 @@ package fr.skytasul.quests.rewards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemsGUI;
 
 public class ItemReward extends AbstractReward {
@@ -29,8 +32,9 @@ public class ItemReward extends AbstractReward {
 	@Override
 	public List<String> give(Player p) {
 		Utils.giveItems(p, items);
-		int amount = items.stream().mapToInt(ItemStack::getAmount).sum();
-		return amount == 0 ? null : Arrays.asList(amount + " " + Lang.Item.toString());
+		if (items.isEmpty())
+			return Collections.emptyList();
+		return Arrays.asList(getItemsSizeString());
 	}
 
 	@Override
@@ -40,13 +44,23 @@ public class ItemReward extends AbstractReward {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return items.stream().mapToInt(ItemStack::getAmount).sum() + " " + Lang.Item.toString();
+		return getItemsSizeString();
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("items_amount", this::getItemsSizeString);
+	}
+
+	private String getItemsSizeString() {
+		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
 	}
 	
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(items.size() + " " + Lang.Item.toString());
+		loreBuilder.addDescription(getItemsSizeString());
 	}
 
 	@Override

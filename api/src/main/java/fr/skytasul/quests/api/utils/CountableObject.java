@@ -3,8 +3,10 @@ package fr.skytasul.quests.api.utils;
 import java.util.Objects;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public interface CountableObject<T> {
+public interface CountableObject<T> extends HasPlaceholders {
 
 	@NotNull
 	UUID getUUID();
@@ -16,6 +18,11 @@ public interface CountableObject<T> {
 
 	default @NotNull MutableCountableObject<T> toMutable() {
 		return createMutable(getUUID(), getObject(), getAmount());
+	}
+
+	@Override
+	default @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		return PlaceholderRegistry.of("amount", getAmount());
 	}
 
 	public interface MutableCountableObject<T> extends CountableObject<T> {

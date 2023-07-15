@@ -24,8 +24,8 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.close.OpenCloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
-import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class GuiManagerImplementation implements GuiManager, Listener {
@@ -116,7 +116,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 		if (behavior instanceof StandardCloseBehavior) {
 			switch ((StandardCloseBehavior) behavior) {
 				case CONFIRM:
-					QuestUtils.runSync(() -> ConfirmGUI.confirm(() -> closeAndExit(player), () -> open(player, gui),
+					QuestUtils.runSync(() -> factory.createConfirmation(() -> closeAndExit(player), () -> open(player, gui),
 							Lang.INDICATION_CLOSE.toString()).open(player));
 					break;
 				case NOTHING:
@@ -175,7 +175,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			event.setCancelled(guiEvent.isCancelled());
 		} catch (Exception ex) {
 			event.setCancelled(true);
-			Lang.ERROR_OCCURED.send(player, ex.getMessage() + " in " + gui.getClass().getSimpleName());
+			DefaultErrors.sendGeneric(player, ex.getMessage() + " in " + gui.getClass().getSimpleName());
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred when " + player.getName()
 					+ " clicked in inventory " + gui.getClass().getName() + " at slot " + event.getSlot(), ex);
 		}

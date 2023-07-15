@@ -11,6 +11,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -18,7 +19,7 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 
 public class StageChat extends AbstractStage{
 	
@@ -130,7 +131,7 @@ public class StageChat extends AbstractStage{
 		
 		public void setText(String text) {
 			this.text = text;
-			getLine().refreshItem(MESSAGE_SLOT, item -> ItemUtils.lore(item, Lang.optionValue.format(text)));
+			getLine().refreshItem(MESSAGE_SLOT, item -> ItemUtils.lore(item, QuestOption.formatNullableValue(text)));
 		}
 		
 		public void setPlaceholders(boolean placeholders) {

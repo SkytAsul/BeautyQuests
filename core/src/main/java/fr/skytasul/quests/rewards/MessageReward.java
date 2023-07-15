@@ -1,14 +1,18 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class MessageReward extends AbstractReward {
 
@@ -23,8 +27,8 @@ public class MessageReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player p) {
-		MessageUtils.sendOffMessage(p, text);
-		return null;
+		MessageUtils.sendMessage(p, text, MessageType.OFF);
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -32,6 +36,12 @@ public class MessageReward extends AbstractReward {
 		return new MessageReward(getCustomDescription(), text);
 	}
 	
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("message", () -> text);
+	}
+
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);

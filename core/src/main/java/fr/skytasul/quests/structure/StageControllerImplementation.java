@@ -22,7 +22,8 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageHandler;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class StageControllerImplementation<T extends AbstractStage> implements StageController, Listener {
@@ -94,7 +95,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		if (stage.getCustomText() != null)
-			return "§e" + MessageUtils.format(stage.getCustomText(), stage.descriptionFormat(acc, source));
+			return "§e" + MessageUtils.format(stage.getCustomText(), stage.getPlaceholdersRegistry());
 
 		try {
 			return stage.descriptionLine(acc, source);
@@ -120,7 +121,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	public void start(@NotNull PlayerAccount acc) {
 		if (acc.isCurrent())
-			MessageUtils.sendOffMessage(acc.getPlayer(), stage.getStartMessage());
+			MessageUtils.sendMessage(acc.getPlayer(), stage.getStartMessage(), MessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);

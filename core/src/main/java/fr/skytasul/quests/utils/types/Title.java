@@ -42,7 +42,7 @@ public class Title {
 	
 	@Override
 	public String toString() {
-		return title + ", " + subtitle + ", " + Lang.Ticks.format(fadeIn + stay + fadeOut);
+		return title + ", " + subtitle + ", " + Lang.Ticks.quickFormat("ticks", fadeIn + stay + fadeOut);
 	}
 	
 	public void serialize(ConfigurationSection section) {

@@ -10,8 +10,9 @@ import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 
-public interface PlayerAccount {
+public interface PlayerAccount extends HasPlaceholders {
 	/**
 	 * @return if this account is currently used by the player (if true, {@link #getPlayer()} cannot
 	 *         return a null player)

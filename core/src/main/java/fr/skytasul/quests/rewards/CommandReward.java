@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
@@ -47,7 +48,11 @@ public class CommandReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.commands.format(commands.size()));
+		loreBuilder.addDescription(getCommandsSizeString());
+	}
+
+	private @NotNull String getCommandsSizeString() {
+		return Lang.commands.quickFormat("amount", commands.size());
 	}
 
 	@Override
@@ -69,7 +74,8 @@ public class CommandReward extends AbstractReward {
 
 			@Override
 			public ItemStack getObjectItemStack(Command cmd) {
-				return ItemUtils.item(XMaterial.CHAIN_COMMAND_BLOCK, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
+				return ItemUtils.item(XMaterial.CHAIN_COMMAND_BLOCK, Lang.commandsListValue.format(cmd),
+						Lang.commandsListConsole.format(cmd.getPlaceholdersRegistry().shifted("command_console")));
 			}
 			
 			@Override

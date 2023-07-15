@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.localization;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 
 /**
  * Stores all string paths and methods to format and send them to players.
@@ -39,7 +40,7 @@ public enum Lang implements Locale {
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
-	DIALOG_SKIPPED("msg.dialogs.skipped"),
+	DIALOG_SKIPPED("msg.dialogs.skipped", MessageType.UNPREFIXED),
 	DIALOG_TOO_FAR("msg.dialogs.tooFar"), // 0: npc name
 	
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
@@ -95,7 +96,6 @@ public enum Lang implements Locale {
 	
 	REGION_DOESNT_EXIST("msg.regionDoesntExists"),
 	NPC_DOESNT_EXIST("msg.npcDoesntExist"),
-	OBJECT_DOESNT_EXIST("msg.objectDoesntExist"),
 	NUMBER_NEGATIVE("msg.number.negative"),
 	NUMBER_ZERO("msg.number.zero"),
 	NUMBER_INVALID("msg.number.invalid"),
@@ -173,25 +173,25 @@ public enum Lang implements Locale {
 	COMMAND_TRANSLATION_EXISTS("msg.command.downloadTranslations.exists"), // 0: file
 	COMMAND_TRANSLATION_DOWNLOADED("msg.command.downloadTranslations.downloaded"), // 0: lang
 	
-	COMMAND_HELP("msg.command.help.header"),
-	COMMAND_HELP_CREATE("msg.command.help.create"),
-	COMMAND_HELP_EDIT("msg.command.help.edit"),
-	COMMAND_HELP_REMOVE("msg.command.help.remove"),
-	COMMAND_HELP_FINISH("msg.command.help.finishAll"),
-	COMMAND_HELP_STAGE("msg.command.help.setStage"),
-	COMMAND_HELP_DIALOG("msg.command.help.startDialog"),
-	COMMAND_HELP_RESET("msg.command.help.resetPlayer"),
-	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest"),
-	COMMAND_HELP_SEE("msg.command.help.seePlayer"),
-	COMMAND_HELP_RELOAD("msg.command.help.reload"),
-	COMMAND_HELP_START("msg.command.help.start"),
-	COMMAND_HELP_SETITEM("msg.command.help.setItem"),
-	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework"),
-	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode"),
-	COMMAND_HELP_VERSION("msg.command.help.version"),
-	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations"),
-	COMMAND_HELP_SAVE("msg.command.help.save"),
-	COMMAND_HELP_LIST("msg.command.help.list"),
+	COMMAND_HELP("msg.command.help.header", MessageType.UNPREFIXED),
+	COMMAND_HELP_CREATE("msg.command.help.create", MessageType.UNPREFIXED),
+	COMMAND_HELP_EDIT("msg.command.help.edit", MessageType.UNPREFIXED),
+	COMMAND_HELP_REMOVE("msg.command.help.remove", MessageType.UNPREFIXED),
+	COMMAND_HELP_FINISH("msg.command.help.finishAll", MessageType.UNPREFIXED),
+	COMMAND_HELP_STAGE("msg.command.help.setStage", MessageType.UNPREFIXED),
+	COMMAND_HELP_DIALOG("msg.command.help.startDialog", MessageType.UNPREFIXED),
+	COMMAND_HELP_RESET("msg.command.help.resetPlayer", MessageType.UNPREFIXED),
+	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest", MessageType.UNPREFIXED),
+	COMMAND_HELP_SEE("msg.command.help.seePlayer", MessageType.UNPREFIXED),
+	COMMAND_HELP_RELOAD("msg.command.help.reload", MessageType.UNPREFIXED),
+	COMMAND_HELP_START("msg.command.help.start", MessageType.UNPREFIXED),
+	COMMAND_HELP_SETITEM("msg.command.help.setItem", MessageType.UNPREFIXED),
+	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework", MessageType.UNPREFIXED),
+	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", MessageType.UNPREFIXED),
+	COMMAND_HELP_VERSION("msg.command.help.version", MessageType.UNPREFIXED),
+	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations", MessageType.UNPREFIXED),
+	COMMAND_HELP_SAVE("msg.command.help.save", MessageType.UNPREFIXED),
+	COMMAND_HELP_LIST("msg.command.help.list", MessageType.UNPREFIXED),
 	
 	// * Editors *
 	ALREADY_EDITOR("msg.editor.already"),
@@ -282,7 +282,7 @@ public enum Lang implements Locale {
 	UNKNOWN_BLOCK_TYPE("msg.editor.itemCreator.unknownBlockType"),
 	INVALID_BLOCK_TYPE("msg.editor.itemCreator.invalidBlockType"),
 	
-	DIALOG_SYNTAX("msg.editor.dialog.syntax"),
+	DIALOG_MESSAGE_SYNTAX("msg.editor.dialog.syntaxMessage"),
 	DIALOG_REMOVE_SYNTAX("msg.editor.dialog.syntaxRemove"),
 	DIALOG_MSG_ADDED_PLAYER("msg.editor.dialog.player"),
 	DIALOG_MSG_ADDED_NPC("msg.editor.dialog.npc"),
@@ -297,22 +297,22 @@ public enum Lang implements Locale {
 	DIALOG_SKIPPABLE_SET("msg.editor.dialog.skippable.set"), // 0: previous, 1: new
 	DIALOG_SKIPPABLE_UNSET("msg.editor.dialog.skippable.unset"), // 0: previous
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
-	DIALOG_HELP_HEADER("msg.editor.dialog.help.header"),
-	DIALOG_HELP_NPC("msg.editor.dialog.help.npc"),
-	DIALOG_HELP_PLAYER("msg.editor.dialog.help.player"),
-	DIALOG_HELP_NOTHING("msg.editor.dialog.help.nothing"),
-	DIALOG_HELP_REMOVE("msg.editor.dialog.help.remove"),
-	DIALOG_HELP_LIST("msg.editor.dialog.help.list"),
-	DIALOG_HELP_NPCINSERT("msg.editor.dialog.help.npcInsert"),
-	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert"),
-	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert"),
-	DIALOG_HELP_EDIT("msg.editor.dialog.help.edit"),
-	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound"),
-	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime"),
-	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName"),
-	DIALOG_HELP_SKIPPABLE("msg.editor.dialog.help.skippable"),
-	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear"),
-	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close"),
+	DIALOG_HELP_HEADER("msg.editor.dialog.help.header", MessageType.UNPREFIXED),
+	DIALOG_HELP_NPC("msg.editor.dialog.help.npc", MessageType.UNPREFIXED),
+	DIALOG_HELP_PLAYER("msg.editor.dialog.help.player", MessageType.UNPREFIXED),
+	DIALOG_HELP_NOTHING("msg.editor.dialog.help.nothing", MessageType.UNPREFIXED),
+	DIALOG_HELP_REMOVE("msg.editor.dialog.help.remove", MessageType.UNPREFIXED),
+	DIALOG_HELP_LIST("msg.editor.dialog.help.list", MessageType.UNPREFIXED),
+	DIALOG_HELP_NPCINSERT("msg.editor.dialog.help.npcInsert", MessageType.UNPREFIXED),
+	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert", MessageType.UNPREFIXED),
+	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert", MessageType.UNPREFIXED),
+	DIALOG_HELP_EDIT("msg.editor.dialog.help.edit", MessageType.UNPREFIXED),
+	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound", MessageType.UNPREFIXED),
+	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime", MessageType.UNPREFIXED),
+	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName", MessageType.UNPREFIXED),
+	DIALOG_HELP_SKIPPABLE("msg.editor.dialog.help.skippable", MessageType.UNPREFIXED),
+	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear", MessageType.UNPREFIXED),
+	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close", MessageType.UNPREFIXED),
 	
 	MYTHICMOB_LIST("msg.editor.mythicmobs.list"),
 	MYTHICMOB_NOT_EXISTS("msg.editor.mythicmobs.isntMythicMob"),
@@ -322,11 +322,11 @@ public enum Lang implements Locale {
 	TEXTLIST_SYNTAX("msg.editor.textList.syntax"),
 	TEXTLIST_TEXT_ADDED("msg.editor.textList.added"),
 	TEXTLIST_TEXT_REMOVED("msg.editor.textList.removed"),
-	TEXTLIST_TEXT_HELP_HEADER("msg.editor.textList.help.header"),
-	TEXTLIST_TEXT_HELP_ADD("msg.editor.textList.help.add"),
-	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove"),
-	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list"),
-	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close"),
+	TEXTLIST_TEXT_HELP_HEADER("msg.editor.textList.help.header", MessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_ADD("msg.editor.textList.help.add", MessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove", MessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list", MessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close", MessageType.UNPREFIXED),
 	
 	// * Quests lists*
 
@@ -370,7 +370,6 @@ public enum Lang implements Locale {
 	stageDealDamage("inv.create.dealDamage"),
 	stageEatDrink("inv.create.eatDrink"),
 	stageText("inv.create.NPCText"),
-	dialogLines("inv.create.dialogLines"), // 0: lines
 	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
 	stageGPS("inv.create.gps"),
@@ -518,7 +517,7 @@ public enum Lang implements Locale {
 	INVENTORY_NPC("inv.npcCreate.name"),
 	name("inv.npcCreate.setName"),
 	skin("inv.npcCreate.setSkin"),
-	type("inv.npcCreate.setType"),
+	npcType("inv.npcCreate.setType"),
 	move("inv.npcCreate.move.itemName"),
 	moveLore("inv.npcCreate.move.itemLore"),
 	moveItem("inv.npcCreate.moveItem"),
@@ -830,6 +829,7 @@ public enum Lang implements Locale {
 	AmountDialogLines("misc.amounts.dialogLines"), // 0: amount
 	AmountPermissions("misc.amounts.permissions"), // 0: amount
 	AmountMobs("misc.amounts.mobs"), // 0: amount
+	AmountXp("misc.amounts.xp"),
 	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
@@ -849,8 +849,6 @@ public enum Lang implements Locale {
 	Reset("misc.reset"),
 	Or("misc.or"),
 	Amount("misc.amount"),
-	Item("misc.items"),
-	Exp("misc.expPoints"),
 	Yes("misc.yes"),
 	No("misc.no"),
 	And("misc.and");
@@ -858,16 +856,27 @@ public enum Lang implements Locale {
 	private static final String DEFAULT_STRING = "§cnot loaded";
 	
 	private final @NotNull String path;
+	private final @NotNull MessageType type;
 	private final @Nullable Lang prefix;
 	
 	private @NotNull String value = DEFAULT_STRING;
 
+
 	private Lang(@NotNull String path) {
-		this(path, null);
+		this(path, MessageType.PREFIXED, null);
+	}
+	
+	private Lang(@NotNull String path, @NotNull MessageType type) {
+		this(path, type, null);
 	}
 	
 	private Lang(@NotNull String path, @Nullable Lang prefix) {
+		this(path, MessageType.PREFIXED, prefix);
+	}
+
+	private Lang(@NotNull String path, @NotNull MessageType type, @Nullable Lang prefix) {
 		this.path = path;
+		this.type = type;
 		this.prefix = prefix;
 	}
 	
@@ -876,6 +885,11 @@ public enum Lang implements Locale {
 		return path;
 	}
 	
+	@Override
+	public @NotNull MessageType getType() {
+		return type;
+	}
+
 	@Override
 	public void setValue(@NotNull String value) {
 		this.value = Objects.requireNonNull(value);

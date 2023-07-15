@@ -3,7 +3,6 @@ package fr.skytasul.quests.requirements.logical;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
@@ -39,7 +38,7 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.requirements.format(requirements.size()));
+		loreBuilder.addDescription(requirements.getSizeString());
 	}
 	
 	@Override

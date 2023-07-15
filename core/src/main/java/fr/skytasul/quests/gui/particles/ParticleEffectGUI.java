@@ -19,6 +19,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
@@ -54,9 +55,9 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 		this.color = color;
 
 		buttons.put(1, LayoutedButton.create(XMaterial.FIREWORK_STAR, Lang.particle_shape.toString(),
-				() -> Arrays.asList(Lang.optionValue.format(shape)), this::shapeClick));
+				() -> Arrays.asList(QuestOption.formatNullableValue(shape)), this::shapeClick));
 		buttons.put(3, LayoutedButton.create(XMaterial.PAPER, Lang.particle_type.toString(),
-				() -> Arrays.asList(Lang.optionValue.format(particle)), this::particleClick));
+				() -> Arrays.asList(QuestOption.formatNullableValue(particle)), this::particleClick));
 		buttons.put(4, new LayoutedButton.ItemButton() {
 			@Override
 			public void click(@NotNull LayoutedClickEvent event) {
@@ -65,8 +66,8 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 			@Override
 			public @Nullable ItemStack getItem() {
-				return ItemUtils.item(XMaterial.MAGENTA_DYE, Lang.particle_color.toString(),
-						Lang.optionValue.format("RGB: " + color.getRed() + " " + color.getGreen() + " " + color.getBlue()));
+				return ItemUtils.item(XMaterial.MAGENTA_DYE, Lang.particle_color.toString(), QuestOption
+						.formatNullableValue("RGB: " + color.getRed() + " " + color.getGreen() + " " + color.getBlue()));
 			}
 
 			@Override

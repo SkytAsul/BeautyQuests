@@ -17,7 +17,6 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.utils.types.Title;
 
 public class TitleGUI extends AbstractGui {
@@ -77,18 +76,19 @@ public class TitleGUI extends AbstractGui {
 	public void setFadeIn(int fadeIn) {
 		this.fadeIn = fadeIn;
 		ItemUtils.lore(inv.getItem(SLOT_FADE_IN),
-				QuestOption.formatNullableValue(Lang.Ticks.format(fadeIn), fadeIn == Title.FADE_IN));
+				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", fadeIn), fadeIn == Title.FADE_IN));
 	}
 
 	public void setStay(int stay) {
 		this.stay = stay;
-		ItemUtils.lore(inv.getItem(SLOT_STAY), QuestOption.formatNullableValue(Lang.Ticks.format(stay), stay == Title.STAY));
+		ItemUtils.lore(inv.getItem(SLOT_STAY),
+				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", stay), stay == Title.STAY));
 	}
 
 	public void setFadeOut(int fadeOut) {
 		this.fadeOut = fadeOut;
 		ItemUtils.lore(inv.getItem(SLOT_FADE_OUT),
-				QuestOption.formatNullableValue(Lang.Ticks.format(fadeOut), fadeOut == Title.FADE_OUT));
+				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", fadeOut), fadeOut == Title.FADE_OUT));
 	}
 
 	@Override
@@ -120,19 +120,19 @@ public class TitleGUI extends AbstractGui {
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot()) {
 			case SLOT_TITLE:
-				startStringEditor(event.getPlayer(), Lang.TITLE_TITLE.toString(), this::setTitle);
+				startStringEditor(event.getPlayer(), Lang.TITLE_TITLE, this::setTitle);
 				break;
 			case SLOT_SUBTITLE:
-				startStringEditor(event.getPlayer(), Lang.TITLE_SUBTITLE.toString(), this::setSubtitle);
+				startStringEditor(event.getPlayer(), Lang.TITLE_SUBTITLE, this::setSubtitle);
 				break;
 			case SLOT_FADE_IN:
-				startIntEditor(event.getPlayer(), Lang.TITLE_FADEIN.toString(), this::setFadeIn);
+				startIntEditor(event.getPlayer(), Lang.TITLE_FADEIN, this::setFadeIn);
 				break;
 			case SLOT_STAY:
-				startIntEditor(event.getPlayer(), Lang.TITLE_STAY.toString(), this::setStay);
+				startIntEditor(event.getPlayer(), Lang.TITLE_STAY, this::setStay);
 				break;
 			case SLOT_FADE_OUT:
-				startIntEditor(event.getPlayer(), Lang.TITLE_FADEOUT.toString(), this::setFadeOut);
+				startIntEditor(event.getPlayer(), Lang.TITLE_FADEOUT, this::setFadeOut);
 				break;
 			case 7:
 				close(event.getPlayer());
@@ -152,8 +152,8 @@ public class TitleGUI extends AbstractGui {
 		return new DelayCloseBehavior(() -> end.accept(null));
 	}
 
-	private void startStringEditor(Player p, String helpMsg, Consumer<String> setter) {
-		MessageUtils.sendPrefixedMessage(p, helpMsg);
+	private void startStringEditor(Player p, Lang helpMsg, Consumer<String> setter) {
+		helpMsg.send(p);
 		new TextEditor<String>(p, () -> {
 			p.openInventory(inv);
 		}, msg -> {
@@ -163,8 +163,8 @@ public class TitleGUI extends AbstractGui {
 		}).passNullIntoEndConsumer().start();
 	}
 
-	private void startIntEditor(Player p, String helpMsg, Consumer<Integer> setter) {
-		MessageUtils.sendPrefixedMessage(p, helpMsg);
+	private void startIntEditor(Player p, Lang helpMsg, Consumer<Integer> setter) {
+		helpMsg.send(p);
 		new TextEditor<>(p, () -> {
 			p.openInventory(inv);
 		}, msg -> {

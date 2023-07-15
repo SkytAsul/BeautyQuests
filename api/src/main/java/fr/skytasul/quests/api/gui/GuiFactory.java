@@ -1,10 +1,12 @@
 package fr.skytasul.quests.api.gui;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerAccount;
@@ -37,5 +39,15 @@ public interface GuiFactory {
 
 	@NotNull
 	Gui createNpcSelection(@NotNull Runnable cancel, @NotNull Consumer<BqNpc> callback, boolean nullable);
+
+	@NotNull
+	default Gui createConfirmation(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
+			@NotNull String @Nullable... lore) {
+		return createConfirmation(yes, no, indication, Arrays.asList(lore));
+	}
+
+	@NotNull
+	Gui createConfirmation(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
+			@Nullable List<@Nullable String> lore);
 
 }

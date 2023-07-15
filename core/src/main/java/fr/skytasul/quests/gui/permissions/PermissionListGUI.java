@@ -21,8 +21,10 @@ public class PermissionListGUI extends ListGUI<Permission> {
 		this.end = end;
 	}
 
+	@Override
 	public ItemStack getObjectItemStack(Permission object) {
-		return ItemUtils.item(XMaterial.PAPER, "§e" + object.permission, Lang.permRemoved.format(object.take ? Lang.Yes : Lang.No), Lang.permWorld.format(object.world == null ? Lang.worldGlobal.toString() : object.world));
+		return ItemUtils.item(XMaterial.PAPER, "§e" + object.permission, Lang.permRemoved.format(object),
+				Lang.permWorld.format(object));
 	}
 
 	@Override

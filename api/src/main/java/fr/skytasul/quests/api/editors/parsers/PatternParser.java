@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class PatternParser implements AbstractParser<Pattern> {
 	
@@ -16,7 +17,7 @@ public class PatternParser implements AbstractParser<Pattern> {
 		try {
 			return Pattern.compile(msg);
 		}catch (PatternSyntaxException ex) {
-			Lang.INVALID_PATTERN.send(p, msg);
+			Lang.INVALID_PATTERN.send(p, PlaceholderRegistry.of("input", msg));
 			return null;
 		}
 	}

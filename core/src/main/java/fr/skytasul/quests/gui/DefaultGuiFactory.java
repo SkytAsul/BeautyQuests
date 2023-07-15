@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiFactory;
+import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
@@ -45,6 +47,12 @@ public class DefaultGuiFactory implements GuiFactory {
 	public @NotNull Gui createNpcSelection(@NotNull Runnable cancel, @NotNull Consumer<BqNpc> callback,
 			boolean nullable) {
 		return NpcSelectGUI.select(cancel, callback, nullable);
+	}
+
+	@Override
+	public @NotNull Gui createConfirmation(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
+			@Nullable List<@Nullable String> lore) {
+		return ConfirmGUI.confirm(yes, no, indication, lore);
 	}
 
 }

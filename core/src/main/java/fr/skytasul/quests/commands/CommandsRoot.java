@@ -2,7 +2,8 @@ package fr.skytasul.quests.commands;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Description;
 import revxrsal.commands.annotation.Subcommand;
@@ -17,8 +18,8 @@ public class CommandsRoot {
 	
 	@Subcommand ("help")
 	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries) {
-		Lang.COMMAND_HELP.sendWP(actor.getSender());
-		helpEntries.forEach(help -> MessageUtils.sendUnprefixedMessage(actor.getSender(), help));
+		Lang.COMMAND_HELP.send(actor.getSender());
+		helpEntries.forEach(help -> MessageUtils.sendMessage(actor.getSender(), help, MessageType.UNPREFIXED));
 	}
 	
 	@Subcommand ("version")

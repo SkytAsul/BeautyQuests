@@ -8,6 +8,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class TextListEditor extends Editor{
 	
@@ -49,23 +50,24 @@ public class TextListEditor extends Editor{
 		
 		case ADD:
 			if (!hasMsg){
-				Lang.TEXTLIST_SYNTAX.send(player, " add <message>");
+				sendSyntax(" add <message>");
 				break;
 			}
 			if (valid != null){
 				if (!valid.test(msg)) break;
 			}
 			texts.add(msg);
-			Lang.TEXTLIST_TEXT_ADDED.send(player, msg);
+			Lang.TEXTLIST_TEXT_ADDED.send(player, PlaceholderRegistry.of("msg", msg));
 			break;
 
 		case REMOVE:
 			if (!hasMsg){
-				Lang.TEXTLIST_SYNTAX.send(player, " remove <id>");
+				sendSyntax(" remove <id>");
 				break;
 			}
 			try{
-				Lang.TEXTLIST_TEXT_REMOVED.send(player, texts.remove(Integer.parseInt(args[1])));
+				String removed = texts.remove(Integer.parseInt(args[1]));
+				Lang.TEXTLIST_TEXT_REMOVED.send(player, PlaceholderRegistry.of("msg", removed));
 			}catch (IllegalArgumentException ex){
 				Lang.NUMBER_INVALID.send(player);
 			}
@@ -81,7 +83,8 @@ public class TextListEditor extends Editor{
 
 		case HELP:
 			for (Lang l : Lang.values()){
-				if (l.getPath().startsWith("msg.editor.textList.help.")) l.sendWP(player);
+				if (l.getPath().startsWith("msg.editor.textList.help."))
+					l.send(player);
 			}
 			break;
 
@@ -92,6 +95,10 @@ public class TextListEditor extends Editor{
 
 		}
 		return true;
+	}
+
+	private void sendSyntax(String command) {
+		Lang.TEXTLIST_SYNTAX.send(player, PlaceholderRegistry.of("command", command));
 	}
 
 	private enum Command{

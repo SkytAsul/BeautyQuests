@@ -8,12 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
 
@@ -50,14 +52,29 @@ public class RemoveItemsReward extends AbstractReward {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return items.stream().mapToInt(ItemStack::getAmount).sum() + " " + Lang.Item.toString();
+		return getItemsSizeString();
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("items_amount", this::getItemsSizeString);
+		placeholders.register("comparisons_amount", this::getComparisonsSizeString);
+	}
+
+	private String getItemsSizeString() {
+		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
 	}
 	
+	private @NotNull String getComparisonsSizeString() {
+		return Lang.AmountComparisons.quickFormat("amount", comparisons.getEffective().size());
+	}
+
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.AmountItems.format(items.size()));
-		loreBuilder.addDescription(Lang.AmountComparisons.format(comparisons.getEffective().size()));
+		loreBuilder.addDescription(getItemsSizeString());
+		loreBuilder.addDescription(getComparisonsSizeString());
 		loreBuilder.addClick(ClickType.LEFT, Lang.stageItems.toString());
 		loreBuilder.addClick(ClickType.RIGHT, Lang.stageItemsComparison.toString());
 	}

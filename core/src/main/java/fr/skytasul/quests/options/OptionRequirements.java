@@ -15,8 +15,9 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.requirements.RequirementList;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator, RequirementList>
 		implements QuestDescriptionProvider {
@@ -27,8 +28,8 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 	}
 	
 	@Override
-	protected String getSizeString(int size) {
-		return Lang.requirements.format(size);
+	protected String getSizeString() {
+		return RequirementList.getSizeString(getValue().size());
 	}
 	
 	@Override
@@ -68,7 +69,8 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 					if (description != null)
 						description = MessageUtils.format(x.test(context.getPlayerAccount().getPlayer())
 								? context.getDescriptionOptions().getRequirementsValid()
-								: context.getDescriptionOptions().getRequirementsInvalid(), description);
+								: context.getDescriptionOptions().getRequirementsInvalid(),
+								PlaceholderRegistry.of("requirement_description", description));
 					return description;
 				})
 				.filter(Objects::nonNull)

@@ -50,6 +50,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		return -1;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public @UnmodifiableView @NotNull Collection<@NotNull QuestBranch> getBranches() {
 		return (Collection) branches.values();

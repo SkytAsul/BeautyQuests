@@ -43,7 +43,8 @@ public class FactionRequirement extends AbstractRequirement {
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDFaction.format(String.join(" " + Lang.Or.toString() + " ", (Iterable<String>) () -> factions.stream().map(Faction::getName).iterator()));
+		return Lang.RDFaction.quickFormat("factions", String.join(" " + Lang.Or.toString() + " ",
+				(Iterable<String>) () -> factions.stream().map(Faction::getName).iterator()));
 	}
 	
 	@Override

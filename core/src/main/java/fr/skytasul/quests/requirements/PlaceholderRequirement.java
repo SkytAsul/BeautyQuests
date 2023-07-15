@@ -3,6 +3,7 @@ package fr.skytasul.quests.requirements;
 import java.math.BigDecimal;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.localization.Lang;
@@ -11,7 +12,8 @@ import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -40,6 +42,15 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	}
 
 	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("placeholder", () -> rawPlaceholder);
+		placeholders.register("target_value", () -> value);
+		placeholders.register("comparison", () -> Character.toString(comparison.getSymbol()));
+		placeholders.register("parse_value", () -> Boolean.toString(parseValue));
+	}
+
+	@Override
 	public boolean test(Player p){
 		if (hook == null) return false;
 		String request = hook.onRequest(p, params);
@@ -59,7 +70,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);
 		String value = this.value;
 		if (parseValue)
-			value = MessageUtils.finalFormat(p, value, true);
+			value = MessageUtils.finalFormat(p, value, true, null);
 		return value.equals(request);
 	}
 	
@@ -128,7 +139,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(QuestOption.formatNullableValue(rawPlaceholder));
-		loreBuilder.addDescription(comparison.getTitle().format(value));
+		loreBuilder.addDescription(comparison.getTitle().quickFormat("number", value));
 	}
 
 	@Override
@@ -136,7 +147,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(event.getPlayer());
 		new TextEditor<String>(event.getPlayer(), event::cancel, id -> {
 			setPlaceholder(id);
-			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(event.getPlayer(), id);
+			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(event.getPlayer(), this);
 			new TextEditor<String>(event.getPlayer(), () -> {
 				if (value == null) event.getGUI().remove(this);
 				event.reopenGUI();
@@ -144,7 +155,9 @@ public class PlaceholderRequirement extends AbstractRequirement {
 				this.value = value;
 				try {
 					new BigDecimal(value); // tests if the value is a number
-					Lang.COMPARISON_TYPE.send(event.getPlayer(), ComparisonMethod.getComparisonParser().getNames(), ComparisonMethod.EQUALS.name().toLowerCase());
+					Lang.COMPARISON_TYPE.send(event.getPlayer(),
+							PlaceholderRegistry.of("available", ComparisonMethod.getComparisonParser().getNames(), "default",
+									ComparisonMethod.EQUALS.name().toLowerCase()).with(this));
 					new TextEditor<>(event.getPlayer(), null, comp -> {
 						this.comparison = comp == null ? ComparisonMethod.EQUALS : comp;
 						event.reopenGUI();

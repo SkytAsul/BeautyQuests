@@ -13,7 +13,9 @@ import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.api.utils.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public abstract class AbstractRequirement extends QuestObject {
 	
@@ -60,7 +62,7 @@ public abstract class AbstractRequirement extends QuestObject {
 			reason = getDefaultReason(player);
 
 		if (reason != null && !reason.isEmpty() && !"none".equals(reason)) {
-			MessageUtils.sendPrefixedMessage(player, reason);
+			MessageUtils.sendMessage(player, reason, MessageType.PREFIXED, getPlaceholdersRegistry());
 			return true;
 		}
 
@@ -80,6 +82,12 @@ public abstract class AbstractRequirement extends QuestObject {
 	
 	protected @NotNull String getInvalidReason() {
 		return "invalid requirement";
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("custom_reason", () -> customReason);
 	}
 
 	protected @Nullable ClickType getCustomReasonClick() {
@@ -113,8 +121,8 @@ public abstract class AbstractRequirement extends QuestObject {
 	@Override
 	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder
-				.addDescription(Lang.requirementReason.format(customReason == null ? Lang.NotSet.toString() : customReason));
+		loreBuilder.addDescription(Lang.requirementReason.format(
+						PlaceholderRegistry.of("reason", customReason == null ? Lang.NotSet.toString() : customReason)));
 		loreBuilder.addClick(getCustomReasonClick(), Lang.setRequirementReason.toString());
 	}
 

@@ -8,8 +8,9 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 
-public interface QuestPool {
+public interface QuestPool extends HasPlaceholders {
 
 	int getId();
 

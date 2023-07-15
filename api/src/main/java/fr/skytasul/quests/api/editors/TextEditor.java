@@ -5,6 +5,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class TextEditor<T> extends Editor {
 	
@@ -48,7 +50,7 @@ public class TextEditor<T> extends Editor {
 	public boolean chat(String msg, String strippedMessage){
 		if (strippedMessage.equals("null")) {
 			if (nul == null && !nullIntoConsumer) {
-				Lang.ARG_NOT_SUPPORTED.send(player, "null");
+				Lang.ARG_NOT_SUPPORTED.send(player, PlaceholderRegistry.of("arg", "null"));
 				return false;
 			}
 			stop();
@@ -72,7 +74,7 @@ public class TextEditor<T> extends Editor {
 					returnment = tmp;
 				}
 			}catch (Throwable ex){
-				Lang.ERROR_OCCURED.send(player, strippedMessage + " parsingText");
+				DefaultErrors.sendGeneric(player, strippedMessage + " parsingText");
 				invalid = true;
 				ex.printStackTrace();
 			}

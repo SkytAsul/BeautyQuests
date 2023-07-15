@@ -49,7 +49,7 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 	private String[] getLore() {
 		return new String[] {formatDescription(Lang.startDialogLore.toString()), "",
 				getValue() == null ? Lang.NotSet.toString()
-						: "§7" + Lang.AmountDialogLines.format(getValue().getMessages().size())};
+						: "§7" + Lang.AmountDialogLines.quickFormat("lines_amount", getValue().getMessages().size())};
 	}
 	
 	@Override

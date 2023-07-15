@@ -3,9 +3,14 @@ package fr.skytasul.quests.utils.types;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.Vault;
 
-public class Permission implements Cloneable {
+public class Permission implements Cloneable, HasPlaceholders {
 
 	public final String permission, world;
 	public final boolean take;
@@ -18,6 +23,12 @@ public class Permission implements Cloneable {
 
 	public void give(Player p) {
 		Vault.changePermission(p, permission, take, world);
+	}
+
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		return PlaceholderRegistry.of("permission", permission, "permission_removed", MessageUtils.getYesNo(take),
+				"permission_world", world == null ? Lang.worldGlobal.toString() : world);
 	}
 
 	public Map<String, Object> serialize() {

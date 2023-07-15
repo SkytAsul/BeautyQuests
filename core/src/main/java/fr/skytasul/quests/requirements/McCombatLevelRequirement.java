@@ -24,13 +24,18 @@ public class McCombatLevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
+	protected String getPlaceholderName() {
+		return "level";
+	}
+
+	@Override
 	protected String getDefaultReason(Player player) {
-		return Lang.REQUIREMENT_COMBAT_LEVEL.format(getFormattedValue());
+		return Lang.REQUIREMENT_COMBAT_LEVEL.format(this);
 	}
 	
 	@Override
 	public String getDefaultDescription(Player p) {
-		return Lang.RDCombatLevel.format(Integer.toString((int) target));
+		return Lang.RDCombatLevel.format(this);
 	}
 	
 	@Override

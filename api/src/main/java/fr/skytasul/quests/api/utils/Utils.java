@@ -39,6 +39,7 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

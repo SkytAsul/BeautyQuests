@@ -30,10 +30,10 @@ public class OptionRepeatable extends QuestOptionBoolean implements QuestDescrip
 		if (quest.testTimer(context.getPlayerAccount(), false)) {
 			lore.add(Lang.canRedo.toString());
 		}else {
-			lore.add(Lang.timeWait.format(quest.getTimeLeft(context.getPlayerAccount())));
+			lore.add(Lang.timeWait.quickFormat("time_left", quest.getTimeLeft(context.getPlayerAccount())));
 		}
 		lore.add(null);
-		lore.add(Lang.timesFinished.format(context.getQuestDatas().getTimesFinished()));
+		lore.add(Lang.timesFinished.quickFormat("times_finished", context.getQuestDatas().getTimesFinished()));
 		return lore;
 	}
 	

@@ -30,7 +30,6 @@ import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
-import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -43,10 +42,13 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
@@ -68,6 +70,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	private boolean removed = false;
 	public List<Player> inAsyncStart = new ArrayList<>();
 	
+	private PlaceholderRegistry placeholders;
+
 	public QuestImplementation(int id) {
 		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
@@ -93,6 +97,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return descriptions;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterator<QuestOption> iterator() {
 		return (Iterator) options.iterator();
@@ -152,6 +157,10 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return file;
 	}
 	
+	public String getNameAndId() {
+		return getName() + " (#" + id + ")";
+	}
+
 	@Override
 	public @Nullable String getName() {
 		return getOptionValueOrDef(OptionName.class);
@@ -314,7 +323,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		}
 		if (QuestsAPI.getAPI().getQuestsManager().getStartedSize(acc) >= playerMaxLaunchedQuest) {
 			if (sendMessage)
-				Lang.QUESTS_MAX_LAUNCHED.send(p, playerMaxLaunchedQuest);
+				Lang.QUESTS_MAX_LAUNCHED.quickSend(p, "quests_max_amount", playerMaxLaunchedQuest);
 			return false;
 		}
 		return true;
@@ -324,7 +333,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()) {
-				if (sendMessage && acc.isCurrent()) Lang.QUEST_WAIT.send(acc.getPlayer(), getTimeLeft(acc));
+				if (sendMessage && acc.isCurrent())
+					Lang.QUEST_WAIT.quickSend(acc.getPlayer(), "time_left", getTimeLeft(acc));
 				return false;
 			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
 		}
@@ -381,6 +391,18 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 	
 	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry()
+					.registerIndexed("quest", this::getNameAndId)
+					.register("quest_name", this::getName)
+					.register("quest_id", id)
+					.register("quest_description", this::getDescription);
+		}
+		return placeholders;
+	}
+
+	@Override
 	public @NotNull CompletableFuture<Boolean> attemptStart(@NotNull Player p) {
 		if (!canStart(p, true))
 			return CompletableFuture.completedFuture(false);
@@ -389,12 +411,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (QuestsConfiguration.getConfig().getQuestsConfig().questConfirmGUI()
 				&& !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
 			CompletableFuture<Boolean> future = new CompletableFuture<>();
-			ConfirmGUI.confirm(() -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
 				start(p);
 				future.complete(true);
 			}, () -> {
 				future.complete(false);
-			}, Lang.INDICATION_START.format(getName()), confirm).open(p);
+			}, Lang.INDICATION_START.format(getPlaceholdersRegistry()), confirm).open(p);
 			return future;
 		}else {
 			start(p);
@@ -422,7 +444,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
 			if (!"none".equals(startMsg))
-				MessageUtils.sendRawMessage(p, startMsg, true, getName());
+				MessageUtils.sendRawMessage(p, startMsg, true, getPlaceholdersRegistry());
 		}
 		
 		Runnable run = () -> {
@@ -434,7 +456,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			}
 			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance).map(Actionnable.class::cast).forEach(x -> x.trigger(p));
 			if (!silently && !msg.isEmpty())
-				Lang.FINISHED_OBTAIN.send(p, MessageUtils.itemsToFormattedString(msg.toArray(new String[0])));
+				Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
+						MessageUtils.itemsToFormattedString(msg.toArray(new String[0])));
 			inAsyncStart.remove(p);
 			
 			QuestUtils.runOrSync(() -> {
@@ -462,12 +485,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				if (hasOption(OptionEndMessage.class)) {
 					String endMsg = getOption(OptionEndMessage.class).getValue();
 					if (!"none".equals(endMsg))
-						MessageUtils.sendRawMessage(p, endMsg, true, obtained);
+						MessageUtils.sendRawMessage(p, endMsg, true, PlaceholderRegistry.of("rewards", obtained).with(this));
 				} else
-					MessageUtils.sendPrefixedMessage(p, Lang.FINISHED_BASE.format(getName())
-							+ (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.format(obtained)));
+					MessageUtils.sendMessage(p, Lang.FINISHED_BASE.format(this)
+							+ (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.quickFormat("rewards", obtained)),
+							MessageType.PREFIXED);
 			}catch (Exception ex) {
-				Lang.ERROR_OCCURED.send(p, "reward message");
+				DefaultErrors.sendGeneric(p, "reward message");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving quest end rewards.", ex);
 			}
 			

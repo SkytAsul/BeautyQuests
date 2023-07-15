@@ -86,18 +86,18 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescription(Lang.rewards.format(rewards.size()));
-		loreBuilder.addDescription(Lang.requirements.format(requirements.size()));
+		loreBuilder.addDescription(rewards.getSizeString());
+		loreBuilder.addDescription(requirements.getSizeString());
 	}
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		LayoutedGUI.newBuilder()
 				.addButton(0,
-						LayoutedButton.create(XMaterial.NETHER_STAR, () -> "§b" + Lang.requirements.format(requirements.size()),
+						LayoutedButton.create(XMaterial.NETHER_STAR, () -> "§b" + requirements.getSizeString(),
 								Collections.emptyList(), this::editRequirements))
 				.addButton(1,
-						LayoutedButton.create(XMaterial.CHEST, () -> "§a" + Lang.rewards.format(rewards.size()),
+						LayoutedButton.create(XMaterial.CHEST, () -> "§a" + rewards.getSizeString(),
 								Collections.emptyList(), this::editRewards))
 				.addButton(4, LayoutedButton.create(ItemUtils.itemDone, __ -> event.reopenGUI()))
 				.setName(Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString())

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 
@@ -46,12 +47,20 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 		forEach(requirement -> requirement.detach());
 	}
 
+	public String getSizeString() {
+		return getSizeString(size());
+	}
+
 	public @NotNull List<Map<String, Object>> serialize() {
 		return SerializableObject.serializeList(this);
 	}
 
 	public static RequirementList deserialize(@NotNull List<Map<?, ?>> mapList) {
 		return new RequirementList(SerializableObject.deserializeList(mapList, AbstractRequirement::deserialize));
+	}
+
+	public static String getSizeString(int size) {
+		return Lang.requirements.quickFormat("amount", size);
 	}
 
 }

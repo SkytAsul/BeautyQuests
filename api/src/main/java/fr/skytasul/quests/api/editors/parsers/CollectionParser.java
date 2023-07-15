@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class CollectionParser<T> implements AbstractParser<T> {
 	
@@ -20,7 +21,8 @@ public class CollectionParser<T> implements AbstractParser<T> {
 	@Override
 	public T parse(Player p, String msg) throws Throwable {
 		T obj = names.get(processName(msg));
-		if (obj == null) Lang.NO_SUCH_ELEMENT.send(p, namesString);
+		if (obj == null)
+			Lang.NO_SUCH_ELEMENT.send(p, PlaceholderRegistry.of("available_elements", namesString));
 		return obj;
 	}
 
@@ -30,7 +32,7 @@ public class CollectionParser<T> implements AbstractParser<T> {
 	
 	@Override
 	public void sendIndication(Player p) {
-		Lang.AVAILABLE_ELEMENTS.send(p, namesString);
+		Lang.AVAILABLE_ELEMENTS.send(p, PlaceholderRegistry.of("available_elements", namesString));
 	}
 
 	public String getNames() {

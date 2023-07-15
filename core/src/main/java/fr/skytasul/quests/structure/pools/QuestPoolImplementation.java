@@ -10,11 +10,14 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -23,6 +26,8 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -42,6 +47,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	
 	BqNpcImplementation npc;
 	List<Quest> quests = new ArrayList<>();
+
+	private @Nullable PlaceholderRegistry placeholders;
 	
 	QuestPoolImplementation(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
 		this.id = id;
@@ -130,19 +137,36 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 	
 	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry()
+					.registerIndexed("pool", "#" + id)
+					.register("pool_id", id)
+					.register("pool_npc", () -> npcID + " (" + (npc == null ? "unknown" : npc.getNpc().getName()) + ")")
+					.register("pool_max_quests", maxQuests)
+					.register("pool_quests_per_launch", questsPerLaunch)
+					.register("pool_redo", MessageUtils.getYesNo(redoAllowed))
+					.register("pool_duplicates", MessageUtils.getYesNo(avoidDuplicates))
+					.register("pool_time", Utils.millisToHumanString(timeDiff))
+					.register("pool_hologram", QuestOption.formatNullableValue(hologram, Lang.PoolHologramText))
+					.register("pool_quests",
+							() -> quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", ")));
+		}
+		return placeholders;
+	}
+
+	@Override
 	public ItemStack getItemStack(String action) {
-		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(id),
-				Lang.poolItemNPC.format(npcID + " (" + (npc == null ? "unknown" : npc.getNpc().getName())
-						+ ")"),
-				Lang.poolItemMaxQuests.format(maxQuests),
-				Lang.poolItemQuestsPerLaunch.format(questsPerLaunch),
-				Lang.poolItemRedo.format(redoAllowed ? Lang.Enabled : Lang.Disabled),
-				Lang.poolItemTime.format(Utils.millisToHumanString(timeDiff)),
-				Lang.poolItemHologram.format(hologram == null ? "\n§7 > " + Lang.PoolHologramText.toString() + "\n§7 > " + Lang.defaultValue : hologram),
-				Lang.poolItemAvoidDuplicates.format(avoidDuplicates ? Lang.Enabled : Lang.Disabled),
-				"§7" + Lang.requirements.format(requirements.size()),
-				Lang.poolItemQuestsList.format(quests.size(),
-						quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", "))),
+		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(this),
+				Lang.poolItemNPC.format(this),
+				Lang.poolItemMaxQuests.format(this),
+				Lang.poolItemQuestsPerLaunch.format(this),
+				Lang.poolItemRedo.format(this),
+				Lang.poolItemTime.format(this),
+				Lang.poolItemHologram.format(this),
+				Lang.poolItemAvoidDuplicates.format(this),
+				"§7" + requirements.getSizeString(),
+				Lang.poolItemQuestsList.format(this),
 				"", action);
 	}
 	
@@ -197,7 +221,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0)
-			return CompletableFuture.completedFuture(Lang.POOL_NO_TIME.format(Utils.millisToHumanString(time)));
+			return CompletableFuture
+					.completedFuture(Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
 
 		return CompletableFuture.supplyAsync(() -> {
 			List<Quest> started = new ArrayList<>(questsPerLaunch);
@@ -240,7 +265,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		} else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
 				.count() >= maxQuests) {
 			// player has too much quests in this pool to be able to start one more
-			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(maxQuests)));
+			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(this)));
 		}
 
 		List<Quest> notStarted = notCompleted.stream().filter(quest -> !quest.hasStarted(acc)).collect(Collectors.toList());

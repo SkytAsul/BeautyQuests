@@ -25,6 +25,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
@@ -42,8 +43,9 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		this.run = run;
 
 		if (allowAmount)
-			buttons.put(1, LayoutedButton.create(XMaterial.REDSTONE, () -> Lang.Amount.format(amount), Collections.emptyList(),
-					this::amountClick));
+			buttons.put(1,
+					LayoutedButton.create(XMaterial.REDSTONE, () -> Lang.Amount.quickFormat("amount", amount),
+							Collections.emptyList(), this::amountClick));
 		buttons.put(2, LayoutedButton.create(XMaterial.NAME_TAG, Lang.blockName.toString(),
 				Arrays.asList(QuestOption.formatNullableValue(customName, customName == null)), this::nameClick));
 		buttons.put(4, new LayoutedButton() {
@@ -55,11 +57,13 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 			@Override
 			public void place(@NotNull Inventory inventory, int slot) {
-				inventory.setItem(slot, ItemUtils.item(type, Lang.materialName.format(type.name())));
+				inventory.setItem(slot, ItemUtils.item(type, Lang.materialName.quickFormat("block_type", type.name())));
 				if (inventory.getItem(slot) == null || inventory.getItem(slot).getType() == Material.AIR) {
 					// means that the material cannot be treated as an inventory item (ie: fire)
-					inventory.setItem(slot, ItemUtils.item(XMaterial.STONE, Lang.materialName.format(type.name()),
-							QuestOption.formatDescription(Lang.materialNotItemLore.format(type.name()))));
+					inventory.setItem(slot,
+							ItemUtils.item(XMaterial.STONE, Lang.materialName.quickFormat("block_type", type.name()),
+									QuestOption.formatDescription(
+											Lang.materialNotItemLore.quickFormat("block_type", type.name()))));
 				}
 				if (tag == null)
 					ItemUtils.addEnchant(inventory.getItem(slot), Enchantment.DURABILITY, 1);
@@ -112,7 +116,8 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 				try {
 					Bukkit.createBlockData(type.parseMaterial(), blockData);
 				} catch (Exception ex) {
-					Lang.INVALID_BLOCK_DATA.send(event.getPlayer(), blockData, type.name());
+					Lang.INVALID_BLOCK_DATA.send(event.getPlayer(),
+							PlaceholderRegistry.of("block_data", blockData, "block_material", type.name()));
 					blockData = null;
 				}
 			}
@@ -121,7 +126,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void dataClick(LayoutedClickEvent event) {
-		Lang.BLOCK_DATA.send(event.getPlayer(),
+		Lang.BLOCK_DATA.quickSend(event.getPlayer(), "available_datas",
 				String.join(", ", NMS.getNMS().getAvailableBlockProperties(type.parseMaterial())));
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			String tmp = "[" + obj + "]";
@@ -130,7 +135,8 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 				blockData = tmp;
 				tag = null;
 			} catch (Exception ex) {
-				Lang.INVALID_BLOCK_DATA.send(event.getPlayer(), tmp, type.name());
+				Lang.INVALID_BLOCK_DATA.send(event.getPlayer(),
+						PlaceholderRegistry.of("block_data", tmp, "block_material", type.name()));
 			}
 			event.refreshGuiReopen();
 		}, () -> {
@@ -140,11 +146,12 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		Lang.BLOCK_TAGS.send(event.getPlayer(), String.join(", ", NMS.getNMS().getAvailableBlockTags()));
+		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags",
+				String.join(", ", NMS.getNMS().getAvailableBlockTags()));
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			NamespacedKey key = NamespacedKey.fromString((String) obj);
 			if (key == null || Bukkit.getTag("blocks", key, Material.class) == null) {
-				Lang.INVALID_BLOCK_TAG.send(event.getPlayer(), obj);
+				Lang.INVALID_BLOCK_TAG.quickSend(event.getPlayer(), "block_tag", obj);
 			} else {
 				tag = (String) obj;
 				type = XMaterial.STONE;

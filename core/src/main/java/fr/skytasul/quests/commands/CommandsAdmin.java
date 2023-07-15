@@ -19,13 +19,14 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.OutsideEditor;
 import fr.skytasul.quests.api.editors.SelectNPC;
-import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MessageUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
@@ -108,13 +109,13 @@ public class CommandsAdmin implements OrphanCommand {
 	
 	private void doRemove(BukkitCommandActor sender, Quest quest) {
 		if (sender.isPlayer()) {
-			ConfirmGUI.confirm(() -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
 				quest.delete(false, false);
-				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getName());
-			}, null, Lang.INDICATION_REMOVE.format(quest.getName())).open(sender.getAsPlayer());
+				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getPlaceholdersRegistry());
+			}, null, Lang.INDICATION_REMOVE.format(quest.getPlaceholdersRegistry())).open(sender.getAsPlayer());
 		}else {
 			quest.delete(false, false);
-			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getName());
+			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getPlaceholdersRegistry());
 		}
 	}
 	
@@ -184,14 +185,14 @@ public class CommandsAdmin implements OrphanCommand {
 		if (NMS.isValid()) {
 			ListBook.openQuestBook(player);
 		} else
-			MessageUtils.sendPrefixedMessage(player, "Version not supported");
+			MessageUtils.sendMessage(player, "Version not supported", MessageType.PREFIXED);
 	}
 	
 	@Subcommand ("downloadTranslations")
 	@CommandPermission ("beautyquests.command.manage")
 	public void downloadTranslations(BukkitCommandActor actor, @Optional String lang, @Switch boolean overwrite) {
 		if (MinecraftVersion.MAJOR < 13)
-			throw new CommandErrorException(Lang.VERSION_REQUIRED.format("≥ 1.13"));
+			throw new CommandErrorException(Lang.VERSION_REQUIRED.quickFormat("version", "≥ 1.13"));
 		
 		if (lang == null)
 			throw new CommandErrorException(Lang.COMMAND_TRANSLATION_SYNTAX.toString());
@@ -202,22 +203,24 @@ public class CommandsAdmin implements OrphanCommand {
 		try {
 			File destination = new File(BeautyQuests.getInstance().getDataFolder(), lang + ".json");
 			if (destination.isDirectory())
-				throw new CommandErrorException(Lang.ERROR_OCCURED.format(lang + ".json is a directory"));
+				throw new CommandErrorException(Lang.ERROR_OCCURED.quickFormat("error", lang + ".json is a directory"));
 			if (!overwrite && destination.exists())
-				throw new CommandErrorException(Lang.COMMAND_TRANSLATION_EXISTS.format(lang + ".json"));
+				throw new CommandErrorException(Lang.COMMAND_TRANSLATION_EXISTS.quickFormat("file_name", lang + ".json"));
 			
 			try (ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream())) {
 				destination.createNewFile();
 				try (FileOutputStream output = new FileOutputStream(destination)) {
 					output.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
-					Lang.COMMAND_TRANSLATION_DOWNLOADED.send(actor.getSender(), lang);
+					Lang.COMMAND_TRANSLATION_DOWNLOADED.quickSend(actor.getSender(), "lang", lang);
 				}
 			}catch (FileNotFoundException ex) {
-				throw new CommandErrorException(Lang.COMMAND_TRANSLATION_NOT_FOUND.format(lang, version));
+				throw new CommandErrorException(
+						Lang.COMMAND_TRANSLATION_NOT_FOUND.format(PlaceholderRegistry.of("lang", lang, "version", version)));
 			}
 		}catch (IOException e) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while downloading translation.", e);
-			throw new CommandErrorException(Lang.ERROR_OCCURED.format("IO Exception when downloading translation."));
+			throw new CommandErrorException(
+					Lang.ERROR_OCCURED.quickFormat("error", "IO Exception when downloading translation."));
 		}
 	}
 	

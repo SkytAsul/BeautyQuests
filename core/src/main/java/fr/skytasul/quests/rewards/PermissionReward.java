@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.permissions.PermissionListGUI;
 import fr.skytasul.quests.utils.types.Permission;
 
@@ -36,11 +39,17 @@ public class PermissionReward extends AbstractReward {
 	public AbstractReward clone() {
 		return new PermissionReward(getCustomDescription(), new ArrayList<>(permissions));
 	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("permissions_amount", permissions.size());
+	}
 	
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescriptionAsValue(permissions.size() + " permissions");
+		loreBuilder.addDescriptionAsValue(Lang.AmountPermissions.format(this));
 	}
 	
 	@Override

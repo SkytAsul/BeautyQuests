@@ -97,6 +97,7 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 		return pools.get(id);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public @NotNull @UnmodifiableView Collection<QuestPool> getPools() {
 		return (Collection) pools.values();

@@ -225,8 +225,7 @@ public class StagesGUI extends AbstractGui {
 			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
 
 			int maxStages = ending ? 20 : 15;
-			ItemStack manageItem =
-					ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type.getName()), getLineManageLore(lineId));
+			ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type), getLineManageLore(lineId));
 			lineObj.setItem(0, manageItem, event -> {
 				switch (event.getClick()) {
 					case LEFT:
