@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -228,7 +227,10 @@ public class CommandsAdmin implements OrphanCommand {
 		
 		Utils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
-			try (Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"))) {
+			Database db = null;
+			try {
+				// no try-with-resource because the database is used in another thread
+				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
 				final Database fdb = db;
@@ -236,14 +238,18 @@ public class CommandsAdmin implements OrphanCommand {
 					actor.reply("§aStarting migration...");
 					try {
 						actor.reply(PlayersManagerDB.migrate(fdb, (PlayersManagerYAML) PlayersManager.manager));
-					}catch (Exception ex) {
+					} catch (Exception ex) {
 						actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
 						BeautyQuests.logger.severe("Error during data migration", ex);
+					} finally {
+						fdb.close();
 					}
 				});
-			}catch (SQLException ex) {
+			} catch (Exception ex) {
 				actor.error("§cConnection to database has failed. Aborting. " + ex.getMessage());
 				BeautyQuests.logger.severe("An error occurred while connecting to the database for datas migration.", ex);
+				if (db != null)
+					db.close();
 			}
 		});
 	}
