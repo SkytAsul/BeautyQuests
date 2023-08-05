@@ -6,8 +6,9 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 
-public interface BqNpc extends Locatable.Located.LocatedEntity {
+public interface BqNpc extends Locatable.Located.LocatedEntity, HasPlaceholders {
 
 	BqInternalNpc getNpc();
 

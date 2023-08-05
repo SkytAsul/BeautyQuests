@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
@@ -23,16 +22,17 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public abstract class AbstractCountableStage<T> extends AbstractStage {
+public abstract class AbstractCountableStage<T> extends AbstractStage implements HasMultipleObjects<T> {
 
 	protected final @NotNull List<@NotNull CountableObject<T>> objects;
 
@@ -47,6 +47,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 		calculateSize();
 	}
 
+	@Override
 	public @NotNull List<@NotNull CountableObject<T>> getObjects() {
 		return objects;
 	}
@@ -71,7 +72,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public @NotNull Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc, boolean warnNull) {
+	public @UnknownNullability Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc,
+			boolean warnNull) {
 		Map<?, Integer> remaining = getData(acc, "remaining");
 		if (warnNull && remaining == null)
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString());
@@ -104,6 +106,40 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 			throw new UnsupportedOperationException(object.getClass().getName());
 	}
 
+	@Override
+	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
+		Map<@NotNull UUID, @NotNull Integer> remainings = getPlayerRemainings(account, false);
+		if (remainings == null || remainings.isEmpty())
+			return (Map) remainings;
+
+		return remainings.entrySet().stream()
+				.map(entry -> Map.entry(getObject(entry.getKey()).orElse(null), entry.getValue()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	@Override
+	public @Nullable CountableObject<T> getObject(int index) {
+		return index >= objects.size() ? null : objects.get(index);
+	}
+
+	@Override
+	public int getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
+		// we do not use default implementation in HasMultipleObjects to avoid conversion from UUID to
+		// CountableObject
+		return getPlayerRemainings(account, false).get(object.getUUID());
+	}
+
+	@Override
+	public int getTotalPlayerAmount(@NotNull PlayerAccount account) {
+		// same as in getPlayerAmount
+		return getPlayerRemainings(account, false).values().stream().mapToInt(Integer::intValue).sum();
+	}
+
+	@Override
+	public @NotNull String getObjectName(CountableObject<T> object) {
+		return getName(object.getObject());
+	}
+
 	protected void updatePlayerRemaining(@NotNull Player player, @NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
 		updateObjective(player, "remaining", remaining.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
@@ -115,30 +151,9 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	}
 
 	@Override
-	public @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		return Utils.descriptionLines(source, buildRemainingArray(acc, source));
-	}
-
-	@Override
-	public @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc,
-			@NotNull DescriptionSource source) {
-		return new Supplier[] {() -> Utils.descriptionLines(source, buildRemainingArray(acc, source))};
-	}
-
-	private @NotNull String @NotNull [] buildRemainingArray(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
-		if (playerAmounts == null) return new String[] { "§4§lerror" };
-		String[] elements = new String[playerAmounts.size()];
-
-		int i = 0;
-		for (Entry<UUID, Integer> entry : playerAmounts.entrySet()) {
-			elements[i++] = getObject(entry.getKey())
-					.map(object -> QuestsConfiguration.getItemNameColor() + Utils.getStringFromNameAndAmount(
-							getName(object.getObject()), QuestsConfiguration.getItemAmountColor(), entry.getValue(),
-							object.getAmount(), QuestsConfiguration.showDescriptionItemsXOne(source)))
-					.orElse("no object " + entry.getKey());
-		}
-		return elements;
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		ItemsDescriptionPlaceholders.register(placeholders, getPlaceholderKey(), this);
 	}
 
 	@Override
@@ -249,6 +264,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage {
 	protected @NotNull T cloneObject(@NotNull T object) {
 		return object;
 	}
+
+	protected abstract @NotNull String getPlaceholderKey();
 
 	protected abstract @NotNull String getName(@NotNull T object);
 

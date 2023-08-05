@@ -1,7 +1,6 @@
 package fr.skytasul.quests.stages;
 
 import java.util.Map;
-import java.util.function.Supplier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,19 +14,23 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionConfiguration;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.misc.BucketTypeGUI;
 
-public class StageBucket extends AbstractStage {
+public class StageBucket extends AbstractStage implements HasSingleObject {
 
 	private BucketType bucket;
 	private int amount;
@@ -42,8 +45,23 @@ public class StageBucket extends AbstractStage {
 		return bucket;
 	}
 
+	@Override
+	public @NotNull String getObjectName() {
+		return bucket.getName();
+	}
+
 	public int getBucketAmount() {
 		return amount;
+	}
+
+	@Override
+	public int getObjectAmount() {
+		return amount;
+	}
+
+	@Override
+	public @NotNull ItemsDescriptionConfiguration getItemsDescriptionConfiguration() {
+		return QuestsConfiguration.getConfig().getStageDescriptionConfig();
 	}
 
 	@EventHandler (priority = EventPriority.MONITOR)
@@ -61,7 +79,8 @@ public class StageBucket extends AbstractStage {
 		}
 	}
 
-	private int getPlayerAmount(PlayerAccount acc) {
+	@Override
+	public int getPlayerAmount(PlayerAccount acc) {
 		return getData(acc, "amount");
 	}
 
@@ -71,17 +90,15 @@ public class StageBucket extends AbstractStage {
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_BUCKET.format(Utils.getStringFromNameAndAmount(bucket.getName(),
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
-				amount, false));
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("bucket_type", bucket.getName());
+		ItemsDescriptionPlaceholders.register(placeholders, "buckets", this);
 	}
 
 	@Override
-	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] {() -> Utils.getStringFromNameAndAmount(bucket.getName(),
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
-				amount, false)};
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_BUCKET.toString();
 	}
 
 	@Override
@@ -166,14 +183,14 @@ public class StageBucket extends AbstractStage {
 		
 		public void setBucket(BucketType bucket) {
 			this.bucket = bucket;
-			ItemStack newItem = ItemUtils.lore(getLine().getItem(7), Lang.optionValue.format(bucket.getName()));
+			ItemStack newItem = ItemUtils.lore(getLine().getItem(7), QuestOption.formatNullableValue(bucket.getName()));
 			newItem.setType(bucket.type.parseMaterial());
 			getLine().refreshItem(7, newItem);
 		}
 		
 		public void setAmount(int amount) {
 			this.amount = amount;
-			getLine().refreshItemLore(6, Lang.Amount.format(amount));
+			getLine().refreshItemLore(6, Lang.Amount.quickFormat("amount", amount));
 		}
 		
 		@Override

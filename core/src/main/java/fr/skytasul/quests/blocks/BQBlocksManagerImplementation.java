@@ -161,7 +161,7 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 	}
 
 	public @NotNull BQBlock createBlockdata(@NotNull String blockData, @Nullable String customName) {
-		return new Post1_13.BQBlockData(new BQBlockOptions(tagType, customName), blockData);
+		return new Post1_13.BQBlockData(new BQBlockOptions(blockdataType, customName), blockData);
 	}
 
 	public @NotNull BQBlock createTag(@NotNull String tag, @Nullable String customName) {

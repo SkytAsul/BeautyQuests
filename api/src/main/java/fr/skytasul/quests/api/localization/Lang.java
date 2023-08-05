@@ -833,7 +833,6 @@ public enum Lang implements Locale {
 	
 	HologramText("misc.hologramText"),
 	PoolHologramText("misc.poolHologramText"),
-	MobsProgression("misc.mobsProgression"),
 	EntityType("misc.entityType"),
 	EntityTypeAny("misc.entityTypeAny"),
 	QuestItemLore("misc.questItemLore"),

@@ -14,6 +14,7 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -70,7 +71,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);
 		String value = this.value;
 		if (parseValue)
-			value = MessageUtils.finalFormat(p, value, true, null);
+			value = MessageUtils.finalFormat(value, null, PlaceholdersContext.of(p, true));
 		return value.equals(request);
 	}
 	

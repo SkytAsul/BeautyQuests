@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,36 +22,30 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.mobs.MobSelectionGUI;
 import fr.skytasul.quests.mobs.Mob;
 
 @SuppressWarnings ("rawtypes")
-public class StageDealDamage extends AbstractStage {
+public class StageDealDamage extends AbstractStage implements HasSingleObject {
 	
 	private final double damage;
 	private final List<Mob> targetMobs;
-	
-	private final String targetMobsString;
 	
 	public StageDealDamage(StageController controller, double damage, List<Mob> targetMobs) {
 		super(controller);
 		this.damage = damage;
 		this.targetMobs = targetMobs;
-		
-		targetMobsString = getTargetMobsString(targetMobs);
-	}
-	
-	private static String getTargetMobsString(List<Mob> targetMobs) {
-		if (targetMobs == null || targetMobs.isEmpty()) return Lang.EntityTypeAny.toString();
-		return targetMobs.stream().map(Mob::getName).collect(Collectors.joining(", "));
 	}
 	
 	@Override
@@ -89,14 +82,36 @@ public class StageDealDamage extends AbstractStage {
 		}
 	}
 	
-	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return (targetMobs == null || targetMobs.isEmpty() ? Lang.SCOREBOARD_DEAL_DAMAGE_ANY : Lang.SCOREBOARD_DEAL_DAMAGE_MOBS).format(descriptionFormat(acc, source));
+	public double getPlayerAmountDouble(@NotNull PlayerAccount account) {
+		return getData(account, "amount");
 	}
-	
+
 	@Override
-	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Object[] { (Supplier<String>) () -> Integer.toString(super.<Double>getData(acc, "amount").intValue()), targetMobsString };
+	public int getPlayerAmount(@NotNull PlayerAccount account) {
+		return (int) Math.ceil(getPlayerAmountDouble(account));
+	}
+
+	@Override
+	public int getObjectAmount() {
+		return (int) damage;
+	}
+
+	@Override
+	public @NotNull String getObjectName() {
+		return "damage";
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		ItemsDescriptionPlaceholders.register(placeholders, "damage", this);
+		placeholders.registerIndexed("target_mobs", getTargetMobsString(targetMobs));
+	}
+
+	@Override
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return targetMobs == null || targetMobs.isEmpty() ? Lang.SCOREBOARD_DEAL_DAMAGE_ANY.toString()
+				: Lang.SCOREBOARD_DEAL_DAMAGE_MOBS.toString();
 	}
 	
 	@Override
@@ -112,6 +127,12 @@ public class StageDealDamage extends AbstractStage {
 				section.contains("targetMobs") ? section.getMapList("targetMobs").stream().map(map -> Mob.deserialize((Map) map)).collect(Collectors.toList()) : null);
 	}
 	
+	private static String getTargetMobsString(List<Mob> targetMobs) {
+		if (targetMobs == null || targetMobs.isEmpty())
+			return Lang.EntityTypeAny.toString();
+		return targetMobs.stream().map(Mob::getName).collect(Collectors.joining(", "));
+	}
+
 	public static class Creator extends StageCreation<StageDealDamage> {
 		
 		private static final int SLOT_DAMAGE = 6;

@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
@@ -46,7 +46,7 @@ public class StageDeath extends AbstractStage {
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_DIE.toString();
 	}
 	
@@ -89,8 +89,9 @@ public class StageDeath extends AbstractStage {
 		
 		public void setCauses(List<DamageCause> causes) {
 			this.causes = causes;
-			getLine().refreshItem(CAUSES_SLOT, item -> ItemUtils.lore(item, Lang.optionValue
-					.format(causes.isEmpty() ? Lang.stageDeathCauseAny : Lang.stageDeathCausesSet.format(causes.size()))));
+			getLine().refreshItem(CAUSES_SLOT,
+					item -> ItemUtils.lore(item, QuestOption.formatNullableValue(causes.isEmpty() ? Lang.stageDeathCauseAny
+							: Lang.stageDeathCausesSet.quickFormat("causes_amount", causes.size()))));
 		}
 		
 		@Override

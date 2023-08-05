@@ -6,11 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
-import fr.skytasul.quests.api.utils.SplittableDescriptionConfiguration;
 import net.md_5.bungee.api.ChatColor;
 
 public class MessageUtils {
@@ -27,29 +25,37 @@ public class MessageUtils {
 
 	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
 			@Nullable PlaceholderRegistry placeholders) {
+		sendMessage(sender, message, type, placeholders, PlaceholdersContext.of(sender, false));
+	}
+
+	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
+			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
 		if (message == null || message.isEmpty())
 			return;
 
-		sendRawMessage(sender, type.process(message), false, placeholders);
+		sendRawMessage(sender, type.process(message), placeholders, context);
 	}
 
-	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text, boolean playerName,
-			@Nullable PlaceholderRegistry placeholders) {
+	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,
+			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
 		if (text == null || text.isEmpty())
 			return;
 
-		text = finalFormat(sender, text, playerName, placeholders);
+		text = finalFormat(text, placeholders, context);
 		sender.sendMessage(NEWLINE_PATTERN.split(text));
 	}
 
-	public static String finalFormat(@Nullable CommandSender sender, @NotNull String text, boolean playerName,
-			@Nullable PlaceholderRegistry placeholders) {
-		if (DependenciesManager.papi.isEnabled() && sender instanceof Player)
-			text = QuestsPlaceholders.setPlaceholders((Player) sender, text);
-		if (playerName && sender != null)
-			text = text.replace("{PLAYER}", sender.getName()).replace("{PREFIX}", QuestsConfiguration.getPrefix());
+	public static String finalFormat(@NotNull String text, @Nullable PlaceholderRegistry placeholders,
+			@NotNull PlaceholdersContext context) {
+		if (DependenciesManager.papi.isEnabled() && context.getActor() instanceof Player)
+			text = QuestsPlaceholders.setPlaceholders((Player) context.getActor(), text);
+		if (context.replacePluginPlaceholders()) {
+			text = text
+					.replace("{PLAYER}", context.getActor().getName())
+					.replace("{PREFIX}", QuestsPlugin.getPlugin().getPrefix());
+		}
 		text = ChatColor.translateAlternateColorCodes('&', text);
-		return format(text, placeholders);
+		return format(text, placeholders, context);
 	}
 
 	public static String itemsToFormattedString(String[] items) {
@@ -73,6 +79,11 @@ public class MessageUtils {
 	}
 
 	public static @NotNull String format(@NotNull String msg, @Nullable PlaceholderRegistry placeholders) {
+		return format(msg, placeholders, PlaceholdersContext.DEFAULT_CONTEXT);
+	}
+
+	public static @NotNull String format(@NotNull String msg, @Nullable PlaceholderRegistry placeholders,
+			@NotNull PlaceholdersContext context) {
 		if (placeholders != null) {
 			Matcher matcher = PLACEHOLDER_PATTERN.matcher(msg);
 
@@ -85,7 +96,7 @@ public class MessageUtils {
 					output = new StringBuilder(msg.length());
 
 				String key = matcher.group(1);
-				String replacement = placeholders.resolve(key);
+				String replacement = placeholders.resolve(key, context);
 				String substring = msg.substring(lastAppend, matcher.start());
 				colors = ChatColorUtils.getLastColors(colors, substring);
 				output.append(substring);
@@ -101,15 +112,6 @@ public class MessageUtils {
 		}
 
 		return msg;
-	}
-
-	public static String formatDescription(DescriptionSource source, SplittableDescriptionConfiguration configuration,
-			String... elements) {
-		if (elements.length == 0)
-			return Lang.Unknown.toString();
-		if (elements.length == 1 && configuration.isAloneSplitAmountShown(source))
-			return MessageUtils.itemsToFormattedString(elements, configuration.getItemAmountColor());
-		return String.join(configuration.getSplitPrefix(), elements);
 	}
 
 	public static String getYesNo(boolean bool) {

@@ -1,7 +1,6 @@
 package fr.skytasul.quests.stages;
 
 import java.util.Map;
-import java.util.function.Supplier;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,29 +11,32 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
  */
-public class StageCraft extends AbstractStage {
+public class StageCraft extends AbstractStage implements HasSingleObject {
 
-	private ItemStack result;
+	private final ItemStack result;
 	private final ItemComparisonMap comparisons;
 	
 	public StageCraft(StageController controller, ItemStack result, ItemComparisonMap comparisons) {
@@ -127,25 +129,33 @@ public class StageCraft extends AbstractStage {
 		datas.put("amount", result.getAmount());
 	}
 
-	private int getPlayerAmount(PlayerAccount acc) {
+	@Override
+	public int getPlayerAmount(PlayerAccount acc) {
 		Integer amount = getData(acc, "amount");
 		return amount == null ? 0 : amount.intValue();
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_CRAFT.format(Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true),
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
-				result.getAmount(), false));
+	public @NotNull String getObjectName() {
+		return ItemUtils.getName(result, true);
 	}
 
 	@Override
-	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] {() -> Utils.getStringFromNameAndAmount(ItemUtils.getName(result, true),
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), getPlayerAmount(acc),
-				result.getAmount(), false)};
+	public int getObjectAmount() {
+		return result.getAmount();
 	}
-	
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		ItemsDescriptionPlaceholders.register(placeholders, "items", this);
+	}
+
+	@Override
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_CRAFT.toString();
+	}
+
 	@Override
 	protected void serialize(ConfigurationSection section) {
 		section.set("result", result.serialize());
@@ -202,13 +212,15 @@ public class StageCraft extends AbstractStage {
 		public void setItem(ItemStack item) {
 			this.item = item;
 			getLine().refreshItem(ITEM_SLOT,
-					item2 -> ItemUtils.lore(item2, Lang.optionValue.format(Utils.getStringFromItemStack(item, "§8", true))));
+					item2 -> ItemUtils.lore(item2,
+							QuestOption.formatNullableValue(Utils.getStringFromItemStack(item, "§8", true))));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
 			getLine().refreshItem(COMPARISONS_SLOT, item -> ItemUtils.lore(item,
-					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
+					QuestOption.formatNullableValue(
+							Lang.AmountComparisons.quickFormat("amount", this.comparisons.getEffective().size()))));
 		}
 
 		@Override

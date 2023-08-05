@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -20,8 +21,6 @@ import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
 
 public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack> {
 	
@@ -42,6 +41,11 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		}else comparisons = new ItemComparisonMap();
 		
 		super.deserialize(section);
+	}
+
+	@Override
+	protected @NotNull String getPlaceholderKey() {
+		return "items";
 	}
 
 	@Override
@@ -91,15 +95,15 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 			super.setupLine(line);
 			
 			line.setItem(6, getEditItem().clone(), event -> {
-				new ItemsGUI(items -> {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemsSelection(items -> {
 					setItems(items);
-					reopenGUI(player, true);
+					event.reopen();
 				}, items).open(event.getPlayer());
 			});
 			line.setItem(7, stageComparison.clone(), event -> {
-				new ItemComparisonGUI(comparisons, () -> {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemComparisonsSelection(comparisons, () -> {
 					setComparisons(comparisons);
-					reopenGUI(player, true);
+					event.reopen();
 				}).open(event.getPlayer());
 			});
 		}
@@ -108,19 +112,19 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			getLine().refreshItemLore(6, Lang.optionValue.format(Lang.AmountItems.format(this.items.size())));
+			getLine().refreshItemLoreOptionValue(6, Lang.AmountItems.quickFormat("amount", this.items.size()));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			getLine().refreshItemLore(7,
-					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size())));
+			getLine().refreshItemLoreOptionValue(7,
+					Lang.AmountComparisons.quickFormat("amount", this.comparisons.getEffective().size()));
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new ItemsGUI(items -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemsSelection(items -> {
 				setItems(items);
 				context.reopenGui();
 			}, Collections.emptyList()).open(p);

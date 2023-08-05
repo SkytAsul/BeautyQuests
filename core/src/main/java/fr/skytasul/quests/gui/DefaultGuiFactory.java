@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiFactory;
 import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
@@ -14,8 +15,10 @@ import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemCreatorGUI;
 import fr.skytasul.quests.gui.items.ItemGUI;
+import fr.skytasul.quests.gui.items.ItemsGUI;
 import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
@@ -35,6 +38,17 @@ public class DefaultGuiFactory implements GuiFactory {
 	@Override
 	public @NotNull Gui createItemCreator(@NotNull Consumer<ItemStack> callback, boolean allowCancel) {
 		return new ItemCreatorGUI(callback, allowCancel);
+	}
+
+	@Override
+	public @NotNull Gui createItemsSelection(@NotNull Consumer<@NotNull List<@NotNull ItemStack>> callback,
+			@Nullable List<@Nullable ItemStack> existingItems) {
+		return new ItemsGUI(callback, existingItems);
+	}
+
+	@Override
+	public @NotNull Gui createItemComparisonsSelection(@NotNull ItemComparisonMap comparisons, @NotNull Runnable validate) {
+		return new ItemComparisonGUI(comparisons, validate);
 	}
 
 	@Override

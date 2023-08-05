@@ -16,15 +16,22 @@ import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.dialogs.Message;
+import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.SplittableDescriptionConfiguration;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
 
@@ -35,8 +42,7 @@ public class StageBringBack extends StageNPC{
 	protected final ItemComparisonMap comparisons;
 	
 	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
-	protected final String splitted;
-	protected final String line;
+	protected final String[] itemsDescriptions;
 	
 	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
 		super(controller);
@@ -49,20 +55,24 @@ public class StageBringBack extends StageNPC{
 			amountsMap.put(item, amount);
 		}
 
-		String[] array = new String[items.length]; // create messages on beginning
-		SplittableDescriptionConfiguration splitConfig = QuestsConfiguration.getConfig().getStageDescriptionConfig();
-		for (int i = 0; i < array.length; i++){
-			array[i] = splitConfig.getItemNameColor() + Utils.getStringFromItemStack(items[i],
-					splitConfig.getItemAmountColor(), splitConfig.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT));
-		}
-		splitted = MessageUtils.formatDescription(DescriptionSource.FORCESPLIT, splitConfig, array);
-		if (splitConfig.isAloneSplitAmountShown(DescriptionSource.FORCESPLIT)) {
-			for (int i = 0; i < array.length; i++) {
-				array[i] = splitConfig.getItemNameColor()
-						+ Utils.getStringFromItemStack(items[i], splitConfig.getItemAmountColor(), false);
-			}
-		}
-		line = MessageUtils.formatDescription(DescriptionSource.FORCELINE, splitConfig, array);
+		itemsDescriptions =
+				Arrays.stream(items).map(item -> ItemsDescriptionPlaceholders.formatObject(new HasSingleObject() {
+
+					@Override
+					public int getPlayerAmount(@NotNull PlayerAccount account) {
+						return item.getAmount();
+					}
+
+					@Override
+					public @NotNull String getObjectName() {
+						return ItemUtils.getName(item);
+					}
+
+					@Override
+					public int getObjectAmount() {
+						return item.getAmount();
+					}
+				}, PlaceholdersContext.of((Player) null, false))).toArray(String[]::new);
 	}
 	
 	public boolean checkItems(Player p, boolean msg){
@@ -79,9 +89,8 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public void sendNeedMessage(Player p) {
-		String message = getMessage();
-		if (message != null && !message.isEmpty() && !message.equals("none"))
-			Lang.NpcText.sendWP(p, npcName(), MessageUtils.format(message, line), 1, 1);
+		new Message(MessageUtils.format(getMessage(), getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext.of(true,
+				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE)), Sender.NPC).sendMessage(p, npcName(), 1, 1);
 	}
 	
 	public void removeItems(Player p){
@@ -100,19 +109,16 @@ public class StageBringBack extends StageNPC{
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return MessageUtils.format(Lang.SCOREBOARD_ITEMS.toString() + " "
-				+ (QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitSources().contains(source) ? splitted
-						: line),
-				npcName());
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_ITEMS.toString();
 	}
-	
+
 	@Override
-	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new String[] {
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitSources().contains(source) ? splitted
-						: line,
-				npcName()};
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexedContextual("items", StageDescriptionPlaceholdersContext.class,
+				context -> ItemsDescriptionPlaceholders.formatObjectList(context.getDescriptionSource(),
+						QuestsConfiguration.getConfig().getStageDescriptionConfig(), itemsDescriptions));
 	}
 
 	@Override
@@ -212,21 +218,21 @@ public class StageBringBack extends StageNPC{
 		
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			getLine().refreshItemLore(5, Lang.optionValue.format(Lang.AmountItems.format(this.items.size())));
+			getLine().refreshItemLore(5,
+					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("amount", this.items.size())));
 		}
 		
 		public void setMessage(String message) {
 			this.message = message;
-			getLine().refreshItemLore(9,
-					message == null
-							? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString()
-							: QuestOption.formatNullableValue(message));
+			getLine().refreshItemLore(9, QuestOption.formatNullableValue(message, Lang.NEED_OBJECTS));
 		}
 		
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
 			getLine().refreshItemLore(10,
-					Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size())));
+					QuestOption.formatNullableValue(
+							Lang.AmountComparisons.quickFormat("amount", this.comparisons.getEffective().size()),
+							comparisons.isDefault()));
 		}
 		
 		@Override

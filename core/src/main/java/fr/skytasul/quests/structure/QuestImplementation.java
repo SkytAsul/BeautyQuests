@@ -49,6 +49,7 @@ import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
@@ -444,7 +445,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
 			if (!"none".equals(startMsg))
-				MessageUtils.sendRawMessage(p, startMsg, true, getPlaceholdersRegistry());
+				MessageUtils.sendRawMessage(p, startMsg, getPlaceholdersRegistry(), PlaceholdersContext.of(p, true));
 		}
 		
 		Runnable run = () -> {
@@ -485,7 +486,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				if (hasOption(OptionEndMessage.class)) {
 					String endMsg = getOption(OptionEndMessage.class).getValue();
 					if (!"none".equals(endMsg))
-						MessageUtils.sendRawMessage(p, endMsg, true, PlaceholderRegistry.of("rewards", obtained).with(this));
+						MessageUtils.sendRawMessage(p, endMsg, PlaceholderRegistry.of("rewards", obtained).with(this),
+								PlaceholdersContext.of(p, true));
 				} else
 					MessageUtils.sendMessage(p, Lang.FINISHED_BASE.format(this)
 							+ (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.quickFormat("rewards", obtained)),

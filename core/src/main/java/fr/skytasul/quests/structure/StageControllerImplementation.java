@@ -20,6 +20,7 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.StageHandler;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -94,11 +95,11 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		if (stage.getCustomText() != null)
-			return "§e" + MessageUtils.format(stage.getCustomText(), stage.getPlaceholdersRegistry());
-
 		try {
-			return stage.descriptionLine(acc, source);
+			StageDescriptionPlaceholdersContext context = StageDescriptionPlaceholdersContext.of(true, acc, source);
+			String description =
+					stage.getCustomText() == null ? stage.getDefaultDescription(context) : ("§e" + stage.getCustomText());
+			return MessageUtils.finalFormat(description, stage.getPlaceholdersRegistry(), context);
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe(
 					"An error occurred while getting the description line for player " + acc.getName() + " in " + toString(),

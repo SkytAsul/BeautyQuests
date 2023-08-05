@@ -412,7 +412,7 @@ inv:
     editBucketAmount: §eEdit amount of buckets to fill
     editLocation: §eEdit location
     editRadius: §eEdit distance from location
-    currentRadius: '§eCurrent distance: §6{0}'
+    currentRadius: '§eCurrent distance: §6{radius}'
     changeTicksRequired: '§eChange played ticks required'
     changeEntityType: '§eChange entity type'
     stage:
@@ -422,7 +422,7 @@ inv:
       death:
         causes: '§aSet death causes §d(ADVANCED)'
         anyCause: Any death cause
-        setCauses: '{0} death cause(s)'
+        setCauses: '{causes_amount} death cause(s)'
       dealDamage:
         damage: '§eDamage to deal'
         targetMobs: '§cMobs to damage'
@@ -752,29 +752,29 @@ scoreboard:
   textBetwteenBranch: §e or
   asyncEnd: §ex
   stage:
-    region: §eFind region §6{0}
-    npc: §eTalk with NPC §6{0}
-    items: '§eBring items to §6{0}§e:'
-    mobs: §eKill §6{0}
-    mine: §eMine {0}
-    placeBlocks: §ePlace {0}
-    chat: §eWrite §6{0}
+    region: §eFind region §6{region_id}
+    npc: §eTalk with NPC §6{dialog_npc_name}
+    items: '§eBring items to §6{dialog_npc_name}§e: {items}'
+    mobs: §eKill §6{mobs}
+    mine: §eMine {blocks}
+    placeBlocks: §ePlace {blocks}
+    chat: §eWrite §6{text}
     interact: §eClick on the block at §6{0}
     interactMaterial: §eClick on a §6{0}§e block
-    fish: §eFish §6{0}
-    melt: §eMelt §6{0}
-    enchant: §eEnchant §6{0}
-    craft: §eCraft §6{0}
-    bucket: §eFill §6{0}
-    location: §eGo to §6{0}§e, §6{1}§e, §6{2}§e in §6{3}
-    playTimeFormatted: §ePlay §6{0}
-    breed: §eBreed §6{0}
-    tame: §eTame §6{0}
+    fish: §eFish §6{items}
+    melt: §eMelt §6{items}
+    enchant: §eEnchant §6{items}
+    craft: §eCraft §6{items}
+    bucket: §eFill §6{buckets}
+    location: §eGo to §6{target_x}§e, §6{target_y}§e, §6{target_z}§e in §6{target_world}
+    playTimeFormatted: §ePlay §6{time_remaining_human}
+    breed: §eBreed §6{mobs}
+    tame: §eTame §6{mobs}
     die: §cDie
     dealDamage:
-      any: §cDeal {0} damage
-      mobs: §cDeal {0} damage to {1}
-    eatDrink: §eConsume §6{0}
+      any: §cDeal {damage_remaining} damage
+      mobs: §cDeal {damage_remaining} damage to {target_mobs}
+    eatDrink: §eConsume §6{items}
 indication:
   startQuest: §7Do you want to start the quest {quest_name}?
   closeInventory: §7Are you sure you want to close the GUI?
@@ -798,7 +798,7 @@ misc:
     prefix: §6<§e§lQuests§r§6> §r
     npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
     selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
-    offText: §r§e{0}
+    offText: §r§e{message}
     editorPrefix: §a
     errorPrefix: §4✖ §c
     successPrefix: §2✔ §a
@@ -875,7 +875,6 @@ misc:
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
   poolHologramText: §eNew quest available!
-  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
   entityType: '§eEntity type: {0}'
   entityTypeAny: §eAny entity
   enabled: Enabled

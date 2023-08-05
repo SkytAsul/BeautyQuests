@@ -16,17 +16,19 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.compatibility.worldguard.BQWorldGuard;
 import fr.skytasul.quests.utils.compatibility.worldguard.WorldGuardEntryEvent;
@@ -97,13 +99,15 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return MessageUtils.format(Lang.SCOREBOARD_REG.toString(), region.getId());
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("region_id", region.getId());
+		placeholders.register("region_world", world.getName());
 	}
-	
+
 	@Override
-	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new String[]{region.getId()};
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_REG.toString();
 	}
 
 	@Override
@@ -164,7 +168,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		public void setRegion(String regionName, String worldName) {
 			this.regionName = regionName;
 			this.worldName = worldName;
-			getLine().refreshItemLore(7, Lang.optionValue.format(regionName + " (" + worldName + ")"));
+			getLine().refreshItemLore(7, QuestOption.formatNullableValue(regionName + " (" + worldName + ")"));
 		}
 		
 		public void setExit(boolean exit) {
@@ -175,8 +179,8 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		}
 
 		private void launchRegionEditor(Player p, boolean first) {
-			MessageUtils.sendPrefixedMessage(p,
-					Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()));
+			MessageUtils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()),
+					MessageType.PREFIXED);
 			new TextEditor<String>(p, () -> {
 				if (first)
 					context.remove();
@@ -185,7 +189,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 				if (BQWorldGuard.getInstance().regionExists(obj, p.getWorld())) {
 					setRegion(obj, p.getWorld().getName());
 				}else {
-					MessageUtils.sendPrefixedMessage(p, Lang.REGION_DOESNT_EXIST.toString());
+					Lang.REGION_DOESNT_EXIST.send(p);
 					if (first)
 						context.remove();
 				}

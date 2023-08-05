@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -27,6 +28,7 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -71,6 +73,8 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	
 	private BqInternalNpc npc;
 
+	private @Nullable PlaceholderRegistry placeholders;
+
 	public BqNpcImplementation(BqInternalNpc npc) {
 		this.npc = npc;
 
@@ -95,6 +99,16 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	@Override
 	public @NotNull Location getLocation() {
 		return npc.getLocation();
+	}
+
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null) {
+			placeholders = new PlaceholderRegistry()
+					.register("npc_name", npc.getName())
+					.register("npc_id", npc.getId());
+		}
+		return placeholders;
 	}
 
 	private BukkitTask startLauncheableTasks() {

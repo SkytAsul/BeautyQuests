@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
@@ -166,12 +165,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	
 	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
 
-	/**
-	 * @param acc PlayerAccount who has the stage in progress
-	 * @param source source of the description request
-	 * @return the progress of the stage for the player
-	 */
-	public abstract @NotNull String descriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
+	public abstract @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context);
 	
 	protected final void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
 		controller.updateObjective(p, dataKey, dataValue);

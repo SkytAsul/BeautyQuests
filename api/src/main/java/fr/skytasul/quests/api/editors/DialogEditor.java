@@ -1,5 +1,7 @@
 package fr.skytasul.quests.api.editors;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
@@ -9,6 +11,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 
 public class DialogEditor extends Editor{
 	
@@ -35,7 +38,7 @@ public class DialogEditor extends Editor{
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(argsColored, 1, " ");
+			msg = Arrays.stream(argsColored).skip(1).collect(Collectors.joining(" "));
 			hasMsg = true;
 		}
 		switch (cmd) {
@@ -71,8 +74,9 @@ public class DialogEditor extends Editor{
 		case LIST:
 			for (int i = 0; i < d.getMessages().size(); i++) {
 				Message dmsg = d.getMessages().get(i);
-				MessageUtils.sendRawMessage(player, "§6{index}: §7\"{msg}§7\"§e by §l{sender}", false,
-						PlaceholderRegistry.of("index", i, "msg", dmsg.text, "sender", dmsg.sender.name().toLowerCase()));
+				MessageUtils.sendRawMessage(player, "§6{index}: §7\"{msg}§7\"§e by §l{sender}",
+						PlaceholderRegistry.of("index", i, "msg", dmsg.text, "sender", dmsg.sender.name().toLowerCase()),
+						PlaceholdersContext.DEFAULT_CONTEXT);
 			}
 			break;
 			

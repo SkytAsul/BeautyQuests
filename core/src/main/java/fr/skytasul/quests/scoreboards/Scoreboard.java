@@ -29,6 +29,7 @@ import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 
 public class Scoreboard extends BukkitRunnable implements Listener {
 
@@ -307,7 +308,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					lines = Collections.emptyList();
 					lastValue = null;
 				} else {
-					text = MessageUtils.finalFormat(p, text, true, null);
+					text = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(p, true));
 					if (text.equals(lastValue))
 						return false;
 

@@ -6,8 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.Utils;
 import net.md_5.bungee.api.ChatMessageType;
@@ -26,14 +26,14 @@ public class Message implements Cloneable {
 	}
 
 	public int getWaitTime() {
-		return wait == -1 ? QuestsConfiguration.getDialogsConfig().getDefaultTime() : wait;
+		return wait == -1 ? QuestsConfiguration.getConfig().getDialogsConfig().getDefaultTime() : wait;
 	}
 
 	public BukkitTask sendMessage(Player p, String npc, int id, int size) {
 		BukkitTask task = null;
 
 		String sent = formatMessage(p, npc, id, size);
-		if (QuestsConfiguration.getDialogsConfig().sendInActionBar()) {
+		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
@@ -52,7 +52,7 @@ public class Message implements Cloneable {
 							cancel();
 						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 					}
-				}.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 40, 40);
+				}.runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), 40, 40);
 			}
 		} else
 			p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
@@ -70,9 +70,9 @@ public class Message implements Cloneable {
 		String sentSound = sound;
 		if (sentSound == null) {
 			if (sender == Sender.PLAYER) {
-				sentSound = QuestsConfiguration.getDialogsConfig().getDefaultPlayerSound();
+				sentSound = QuestsConfiguration.getConfig().getDialogsConfig().getDefaultPlayerSound();
 			} else if (sender == Sender.NPC) {
-				sentSound = QuestsConfiguration.getDialogsConfig().getDefaultNPCSound();
+				sentSound = QuestsConfiguration.getConfig().getDialogsConfig().getDefaultNPCSound();
 			}
 		}
 		return sentSound;

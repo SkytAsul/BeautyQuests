@@ -10,9 +10,8 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.api.utils.CountableObject;
@@ -28,8 +27,8 @@ public class StageEatDrink extends AbstractItemStage {
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_EAT_DRINK.format(super.descriptionLine(acc, source));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_EAT_DRINK.toString();
 	}
 	
 	@EventHandler

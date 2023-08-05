@@ -2,7 +2,6 @@ package fr.skytasul.quests.stages;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,17 +14,21 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
 
-public class StagePlayTime extends AbstractStage {
+public class StagePlayTime extends AbstractStage implements HasSingleObject {
 
 	private final long playTicks;
 	
@@ -41,13 +44,16 @@ public class StagePlayTime extends AbstractStage {
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_PLAY_TIME.format(descriptionFormat(acc, source));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_PLAY_TIME.toString();
 	}
 	
 	@Override
-	public Supplier<Object>[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Supplier[] { () -> Utils.millisToHumanString(getRemaining(acc) * 50L) };
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerContextual("time_remaining_human", PlayerPlaceholdersContext.class,
+				context -> Utils.millisToHumanString(getPlayerAmount(context.getPlayerAccount())));
+		ItemsDescriptionPlaceholders.register(placeholders, "time", this);
 	}
 	
 	private long getRemaining(PlayerAccount acc) {
@@ -62,6 +68,21 @@ public class StagePlayTime extends AbstractStage {
 				remaining < 0 ? 0 : remaining));
 	}
 	
+	@Override
+	public int getPlayerAmount(@NotNull PlayerAccount account) {
+		return (int) (getRemaining(account) * 50L);
+	}
+
+	@Override
+	public int getObjectAmount() {
+		return (int) (playTicks * 50L);
+	}
+
+	@Override
+	public @NotNull String getObjectName() {
+		return "time";
+	}
+
 	@Override
 	public void joined(Player p) {
 		super.joined(p);
@@ -148,7 +169,7 @@ public class StagePlayTime extends AbstractStage {
 		
 		public void setTicks(long ticks) {
 			this.ticks = ticks;
-			getLine().refreshItemLore(7, Lang.optionValue.format(ticks + " ticks"));
+			getLine().refreshItemLoreOptionValue(7, Lang.Ticks.quickFormat("ticks", ticks + " ticks"));
 		}
 		
 		@Override

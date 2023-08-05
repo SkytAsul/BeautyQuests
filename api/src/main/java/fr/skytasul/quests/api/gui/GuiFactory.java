@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
@@ -32,6 +33,13 @@ public interface GuiFactory {
 
 	@NotNull
 	Gui createItemCreator(@NotNull Consumer<ItemStack> callback, boolean allowCancel);
+
+	@NotNull
+	Gui createItemsSelection(@NotNull Consumer<@NotNull List<@NotNull ItemStack>> callback,
+			@Nullable List<@Nullable ItemStack> existingItems);
+
+	@NotNull
+	Gui createItemComparisonsSelection(@NotNull ItemComparisonMap comparisons, @NotNull Runnable validate);
 
 	@NotNull
 	Gui createBlocksSelection(@NotNull Consumer<List<MutableCountableObject<BQBlock>>> callback,

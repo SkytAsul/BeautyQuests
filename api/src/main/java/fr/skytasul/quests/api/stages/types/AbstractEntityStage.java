@@ -5,22 +5,20 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.Supplier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -31,10 +29,12 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 @LocatableType (types = LocatedType.ENTITY)
-public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable {
+public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable, HasSingleObject {
 	
 	protected final @NotNull EntityType entity;
 	protected final int amount;
@@ -49,22 +49,38 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(p) && canUpdate(p)) {
 			if (entity == null || type.equals(entity)) {
-				Integer playerAmount = getPlayerAmount(acc);
-				if (playerAmount == null) {
+				OptionalInt playerAmount = getPlayerAmountOptional(acc);
+				if (!playerAmount.isPresent()) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
-				}else if (playerAmount.intValue() <= 1) {
+				} else if (playerAmount.getAsInt() <= 1) {
 					finishStage(p);
 				}else {
-					updateObjective(p, "amount", playerAmount.intValue() - 1);
+					updateObjective(p, "amount", playerAmount.getAsInt() - 1);
 				}
 			}
 		}
 	}
 	
-	protected @Nullable Integer getPlayerAmount(@NotNull PlayerAccount acc) {
-		return getData(acc, "amount");
+	protected @NotNull OptionalInt getPlayerAmountOptional(@NotNull PlayerAccount acc) {
+		Integer amount = getData(acc, "amount");
+		return amount == null ? OptionalInt.empty() : OptionalInt.of(amount.intValue());
 	}
 	
+	@Override
+	public int getPlayerAmount(@NotNull PlayerAccount account) {
+		return getPlayerAmountOptional(account).orElse(0);
+	}
+
+	@Override
+	public int getObjectAmount() {
+		return amount;
+	}
+
+	@Override
+	public @NotNull String getObjectName() {
+		return entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity);
+	}
+
 	@Override
 	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
@@ -77,20 +93,10 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		section.set("amount", amount);
 	}
 	
-	protected @NotNull String getMobsLeft(@NotNull PlayerAccount acc) {
-		Integer playerAmount = getPlayerAmount(acc);
-		if (playerAmount == null) return "§cerror: no datas";
-		
-		return Utils.getStringFromNameAndAmount(
-				entity == null ? Lang.EntityTypeAny.toString() : MinecraftNames.getEntityName(entity),
-				QuestsConfiguration.getConfig().getStageDescriptionConfig().getItemAmountColor(), playerAmount, amount,
-				false);
-	}
-	
 	@Override
-	public @NotNull Supplier<Object> @NotNull [] descriptionFormat(@NotNull PlayerAccount acc,
-			@NotNull DescriptionSource source) {
-		return new Supplier[] { () -> getMobsLeft(acc) };
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		ItemsDescriptionPlaceholders.register(placeholders, "mobs", this);
 	}
 	
 	@Override

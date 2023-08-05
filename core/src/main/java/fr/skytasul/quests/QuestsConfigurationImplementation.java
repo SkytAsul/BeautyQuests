@@ -81,7 +81,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		quests = new QuestsConfig();
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
-		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stageDescriptionItemsSplit"));
+		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stage description"));
 		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
 	}
 	
@@ -651,30 +651,27 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	
 	public class StageDescriptionConfig implements QuestsConfiguration.StageDescription {
 
-		private String itemNameColor;
-		private String itemAmountColor;
-		private String stageDescriptionFormat = "§8({0}/{1}) §e{2}";
+		private String itemSingleFormat, itemMultipleFormat;
+		private String stageDescriptionFormat;
 		private String descPrefix = "{nl}§e- §6";
-		private String descAmountFormat = "x{0}";
-		private boolean descXOne = true;
 		private boolean inlineAlone = true;
 		private Set<DescriptionSource> descSources = EnumSet.noneOf(DescriptionSource.class);
+		private boolean bossBars = true;
+		private String bossBarFormat;
 
-		private final ConfigurationSection config;
+		private ConfigurationSection config;
 
 		public StageDescriptionConfig(ConfigurationSection config) {
 			this.config = config;
 		}
 
 		private void init() {
-			itemNameColor = config.getString("itemNameColor");
-			itemAmountColor = config.getString("itemAmountColor");
-			stageDescriptionFormat = config.getString("descriptionFormat");
+			itemSingleFormat = config.getString("item formats.single");
+			itemMultipleFormat = config.getString("item formats.multiple");
+			stageDescriptionFormat = config.getString("description format");
 			descPrefix = "{nl}" + config.getString("prefix");
-			descAmountFormat = config.getString("amountFormat");
-			descXOne = config.getBoolean("showXOne");
-			inlineAlone = config.getBoolean("inlineAlone");
-			for (String s : config.getStringList("sources")) {
+			inlineAlone = config.getBoolean("inline alone");
+			for (String s : config.getStringList("split sources")) {
 				try {
 					descSources.add(DescriptionSource.valueOf(s));
 				} catch (IllegalArgumentException ex) {
@@ -682,15 +679,43 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 							.warning("Loading of description splitted sources failed : source " + s + " does not exist");
 				}
 			}
+			bossBars = config.getBoolean("boss bars");
+			bossBarFormat = config.getString("boss bar format");
 		}
 
 		private boolean update() {
 			boolean result = false;
-			if (config.getParent() != null) {
-				result |= migrateEntry(config, config.getParent(), "itemNameColor", "itemNameColor");
-				result |= migrateEntry(config, config.getParent(), "itemAmountColor", "itemAmountColor");
-				result |= migrateEntry(config, config.getParent(), "stageDescriptionFormat", "descriptionFormat");
+
+			if (config == null) {
+				migrateEntry(QuestsConfigurationImplementation.this.config, QuestsConfigurationImplementation.this.config,
+						"stageDescriptionItemsSplit", "stage description");
+				config = QuestsConfigurationImplementation.this.config.getConfigurationSection("stage description");
+				result = true;
 			}
+
+			result |= migrateEntry(config, config.getParent(), "stageDescriptionFormat", "description format");
+			result |= migrateEntry(config, config, "prefix", "line prefix");
+			result |= migrateEntry(config, config, "sources", "split sources");
+			if (config.contains("amountFormat")) {
+				String amountFormat = config.getString("amountFormat");
+				boolean showXOne = config.getBoolean("showXOne");
+				String itemNameColor = config.getParent().getString("itemNameColor");
+				String itemAmountColor = config.getParent().getString("itemAmountColor");
+
+				String multipleFormat = itemNameColor + "{name}" + itemAmountColor + " " + amountFormat;
+				String singleFormat = showXOne ? multipleFormat : (itemNameColor + "{name}");
+				config.set("item formats.multiple", multipleFormat);
+				config.set("item formats.single", singleFormat);
+
+				config.set("amountFormat", null);
+				config.set("showXOne", null);
+				config.getParent().set("itemNameColor", null);
+				config.getParent().set("itemAmountColor", null);
+				result = true;
+			}
+
+			result |= migrateEntry(config, config.getParent(), "mobsProgressBar", "boss bars");
+
 			return result;
 		}
 
@@ -700,28 +725,18 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 
 		@Override
-		public String getItemNameColor() {
-			return itemNameColor;
+		public @NotNull String getSingleItemFormat() {
+			return itemSingleFormat;
 		}
 
 		@Override
-		public String getItemAmountColor() {
-			return itemAmountColor;
+		public @NotNull String getMultipleItemsFormat() {
+			return itemMultipleFormat;
 		}
 
 		@Override
 		public String getSplitPrefix() {
 			return descPrefix;
-		}
-
-		@Override
-		public String getSplitAmountFormat() {
-			return descAmountFormat;
-		}
-
-		@Override
-		public boolean isAloneSplitAmountShown() {
-			return descXOne;
 		}
 
 		@Override
@@ -734,16 +749,14 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			return descSources;
 		}
 
-		public boolean showDescriptionItemsXOne(DescriptionSource source) {
-			return splitDescription(source) && descXOne;
+		@Override
+		public boolean areBossBarsEnabled() {
+			return bossBars;
 		}
 
-		public boolean splitDescription(DescriptionSource source) {
-			if (source == DescriptionSource.FORCESPLIT)
-				return true;
-			if (source == DescriptionSource.FORCELINE)
-				return false;
-			return descSources.contains(source);
+		@Override
+		public String getBossBarFormat() {
+			return bossBarFormat;
 		}
 
 	}

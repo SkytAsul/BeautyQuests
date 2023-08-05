@@ -24,6 +24,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
@@ -33,6 +34,8 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.mobs.Mob;
 
@@ -81,15 +84,23 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Lang.SCOREBOARD_MOBS.format(super.descriptionLine(acc, source));
+	protected @NotNull String getPlaceholderKey() {
+		return "mobs";
+	}
+
+	@Override
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_NONE.toString();
 	}
 	
 	@Override
 	public void started(PlayerAccount acc) {
 		super.started(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
-			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), (Object[]) super.descriptionFormat(acc, DescriptionSource.FORCELINE));
+			MessageUtils.sendMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), MessageType.PREFIXED,
+					getPlaceholdersRegistry(),
+					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE));
+			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), this);
 		}
 	}
 
@@ -175,7 +186,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		public void setMobs(List<MutableCountableObject<Mob<?>>> mobs) {
 			this.mobs = mobs;
 			getLine().refreshItem(7,
-					item -> ItemUtils.lore(item, Lang.optionValue.format(Lang.AmountMobs.format(mobs.size()))));
+					item -> ItemUtils.loreOptionValue(item, Lang.AmountMobs.quickFormat("mobs_amount", mobs.size())));
 		}
 		
 		public void setShoot(boolean shoot) {

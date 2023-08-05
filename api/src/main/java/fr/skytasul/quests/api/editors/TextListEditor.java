@@ -1,13 +1,14 @@
 package fr.skytasul.quests.api.editors;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class TextListEditor extends Editor{
@@ -43,7 +44,7 @@ public class TextListEditor extends Editor{
 			return false;
 		}
 		if (args.length > 1){
-			msg = Utils.buildFromArray(coloredMessage.split(" "), 1, " ");
+			msg = Arrays.stream(coloredMessage.split(" ")).skip(1).collect(Collectors.joining(" "));
 			hasMsg = true;
 		}
 		switch (cmd) {

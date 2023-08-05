@@ -7,15 +7,15 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.blocks.BQBlock;
-import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.gui.blocks.BlocksGUI;
 
 public abstract class AbstractCountableBlockStage extends AbstractCountableStage<BQBlock> {
 	
@@ -31,6 +31,11 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 	}
 
 	@Override
+	protected @NotNull String getPlaceholderKey() {
+		return "blocks";
+	}
+
+	@Override
 	protected @NotNull String getName(@NotNull BQBlock object) {
 		return object.getName();
 	}
@@ -42,7 +47,7 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 
 	@Override
 	protected @NotNull BQBlock deserialize(@NotNull Object object) {
-		return BQBlock.fromString((String) object);
+		return QuestsAPI.getAPI().getBlocksManager().deserialize((String) object);
 	}
 	
 	public abstract static class AbstractCreator<T extends AbstractCountableBlockStage> extends StageCreation<T> {
@@ -58,10 +63,10 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 			super.setupLine(line);
 			
 			line.setItem(getBlocksSlot(), getBlocksItem(), event -> {
-				new BlocksGUI(blocks, obj -> {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createBlocksSelection(obj -> {
 					setBlocks(obj);
 					event.reopen();
-				}).open(event.getPlayer());
+				}, blocks).open(event.getPlayer());
 			});
 		}
 		
@@ -77,16 +82,16 @@ public abstract class AbstractCountableBlockStage extends AbstractCountableStage
 		
 		public void setBlocks(List<MutableCountableObject<BQBlock>> blocks) {
 			this.blocks = blocks;
-			getLine().refreshItemLore(getBlocksSlot(), Lang.optionValue.format(blocks.size() + " blocks"));
+			getLine().refreshItemLoreOptionValue(getBlocksSlot(), blocks.size() + " blocks");
 		}
 		
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			new BlocksGUI(Collections.emptyList(), obj -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createBlocksSelection(obj -> {
 				setBlocks(obj);
 				context.reopenGui();
-			}).open(p);
+			}, Collections.emptyList()).open(p);
 		}
 		
 		@Override

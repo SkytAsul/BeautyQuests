@@ -16,9 +16,11 @@ import org.bukkit.inventory.meta.KnowledgeBookMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
@@ -173,6 +175,10 @@ public final class ItemUtils {
 		return is;
 	}
 	
+	public static ItemStack loreOptionValue(ItemStack is, @Nullable Object value) {
+		return lore(is, QuestOption.formatNullableValue(value));
+	}
+
 	private static List<String> getLoreLines(String... lore) {
 		if (lore != null) {
 			List<String> finalLines = new ArrayList<>();

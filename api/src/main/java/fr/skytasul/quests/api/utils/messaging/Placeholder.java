@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.utils.messaging;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -15,7 +16,7 @@ public interface Placeholder {
 	boolean matches(@NotNull String key);
 
 	@Nullable
-	String resolve(@NotNull String key);
+	String resolve(@NotNull String key, @NotNull PlaceholdersContext context);
 
 	static Placeholder of(@NotNull String key, @Nullable Object value) {
 		String string = Objects.toString(value);
@@ -26,7 +27,7 @@ public interface Placeholder {
 		return new Placeholder() {
 
 			@Override
-			public @Nullable String resolve(@NotNull String key) {
+			public @Nullable String resolve(@NotNull String key, @NotNull PlaceholdersContext context) {
 				return valueSupplier.get();
 			}
 
@@ -44,7 +45,7 @@ public interface Placeholder {
 			private Map<String, Matcher> matchers = new ConcurrentHashMap<>();
 
 			@Override
-			public @Nullable String resolve(@NotNull String key) {
+			public @Nullable String resolve(@NotNull String key, @NotNull PlaceholdersContext context) {
 				Matcher matcher = matchers.remove(key);
 				if (matcher == null) {
 					matcher = pattern.matcher(key);
@@ -64,6 +65,80 @@ public interface Placeholder {
 				return false;
 			}
 		};
+	}
+
+	static <T extends PlaceholdersContext> Placeholder ofContextual(@NotNull String key, @NotNull Class<T> contextClass,
+			@NotNull Function<T, String> valueFunction) {
+		return new ContextualizedPlaceholder<T>() {
+
+			@Override
+			public boolean matches(@NotNull String keyToMatch) {
+				return keyToMatch.equals(key);
+			}
+
+			@Override
+			public @NotNull Class<T> getContextClass() {
+				return contextClass;
+			}
+
+			@Override
+			public @Nullable String resolveContextual(@NotNull String key, T context) {
+				return valueFunction.apply(context);
+			}
+		};
+	}
+
+	static <T extends PlaceholdersContext> Placeholder ofPatternContextual(@NotNull String regex,
+			@NotNull Class<T> contextClass,
+			@NotNull BiFunction<@NotNull Matcher, @NotNull T, @Nullable String> valueFunction) {
+		return new ContextualizedPlaceholder<T>() {
+			private Pattern pattern = Pattern.compile(regex);
+			private Map<String, Matcher> matchers = new ConcurrentHashMap<>();
+
+			@Override
+			public @Nullable String resolveContextual(@NotNull String key, @NotNull T context) {
+				Matcher matcher = matchers.remove(key);
+				if (matcher == null) {
+					matcher = pattern.matcher(key);
+					if (!matcher.matches())
+						throw new IllegalStateException();
+				}
+				return valueFunction.apply(matcher, context);
+			}
+
+			@Override
+			public boolean matches(@NotNull String key) {
+				Matcher matcher = pattern.matcher(key);
+				if (matcher.matches()) {
+					matchers.put(key, matcher);
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public @NotNull Class<T> getContextClass() {
+				return contextClass;
+			}
+		};
+	}
+
+	public interface ContextualizedPlaceholder<T extends PlaceholdersContext> extends Placeholder {
+
+		@NotNull
+		Class<T> getContextClass();
+
+		@Override
+		default @Nullable String resolve(@NotNull String key, @NotNull PlaceholdersContext context) {
+			if (!getContextClass().isInstance(context))
+				throw new IllegalArgumentException("Context is not of type " + getContextClass().getName());
+
+			return resolveContextual(key, getContextClass().cast(context));
+		}
+
+		@Nullable
+		String resolveContextual(@NotNull String key, T context);
+
 	}
 
 }

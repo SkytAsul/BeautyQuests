@@ -25,10 +25,9 @@ import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
@@ -55,8 +54,8 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Lang.SCOREBOARD_MINE.format(super.descriptionLine(acc, source));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_MINE.toString();
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)

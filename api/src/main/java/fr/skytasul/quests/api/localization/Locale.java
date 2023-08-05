@@ -44,7 +44,7 @@ public interface Locale {
 	}
 	
 	default @NotNull String quickFormat(@NotNull String key1, @Nullable Object value1) {
-		// TODO maybe simplfy this for optimization?
+		// TODO maybe simplify this for optimization?
 		return format(PlaceholderRegistry.of(key1, value1));
 	}
 

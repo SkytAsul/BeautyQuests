@@ -16,10 +16,10 @@ import fr.skytasul.quests.api.editors.parsers.PatternParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
@@ -27,6 +27,7 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.BQLocation;
@@ -39,16 +40,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	private final int radiusSquared;
 	private final boolean gps;
 	
-	private String descMessage;
-	
 	public StageLocation(StageController controller, BQLocation lc, int radius, boolean gps) {
 		super(controller);
 		this.lc = lc;
 		this.radius = radius;
 		this.radiusSquared = radius * radius;
 		this.gps = gps;
-		
-		this.descMessage = Lang.SCOREBOARD_LOCATION.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorldName());
 	}
 	
 	public BQLocation getLocation() {
@@ -121,13 +118,17 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return descMessage;
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("target_x", lc.getBlockX());
+		placeholders.registerIndexed("target_y", lc.getBlockY());
+		placeholders.registerIndexed("target_z", lc.getBlockZ());
+		placeholders.registerIndexed("target_world", lc.getWorldName());
 	}
 	
 	@Override
-	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new Object[] { lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorldName() };
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_LOCATION.toString();
 	}
 
 	@Override
@@ -195,7 +196,8 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		
 		public void setRadius(int radius) {
 			this.radius = radius;
-			getLine().refreshItem(SLOT_RADIUS, item -> ItemUtils.lore(item, Lang.stageLocationCurrentRadius.format(radius)));
+			getLine().refreshItem(SLOT_RADIUS,
+					item -> ItemUtils.lore(item, Lang.stageLocationCurrentRadius.quickFormat("radius", radius)));
 		}
 		
 		public void setPattern(Pattern pattern) {

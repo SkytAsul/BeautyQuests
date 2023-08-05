@@ -8,9 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 
@@ -29,8 +28,8 @@ public class StageBreed extends AbstractEntityStage {
 	}
 	
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source) {
-		return Lang.SCOREBOARD_BREED.format(getMobsLeft(acc));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_BREED.toString();
 	}
 
 	public static StageBreed deserialize(ConfigurationSection section, StageController controller) {

@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.EntityType;
@@ -162,15 +161,16 @@ public class Utils{
 			Lang.ITEM_DROPPED.send(p);
 		}
 	}
-	
+
 	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-		if (value == null) return null;
-	    for (Entry<T, E> entry : map.entrySet()) {
-	        if (value.equals(entry.getValue())) {
-	            return entry.getKey();
-	        }
-	    }
-	    return null;
+		if (value == null)
+			return null;
+		for (Entry<T, E> entry : map.entrySet()) {
+			if (value.equals(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 	
 	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
@@ -184,39 +184,9 @@ public class Utils{
 		return list;
 	}
 	
-	public static String buildFromArray(Object[] array, int start, String insert){
-		if (array == null || array.length == 0) return ""; 
-		StringBuilder stb = new StringBuilder();
-		for (int i = start; i < array.length; i++){
-			stb.append(array[i] + ((i == array.length - 1) ? "" : insert));
-		}
-		return stb.toString();
-	}
-	
-	public static Integer parseInt(CommandSender sender, String arg){
-		try{
-			return Integer.parseInt(arg);
-		}catch (NumberFormatException ex){
-			Lang.NUMBER_INVALID.send(sender, arg);
-			return null;
-		}
-	}
-	
-	public static int parseInt(Object obj){
-		if (obj instanceof Number) return ((Number) obj).intValue();
-		if (obj instanceof String) return Integer.parseInt((String) obj);
-		return 0;
-	}
-	
 	public static long parseLong(Object obj) {
 		if (obj instanceof Number) return ((Number) obj).longValue();
 		if (obj instanceof String) return Long.parseLong((String) obj);
-		return 0;
-	}
-
-	public static double parseDouble(Object obj) {
-		if (obj instanceof Number) return ((Number) obj).doubleValue();
-		if (obj instanceof String) return Double.parseDouble((String) obj);
 		return 0;
 	}
 	

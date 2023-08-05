@@ -8,7 +8,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.api.utils.SplittableDescriptionConfiguration;
+import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionConfiguration;
 
 public interface QuestsConfiguration {
 
@@ -109,9 +109,13 @@ public interface QuestsConfiguration {
 
 	}
 
-	interface StageDescription extends SplittableDescriptionConfiguration {
+	interface StageDescription extends ItemsDescriptionConfiguration {
 
 		String getStageDescriptionFormat();
+
+		boolean areBossBarsEnabled();
+
+		String getBossBarFormat();
 
 	}
 

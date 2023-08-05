@@ -28,6 +28,10 @@ public interface StageGuiLine {
 		refreshItem(slot, ItemUtils.lore(getItem(slot), lore));
 	}
 
+	default void refreshItemLoreOptionValue(int slot, @Nullable Object value) {
+		refreshItem(slot, ItemUtils.loreOptionValue(getItem(slot), value));
+	}
+
 	default void refreshItemName(int slot, String name) {
 		refreshItem(slot, ItemUtils.name(getItem(slot), name));
 	}

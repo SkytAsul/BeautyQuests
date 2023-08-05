@@ -12,23 +12,23 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 
 public class StageChat extends AbstractStage{
 	
-	private String text;
-	private boolean cancel;
-	private boolean ignoreCase;
-	private boolean placeholders;
-	
-	private boolean command;
+	private final String text;
+	private final boolean cancel;
+	private final boolean ignoreCase;
+	private final boolean placeholders;
+	private final boolean command;
 	
 	public StageChat(StageController controller, String text, boolean cancel, boolean ignoreCase, boolean placeholders) {
 		super(controller);
@@ -43,13 +43,14 @@ public class StageChat extends AbstractStage{
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, DescriptionSource source){
-		return Lang.SCOREBOARD_CHAT.format(text);
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("text", text);
 	}
 	
 	@Override
-	public Object[] descriptionFormat(PlayerAccount acc, DescriptionSource source) {
-		return new String[]{text};
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_CHAT.toString();
 	}
 	
 	public String getText() {
@@ -78,7 +79,7 @@ public class StageChat extends AbstractStage{
 	
 	private boolean check(String message, Player p) {
 		if (placeholders)
-			message = MessageUtils.finalFormat(p, message, true);
+			message = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(p, true));
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text))) return false;
 		if (!hasStarted(p)) return false;
 		if (canUpdate(p)) finishStage(p);

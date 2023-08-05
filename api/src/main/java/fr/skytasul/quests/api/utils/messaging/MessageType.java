@@ -21,7 +21,7 @@ public enum MessageType {
 	OFF() {
 		@Override
 		public @NotNull String process(@NotNull String msg) {
-			return Lang.OffText.format(msg);
+			return Lang.OffText.quickFormat("message", msg);
 		}
 	};
 

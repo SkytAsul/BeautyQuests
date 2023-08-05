@@ -47,9 +47,9 @@ public interface CountableObject<T> extends HasPlaceholders {
 
 	class DummyCountableObject<T> implements CountableObject<T> {
 
-		private final UUID uuid;
-		private final T object;
-		private final int amount;
+		protected final UUID uuid;
+		protected T object;
+		protected int amount;
 
 		public DummyCountableObject(UUID uuid, T object, int amount) {
 			this.uuid = Objects.requireNonNull(uuid);
@@ -72,38 +72,30 @@ public interface CountableObject<T> extends HasPlaceholders {
 			return amount;
 		}
 
+		@Override
+		public int hashCode() {
+			return uuid.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof CountableObject))
+				return false;
+			CountableObject<T> other = (CountableObject<T>) obj;
+			return other.getUUID().equals(uuid);
+		}
+
 	}
 
-	class DummyMutableCountableObject<T> implements MutableCountableObject<T> {
-
-		private final UUID uuid;
-		private T object;
-		private int amount;
+	class DummyMutableCountableObject<T> extends DummyCountableObject<T> implements MutableCountableObject<T> {
 
 		public DummyMutableCountableObject(UUID uuid, T object, int amount) {
-			this.uuid = Objects.requireNonNull(uuid);
-			this.object = Objects.requireNonNull(object);
-			this.amount = amount;
-		}
-
-		@Override
-		public UUID getUUID() {
-			return uuid;
-		}
-
-		@Override
-		public T getObject() {
-			return object;
+			super(uuid, object, amount);
 		}
 
 		@Override
 		public void setObject(T object) {
 			this.object = object;
-		}
-
-		@Override
-		public int getAmount() {
-			return amount;
 		}
 
 		@Override

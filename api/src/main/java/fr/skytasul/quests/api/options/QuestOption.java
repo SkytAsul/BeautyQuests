@@ -141,10 +141,10 @@ public abstract class QuestOption<T> implements Cloneable {
 		return formatNullableValue(value == null ? defaultValue : value, value == null);
 	}
 
-	public static @NotNull String formatNullableValue(@Nullable Object value, boolean defaultValue) {
+	public static @NotNull String formatNullableValue(@Nullable Object value, boolean isDefault) {
 		String valueString =
 				Lang.optionValue.format(PlaceholderRegistry.of("value", value == null ? Lang.NotSet.toString() : value));
-		if (defaultValue)
+		if (isDefault)
 			valueString += " " + Lang.defaultValue.toString();
 		return valueString;
 	}
