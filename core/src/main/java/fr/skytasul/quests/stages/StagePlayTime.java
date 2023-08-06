@@ -23,12 +23,12 @@ import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
+import fr.skytasul.quests.api.utils.progress.HasProgress;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 
-public class StagePlayTime extends AbstractStage implements HasSingleObject {
+public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	private final long playTicks;
 	
@@ -51,9 +51,9 @@ public class StagePlayTime extends AbstractStage implements HasSingleObject {
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		placeholders.registerContextual("time_remaining_human", PlayerPlaceholdersContext.class,
+		placeholders.registerIndexedContextual("time_remaining_human", PlayerPlaceholdersContext.class,
 				context -> Utils.millisToHumanString(getPlayerAmount(context.getPlayerAccount())));
-		ItemsDescriptionPlaceholders.register(placeholders, "time", this);
+		ProgressPlaceholders.registerProgress(placeholders, "time", this);
 	}
 	
 	private long getRemaining(PlayerAccount acc) {
@@ -74,13 +74,8 @@ public class StagePlayTime extends AbstractStage implements HasSingleObject {
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public int getTotalAmount() {
 		return (int) (playTicks * 50L);
-	}
-
-	@Override
-	public @NotNull String getObjectName() {
-		return "time";
 	}
 
 	@Override

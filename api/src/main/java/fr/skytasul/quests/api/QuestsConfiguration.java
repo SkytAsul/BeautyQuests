@@ -8,7 +8,8 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionConfiguration;
+import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
+import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 
 public interface QuestsConfiguration {
 
@@ -52,10 +53,6 @@ public interface QuestsConfiguration {
 		String nextStageSound();
 
 		boolean fireworks();
-
-		boolean mobsProgressBar();
-
-		int progressBarTimeoutSeconds();
 
 		Collection<NpcClickType> getNpcClicks();
 
@@ -109,13 +106,9 @@ public interface QuestsConfiguration {
 
 	}
 
-	interface StageDescription extends ItemsDescriptionConfiguration {
+	interface StageDescription extends ItemsDescriptionConfiguration, ProgressBarConfig {
 
 		String getStageDescriptionFormat();
-
-		boolean areBossBarsEnabled();
-
-		String getBossBarFormat();
 
 	}
 

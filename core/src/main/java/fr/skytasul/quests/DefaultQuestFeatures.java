@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
+import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -17,19 +18,81 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.serializable.SerializableCreator;
+import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.api.stages.options.StageOption;
+import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.api.utils.progress.HasProgress;
+import fr.skytasul.quests.options.OptionAutoQuest;
+import fr.skytasul.quests.options.OptionBypassLimit;
+import fr.skytasul.quests.options.OptionCancelRewards;
+import fr.skytasul.quests.options.OptionCancellable;
+import fr.skytasul.quests.options.OptionConfirmMessage;
+import fr.skytasul.quests.options.OptionDescription;
+import fr.skytasul.quests.options.OptionEndMessage;
+import fr.skytasul.quests.options.OptionEndRewards;
+import fr.skytasul.quests.options.OptionEndSound;
+import fr.skytasul.quests.options.OptionFailOnDeath;
+import fr.skytasul.quests.options.OptionFirework;
+import fr.skytasul.quests.options.OptionHideNoRequirements;
+import fr.skytasul.quests.options.OptionHologramLaunch;
+import fr.skytasul.quests.options.OptionHologramLaunchNo;
+import fr.skytasul.quests.options.OptionHologramText;
+import fr.skytasul.quests.options.OptionName;
+import fr.skytasul.quests.options.OptionQuestItem;
+import fr.skytasul.quests.options.OptionQuestPool;
+import fr.skytasul.quests.options.OptionRepeatable;
+import fr.skytasul.quests.options.OptionRequirements;
+import fr.skytasul.quests.options.OptionScoreboardEnabled;
+import fr.skytasul.quests.options.OptionStartDialog;
+import fr.skytasul.quests.options.OptionStartMessage;
+import fr.skytasul.quests.options.OptionStartRewards;
+import fr.skytasul.quests.options.OptionStartable;
+import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.options.OptionVisibility;
 import fr.skytasul.quests.requirements.EquipmentRequirement;
 import fr.skytasul.quests.requirements.LevelRequirement;
 import fr.skytasul.quests.requirements.PermissionsRequirement;
 import fr.skytasul.quests.requirements.QuestRequirement;
 import fr.skytasul.quests.requirements.ScoreboardRequirement;
 import fr.skytasul.quests.requirements.logical.LogicalOrRequirement;
-import fr.skytasul.quests.rewards.*;
-import fr.skytasul.quests.stages.*;
+import fr.skytasul.quests.rewards.CheckpointReward;
+import fr.skytasul.quests.rewards.CommandReward;
+import fr.skytasul.quests.rewards.ItemReward;
+import fr.skytasul.quests.rewards.MessageReward;
+import fr.skytasul.quests.rewards.QuestStopReward;
+import fr.skytasul.quests.rewards.RandomReward;
+import fr.skytasul.quests.rewards.RemoveItemsReward;
+import fr.skytasul.quests.rewards.RequirementDependentReward;
+import fr.skytasul.quests.rewards.TeleportationReward;
+import fr.skytasul.quests.rewards.TitleReward;
+import fr.skytasul.quests.rewards.WaitReward;
+import fr.skytasul.quests.rewards.XPReward;
+import fr.skytasul.quests.stages.StageBreed;
+import fr.skytasul.quests.stages.StageBringBack;
+import fr.skytasul.quests.stages.StageBucket;
+import fr.skytasul.quests.stages.StageChat;
+import fr.skytasul.quests.stages.StageCraft;
+import fr.skytasul.quests.stages.StageDealDamage;
+import fr.skytasul.quests.stages.StageDeath;
+import fr.skytasul.quests.stages.StageEatDrink;
+import fr.skytasul.quests.stages.StageEnchant;
+import fr.skytasul.quests.stages.StageFish;
+import fr.skytasul.quests.stages.StageInteract;
+import fr.skytasul.quests.stages.StageLocation;
+import fr.skytasul.quests.stages.StageMelt;
+import fr.skytasul.quests.stages.StageMine;
+import fr.skytasul.quests.stages.StageMobs;
+import fr.skytasul.quests.stages.StageNPC;
+import fr.skytasul.quests.stages.StagePlaceBlocks;
+import fr.skytasul.quests.stages.StagePlayTime;
+import fr.skytasul.quests.stages.StageTame;
+import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 
 public final class DefaultQuestFeatures {
 
@@ -94,6 +157,30 @@ public final class DefaultQuestFeatures {
 				StageDealDamage::deserialize, stageDealDamage, StageDealDamage.Creator::new));
 		QuestsAPI.getAPI().getStages().register(new StageType<>("EAT_DRINK", StageEatDrink.class, Lang.EatDrink.name(),
 				StageEatDrink::new, stageEatDrink, StageEatDrink.Creator::new));
+	}
+
+	public static void registerStageOptions() {
+		QuestsAPI.getAPI().getStages().autoRegisterOption(new StageOptionAutoRegister() {
+
+			@Override
+			public boolean appliesTo(@NotNull StageType<?> type) {
+				return HasProgress.class.isAssignableFrom(type.getStageClass());
+			}
+
+			@Override
+			public <T extends AbstractStage> SerializableCreator<StageOption<T>> createOptionCreator(
+					@NotNull StageType<T> type) {
+				return createCreator((StageType) type);
+			}
+
+			public <T extends AbstractStage & HasProgress> SerializableCreator<StageOptionProgressBar<T>> createCreator(
+					@NotNull StageType<T> type) {
+				return new SerializableCreator<>("progressbar", StageOptionProgressBar.class,
+						() -> new StageOptionProgressBar<>(type.getStageClass()));
+
+			}
+
+		});
 	}
 
 	public static void registerQuestOptions() {

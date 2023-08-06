@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,5 +59,8 @@ public interface GuiFactory {
 	@NotNull
 	Gui createConfirmation(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
 			@Nullable List<@Nullable String> lore);
+
+	@NotNull
+	Gui createEntityTypeSelection(@NotNull Consumer<EntityType> callback, @Nullable Predicate<@NotNull EntityType> filter);
 
 }

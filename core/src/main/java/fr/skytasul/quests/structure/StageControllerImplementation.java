@@ -84,7 +84,9 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + toString());
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
-		branch.getManager().objectiveUpdated(player);
+
+		propagateStageHandlers(handler -> handler.stageUpdated(player, this));
+		branch.getManager().questUpdated(player);
 	}
 
 	@Override

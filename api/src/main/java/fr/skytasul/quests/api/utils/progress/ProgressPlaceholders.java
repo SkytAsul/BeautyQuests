@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.utils.itemdescription;
+package fr.skytasul.quests.api.utils.progress;
 
 import java.util.Map;
 import org.bukkit.entity.Player;
@@ -8,45 +8,59 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.Placeholder;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration;
+import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 
-public final class ItemsDescriptionPlaceholders {
+public final class ProgressPlaceholders {
 
-	private static final PlaceholderRegistry DESCRIPTION_REGISTRY = new PlaceholderRegistry()
-			.registerIndexedContextual("remaining", DescriptionPlaceholderContext.class,
-					context -> Integer.toString(context.getItem().getPlayerAmount(context.getPlayerAccount())))
-			.registerIndexedContextual("done", DescriptionPlaceholderContext.class,
-					context -> Integer.toString(context.getItem().getObjectAmount()
-							- context.getItem().getPlayerAmount(context.getPlayerAccount())))
-			.registerIndexedContextual("amount", DescriptionPlaceholderContext.class,
-					context -> Integer.toString(context.getItem().getObjectAmount()))
-			.registerIndexedContextual("percentage", DescriptionPlaceholderContext.class,
-					context -> Integer.toString((int) (context.getItem().getPlayerAmount(context.getPlayerAccount()) * 100D
-							/ context.getItem().getObjectAmount())))
-			.registerIndexedContextual("name", DescriptionPlaceholderContext.class,
-					context -> context.getItem().getObjectName());
+	private static final PlaceholderRegistry PROGRESS_REGISTRY = new PlaceholderRegistry()
+			.registerIndexedContextual("remaining", ProgressPlaceholderContext.class,
+					context -> Integer.toString(context.getProgress().getPlayerAmount(context.getPlayerAccount())))
+			.registerIndexedContextual("done", ProgressPlaceholderContext.class,
+					context -> Integer.toString(context.getProgress().getTotalAmount()
+							- context.getProgress().getPlayerAmount(context.getPlayerAccount())))
+			.registerIndexedContextual("amount", ProgressPlaceholderContext.class,
+					context -> Integer.toString(context.getProgress().getTotalAmount()))
+			.registerIndexedContextual("percentage", ProgressPlaceholderContext.class,
+					context -> Integer.toString((int) (context.getProgress().getPlayerAmount(context.getPlayerAccount())
+							* 100D / context.getProgress().getTotalAmount())));
+	private static final PlaceholderRegistry DESCRIPTION_REGISTRY = PROGRESS_REGISTRY.with(new PlaceholderRegistry()
+			.registerIndexedContextual("name", ProgressObjectPlaceholderContext.class,
+					context -> context.getProgress().getObjectName()));
 
-	private ItemsDescriptionPlaceholders() {}
+	private ProgressPlaceholders() {}
 
-	public static void register(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
+	public static void registerProgress(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
+			@NotNull HasProgress progress) {
+		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|amount|percentage)",
+				PlayerPlaceholdersContext.class, (matcher, context) -> {
+					return PROGRESS_REGISTRY.resolve(matcher.group(1), new ProgressPlaceholderContext(
+							context.getActor(), context.replacePluginPlaceholders(), progress));
+				}));
+	}
+
+	public static void registerObject(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
 			@NotNull HasSingleObject object) {
 		placeholders.registerIndexedContextual(key, PlayerPlaceholdersContext.class,
 				context -> formatObject(object, context));
 
 		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|amount|percentage|name)",
 				PlayerPlaceholdersContext.class, (matcher, context) -> {
-					return DESCRIPTION_REGISTRY.resolve(matcher.group(1), new DescriptionPlaceholderContext(
+					return DESCRIPTION_REGISTRY.resolve(matcher.group(1), new ProgressObjectPlaceholderContext(
 							context.getActor(), context.replacePluginPlaceholders(), object));
 				}));
 	}
 
-	public static <T> void register(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
+	public static <T> void registerObjects(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
 			@NotNull HasMultipleObjects<T> objects) {
+		registerProgress(placeholders, key, objects);
+
 		placeholders.registerIndexedContextual(key, StageDescriptionPlaceholdersContext.class, context -> {
 			Map<CountableObject<T>, Integer> amounts = objects.getPlayerAmounts(context.getPlayerAccount());
 			String[] objectsDescription = amounts.entrySet().stream()
@@ -55,12 +69,6 @@ public final class ItemsDescriptionPlaceholders {
 			return formatObjectList(context.getDescriptionSource(), objects.getItemsDescriptionConfiguration(),
 					objectsDescription);
 		});
-
-		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|amount|percentage)",
-				PlayerPlaceholdersContext.class, (matcher, context) -> {
-					return DESCRIPTION_REGISTRY.resolve(matcher.group(1), new DescriptionPlaceholderContext(
-							context.getActor(), context.replacePluginPlaceholders(), objects.asTotalObject()));
-				}));
 
 		placeholders.register(Placeholder.ofPatternContextual(key + "_(\\d+)(?:_(remaining|done|amount|percentage))?",
 				PlayerPlaceholdersContext.class, (matcher, context) -> {
@@ -75,7 +83,7 @@ public final class ItemsDescriptionPlaceholders {
 					if (operation == null)
 						return formatObject(item, context);
 					
-					return DESCRIPTION_REGISTRY.resolve(operation, new DescriptionPlaceholderContext(context.getActor(),
+					return DESCRIPTION_REGISTRY.resolve(operation, new ProgressObjectPlaceholderContext(context.getActor(),
 							context.replacePluginPlaceholders(), item));
 				}));
 	}
@@ -110,7 +118,7 @@ public final class ItemsDescriptionPlaceholders {
 				? object.getItemsDescriptionConfiguration().getMultipleItemsFormat()
 				: object.getItemsDescriptionConfiguration().getSingleItemFormat();
 		return MessageUtils.format(formatString, DESCRIPTION_REGISTRY,
-				new DescriptionPlaceholderContext(context.getActor(), context.replacePluginPlaceholders(), object));
+				new ProgressObjectPlaceholderContext(context.getActor(), context.replacePluginPlaceholders(), object));
 	}
 
 	public static @NotNull String formatObjectList(@NotNull DescriptionSource source,
@@ -122,17 +130,17 @@ public final class ItemsDescriptionPlaceholders {
 		return String.join(configuration.getSplitPrefix(), elements);
 	}
 
-	private static class DescriptionPlaceholderContext implements PlayerPlaceholdersContext {
+	private static class ProgressPlaceholderContext implements PlayerPlaceholdersContext {
 
 		private final @NotNull Player player;
 		private final boolean replacePluginPlaceholders;
-		private final @NotNull HasSingleObject item;
+		private final @NotNull HasProgress progress;
 
-		public DescriptionPlaceholderContext(@NotNull Player player, boolean replacePluginPlaceholders,
-				@NotNull HasSingleObject item) {
+		public ProgressPlaceholderContext(@NotNull Player player, boolean replacePluginPlaceholders,
+				@NotNull HasProgress progress) {
 			this.player = player;
 			this.replacePluginPlaceholders = replacePluginPlaceholders;
-			this.item = item;
+			this.progress = progress;
 		}
 
 		@Override
@@ -145,8 +153,22 @@ public final class ItemsDescriptionPlaceholders {
 			return replacePluginPlaceholders;
 		}
 
-		public @NotNull HasSingleObject getItem() {
-			return item;
+		public @NotNull HasProgress getProgress() {
+			return progress;
+		}
+
+	}
+
+	private static class ProgressObjectPlaceholderContext extends ProgressPlaceholderContext {
+
+		public ProgressObjectPlaceholderContext(@NotNull Player player, boolean replacePluginPlaceholders,
+				@NotNull HasSingleObject object) {
+			super(player, replacePluginPlaceholders, object);
+		}
+
+		@Override
+		public @NotNull HasSingleObject getProgress() {
+			return (@NotNull HasSingleObject) super.getProgress();
 		}
 
 	}

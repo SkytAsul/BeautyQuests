@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.utils.itemdescription;
+package fr.skytasul.quests.api.utils.progress.itemdescription;
 
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;

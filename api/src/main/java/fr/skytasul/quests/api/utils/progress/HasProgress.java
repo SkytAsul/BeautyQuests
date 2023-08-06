@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.stages.types;
+package fr.skytasul.quests.api.utils.progress;
 
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.players.PlayerAccount;

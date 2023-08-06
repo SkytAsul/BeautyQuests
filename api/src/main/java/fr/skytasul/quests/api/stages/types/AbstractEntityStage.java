@@ -29,9 +29,9 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 
 @LocatableType (types = LocatedType.ENTITY)
 public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable, HasSingleObject {
@@ -96,7 +96,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		ItemsDescriptionPlaceholders.register(placeholders, "mobs", this);
+		ProgressPlaceholders.registerObject(placeholders, "mobs", this);
 	}
 	
 	@Override
@@ -135,13 +135,13 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 			super.setupLine(line);
 			
 			line.setItem(6, ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, Lang.changeEntityType.toString()), event -> {
-				new EntityTypeGUI(x -> {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(x -> {
 					setEntity(x);
 					event.reopen();
 				}, x -> x == null ? canBeAnyEntity() : canUseEntity(x)).open(event.getPlayer());
 			});
 			
-			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.format(1)), event -> {
+			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.quickFormat("amount", 1)), event -> {
 				new TextEditor<>(event.getPlayer(), event::reopen, x -> {
 					setAmount(x);
 					event.reopen();
@@ -151,13 +151,12 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 		
 		public void setEntity(EntityType entity) {
 			this.entity = entity;
-			getLine().refreshItemLore(6,
-					Lang.optionValue.format(entity == null ? Lang.EntityTypeAny.toString() : entity.name()));
+			getLine().refreshItemLoreOptionValue(6, entity == null ? Lang.EntityTypeAny.toString() : entity.name());
 		}
 		
 		public void setAmount(int amount) {
 			this.amount = amount;
-			getLine().refreshItemName(7, Lang.Amount.format(amount));
+			getLine().refreshItemName(7, Lang.Amount.quickFormat("amount", amount));
 		}
 		
 		@Override

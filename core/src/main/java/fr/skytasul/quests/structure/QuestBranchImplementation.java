@@ -233,7 +233,7 @@ public class QuestBranchImplementation implements QuestBranch {
 				}
 				branch.start(acc);
 			}
-			manager.objectiveUpdated(p);
+			manager.questUpdated(p);
 		});
 	}
 	

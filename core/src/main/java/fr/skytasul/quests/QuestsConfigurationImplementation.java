@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -203,10 +202,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return sound;
 	}
 	
-	private boolean migrateEntry(ConfigurationSection config, ConfigurationSection migrateFrom, String key, String migrateKey) {
-		if (migrateFrom.contains(migrateKey)) {
-			config.set(key, migrateFrom.get(migrateKey));
-			migrateFrom.set(migrateKey, null);
+	private boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
+			String newKey) {
+		if (oldConfig.contains(oldKey)) {
+			newConfig.set(newKey, oldConfig.get(oldKey));
+			oldConfig.set(oldKey, null);
 			return true;
 		}
 		return false;
@@ -351,8 +351,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean questConfirmGUI = false;
 		private Collection<NpcClickType> npcClicks = Arrays.asList(NpcClickType.RIGHT, NpcClickType.SHIFT_RIGHT);
 		private boolean skipNpcGuiIfOnlyOneQuest = true;
-		private boolean mobsProgressBar = false;
-		private int progressBarTimeoutSeconds = 15;
 		private boolean requirementReasonOnMultipleQuests = true;
 		private boolean stageEndRewardsMessage = true;
 
@@ -397,8 +395,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
 			skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
-			mobsProgressBar = config.getBoolean("mobsProgressBar");
-			progressBarTimeoutSeconds = config.getInt("progressBarTimeoutSeconds");
 			requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 			stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		}
@@ -451,16 +447,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public boolean fireworks() {
 			return fireworks;
-		}
-
-		@Override
-		public boolean mobsProgressBar() {
-			return mobsProgressBar && QuestsAPI.getAPI().hasBossBarManager();
-		}
-
-		@Override
-		public int progressBarTimeoutSeconds() {
-			return progressBarTimeoutSeconds;
 		}
 
 		@Override
@@ -527,10 +513,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean update() {
 			boolean result = false;
 			if (config.getParent() != null) {
-				result |= migrateEntry(config, config.getParent(), "inActionBar", "dialogsInActionBar");
-				result |= migrateEntry(config, config.getParent(), "defaultTime", "dialogsDefaultTime");
-				result |= migrateEntry(config, config.getParent(), "disableClick", "disableDialogClick");
-				result |= migrateEntry(config, config.getParent(), "history", "dialogHistory");
+				result |= migrateEntry(config.getParent(), "dialogsInActionBar", config, "inActionBar");
+				result |= migrateEntry(config.getParent(), "dialogsDefaultTime", config, "defaultTime");
+				result |= migrateEntry(config.getParent(), "disableDialogClick", config, "disableClick");
+				result |= migrateEntry(config.getParent(), "dialogHistory", config, "history");
 			}
 			return result;
 		}
@@ -616,8 +602,8 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean update() {
 			boolean result = false;
 			if (config.getParent() != null) {
-				result |= migrateEntry(config, config.getParent(), "openNotStartedTabWhenEmpty", "menuOpenNotStartedTabWhenEmpty");
-				result |= migrateEntry(config, config.getParent(), "allowPlayerCancelQuest", "allowPlayerCancelQuest");
+				result |= migrateEntry(config.getParent(), "menuOpenNotStartedTabWhenEmpty", config, "openNotStartedTabWhenEmpty");
+				result |= migrateEntry(config.getParent(), "allowPlayerCancelQuest", config, "allowPlayerCancelQuest");
 			}
 			return result;
 		}
@@ -658,6 +644,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private Set<DescriptionSource> descSources = EnumSet.noneOf(DescriptionSource.class);
 		private boolean bossBars = true;
 		private String bossBarFormat;
+		private int bossBarTimeout = 15;
 
 		private ConfigurationSection config;
 
@@ -681,21 +668,22 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 			bossBars = config.getBoolean("boss bars");
 			bossBarFormat = config.getString("boss bar format");
+			bossBarTimeout = config.getInt("boss bar timeout");
 		}
 
 		private boolean update() {
 			boolean result = false;
 
 			if (config == null) {
-				migrateEntry(QuestsConfigurationImplementation.this.config, QuestsConfigurationImplementation.this.config,
-						"stageDescriptionItemsSplit", "stage description");
+				migrateEntry(QuestsConfigurationImplementation.this.config, "stageDescriptionItemsSplit",
+						QuestsConfigurationImplementation.this.config, "stage description");
 				config = QuestsConfigurationImplementation.this.config.getConfigurationSection("stage description");
 				result = true;
 			}
 
-			result |= migrateEntry(config, config.getParent(), "stageDescriptionFormat", "description format");
-			result |= migrateEntry(config, config, "prefix", "line prefix");
-			result |= migrateEntry(config, config, "sources", "split sources");
+			result |= migrateEntry(config.getParent(), "stageDescriptionFormat", config, "description format");
+			result |= migrateEntry(config, "prefix", config, "line prefix");
+			result |= migrateEntry(config, "sources", config, "split sources");
 			if (config.contains("amountFormat")) {
 				String amountFormat = config.getString("amountFormat");
 				boolean showXOne = config.getBoolean("showXOne");
@@ -714,7 +702,8 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				result = true;
 			}
 
-			result |= migrateEntry(config, config.getParent(), "mobsProgressBar", "boss bars");
+			result |= migrateEntry(config.getParent(), "mobsProgressBar", config, "boss bars");
+			result |= migrateEntry(config.getParent(), "progressBarTimeoutSeconds", config, "boss bar timeout");
 
 			return result;
 		}
@@ -757,6 +746,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public String getBossBarFormat() {
 			return bossBarFormat;
+		}
+
+		@Override
+		public int getBossBarTimeout() {
+			return bossBarTimeout;
 		}
 
 	}

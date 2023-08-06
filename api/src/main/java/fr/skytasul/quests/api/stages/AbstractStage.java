@@ -29,7 +29,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	private @Nullable String customText = null;
 	private @NotNull RewardList rewards = new RewardList();
 	private @NotNull RequirementList validationRequirements = new RequirementList();
-	
+
 	private @NotNull List<@NotNull StageOption> options;
 
 	private @Nullable PlaceholderRegistry placeholders;
@@ -74,11 +74,11 @@ public abstract class AbstractStage implements HasPlaceholders {
 		this.validationRequirements = validationRequirements;
 		validationRequirements.attachQuest(getQuest());
 	}
-	
+
 	public @NotNull List<@NotNull StageOption> getOptions() {
 		return options;
 	}
-	
+
 	public void setOptions(@NotNull List<@NotNull StageOption> options) {
 		this.options = options;
 	}
@@ -109,6 +109,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	}
 
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		placeholders.compose(false, controller.getBranch().getQuest());
 		placeholders.register("stage_type", controller.getStageType().getName());
 		placeholders.register("stage_rewards", rewards.getSizeString());
 		placeholders.register("stage_requirements", validationRequirements.getSizeString());

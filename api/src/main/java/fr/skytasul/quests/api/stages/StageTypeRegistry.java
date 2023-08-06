@@ -1,16 +1,18 @@
 package fr.skytasul.quests.api.stages;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 
 public class StageTypeRegistry implements Iterable<StageType<?>> {
 	
-	private @NotNull List<@NotNull StageType<?>> types = new LinkedList<>();
+	private final @NotNull List<@NotNull StageType<?>> types = new ArrayList<>();
+	private final @NotNull List<@NotNull StageOptionAutoRegister> autoRegisteringOptions = new ArrayList<>(2);
 	
 	/**
 	 * Registers new stage type into the plugin.
@@ -20,8 +22,25 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 		Validate.notNull(type);
 		types.add(type);
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Stage registered (" + type.getName() + ", " + (types.size() - 1) + ")");
+		applyAutoregisteringOptions(type);
 	}
 	
+	private <T extends AbstractStage> void applyAutoregisteringOptions(@NotNull StageType<T> type) {
+		for (StageOptionAutoRegister autoRegister : autoRegisteringOptions) {
+			if (autoRegister.appliesTo(type))
+				type.getOptionsRegistry().register(autoRegister.createOptionCreator(type));
+		}
+	}
+
+	public void autoRegisterOption(@NotNull StageOptionAutoRegister autoRegister) {
+		Validate.notNull(autoRegister);
+		autoRegisteringOptions.add(autoRegister);
+
+		for (StageType<?> type : types) {
+			applyAutoregisteringOptions(type);
+		}
+	}
+
 	public @NotNull List<@NotNull StageType<?>> getTypes() {
 		return types;
 	}

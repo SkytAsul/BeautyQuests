@@ -27,11 +27,11 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
 
@@ -56,7 +56,7 @@ public class StageBringBack extends StageNPC{
 		}
 
 		itemsDescriptions =
-				Arrays.stream(items).map(item -> ItemsDescriptionPlaceholders.formatObject(new HasSingleObject() {
+				Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 					@Override
 					public int getPlayerAmount(@NotNull PlayerAccount account) {
@@ -117,7 +117,7 @@ public class StageBringBack extends StageNPC{
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
 		placeholders.registerIndexedContextual("items", StageDescriptionPlaceholdersContext.class,
-				context -> ItemsDescriptionPlaceholders.formatObjectList(context.getDescriptionSource(),
+				context -> ProgressPlaceholders.formatObjectList(context.getDescriptionSource(),
 						QuestsConfiguration.getConfig().getStageDescriptionConfig(), itemsDescriptions));
 	}
 

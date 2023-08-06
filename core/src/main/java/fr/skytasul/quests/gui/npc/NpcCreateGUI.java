@@ -22,7 +22,6 @@ import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
-import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
 public class NpcCreateGUI extends AbstractGui {
 
@@ -103,12 +102,12 @@ public class NpcCreateGUI extends AbstractGui {
 			break;
 			
 		case 5:
-			new EntityTypeGUI(en -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(en -> {
 				setType(en);
 				event.reopen();
 			}, x -> x != null
 					&& BeautyQuests.getInstance().getNpcManager().getInternalFactory().isValidEntityType(x))
-							.open(event.getPlayer());
+					.open(event.getPlayer());
 			break;
 			
 		case 7:

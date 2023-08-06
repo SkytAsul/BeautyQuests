@@ -9,9 +9,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
-import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 import me.lokka30.levelledmobs.LevelledMobs;
 
 public class BQLevelledMobs extends BukkitEntityFactory implements LeveledMobFactory<EntityType> {
@@ -30,7 +30,8 @@ public class BQLevelledMobs extends BukkitEntityFactory implements LeveledMobFac
 
 	@Override
 	public void itemClick(Player p, Consumer<EntityType> run) {
-		new EntityTypeGUI(run, x -> x != null && x.isAlive()).open(p);
+		QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(run, x -> x != null && x.isAlive())
+				.open(p);
 	}
 
 	@Override

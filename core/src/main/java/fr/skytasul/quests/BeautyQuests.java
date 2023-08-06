@@ -409,6 +409,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				DefaultQuestFeatures.registerRewards();
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default requirements.");
 				DefaultQuestFeatures.registerRequirements();
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default stage options.");
+				DefaultQuestFeatures.registerStageOptions();
 				getServer().getPluginManager().registerEvents(guiManager = new GuiManagerImplementation(), this);
 				getServer().getPluginManager().registerEvents(editorManager = new EditorManagerImplementation(), this);
 				getAPI().registerMobFactory(new BukkitEntityFactory());

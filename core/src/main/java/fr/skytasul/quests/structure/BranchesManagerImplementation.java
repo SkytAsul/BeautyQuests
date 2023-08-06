@@ -78,7 +78,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	 * 
 	 * @param player Player
 	 */
-	public final void objectiveUpdated(@NotNull Player player) {
+	public final void questUpdated(@NotNull Player player) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		if (quest.hasStarted(acc)) {
 			QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(acc, quest));

@@ -13,11 +13,11 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 
 public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 
@@ -34,7 +34,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 
 	@Override
 	public void itemClick(Player p, Consumer<EntityType> run) {
-		new EntityTypeGUI(run, x -> x != null).open(p);
+		QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(run, x -> x != null).open(p);
 	}
 	
 	@Override

@@ -97,12 +97,26 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	}
 
 	/**
-	 * Adds all the placeholders from the passed placeholders holders to this placeholders registry.
+	 * Adds all the placeholders from the passed placeholders holders to this placeholders registry and
+	 * keeps indexed placeholders.
 	 * 
 	 * @param placeholdersHolders holders to get the placeholders from
 	 * @return this placeholder registry
 	 */
 	public @NotNull PlaceholderRegistry compose(@NotNull HasPlaceholders @NotNull... placeholdersHolders) {
+		return compose(true, placeholdersHolders);
+	}
+
+	/**
+	 * Adds all the placeholders from the passed placeholders holders to this placeholders registry.
+	 * 
+	 * @param withIndexes should the indexed placeholders of the passed placeholders holders be kept as
+	 *        indexed
+	 * @param placeholdersHolders holders to get the placeholders from
+	 * @return this placeholder registry
+	 */
+	public @NotNull PlaceholderRegistry compose(boolean withIndexes,
+			@NotNull HasPlaceholders @NotNull... placeholdersHolders) {
 		for (HasPlaceholders holder : placeholdersHolders) {
 			this.placeholders.addAll(holder.getPlaceholdersRegistry().placeholders);
 			if (!holder.getPlaceholdersRegistry().indexed.isEmpty())

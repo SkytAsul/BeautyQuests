@@ -3,6 +3,8 @@ package fr.skytasul.quests.gui;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,7 @@ import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemCreatorGUI;
 import fr.skytasul.quests.gui.items.ItemGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import fr.skytasul.quests.gui.mobs.EntityTypeGUI;
 import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
@@ -67,6 +70,12 @@ public class DefaultGuiFactory implements GuiFactory {
 	public @NotNull Gui createConfirmation(@Nullable Runnable yes, @Nullable Runnable no, @NotNull String indication,
 			@Nullable List<@Nullable String> lore) {
 		return ConfirmGUI.confirm(yes, no, indication, lore);
+	}
+
+	@Override
+	public @NotNull Gui createEntityTypeSelection(@NotNull Consumer<EntityType> callback,
+			@Nullable Predicate<@NotNull EntityType> filter) {
+		return new EntityTypeGUI(callback, filter);
 	}
 
 }

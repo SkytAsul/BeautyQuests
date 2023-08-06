@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.utils.itemdescription;
+package fr.skytasul.quests.api.utils.progress.itemdescription;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.stages.types.HasProgress;
 import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.progress.HasProgress;
 
 public interface HasItemsDescriptionConfiguration {
 
@@ -33,7 +33,7 @@ public interface HasItemsDescriptionConfiguration {
 
 	}
 
-	public interface HasMultipleObjects<T> extends HasItemsDescriptionConfiguration {
+	public interface HasMultipleObjects<T> extends HasItemsDescriptionConfiguration, HasProgress {
 
 		@NotNull
 		Collection<CountableObject<T>> getObjects();
@@ -48,36 +48,18 @@ public interface HasItemsDescriptionConfiguration {
 		@NotNull
 		Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account);
 
-		default int getTotalPlayerAmount(@NotNull PlayerAccount account) {
-			return getPlayerAmounts(account).values().stream().mapToInt(Integer::intValue).sum();
-		}
-
 		default int getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
 			return getPlayerAmounts(account).get(object);
 		}
 
-		default @NotNull HasSingleObject asTotalObject() {
-			return new HasSingleObject() {
-				@Override
-				public @NotNull ItemsDescriptionConfiguration getItemsDescriptionConfiguration() {
-					return getItemsDescriptionConfiguration();
-				}
+		@Override
+		default int getPlayerAmount(@NotNull PlayerAccount account) {
+			return getPlayerAmounts(account).values().stream().mapToInt(Integer::intValue).sum();
+		}
 
-				@Override
-				public int getPlayerAmount(@NotNull PlayerAccount account) {
-					return getTotalPlayerAmount(account);
-				}
-
-				@Override
-				public @NotNull String getObjectName() {
-					return "total";
-				}
-
-				@Override
-				public int getObjectAmount() {
-					return getObjects().stream().mapToInt(CountableObject::getAmount).sum();
-				}
-			};
+		@Override
+		default int getTotalAmount() {
+			return getObjects().stream().mapToInt(CountableObject::getAmount).sum();
 		}
 
 	}

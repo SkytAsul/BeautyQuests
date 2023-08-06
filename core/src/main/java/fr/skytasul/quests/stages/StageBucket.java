@@ -24,10 +24,10 @@ import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionConfiguration;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 import fr.skytasul.quests.gui.misc.BucketTypeGUI;
 
 public class StageBucket extends AbstractStage implements HasSingleObject {
@@ -93,7 +93,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject {
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
 		placeholders.register("bucket_type", bucket.getName());
-		ItemsDescriptionPlaceholders.register(placeholders, "buckets", this);
+		ProgressPlaceholders.registerObject(placeholders, "buckets", this);
 	}
 
 	@Override

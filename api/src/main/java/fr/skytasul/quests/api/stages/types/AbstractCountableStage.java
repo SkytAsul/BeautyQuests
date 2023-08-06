@@ -8,43 +8,30 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
-import fr.skytasul.quests.api.BossBarManager.BQBossBar;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage implements HasMultipleObjects<T> {
 
 	protected final @NotNull List<@NotNull CountableObject<T>> objects;
 
-	protected @NotNull Map<Player, BossBar> bars = new HashMap<>();
-	private boolean barsEnabled = false;
-	private int cachedSize = 0;
-
 	protected AbstractCountableStage(@NotNull StageController controller,
 			@NotNull List<@NotNull CountableObject<T>> objects) {
 		super(controller);
 		this.objects = objects;
-		calculateSize();
 	}
 
 	@Override
@@ -130,9 +117,14 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	}
 
 	@Override
-	public int getTotalPlayerAmount(@NotNull PlayerAccount account) {
+	public int getPlayerAmount(@NotNull PlayerAccount account) {
 		// same as in getPlayerAmount
 		return getPlayerRemainings(account, false).values().stream().mapToInt(Integer::intValue).sum();
+	}
+
+	@Override
+	public int getTotalAmount() {
+		return objects.stream().mapToInt(CountableObject::getAmount).sum();
 	}
 
 	@Override
@@ -145,15 +137,10 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
 	}
 
-	protected void calculateSize() {
-		cachedSize = objects.stream().mapToInt(CountableObject::getAmount).sum();
-		barsEnabled = QuestsConfiguration.getConfig().getQuestsConfig().mobsProgressBar() && cachedSize > 0;
-	}
-
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		ItemsDescriptionPlaceholders.register(placeholders, getPlaceholderKey(), this);
+		ProgressPlaceholders.registerObjects(placeholders, getPlaceholderKey(), this);
 	}
 
 	@Override
@@ -196,65 +183,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 					finishStage(p);
 					return true;
 				}else {
-					if (barsEnabled) {
-						BossBar bar = bars.get(p);
-						if (bar == null) {
-							QuestsPlugin.getPlugin().getLoggerExpanded().warning(p.getName() + " does not have boss bar for stage " + toString() + ". This is a bug!");
-						}else bar.update(playerAmounts.values().stream().mapToInt(Integer::intValue).sum());
-					}
-
 					updatePlayerRemaining(p, playerAmounts);
 					return false;
 				}
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void started(@NotNull PlayerAccount acc) {
-		super.started(acc);
-		if (acc.isCurrent()) createBar(acc.getPlayer(), cachedSize);
-	}
-
-	@Override
-	public void ended(@NotNull PlayerAccount acc) {
-		super.ended(acc);
-		if (acc.isCurrent()) removeBar(acc.getPlayer());
-	}
-
-	@Override
-	public void unload() {
-		super.unload();
-		bars.values().forEach(BossBar::remove);
-	}
-
-	@Override
-	public void joined(@NotNull Player p) {
-		super.joined(p);
-		Map<UUID, Integer> remainings = getPlayerRemainings(PlayersManager.getPlayerAccount(p), true);
-		if (remainings == null) return;
-		createBar(p, remainings.values().stream().mapToInt(Integer::intValue).sum());
-	}
-	
-	@Override
-	public void left(@NotNull Player p) {
-		super.left(p);
-		removeBar(p);
-	}
-
-	protected void createBar(@NotNull Player p, int amount) {
-		if (barsEnabled) {
-			if (bars.containsKey(p)) { // NOSONAR Map#computeIfAbsent cannot be used here as we should log the issue
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to create an already existing bossbar for player " + p.getName());
-				return;
-			}
-			bars.put(p, new BossBar(p, amount));
-		}
-	}
-
-	protected void removeBar(@NotNull Player p) {
-		if (bars.containsKey(p)) bars.remove(p).remove();
 	}
 
 	protected boolean objectApplies(@NotNull T object, @UnknownNullability Object other) {
@@ -302,63 +236,12 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		}
 
 		if (objects.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Stage with no content: " + toString());
-		calculateSize();
 	}
 
 	private static UUID uuidFromLegacyIndex(int index) { // useful for migration purpose
 		return new UUID(index, 2478L);
 		// 2478 is a magic value, the only necessity is that it stays constant
 		// and I like the number 2478
-	}
-
-	class BossBar {
-		private Player p;
-		private BQBossBar bar;
-		private BukkitTask timer;
-
-		public BossBar(Player p, int amount) {
-			this.p = p;
-			
-			BarStyle style = null;
-			if (cachedSize % 20 == 0) {
-				style = BarStyle.SEGMENTED_20;
-			}else if (cachedSize % 10 == 0) {
-				style = BarStyle.SEGMENTED_10;
-			}else if (cachedSize % 12 == 0) {
-				style = BarStyle.SEGMENTED_12;
-			}else if (cachedSize % 6 == 0) {
-				style = BarStyle.SEGMENTED_6;
-			}else style = BarStyle.SOLID;
-			bar = QuestsAPI.getAPI().getBossBarManager()
-					.buildBossBar(Lang.MobsProgression.format(getQuest().getName(), 100, 100), BarColor.YELLOW, style);
-			update(amount);
-		}
-
-		public void remove() {
-			bar.removeAll();
-			if (timer != null) timer.cancel();
-		}
-
-		public void update(int amount) {
-			if (amount >= 0 && amount <= cachedSize) {
-				bar.setProgress((double) (cachedSize - amount) / (double) cachedSize);
-			}else QuestsPlugin.getPlugin().getLoggerExpanded().warning("Amount of objects superior to max objects in " + AbstractCountableStage.this.toString() + " for player " + p.getName() + ": " + amount + " > " + cachedSize);
-			bar.setTitle(Lang.MobsProgression.format(getQuest().getName(), cachedSize - amount, cachedSize));
-			bar.addPlayer(p);
-			timer();
-		}
-
-		private void timer() {
-			if (QuestsConfiguration.getConfig().getQuestsConfig().progressBarTimeoutSeconds() <= 0)
-				return;
-			if (timer != null)
-				timer.cancel();
-
-			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
-				bar.removePlayer(p);
-				timer = null;
-			}, QuestsConfiguration.getConfig().getQuestsConfig().progressBarTimeoutSeconds() * 20L);
-		}
 	}
 
 }

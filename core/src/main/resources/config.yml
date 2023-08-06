@@ -49,8 +49,6 @@ finishSound: ENTITY_PLAYER_LEVELUP
 nextStageSound: ITEM_FIRECHARGE_USE
 # Enable or disable end fireworks
 fireworks: true
-# Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
-progressBarTimeoutSeconds: 15
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
@@ -165,6 +163,8 @@ stage description:
   # Format of the boss bar for stages with progress.
   # Available placeholders are: {quest_name}, {stage_done}, {stage_remaining}, {stage_total}, {stage_percentage}
   boss bar format: "§6{quest_name}: §e{stage_done}/{stage_total}"
+  # Seconds before the progress bar disappear (set it to 0 to make it persistent)
+  boss bar timeout: 15
 
 # - Quest descriptions -
 # How is formatted the quest description in GUIs

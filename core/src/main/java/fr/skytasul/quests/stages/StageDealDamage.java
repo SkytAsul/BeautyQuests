@@ -30,14 +30,14 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
-import fr.skytasul.quests.api.utils.itemdescription.ItemsDescriptionPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.progress.HasProgress;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.gui.mobs.MobSelectionGUI;
 import fr.skytasul.quests.mobs.Mob;
 
 @SuppressWarnings ("rawtypes")
-public class StageDealDamage extends AbstractStage implements HasSingleObject {
+public class StageDealDamage extends AbstractStage implements HasProgress {
 	
 	private final double damage;
 	private final List<Mob> targetMobs;
@@ -92,19 +92,14 @@ public class StageDealDamage extends AbstractStage implements HasSingleObject {
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public int getTotalAmount() {
 		return (int) damage;
-	}
-
-	@Override
-	public @NotNull String getObjectName() {
-		return "damage";
 	}
 
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		ItemsDescriptionPlaceholders.register(placeholders, "damage", this);
+		ProgressPlaceholders.registerProgress(placeholders, "damage", this);
 		placeholders.registerIndexed("target_mobs", getTargetMobsString(targetMobs));
 	}
 
