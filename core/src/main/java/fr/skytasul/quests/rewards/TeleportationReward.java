@@ -9,9 +9,9 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.utils.types.BQLocation;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -38,7 +38,7 @@ public class TeleportationReward extends AbstractReward {
 	@Override
 	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescriptionAsValue(Utils.locationToString(teleportation));
+		loreBuilder.addDescriptionAsValue(Lang.Location.format(new BQLocation(teleportation)));
 	}
 	
 	@Override

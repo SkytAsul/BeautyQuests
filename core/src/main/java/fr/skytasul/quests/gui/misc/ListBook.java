@@ -7,9 +7,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class ListBook{
 
@@ -42,7 +42,7 @@ public class ListBook{
 		}
 		
 		is.setItemMeta(im);
-		Utils.openBook(p, is);
+		QuestUtils.openBook(p, is);
 	}
 	
 	private static String formatLine(String title, String object){

@@ -38,7 +38,7 @@ public class QuestObjectLoreBuilder {
 	}
 
 	public void addDescriptionAsValue(@Nullable Object value) {
-		addDescription(QuestOption.formatNullableValue(value == null ? null : value.toString()));
+		addDescription(QuestOption.formatNullableValue(value));
 	}
 
 	public void addClick(@Nullable ClickType click, @NotNull String action) {

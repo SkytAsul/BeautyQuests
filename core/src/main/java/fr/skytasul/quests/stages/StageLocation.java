@@ -26,7 +26,6 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.compatibility.GPS;
@@ -191,7 +190,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		public void setLocation(Location location) {
 			this.location = location;
 			getLine().refreshItem(SLOT_LOCATION,
-					item -> ItemUtils.lore(item, QuestOption.formatDescription(Utils.locationToString(location))));
+					item -> ItemUtils.loreOptionValue(item, Lang.Location.format(getBQLocation())));
 		}
 		
 		public void setRadius(int radius) {

@@ -173,7 +173,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 		DialogSendMessageEvent event = new DialogSendMessageEvent(dialog, msg, npc, p);
 		Bukkit.getPluginManager().callEvent(event);
 		if (!event.isCancelled())
-			status.runningMsgTask = msg.sendMessage(p, dialog.getNPCName(npc), id, dialog.getMessages().size());
+			status.runningMsgTask = msg.sendMessage(p, npc, dialog.getNPCName(npc), id, dialog.getMessages().size());
 		
 		return false;
 	}

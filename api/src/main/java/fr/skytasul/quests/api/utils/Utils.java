@@ -27,21 +27,13 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scoreboard.DisplaySlot;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.utils.nms.NMS;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 /**
  * A bunch of static methods who can be useful
@@ -51,19 +43,6 @@ public class Utils{
 	
 	public static Optional<String> getFilenameExtension(String filename) {
 		return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
-	}
-	
-	public static void openBook(Player p, ItemStack book){
-		int slot = p.getInventory().getHeldItemSlot();
-		ItemStack old = p.getInventory().getItem(slot);
-		p.getInventory().setItem(slot, book);
-
-		ByteBuf buf = Unpooled.buffer(256);
-		buf.setByte(0, (byte) 0);
-		buf.writerIndex(1);
-
-		NMS.getNMS().sendPacket(p, NMS.getNMS().bookPacket(buf));
-		p.getInventory().setItem(slot, old);
 	}
 
 	public static String ticksToElapsedTime(int ticks) {
@@ -109,54 +88,6 @@ public class Utils{
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
 		return ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
 	}
-	
-	public static String getStringFromNameAndAmount(String name, String amountColor, int remaining, int total, boolean showXOne) {
-		int done = total - remaining;
-		int percentage = (int) (done / (double) total * 100);
-		String string = name;
-		if (remaining > 1 || showXOne) {
-			string += "§r" + amountColor + " "
-					+ MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getSplitAmountFormat(),
-							remaining, done, total, percentage);
-		}
-		return string;
-	}
-
-	public static String locationToString(Location lc){
-		if (lc == null) return null;
-		return Lang.teleportation.format(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ(), lc.getWorld() == null ? Lang.Unknown.toString() : lc.getWorld().getName());
-	}
-	
-	private static boolean cachedScoreboardPresent = false;
-	private static long cachedScoreboardPresenceExp = 0;
-	public static Location upLocationForEntity(LivingEntity en, double value) {
-		double height = value;
-		height += QuestsConfiguration.getHologramsHeight();
-		height += NMS.getNMS().entityNameplateHeight(en);
-		if (en instanceof Player) {
-			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {
-				cachedScoreboardPresenceExp = System.currentTimeMillis() + 60_000;
-				cachedScoreboardPresent = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) != null;
-				// as a new Objective object is allocated each time we check this,
-				// it is better to cache the boolean for memory consumption.
-				// scoreboards are not intended to change frequently, therefore it is
-				// not a problem to cache this value for a minute.
-			}
-			if (cachedScoreboardPresent) height += 0.24;
-		}
-		return en.getLocation().add(0, height, 0);
-	}
-	
-	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
-        if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
-            try {
-				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
-			}catch (ReflectiveOperationException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while attempting to compare items using NMS", ex);
-			}
-        }
-        return false;
-    }
 	
 	public static void giveItems(Player p, List<ItemStack> items) {
 		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new));

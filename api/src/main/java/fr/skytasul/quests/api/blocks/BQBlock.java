@@ -69,7 +69,8 @@ public abstract class BQBlock implements HasPlaceholders {
 		if (placeholders == null) {
 			placeholders = new PlaceholderRegistry()
 					.registerIndexed("block_type", getAsString())
-					.register("block_material", getMaterial().name());
+					.register("block_material", getMaterial().name())
+					.register("block", getName());
 		}
 		return placeholders;
 	}

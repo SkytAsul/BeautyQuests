@@ -6,18 +6,73 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scoreboard.DisplaySlot;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.utils.nms.NMS;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class QuestUtils {
+
+	public static void openBook(Player p, ItemStack book) {
+		int slot = p.getInventory().getHeldItemSlot();
+		ItemStack old = p.getInventory().getItem(slot);
+		p.getInventory().setItem(slot, book);
+
+		ByteBuf buf = Unpooled.buffer(256);
+		buf.setByte(0, (byte) 0);
+		buf.writerIndex(1);
+
+		NMS.getNMS().sendPacket(p, NMS.getNMS().bookPacket(buf));
+		p.getInventory().setItem(slot, old);
+	}
+
+	private static boolean cachedScoreboardPresent = false;
+	private static long cachedScoreboardPresenceExp = 0;
+
+	public static Location upLocationForEntity(LivingEntity en, double value) {
+		double height = value;
+		height += QuestsConfigurationImplementation.getConfiguration().getHologramsHeight();
+		height += NMS.getNMS().entityNameplateHeight(en);
+		if (en instanceof Player) {
+			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {
+				cachedScoreboardPresenceExp = System.currentTimeMillis() + 60_000;
+				cachedScoreboardPresent =
+						Bukkit.getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME) != null;
+				// as a new Objective object is allocated each time we check this,
+				// it is better to cache the boolean for memory consumption.
+				// scoreboards are not intended to change frequently, therefore it is
+				// not a problem to cache this value for a minute.
+			}
+			if (cachedScoreboardPresent)
+				height += 0.24;
+		}
+		return en.getLocation().add(0, height, 0);
+	}
+
+	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
+		if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
+			try {
+				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
+			} catch (ReflectiveOperationException ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.severe("An error occurred while attempting to compare items using NMS", ex);
+			}
+		}
+		return false;
+	}
 
 	public static void runOrSync(Runnable run) {
 		if (Bukkit.isPrimaryThread()) {

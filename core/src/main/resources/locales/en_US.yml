@@ -872,6 +872,9 @@ misc:
     mobs: '{mobs_amount} mob(s)'
     xp: '{xp_amount} experience point(s)'
   ticks: '{ticks} ticks'
+  location: |-
+    Location: {x} {y} {z}
+    World: {world}
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
   poolHologramText: §eNew quest available!

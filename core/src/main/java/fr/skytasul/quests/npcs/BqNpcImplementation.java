@@ -37,7 +37,6 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcManagerImplementation.WrappedInternalNpc;
 import fr.skytasul.quests.options.OptionHologramLaunch;
@@ -45,6 +44,7 @@ import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	
@@ -429,7 +429,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}
 		
 		public void refresh(LivingEntity en) {
-			Location lc = Utils.upLocationForEntity(en, getYAdd());
+			Location lc = QuestUtils.upLocationForEntity(en, getYAdd());
 			if (debug) System.out.println("refreshing " + toString() + " (hologram null: " + (hologram == null) + ")");
 			if (hologram == null) {
 				create(lc);

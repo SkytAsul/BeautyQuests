@@ -39,8 +39,8 @@ import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
@@ -48,7 +48,7 @@ import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
 
 	private BqNpc npc;
-	private int npcID;
+	private String npcID;
 	protected Dialog dialog = null;
 	protected DialogRunnerImplementation dialogRunner = null;
 	protected boolean hide = false;
@@ -92,7 +92,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 					if (hologram == null)
 						createHoloLaunch();
 					hologram.setPlayersVisible(tmp);
-					hologram.teleport(Utils.upLocationForEntity((LivingEntity) en, 1));
+					hologram.teleport(QuestUtils.upLocationForEntity((LivingEntity) en, 1));
 				}
 
 				if (QuestsConfigurationImplementation.getConfiguration().showTalkParticles()) {
@@ -125,14 +125,14 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		return npc;
 	}
 
-	public int getNPCID() {
+	public String getNPCID() {
 		return npcID;
 	}
 
-	public void setNPC(int npcID) {
+	public void setNPC(String npcID) {
 		this.npcID = npcID;
-		if (npcID >= 0)
-			this.npc = QuestsPlugin.getPlugin().getNpcManager().getById(npcID);
+		if (npcID != null)
+			npc = QuestsPlugin.getPlugin().getNpcManager().getById(npcID);
 		if (npc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The NPC " + npcID + " does not exist for " + toString());
 		} else {
@@ -180,7 +180,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		placeholders.registerIndexed("dialog_npc_name", this::npcName);
+		placeholders.registerIndexed("dialog_npc_name", this::getNpcName);
 		placeholders.compose(npc);
 	}
 
@@ -208,7 +208,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		e.setCancelled(dialogRunner.onClick(p).shouldCancel());
 	}
 
-	protected String npcName() {
+	protected String getNpcName() {
 		if (npc == null)
 			return "§c§lunknown NPC " + npcID;
 		if (dialog != null && dialog.getNpcName() != null)
@@ -302,7 +302,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (section.contains("msg"))
 			setDialog(Dialog.deserialize(section.getConfigurationSection("msg")));
 		if (section.contains("npcID")) {
-			setNPC(section.getInt("npcID"));
+			setNPC(section.getString("npcID"));
 		} else
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No NPC specified for " + toString());
 		if (section.contains("hid"))
@@ -330,7 +330,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		private static final int SLOT_NPC = 7;
 		private static final int SLOT_DIALOG = 8;
 
-		private int npcID = -1;
+		private String npcID = null;
 		private Dialog dialog = null;
 		private boolean hidden = false;
 
@@ -361,7 +361,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			line.setItem(SLOT_HIDE, ItemUtils.itemSwitch(Lang.stageHide.toString(), hidden), event -> setHidden(!hidden));
 		}
 
-		public void setNPCId(int npcID) {
+		public void setNPCId(String npcID) {
 			this.npcID = npcID;
 			getLine().refreshItem(SLOT_NPC, item -> ItemUtils.lore(item, QuestOption.formatDescription("ID: §l" + npcID)));
 		}

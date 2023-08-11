@@ -22,7 +22,6 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -34,7 +33,6 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 import fr.skytasul.quests.utils.types.BQLocation;
 
@@ -182,7 +180,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 				});
 			}
 			getLine().refreshItem(7,
-					item -> ItemUtils.lore(item, QuestOption.formatDescription(Utils.locationToString(location))));
+					item -> ItemUtils.loreOptionValue(item, Lang.Location.format(getBQLocation())));
 			this.location = location;
 		}
 		
@@ -195,7 +193,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 					}).open(event.getPlayer());
 				});
 			}
-			getLine().refreshItem(7, item -> ItemUtils.lore(item, Lang.optionValue.format(block.getName())));
+			getLine().refreshItem(7, item -> ItemUtils.loreOptionValue(item, block.getName()));
 			this.block = block;
 		}
 		
@@ -225,6 +223,10 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 					.build().open(p);
 		}
 
+		private @NotNull BQLocation getBQLocation() {
+			return new BQLocation(location);
+		}
+
 		@Override
 		public void edit(StageInteract stage) {
 			super.edit(stage);
@@ -237,7 +239,7 @@ public class StageInteract extends AbstractStage implements Locatable.MultipleLo
 		@Override
 		public StageInteract finishStage(StageController controller) {
 			if (location != null) {
-				return new StageInteract(controller, leftClick, new BQLocation(location));
+				return new StageInteract(controller, leftClick, getBQLocation());
 			}else return new StageInteract(controller, leftClick, block);
 		}
 		

@@ -14,10 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public class BQLocation extends Location implements Locatable.Located {
+public class BQLocation extends Location implements Locatable.Located, HasPlaceholders {
 	
-	private Pattern worldPattern;
+	private @Nullable Pattern worldPattern;
+
+	private @Nullable PlaceholderRegistry placeholders;
 	
 	public BQLocation(Location bukkit) {
 		this(bukkit.getWorld(), bukkit.getX(), bukkit.getY(), bukkit.getZ(), bukkit.getYaw(), bukkit.getPitch());
@@ -88,6 +92,19 @@ public class BQLocation extends Location implements Locatable.Located {
 					.orElse(null);
 	}
 	
+	@Override
+	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
+		if (placeholders == null)
+			placeholders = new PlaceholderRegistry()
+					.register("x", () -> Integer.toString(getBlockX()))
+					.register("y", () -> Integer.toString(getBlockY()))
+					.register("z", () -> Integer.toString(getBlockZ()))
+					.register("world", () -> getWorldName())
+					.register("world_name", () -> getWorld() == null ? null : getWorld().getName())
+					.register("world_pattern", () -> worldPattern.pattern());
+		return placeholders;
+	}
+
 	@Override
 	public double distanceSquared(Location o) {
 		Validate.isTrue(isWorld(o.getWorld()), "World does not match");

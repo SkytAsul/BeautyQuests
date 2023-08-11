@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.utils.messaging.MessageType;
 /**
  * Stores all string paths and methods to format and send them to players.
  */
+@SuppressWarnings("squid:S115")
 public enum Lang implements Locale {
 	
 	/* Formats (must be first to be used after) */
@@ -551,7 +552,6 @@ public enum Lang implements Locale {
 	
 	INVENTORY_REWARDS("inv.rewards.name"),
 	commands("inv.rewards.commands"),
-	teleportation("inv.rewards.teleportation"),
 	rewardRandomRewards("inv.rewards.random.rewards"),
 	rewardRandomMinMax("inv.rewards.random.minMax"),
 	
@@ -782,7 +782,7 @@ public enum Lang implements Locale {
 	Enchant("misc.stageType.Enchant"),
 	Craft("misc.stageType.Craft"),
 	Bucket("misc.stageType.Bucket"),
-	Location("misc.stageType.location"),
+	StageLocation("misc.stageType.location"),
 	PlayTime("misc.stageType.playTime"),
 	Breed("misc.stageType.breedAnimals"),
 	Tame("misc.stageType.tameAnimals"),
@@ -837,6 +837,7 @@ public enum Lang implements Locale {
 	EntityTypeAny("misc.entityTypeAny"),
 	QuestItemLore("misc.questItemLore"),
 	Ticks("misc.ticks"),
+	Location("misc.location"),
 	Enabled("misc.enabled"),
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),

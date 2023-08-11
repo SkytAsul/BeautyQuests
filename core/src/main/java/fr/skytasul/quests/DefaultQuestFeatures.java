@@ -25,7 +25,6 @@ import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.options.OptionBypassLimit;
@@ -93,6 +92,7 @@ import fr.skytasul.quests.stages.StagePlaceBlocks;
 import fr.skytasul.quests.stages.StagePlayTime;
 import fr.skytasul.quests.stages.StageTame;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public final class DefaultQuestFeatures {
 
@@ -143,7 +143,7 @@ public final class DefaultQuestFeatures {
 				StageCraft::deserialize, stageCraft, StageCraft.Creator::new));
 		QuestsAPI.getAPI().getStages().register(new StageType<>("BUCKET", StageBucket.class, Lang.Bucket.name(),
 				StageBucket::deserialize, stageBucket, StageBucket.Creator::new));
-		QuestsAPI.getAPI().getStages().register(new StageType<>("LOCATION", StageLocation.class, Lang.Location.name(),
+		QuestsAPI.getAPI().getStages().register(new StageType<>("LOCATION", StageLocation.class, Lang.StageLocation.name(),
 				StageLocation::deserialize, stageLocation, StageLocation.Creator::new));
 		QuestsAPI.getAPI().getStages().register(new StageType<>("PLAY_TIME", StagePlayTime.class, Lang.PlayTime.name(),
 				StagePlayTime::deserialize, stagePlayTime, StagePlayTime.Creator::new));
@@ -307,7 +307,7 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("bukkit", Lang.comparisonBukkit.toString(),
 				Lang.comparisonBukkitLore.toString(), ItemStack::isSimilar).setEnabledByDefault());
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("customBukkit", Lang.comparisonCustomBukkit.toString(),
-				Lang.comparisonCustomBukkitLore.toString(), Utils::isSimilar));
+				Lang.comparisonCustomBukkitLore.toString(), QuestUtils::isSimilar));
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("material", Lang.comparisonMaterial.toString(),
 				Lang.comparisonMaterialLore.toString(), (item1, item2) -> {
 					if (item2.getType() != item1.getType())

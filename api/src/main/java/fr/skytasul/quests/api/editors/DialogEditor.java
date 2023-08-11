@@ -7,7 +7,6 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -88,7 +87,7 @@ public class DialogEditor extends Editor{
 				break;
 			}
 			try{
-				msg = Utils.buildFromArray(argsColored, 2, " ");
+				msg = Arrays.stream(argsColored).skip(2).collect(Collectors.joining(" "));
 				Sender sender = Sender.valueOf(cmd.name().replace("INSERT", ""));
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Lang.valueOf("DIALOG_MSG_ADDED_" + cmd.name()).send(player, PlaceholderRegistry.of("msg", msg));
@@ -104,7 +103,7 @@ public class DialogEditor extends Editor{
 			}
 			try{
 				Message message = d.getMessages().get(Integer.parseInt(args[1]));
-				msg = Utils.buildFromArray(argsColored, 2, " ");
+				msg = Arrays.stream(argsColored).skip(2).collect(Collectors.joining(" "));
 				message.text = msg;
 				Lang.DIALOG_MSG_EDITED.send(player, PlaceholderRegistry.of("msg", msg));
 			}catch (IllegalArgumentException ex){
