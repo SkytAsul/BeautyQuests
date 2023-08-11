@@ -64,7 +64,7 @@ public interface QuestsAPI {
 	@NotNull
 	QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards();
 
-	void setNpcFactory(@NotNull BqInternalNpcFactory factory);
+	void addNpcFactory(@NotNull String key, @NotNull BqInternalNpcFactory factory);
 
 	boolean hasHologramsManager();
 

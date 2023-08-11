@@ -1,7 +1,17 @@
 package fr.skytasul.quests.npcs;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -29,6 +39,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.npcs.BqNpcManagerImplementation.WrappedInternalNpc;
 import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
@@ -70,43 +81,48 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}
 	};
 	private final boolean holograms;
-	
-	private BqInternalNpc npc;
+
+	private final @NotNull WrappedInternalNpc wrappedNpc;
 
 	private @Nullable PlaceholderRegistry placeholders;
 
-	public BqNpcImplementation(BqInternalNpc npc) {
-		this.npc = npc;
+	public BqNpcImplementation(@NotNull WrappedInternalNpc wrappedNpc) {
+		this.wrappedNpc = wrappedNpc;
 
 		holograms = hologramText.enabled || hologramLaunch.enabled || hologramLaunchNo.enabled || hologramPool.enabled;
 		launcheableTask = startLauncheableTasks();
 	}
 	
-	@Override
-	public BqInternalNpc getNpc() {
-		return npc;
+	public @NotNull WrappedInternalNpc getWrappedNpc() {
+		return wrappedNpc;
 	}
 
-	public void setNpc(BqInternalNpc npc) {
-		this.npc = npc;
+	@Override
+	public String getId() {
+		return wrappedNpc.getId();
+	}
+
+	@Override
+	public BqInternalNpc getNpc() {
+		return wrappedNpc.getNpc();
 	}
 
 	@Override
 	public @NotNull Entity getEntity() {
-		return npc.getEntity();
+		return getNpc().getEntity();
 	}
 
 	@Override
 	public @NotNull Location getLocation() {
-		return npc.getLocation();
+		return getNpc().getLocation();
 	}
 
 	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
 			placeholders = new PlaceholderRegistry()
-					.register("npc_name", npc.getName())
-					.register("npc_id", npc.getId());
+					.register("npc_name", getNpc().getName())
+					.register("npc_id", getId());
 		}
 		return placeholders;
 	}
@@ -117,7 +133,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			
 			@Override
 			public void run() {
-				if (!npc.isSpawned())
+				if (!getNpc().isSpawned())
 					return;
 				if (!(getEntity() instanceof LivingEntity)) return;
 				LivingEntity en = (LivingEntity) getEntity();
@@ -207,7 +223,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			@Override
 			public void run() {
 				LivingEntity en = null; // check if NPC is spawned and living
-				if (npc.isSpawned() && getEntity() instanceof LivingEntity)
+				if (getNpc().isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
 				if (en == null) {
 					if (!hologramsRemoved) removeHolograms(false); // if the NPC is not living and holograms have not been already removed before
@@ -352,15 +368,16 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	}
 	
 	public void delete(String cause) {
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removing NPC Starter " + npc.getId());
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removing NPC Starter " + getId());
 		for (Quest qu : quests.keySet()) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Starter NPC #" + npc.getId() + " has been removed from quest " + qu.getId() + ". Reason: " + cause);
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"Starter NPC #" + getId() + " has been removed from quest " + qu.getId() + ". Reason: " + cause);
 			qu.removeOption(OptionStarterNPC.class);
 		}
 		quests = null;
 		for (QuestPool pool : pools) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("NPC #" + npc.getId() + " has been removed from pool " + pool.getId() + ". Reason: " + cause);
+					.warning("NPC " + getId() + " has been removed from pool " + pool.getId() + ". Reason: " + cause);
 			((QuestPoolImplementation) pool).unloadStarter();
 		}
 		unload();
@@ -374,7 +391,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	
 	@Override
 	public String toString() {
-		String npcInfo = "NPC #" + npc.getId() + ", " + quests.size() + " quests, " + pools.size() + " pools";
+		String npcInfo = "NPC " + getId() + ", " + quests.size() + " quests, " + pools.size() + " pools";
 		String hologramsInfo;
 		if (!holograms) {
 			hologramsInfo = "no holograms";

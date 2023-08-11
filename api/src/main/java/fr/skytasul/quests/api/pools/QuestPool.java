@@ -14,7 +14,7 @@ public interface QuestPool extends HasPlaceholders {
 
 	int getId();
 
-	int getNpcId();
+	String getNpcId();
 
 	String getHologram();
 

@@ -804,10 +804,10 @@ misc:
     successPrefix: §2✔ §a
     requirementNotMetPrefix: §c
   time:
-    weeks: '{0} weeks'
-    days: '{0} days'
-    hours: '{0} hours'
-    minutes: '{0} minutes'
+    weeks: '{weeks_amount} weeks'
+    days: '{days_amount} days'
+    hours: '{hours_amount} hours'
+    minutes: '{minutes_amount} minutes'
     lessThanAMinute: 'less than a minute'
   stageType:
     region: Find region

@@ -162,7 +162,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
 			
-			if (npcManager.getInternalFactory() == null) {
+			if (!npcManager.isEnabled()) {
 				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
 			}
 			
@@ -193,7 +193,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						logger.severe("An error occurred while loading plugin datas.", e);
 					}
 				}
-			}.runTaskLater(this, npcManager.getInternalFactory().getTimeToWaitForNPCs());
+			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();

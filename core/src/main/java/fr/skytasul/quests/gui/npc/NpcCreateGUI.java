@@ -8,7 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
@@ -18,6 +17,7 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
@@ -29,14 +29,17 @@ public class NpcCreateGUI extends AbstractGui {
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
 	
-	private Consumer<BqNpc> end;
-	private Runnable cancel;
+	private final @NotNull BqInternalNpcFactoryCreatable factory;
+	private final @NotNull Consumer<@NotNull BqNpc> end;
+	private final @NotNull Runnable cancel;
 	
 	private EntityType en;
 	private String name;
 	private String skin;
 	
-	public NpcCreateGUI(Consumer<BqNpc> end, Runnable cancel) {
+	public NpcCreateGUI(@NotNull BqInternalNpcFactoryCreatable factory, @NotNull Consumer<@NotNull BqNpc> end,
+			@NotNull Runnable cancel) {
+		this.factory = factory;
 		this.end = end;
 		this.cancel = cancel;
 	}
@@ -105,9 +108,7 @@ public class NpcCreateGUI extends AbstractGui {
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(en -> {
 				setType(en);
 				event.reopen();
-			}, x -> x != null
-					&& BeautyQuests.getInstance().getNpcManager().getInternalFactory().isValidEntityType(x))
-					.open(event.getPlayer());
+			}, x -> x != null && factory.isValidEntityType(x)).open(event.getPlayer());
 			break;
 			
 		case 7:
@@ -118,7 +119,8 @@ public class NpcCreateGUI extends AbstractGui {
 		case 8:
 			event.close();
 			try {
-				end.accept(QuestsPlugin.getPlugin().getNpcManager().createNPC(event.getPlayer().getLocation(), en, name, skin));
+				end.accept(QuestsPlugin.getPlugin().getNpcManager().createNPC(factory, event.getPlayer().getLocation(), en,
+						name, skin));
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				DefaultErrors.sendGeneric(event.getPlayer(), "npc creation " + ex.getMessage());

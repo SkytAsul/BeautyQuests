@@ -344,7 +344,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 			line.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString()), event -> {
 				QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, newNPC -> {
-					setNPCId(newNPC.getNpc().getId());
+					setNPCId(newNPC.getId());
 					event.reopen();
 				}, false).open(event.getPlayer());
 			});
@@ -386,7 +386,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		public void start(Player p) {
 			super.start(p);
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(context::removeAndReopenGui, newNPC -> {
-				setNPCId(newNPC.getNpc().getId());
+				setNPCId(newNPC.getId());
 				context.reopenGui();
 			}, false).open(p);
 		}

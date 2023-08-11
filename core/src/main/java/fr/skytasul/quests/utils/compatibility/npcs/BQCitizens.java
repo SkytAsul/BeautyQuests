@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
-import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import net.citizensnpcs.Settings;
 import net.citizensnpcs.api.CitizensAPI;
@@ -24,7 +24,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
 
-public class BQCitizens implements BqInternalNpcFactory {
+public class BQCitizens implements BqInternalNpcFactoryCreatable {
 	
 	@Override
 	public int getTimeToWaitForNPCs() {
@@ -79,10 +79,18 @@ public class BQCitizens implements BqInternalNpcFactory {
 	}
 	
 	@Override
-	public BqInternalNpc create(Location location, EntityType type, String name) {
+	public BqInternalNpc create(Location location, EntityType type, String name, @Nullable String skin) {
 		NPC npc = CitizensAPI.getNPCRegistry().createNPC(type, name);
 		if (!Settings.Setting.DEFAULT_LOOK_CLOSE.asBoolean()) npc.getOrAddTrait(LookClose.class).toggle();
 		npc.spawn(location);
+
+		if (skin == null) {
+			if (npc.hasTrait(SkinTrait.class))
+				npc.getTraitNullable(SkinTrait.class).clearTexture();
+		} else if (type == EntityType.PLAYER) {
+			npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
+		}
+
 		return new BQCitizensNPC(npc);
 	}
 	
@@ -99,7 +107,7 @@ public class BQCitizens implements BqInternalNpcFactory {
 		}
 		
 		@Override
-		public int getId() {
+		public int getInternalId() {
 			return npc.getId();
 		}
 		
@@ -121,16 +129,6 @@ public class BQCitizens implements BqInternalNpcFactory {
 		@Override
 		public @NotNull Location getLocation() {
 			return npc.getStoredLocation();
-		}
-		
-		@Override
-		public void setSkin(@Nullable String skin) {
-			if (skin == null) {
-				if (npc.hasTrait(SkinTrait.class))
-					npc.getTraitNullable(SkinTrait.class).clearTexture();
-			} else {
-				npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
-			}
 		}
 		
 		@Override

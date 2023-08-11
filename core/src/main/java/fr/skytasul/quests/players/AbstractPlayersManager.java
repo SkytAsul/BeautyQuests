@@ -225,7 +225,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	
 	@Override
 	public @UnknownNullability PlayerAccountImplementation getAccount(@NotNull Player p) {
-		if (BeautyQuests.getInstance().getNpcManager().getInternalFactory().isNPC(p))
+		if (BeautyQuests.getInstance().getNpcManager().isNPC(p))
 			return null;
 		if (!p.isOnline()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Trying to fetch the account of an offline player (" + p.getName() + ")");

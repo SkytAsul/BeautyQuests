@@ -116,7 +116,7 @@ public class QuestsListener implements Listener{
 		}else if (!startablePools.isEmpty()) {
 			QuestPool pool = startablePools.iterator().next();
 			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.debug("NPC " + npc.getNpc().getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
+					.debug("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
 		}else {
 			if (!timer.isEmpty()) {
 				timer.get(0).testTimer(acc, true);

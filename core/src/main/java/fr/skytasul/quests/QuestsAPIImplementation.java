@@ -119,8 +119,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public void setNpcFactory(@NotNull BqInternalNpcFactory factory) {
-		QuestsPlugin.getPlugin().getNpcManager().setInternalFactory(factory);
+	public void addNpcFactory(@NotNull String key, @NotNull BqInternalNpcFactory factory) {
+		QuestsPlugin.getPlugin().getNpcManager().addInternalFactory(key, factory);
 	}
 
 	@Override

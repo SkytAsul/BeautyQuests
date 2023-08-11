@@ -6,10 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,10 +34,10 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getConfig().getDialogsConfig().getDefaultTime() : wait;
 	}
 
-	public BukkitTask sendMessage(Player p, String npc, int id, int size) {
+	public BukkitTask sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
 		BukkitTask task = null;
 
-		String sent = formatMessage(p, npc, id, size);
+		String sent = formatMessage(p, npc, npcCustomName, id, size);
 		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
@@ -78,17 +83,29 @@ public class Message implements Cloneable {
 		return sentSound;
 	}
 
-	public String formatMessage(Player p, String npc, int id, int size) {
+	public String formatMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
+		PlaceholderRegistry registry = new PlaceholderRegistry()
+				.registerIndexed("player_name", p.getName())
+				.registerIndexed("npc_name_message", npcCustomName)
+				.registerIndexed("text", text)
+				.registerIndexed("message_id", id + 1)
+				.registerIndexed("message_count", size);
+		if (npc != null)
+			registry.compose(npc);
+
 		String sent = null;
 		switch (sender) {
 			case PLAYER:
-				sent = Utils.finalFormat(p, Lang.SelfText.format(p.getName(), text, id + 1, size), true);
+				sent = MessageUtils.finalFormat(Lang.SelfText.toString(), registry.withoutIndexes("npc_name_message"),
+						PlaceholdersContext.of(p, true));
 				break;
 			case NPC:
-				sent = Utils.finalFormat(p, Lang.NpcText.format(npc, text, id + 1, size), true);
+				sent = MessageUtils.finalFormat(Lang.NpcText.toString(), registry.withoutIndexes("player_name"),
+						PlaceholdersContext.of(p, true));
 				break;
 			case NOSENDER:
-				sent = Utils.finalFormat(p, Utils.format(text, id + 1, size), true);
+				sent = MessageUtils.finalFormat(text, registry.withoutIndexes("npc_name_message", "player_name"),
+						PlaceholdersContext.of(p, true));
 				break;
 		}
 		return sent;

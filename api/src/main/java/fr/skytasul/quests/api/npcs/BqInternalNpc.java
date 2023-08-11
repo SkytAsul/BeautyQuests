@@ -3,11 +3,10 @@ package fr.skytasul.quests.api.npcs;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface BqInternalNpc {
 
-	public abstract int getId();
+	public int getInternalId();
 
 	public abstract @NotNull String getName();
 
@@ -16,8 +15,6 @@ public interface BqInternalNpc {
 	public abstract @NotNull Entity getEntity();
 
 	public abstract @NotNull Location getLocation();
-
-	public abstract void setSkin(@Nullable String skin);
 
 	/**
 	 * Sets the "paused" state of the NPC navigation

@@ -72,7 +72,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 	private void end(Player p) {
 		if (test(p) != TestResult.ALLOW) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Dialog predicates not completed for NPC " + npc.getNpc().getId()
+					.warning("Dialog predicates not completed for NPC " + npc.getId()
 							+ " whereas the dialog should end. This is a bug.");
 			return;
 		}

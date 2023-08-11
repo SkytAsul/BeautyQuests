@@ -36,7 +36,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	
 	private final int id;
 	
-	private final int npcID;
+	private final String npcId;
 	private final String hologram;
 	private final int maxQuests;
 	private final int questsPerLaunch;
@@ -50,9 +50,10 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	private @Nullable PlaceholderRegistry placeholders;
 	
-	QuestPoolImplementation(int id, int npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
+	QuestPoolImplementation(int id, String npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed,
+			long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
 		this.id = id;
-		this.npcID = npcID;
+		this.npcId = npcID;
 		this.hologram = hologram;
 		this.maxQuests = maxQuests;
 		this.questsPerLaunch = questsPerLaunch;
@@ -61,7 +62,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		this.avoidDuplicates = avoidDuplicates;
 		this.requirements = requirements;
 		
-		if (npcID >= 0) {
+		if (npcID != null) {
 			npc = BeautyQuests.getInstance().getNpcManager().getById(npcID);
 			if (npc != null) {
 				npc.addPool(this);
@@ -77,8 +78,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 	
 	@Override
-	public int getNpcId() {
-		return npcID;
+	public String getNpcId() {
+		return npcId;
 	}
 	
 	@Override
@@ -142,7 +143,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 			placeholders = new PlaceholderRegistry()
 					.registerIndexed("pool", "#" + id)
 					.register("pool_id", id)
-					.register("pool_npc", () -> npcID + " (" + (npc == null ? "unknown" : npc.getNpc().getName()) + ")")
+					.register("pool_npc", () -> npcId + " (" + (npc == null ? "unknown" : npc.getNpc().getName()) + ")")
 					.register("pool_max_quests", maxQuests)
 					.register("pool_quests_per_launch", questsPerLaunch)
 					.register("pool_redo", MessageUtils.getYesNo(redoAllowed))
@@ -328,14 +329,14 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		if (questsPerLaunch != 1) config.set("questsPerLaunch", questsPerLaunch);
 		config.set("redoAllowed", redoAllowed);
 		config.set("timeDiff", timeDiff);
-		config.set("npcID", npcID);
+		config.set("npcID", npcId);
 		config.set("avoidDuplicates", avoidDuplicates);
 		if (!requirements.isEmpty())
 			config.set("requirements", requirements.serialize());
 	}
 	
 	public static QuestPoolImplementation deserialize(int id, ConfigurationSection config) {
-		return new QuestPoolImplementation(id, config.getInt("npcID"), config.getString("hologram"),
+		return new QuestPoolImplementation(id, config.getString("npcID"), config.getString("hologram"),
 				config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"),
 				config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true),
 				RequirementList.deserialize(config.getMapList("requirements")));

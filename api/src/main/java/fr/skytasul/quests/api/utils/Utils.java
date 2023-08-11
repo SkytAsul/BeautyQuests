@@ -79,22 +79,26 @@ public class Utils{
 		StringBuilder sb = new StringBuilder();
 		
 		long weeks = time / 604_800_000;
-		if (weeks != 0) sb.append(Lang.TimeWeeks.format(weeks));
+		if (weeks != 0)
+			sb.append(Lang.TimeWeeks.quickFormat("weeks_amount", weeks));
 		time -= weeks * 604_800_000;
 		
 		long days = time / 86_400_000;
 		if (sb.length() != 0) sb.append(' ');
-		if (days != 0) sb.append(Lang.TimeDays.format(days));
+		if (days != 0)
+			sb.append(Lang.TimeDays.quickFormat("days_amount", days));
 		time -= days * 86_400_000;
 		
 		long hours = time / 3_600_000;
 		if (sb.length() != 0) sb.append(' ');
-		if (hours != 0) sb.append(Lang.TimeHours.format(hours));
+		if (hours != 0)
+			sb.append(Lang.TimeHours.quickFormat("hours_amount", hours));
 		time -= hours * 3_600_000;
 		
 		long minutes = time / 60_000;
 		if (sb.length() != 0) sb.append(' ');
-		if (minutes != 0) sb.append(Lang.TimeMinutes.format(minutes));
+		if (minutes != 0)
+			sb.append(Lang.TimeMinutes.quickFormat("minutes_amount", minutes));
 		time -= minutes * 60_000;
 		
 		if (sb.length() == 0) sb.append(Lang.TimeLessMinute.toString());

@@ -117,7 +117,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			List<List<String>> lines = new ArrayList<>(messages.size());
 			for (int i = 0; i < messages.size(); i++) {
 				Message msg = messages.get(i);
-				String formatted = msg.formatMessage(player, dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
+				String formatted = msg.formatMessage(player, dialogable.getNPC(),
+						dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
 				lines.add(ChatColorUtils.wordWrap(formatted, 40, 100));
 			}
 

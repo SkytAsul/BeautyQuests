@@ -21,12 +21,12 @@ public class OptionStarterNPC extends QuestOption<BqNpc> {
 	
 	@Override
 	public Object save() {
-		return getValue().getNpc().getId();
+		return getValue().getId();
 	}
 	
 	@Override
 	public void load(ConfigurationSection config, String key) {
-		setValue(QuestsPlugin.getPlugin().getNpcManager().getById(config.getInt(key)));
+		setValue(QuestsPlugin.getPlugin().getNpcManager().getById(config.getString(key)));
 	}
 	
 	@Override
@@ -40,7 +40,7 @@ public class OptionStarterNPC extends QuestOption<BqNpc> {
 		lore.add(null);
 		if (options != null && options.hasOption(OptionQuestPool.class) && options.getOption(OptionQuestPool.class).hasCustomValue()) lore.add(Lang.questStarterSelectPool.toString());
 		lore.add(getValue() == null ? Lang.NotSet.toString()
-				: "§7" + getValue().getNpc().getName() + " §8(" + getValue().getNpc().getId() + ")");
+				: "§7" + getValue().getNpc().getName() + " §8(" + getValue().getId() + ")");
 		return lore;
 	}
 	

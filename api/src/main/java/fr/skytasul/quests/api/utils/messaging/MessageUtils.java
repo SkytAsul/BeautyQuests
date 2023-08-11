@@ -51,6 +51,7 @@ public class MessageUtils {
 			text = QuestsPlaceholders.setPlaceholders((Player) context.getActor(), text);
 		if (context.replacePluginPlaceholders()) {
 			text = text
+					.replace("{player}", context.getActor().getName())
 					.replace("{PLAYER}", context.getActor().getName())
 					.replace("{PREFIX}", QuestsPlugin.getPlugin().getPrefix());
 		}

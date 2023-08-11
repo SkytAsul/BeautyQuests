@@ -142,6 +142,33 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 
 	/**
 	 * Creates a <i>new</i> placeholders registry containing the same placeholders as this instance but
+	 * with the placeholers passed as parameter no longer being indexed.
+	 * 
+	 * @param exceptedPlaceholders placeholders no longer being indexed
+	 * @return a copy of this registry without some indexed placeholders
+	 */
+	public @NotNull PlaceholderRegistry withoutIndexes(@NotNull Placeholder @NotNull... exceptedPlaceholders) {
+		PlaceholderRegistry result = new PlaceholderRegistry(this.placeholders.toArray(Placeholder[]::new));
+
+		out: for (Placeholder placeholder : indexed) { // NOSONAR: very simple label use
+			for (Placeholder exceptedPlaceholder : exceptedPlaceholders) {
+				if (exceptedPlaceholder == placeholder)
+					continue out;
+			}
+
+			result.indexed.add(placeholder);
+		}
+
+		return result;
+	}
+
+	public @NotNull PlaceholderRegistry withoutIndexes(@NotNull String @NotNull... exceptedPlaceholders) {
+		return withoutIndexes(Arrays.stream(exceptedPlaceholders).map(x -> Objects.requireNonNull(getPlaceholder(x)))
+				.toArray(Placeholder[]::new));
+	}
+
+	/**
+	 * Creates a <i>new</i> placeholders registry containing the same placeholders as this instance but
 	 * with the indexed placeholers being shifted so that the passed placeholder is the first one.
 	 * 
 	 * @param placeholder first placeholder to be indexed

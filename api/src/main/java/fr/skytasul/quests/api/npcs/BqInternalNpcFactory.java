@@ -24,21 +24,26 @@ public interface BqInternalNpcFactory {
 	@Nullable
 	BqInternalNpc fetchNPC(int id);
 
-	@NotNull
-	BqInternalNpc create(@NotNull Location location, @NotNull EntityType type, @NotNull String name);
-
-	boolean isValidEntityType(@NotNull EntityType type);
-
 	default void npcClicked(@Nullable Cancellable event, int npcID, @NotNull Player p, @NotNull NpcClickType click) {
-		QuestsPlugin.getPlugin().getNpcManager().npcClicked(event, npcID, p, click);
+		QuestsPlugin.getPlugin().getNpcManager().npcClicked(this, event, npcID, p, click);
 	}
 
 	default void npcRemoved(int id) {
-		QuestsPlugin.getPlugin().getNpcManager().npcRemoved(id);
+		QuestsPlugin.getPlugin().getNpcManager().npcRemoved(this, id);
 	}
 
 	default void npcsReloaded() {
-		QuestsPlugin.getPlugin().getNpcManager().reload();
+		QuestsPlugin.getPlugin().getNpcManager().reload(this);
+	}
+
+	public interface BqInternalNpcFactoryCreatable extends BqInternalNpcFactory {
+
+		boolean isValidEntityType(@NotNull EntityType type);
+
+		@NotNull
+		BqInternalNpc create(@NotNull Location location, @NotNull EntityType type, @NotNull String name,
+				@Nullable String skin);
+
 	}
 
 }

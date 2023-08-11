@@ -44,7 +44,7 @@ public class PoolEditGUI extends AbstractGui {
 	private int questsPerLaunch = 1;
 	private boolean redoAllowed = true;
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
-	private int npcID = -1;
+	private String npcID = null;
 	private boolean avoidDuplicates = true;
 	private RequirementList requirements = new RequirementList();
 	
@@ -67,7 +67,8 @@ public class PoolEditGUI extends AbstractGui {
 	}
 	
 	private String[] getNPCLore() {
-		return new String[] { "§8> " + Lang.requiredParameter.toString(), "", QuestOption.formatNullableValue("NPC #" + npcID) };
+		return new String[] {"§8> " + Lang.requiredParameter.toString(), "",
+				QuestOption.formatNullableValue("NPC " + npcID)};
 	}
 	
 	private String[] getHologramLore() {
@@ -91,7 +92,7 @@ public class PoolEditGUI extends AbstractGui {
 	}
 	
 	private void handleDoneButton(Inventory inv) {
-		boolean newState = /*name != null &&*/ npcID != -1;
+		boolean newState = npcID != null;
 		if (newState == canFinish) return;
 		inv.getItem(SLOT_CREATE).setType((newState ? XMaterial.DIAMOND : XMaterial.CHARCOAL).parseMaterial());
 		canFinish = newState;
@@ -123,7 +124,7 @@ public class PoolEditGUI extends AbstractGui {
 		switch (event.getSlot()) {
 		case SLOT_NPC:
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
-				npcID = npc.getNpc().getId();
+				npcID = npc.getId();
 				ItemUtils.lore(event.getClicked(), getNPCLore());
 				handleDoneButton(getInventory());
 				reopen(event.getPlayer());

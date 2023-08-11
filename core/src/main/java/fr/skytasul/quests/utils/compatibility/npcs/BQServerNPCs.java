@@ -10,10 +10,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
-import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import io.github.znetworkw.znpcservers.ServersNPC;
 import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
@@ -23,7 +24,7 @@ import io.github.znetworkw.znpcservers.npc.NPCSkin;
 import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.npc.event.NPCInteractEvent;
 
-public class BQServerNPCs implements BqInternalNpcFactory {
+public class BQServerNPCs implements BqInternalNpcFactoryCreatable {
 	
 	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
@@ -59,12 +60,16 @@ public class BQServerNPCs implements BqInternalNpcFactory {
 	}
 	
 	@Override
-	public @NotNull BqInternalNpc create(Location location, EntityType type, String name) {
+	public @NotNull BqInternalNpc create(Location location, EntityType type, String name, @Nullable String skin) {
 		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
 		int id = ids.size();
 		while (ids.contains(id)) id++;
 		NPC npc = ServersNPC.createNPC(id, NPCType.valueOf(type.name()), location, name);
 		npc.getNpcPojo().getFunctions().put("look", true);
+
+		if (type == EntityType.PLAYER)
+			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
+
 		return new BQServerNPC(npc);
 	}
 	
@@ -87,7 +92,7 @@ public class BQServerNPCs implements BqInternalNpcFactory {
 		}
 		
 		@Override
-		public int getId() {
+		public int getInternalId() {
 			return npc.getNpcPojo().getId();
 		}
 		
@@ -109,11 +114,6 @@ public class BQServerNPCs implements BqInternalNpcFactory {
 		@Override
 		public Location getLocation() {
 			return npc.getLocation();
-		}
-		
-		@Override
-		public void setSkin(String skin) {
-			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
 		}
 		
 		@Override

@@ -66,17 +66,14 @@ public class CommandsManagerImplementation implements CommandsManager {
 						.collect(Collectors.toList())));
 		
 		handler.registerValueResolver(BqNpc.class, context -> {
-			int id = context.popInt();
+			String id = context.pop();
 			BqNpc npc = QuestsPlugin.getPlugin().getNpcManager().getById(id);
 			if (npc == null)
 				throw new CommandErrorException(Lang.NPC_DOESNT_EXIST.quickFormat("npc_id", id));
 			return npc;
 		});
 		handler.getAutoCompleter().registerParameterSuggestions(BqNpc.class,
-				SuggestionProvider.of(() -> BeautyQuests.getInstance().getNpcManager().getInternalFactory().getIDs()
-						.stream()
-						.map(String::valueOf)
-						.collect(Collectors.toList())));
+				SuggestionProvider.of(() -> BeautyQuests.getInstance().getNpcManager().getAvailableIds()));
 		
 		handler.registerCondition((@NotNull CommandActor actor, @NotNull ExecutableCommand command, @NotNull @Unmodifiable List<String> arguments) -> {
 			if (command.hasAnnotation(OutsideEditor.class)) {

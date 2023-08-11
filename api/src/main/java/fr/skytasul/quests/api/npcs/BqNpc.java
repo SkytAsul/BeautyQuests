@@ -10,6 +10,8 @@ import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 
 public interface BqNpc extends Locatable.Located.LocatedEntity, HasPlaceholders {
 
+	String getId();
+
 	BqInternalNpc getNpc();
 
 	Set<Quest> getQuests();
