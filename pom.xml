@@ -31,6 +31,7 @@
 	<modules>
 		<module>api</module>
 		<module>core</module>
+		<module>integrations</module>
 		<module>v1_9_R1</module>
 		<module>v1_9_R2</module>
 		<module>v1_12_R1</module>

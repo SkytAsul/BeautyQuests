@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 
 public interface QuestsPlugin extends Plugin {
@@ -25,14 +26,15 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull EditorManager getEditorManager();
 
+	public @NotNull BqNpcManager getNpcManager();
+
+	public @NotNull IntegrationManager getIntegrationManager();
+
 	public @NotNull String getPrefix(); // TODO maybe not necessary
 
 	public void notifyLoadingFailure();
 
 	public void noticeSavingFailure();
-
-	@NotNull
-	BqNpcManager getNpcManager();
 
 	public static @NotNull QuestsPlugin getPlugin() {
 		return QuestsAPIProvider.getAPI().getPlugin();

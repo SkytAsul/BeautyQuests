@@ -28,9 +28,9 @@ import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
-import fr.skytasul.quests.utils.compatibility.Accounts;
 import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 
 public class QuestsConfigurationImplementation implements QuestsConfiguration {
@@ -40,8 +40,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 
 	private String minecraftTranslationsFile = null;
-	private boolean gps = false;
-	private boolean skillAPIoverride = true;
 	private boolean enablePrefix = true;
 	private double hologramsHeight = 0.0;
 	private boolean disableTextHologram = false;
@@ -51,9 +49,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private ParticleEffect particleStart;
 	private ParticleEffect particleTalk;
 	private ParticleEffect particleNext;
-	private String dSetName = "Quests";
-	private String dIcon = "bookshelf";
-	private int dMinZoom = 0;
 	
 	private ItemStack holoLaunchItem = null;
 	private ItemStack holoLaunchNoItem = null;
@@ -67,7 +62,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	int saveCycle = 15;
 	int firstQuestID = -1; // changed in 0.19, TODO
 	
-	private FileConfiguration config;
+	private final FileConfiguration config;
 	private QuestsConfig quests;
 	private DialogsConfig dialogs;
 	private QuestsMenuConfig menu;
@@ -108,22 +103,16 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		firstQuestID = config.getInt("firstQuest", -1);
-		gps = DependenciesManager.gps.isEnabled() && config.getBoolean("gps");
-		skillAPIoverride = config.getBoolean("skillAPIoverride");
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		hookAcounts = DependenciesManager.acc.isEnabled() && config.getBoolean("accountsHook");
 		if (hookAcounts) {
-			Bukkit.getPluginManager().registerEvents(new Accounts(), BeautyQuests.getInstance());
+			Bukkit.getPluginManager().registerEvents(new BqAccountsHook(), BeautyQuests.getInstance());
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
 		}
 		usePlayerBlockTracker = DependenciesManager.PlayerBlockTracker.isEnabled() && config.getBoolean("usePlayerBlockTracker");
-		dSetName = config.getString("dynmap.markerSetName");
-		if (dSetName == null || dSetName.isEmpty()) DependenciesManager.dyn.disable();
-		dIcon = config.getString("dynmap.markerIcon");
-		dMinZoom = config.getInt("dynmap.minZoom");
 		
 		if (MinecraftVersion.MAJOR >= 9) {
 			particleStart = loadParticles("start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
@@ -244,14 +233,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	public String getPrefix() {
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
 	}
-
-	public boolean handleGPS() {
-		return gps;
-	}
-	
-	public boolean xpOverridedSkillAPI() {
-		return skillAPIoverride;
-	}
 	
 	public boolean isTextHologramDisabled() {
 		return disableTextHologram;
@@ -311,18 +292,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	
 	public boolean usePlayerBlockTracker() {
 		return usePlayerBlockTracker;
-	}
-
-	public String dynmapSetName() {
-		return dSetName;
-	}
-	
-	public String dynmapMarkerIcon() {
-		return dIcon;
-	}
-	
-	public int dynmapMinimumZoom() {
-		return dMinZoom;
 	}
 	
 	public boolean isMinecraftTranslationsEnabled() {

@@ -29,11 +29,10 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.MissingDependencyException;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.utils.DebugUtils;
-import fr.skytasul.quests.utils.compatibility.Accounts;
-import fr.skytasul.quests.utils.compatibility.MissingDependencyException;
 
 public abstract class AbstractPlayersManager implements PlayersManager {
 
@@ -95,7 +94,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	}
 
 	protected @NotNull AbstractAccount createAbstractAccount(@NotNull Player p) {
-		return QuestsConfigurationImplementation.getConfiguration().hookAccounts() ? Accounts.getPlayerAccount(p)
+		return QuestsConfigurationImplementation.getConfiguration().hookAccounts() ? BqAccountsHook.getPlayerAccount(p)
 				: new UUIDAccount(p.getUniqueId());
 	}
 
@@ -103,7 +102,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
 			if (!p.isOnline())
 				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
-			return "Hooked|" + Accounts.getPlayerCurrentIdentifier(p.getPlayer());
+			return "Hooked|" + BqAccountsHook.getPlayerCurrentIdentifier(p.getPlayer());
 		}
 		return p.getUniqueId().toString();
 	}
@@ -115,7 +114,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 						"AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
 			String nidentifier = identifier.substring(7);
 			try{
-				return Accounts.getAccountFromIdentifier(nidentifier);
+				return BqAccountsHook.getAccountFromIdentifier(nidentifier);
 			}catch (Exception ex){
 				ex.printStackTrace();
 			}
@@ -124,7 +123,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 				UUID uuid = UUID.fromString(identifier);
 				if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
 					try{
-						return Accounts.createAccountFromUUID(uuid);
+						return BqAccountsHook.createAccountFromUUID(uuid);
 					}catch (UnsupportedOperationException ex){
 						QuestsPlugin.getPlugin().getLoggerExpanded().warning("Can't migrate an UUID account to a hooked one.");
 					}

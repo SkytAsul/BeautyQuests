@@ -101,8 +101,6 @@ questsMenu:
   allowPlayerCancelQuest: true
 
 # - Integrations -
-# Enable GPS integration
-gps: false
 # Enable or disable SkillAPI experience overriding in xp reward/requirement
 skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
@@ -130,9 +128,9 @@ startedQuestsPlaceholder:
   splitPlaceholderFormat: "§6{questName}\n{questDescription}"
   # Format of the empty placeholder %beautyquests_started_ordered%. Available placeholders: {questName} and {questDescription}
   inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
-# dynmap integration options
+# dynmap and BlueMap integration options
 dynmap:
-  # Name of the marker set. To disable dynmap integration, put an empty string
+  # Name of the marker set. To disable dynmap or BlueMap integration, put an empty string
   markerSetName: ""
   # Icon for quest markers
   markerIcon: "bookshelf"

@@ -878,7 +878,7 @@ misc:
   questItemLore: §e§oQuest Item
   hologramText: §8§lQuest NPC
   poolHologramText: §eNew quest available!
-  entityType: '§eEntity type: {0}'
+  entityType: '§eEntity type: {entity_type}'
   entityTypeAny: §eAny entity
   enabled: Enabled
   disabled: Disabled

@@ -2,6 +2,7 @@ package fr.skytasul.quests.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
+import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 
 /**
  * This class contains most of the useful accessors to fetch data from BeautyQuests and methods to
@@ -91,6 +93,11 @@ public interface QuestsAPI {
 	Collection<@NotNull QuestsHandler> getQuestsHandlers();
 
 	void propagateQuestsHandlers(@NotNull Consumer<@NotNull QuestsHandler> consumer);
+
+	@NotNull
+	Set<MessageProcessor> getMessageProcessors();
+
+	void registerMessageProcessor(@NotNull MessageProcessor processor);
 
 	public static @NotNull QuestsAPI getAPI() {
 		return QuestsAPIProvider.getAPI();

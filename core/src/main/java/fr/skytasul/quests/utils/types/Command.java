@@ -11,9 +11,9 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.QuestsPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 
 public class Command implements HasPlaceholders {
 
@@ -33,11 +33,11 @@ public class Command implements HasPlaceholders {
 	
 	public void execute(Player o){
 		Runnable run = () -> {
-			String formattedcmd = label.replace("{PLAYER}", o.getName());
-			if (parse && DependenciesManager.papi.isEnabled()) formattedcmd = QuestsPlaceholders.setPlaceholders(o, formattedcmd);
+			String formattedCommand = MessageUtils.finalFormat(label, null, PlaceholdersContext.of(o, parse));
+
 			CommandSender sender = console ? Bukkit.getConsoleSender() : o;
-			Bukkit.dispatchCommand(sender, formattedcmd);
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug(sender.getName() + " performed command " + formattedcmd);
+			Bukkit.dispatchCommand(sender, formattedCommand);
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug(sender.getName() + " performed command " + formattedCommand);
 		};
 		if (delay == 0 && Bukkit.isPrimaryThread()) {
 			run.run();

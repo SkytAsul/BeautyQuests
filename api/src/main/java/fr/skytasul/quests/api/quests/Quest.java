@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -37,6 +38,8 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 	public @Nullable String getDescription();
 
 	public @NotNull ItemStack getQuestItem();
+
+	public @Nullable BqNpc getStarterNpc();
 
 	public boolean isScoreboardEnabled();
 

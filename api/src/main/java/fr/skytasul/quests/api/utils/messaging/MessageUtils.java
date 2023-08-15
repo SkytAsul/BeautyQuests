@@ -3,13 +3,11 @@ package fr.skytasul.quests.api.utils.messaging;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
-import net.md_5.bungee.api.ChatColor;
 
 public class MessageUtils {
 
@@ -47,15 +45,10 @@ public class MessageUtils {
 
 	public static String finalFormat(@NotNull String text, @Nullable PlaceholderRegistry placeholders,
 			@NotNull PlaceholdersContext context) {
-		if (DependenciesManager.papi.isEnabled() && context.getActor() instanceof Player)
-			text = QuestsPlaceholders.setPlaceholders((Player) context.getActor(), text);
-		if (context.replacePluginPlaceholders()) {
-			text = text
-					.replace("{player}", context.getActor().getName())
-					.replace("{PLAYER}", context.getActor().getName())
-					.replace("{PREFIX}", QuestsPlugin.getPlugin().getPrefix());
+		for (MessageProcessor processor : QuestsAPI.getAPI().getMessageProcessors()) {
+			placeholders = processor.processPlaceholders(placeholders, context);
+			text = processor.processString(text, context);
 		}
-		text = ChatColor.translateAlternateColorCodes('&', text);
 		return format(text, placeholders, context);
 	}
 

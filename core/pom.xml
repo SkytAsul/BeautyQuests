@@ -41,11 +41,13 @@
 						</relocation>
 						<relocation>
 							<pattern>com.tchristofferson.configupdater</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
+							<shadedPattern>
+								fr.skytasul.quests.utils.configupdater</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.jeff_media.updatechecker</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
+							<shadedPattern>
+								fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.zaxxer.hikari</pattern>
@@ -85,155 +87,73 @@
 			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 		<repository>
-			<id>placeholderapi</id>
-			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
-		<repository>
-			<id>dynmap</id>
-			<url>https://repo.mikeprimm.com/</url>
-		</repository>
-		<repository>
-			<id>sk89q-repo</id>
-			<url>https://maven.enginehub.org/repo/</url>
+			<id>jeff-media-public</id>
+			<url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
 		<repository>
-			<id>mineacademy-repo</id>
-			<url>https://bitbucket.org/kangarko/libraries/raw/master</url>
-		</repository>
-		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>maven-central</id>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>teamvk-repo</id>
-			<url>https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/</url>
-		</repository>
-		<repository>
-			<id>lumine</id>
-			<url>https://mvn.lumine.io/repository/maven-public/</url>
-			<releases>
-				<updatePolicy>interval:10080</updatePolicy>
-			</releases>
-			<snapshots>
-				<updatePolicy>interval:10080</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>citizens</id>
-			<url>http://repo.citizensnpcs.co/</url> <!-- really slow repo -->
-			<releases>
-				<updatePolicy>interval:10080</updatePolicy>
-			</releases>
-			<snapshots>
-				<updatePolicy>interval:10080</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jeff-media-public</id>
-			<url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
-		</repository>
-		<repository>
-			<id>bg-repo</id>
-			<url>https://repo.bg-software.com/repository/api/</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
-	   <dependency>
-	       <groupId>fr.skytasul</groupId>
-	       <artifactId>beautyquests-api</artifactId>
-	       <version>${project.version}</version>
-	       <scope>provided</scope>
-	   </dependency>
-	   
+		<dependency>
+			<groupId>fr.skytasul</groupId>
+			<artifactId>beautyquests-api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Development dependencies -->
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
 			<version>24.0.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version> <!-- For Java 8 compatibility -->
-        </dependency>
-
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>1.19.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.68.Final</version>
+			<scope>provided</scope>
+		</dependency>
 		
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizens-main</artifactId>
-			<version>2.0.31-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mcmonkey</groupId>
-			<artifactId>sentinel</artifactId>
-			<version>2.7.3-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.github.znetworkw.znpcservers</groupId>
-			<artifactId>znpcservers</artifactId>
-			<version>3.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.MilkBowl</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>1.7</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>me.clip</groupId>
-			<artifactId>placeholderapi</artifactId>
-			<version>2.11.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
-			<artifactId>holographicdisplays-api</artifactId>
-			<version>2.4.9</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>me.filoghost.holographicdisplays</groupId>
-			<artifactId>holographicdisplays-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sk89q.worldguard</groupId>
-			<artifactId>worldguard-bukkit</artifactId>
-			<version>7.0.7</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>net.java.truevfs</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		<!-- Integrations that must be in core -->
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>accountshook</artifactId>
 			<version>1.4.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Flo0</groupId>
+			<artifactId>PlayerBlockTracker</artifactId>
+			<version>1.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Included libraries -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>4.0.3</version> <!-- For Java 8 compatibility -->
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
@@ -251,152 +171,13 @@
 			<groupId>com.tchristofferson</groupId>
 			<artifactId>ConfigUpdater</artifactId>
 			<version>2.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>io.lumine.xikage</groupId>
-			<artifactId>MythicMobs</artifactId>
-			<version>4.12.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.lumine</groupId>
-			<artifactId>Mythic-Dist</artifactId>
-			<version>5.2.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.promcteam</groupId>
-			<artifactId>proskillapi</artifactId>
-			<version>1.1.7.0.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.BlueMap-Minecraft</groupId>
-			<artifactId>BlueMapAPI</artifactId>
-			<version>v2.5.0</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jeff_media</groupId>
 			<artifactId>SpigotUpdateChecker</artifactId>
 			<version>3.0.0</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.vk2gpz.tokenenchant</groupId>
-			<artifactId>TokenEnchantAPI</artifactId>
-			<version>18.37.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.decentsoftware-eu</groupId>
-			<artifactId>decentholograms</artifactId>
-			<version>2.8.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.Flo0</groupId>
-			<artifactId>PlayerBlockTracker</artifactId>
-			<version>1.0.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.lokka30</groupId>
-			<artifactId>LevelledMobs</artifactId>
-			<version>3.2.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.bgsoftware</groupId>
-			<artifactId>WildStackerAPI</artifactId>
-			<version>2022.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.LoneDev6</groupId>
-			<artifactId>api-itemsadder</artifactId>
-			<version>3.2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Local JARs -->
-		<dependency>
-			<groupId>org.mineacademy</groupId>
-			<artifactId>boss</artifactId>
-			<version>4.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.songoda</groupId>
-			<artifactId>UltimateTimber</artifactId>
-			<version>2.3.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.dynmap</groupId>
-			<artifactId>dynmap</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>factions</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>massivecore</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.live.bemmamin</groupId>
-			<artifactId>gps</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gamingmesh</groupId>
-			<artifactId>jobs</artifactId>
-			<version>5.1.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.mrphpfan</groupId>
-			<artifactId>mccombatlevel</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.nossr50</groupId>
-			<artifactId>mcmmo</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.suxy</groupId>
-			<artifactId>skillapi</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.zrips</groupId>
-			<artifactId>cmi</artifactId>
-			<version>9.0.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.zrips</groupId>
-			<artifactId>cmilib</artifactId>
-			<version>1.2.3.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>gcspawners</groupId>
-			<artifactId>gcspawners</artifactId>
-			<version>3.3.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

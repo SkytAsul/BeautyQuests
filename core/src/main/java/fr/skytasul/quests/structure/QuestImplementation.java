@@ -31,6 +31,7 @@ import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
 import fr.skytasul.quests.api.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -51,7 +52,28 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.options.OptionBypassLimit;
+import fr.skytasul.quests.options.OptionCancelRewards;
+import fr.skytasul.quests.options.OptionCancellable;
+import fr.skytasul.quests.options.OptionConfirmMessage;
+import fr.skytasul.quests.options.OptionDescription;
+import fr.skytasul.quests.options.OptionEndMessage;
+import fr.skytasul.quests.options.OptionEndRewards;
+import fr.skytasul.quests.options.OptionEndSound;
+import fr.skytasul.quests.options.OptionFirework;
+import fr.skytasul.quests.options.OptionHideNoRequirements;
+import fr.skytasul.quests.options.OptionName;
+import fr.skytasul.quests.options.OptionQuestItem;
+import fr.skytasul.quests.options.OptionQuestPool;
+import fr.skytasul.quests.options.OptionRepeatable;
+import fr.skytasul.quests.options.OptionRequirements;
+import fr.skytasul.quests.options.OptionScoreboardEnabled;
+import fr.skytasul.quests.options.OptionStartDialog;
+import fr.skytasul.quests.options.OptionStartMessage;
+import fr.skytasul.quests.options.OptionStartRewards;
+import fr.skytasul.quests.options.OptionStarterNPC;
+import fr.skytasul.quests.options.OptionTimer;
+import fr.skytasul.quests.options.OptionVisibility;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
@@ -207,6 +229,11 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return getOptionValueOrDef(OptionBypassLimit.class);
 	}
 	
+	@Override
+	public @Nullable BqNpc getStarterNpc() {
+		return getOptionValueOrDef(OptionStarterNPC.class);
+	}
+
 	public boolean hasAsyncStart() {
 		return getOptionValueOrDef(OptionStartRewards.class).hasAsync();
 	}

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -25,7 +26,11 @@ import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
+import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
+import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.options.OptionBypassLimit;
 import fr.skytasul.quests.options.OptionCancelRewards;
@@ -93,6 +98,8 @@ import fr.skytasul.quests.stages.StagePlayTime;
 import fr.skytasul.quests.stages.StageTame;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.utils.compatibility.BQBossBarImplementation;
+import net.md_5.bungee.api.ChatColor;
 
 public final class DefaultQuestFeatures {
 
@@ -346,6 +353,46 @@ public final class DefaultQuestFeatures {
 						return true;
 					return ((Repairable) meta1).getRepairCost() == ((Repairable) meta2).getRepairCost();
 				}).setMetaNeeded());
+	}
+
+	public static void registerMisc() {
+		QuestsAPI.getAPI().registerMobFactory(new BukkitEntityFactory());
+		if (MinecraftVersion.MAJOR >= 9)
+			QuestsAPI.getAPI().setBossBarManager(new BQBossBarImplementation());
+	}
+
+	public static void registerMessageProcessors() {
+		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
+				.registerContextual("player", PlaceholdersContext.class, context -> context.getActor().getName())
+				.registerContextual("PLAYER", PlaceholdersContext.class, context -> context.getActor().getName())
+				.register("prefix", () -> QuestsPlugin.getPlugin().getPrefix());
+
+		QuestsAPI.getAPI().registerMessageProcessor(new MessageProcessor() {
+			@Override
+			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
+				if (context.replacePluginPlaceholders())
+					return placeholders == null ? defaultPlaceholders : placeholders.with(defaultPlaceholders);
+				else
+					return placeholders;
+			}
+
+			@Override
+			public int getPriority() {
+				return 1;
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor(new MessageProcessor() {
+			@Override
+			public String processString(String string, PlaceholdersContext context) {
+				return ChatColor.translateAlternateColorCodes('&', string);
+			}
+
+			@Override
+			public int getPriority() {
+				return 10;
+			}
+		});
 	}
 
 }

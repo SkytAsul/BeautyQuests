@@ -16,7 +16,6 @@ import fr.skytasul.quests.api.editors.parsers.PatternParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -28,7 +27,6 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
-import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.BQLocation;
 
 @LocatableType (types = LocatedType.OTHER)
@@ -37,23 +35,16 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	private final BQLocation lc;
 	private final int radius;
 	private final int radiusSquared;
-	private final boolean gps;
 	
-	public StageLocation(StageController controller, BQLocation lc, int radius, boolean gps) {
+	public StageLocation(StageController controller, BQLocation lc, int radius) {
 		super(controller);
 		this.lc = lc;
 		this.radius = radius;
 		this.radiusSquared = radius * radius;
-		this.gps = gps;
 	}
 	
 	public BQLocation getLocation() {
 		return lc;
-	}
-	
-	@Override
-	public boolean isShown(Player player) {
-		return isGPSEnabled();
 	}
 	
 	@Override
@@ -63,10 +54,6 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	
 	public int getRadius(){
 		return radius;
-	}
-	
-	public boolean isGPSEnabled() {
-		return gps;
 	}
 	
 	@EventHandler
@@ -79,40 +66,6 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (lc.distanceSquared(e.getTo()) <= radiusSquared) finishStage(p);
-		}
-	}
-	
-	@Override
-	public void joined(Player p) {
-		super.joined(p);
-		if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && gps)
-			GPS.launchCompass(p, lc);
-	}
-	
-	@Override
-	public void left(Player p) {
-		super.left(p);
-		if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && gps)
-			GPS.stopCompass(p);
-	}
-	
-	@Override
-	public void started(PlayerAccount acc) {
-		super.started(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && gps)
-				GPS.launchCompass(p, lc);
-		}
-	}
-	
-	@Override
-	public void ended(PlayerAccount acc) {
-		super.ended(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && gps)
-				GPS.stopCompass(p);
 		}
 	}
 	
@@ -134,11 +87,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	protected void serialize(ConfigurationSection section) {
 		section.set("location", lc.serialize());
 		section.set("radius", radius);
-		if (!gps) section.set("gps", false);
 	}
 
 	public static StageLocation deserialize(ConfigurationSection section, StageController controller) {
-		return new StageLocation(controller, BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)), section.getInt("radius"), section.getBoolean("gps", true));
+		return new StageLocation(controller,
+				BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)),
+				section.getInt("radius"));
 	}
 	
 	public static class Creator extends StageCreation<StageLocation> {
@@ -238,12 +192,11 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 			setLocation(stage.getLocation());
 			setRadius(stage.getRadius());
 			setPattern(stage.getLocation().getWorldPattern());
-			setGPS(stage.isGPSEnabled());
 		}
 		
 		@Override
 		public StageLocation finishStage(StageController controller) {
-			return new StageLocation(controller, getBQLocation(), radius, gps);
+			return new StageLocation(controller, getBQLocation(), radius);
 		}
 		
 	}

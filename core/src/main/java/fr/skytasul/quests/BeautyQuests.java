@@ -41,6 +41,7 @@ import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.localization.Locale;
+import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
@@ -56,10 +57,8 @@ import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
 import fr.skytasul.quests.utils.Database;
-import fr.skytasul.quests.utils.compatibility.BQBossBarImplementation;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
-import fr.skytasul.quests.utils.compatibility.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -99,7 +98,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	protected boolean savingFailure = false;
 	protected boolean loaded = false;
 	
-	private @NotNull DependenciesManager dependencies = new DependenciesManager();
+	private @NotNull IntegrationManager integrations = new IntegrationManager();
 	private @Nullable CommandsManagerImplementation command;
 	private @Nullable LoggerExpanded logger;
 	private @Nullable LoggerHandler loggerHandler;
@@ -143,8 +142,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			
 			checkPaper();
 			
-			dependencies.testCompatibilities();
-			Bukkit.getPluginManager().registerEvents(dependencies, this);
+			loadDefaultIntegrations();
+			integrations.testCompatibilities();
+			Bukkit.getPluginManager().registerEvents(integrations, this);
 
 			saveDefaultConfig();
 			NMS.isValid(); // to force initialization
@@ -157,7 +157,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			registerCommands();
 			
 			try {
-				dependencies.initializeCompatibilities();
+				integrations.initializeCompatibilities();
 			}catch (Exception ex) {
 				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
@@ -216,7 +216,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			setEnabled(false);
 		}
 	}
-	
+
 	@Override
 	public void onDisable(){
 		try {
@@ -240,7 +240,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("An error occurred while saving config.", e);
 			}
 			try {
-				dependencies.disableCompatibilities();
+				integrations.disableCompatibilities();
 			}catch (Exception e) {
 				logger.severe("An error occurred while disabling plugin integrations.", e);
 			}
@@ -331,7 +331,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			return "0 - 5";
 		}));
 		metrics.addCustomChart(new AdvancedPie("hooks", () -> { // replace with bar chart when bStats add them back
-			return dependencies.getDependencies()
+			return integrations.getDependencies()
 				.stream()
 				.filter(dep -> dep.isEnabled())
 				.map(dep -> dep.getFoundPlugin().getName())
@@ -411,17 +411,30 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				DefaultQuestFeatures.registerRequirements();
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default stage options.");
 				DefaultQuestFeatures.registerStageOptions();
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default miscellenaeous.");
+				DefaultQuestFeatures.registerMisc();
+				DefaultQuestFeatures.registerMessageProcessors();
 				getServer().getPluginManager().registerEvents(guiManager = new GuiManagerImplementation(), this);
 				getServer().getPluginManager().registerEvents(editorManager = new EditorManagerImplementation(), this);
-				getAPI().registerMobFactory(new BukkitEntityFactory());
-				if (MinecraftVersion.MAJOR >= 9)
-					getAPI().setBossBarManager(new BQBossBarImplementation());
 			}
 		}catch (LoadingException ex) {
 			throw ex;
 		}catch (Throwable ex) {
 			throw new LoadingException("Error while loading configuration and initializing values", ex);
 		}
+	}
+
+
+	private void loadDefaultIntegrations() {
+		try {
+			Class<?> loaderClass = Class.forName("fr.skytasul.quests.integrations.IntegrationsLoader");
+			loaderClass.getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException ex) {
+			logger.warning("Could not find integrations loader class.");
+		} catch (ReflectiveOperationException ex) {
+			logger.severe("Cannot load default integrations.", ex);
+		}
+		InternalIntegrations.AccountsHook.isEnabled(); // to initialize the class
 	}
 	
 	private YamlConfiguration loadLang() throws LoadingException {
@@ -461,7 +474,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
-		dependencies.lockDependencies();
+		integrations.lockDependencies();
 		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
 		
 		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
@@ -782,6 +795,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	@Override
 	public @NotNull BqNpcManagerImplementation getNpcManager() {
 		return npcManager;
+	}
+
+	@Override
+	public @NotNull IntegrationManager getIntegrationManager() {
+		return integrations;
 	}
 
 	@Override

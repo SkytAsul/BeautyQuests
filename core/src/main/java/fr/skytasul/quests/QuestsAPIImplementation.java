@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
+import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
@@ -49,6 +51,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
+
+	private final Set<MessageProcessor> processors = new TreeSet<>();
 
 	private QuestsAPIImplementation() {}
 
@@ -197,6 +201,16 @@ public class QuestsAPIImplementation implements QuestsAPI {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating quests handler.", ex);
 			}
 		});
+	}
+
+	@Override
+	public @NotNull Set<MessageProcessor> getMessageProcessors() {
+		return processors;
+	}
+
+	@Override
+	public void registerMessageProcessor(@NotNull MessageProcessor processor) {
+		processors.add(processor);
 	}
 
 	@Override

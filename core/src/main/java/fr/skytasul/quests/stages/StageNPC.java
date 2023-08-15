@@ -41,7 +41,6 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.compatibility.GPS;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
 @LocatableType(types = LocatedType.ENTITY)
@@ -220,8 +219,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void joined(Player p) {
 		super.joined(p);
 		cachePlayer(p);
-		if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && !hide)
-			GPS.launchCompass(p, npc.getLocation());
 	}
 
 	private void cachePlayer(Player p) {
@@ -237,8 +234,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	private void uncacheAll() {
-		if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && !hide)
-			cached.forEach(GPS::stopCompass);
 		if (npc != null)
 			cached.forEach(p -> npc.removeHiddenForPlayer(p, this));
 	}
@@ -247,8 +242,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void left(Player p) {
 		super.left(p);
 		uncachePlayer(p);
-		if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && !hide)
-			GPS.stopCompass(p);
 		if (dialogRunner != null)
 			dialogRunner.removePlayer(p);
 	}
@@ -259,8 +252,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (acc.isCurrent()) {
 			Player p = acc.getPlayer();
 			cachePlayer(p);
-			if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && npc != null)
-				GPS.launchCompass(p, npc.getLocation());
 		}
 	}
 
@@ -272,8 +263,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			if (dialogRunner != null)
 				dialogRunner.removePlayer(p);
 			uncachePlayer(p);
-			if (QuestsConfigurationImplementation.getConfiguration().handleGPS() && !hide)
-				GPS.stopCompass(p);
 		}
 	}
 

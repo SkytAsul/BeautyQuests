@@ -1,5 +1,7 @@
 package fr.skytasul.quests.api.utils.logger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -15,6 +17,8 @@ public class LoggerExpanded {
 	private final @NotNull Logger logger;
 	private final @NotNull ILoggerHandler handler;
 	
+	private final Map<Object, Long> times = new HashMap<>();
+
 	public LoggerExpanded(@NotNull Logger logger, @Nullable ILoggerHandler handler) {
 		this.logger = logger;
 		this.handler = handler == null ? ILoggerHandler.EMPTY_LOGGER : handler;
@@ -36,6 +40,14 @@ public class LoggerExpanded {
 		logger.log(Level.WARNING, msg, throwable);
 	}
 	
+	public void warning(@Nullable String msg, @NotNull Object type, int seconds) {
+		Long time = times.get(type);
+		if (time == null || time.longValue() + seconds * 1000 < System.currentTimeMillis()) {
+			logger.warning(msg);
+			times.put(type, System.currentTimeMillis());
+		}
+	}
+
 	public void severe(@Nullable String msg) {
 		logger.log(Level.SEVERE, msg);
 	}
