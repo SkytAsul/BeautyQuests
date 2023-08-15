@@ -1,6 +1,7 @@
 package fr.skytasul.quests.integrations;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 
 public class IntegrationsConfiguration {
 
@@ -15,8 +16,10 @@ public class IntegrationsConfiguration {
 	}
 
 	public void load() {
-		if (config.getBoolean("skillAPIoverride")) {
-
+		if (config.getBoolean("skillAPIoverride", false)) {
+			config.set("skillAPIoverride", null);
+			QuestsPlugin.getPlugin().getLogger().warning("The config option \"skillAPIoverride\" is no longer supported."
+					+ " You must change your vanilla XP rewards to specialized SkillAPI XP rewards.");
 		}
 
 		dSetName = config.getString("dynmap.markerSetName");

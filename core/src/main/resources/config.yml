@@ -101,22 +101,20 @@ questsMenu:
   allowPlayerCancelQuest: true
 
 # - Integrations -
-# Enable or disable SkillAPI experience overriding in xp reward/requirement
-skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
 # If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
 # using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
 usePlayerBlockTracker: true
-# (HolographicDisplays) Disable the hologram above NPC's head
+# (Holograms) Disable the hologram above NPC's head
 disableTextHologram: false
-# (HolographicDisplays) Value added to the hologram height (decimal value)
+# (Holograms) Value added to the hologram height (decimal value)
 hologramsHeight: 0.0
-# (HolographicDisplays) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
+# (Holograms) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
 holoLaunchItemName: BOOK
-# (HolographicDisplays) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
+# (Holograms) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
 holoTalkItemName: COAL
-# (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
+# (Holograms) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:

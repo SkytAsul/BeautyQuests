@@ -813,6 +813,8 @@ public enum Lang implements Locale {
 	RMoney("misc.requirement.money"),
 	REquipment("misc.requirement.equipment"),
 	
+	RWSkillApiXp("misc.reward.skillApiXp"),
+
 	BucketWater("misc.bucket.water"),
 	BucketLava("misc.bucket.lava"),
 	BucketMilk("misc.bucket.milk"),

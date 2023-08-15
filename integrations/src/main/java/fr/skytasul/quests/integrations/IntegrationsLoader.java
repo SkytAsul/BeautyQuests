@@ -33,6 +33,7 @@ import fr.skytasul.quests.integrations.placeholders.PlaceholderRequirement;
 import fr.skytasul.quests.integrations.placeholders.QuestsPlaceholders;
 import fr.skytasul.quests.integrations.skillapi.ClassRequirement;
 import fr.skytasul.quests.integrations.skillapi.SkillAPILevelRequirement;
+import fr.skytasul.quests.integrations.skillapi.SkillAPIXpReward;
 import fr.skytasul.quests.integrations.vault.economy.MoneyRequirement;
 import fr.skytasul.quests.integrations.vault.economy.MoneyReward;
 import fr.skytasul.quests.integrations.vault.permission.PermissionReward;
@@ -95,8 +96,12 @@ public class IntegrationsLoader {
 
 
 		// MAPS
-		manager.addDependency(new BQDependency("dynmap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQDynmap())));
-		manager.addDependency(new BQDependency("BlueMap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQBlueMap())));
+		if (config.dynmapSetName() != null && !config.dynmapSetName().isEmpty()) {
+			manager.addDependency(
+					new BQDependency("dynmap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQDynmap())));
+			manager.addDependency(
+					new BQDependency("BlueMap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQBlueMap())));
+		}
 
 
 		// HOLOGRAMS
@@ -184,6 +189,8 @@ public class IntegrationsLoader {
 				.register(new RequirementCreator("skillAPILevelRequired", SkillAPILevelRequirement.class,
 						ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()),
 						SkillAPILevelRequirement::new));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("skillAPI-exp", SkillAPIXpReward.class,
+				ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RWSkillApiXp.toString()), SkillAPIXpReward::new));
 	}
 
 	private boolean isBossVersionValid(Plugin plugin) {

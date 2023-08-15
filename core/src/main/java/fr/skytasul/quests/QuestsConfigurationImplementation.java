@@ -31,7 +31,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
+import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 
 public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
@@ -107,12 +107,12 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
-		hookAcounts = DependenciesManager.acc.isEnabled() && config.getBoolean("accountsHook");
+		hookAcounts = config.getBoolean("accountsHook");
 		if (hookAcounts) {
 			Bukkit.getPluginManager().registerEvents(new BqAccountsHook(), BeautyQuests.getInstance());
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
 		}
-		usePlayerBlockTracker = DependenciesManager.PlayerBlockTracker.isEnabled() && config.getBoolean("usePlayerBlockTracker");
+		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 		
 		if (MinecraftVersion.MAJOR >= 9) {
 			particleStart = loadParticles("start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
@@ -287,11 +287,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 	
 	public boolean hookAccounts() {
-		return hookAcounts;
+		return hookAcounts && InternalIntegrations.AccountsHook.isEnabled();
 	}
 	
 	public boolean usePlayerBlockTracker() {
-		return usePlayerBlockTracker;
+		return usePlayerBlockTracker && InternalIntegrations.PlayerBlockTracker.isEnabled();
 	}
 	
 	public boolean isMinecraftTranslationsEnabled() {

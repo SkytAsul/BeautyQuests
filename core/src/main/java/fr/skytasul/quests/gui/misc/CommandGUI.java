@@ -13,7 +13,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
 import fr.skytasul.quests.utils.types.Command;
 
 public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
@@ -36,9 +35,8 @@ public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 				this::commandClick));
 		buttons.put(3, LayoutedButton.create(() -> ItemUtils.itemSwitch(Lang.commandConsole.toString(), console),
 				this::consoleClick));
-		if (DependenciesManager.papi.isEnabled())
-			buttons.put(4, LayoutedButton.create(() -> ItemUtils.itemSwitch(Lang.commandParse.toString(), parse),
-					this::parseClick));
+		buttons.put(4, LayoutedButton.create(() -> ItemUtils.itemSwitch(Lang.commandParse.toString(), parse),
+				this::parseClick));
 		buttons.put(5, LayoutedButton.createLoreValue(XMaterial.CLOCK, Lang.commandDelay.toString(), () -> delay,
 				this::delayClick));
 		buttons.put(8,

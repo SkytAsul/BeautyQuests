@@ -808,7 +808,7 @@ misc:
     days: '{days_amount} days'
     hours: '{hours_amount} hours'
     minutes: '{minutes_amount} minutes'
-    lessThanAMinute: 'less than a minute'
+    lessThanAMinute: 'a few seconds'
   stageType:
     region: Find region
     npc: Find NPC
@@ -853,6 +853,8 @@ misc:
     mcMMOSkillLevel: §dSkill level required
     money: §dMoney required
     equipment: §eEquipment required
+  reward:
+    skillApiXp: SkillAPI XP reward
   bucket:
     water: Water bucket
     lava: Lava bucket
