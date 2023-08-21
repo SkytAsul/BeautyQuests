@@ -3,6 +3,7 @@ package fr.skytasul.quests.structure;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,6 +27,7 @@ import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.utils.compatibility.BQBackwardCompat;
 
 public class StageControllerImplementation<T extends AbstractStage> implements StageController, Listener {
 
@@ -196,10 +198,12 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 			@NotNull ConfigurationSection section) {
 		String typeID = section.getString("stageType");
 
-		StageType<?> stageType = QuestsAPI.getAPI().getStages().getType(typeID)
-				.orElseThrow(() -> new IllegalArgumentException("Unknown stage type " + typeID));
+		Optional<StageType<?>> stageType = QuestsAPI.getAPI().getStages().getType(typeID);
 
-		return loadFromConfig(branch, section, stageType);
+		if (!stageType.isPresent())
+			stageType = BQBackwardCompat.loadStageFromConfig(typeID, section);
+
+		return loadFromConfig(branch, section, stageType.orElseThrow(() -> new IllegalArgumentException("Unknown stage type " + typeID)));
 	}
 
 	private static <T extends AbstractStage> @NotNull StageControllerImplementation<T> loadFromConfig(

@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -100,12 +99,10 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		private static final int SLOT_RADIUS = 6;
 		private static final int SLOT_LOCATION = 7;
 		private static final int SLOT_WORLD_PATTERN = 8;
-		private static final int SLOT_GPS = 9;
 		
 		private Location location;
 		private Pattern pattern;
 		private int radius;
-		private boolean gps = true;
 		
 		public Creator(@NotNull StageCreationContext<StageLocation> context) {
 			super(context);
@@ -136,9 +133,6 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 					event.reopen();
 				}, PatternParser.PARSER).passNullIntoEndConsumer().start();
 			});
-			
-			if (QuestsConfigurationImplementation.getConfiguration().handleGPS())
-				line.setItem(SLOT_GPS, ItemUtils.itemSwitch(Lang.stageGPS.toString(), gps), event -> setGPS(!gps));
 		}
 		
 		public void setLocation(Location location) {
@@ -159,14 +153,6 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 					item -> ItemUtils.lore(item, QuestOption.formatDescription(Lang.stageLocationWorldPatternLore.format()),
 							"",
 							pattern == null ? Lang.NotSet.toString() : QuestOption.formatNullableValue(pattern.pattern())));
-		}
-		
-		public void setGPS(boolean gps) {
-			if (this.gps != gps) {
-				this.gps = gps;
-				if (QuestsConfigurationImplementation.getConfiguration().handleGPS())
-					getLine().refreshItem(SLOT_GPS, item -> ItemUtils.setSwitch(item, gps));
-			}
 		}
 		
 		private BQLocation getBQLocation() {

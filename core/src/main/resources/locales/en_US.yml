@@ -370,6 +370,7 @@ inv:
     placeBlocks: §aPlace blocks
     talkChat: §aWrite in chat
     interact: §aInteract with block
+    interactBlock: §aInteract with block at location
     fish: §aCatch fishes
     melt: §6Melt items
     enchant: §dEnchant items
@@ -759,8 +760,8 @@ scoreboard:
     mine: §eMine {blocks}
     placeBlocks: §ePlace {blocks}
     chat: §eWrite §6{text}
-    interact: §eClick on the block at §6{0}
-    interactMaterial: §eClick on a §6{0}§e block
+    interact: §eClick on the block at §6{x} {y} {z}
+    interactMaterial: §eClick on a §6{block}§e block
     fish: §eFish §6{items}
     melt: §eMelt §6{items}
     enchant: §eEnchant §6{items}
@@ -818,6 +819,7 @@ misc:
     placeBlocks: Place blocks
     chat: Write in chat
     interact: Interact with block
+    interactLocation: Interact with block at location
     Fish: Catch fishes
     Melt: Melt items
     Enchant: Enchant items
