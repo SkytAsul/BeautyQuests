@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -44,8 +45,11 @@ public interface Locale {
 	}
 	
 	default @NotNull String quickFormat(@NotNull String key1, @Nullable Object value1) {
-		// TODO maybe simplify this for optimization?
-		return format(PlaceholderRegistry.of(key1, value1));
+		// for performance reason: no need to allocate a new placeholder registry with a new placeholder
+		String replacement = Objects.toString(value1);
+		return getValue()
+				.replace("{0}", replacement) // TODO remove, migration
+				.replace("{" + key1 + "}", replacement);
 	}
 
 	default void send(@NotNull CommandSender sender) {

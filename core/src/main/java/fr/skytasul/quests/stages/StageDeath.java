@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -89,9 +88,8 @@ public class StageDeath extends AbstractStage {
 		
 		public void setCauses(List<DamageCause> causes) {
 			this.causes = causes;
-			getLine().refreshItem(CAUSES_SLOT,
-					item -> ItemUtils.lore(item, QuestOption.formatNullableValue(causes.isEmpty() ? Lang.stageDeathCauseAny
-							: Lang.stageDeathCausesSet.quickFormat("causes_amount", causes.size()))));
+			getLine().refreshItemLoreOptionValue(CAUSES_SLOT, causes.isEmpty() ? Lang.stageDeathCauseAny
+					: Lang.stageDeathCausesSet.quickFormat("causes_amount", causes.size()));
 		}
 		
 		@Override
