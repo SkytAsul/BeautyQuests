@@ -3,9 +3,9 @@ package fr.skytasul.quests.requirements.logical;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
@@ -36,7 +36,7 @@ public class LogicalOrRequirement extends AbstractRequirement {
 	}
 	
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(requirements.getSizeString());
 	}

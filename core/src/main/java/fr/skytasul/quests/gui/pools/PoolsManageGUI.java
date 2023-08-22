@@ -31,10 +31,12 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
 	@Override
 	public void click(QuestPool existing, ItemStack clicked, ClickType click) {
-		if (click == ClickType.MIDDLE) {
+		if (click == ClickType.SHIFT_LEFT) {
 			if (existing != null) {
-				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getId());
-				get().open(player);
+				BeautyQuests.getInstance().getGuiManager().getFactory().createConfirmation(() -> {
+					BeautyQuests.getInstance().getPoolsManager().removePool(existing.getId());
+					get().open(player);
+				}, this::reopen, Lang.INDICATION_REMOVE_POOL.format(existing)).open(player);
 			}
 		}else {
 			new PoolEditGUI(() -> get().open(player), existing).open(player);

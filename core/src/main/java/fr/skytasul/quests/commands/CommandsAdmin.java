@@ -111,11 +111,11 @@ public class CommandsAdmin implements OrphanCommand {
 		if (sender.isPlayer()) {
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
 				quest.delete(false, false);
-				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getPlaceholdersRegistry());
-			}, null, Lang.INDICATION_REMOVE.format(quest.getPlaceholdersRegistry())).open(sender.getAsPlayer());
+				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
+			}, null, Lang.INDICATION_REMOVE.format(quest)).open(sender.getAsPlayer());
 		}else {
 			quest.delete(false, false);
-			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest.getPlaceholdersRegistry());
+			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
 		}
 	}
 	

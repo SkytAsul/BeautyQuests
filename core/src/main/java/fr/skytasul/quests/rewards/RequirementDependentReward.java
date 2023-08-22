@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
@@ -16,7 +17,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
@@ -84,7 +84,7 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(rewards.getSizeString());
 		loreBuilder.addDescription(requirements.getSizeString());

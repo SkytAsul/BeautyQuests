@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
@@ -109,12 +110,12 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	}
 	
 	public @NotNull String @Nullable [] getItemLore() {
-		QuestObjectLoreBuilder lore = new QuestObjectLoreBuilder();
+		LoreBuilder lore = new LoreBuilder();
 		addLore(lore);
 		return lore.toLoreArray();
 	}
 	
-	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(@NotNull LoreBuilder loreBuilder) {
 		loreBuilder.addClick(getRemoveClick(), "§c" + Lang.Remove.toString());
 		loreBuilder.addClick(getCustomDescriptionClick(), Lang.object_description_set.toString());
 

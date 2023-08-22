@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
@@ -53,8 +54,13 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		}
 	}
 	
-	protected ClickType getRemoveClick(T object) {
-		return ClickType.MIDDLE;
+	protected ClickType getRemoveClick(@NotNull T object) {
+		return ClickType.SHIFT_LEFT;
+	}
+
+	protected @NotNull LoreBuilder createLoreBuilder(@NotNull T object) {
+		return new LoreBuilder()
+				.addClick(getRemoveClick(object), "§c" + Lang.Remove.toString());
 	}
 
 	public boolean remove(T object) {

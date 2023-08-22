@@ -38,8 +38,9 @@ public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 
 	@Override
 	public ItemStack getObjectItemStack(MutableCountableObject<BQBlock> object) {
-		return item(object.getObject().getMaterial(), Lang.materialName.format(object.getObject()),
-				Lang.Amount.format(object));
+		return item(object.getObject().getMaterial(), Lang.materialName.format(object.getObject()), createLoreBuilder(object)
+				.addDescription(Lang.Amount.format(object))
+				.toLoreArray());
 	}
 
 }

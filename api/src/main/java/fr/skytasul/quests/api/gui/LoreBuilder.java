@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.objects;
+package fr.skytasul.quests.api.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
 
-public class QuestObjectLoreBuilder {
+public class LoreBuilder {
 
 	private static final List<ClickType> ORDERED_CLICKS =
 			Arrays.asList(ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
@@ -27,25 +27,26 @@ public class QuestObjectLoreBuilder {
 	private List<String> description = new ArrayList<>(5);
 	private Map<ClickType, String> clicks = new TreeMap<>(CLICKS_COMPARATOR);
 
-	public QuestObjectLoreBuilder() {}
-
-	public void addDescriptionRaw(@Nullable String line) {
+	public @NotNull LoreBuilder addDescriptionRaw(@Nullable String line) {
 		description.add(line);
+		return this;
 	}
 
-	public void addDescription(@Nullable String line) {
+	public @NotNull LoreBuilder addDescription(@Nullable String line) {
 		addDescriptionRaw(QuestOption.formatDescription(line));
+		return this;
 	}
 
-	public void addDescriptionAsValue(@Nullable Object value) {
+	public @NotNull LoreBuilder addDescriptionAsValue(@Nullable Object value) {
 		addDescription(QuestOption.formatNullableValue(value));
+		return this;
 	}
 
-	public void addClick(@Nullable ClickType click, @NotNull String action) {
-		if (click == null)
-			return;
+	public @NotNull LoreBuilder addClick(@Nullable ClickType click, @NotNull String action) {
+		if (click != null)
+			clicks.put(click, action);
 
-		clicks.put(click, action);
+		return this;
 	}
 
 	public @NotNull String @Nullable [] toLoreArray() {

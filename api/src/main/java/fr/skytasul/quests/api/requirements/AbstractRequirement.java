@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
@@ -119,7 +119,7 @@ public abstract class AbstractRequirement extends QuestObject {
 	protected abstract void itemClick(@NotNull QuestObjectClickEvent event);
 
 	@Override
-	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(@NotNull LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(Lang.requirementReason.format(
 						PlaceholderRegistry.of("reason", customReason == null ? Lang.NotSet.toString() : customReason)));

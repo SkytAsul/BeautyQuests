@@ -1,6 +1,5 @@
 package fr.skytasul.quests.gui.mobs;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
@@ -38,7 +38,7 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 	@Override
 	public void clickObject(MutableCountableObject<Mob<?>> mob, ItemStack item, ClickType click) {
 		super.clickObject(mob, item, click);
-		if (click == ClickType.SHIFT_LEFT) {
+		if (click == ClickType.RIGHT) {
 			Lang.MOB_NAME.send(player);
 			new TextEditor<>(player, super::reopen, name -> {
 				mob.getObject().setCustomName((String) name);
@@ -62,8 +62,6 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 			} else {
 				QuestUtils.playPluginSound(player.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
 			}
-		} else if (click == ClickType.RIGHT) {
-			remove(mob);
 		}
 	}
 
@@ -79,17 +77,13 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 
 	@Override
 	public ItemStack getObjectItemStack(MutableCountableObject<Mob<?>> mob) {
-		List<String> lore = new ArrayList<>();
-		lore.add(Lang.Amount.format(mob));
-		lore.addAll(mob.getObject().getDescriptiveLore());
-		lore.add("");
-		lore.add(Lang.click.toString());
-		if (mob.getObject().getFactory() instanceof LeveledMobFactory) {
-			lore.add("§7" + Lang.ClickShiftRight + " > §e" + Lang.setLevel);
-		} else {
-			lore.add("§8§n" + Lang.ClickShiftRight + " > " + Lang.setLevel);
-		}
-		ItemStack item = ItemUtils.item(mob.getObject().getMobItem(), mob.getObject().getName(), lore);
+		LoreBuilder loreBuilder = createLoreBuilder(mob)
+				.addDescription(Lang.Amount.format(mob))
+				.addClick(ClickType.LEFT, Lang.editAmount.toString())
+				.addClick(ClickType.RIGHT, Lang.editMobName.toString())
+				.addClick(ClickType.SHIFT_RIGHT, (mob.getObject().getFactory() instanceof LeveledMobFactory ? "" : "§8§n")
+						+ Lang.setLevel.toString());
+		ItemStack item = ItemUtils.item(mob.getObject().getMobItem(), mob.getObject().getName(), loreBuilder.toLoreArray());
 		item.setAmount(Math.min(mob.getAmount(), 64));
 		return item;
 	}

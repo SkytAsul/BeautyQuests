@@ -540,10 +540,8 @@ inv:
   mobs:
     name: Select mobs
     none: §aClick to add a mob.
-    clickLore: |-
-      §a§lLeft-click§a to edit amount.
-      §a§l§nShift§a§l + left-click§a to edit mob name.
-      §c§lRight-click§c to delete.
+    editAmount: Edit amount
+    editMobName: Edit mob name
     setLevel: Set minimum level
   mobSelect:
     name: Select mob type
@@ -758,7 +756,8 @@ indication:
   startQuest: §7Do you want to start the quest {quest_name}?
   closeInventory: §7Are you sure you want to close the GUI?
   cancelQuest: §7Are you sure you want to cancel the quest {quest_name}?
-  removeQuest: §7Are you sure you want to remove the quest {quest_name}?
+  removeQuest: §7Are you sure you want to remove the quest {quest}?
+  removePool: §7Are you sure you want to remove the pool {quest}?
 description:
   requirement:
     title: '§8§lRequirements:'
@@ -866,7 +865,6 @@ misc:
   disabled: Disabled
   unknown: unknown
   notSet: §cnot set
-  remove: §7Middle-click to remove
   removeRaw: Remove
   reset: Reset
   or: or

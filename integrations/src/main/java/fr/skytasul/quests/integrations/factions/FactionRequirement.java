@@ -16,11 +16,11 @@ import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 
 public class FactionRequirement extends AbstractRequirement {
@@ -56,7 +56,7 @@ public class FactionRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(factions.size() + " factions");
 	}
@@ -67,7 +67,7 @@ public class FactionRequirement extends AbstractRequirement {
 			
 			@Override
 			public ItemStack getObjectItemStack(Faction object) {
-				return ItemUtils.item(XMaterial.IRON_SWORD, object.getName(), "", Lang.RemoveMid.toString());
+				return ItemUtils.item(XMaterial.IRON_SWORD, object.getName(), createLoreBuilder(object).toLoreArray());
 			}
 			
 			@Override

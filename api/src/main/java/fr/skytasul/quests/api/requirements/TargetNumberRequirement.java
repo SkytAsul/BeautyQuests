@@ -8,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -65,7 +65,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	protected void addLore(@NotNull QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(@NotNull LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(QuestOption.formatNullableValue(getFormattedValue()));
 	}

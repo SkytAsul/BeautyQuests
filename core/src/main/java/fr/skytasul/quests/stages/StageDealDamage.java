@@ -163,7 +163,8 @@ public class StageDealDamage extends AbstractStage implements HasProgress {
 					
 					@Override
 					public ItemStack getObjectItemStack(Mob object) {
-						return ItemUtils.item(object.getMobItem(), object.getName(), Lang.RemoveMid.toString());
+						return ItemUtils.item(object.getMobItem(), object.getName(),
+								createLoreBuilder(object).toLoreArray());
 					}
 					
 					@Override

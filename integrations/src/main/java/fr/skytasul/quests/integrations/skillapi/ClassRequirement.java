@@ -13,11 +13,11 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 
 public class ClassRequirement extends AbstractRequirement {
@@ -60,7 +60,7 @@ public class ClassRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(classes.size() + " classes");
 	}
@@ -71,7 +71,7 @@ public class ClassRequirement extends AbstractRequirement {
 			
 			@Override
 			public ItemStack getObjectItemStack(RPGClass object) {
-				return ItemUtils.loreAdd(object.getIcon(), "", Lang.RemoveMid.toString());
+				return ItemUtils.loreAdd(object.getIcon(), createLoreBuilder(object).toLoreArray());
 			}
 			
 			@Override

@@ -3,8 +3,8 @@ package fr.skytasul.quests.rewards;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.objects.QuestObjectLoreBuilder;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.misc.TitleGUI;
 import fr.skytasul.quests.utils.types.Title;
@@ -21,7 +21,7 @@ public class TitleReward extends AbstractReward {
 	}
 	
 	@Override
-	protected void addLore(QuestObjectLoreBuilder loreBuilder) {
+	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescriptionAsValue(title);
 	}

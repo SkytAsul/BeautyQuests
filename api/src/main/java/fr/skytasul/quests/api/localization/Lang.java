@@ -519,6 +519,8 @@ public enum Lang implements Locale {
 	
 	INVENTORY_MOBS("inv.mobs.name"),
 	click("inv.mobs.clickLore"),
+	editAmount("inv.mobs.editAmount"),
+	editMobName("inv.mobs.editMobName"),
 	setLevel("inv.mobs.setLevel"),
 
 	INVENTORY_MOBSELECT("inv.mobSelect.name"),
@@ -732,6 +734,7 @@ public enum Lang implements Locale {
 	INDICATION_CLOSE("indication.closeInventory"),
 	INDICATION_CANCEL("indication.cancelQuest"), // 0: quest name
 	INDICATION_REMOVE("indication.removeQuest"), // 0: quest name
+	INDICATION_REMOVE_POOL("indication.removePool"),
 
 	/* Description */
 	
@@ -830,7 +833,6 @@ public enum Lang implements Locale {
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),
 	NotSet("misc.notSet"),
-	RemoveMid("misc.remove"),
 	Remove("misc.removeRaw"),
 	Reset("misc.reset"),
 	Or("misc.or"),

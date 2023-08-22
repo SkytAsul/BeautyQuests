@@ -40,7 +40,7 @@ public class QuestObjectGUI<T extends QuestObject> extends ListGUI<T> {
 	}
 
 	@Override
-	protected ClickType getRemoveClick(T object) {
+	protected ClickType getRemoveClick(@NotNull T object) {
 		return object.getRemoveClick();
 	}
 
