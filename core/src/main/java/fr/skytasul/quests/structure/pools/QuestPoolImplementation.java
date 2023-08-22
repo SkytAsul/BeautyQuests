@@ -151,7 +151,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 					.register("pool_time", Utils.millisToHumanString(timeDiff))
 					.register("pool_hologram", QuestOption.formatNullableValue(hologram, Lang.PoolHologramText))
 					.register("pool_quests",
-							() -> quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", ")));
+							() -> quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", ")))
+					.register("pool_quests_amount", () -> Integer.toString(quests.size()));
 		}
 		return placeholders;
 	}

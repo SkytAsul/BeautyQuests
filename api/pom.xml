@@ -21,11 +21,11 @@
 					<relocations>
 						<relocation>
 							<pattern>revxrsal.commands</pattern>
-							<shadedPattern>fr.skytasul.quests.commands.revxrsal</shadedPattern>
+							<shadedPattern>fr.skytasul.quests.api.commands.revxrsal</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.cryptomorin.xseries</pattern>
-							<shadedPattern>fr.skytasul.quests.utils</shadedPattern>
+							<shadedPattern>fr.skytasul.quests.api.utils</shadedPattern>
 						</relocation>
 					</relocations>
 					<filters>

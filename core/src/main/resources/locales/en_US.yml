@@ -3,7 +3,7 @@ msg:
     finished:
       base: §aCongratulations! You have finished the quest §e{quest_name}§a!
       obtain: §aYou obtain {rewards}!
-    started: §aYou have started the quest §r§e{0}§o§6!
+    started: §aYou have started the quest §r§e{quest_name}§o§6!
     created: §aCongratulations! You have created the quest §e{quest}§a which includes
       {quest_branches} branch(es)!
     edited: §aCongratulations! You have edited the quest §e{quest}§a which now includes
@@ -17,7 +17,6 @@ msg:
     notStarted: §cYou are not currently doing this quest.
   quests:
     maxLaunched: §cYou cannot have more than {quests_max_amount} quest(s) at the same time...
-    nopStep: §cThis quest doesn't have any step.
     updated: §7Quest §e{quest_name}§7 updated.
     checkpoint: §7Quest checkpoint reached!
     failed: §cYou have failed the quest {quest_name}...
@@ -31,8 +30,7 @@ msg:
     craft: §cYou can't use a quest item to craft!
     eat: §cYou cannot eat a quest item!
   stageMobs:
-    noMobs: §cThis stage doesn't need any mobs to kill.
-    listMobs: §aYou must kill {0}.
+    listMobs: §aYou must kill {mobs}.
   writeNPCText: '§aWrite the dialog that will be said to the player by the NPC: (Write
     "help" to receive help.)'
   writeRegionName: '§aWrite the name of the region required for the step:'
@@ -79,9 +77,6 @@ msg:
   experience:
     edited: §aYou have changed the experience gain from {old_xp_amount} to {xp_amount} points.
   selectNPCToKill: §aSelect the NPC to kill.
-  npc:
-    remove: §aNPC deleted.
-    talk: §aGo and talk to the NPC named §e{0}§a.
   regionDoesntExists: §cThis region doesn't exist. (You have to be in the same world.)
   npcDoesntExist: §cThe NPC with the id {npc_id} doesn't exist.
   number:
@@ -90,16 +85,12 @@ msg:
     invalid: §c{input} isn't a valid number.
     notInBounds: §cYour number must be between {min} and {max}.
   errorOccurred: '§cAn error occurred, please contact an adminstrator! §4§lError code: {error}'
-  commandsDisabled: §cCurrently you aren't allowed to execute commands!
   indexOutOfBounds: §cThe number {index} is out of bounds! It has to be between {min} and
     {max}.
   invalidBlockData: §cThe blockdata {block_data} is invalid or incompatible with the block {block_material}.
   invalidBlockTag: §cUnavailable block tag {block_tag}.
-  bringBackObjects: Bring me back {0}.
+  bringBackObjects: Bring me back {items}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
-  playerNeverConnected: §cUnable to find informations about the player {0}.
-  playerNotOnline: §cThe player {0} is offline.
-  playerDataNotFound: §cDatas of player {0} not found.
   versionRequired: 'Version required: §l{version}'
   restartServer: '§7Restart your server to see the modifications.'
   dialogs:
@@ -127,14 +118,8 @@ msg:
       noDialog: §cThe player has no pending dialog.
       alreadyIn: §cThe player is already playing a dialog.
       success: §aStarted dialog for player {player} in quest {quest}!
-    playerNeeded: §cYou must be a player to execute this command!
-    incorrectSyntax: §cIncorrect syntax.
-    noPermission: '§cYou haven''t enough permissions to execute this command! (Required:
-      {0})'
     invalidCommand:
-      quests: §cThis command doesn't exist, write §e/quests help§c.
       simple: §cThis command doesn't exist, write §ehelp§c.
-    needItem: §cYou must hold an item in your main hand!
     itemChanged: §aThe item has been edited. The changes will affect after a restart.
     itemRemoved: §aThe hologram item has been removed.
     removed: §aThe quest {quest_name} has successfully been removed.
@@ -149,8 +134,8 @@ msg:
     startQuest: '§6You have forced starting of quest {quest} for {player}.'
     startQuestNoRequirements: '§cThe player does not meet the requirements for the quest {quest}...
       Append "-overrideRequirements" at the end of your command to bypass the requirements check.'
-    cancelQuest: §6You have cancelled the quest {0}.
-    cancelQuestUnavailable: §cThe quest {0} can't be cancelled.
+    cancelQuest: §6You have cancelled the quest {quest}.
+    cancelQuestUnavailable: §cThe quest {quest} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
       informations.
     backupPlayersFailed: §cCreating a backup for all the player informations has failed.
@@ -386,7 +371,6 @@ inv:
     NPCText: §eEdit dialog
     NPCSelect: §eChoose or create NPC
     hideClues: Hide particles and holograms
-    gps: Displays a compass towards the objective
     editMobsKill: §eEdit mobs to kill
     mobsKillFromAFar: Needs to be killed with projectile
     editBlocksMine: §eEdit blocks to break
@@ -577,12 +561,6 @@ inv:
   rewards:
     name: Rewards
     commands: 'Commands: {amount}'
-    teleportation: |-
-      §aSelected:
-       X: {0}
-       Y: {1}
-       Z: {2}
-       World: {3}
     random:
       rewards: Edit rewards
       minMax: Edit min and max
@@ -681,7 +659,7 @@ inv:
     poolTime: '§8Time between quests: §7{pool_time}'
     poolHologram: '§8Hologram text: §7{pool_hologram}'
     poolAvoidDuplicates: '§8Avoid duplicates: §7{pool_duplicates}'
-    poolQuestsList: '§7{0} §8quest(s): §7{pool_quests}'
+    poolQuestsList: '§7{pool_quests_amount} §8quest(s): §7{pool_quests}'
     create: §aCreate a quest pool
     edit: §e> §6§oEdit the pool... §e<
     choose: §e> §6§oChoose this pool §e<
@@ -797,8 +775,8 @@ description:
 misc:
   format:
     prefix: §6<§e§lQuests§r§6> §r
-    npcText: §6[{2}/{3}] §e§l{0}:§r§e {1}
-    selfText: §6[{2}/{3}] §e§l{0}:§r§e {1}
+    npcText: §6[{message_id}/{message_count}] §e§l{npc_name_message}:§r§e {text}
+    selfText: §6[{message_id}/{message_count}] §e§l{player_name}:§r§e {text}
     offText: §r§e{message}
     editorPrefix: §a
     errorPrefix: §4✖ §c
@@ -888,8 +866,6 @@ misc:
   disabled: Disabled
   unknown: unknown
   notSet: §cnot set
-  unused: §2§lUnused
-  used: §a§lUsed
   remove: §7Middle-click to remove
   removeRaw: Remove
   reset: Reset

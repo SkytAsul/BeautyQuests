@@ -36,7 +36,6 @@ public enum Lang implements Locale {
 	QUEST_NOT_STARTED("msg.quest.notStarted"),
 	
 	QUESTS_MAX_LAUNCHED("msg.quests.maxLaunched"), // 0: max quests
-	QUEST_NOSTEPS("msg.quests.nopStep"),
 	QUEST_UPDATED("msg.quests.updated"),
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
@@ -53,7 +52,6 @@ public enum Lang implements Locale {
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),
 	QUEST_ITEM_EAT("msg.questItem.eat"),
 	
-	STAGE_NOMOBS("msg.stageMobs.noMobs"),
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
 	
 	TYPE_CANCEL("msg.typeCancel"),
@@ -92,9 +90,6 @@ public enum Lang implements Locale {
 	XP_EDITED("msg.experience.edited"),
 	SELECT_KILL_NPC("msg.selectNPCToKill"),
 	
-	NPC_REMOVE("msg.npc.remove"),
-	TALK_NPC("msg.npc.talk"),
-	
 	REGION_DOESNT_EXIST("msg.regionDoesntExists"),
 	NPC_DOESNT_EXIST("msg.npcDoesntExist"),
 	NUMBER_NEGATIVE("msg.number.negative"),
@@ -102,7 +97,6 @@ public enum Lang implements Locale {
 	NUMBER_INVALID("msg.number.invalid"),
 	NUMBER_NOT_IN_BOUNDS("msg.number.notInBounds"), // 0: min, 1: max
 	ERROR_OCCURED("msg.errorOccurred"),
-	CANT_COMMAND("msg.commandsDisabled"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
 	INVALID_BLOCK_DATA("msg.invalidBlockData"), // 0: blockdata, 1: material
 	INVALID_BLOCK_TAG("msg.invalidBlockTag"), // 0: tag
@@ -110,22 +104,13 @@ public enum Lang implements Locale {
 	NEED_OBJECTS("msg.bringBackObjects"),
 	ITEM_DROPPED("msg.inventoryFull"),
 	
-	PLAYER_NEVER_CONNECTED("msg.playerNeverConnected"),
-	PLAYER_NOT_ONLINE("msg.playerNotOnline"),
-	PLAYER_DATA_NOT_FOUND("msg.playerDataNotFound"), // 0: player name
-	
 	VERSION_REQUIRED("msg.versionRequired", ErrorPrefix), // 0: version
 	
 	RESTART_SERVER("msg.restartServer"),
 	
 	// * Commands *
 	
-	MUST_PLAYER("msg.command.playerNeeded"),
-	INCORRECT_SYNTAX("msg.command.incorrectSyntax"),
-	PERMISSION_REQUIRED("msg.command.noPermission"),
-	COMMAND_DOESNT_EXIST("msg.command.invalidCommand.quests"),
 	COMMAND_DOESNT_EXIST_NOSLASH("msg.command.invalidCommand.simple"),
-	MUST_HOLD_ITEM("msg.command.needItem"),
 	ITEM_CHANGED("msg.command.itemChanged"),
 	ITEM_REMOVED("msg.command.itemRemoved"),
 	SUCCESFULLY_REMOVED("msg.command.removed"),
@@ -374,7 +359,6 @@ public enum Lang implements Locale {
 	stageText("inv.create.NPCText"),
 	stageNPCSelect("inv.create.NPCSelect"),
 	stageHide("inv.create.hideClues"),
-	stageGPS("inv.create.gps"),
 	editMobs("inv.create.editMobsKill"),
 	mobsKillType("inv.create.mobsKillFromAFar"),
 	editBlocksMine("inv.create.editBlocksMine"),
@@ -846,8 +830,6 @@ public enum Lang implements Locale {
 	Disabled("misc.disabled"),
 	Unknown("misc.unknown"),
 	NotSet("misc.notSet"),
-	Unused("misc.unused"),
-	Used("misc.used"),
 	RemoveMid("misc.remove"),
 	Remove("misc.removeRaw"),
 	Reset("misc.reset"),
