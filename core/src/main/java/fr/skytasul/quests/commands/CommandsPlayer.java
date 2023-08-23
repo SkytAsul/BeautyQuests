@@ -3,6 +3,14 @@ package fr.skytasul.quests.commands;
 import java.util.Optional;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
+import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
+import fr.skytasul.quests.api.commands.revxrsal.exception.InvalidSubcommandException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
@@ -11,20 +19,15 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.rewards.CheckpointReward;
-import revxrsal.commands.annotation.Default;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.command.ExecutableCommand;
-import revxrsal.commands.exception.CommandErrorException;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsPlayer implements OrphanCommand {
 	
 	@Default
 	@CommandPermission ("beautyquests.command.listPlayer")
-	public void menu(BukkitCommandActor actor, ExecutableCommand command, @revxrsal.commands.annotation.Optional String subcommand) {
-		if (subcommand != null) throw new revxrsal.commands.exception.InvalidSubcommandException(command.getPath(), subcommand);
+	public void menu(BukkitCommandActor actor, ExecutableCommand command,
+			@fr.skytasul.quests.api.commands.revxrsal.annotation.Optional String subcommand) {
+		if (subcommand != null)
+			throw new InvalidSubcommandException(command.getPath(), subcommand);
 		PlayerAccount acc = PlayersManager.getPlayerAccount(actor.requirePlayer());
 		if (acc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Player " + actor.getName() + " has got no account. This is a CRITICAL issue.");

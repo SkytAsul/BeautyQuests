@@ -6,10 +6,10 @@ import java.util.function.Function;
 import org.bukkit.DyeColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class PermissionListGUI extends ListGUI<Permission> {
 

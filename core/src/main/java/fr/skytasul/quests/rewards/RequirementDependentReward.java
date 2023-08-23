@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -23,6 +22,7 @@ import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class RequirementDependentReward extends AbstractReward {
 	

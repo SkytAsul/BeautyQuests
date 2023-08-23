@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.XMaterial;
 import me.lokka30.levelledmobs.LevelledMobs;
 
 public class BQLevelledMobs implements LeveledMobFactory<EntityType> {

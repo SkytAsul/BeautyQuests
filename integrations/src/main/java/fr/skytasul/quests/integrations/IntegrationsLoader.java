@@ -2,7 +2,6 @@ package fr.skytasul.quests.integrations;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -12,6 +11,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.IntegrationManager.BQDependency;
+import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.integrations.factions.FactionRequirement;
 import fr.skytasul.quests.integrations.jobs.JobLevelRequirement;
 import fr.skytasul.quests.integrations.maps.BQBlueMap;

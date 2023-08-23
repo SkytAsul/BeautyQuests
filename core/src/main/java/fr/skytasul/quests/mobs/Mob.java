@@ -9,11 +9,11 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class Mob<D> implements Cloneable {
 

@@ -13,7 +13,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -24,6 +23,7 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>> {
 	

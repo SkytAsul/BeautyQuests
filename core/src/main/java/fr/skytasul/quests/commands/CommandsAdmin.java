@@ -18,6 +18,15 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.OutsideEditor;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Flag;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.SecretCommand;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Switch;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.editors.SelectNPC;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
@@ -38,15 +47,6 @@ import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.nms.NMS;
-import revxrsal.commands.annotation.Flag;
-import revxrsal.commands.annotation.Optional;
-import revxrsal.commands.annotation.SecretCommand;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.annotation.Switch;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.exception.CommandErrorException;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsAdmin implements OrphanCommand {
 	

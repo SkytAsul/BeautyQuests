@@ -26,7 +26,7 @@ import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 
-public class StageOptionProgressBar<T extends AbstractStage & HasProgress> extends StageOption<T> {
+public class StageOptionProgressBar<T extends AbstractStage> extends StageOption<T> {
 
 	private final @NotNull Map<Player, ProgressBar> bars = new HashMap<>();
 
@@ -62,7 +62,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	@Override
 	public void stageStart(PlayerAccount acc, StageController stage) {
 		if (acc.isCurrent())
-			createBar(acc.getPlayer(), (T) stage.getStage());
+			createBar(acc.getPlayer(), stage.getStage());
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 
 	@Override
 	public void stageJoin(Player p, StageController stage) {
-		createBar(p, (T) stage.getStage());
+		createBar(p, stage.getStage());
 	}
 
 	@Override
@@ -102,14 +102,14 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		return getProgressConfig().areBossBarsEnabled() && QuestsAPI.getAPI().hasBossBarManager();
 	}
 
-	protected void createBar(@NotNull Player p, T progress) {
+	protected void createBar(@NotNull Player p, AbstractStage stage) {
 		if (areBarsEnabled()) {
 			if (bars.containsKey(p)) { // NOSONAR Map#computeIfAbsent cannot be used here as we should log the issue
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.warning("Trying to create an already existing bossbar for player " + p.getName());
 				return;
 			}
-			bars.put(p, new ProgressBar(p, progress));
+			bars.put(p, new ProgressBar<>(p, (AbstractStage & HasProgress) stage));
 		}
 	}
 
@@ -118,16 +118,16 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			bars.remove(p).remove();
 	}
 
-	class ProgressBar {
+	class ProgressBar<P extends AbstractStage & HasProgress> {
 		private final PlayerAccount acc;
 		private final BQBossBar bar;
-		private final T progress;
+		private final P progress;
 		private final int totalAmount;
 		private final PlaceholderRegistry placeholders;
 
 		private BukkitTask timer;
 
-		public ProgressBar(Player p, T progress) {
+		public ProgressBar(Player p, P progress) {
 			this.progress = progress;
 			this.acc = PlayersManager.getPlayerAccount(p);
 			this.totalAmount = progress.getTotalAmount();

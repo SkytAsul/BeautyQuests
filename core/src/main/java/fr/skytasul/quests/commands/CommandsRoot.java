@@ -1,15 +1,15 @@
 package fr.skytasul.quests.commands;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Command;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Description;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.help.CommandHelp;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import revxrsal.commands.annotation.Command;
-import revxrsal.commands.annotation.Description;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.help.CommandHelp;
 
 @Command ({ "quests", "quest", "bq", "beautyquests", "bquests" })
 @Description ("Main command for quests")

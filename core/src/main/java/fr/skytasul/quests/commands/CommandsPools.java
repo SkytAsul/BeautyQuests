@@ -2,18 +2,18 @@ package fr.skytasul.quests.commands;
 
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Switch;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
-import revxrsal.commands.annotation.Default;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.annotation.Switch;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsPools implements OrphanCommand {
 

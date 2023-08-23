@@ -13,6 +13,18 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Range;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Switch;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.EntitySelector;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
+import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
+import fr.skytasul.quests.api.commands.revxrsal.exception.NoPermissionException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
@@ -35,18 +47,6 @@ import fr.skytasul.quests.structure.BranchesManagerImplementation;
 import fr.skytasul.quests.structure.EndingStageImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
-import revxrsal.commands.annotation.Optional;
-import revxrsal.commands.annotation.Range;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.annotation.Switch;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.BukkitCommandPermission;
-import revxrsal.commands.bukkit.EntitySelector;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.command.ExecutableCommand;
-import revxrsal.commands.exception.CommandErrorException;
-import revxrsal.commands.exception.NoPermissionException;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsPlayerManagement implements OrphanCommand {
 	

@@ -11,6 +11,14 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.commands.OutsideEditor;
+import fr.skytasul.quests.api.commands.revxrsal.autocomplete.SuggestionProvider;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandHandler;
+import fr.skytasul.quests.api.commands.revxrsal.command.CommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
+import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.Orphans;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.pools.QuestPool;
@@ -18,14 +26,6 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.scoreboards.Scoreboard;
-import revxrsal.commands.autocomplete.SuggestionProvider;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.BukkitCommandHandler;
-import revxrsal.commands.command.CommandActor;
-import revxrsal.commands.command.ExecutableCommand;
-import revxrsal.commands.exception.CommandErrorException;
-import revxrsal.commands.orphan.OrphanCommand;
-import revxrsal.commands.orphan.Orphans;
 
 public class CommandsManagerImplementation implements CommandsManager {
 	

@@ -2,24 +2,26 @@ package fr.skytasul.quests.commands;
 
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Range;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
+import fr.skytasul.quests.api.commands.revxrsal.exception.InvalidSubcommandException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.scoreboards.Scoreboard;
-import revxrsal.commands.annotation.Default;
-import revxrsal.commands.annotation.Optional;
-import revxrsal.commands.annotation.Range;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.command.ExecutableCommand;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsScoreboard implements OrphanCommand {
 	
 	@Default
 	@CommandPermission ("beautyquests.command.scoreboard.toggle")
 	public void scoreboardToggle(Player player, ExecutableCommand command, Scoreboard scoreboard, @Optional String subcommand) {
-		if (subcommand != null) throw new revxrsal.commands.exception.InvalidSubcommandException(command.getPath(), subcommand);
+		if (subcommand != null)
+			throw new InvalidSubcommandException(command.getPath(), subcommand);
 		if (scoreboard.isForceHidden()) {
 			scoreboard.show(true);
 			Lang.COMMAND_SCOREBOARD_OWN_SHOWN.send(player);
