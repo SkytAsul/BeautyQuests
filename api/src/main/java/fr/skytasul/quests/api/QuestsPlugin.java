@@ -12,16 +12,21 @@ import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 
 public interface QuestsPlugin extends Plugin {
 
+	/**
+	 * Utility method to get the API object.
+	 *
+	 * @return the api object
+	 */
 	public @NotNull QuestsAPI getAPI();
 
 	public @NotNull CommandsManager getCommand();
-	
+
 	public @NotNull QuestsConfiguration getConfiguration();
-	
+
 	public @NotNull PlayersManager getPlayersManager();
 
 	public @NotNull LoggerExpanded getLoggerExpanded();
-	
+
 	public @NotNull GuiManager getGuiManager();
 
 	public @NotNull EditorManager getEditorManager();
@@ -32,8 +37,13 @@ public interface QuestsPlugin extends Plugin {
 
 	public void notifyLoadingFailure();
 
-	public void noticeSavingFailure();
-
+	public void notifySavingFailure();
+	
+	/**
+	 * Utility method to get the plugin object.
+	 *
+	 * @return the plugin object
+	 */
 	public static @NotNull QuestsPlugin getPlugin() {
 		return QuestsAPIProvider.getAPI().getPlugin();
 	}

@@ -340,7 +340,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("Error when serializing the stage " + i + " for the quest " + getQuest().getId(), ex);
-				QuestsPlugin.getPlugin().noticeSavingFailure();
+				QuestsPlugin.getPlugin().notifySavingFailure();
 			}
 		}
 
@@ -356,7 +356,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			}catch (Exception ex){
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("Error when serializing the ending stage " + i + " for the quest " + getQuest().getId(), ex);
-				QuestsPlugin.getPlugin().noticeSavingFailure();
+				QuestsPlugin.getPlugin().notifySavingFailure();
 			}
 		}
 	}

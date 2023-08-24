@@ -109,7 +109,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("Error when serializing the branch " + id + " for the quest " + quest.getId(), ex);
-				QuestsPlugin.getPlugin().noticeSavingFailure();
+				QuestsPlugin.getPlugin().notifySavingFailure();
 			}
 		});
 	}

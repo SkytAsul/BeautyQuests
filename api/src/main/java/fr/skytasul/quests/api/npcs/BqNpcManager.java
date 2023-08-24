@@ -14,6 +14,12 @@ public interface BqNpcManager {
 
 	boolean isEnabled();
 
+	/**
+	 * Adds a new npc factory to the npc manager.
+	 *
+	 * @param key unique key of the npc factory
+	 * @param internalFactory factory
+	 */
 	void addInternalFactory(@NotNull String key, @NotNull BqInternalNpcFactory internalFactory);
 
 	@NotNull

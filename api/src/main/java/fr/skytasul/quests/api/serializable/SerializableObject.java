@@ -12,14 +12,14 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.Utils;
 
 public abstract class SerializableObject {
-	
+
 	protected final @NotNull SerializableCreator creator;
 
 	protected SerializableObject(@NotNull SerializableRegistry registry) {
 		this.creator = registry.getByClass(getClass());
 		if (creator == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as an object.");
 	}
-	
+
 	protected SerializableObject(@NotNull SerializableCreator creator) {
 		this.creator = creator;
 		if (creator == null) throw new IllegalArgumentException("Creator cannot be null.");
@@ -35,11 +35,11 @@ public abstract class SerializableObject {
 
 	@Override
 	public abstract @NotNull SerializableObject clone();
-	
+
 	public abstract void save(@NotNull ConfigurationSection section);
-	
+
 	public abstract void load(@NotNull ConfigurationSection section);
-	
+
 	public final void serialize(@NotNull ConfigurationSection section) {
 		section.set("id", creator.getID());
 		save(section);
@@ -49,20 +49,20 @@ public abstract class SerializableObject {
 			@NotNull Map<String, Object> map, @NotNull SerializableRegistry<T, C> registry) {
 		return deserialize(Utils.createConfigurationSection(map), registry);
 	}
-	
+
 	public static <T extends SerializableObject, C extends SerializableCreator<T>> @NotNull T deserialize(
 			@NotNull ConfigurationSection section, @NotNull SerializableRegistry<T, C> registry) {
 		SerializableCreator<T> creator = null;
-		
+
 		String id = section.getString("id");
 		if (id != null) creator = registry.getByID(id);
-		
+
 		if (creator == null && section.contains("class")) {
 			String className = section.getString("class");
 			try {
 				creator = registry.getByClass(Class.forName(className));
 			}catch (ClassNotFoundException e) {}
-			
+
 			if (creator == null) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot find object class " + className);
 				return null;
@@ -85,19 +85,19 @@ public abstract class SerializableObject {
 				T object = deserializeFunction.apply((Map<String, Object>) objectMap);
 				if (object == null) {
 					QuestsPlugin.getPlugin().notifyLoadingFailure();
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("The quest object for class "
-							+ String.valueOf(objectMap.get("class")) + " has not been deserialized.");
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("The quest object for id "
+							+ String.valueOf(objectMap.get("id")) + " has not been deserialized.");
 				}else objects.add(object);
 			}catch (Exception e) {
 				QuestsPlugin.getPlugin().notifyLoadingFailure();
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"An exception occured while deserializing a quest object (class " + objectMap.get("class") + ").",
+						"An exception occured while deserializing a quest object (id " + objectMap.get("id") + ").",
 						e);
 			}
 		}
 		return objects;
 	}
-	
+
 	public static @NotNull List<Map<String, Object>> serializeList(@NotNull List<? extends SerializableObject> objects) {
 		return objects.stream().map(object -> {
 			MemoryConfiguration section = new MemoryConfiguration();
@@ -105,5 +105,5 @@ public abstract class SerializableObject {
 			return section.getValues(false);
 		}).collect(Collectors.toList());
 	}
-	
+
 }

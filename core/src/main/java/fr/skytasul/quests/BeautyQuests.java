@@ -724,7 +724,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public void noticeSavingFailure() {
+	public void notifySavingFailure() {
 		savingFailure = true;
 	}
 

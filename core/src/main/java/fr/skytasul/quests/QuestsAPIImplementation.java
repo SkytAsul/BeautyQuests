@@ -119,11 +119,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public boolean hasHologramsManager() {
-		return hologramsManager != null;
-	}
-
-	@Override
 	public @Nullable AbstractHolograms<?> getHologramsManager() {
 		return hologramsManager;
 	}
@@ -137,11 +132,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		hologramsManager = newHologramsManager;
 		QuestsPlugin.getPlugin().getLoggerExpanded()
 				.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
-	}
-
-	@Override
-	public boolean hasBossBarManager() {
-		return bossBarManager != null;
 	}
 
 	@Override
