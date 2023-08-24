@@ -21,7 +21,7 @@ public class Command implements HasPlaceholders {
 	public final boolean console;
 	public final boolean parse;
 	public final int delay;
-	
+
 	private @Nullable PlaceholderRegistry placeholders;
 
 	public Command(String label, boolean console, boolean parse, int delay) {
@@ -30,10 +30,10 @@ public class Command implements HasPlaceholders {
 		this.parse = parse;
 		this.delay = delay;
 	}
-	
+
 	public void execute(Player o){
 		Runnable run = () -> {
-			String formattedCommand = MessageUtils.finalFormat(label, null, PlaceholdersContext.of(o, parse));
+			String formattedCommand = MessageUtils.finalFormat(label, null, PlaceholdersContext.of(o, parse, null));
 
 			CommandSender sender = console ? Bukkit.getConsoleSender() : o;
 			Bukkit.dispatchCommand(sender, formattedCommand);
@@ -43,7 +43,7 @@ public class Command implements HasPlaceholders {
 			run.run();
 		}else Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), run, delay);
 	}
-	
+
 	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
@@ -58,17 +58,17 @@ public class Command implements HasPlaceholders {
 
 	public Map<String, Object> serialize(){
 		Map<String, Object> map = new HashMap<>();
-		
+
 		map.put("label", label);
 		map.put("console", console);
 		if (parse) map.put("parse", parse);
 		if (delay > 0) map.put("delay", delay);
-		
+
 		return map;
 	}
-	
+
 	public static Command deserialize(Map<String, Object> map){
 		return new Command((String) map.get("label"), (boolean) map.get("console"), (boolean) map.getOrDefault("parse", Boolean.FALSE), (int) map.getOrDefault("delay", 0));
 	}
-	
+
 }

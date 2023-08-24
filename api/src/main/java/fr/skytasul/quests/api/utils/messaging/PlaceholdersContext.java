@@ -9,14 +9,17 @@ import fr.skytasul.quests.api.players.PlayersManager;
 
 public interface PlaceholdersContext {
 
-	static final @NotNull PlaceholdersContext DEFAULT_CONTEXT = of(null, true);
+	static final @NotNull PlaceholdersContext DEFAULT_CONTEXT = of(null, true, null);
 
 	@Nullable
 	CommandSender getActor();
 
 	boolean replacePluginPlaceholders();
 
-	static PlaceholdersContext of(@Nullable CommandSender actor, boolean replacePluginPlaceholders) {
+	@Nullable MessageType getMessageType();
+
+	static PlaceholdersContext of(@Nullable CommandSender actor, boolean replacePluginPlaceholders,
+			@Nullable MessageType messageType) {
 		return new PlaceholdersContext() {
 
 			@Override
@@ -28,10 +31,16 @@ public interface PlaceholdersContext {
 			public @Nullable CommandSender getActor() {
 				return actor;
 			}
+
+			@Override
+			public @Nullable MessageType getMessageType() {
+				return messageType;
+			}
 		};
 	}
 
-	static PlayerPlaceholdersContext of(@Nullable Player actor, boolean replacePluginPlaceholders) {
+	static PlayerPlaceholdersContext of(@Nullable Player actor, boolean replacePluginPlaceholders,
+			@Nullable MessageType messageType) {
 		return new PlayerPlaceholdersContext() {
 
 			@Override
@@ -42,6 +51,11 @@ public interface PlaceholdersContext {
 			@Override
 			public @NotNull Player getActor() {
 				return actor;
+			}
+
+			@Override
+			public @Nullable MessageType getMessageType() {
+				return messageType;
 			}
 		};
 	}

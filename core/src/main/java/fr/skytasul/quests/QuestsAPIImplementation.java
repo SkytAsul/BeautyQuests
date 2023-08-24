@@ -1,21 +1,12 @@
 package fr.skytasul.quests;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.AbstractHolograms;
-import fr.skytasul.quests.api.BossBarManager;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsHandler;
-import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.*;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
@@ -52,7 +43,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
 
-	private final Set<MessageProcessor> processors = new TreeSet<>();
+	private final Set<MessageProcessorInfo> processors = new TreeSet<>();
 
 	private QuestsAPIImplementation() {}
 
@@ -63,7 +54,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	/**
 	 * Register new mob factory
-	 * 
+	 *
 	 * @param factory MobFactory instance
 	 */
 	@Override
@@ -204,13 +195,20 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @NotNull Set<MessageProcessor> getMessageProcessors() {
-		return processors;
+	public @NotNull Collection<MessageProcessor> getMessageProcessors() {
+		return processors.stream().map(x -> x.processor).collect(Collectors.toList());
 	}
 
 	@Override
-	public void registerMessageProcessor(@NotNull MessageProcessor processor) {
-		processors.add(processor);
+	public void registerMessageProcessor(@NotNull String key, int priotity, @NotNull MessageProcessor processor) {
+		Optional<MessageProcessorInfo> existing =
+				processors.stream().filter(x -> x.key.equals(key) && x.priority == priotity).findAny();
+		if (existing.isPresent()) {
+			processors.remove(existing.get());
+			BeautyQuests.getInstance().getLogger().warning("Replacing message processor " + key);
+		}
+
+		processors.add(new MessageProcessorInfo(key, priotity, processor));
 	}
 
 	@Override
@@ -226,6 +224,23 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public @NotNull QuestsPlugin getPlugin() {
 		return BeautyQuests.getInstance();
+	}
+
+	private class MessageProcessorInfo implements Comparable<MessageProcessorInfo> {
+		private String key;
+		private int priority;
+		private MessageProcessor processor;
+
+		public MessageProcessorInfo(String key, int priority, MessageProcessor processor) {
+			this.key = key;
+			this.priority = priority;
+			this.processor = processor;
+		}
+
+		@Override
+		public int compareTo(MessageProcessorInfo o) {
+			return Integer.compare(priority, o.priority);
+		}
 	}
 
 }

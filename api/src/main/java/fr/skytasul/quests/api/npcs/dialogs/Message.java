@@ -97,15 +97,15 @@ public class Message implements Cloneable {
 		switch (sender) {
 			case PLAYER:
 				sent = MessageUtils.finalFormat(Lang.SelfText.toString(), registry.withoutIndexes("npc_name_message"),
-						PlaceholdersContext.of(p, true));
+						PlaceholdersContext.of(p, true, null));
 				break;
 			case NPC:
 				sent = MessageUtils.finalFormat(Lang.NpcText.toString(), registry.withoutIndexes("player_name"),
-						PlaceholdersContext.of(p, true));
+						PlaceholdersContext.of(p, true, null));
 				break;
 			case NOSENDER:
 				sent = MessageUtils.finalFormat(text, registry.withoutIndexes("npc_name_message", "player_name"),
-						PlaceholdersContext.of(p, true));
+						PlaceholdersContext.of(p, true, null));
 				break;
 		}
 		return sent;

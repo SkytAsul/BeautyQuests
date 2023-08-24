@@ -68,6 +68,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<version>3.2.1</version>
+				<configuration>
+					<skipSource>false</skipSource>
+				</configuration>
 				<executions>
 					<execution>
 						<id>attach-sources</id>

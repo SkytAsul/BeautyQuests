@@ -23,15 +23,7 @@ public class MessageUtils {
 
 	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
 			@Nullable PlaceholderRegistry placeholders) {
-		sendMessage(sender, message, type, placeholders, PlaceholdersContext.of(sender, false));
-	}
-
-	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
-			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
-		if (message == null || message.isEmpty())
-			return;
-
-		sendRawMessage(sender, type.process(message), placeholders, context);
+		sendRawMessage(sender, message, placeholders, PlaceholdersContext.of(sender, false, type));
 	}
 
 	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,

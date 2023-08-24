@@ -27,7 +27,7 @@ public class MessageReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player p) {
-		MessageUtils.sendMessage(p, text, MessageType.OFF);
+		MessageUtils.sendMessage(p, text, MessageType.DefaultMessageType.OFF);
 		return Collections.emptyList();
 	}
 

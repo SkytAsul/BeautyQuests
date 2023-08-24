@@ -1,15 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -43,7 +35,7 @@ import fr.skytasul.quests.mobs.Mob;
 public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable {
 
 	private boolean shoot = false;
-	
+
 	public StageMobs(StageController controller, List<CountableObject<Mob<?>>> mobs) {
 		super(controller, mobs);
 	}
@@ -55,7 +47,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	public void setShoot(boolean shoot) {
 		this.shoot = shoot;
 	}
-	
+
 	@EventHandler
 	public void onMobKilled(BQMobDeathEvent e){
 		if (shoot && e.getBukkitEntity() != null && e.getBukkitEntity().getLastDamageCause() != null
@@ -67,7 +59,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		if (hasStarted(p))
 			event(p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
 	}
-	
+
 	@Override
 	protected boolean objectApplies(Mob<?> object, Object other) {
 		KilledMob otherMob = (KilledMob) other;
@@ -92,14 +84,13 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_NONE.toString();
 	}
-	
+
 	@Override
 	public void started(PlayerAccount acc) {
 		super.started(acc);
 		if (acc.isCurrent() && sendStartMessage()) {
-			MessageUtils.sendMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), MessageType.PREFIXED,
-					getPlaceholdersRegistry(),
-					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE));
+			MessageUtils.sendRawMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
+					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE, MessageType.DefaultMessageType.PREFIXED));
 			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), this);
 		}
 	}
@@ -108,7 +99,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	protected Mob<?> cloneObject(Mob<?> object) {
 		return object.clone();
 	}
-	
+
 	@Override
 	protected String getName(Mob<?> object) {
 		return object.getName();
@@ -129,12 +120,12 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		super.serialize(section);
 		if (shoot) section.set("shoot", true);
 	}
-	
+
 	@Override
 	public boolean canBeFetchedAsynchronously() {
 		return false;
 	}
-	
+
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		if (!fetcher.isTargeting(LocatedType.ENTITY)) return Spliterators.emptySpliterator();
@@ -152,7 +143,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 				.<Located>map(entry -> Located.LocatedEntity.create(entry.getKey()))
 				.spliterator();
 	}
-	
+
 	public static StageMobs deserialize(ConfigurationSection section, StageController controller) {
 		StageMobs stage = new StageMobs(controller, new ArrayList<>());
 		stage.deserialize(section);
@@ -165,7 +156,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 
 		private List<MutableCountableObject<Mob<?>>> mobs;
 		private boolean shoot = false;
-		
+
 		public Creator(@NotNull StageCreationContext<StageMobs> context) {
 			super(context);
 		}
@@ -173,7 +164,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
 			line.setItem(7, ItemUtils.item(XMaterial.STONE_SWORD, Lang.editMobs.toString()), event -> {
 				new MobsListGUI(mobs, newMobs -> {
 					setMobs(newMobs);
@@ -182,20 +173,20 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 			});
 			line.setItem(6, ItemUtils.itemSwitch(Lang.mobsKillType.toString(), shoot), event -> setShoot(!shoot));
 		}
-		
+
 		public void setMobs(List<MutableCountableObject<Mob<?>>> mobs) {
 			this.mobs = mobs;
 			getLine().refreshItem(7,
 					item -> ItemUtils.loreOptionValue(item, Lang.AmountMobs.quickFormat("mobs_amount", mobs.size())));
 		}
-		
+
 		public void setShoot(boolean shoot) {
 			if (this.shoot != shoot) {
 				this.shoot = shoot;
 				getLine().refreshItem(6, item -> ItemUtils.setSwitch(item, shoot));
 			}
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);

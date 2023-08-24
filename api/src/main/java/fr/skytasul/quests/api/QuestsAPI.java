@@ -2,7 +2,6 @@ package fr.skytasul.quests.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,9 +94,19 @@ public interface QuestsAPI {
 	void propagateQuestsHandlers(@NotNull Consumer<@NotNull QuestsHandler> consumer);
 
 	@NotNull
-	Set<MessageProcessor> getMessageProcessors();
+	Collection<MessageProcessor> getMessageProcessors();
 
-	void registerMessageProcessor(@NotNull MessageProcessor processor);
+	/**
+	 * Registers a custom message processor into the pipeline.<br>
+	 * If a processor with the same key and priority already exists, it will get replaced by this
+	 * one.<br>
+	 * Processors with the lowest priority are run first.
+	 *
+	 * @param key unique key of this message processor
+	 * @param priority priority of this message processor
+	 * @param processor processor
+	 */
+	void registerMessageProcessor(@NotNull String key, int priority, @NotNull MessageProcessor processor);
 
 	public static @NotNull QuestsAPI getAPI() {
 		return QuestsAPIProvider.getAPI();

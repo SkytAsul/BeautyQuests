@@ -3,19 +3,20 @@ package fr.skytasul.quests.api.utils.progress;
 import java.util.Map;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.utils.CountableObject;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.Placeholder;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
-import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration;
-import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 
 public final class ProgressPlaceholders {
 
@@ -82,7 +83,7 @@ public final class ProgressPlaceholders {
 					String operation = matcher.group(2);
 					if (operation == null)
 						return formatObject(item, context);
-					
+
 					return DESCRIPTION_REGISTRY.resolve(operation, new ProgressObjectPlaceholderContext(context.getActor(),
 							context.replacePluginPlaceholders(), item));
 				}));
@@ -155,6 +156,11 @@ public final class ProgressPlaceholders {
 
 		public @NotNull HasProgress getProgress() {
 			return progress;
+		}
+
+		@Override
+		public @Nullable MessageType getMessageType() {
+			return null;
 		}
 
 	}

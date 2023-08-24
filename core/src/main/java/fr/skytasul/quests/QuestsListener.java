@@ -124,7 +124,7 @@ public class QuestsListener implements Listener{
 				requirements.get(0).testRequirements(p, acc, true);
 			}else {
 				npc.getPools().iterator().next().give(p)
-						.thenAccept(result -> MessageUtils.sendMessage(p, result, MessageType.PREFIXED));
+						.thenAccept(result -> MessageUtils.sendMessage(p, result, MessageType.DefaultMessageType.PREFIXED));
 			}
 			e.setCancelled(false);
 		}

@@ -21,10 +21,10 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 public class PlaceholderRequirement extends AbstractRequirement {
 
 	private String rawPlaceholder;
-	
+
 	private PlaceholderExpansion hook;
 	private String params;
-	
+
 	private String value;
 	private ComparisonMethod comparison;
 	private boolean parseValue = false;
@@ -32,7 +32,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	public PlaceholderRequirement(){
 		this(null, null, null, null, ComparisonMethod.EQUALS);
 	}
-	
+
 	public PlaceholderRequirement(String customDescription, String customReason, String placeholder, String value,
 			ComparisonMethod comparison) {
 		super(customDescription, customReason);
@@ -70,10 +70,10 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		if (comparison == ComparisonMethod.DIFFERENT) return !value.equals(request);
 		String value = this.value;
 		if (parseValue)
-			value = MessageUtils.finalFormat(value, null, PlaceholdersContext.of(p, true));
+			value = MessageUtils.finalFormat(value, null, PlaceholdersContext.of(p, true, null));
 		return value.equals(request);
 	}
-	
+
 	@Override
 	public boolean isValid() {
 		return hook != null;
@@ -83,7 +83,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	protected String getInvalidReason() {
 		return "unknown placeholder " + rawPlaceholder;
 	}
-	
+
 	public void setPlaceholder(String placeholder){
 		this.rawPlaceholder = placeholder;
 		int index = placeholder.indexOf("_");
@@ -104,19 +104,19 @@ public class PlaceholderRequirement extends AbstractRequirement {
 			}
 		}
 	}
-	
+
 	public void setValue(String value){
 		this.value = value;
 	}
-	
+
 	public String getPlaceholder(){
 		return rawPlaceholder;
 	}
-	
+
 	public String getValue(){
 		return value;
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
@@ -168,10 +168,10 @@ public class PlaceholderRequirement extends AbstractRequirement {
 			}).start();
 		}).useStrippedMessage().start();
 	}
-	
+
 	@Override
 	public AbstractRequirement clone() {
 		return new PlaceholderRequirement(getCustomDescription(), getCustomReason(), rawPlaceholder, value, comparison);
 	}
-	
+
 }

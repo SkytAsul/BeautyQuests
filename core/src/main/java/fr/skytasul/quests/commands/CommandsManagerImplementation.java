@@ -28,17 +28,17 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 
 public class CommandsManagerImplementation implements CommandsManager {
-	
+
 	private static String[] COMMAND_ALIASES = { "quests", "quest", "bq", "beautyquests", "bquests" };
-	
+
 	private BukkitCommandHandler handler;
 	private boolean locked = false;
-	
+
 	public CommandsManagerImplementation() {
 		handler = BukkitCommandHandler.create(BeautyQuests.getInstance());
-		handler.setMessagePrefix(QuestsPlugin.getPlugin().getPrefix());
+		handler.setMessagePrefix(BeautyQuests.getInstance().getPrefix());
 		handler.failOnTooManyArguments();
-		
+
 		handler.registerValueResolver(Quest.class, context -> {
 			int id = context.popInt();
 			Quest quest = QuestsAPI.getAPI().getQuestsManager().getQuest(id);
@@ -51,7 +51,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 						.stream()
 						.map(quest -> Integer.toString(quest.getId()))
 						.collect(Collectors.toList())));
-		
+
 		handler.registerValueResolver(QuestPool.class, context -> {
 			int id = context.popInt();
 			QuestPool pool = QuestsAPI.getAPI().getPoolsManager().getPool(id);
@@ -64,7 +64,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 						.stream()
 						.map(pool -> Integer.toString(pool.getId()))
 						.collect(Collectors.toList())));
-		
+
 		handler.registerValueResolver(BqNpc.class, context -> {
 			String id = context.pop();
 			BqNpc npc = QuestsPlugin.getPlugin().getNpcManager().getById(id);
@@ -74,7 +74,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 		});
 		handler.getAutoCompleter().registerParameterSuggestions(BqNpc.class,
 				SuggestionProvider.of(() -> BeautyQuests.getInstance().getNpcManager().getAvailableIds()));
-		
+
 		handler.registerCondition((@NotNull CommandActor actor, @NotNull ExecutableCommand command, @NotNull @Unmodifiable List<String> arguments) -> {
 			if (command.hasAnnotation(OutsideEditor.class)) {
 				BukkitCommandActor bukkitActor = (BukkitCommandActor) actor;
@@ -84,7 +84,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 					throw new CommandErrorException(Lang.ALREADY_EDITOR.toString());
 			}
 		});
-		
+
 		handler.setHelpWriter((command, actor) -> {
 			if (!command.hasPermission(actor)) return null;
 			for (Lang lang : Lang.values()) {
@@ -96,33 +96,33 @@ public class CommandsManagerImplementation implements CommandsManager {
 			}
 			return null;
 		});
-		
+
 		handler.registerResponseHandler(String.class, (msg, actor, command) -> {
-			MessageUtils.sendMessage(((BukkitCommandActor) actor).getSender(), msg, MessageType.PREFIXED);
+			MessageUtils.sendMessage(((BukkitCommandActor) actor).getSender(), msg, MessageType.DefaultMessageType.PREFIXED);
 		});
 
 		handler.registerContextResolver(Scoreboard.class, context -> {
 			return BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(context.getResolvedArgument(Player.class));
 		});
-		
+
 		handler.registerCondition((actor, command, arguments) -> {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(actor.getName() + " executed command: " + command.getPath().toRealString() + " " + String.join(" ", arguments));
 		});
 	}
-	
+
 	@Override
 	public BukkitCommandHandler getHandler() {
 		return handler;
 	}
-	
+
 	public void initializeCommands() {
 		handler.register(new CommandsRoot());
-		
+
 		registerCommands("", new CommandsAdmin(), new CommandsPlayer(), new CommandsPlayerManagement());
 		registerCommands("scoreboard", new CommandsScoreboard());
 		registerCommands("pools", new CommandsPools());
 	}
-	
+
 	@Override
 	public void registerCommands(String subpath, OrphanCommand... commands) {
 		Orphans path;
@@ -134,7 +134,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 		handler.register(Arrays.stream(commands).map(path::handler).toArray());
 		// if (locked) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Registered commands after final locking.");
 	}
-	
+
 	public void lockCommands() {
 		if (locked) return;
 		locked = true;
@@ -143,9 +143,9 @@ public class CommandsManagerImplementation implements CommandsManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Brigadier registered!");
 		});
 	}
-	
+
 	public void unload() {
 		handler.unregisterAllCommands();
 	}
-	
+
 }

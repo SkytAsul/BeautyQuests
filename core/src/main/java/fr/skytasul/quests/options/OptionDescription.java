@@ -15,10 +15,10 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 
 public class OptionDescription extends QuestOptionString implements QuestDescriptionProvider {
-	
+
 	private Cache<QuestDescriptionContext, List<String>> cachedDescription =
 			CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-	
+
 	@Override
 	public void setValue(String value) {
 		super.setValue(value);
@@ -26,44 +26,44 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 		if (cachedDescription != null) // not in constructor
 			cachedDescription.invalidateAll();
 	}
-	
+
 	@Override
 	public void sendIndication(Player p) {
 		Lang.QUEST_DESCRIPTION.send(p);
 	}
-	
+
 	@Override
 	public XMaterial getItemMaterial() {
 		return XMaterial.OAK_SIGN;
 	}
-	
+
 	@Override
 	public String getItemName() {
 		return Lang.customDescription.toString();
 	}
-	
+
 	@Override
 	public String getItemDescription() {
 		return Lang.customDescriptionLore.toString();
 	}
-	
+
 	@Override
 	public boolean isMultiline() {
 		return true;
 	}
-	
+
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		List<String> description = cachedDescription.getIfPresent(context);
 		if (description == null) {
 			description = Arrays
 					.asList("§7" + MessageUtils.finalFormat(getValue(), null,
-							PlaceholdersContext.of(context.getPlayerAccount().getPlayer(), true)));
+							PlaceholdersContext.of(context.getPlayerAccount().getPlayer(), true, null)));
 			cachedDescription.put(context, description);
 		}
 		return description;
 	}
-	
+
 	@Override
 	public String getDescriptionId() {
 		return "description";
@@ -73,5 +73,5 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	public double getDescriptionPriority() {
 		return 0;
 	}
-	
+
 }

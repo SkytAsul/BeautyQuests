@@ -30,8 +30,6 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull IntegrationManager getIntegrationManager();
 
-	public @NotNull String getPrefix(); // TODO maybe not necessary
-
 	public void notifyLoadingFailure();
 
 	public void noticeSavingFailure();

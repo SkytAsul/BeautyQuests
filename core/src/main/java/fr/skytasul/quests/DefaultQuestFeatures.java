@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.Repairable;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -27,6 +26,7 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
@@ -306,9 +306,22 @@ public final class DefaultQuestFeatures {
 		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
 				.registerContextual("player", PlaceholdersContext.class, context -> context.getActor().getName())
 				.registerContextual("PLAYER", PlaceholdersContext.class, context -> context.getActor().getName())
-				.register("prefix", () -> QuestsPlugin.getPlugin().getPrefix());
+				.register("prefix", () -> BeautyQuests.getInstance().getPrefix());
 
-		QuestsAPI.getAPI().registerMessageProcessor(new MessageProcessor() {
+		QuestsAPI.getAPI().registerMessageProcessor("default_message_type", 1, new MessageProcessor() {
+			@Override
+			public String processString(String string, PlaceholdersContext context) {
+				if (context.getMessageType() == MessageType.DefaultMessageType.PREFIXED)
+					return BeautyQuests.getInstance().getPrefix() + string;
+				if (context.getMessageType() == MessageType.DefaultMessageType.UNPREFIXED)
+					return "§6" + string;
+				if (context.getMessageType() == MessageType.DefaultMessageType.OFF)
+					return Lang.OffText.quickFormat("message", string);
+				return string;
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor("default_placeholders", 2, new MessageProcessor() {
 			@Override
 			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
 				if (context.replacePluginPlaceholders())
@@ -316,22 +329,12 @@ public final class DefaultQuestFeatures {
 				else
 					return placeholders;
 			}
-
-			@Override
-			public int getPriority() {
-				return 1;
-			}
 		});
 
-		QuestsAPI.getAPI().registerMessageProcessor(new MessageProcessor() {
+		QuestsAPI.getAPI().registerMessageProcessor("legacy_colors", 10, new MessageProcessor() {
 			@Override
 			public String processString(String string, PlaceholdersContext context) {
 				return ChatColor.translateAlternateColorCodes('&', string);
-			}
-
-			@Override
-			public int getPriority() {
-				return 10;
 			}
 		});
 	}

@@ -177,7 +177,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 
 		private void launchRegionEditor(Player p, boolean first) {
 			MessageUtils.sendMessage(p, Lang.REGION_NAME.toString() + (first ? "" : "\n" + Lang.TYPE_CANCEL.toString()),
-					MessageType.PREFIXED);
+					MessageType.DefaultMessageType.PREFIXED);
 			new TextEditor<String>(p, () -> {
 				if (first)
 					context.remove();

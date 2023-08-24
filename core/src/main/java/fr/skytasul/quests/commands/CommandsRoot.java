@@ -19,7 +19,7 @@ public class CommandsRoot {
 	@Subcommand ("help")
 	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries) {
 		Lang.COMMAND_HELP.send(actor.getSender());
-		helpEntries.forEach(help -> MessageUtils.sendMessage(actor.getSender(), help, MessageType.UNPREFIXED));
+		helpEntries.forEach(help -> MessageUtils.sendMessage(actor.getSender(), help, MessageType.DefaultMessageType.UNPREFIXED));
 	}
 	
 	@Subcommand ("version")

@@ -185,7 +185,7 @@ public class CommandsAdmin implements OrphanCommand {
 		if (NMS.isValid()) {
 			ListBook.openQuestBook(player);
 		} else
-			MessageUtils.sendMessage(player, "Version not supported", MessageType.PREFIXED);
+			MessageUtils.sendMessage(player, "Version not supported", MessageType.DefaultMessageType.PREFIXED);
 	}
 	
 	@Subcommand ("downloadTranslations")

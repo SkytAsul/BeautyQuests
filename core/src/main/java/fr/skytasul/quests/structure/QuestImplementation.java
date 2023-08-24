@@ -5,13 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
@@ -25,11 +19,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.PlayerQuestResetEvent;
-import fr.skytasul.quests.api.events.QuestFinishEvent;
-import fr.skytasul.quests.api.events.QuestLaunchEvent;
-import fr.skytasul.quests.api.events.QuestPreLaunchEvent;
-import fr.skytasul.quests.api.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.events.*;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -46,70 +36,45 @@ import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
-import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import fr.skytasul.quests.api.utils.messaging.*;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.options.OptionBypassLimit;
-import fr.skytasul.quests.options.OptionCancelRewards;
-import fr.skytasul.quests.options.OptionCancellable;
-import fr.skytasul.quests.options.OptionConfirmMessage;
-import fr.skytasul.quests.options.OptionDescription;
-import fr.skytasul.quests.options.OptionEndMessage;
-import fr.skytasul.quests.options.OptionEndRewards;
-import fr.skytasul.quests.options.OptionEndSound;
-import fr.skytasul.quests.options.OptionFirework;
-import fr.skytasul.quests.options.OptionHideNoRequirements;
-import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.options.OptionQuestItem;
-import fr.skytasul.quests.options.OptionQuestPool;
-import fr.skytasul.quests.options.OptionRepeatable;
-import fr.skytasul.quests.options.OptionRequirements;
-import fr.skytasul.quests.options.OptionScoreboardEnabled;
-import fr.skytasul.quests.options.OptionStartDialog;
-import fr.skytasul.quests.options.OptionStartMessage;
-import fr.skytasul.quests.options.OptionStartRewards;
-import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.options.OptionTimer;
-import fr.skytasul.quests.options.OptionVisibility;
+import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.rewards.MessageReward;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class QuestImplementation implements Quest, QuestDescriptionProvider {
-	
+
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
 	private final int id;
 	private final File file;
 	private BranchesManagerImplementation manager;
-	
+
 	private List<QuestOption<?>> options = new ArrayList<>();
 	private List<QuestDescriptionProvider> descriptions = new ArrayList<>();
-	
+
 	private boolean removed = false;
 	public List<Player> inAsyncStart = new ArrayList<>();
-	
+
 	private PlaceholderRegistry placeholders;
 
 	public QuestImplementation(int id) {
 		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
 	}
-	
+
 	public QuestImplementation(int id, @NotNull File file) {
 		this.id = id;
 		this.file = file;
 		this.manager = new BranchesManagerImplementation(this);
 		this.descriptions.add(this);
 	}
-	
+
 	public void load() {
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questLoaded(this));
 	}
-	
+
 	@Override
 	public boolean isValid() {
 		return !removed;
@@ -119,13 +84,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public @NotNull List<QuestDescriptionProvider> getDescriptions() {
 		return descriptions;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterator<QuestOption> iterator() {
 		return (Iterator) options.iterator();
 	}
-	
+
 	@Override
 	public @NotNull <T extends QuestOption<?>> T getOption(@NotNull Class<T> clazz) {
 		for (QuestOption<?> option : options) {
@@ -133,7 +98,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		}
 		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
 	}
-	
+
 	@Override
 	public boolean hasOption(@NotNull Class<? extends QuestOption<?>> clazz) {
 		for (QuestOption<?> option : options) {
@@ -141,7 +106,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void addOption(@NotNull QuestOption<?> option) {
 		if (!option.hasCustomValue()) return;
@@ -154,7 +119,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			}
 		});
 	}
-	
+
 	@Override
 	public void removeOption(@NotNull Class<? extends QuestOption<?>> clazz) {
 		for (Iterator<QuestOption<?>> iterator = options.iterator(); iterator.hasNext();) {
@@ -166,20 +131,20 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			}
 		}
 	}
-	
+
 	public boolean isRemoved(){
 		return removed;
 	}
-	
+
 	@Override
 	public int getId() {
 		return id;
 	}
-	
+
 	public File getFile(){
 		return file;
 	}
-	
+
 	public String getNameAndId() {
 		return getName() + " (#" + id + ")";
 	}
@@ -188,47 +153,47 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public @Nullable String getName() {
 		return getOptionValueOrDef(OptionName.class);
 	}
-	
+
 	@Override
 	public @Nullable String getDescription() {
 		return getOptionValueOrDef(OptionDescription.class);
 	}
-	
+
 	@Override
 	public @NotNull ItemStack getQuestItem() {
 		return getOptionValueOrDef(OptionQuestItem.class);
 	}
-	
+
 	@Override
 	public boolean isScoreboardEnabled() {
 		return getOptionValueOrDef(OptionScoreboardEnabled.class);
 	}
-	
+
 	@Override
 	public boolean isCancellable() {
 		return getOptionValueOrDef(OptionCancellable.class);
 	}
-	
+
 	@Override
 	public boolean isRepeatable() {
 		return getOptionValueOrDef(OptionRepeatable.class);
 	}
-	
+
 	@Override
 	public boolean isHidden(QuestVisibilityLocation location) {
 		return !getOptionValueOrDef(OptionVisibility.class).contains(location);
 	}
-	
+
 	@Override
 	public boolean isHiddenWhenRequirementsNotMet() {
 		return getOptionValueOrDef(OptionHideNoRequirements.class);
 	}
-	
+
 	@Override
 	public boolean canBypassLimit() {
 		return getOptionValueOrDef(OptionBypassLimit.class);
 	}
-	
+
 	@Override
 	public @Nullable BqNpc getStarterNpc() {
 		return getOptionValueOrDef(OptionStarterNPC.class);
@@ -246,7 +211,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public @NotNull BranchesManagerImplementation getBranchesManager() {
 		return manager;
 	}
-	
+
 	public @NotNull String getTimeLeft(@NotNull PlayerAccount acc) {
 		return Utils.millisToHumanString(acc.getQuestDatas(this).getTimer() - System.currentTimeMillis());
 	}
@@ -264,7 +229,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public boolean hasFinished(@NotNull PlayerAccount acc) {
 		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
 	}
-	
+
 	@Override
 	public boolean cancelPlayer(@NotNull PlayerAccount acc) {
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(this);
@@ -280,7 +245,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		manager.remove(acc);
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questReset(acc, this));
 		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
-		
+
 		if (acc.isCurrent()) {
 			try {
 				getOptionValueOrDef(OptionCancelRewards.class).giveRewards(acc.getPlayer());
@@ -289,7 +254,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			}
 		}
 	}
-	
+
 	@Override
 	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc) {
 		boolean hadDatas = false;
@@ -309,7 +274,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 		return future == null ? CompletableFuture.completedFuture(hadDatas) : future.thenApply(__ -> true);
 	}
-	
+
 	@Override
 	public boolean canStart(@NotNull Player p, boolean sendMessage) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -322,7 +287,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!testRequirements(p, acc, sendMessage)) return false;
 		return true;
 	}
-	
+
 	public boolean testRequirements(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (!testQuestLimit(p, acc, sendMessage)) return false;
@@ -331,7 +296,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 						|| getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
 		return getOptionValueOrDef(OptionRequirements.class).testPlayer(p, sendMessage);
 	}
-	
+
 	public boolean testQuestLimit(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
 		if (Boolean.TRUE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
 			return true;
@@ -368,24 +333,24 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		}
 		return true;
 	}
-	
+
 	public boolean isInDialog(@NotNull Player p) {
 		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().isPlayerInDialog(p);
 	}
-	
+
 	public void clickNPC(@NotNull Player p) {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().onClick(p);
 		} else
 			attemptStart(p);
 	}
-	
+
 	public void leave(@NotNull Player p) {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().removePlayer(p);
 		}
 	}
-	
+
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		if (!acc.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
@@ -407,7 +372,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), context.getSource()));
 	}
-	
+
 	@Override
 	public @NotNull String getDescriptionId() {
 		return "advancement";
@@ -417,7 +382,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public double getDescriptionPriority() {
 		return 15;
 	}
-	
+
 	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
@@ -451,12 +416,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return CompletableFuture.completedFuture(true);
 		}
 	}
-	
+
 	@Override
 	public void start(@NotNull Player p) {
 		start(p, false);
 	}
-	
+
 	@Override
 	public void start(@NotNull Player p, boolean silently) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -472,9 +437,9 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
 			if (!"none".equals(startMsg))
-				MessageUtils.sendRawMessage(p, startMsg, getPlaceholdersRegistry(), PlaceholdersContext.of(p, true));
+				MessageUtils.sendRawMessage(p, startMsg, getPlaceholdersRegistry(), PlaceholdersContext.of(p, true, null));
 		}
-		
+
 		Runnable run = () -> {
 			List<String> msg = Collections.emptyList();
 			try {
@@ -487,7 +452,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
 						MessageUtils.itemsToFormattedString(msg.toArray(new String[0])));
 			inAsyncStart.remove(p);
-			
+
 			QuestUtils.runOrSync(() -> {
 				manager.startPlayer(acc);
 				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questStart(acc, this));
@@ -499,13 +464,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			QuestUtils.runAsync(run);
 		}else run.run();
 	}
-	
+
 	@Override
 	public void finish(@NotNull Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		AdminMode.broadcast(p.getName() + " is completing the quest " + id);
 		PlayerQuestDatas questDatas = acc.getQuestDatas(this);
-		
+
 		Runnable run = () -> {
 			try {
 				List<String> msg = getOptionValueOrDef(OptionEndRewards.class).giveRewards(p);
@@ -514,16 +479,16 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 					String endMsg = getOption(OptionEndMessage.class).getValue();
 					if (!"none".equals(endMsg))
 						MessageUtils.sendRawMessage(p, endMsg, PlaceholderRegistry.of("rewards", obtained).with(this),
-								PlaceholdersContext.of(p, true));
+								PlaceholdersContext.of(p, true, null));
 				} else
 					MessageUtils.sendMessage(p, Lang.FINISHED_BASE.format(this)
 							+ (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.quickFormat("rewards", obtained)),
-							MessageType.PREFIXED);
+							MessageType.DefaultMessageType.PREFIXED);
 			}catch (Exception ex) {
 				DefaultErrors.sendGeneric(p, "reward message");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving quest end rewards.", ex);
 			}
-			
+
 			QuestUtils.runOrSync(() -> {
 				manager.remove(acc);
 				questDatas.setBranch(-1);
@@ -538,12 +503,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				}
 				QuestUtils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class));
 				QuestUtils.playPluginSound(p, getOptionValueOrDef(OptionEndSound.class), 1);
-				
+
 				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questFinish(acc, this));
 				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, this));
 			});
 		};
-		
+
 		if (hasAsyncEnd()) {
 			questDatas.setInQuestEnd();
 			new Thread(() -> {
@@ -573,13 +538,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!silently)
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("The quest \"" + getName() + "\" has been removed");
 	}
-	
+
 	public void unload(){
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questUnload(this));
 		manager.remove();
 		options.forEach(QuestOption::detach);
 	}
-	
+
 	@Override
 	public String toString(){
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
@@ -587,7 +552,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	public boolean saveToFile() throws IOException {
 		YamlConfiguration fc = new YamlConfiguration();
-		
+
 		BeautyQuests.getInstance().resetSavingFailure();
 		save(fc);
 		if (BeautyQuests.getInstance().hasSavingFailed()) {
@@ -610,7 +575,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return true;
 		}
 	}
-	
+
 	private void save(@NotNull ConfigurationSection section) {
 		for (QuestOption<?> option : options) {
 			try {
@@ -619,11 +584,11 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("An exception occured when saving an option for quest " + id, ex);
 			}
 		}
-		
+
 		manager.save(section.createSection("manager"));
 		section.set("id", id);
 	}
-	
+
 
 	public static @Nullable QuestImplementation loadFromFile(@NotNull File file) {
 		try {
@@ -635,18 +600,18 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return null;
 		}
 	}
-	
+
 	private static @Nullable QuestImplementation deserialize(@NotNull File file, @NotNull ConfigurationSection map) {
 		if (!map.contains("id")) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Quest doesn't have an id.");
 			return null;
 		}
-		
+
 		QuestImplementation qu = new QuestImplementation(map.getInt("id"), file);
-		
+
 		qu.manager = BranchesManagerImplementation.deserialize(map.getConfigurationSection("manager"), qu);
 		if (qu.manager == null) return null;
-		
+
 		for (String key : map.getKeys(false)) {
 			for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
 				if (creator.applies(key)) {
@@ -676,5 +641,5 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 		return qu;
 	}
-	
+
 }

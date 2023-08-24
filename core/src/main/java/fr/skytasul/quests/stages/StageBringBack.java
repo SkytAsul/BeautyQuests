@@ -1,10 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -36,19 +32,19 @@ import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
 
 public class StageBringBack extends StageNPC{
-	
+
 	protected final ItemStack[] items;
 	protected final String customMessage;
 	protected final ItemComparisonMap comparisons;
-	
+
 	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
 	protected final String[] itemsDescriptions;
-	
+
 	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
 		super(controller);
 		this.customMessage = customMessage;
 		this.comparisons = comparisons;
-		
+
 		this.items = items;
 		for (ItemStack item : items) {
 			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
@@ -72,9 +68,9 @@ public class StageBringBack extends StageNPC{
 					public int getObjectAmount() {
 						return item.getAmount();
 					}
-				}, PlaceholdersContext.of((Player) null, false))).toArray(String[]::new);
+				}, PlaceholdersContext.of((Player) null, false, null))).toArray(String[]::new);
 	}
-	
+
 	public boolean checkItems(Player p, boolean msg){
 		boolean done = true;
 		for (Entry<ItemStack, Integer> en : amountsMap.entrySet()) {
@@ -90,21 +86,21 @@ public class StageBringBack extends StageNPC{
 
 	public void sendNeedMessage(Player p) {
 		new Message(MessageUtils.format(getMessage(), getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext.of(true,
-				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE)), Sender.NPC).sendMessage(p, getNPC(),
+				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC).sendMessage(p, getNPC(),
 						getNpcName(), 1, 1);
 	}
-	
+
 	public void removeItems(Player p){
 		for(ItemStack is : items){
 			comparisons.removeItems(p.getInventory(), is);
 		}
 		p.updateInventory();
 	}
-	
+
 	public ItemStack[] getItems(){
 		return items;
 	}
-	
+
 	protected String getMessage() {
 		return customMessage == null ? Lang.NEED_OBJECTS.toString() : customMessage;
 	}
@@ -128,15 +124,15 @@ public class StageBringBack extends StageNPC{
 		if (acc.isCurrent() && sendStartMessage())
 			sendNeedMessage(acc.getPlayer());
 	}
-	
+
 	@Override
 	protected void initDialogRunner() {
 		super.initDialogRunner();
-		
+
 		getNPC().addStartablePredicate(p -> {
 			return canUpdate(p, false) && checkItems(p, false);
 		}, this);
-		
+
 		dialogRunner.addTest(p -> {
 			if (getNPC().canGiveSomething(p)) {
 				// if the NPC can offer something else to the player
@@ -149,16 +145,16 @@ public class StageBringBack extends StageNPC{
 			return true;
 		});
 		dialogRunner.addTestCancelling(p -> checkItems(p, true));
-		
+
 		dialogRunner.addEndAction(this::removeItems);
 	}
-	
+
 	@Override
 	public void unload() {
 		super.unload();
 		if (getNPC() != null) getNPC().removeStartablePredicate(this);
 	}
-	
+
 	@Override
 	public void serialize(ConfigurationSection section) {
 		super.serialize(section);
@@ -166,7 +162,7 @@ public class StageBringBack extends StageNPC{
 		if (customMessage != null) section.set("customMessage", customMessage);
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
-	
+
 	public static StageBringBack deserialize(ConfigurationSection section, StageController controller) {
 		ItemStack[] items = section.getList("items").toArray(new ItemStack[0]);
 		String customMessage = section.getString("customMessage", null);
@@ -180,7 +176,7 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public abstract static class AbstractCreator<T extends StageBringBack> extends StageNPC.AbstractCreator<T> {
-		
+
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 		private static final ItemStack stageMessage = ItemUtils.item(XMaterial.PAPER, Lang.stageItemsMessage.toString());
 		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
@@ -188,7 +184,7 @@ public class StageBringBack extends StageNPC{
 		protected List<ItemStack> items;
 		protected String message = null;
 		protected ItemComparisonMap comparisons = new ItemComparisonMap();
-		
+
 		protected AbstractCreator(@NotNull StageCreationContext<T> context) {
 			super(context);
 		}
@@ -196,7 +192,7 @@ public class StageBringBack extends StageNPC{
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
 			line.setItem(5, stageItems, event -> {
 				new ItemsGUI(items -> {
 					setItems(items);
@@ -216,18 +212,18 @@ public class StageBringBack extends StageNPC{
 				}).open(event.getPlayer());
 			});
 		}
-		
+
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
 			getLine().refreshItemLore(5,
 					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("amount", this.items.size())));
 		}
-		
+
 		public void setMessage(String message) {
 			this.message = message;
 			getLine().refreshItemLore(9, QuestOption.formatNullableValue(message, Lang.NEED_OBJECTS));
 		}
-		
+
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
 			getLine().refreshItemLore(10,
@@ -235,7 +231,7 @@ public class StageBringBack extends StageNPC{
 							Lang.AmountComparisons.quickFormat("amount", this.comparisons.getEffective().size()),
 							comparisons.isDefault()));
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			new ItemsGUI(items -> {
@@ -251,11 +247,11 @@ public class StageBringBack extends StageNPC{
 			setMessage(stage.customMessage);
 			setComparisons(stage.comparisons.clone());
 		}
-		
+
 	}
-	
+
 	public static class Creator extends AbstractCreator<StageBringBack> {
-		
+
 		public Creator(@NotNull StageCreationContext<StageBringBack> context) {
 			super(context);
 		}
@@ -264,7 +260,7 @@ public class StageBringBack extends StageNPC{
 		protected StageBringBack createStage(StageController controller) {
 			return new StageBringBack(controller, items.toArray(new ItemStack[0]), message, comparisons);
 		}
-		
+
 	}
 
 }

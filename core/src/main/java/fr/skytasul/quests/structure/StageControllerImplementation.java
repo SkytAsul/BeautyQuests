@@ -19,11 +19,7 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.stages.AbstractStage;
-import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
-import fr.skytasul.quests.api.stages.StageHandler;
-import fr.skytasul.quests.api.stages.StageType;
+import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -100,7 +96,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		try {
-			StageDescriptionPlaceholdersContext context = StageDescriptionPlaceholdersContext.of(true, acc, source);
+			StageDescriptionPlaceholdersContext context = StageDescriptionPlaceholdersContext.of(true, acc, source, null);
 			String description =
 					stage.getCustomText() == null ? stage.getDefaultDescription(context) : ("§e" + stage.getCustomText());
 			return MessageUtils.finalFormat(description, stage.getPlaceholdersRegistry(), context);
@@ -126,7 +122,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	public void start(@NotNull PlayerAccount acc) {
 		if (acc.isCurrent())
-			MessageUtils.sendMessage(acc.getPlayer(), stage.getStartMessage(), MessageType.OFF);
+			MessageUtils.sendMessage(acc.getPlayer(), stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);

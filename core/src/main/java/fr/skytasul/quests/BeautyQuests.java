@@ -747,7 +747,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return ensureLoaded(logger);
 	}
 
-	@Override
 	public @NotNull String getPrefix() {
 		return config.getPrefix();
 	}

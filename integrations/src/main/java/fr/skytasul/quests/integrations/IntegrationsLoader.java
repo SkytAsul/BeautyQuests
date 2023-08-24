@@ -34,13 +34,13 @@ import fr.skytasul.quests.integrations.vault.permission.PermissionReward;
 import fr.skytasul.quests.integrations.worldguard.BQWorldGuard;
 
 public class IntegrationsLoader {
-	
+
 	private static IntegrationsLoader instance;
 
 	public static IntegrationsLoader getInstance() {
 		return instance;
 	}
-	
+
 	private IntegrationsConfiguration config;
 
 	public IntegrationsLoader() {
@@ -121,7 +121,7 @@ public class IntegrationsLoader {
 		QuestsAPI.getAPI().getRequirements()
 				.register(new RequirementCreator("placeholderRequired", PlaceholderRequirement.class,
 						ItemUtils.item(XMaterial.NAME_TAG, Lang.RPlaceholder.toString()), PlaceholderRequirement::new));
-		QuestsAPI.getAPI().registerMessageProcessor(new PapiMessageProcessor());
+		QuestsAPI.getAPI().registerMessageProcessor("placeholderapi_replace", 5, new PapiMessageProcessor());
 	}
 
 	private void registerVault() {
@@ -211,7 +211,7 @@ public class IntegrationsLoader {
 				+ plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
 		return false;
 	}
-	
+
 	public IntegrationsConfiguration getConfig() {
 		return config;
 	}

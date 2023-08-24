@@ -62,7 +62,7 @@ public abstract class AbstractRequirement extends QuestObject {
 			reason = getDefaultReason(player);
 
 		if (reason != null && !reason.isEmpty() && !"none".equals(reason)) {
-			MessageUtils.sendMessage(player, reason, MessageType.PREFIXED, getPlaceholdersRegistry());
+			MessageUtils.sendMessage(player, reason, MessageType.DefaultMessageType.PREFIXED, getPlaceholdersRegistry());
 			return true;
 		}
 

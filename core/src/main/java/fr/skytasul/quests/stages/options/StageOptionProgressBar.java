@@ -169,7 +169,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 								+ acc.getNameAndID() + ": " + playerRemaining + " > " + totalAmount);
 
 			bar.setTitle(MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
-					PlaceholdersContext.of(acc.getPlayer(), true)));
+					PlaceholdersContext.of(acc.getPlayer(), true, null)));
 		}
 
 		private void timer() {

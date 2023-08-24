@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
 
@@ -18,7 +19,7 @@ public interface StageDescriptionPlaceholdersContext extends PlaceholdersContext
 	DescriptionSource getDescriptionSource();
 
 	static @NotNull StageDescriptionPlaceholdersContext of(boolean replacePluginPlaceholders, @NotNull PlayerAccount account,
-			@NotNull DescriptionSource source) {
+			@NotNull DescriptionSource source, @Nullable MessageType messageType) {
 		return new StageDescriptionPlaceholdersContext() {
 
 			@Override
@@ -39,6 +40,11 @@ public interface StageDescriptionPlaceholdersContext extends PlaceholdersContext
 			@Override
 			public @NotNull DescriptionSource getDescriptionSource() {
 				return source;
+			}
+
+			@Override
+			public @Nullable MessageType getMessageType() {
+				return messageType;
 			}
 		};
 	}

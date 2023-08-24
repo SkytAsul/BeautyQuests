@@ -40,7 +40,7 @@ public enum Lang implements Locale {
 	QUEST_CHECKPOINT("msg.quests.checkpoint"),
 	QUEST_FAILED("msg.quests.failed"),
 	
-	DIALOG_SKIPPED("msg.dialogs.skipped", MessageType.UNPREFIXED),
+	DIALOG_SKIPPED("msg.dialogs.skipped", MessageType.DefaultMessageType.UNPREFIXED),
 	DIALOG_TOO_FAR("msg.dialogs.tooFar"), // 0: npc name
 	
 	POOL_NO_TIME("msg.pools.noTime"), // 0: time left
@@ -159,25 +159,25 @@ public enum Lang implements Locale {
 	COMMAND_TRANSLATION_EXISTS("msg.command.downloadTranslations.exists"), // 0: file
 	COMMAND_TRANSLATION_DOWNLOADED("msg.command.downloadTranslations.downloaded"), // 0: lang
 	
-	COMMAND_HELP("msg.command.help.header", MessageType.UNPREFIXED),
-	COMMAND_HELP_CREATE("msg.command.help.create", MessageType.UNPREFIXED),
-	COMMAND_HELP_EDIT("msg.command.help.edit", MessageType.UNPREFIXED),
-	COMMAND_HELP_REMOVE("msg.command.help.remove", MessageType.UNPREFIXED),
-	COMMAND_HELP_FINISH("msg.command.help.finishAll", MessageType.UNPREFIXED),
-	COMMAND_HELP_STAGE("msg.command.help.setStage", MessageType.UNPREFIXED),
-	COMMAND_HELP_DIALOG("msg.command.help.startDialog", MessageType.UNPREFIXED),
-	COMMAND_HELP_RESET("msg.command.help.resetPlayer", MessageType.UNPREFIXED),
-	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest", MessageType.UNPREFIXED),
-	COMMAND_HELP_SEE("msg.command.help.seePlayer", MessageType.UNPREFIXED),
-	COMMAND_HELP_RELOAD("msg.command.help.reload", MessageType.UNPREFIXED),
-	COMMAND_HELP_START("msg.command.help.start", MessageType.UNPREFIXED),
-	COMMAND_HELP_SETITEM("msg.command.help.setItem", MessageType.UNPREFIXED),
-	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework", MessageType.UNPREFIXED),
-	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", MessageType.UNPREFIXED),
-	COMMAND_HELP_VERSION("msg.command.help.version", MessageType.UNPREFIXED),
-	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations", MessageType.UNPREFIXED),
-	COMMAND_HELP_SAVE("msg.command.help.save", MessageType.UNPREFIXED),
-	COMMAND_HELP_LIST("msg.command.help.list", MessageType.UNPREFIXED),
+	COMMAND_HELP("msg.command.help.header", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_CREATE("msg.command.help.create", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_EDIT("msg.command.help.edit", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_REMOVE("msg.command.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_FINISH("msg.command.help.finishAll", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_STAGE("msg.command.help.setStage", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_DIALOG("msg.command.help.startDialog", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_RESET("msg.command.help.resetPlayer", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_SEE("msg.command.help.seePlayer", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_RELOAD("msg.command.help.reload", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_START("msg.command.help.start", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_SETITEM("msg.command.help.setItem", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_VERSION("msg.command.help.version", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_SAVE("msg.command.help.save", MessageType.DefaultMessageType.UNPREFIXED),
+	COMMAND_HELP_LIST("msg.command.help.list", MessageType.DefaultMessageType.UNPREFIXED),
 	
 	// * Editors *
 	ALREADY_EDITOR("msg.editor.already"),
@@ -283,22 +283,22 @@ public enum Lang implements Locale {
 	DIALOG_SKIPPABLE_SET("msg.editor.dialog.skippable.set"), // 0: previous, 1: new
 	DIALOG_SKIPPABLE_UNSET("msg.editor.dialog.skippable.unset"), // 0: previous
 	DIALOG_CLEARED("msg.editor.dialog.cleared"),
-	DIALOG_HELP_HEADER("msg.editor.dialog.help.header", MessageType.UNPREFIXED),
-	DIALOG_HELP_NPC("msg.editor.dialog.help.npc", MessageType.UNPREFIXED),
-	DIALOG_HELP_PLAYER("msg.editor.dialog.help.player", MessageType.UNPREFIXED),
-	DIALOG_HELP_NOTHING("msg.editor.dialog.help.nothing", MessageType.UNPREFIXED),
-	DIALOG_HELP_REMOVE("msg.editor.dialog.help.remove", MessageType.UNPREFIXED),
-	DIALOG_HELP_LIST("msg.editor.dialog.help.list", MessageType.UNPREFIXED),
-	DIALOG_HELP_NPCINSERT("msg.editor.dialog.help.npcInsert", MessageType.UNPREFIXED),
-	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert", MessageType.UNPREFIXED),
-	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert", MessageType.UNPREFIXED),
-	DIALOG_HELP_EDIT("msg.editor.dialog.help.edit", MessageType.UNPREFIXED),
-	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound", MessageType.UNPREFIXED),
-	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime", MessageType.UNPREFIXED),
-	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName", MessageType.UNPREFIXED),
-	DIALOG_HELP_SKIPPABLE("msg.editor.dialog.help.skippable", MessageType.UNPREFIXED),
-	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear", MessageType.UNPREFIXED),
-	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close", MessageType.UNPREFIXED),
+	DIALOG_HELP_HEADER("msg.editor.dialog.help.header", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_NPC("msg.editor.dialog.help.npc", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_PLAYER("msg.editor.dialog.help.player", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_NOTHING("msg.editor.dialog.help.nothing", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_REMOVE("msg.editor.dialog.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_LIST("msg.editor.dialog.help.list", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_NPCINSERT("msg.editor.dialog.help.npcInsert", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_PLAYERINSERT("msg.editor.dialog.help.playerInsert", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_NOTHINGINSERT("msg.editor.dialog.help.nothingInsert", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_EDIT("msg.editor.dialog.help.edit", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_ADDSOUND("msg.editor.dialog.help.addSound", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_SETTIME("msg.editor.dialog.help.setTime", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_NPCNAME("msg.editor.dialog.help.npcName", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_SKIPPABLE("msg.editor.dialog.help.skippable", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_CLEAR("msg.editor.dialog.help.clear", MessageType.DefaultMessageType.UNPREFIXED),
+	DIALOG_HELP_CLOSE("msg.editor.dialog.help.close", MessageType.DefaultMessageType.UNPREFIXED),
 	
 	MYTHICMOB_LIST("msg.editor.mythicmobs.list"),
 	MYTHICMOB_NOT_EXISTS("msg.editor.mythicmobs.isntMythicMob"),
@@ -308,11 +308,11 @@ public enum Lang implements Locale {
 	TEXTLIST_SYNTAX("msg.editor.textList.syntax"),
 	TEXTLIST_TEXT_ADDED("msg.editor.textList.added"),
 	TEXTLIST_TEXT_REMOVED("msg.editor.textList.removed"),
-	TEXTLIST_TEXT_HELP_HEADER("msg.editor.textList.help.header", MessageType.UNPREFIXED),
-	TEXTLIST_TEXT_HELP_ADD("msg.editor.textList.help.add", MessageType.UNPREFIXED),
-	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove", MessageType.UNPREFIXED),
-	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list", MessageType.UNPREFIXED),
-	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close", MessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_HEADER("msg.editor.textList.help.header", MessageType.DefaultMessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_ADD("msg.editor.textList.help.add", MessageType.DefaultMessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list", MessageType.DefaultMessageType.UNPREFIXED),
+	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close", MessageType.DefaultMessageType.UNPREFIXED),
 	
 	// * Quests lists*
 
@@ -851,7 +851,7 @@ public enum Lang implements Locale {
 
 
 	private Lang(@NotNull String path) {
-		this(path, MessageType.PREFIXED, null);
+		this(path, MessageType.DefaultMessageType.PREFIXED, null);
 	}
 	
 	private Lang(@NotNull String path, @NotNull MessageType type) {
@@ -859,7 +859,7 @@ public enum Lang implements Locale {
 	}
 	
 	private Lang(@NotNull String path, @Nullable Lang prefix) {
-		this(path, MessageType.PREFIXED, prefix);
+		this(path, MessageType.DefaultMessageType.PREFIXED, prefix);
 	}
 
 	private Lang(@NotNull String path, @NotNull MessageType type, @Nullable Lang prefix) {
