@@ -1,12 +1,15 @@
 package fr.skytasul.quests.players;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI;
@@ -161,6 +164,24 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	@Override
 	public String getQuestFlow() {
 		return questFlow.toString();
+	}
+
+	@Override
+	public Stream<StageController> getQuestFlowStages() {
+		return Arrays.stream(getQuestFlow().split(";"))
+				.filter(x -> !x.isEmpty())
+				.map(arg -> {
+					String[] args = arg.split(":");
+					int branchID = Integer.parseInt(args[0]);
+					QuestBranch branch = getQuest().getBranchesManager().getBranch(branchID);
+					if (branch == null)
+						return null;
+					if (args[1].startsWith("E")) {
+						return branch.getEndingStage(Integer.parseInt(args[1].substring(1)));
+					} else {
+						return branch.getRegularStage(Integer.parseInt(args[1]));
+					}
+				});
 	}
 
 	@Override

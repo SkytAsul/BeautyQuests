@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.players;
 
 import java.util.Map;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.quests.Quest;
@@ -60,5 +61,7 @@ public interface PlayerQuestDatas {
 	void addQuestFlow(@NotNull StageController finished);
 
 	void resetQuestFlow();
+
+	Stream<StageController> getQuestFlowStages();
 
 }

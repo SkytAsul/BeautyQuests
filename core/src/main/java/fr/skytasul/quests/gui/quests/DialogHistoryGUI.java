@@ -1,10 +1,6 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
@@ -22,7 +18,6 @@ import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.XMaterial;
@@ -31,32 +26,32 @@ import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
-	
+
 	private final Runnable end;
 	private final Player player;
-	
+
 	public DialogHistoryGUI(PlayerAccount acc, Quest quest, Runnable end) {
 		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
 		this.end = end;
-		
+
 		Validate.isTrue(acc.hasQuestDatas(quest), "Player must have started the quest");
 		Validate.isTrue(acc.isCurrent(), "Player must be online");
-		
+
 		player = acc.getPlayer();
-		
+
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));
-		
+
 		getDialogableStream(acc.getQuestDatas(quest), quest)
 			.map(WrappedDialogable::new)
 			.forEach(objects::add);
 	}
-	
+
 	@Override
 	public ItemStack getItemStack(WrappedDialogable object) {
 		return object.setMeta(XMaterial.WRITTEN_BOOK.parseItem());
 	}
-	
+
 	@Override
 	public void click(WrappedDialogable existing, ItemStack item, ClickType clickType) {
 		boolean changed = false;
@@ -73,10 +68,10 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				QuestUtils.playPluginSound(player, "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
 			}
 		}
-		
+
 		if (changed) existing.setMeta(item);
 	}
-	
+
 	@Override
 	public CloseBehavior onClose(Player p) {
 		QuestUtils.runSync(end);
@@ -84,32 +79,20 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	}
 
 	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
-		return Arrays.stream(datas.getQuestFlow().split(";"))
-			.filter(x -> !x.isEmpty())
-			.map(arg -> {
-				String[] args = arg.split(":");
-				int branchID = Integer.parseInt(args[0]);
-				QuestBranch branch = quest.getBranchesManager().getBranch(branchID);
-				if (branch == null) return null;
-				if (args[1].startsWith("E")) {
-					return branch.getEndingStage(Integer.parseInt(args[1].substring(1)));
-				}else {
-					return branch.getRegularStage(Integer.parseInt(args[1]));
-				}
-			})
+		return datas.getQuestFlowStages()
 			.filter(Dialogable.class::isInstance)
 			.map(Dialogable.class::cast)
 			.filter(Dialogable::hasDialog);
 	}
-	
+
 	class WrappedDialogable {
 		static final int MAX_LINES = 9;
-		
+
 		final Dialogable dialogable;
 		final List<Page> pages;
-		
+
 		int page = 0;
-		
+
 		WrappedDialogable(Dialogable dialogable) {
 			this.dialogable = dialogable;
 
@@ -172,11 +155,11 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				pages.add(page);
 			}
 		}
-		
+
 		public Page getCurrentPage() {
 			return pages.get(page);
 		}
-		
+
 		public ItemStack setMeta(ItemStack item) {
 			ItemMeta meta = item.getItemMeta();
 			meta.setLore(getCurrentPage().lines);
@@ -187,10 +170,10 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			return item;
 		}
 	}
-	
+
 	class Page {
 		LinkedList<String> lines = new LinkedList<>();
 		String header;
 	}
-	
+
 }
