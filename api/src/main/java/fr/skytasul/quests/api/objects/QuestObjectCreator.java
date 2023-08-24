@@ -5,12 +5,12 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
 
-public class QuestObjectCreator<T extends QuestObject> extends SerializableCreator<T> {
-	
+public abstract class QuestObjectCreator<T extends QuestObject> extends SerializableCreator<T> {
+
 	private final @NotNull ItemStack item;
 	private final boolean multiple;
 	private @NotNull QuestObjectLocation @NotNull [] allowedLocations;
-	
+
 	/**
 	 * @param id unique identifier for the object
 	 * @param clazz Class extending {@link T}
@@ -21,7 +21,7 @@ public class QuestObjectCreator<T extends QuestObject> extends SerializableCreat
 			@NotNull Supplier<@NotNull T> newObjectSupplier) {
 		this(id, clazz, item, newObjectSupplier, true);
 	}
-	
+
 	/**
 	 * @param id unique identifier for the object
 	 * @param clazz Class extending {@link T}
@@ -39,15 +39,15 @@ public class QuestObjectCreator<T extends QuestObject> extends SerializableCreat
 		this.multiple = multiple;
 		this.allowedLocations = allowedLocations;
 	}
-	
+
 	public @NotNull ItemStack getItem() {
 		return item;
 	}
-	
+
 	public boolean canBeMultiple() {
 		return multiple;
 	}
-	
+
 	public boolean isAllowed(@NotNull QuestObjectLocation location) {
 		if (allowedLocations.length == 0) return true;
 		for (QuestObjectLocation allowed : allowedLocations) {
@@ -55,5 +55,5 @@ public class QuestObjectCreator<T extends QuestObject> extends SerializableCreat
 		}
 		return false;
 	}
-	
+
 }

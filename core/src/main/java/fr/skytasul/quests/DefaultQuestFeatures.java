@@ -18,12 +18,11 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.rewards.RewardList;
-import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
-import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
+import fr.skytasul.quests.api.stages.options.StageOptionCreator;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.XMaterial;
@@ -117,17 +116,16 @@ public final class DefaultQuestFeatures {
 				return HasProgress.class.isAssignableFrom(type.getStageClass());
 			}
 
+			@SuppressWarnings("rawtypes")
 			@Override
-			public <T extends AbstractStage> SerializableCreator<StageOption<T>> createOptionCreator(
-					@NotNull StageType<T> type) {
-				return createCreator((StageType) type);
+			public <T extends AbstractStage> StageOptionCreator<T> createOptionCreator(@NotNull StageType<T> type) {
+				return createOptionCreatorInternal((@NotNull StageType) type); // NOSONAR magic
 			}
 
-			public <T extends AbstractStage & HasProgress> SerializableCreator<StageOptionProgressBar<T>> createCreator(
+			private <T extends AbstractStage & HasProgress> StageOptionCreator<T> createOptionCreatorInternal(
 					@NotNull StageType<T> type) {
-				return new SerializableCreator<>("progressbar", StageOptionProgressBar.class,
+				return StageOptionCreator.create("progressbar", StageOptionProgressBar.class,
 						() -> new StageOptionProgressBar<>(type.getStageClass()));
-
 			}
 
 		});
