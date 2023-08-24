@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.npcs.dialogs;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public interface DialogRunner {
 
@@ -36,6 +37,14 @@ public interface DialogRunner {
 	int getPlayerMessage(Player p);
 
 	boolean removePlayer(Player player);
+
+	/**
+	 * Forces the end of the dialog, toggles the end actions and removes the player from this dialog
+	 * runner.
+	 *
+	 * @param player player to end the dialog for
+	 */
+	void forceFinish(@NotNull Player player);
 
 	public enum DialogNextReason {
 		NPC_CLICK, AUTO_TIME, COMMAND, PLUGIN;

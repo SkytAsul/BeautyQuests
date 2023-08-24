@@ -1,11 +1,7 @@
 package fr.skytasul.quests.structure;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -23,23 +19,23 @@ import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 public class BranchesManagerImplementation implements QuestBranchesManager {
 
 	private @NotNull Map<Integer, QuestBranchImplementation> branches = new TreeMap<>(Integer::compare);
-	
+
 	private final @NotNull QuestImplementation quest;
-	
+
 	public BranchesManagerImplementation(@NotNull QuestImplementation quest) {
 		this.quest = quest;
 	}
-	
+
 	@Override
 	public @NotNull QuestImplementation getQuest() {
 		return quest;
 	}
-	
+
 	public void addBranch(@NotNull QuestBranchImplementation branch) {
 		Validate.notNull(branch, "Branch cannot be null !");
 		branches.put(branches.size(), branch);
 	}
-	
+
 	@Override
 	public int getId(@NotNull QuestBranch branch) {
 		for (Entry<Integer, QuestBranchImplementation> en : branches.entrySet()){
@@ -49,33 +45,33 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 				.severe("Trying to get the ID of a branch not in manager of quest " + quest.getId());
 		return -1;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public @UnmodifiableView @NotNull Collection<@NotNull QuestBranch> getBranches() {
 		return (Collection) branches.values();
 	}
-	
+
 	@Override
 	public @Nullable QuestBranchImplementation getBranch(int id) {
 		return branches.get(id);
 	}
-	
+
 	@Override
 	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull PlayerAccount acc) {
 		if (!acc.hasQuestDatas(quest)) return null;
 		return branches.get(acc.getQuestDatas(quest).getBranch());
 	}
-	
+
 	@Override
 	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
 		if (!acc.hasQuestDatas(quest)) return false;
 		return acc.getQuestDatas(quest).getBranch() == branch.getId();
 	}
-	
+
 	/**
 	 * Called internally when the quest is updated for the player
-	 * 
+	 *
 	 * @param player Player
 	 */
 	public final void questUpdated(@NotNull Player player) {
@@ -91,20 +87,20 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);
 	}
-	
+
 	public void remove(@NotNull PlayerAccount acc) {
 		if (!acc.hasQuestDatas(quest)) return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
 	}
-	
+
 	public void remove(){
 		for (QuestBranchImplementation branch : branches.values()){
 			branch.remove();
 		}
 		branches.clear();
 	}
-	
+
 	public void save(@NotNull ConfigurationSection section) {
 		ConfigurationSection branchesSection = section.createSection("branches");
 		branches.forEach((id, branch) -> {
@@ -117,17 +113,17 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 			}
 		});
 	}
-	
+
 	@Override
 	public String toString() {
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
-	
+
 	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section, @NotNull QuestImplementation qu) {
 		BranchesManagerImplementation bm = new BranchesManagerImplementation(qu);
-		
+
 		ConfigurationSection branchesSection;
-		if (section.isList("branches")) { // migration on 0.19.3: TODO remove
+		if (section.isList("branches")) { // TODO migration 0.19.3
 			List<Map<?, ?>> branches = section.getMapList("branches");
 			section.set("branches", null);
 			branchesSection = section.createSection("branches");
@@ -163,7 +159,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 				return null;
 			}
 		}
-		
+
 		for (QuestBranchImplementation branch : tmpBranches.keySet()) {
 			try {
 				if (!branch.load(tmpBranches.get(branch))) {
@@ -179,8 +175,8 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 				return null;
 			}
 		}
-		
+
 		return bm;
 	}
-	
+
 }

@@ -22,11 +22,11 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 public class PermissionsRequirement extends AbstractRequirement {
 
 	private List<Permission> permissions;
-	
+
 	public PermissionsRequirement() {
 		this(null, null, new ArrayList<>());
 	}
-	
+
 	public PermissionsRequirement(String customDescription, String customReason, List<Permission> permissions) {
 		super(customDescription, customReason);
 		this.permissions = permissions;
@@ -51,7 +51,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(Lang.AmountPermissions.format(this));
 	}
-	
+
 	@Override
 	protected void sendCustomReasonHelpMessage(Player p) {
 		Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
@@ -60,12 +60,12 @@ public class PermissionsRequirement extends AbstractRequirement {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<Permission>(Lang.INVENTORY_PERMISSION_LIST.toString(), DyeColor.PURPLE, permissions) {
-			
+
 			@Override
 			public ItemStack getObjectItemStack(Permission object) {
 				return ItemUtils.item(XMaterial.PAPER, object.toString(), createLoreBuilder(object).toLoreArray());
 			}
-			
+
 			@Override
 			public void createObject(Function<Permission, ItemStack> callback) {
 				Lang.CHOOSE_PERM_REQUIRED.send(player);
@@ -73,7 +73,7 @@ public class PermissionsRequirement extends AbstractRequirement {
 					callback.apply(Permission.fromString(obj));
 				}).useStrippedMessage().start();
 			}
-			
+
 			@Override
 			public void finish(List<Permission> objects) {
 				permissions = objects;
@@ -83,26 +83,26 @@ public class PermissionsRequirement extends AbstractRequirement {
 					event.reopenGUI();
 				}).passNullIntoEndConsumer().start();
 			}
-			
+
 		}.open(event.getPlayer());
 	}
-	
+
 	@Override
 	public AbstractRequirement clone() {
 		return new PermissionsRequirement(getCustomDescription(), getCustomReason(), new ArrayList<>(permissions));
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		permissions = section.getStringList("permissions").stream().map(Permission::fromString).collect(Collectors.toList());
-		if (section.contains("message")) // migration from 0.20.1 and before, TODO delete
+		if (section.contains("message")) // TODO migration 0.20.1 and before
 			setCustomReason(section.getString("message"));
 	}
 
@@ -130,5 +130,5 @@ public class PermissionsRequirement extends AbstractRequirement {
 			return new Permission(string.substring(neg ? 1 : 0), !neg);
 		}
 	}
-	
+
 }

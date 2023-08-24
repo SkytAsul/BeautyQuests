@@ -21,7 +21,8 @@
 					<relocations>
 						<relocation>
 							<pattern>revxrsal.commands</pattern>
-							<shadedPattern>fr.skytasul.quests.api.commands.revxrsal</shadedPattern>
+							<shadedPattern>
+								fr.skytasul.quests.api.commands.revxrsal</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.cryptomorin.xseries</pattern>
@@ -38,6 +39,7 @@
 							</includes>
 						</filter>
 					</filters>
+					<shadeSourcesContent>true</shadeSourcesContent>
 				</configuration>
 				<executions>
 					<execution>
@@ -49,11 +51,32 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<parameters>true</parameters>
+				</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.4.1</version>
 				<configuration>
 					<skip>false</skip>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

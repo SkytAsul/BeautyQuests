@@ -23,18 +23,18 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public interface Locale {
-	
+
 	@NotNull
 	String getPath();
-	
+
 	@NotNull
 	String getValue();
-	
+
 	@NotNull
 	MessageType getType();
 
 	void setValue(@NotNull String value);
-	
+
 	default @NotNull String format(@Nullable HasPlaceholders placeholdersHolder) {
 		return MessageUtils.format(getValue(),
 				placeholdersHolder == null ? null : placeholdersHolder.getPlaceholdersRegistry());
@@ -43,12 +43,12 @@ public interface Locale {
 	default @NotNull String format(@NotNull HasPlaceholders @NotNull... placeholdersHolders) {
 		return format(PlaceholderRegistry.combine(placeholdersHolders));
 	}
-	
+
 	default @NotNull String quickFormat(@NotNull String key1, @Nullable Object value1) {
 		// for performance reason: no need to allocate a new placeholder registry with a new placeholder
 		String replacement = Objects.toString(value1);
 		return getValue()
-				.replace("{0}", replacement) // TODO remove, migration
+				.replace("{0}", replacement) // TODO migration 1.0
 				.replace("{" + key1 + "}", replacement);
 	}
 
@@ -79,20 +79,20 @@ public interface Locale {
 			l.setValue(ChatColorUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
 		}
 	}
-	
+
 	public static YamlConfiguration loadLang(@NotNull Plugin plugin, @NotNull Locale @NotNull [] locales,
 			@NotNull String loadedLanguage) throws IOException, URISyntaxException {
 		long lastMillis = System.currentTimeMillis();
-		
+
 		Utils.walkResources(plugin.getClass(), "/locales", 1, path -> {
 			String localeFileName = path.getFileName().toString();
 			if (!localeFileName.toLowerCase().endsWith(".yml")) return;
-			
+
 			if (!Files.exists(plugin.getDataFolder().toPath().resolve("locales").resolve(localeFileName))) {
 				plugin.saveResource("locales/" + localeFileName, false);
 			}
 		});
-		
+
 		String language = "locales/" + loadedLanguage + ".yml";
 		File file = new File(plugin.getDataFolder(), language);
 		InputStream res = plugin.getResource(language);
@@ -118,14 +118,14 @@ public interface Locale {
 			}
 		}
 		loadStrings(locales, YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource("locales/en_US.yml"), StandardCharsets.UTF_8)), conf);
-		
+
 		if (changes) {
 			plugin.getLogger().info("Copied new strings into " + language + " language file.");
 			conf.save(file); // if there has been changes before, save the edited file
 		}
-		
+
 		plugin.getLogger().info("Loaded language " + loadedLanguage + " (" + (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 		return conf;
 	}
-	
+
 }

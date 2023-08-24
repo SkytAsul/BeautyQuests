@@ -34,54 +34,54 @@ import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class QuestBranchImplementation implements QuestBranch {
-	
+
 	private final List<EndingStageImplementation> endStages = new ArrayList<>(5);
 	private final List<StageControllerImplementation> regularStages = new ArrayList<>(15);
-	
+
 	private final List<PlayerAccount> asyncReward = new ArrayList<>(5);
 
 	private final @NotNull BranchesManagerImplementation manager;
-	
+
 	public QuestBranchImplementation(@NotNull BranchesManagerImplementation manager) {
 		this.manager = manager;
 	}
-	
+
 	@Override
 	public @NotNull QuestImplementation getQuest() {
 		return manager.getQuest();
 	}
-	
+
 	@Override
 	public @NotNull BranchesManagerImplementation getManager() {
 		return manager;
 	}
-	
+
 	public int getStageSize(){
 		return regularStages.size();
 	}
-	
+
 	@Override
 	public int getId() {
 		return manager.getId(this);
 	}
-	
+
 	public void addRegularStage(@NotNull StageControllerImplementation<?> stage) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		regularStages.add(stage);
 		stage.load();
 	}
-	
+
 	public void addEndStage(@NotNull StageControllerImplementation<?> stage, @NotNull QuestBranchImplementation linked) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		endStages.add(new EndingStageImplementation(stage, linked));
 		stage.load();
 	}
-	
+
 	@Override
 	public @NotNull @UnmodifiableView List<@NotNull StageController> getRegularStages() {
 		return (List) regularStages;
 	}
-	
+
 	@Override
 	public @NotNull StageControllerImplementation<?> getRegularStage(int id) {
 		return regularStages.get(id);
@@ -91,12 +91,12 @@ public class QuestBranchImplementation implements QuestBranch {
 	public @NotNull @UnmodifiableView List<EndingStage> getEndingStages() {
 		return (List) endStages;
 	}
-	
+
 	@Override
 	public @NotNull StageController getEndingStage(int id) {
 		return endStages.get(id).getStage(); // TODO beware index out of bounds
 	}
-	
+
 	public @Nullable QuestBranchImplementation getLinkedBranch(@NotNull StageController endingStage) {
 		return endStages.stream().filter(end -> end.getStage().equals(endingStage)).findAny().get().getBranch();
 	}
@@ -166,7 +166,7 @@ public class QuestBranchImplementation implements QuestBranch {
 
 		return getRegularStageId(stage) == datas.getStage();
 	}
-	
+
 	public void remove(@NotNull PlayerAccount acc, boolean end) {
 		if (!acc.hasQuestDatas(getQuest())) return;
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
@@ -179,7 +179,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		datas.setBranch(-1);
 		datas.setStage(-1);
 	}
-	
+
 	public void start(@NotNull PlayerAccount acc) {
 		acc.getQuestDatas(getQuest()).setBranch(getId());
 		if (!regularStages.isEmpty()){
@@ -188,7 +188,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			setEndingStages(acc, true);
 		}
 	}
-	
+
 	public void finishStage(@NotNull Player p, @NotNull StageControllerImplementation<?> stage) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for player " + p.getName() + " (coming from " + stage.toString() + ") via " + DebugUtils.stackTraces(1, 3));
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
@@ -236,7 +236,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			manager.questUpdated(p);
 		});
 	}
-	
+
 	private void endStage(@NotNull PlayerAccount acc, @NotNull StageControllerImplementation<?> stage,
 			@NotNull Runnable runAfter) {
 		if (acc.isCurrent()){
@@ -284,7 +284,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			runAfter.run();
 		}
 	}
-	
+
 	public void setStage(@NotNull PlayerAccount acc, int id) {
 		StageControllerImplementation<?> stage = regularStages.get(id);
 		Player p = acc.getPlayer();
@@ -304,7 +304,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
 		}
 	}
-	
+
 	public void setEndingStages(@NotNull PlayerAccount acc, boolean launchStage) {
 		Player p = acc.getPlayer();
 		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null && launchStage)
@@ -324,14 +324,14 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (QuestsConfigurationImplementation.getConfiguration().showNextParticles())
 			QuestsConfigurationImplementation.getConfiguration().getParticleNext().send(p, Arrays.asList(p));
 	}
-	
+
 	public void remove(){
 		regularStages.forEach(StageControllerImplementation::unload);
 		regularStages.clear();
 		endStages.forEach(end -> end.getStage().unload());
 		endStages.clear();
 	}
-	
+
 	public void save(@NotNull ConfigurationSection section) {
 		ConfigurationSection stagesSection = section.createSection("stages");
 		for (int i = 0; i < regularStages.size(); i++) {
@@ -343,7 +343,7 @@ public class QuestBranchImplementation implements QuestBranch {
 				QuestsPlugin.getPlugin().noticeSavingFailure();
 			}
 		}
-		
+
 		ConfigurationSection endSection = section.createSection("endingStages");
 		for (int i = 0; i < endStages.size(); i++) {
 			EndingStageImplementation en = endStages.get(i);
@@ -360,15 +360,15 @@ public class QuestBranchImplementation implements QuestBranch {
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + "}";
 	}
-	
+
 	public boolean load(@NotNull ConfigurationSection section) {
 		ConfigurationSection stagesSection;
-		if (section.isList("stages")) { // migration on 0.19.3: TODO remove
+		if (section.isList("stages")) { // TODO migration 0.19.3
 			List<Map<?, ?>> stages = section.getMapList("stages");
 			section.set("stages", null);
 			stagesSection = section.createSection("stages");
@@ -386,7 +386,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		}else {
 			stagesSection = section.getConfigurationSection("stages");
 		}
-		
+
 		for (int id : stagesSection.getKeys(false).stream().map(Integer::parseInt).sorted().collect(Collectors.toSet())) {
 			try{
 				addRegularStage(StageControllerImplementation.loadFromConfig(this,
@@ -398,9 +398,9 @@ public class QuestBranchImplementation implements QuestBranch {
 				return false;
 			}
 		}
-		
+
 		ConfigurationSection endingStagesSection = null;
-		if (section.isList("endingStages")) { // migration on 0.19.3: TODO remove
+		if (section.isList("endingStages")) { // TODO migration 0.19.3
 			List<Map<?, ?>> endingStages = section.getMapList("endingStages");
 			section.set("endingStages", null);
 			endingStagesSection = section.createSection("endingStages");
@@ -411,7 +411,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		}else if (section.contains("endingStages")) {
 			endingStagesSection = section.getConfigurationSection("endingStages");
 		}
-		
+
 		if (endingStagesSection != null) {
 			for (String key : endingStagesSection.getKeys(false)) {
 				try{
@@ -426,8 +426,8 @@ public class QuestBranchImplementation implements QuestBranch {
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 }

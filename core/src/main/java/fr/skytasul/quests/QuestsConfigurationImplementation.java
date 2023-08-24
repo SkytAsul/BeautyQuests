@@ -1,16 +1,8 @@
 package fr.skytasul.quests;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -23,11 +15,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
-import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.api.utils.*;
 import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
@@ -49,26 +37,26 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private ParticleEffect particleStart;
 	private ParticleEffect particleTalk;
 	private ParticleEffect particleNext;
-	
+
 	private ItemStack holoLaunchItem = null;
 	private ItemStack holoLaunchNoItem = null;
 	private ItemStack holoTalkItem = null;
-	
+
 	private FireworkMeta defaultFirework = null;
 
 	boolean backups = true;
-	
+
 	boolean saveCycleMessage = true;
 	int saveCycle = 15;
-	int firstQuestID = -1; // changed in 0.19, TODO
-	
+	int firstQuestID = -1; // TODO migration 0.19
+
 	private final FileConfiguration config;
 	private QuestsConfig quests;
 	private DialogsConfig dialogs;
 	private QuestsMenuConfig menu;
 	private StageDescriptionConfig stageDescription;
 	private QuestDescriptionConfig questDescription;
-	
+
 	QuestsConfigurationImplementation(FileConfiguration config) {
 		this.config = config;
 
@@ -78,7 +66,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stage description"));
 		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
 	}
-	
+
 	boolean update() {
 		boolean result = false;
 		result |= dialogs.update();
@@ -86,11 +74,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		result |= stageDescription.update();
 		return result;
 	}
-	
+
 	void init() {
 		backups = config.getBoolean("backups", true);
 		if (!backups) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
-		
+
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
 		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
@@ -113,7 +101,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
 		}
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
-		
+
 		if (MinecraftVersion.MAJOR >= 9) {
 			particleStart = loadParticles("start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
 			particleTalk = loadParticles("talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
@@ -123,7 +111,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
 		holoTalkItem = loadHologram("talkItem");
-		
+
 		if (BeautyQuests.getInstance().getDataFile().contains("firework")) {
 			defaultFirework = BeautyQuests.getInstance().getDataFile().getSerializable("firework", FireworkMeta.class);
 		}else {
@@ -133,7 +121,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			defaultFirework = fm;
 		}
 	}
-	
+
 	private void initializeTranslations() {
 		if (MinecraftVersion.MAJOR >= 13) {
 			String fileName = minecraftTranslationsFile;
@@ -172,14 +160,14 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 		return particle;
 	}
-	
+
 	private ItemStack loadHologram(String name) {
 		if (BeautyQuests.getInstance().getDataFile().contains(name)){
 			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
 		}
 		return null;
 	}
-	
+
 	private String loadSound(String key) {
 		String sound = config.getString(key);
 		try {
@@ -190,7 +178,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 		return sound;
 	}
-	
+
 	private boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
 			String newKey) {
 		if (oldConfig.contains(oldKey)) {
@@ -233,39 +221,39 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	public String getPrefix() {
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
 	}
-	
+
 	public boolean isTextHologramDisabled() {
 		return disableTextHologram;
 	}
-	
+
 	public boolean showStartParticles() {
 		return particleStart != null;
 	}
-	
+
 	public ParticleEffect getParticleStart() {
 		return particleStart;
 	}
-	
+
 	public boolean showTalkParticles() {
 		return particleTalk != null;
 	}
-	
+
 	public ParticleEffect getParticleTalk() {
 		return particleTalk;
 	}
-	
+
 	public boolean showNextParticles() {
 		return particleNext != null;
 	}
-	
+
 	public ParticleEffect getParticleNext() {
 		return particleNext;
 	}
-	
+
 	public double getHologramsHeight() {
 		return hologramsHeight;
 	}
-	
+
 	public boolean isCustomHologramNameShown() {
 		return showCustomHologramName;
 	}
@@ -281,27 +269,27 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	public ItemStack getHoloTalkItem() {
 		return holoTalkItem;
 	}
-	
+
 	public FireworkMeta getDefaultFirework() {
 		return defaultFirework;
 	}
-	
+
 	public boolean hookAccounts() {
 		return hookAcounts && InternalIntegrations.AccountsHook.isEnabled();
 	}
-	
+
 	public boolean usePlayerBlockTracker() {
 		return usePlayerBlockTracker && InternalIntegrations.PlayerBlockTracker.isEnabled();
 	}
-	
+
 	public boolean isMinecraftTranslationsEnabled() {
 		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
-	
+
 	public QuestDescription getQuestDescription() {
 		return questDescription;
 	}
-	
+
 	public class QuestsConfig implements QuestsConfiguration.Quests {
 
 		private int defaultTimer = 5;
@@ -461,7 +449,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 
 	public class DialogsConfig implements QuestsConfiguration.Dialogs {
-		
+
 		private boolean inActionBar = false;
 		private int defaultTime = 100;
 		private boolean defaultSkippable = true;
@@ -469,16 +457,16 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean history = true;
 		private int maxMessagesPerHistoryPage = -1;
 		private int maxDistance = 15, maxDistanceSquared = 15 * 15;
-		
+
 		private String defaultPlayerSound = null;
 		private String defaultNPCSound = null;
-		
+
 		private ConfigurationSection config;
-		
+
 		private DialogsConfig(ConfigurationSection config) {
 			this.config = config;
 		}
-		
+
 		private boolean update() {
 			boolean result = false;
 			if (config.getParent() != null) {
@@ -489,7 +477,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 			return result;
 		}
-		
+
 		private void init() {
 			inActionBar = MinecraftVersion.MAJOR > 8 && config.getBoolean("inActionBar");
 			defaultTime = config.getInt("defaultTime");
@@ -499,36 +487,36 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			maxMessagesPerHistoryPage = config.getInt("max messages per history page");
 			maxDistance = config.getInt("maxDistance");
 			maxDistanceSquared = maxDistance <= 0 ? 0 : (maxDistance * maxDistance);
-			
+
 			defaultPlayerSound = config.getString("defaultPlayerSound");
 			defaultNPCSound = config.getString("defaultNPCSound");
 		}
-		
+
 		@Override
 		public boolean sendInActionBar() {
 			return inActionBar;
 		}
-		
+
 		@Override
 		public int getDefaultTime() {
 			return defaultTime;
 		}
-		
+
 		@Override
 		public boolean isSkippableByDefault() {
 			return defaultSkippable;
 		}
-		
+
 		@Override
 		public boolean isClickDisabled() {
 			return disableClick;
 		}
-		
+
 		@Override
 		public boolean isHistoryEnabled() {
 			return history;
 		}
-		
+
 		@Override
 		public int getMaxMessagesPerHistoryPage() {
 			return maxMessagesPerHistoryPage;
@@ -538,36 +526,36 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		public int getMaxDistance() {
 			return maxDistance;
 		}
-		
+
 		@Override
 		public int getMaxDistanceSquared() {
 			return maxDistanceSquared;
 		}
-		
+
 		@Override
 		public String getDefaultPlayerSound() {
 			return defaultPlayerSound;
 		}
-		
+
 		@Override
 		public String getDefaultNPCSound() {
 			return defaultNPCSound;
 		}
-		
+
 	}
-	
+
 	public class QuestsMenuConfig implements QuestsConfiguration.QuestsMenu {
-		
+
 		private Set<PlayerListCategory> tabs;
 		private boolean openNotStartedTabWhenEmpty = true;
 		private boolean allowPlayerCancelQuest = true;
-		
+
 		private ConfigurationSection config;
-		
+
 		private QuestsMenuConfig(ConfigurationSection config) {
 			this.config = config;
 		}
-		
+
 		private boolean update() {
 			boolean result = false;
 			if (config.getParent() != null) {
@@ -576,7 +564,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 			return result;
 		}
-		
+
 		private void init() {
 			tabs = config.getStringList("enabledTabs").stream().map(PlayerListCategory::fromString).collect(Collectors.toSet());
 			if (tabs.isEmpty()) {
@@ -586,24 +574,24 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 		}
-		
+
 		@Override
 		public boolean isNotStartedTabOpenedWhenEmpty() {
 			return openNotStartedTabWhenEmpty;
 		}
-		
+
 		@Override
 		public boolean allowPlayerCancelQuest() {
 			return allowPlayerCancelQuest;
 		}
-		
+
 		@Override
 		public Set<PlayerListCategory> getEnabledTabs() {
 			return tabs;
 		}
-		
+
 	}
-	
+
 	public class StageDescriptionConfig implements QuestsConfiguration.StageDescription {
 
 		private String itemSingleFormat, itemMultipleFormat;

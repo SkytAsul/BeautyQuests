@@ -16,21 +16,17 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
-import fr.skytasul.quests.api.npcs.BqInternalNpc;
-import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
+import fr.skytasul.quests.api.npcs.*;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
-import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.npcs.BqNpcManager;
-import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class BqNpcManagerImplementation implements BqNpcManager {
-	
+
 	private static final String SEPARATOR = "#";
 
 	private final BiMap<String, BqInternalNpcFactory> internalFactories = HashBiMap.create();
 	private final Map<String, BqNpcImplementation> npcs = new HashMap<>();
-	
+
 	private BqInternalNpcFactory last = null;
 
 	public @NotNull String getFactoryKey(@NotNull BqInternalNpcFactory internalFactory) {
@@ -95,7 +91,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		npcs.put(npc.getId(), npc);
 		return npc;
 	}
-	
+
 	@Override
 	public @Nullable BqNpcImplementation getById(String id) {
 		return npcs.computeIfAbsent(id, this::registerNPC);
@@ -110,7 +106,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		int npcId;
 
 		int separatorIndex = id.indexOf(SEPARATOR);
-		if (separatorIndex == -1) { // TODO remove, migration in 1.0
+		if (separatorIndex == -1) { // TODO migration 1.0
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("Loading NPC with id " + id + " from a previous version of the plugin.");
 			factory = getMigrationFactory();
@@ -123,7 +119,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 
 		return new BqNpcImplementation(new WrappedInternalNpc(factory, npcId));
 	}
-	
+
 	@Override
 	public void npcRemoved(BqInternalNpcFactory npcFactory, int id) {
 		String npcId = getNpcId(npcFactory, id);
@@ -132,7 +128,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		npc.delete("NPC " + npcId + " removed");
 		npcs.remove(npcId);
 	}
-	
+
 	@Override
 	public void npcClicked(BqInternalNpcFactory npcFactory, @Nullable Cancellable event, int npcID, @NotNull Player p,
 			@NotNull NpcClickType click) {
@@ -143,7 +139,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (event != null)
 			event.setCancelled(newEvent.isCancelled());
 	}
-	
+
 	@Override
 	public void reload(BqInternalNpcFactory npcFactory) {
 		npcs.forEach((id, npc) -> {
@@ -163,7 +159,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		npcs.values().forEach(BqNpcImplementation::unload);
 		npcs.clear();
 	}
-	
+
 	class WrappedInternalNpc {
 
 		private final BqInternalNpcFactory factory;

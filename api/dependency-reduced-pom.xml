@@ -41,6 +41,14 @@
               </includes>
             </filter>
           </filters>
+          <shadeSourcesContent>true</shadeSourcesContent>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
       <plugin>
@@ -49,6 +57,19 @@
         <configuration>
           <skip>false</skip>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

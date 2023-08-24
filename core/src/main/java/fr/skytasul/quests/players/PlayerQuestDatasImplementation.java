@@ -23,7 +23,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	private int stage;
 	protected Map<String, Object> additionalDatas;
 	protected StringJoiner questFlow = new StringJoiner(";");
-	
+
 	private Boolean hasDialogsCached = null;
 
 	public PlayerQuestDatasImplementation(PlayerAccountImplementation acc, int questID) {
@@ -47,12 +47,12 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 		if (questFlow != null) this.questFlow.add(questFlow);
 		if (branch != -1 && stage == -1) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Incorrect quest " + questID + " datas for " + acc.debugName());
 	}
-	
+
 	@Override
 	public Quest getQuest() {
 		return QuestsAPI.getAPI().getQuestsManager().getQuest(questID);
 	}
-	
+
 	@Override
 	public int getQuestID() {
 		return questID;
@@ -67,7 +67,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	public void incrementFinished() {
 		finished++;
 	}
-	
+
 	@Override
 	public int getTimesFinished() {
 		return finished;
@@ -102,17 +102,17 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	public void setStage(int stage) {
 		this.stage = stage;
 	}
-	
+
 	@Override
 	public boolean hasStarted() {
 		return branch != -1;
 	}
-	
+
 	@Override
 	public boolean isInQuestEnd() {
 		return branch == -2;
 	}
-	
+
 	@Override
 	public void setInQuestEnd() {
 		setBranch(-2);
@@ -132,7 +132,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	public <T> T getAdditionalData(String key) {
 		return (T) additionalDatas.get(key);
 	}
-	
+
 	@Override
 	public <T> T setAdditionalData(String key, T value) {
 		return (T) (value == null ? additionalDatas.remove(key) : additionalDatas.put(key, value));
@@ -142,33 +142,33 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	public Map<String, Object> getStageDatas(int stage) {
 		return getAdditionalData("stage" + stage);
 	}
-	
+
 	@Override
 	public void setStageDatas(int stage, Map<String, Object> datas) {
 		setAdditionalData("stage" + stage, datas);
 	}
-	
+
 	@Override
 	public long getStartingTime() {
 		return getAdditionalData("starting_time");
 	}
-	
+
 	@Override
 	public void setStartingTime(long time) {
 		setAdditionalData("starting_time", time == 0 ? null : time);
 	}
-	
+
 	@Override
 	public String getQuestFlow() {
 		return questFlow.toString();
 	}
-	
+
 	@Override
 	public void addQuestFlow(StageController finished) {
 		questFlow.add(finished.getBranch().getId() + ":" + finished.getFlowId());
 		hasDialogsCached = null;
 	}
-	
+
 	@Override
 	public void resetQuestFlow() {
 		questFlow = new StringJoiner(";");
@@ -182,11 +182,11 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 		}
 		return hasDialogsCached.booleanValue();
 	}
-	
+
 	public void questEdited() {
 		hasDialogsCached = null;
 	}
-	
+
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
 
@@ -203,20 +203,20 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 
 	public static PlayerQuestDatasImplementation deserialize(PlayerAccountImplementation acc, Map<String, Object> map) {
 		PlayerQuestDatasImplementation datas = new PlayerQuestDatasImplementation(acc, (int) map.get("questID"));
-		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO remove, outdated since 0.19
+		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO migration 0.19
 		if (map.containsKey("timesFinished")) datas.finished = (int) map.get("timesFinished");
 		if (map.containsKey("timer")) datas.timer = Utils.parseLong(map.get("timer"));
 		if (map.containsKey("currentBranch")) datas.branch = (int) map.get("currentBranch");
 		if (map.containsKey("currentStage")) datas.stage = (int) map.get("currentStage");
 		if (map.containsKey("datas")) datas.additionalDatas = (Map<String, Object>) map.get("datas");
 		if (map.containsKey("questFlow")) datas.questFlow.add((String) map.get("questFlow"));
-		
-		for (int i = 0; i < 5; i++) { // TODO remove ; migration purpose ; added on 0.20
+
+		for (int i = 0; i < 5; i++) { // TODO migration 0.20
 			if (map.containsKey("stage" + i + "datas")) {
 				datas.additionalDatas.put("stage" + i, map.get("stage" + i + "datas"));
 			}
 		}
-		
+
 		return datas;
 	}
 

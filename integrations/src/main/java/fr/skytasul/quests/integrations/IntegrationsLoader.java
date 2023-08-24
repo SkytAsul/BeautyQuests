@@ -18,13 +18,7 @@ import fr.skytasul.quests.integrations.maps.BQBlueMap;
 import fr.skytasul.quests.integrations.maps.BQDynmap;
 import fr.skytasul.quests.integrations.mcmmo.McCombatLevelRequirement;
 import fr.skytasul.quests.integrations.mcmmo.McMMOSkillRequirement;
-import fr.skytasul.quests.integrations.mobs.BQAdvancedSpawners;
-import fr.skytasul.quests.integrations.mobs.BQBoss;
-import fr.skytasul.quests.integrations.mobs.BQLevelledMobs;
-import fr.skytasul.quests.integrations.mobs.BQWildStacker;
-import fr.skytasul.quests.integrations.mobs.CitizensFactory;
-import fr.skytasul.quests.integrations.mobs.MythicMobs;
-import fr.skytasul.quests.integrations.mobs.MythicMobs5;
+import fr.skytasul.quests.integrations.mobs.*;
 import fr.skytasul.quests.integrations.npcs.BQCitizens;
 import fr.skytasul.quests.integrations.npcs.BQSentinel;
 import fr.skytasul.quests.integrations.npcs.BQServerNPCs;
@@ -46,10 +40,6 @@ public class IntegrationsLoader {
 	public static IntegrationsLoader getInstance() {
 		return instance;
 	}
-	
-	//public static final BQDependency par = new BQDependency("Parties");
-	//public static final BQDependency eboss = new BQDependency("EpicBosses", () -> Bukkit.getPluginManager().registerEvents(new EpicBosses(), BeautyQuests.getInstance()));
-	//public static final BQDependency interactions = new BQDependency("Interactions", () -> InteractionsAPI.); TODO
 	
 	private IntegrationsConfiguration config;
 

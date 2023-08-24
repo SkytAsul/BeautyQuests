@@ -31,7 +31,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 
 	private final boolean left;
 	private final BQLocation lc;
-	
+
 	private Located.LocatedBlock locatedBlock;
 
 	public StageInteractLocation(StageController controller, boolean leftClick, BQLocation location) {
@@ -47,7 +47,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 	public boolean needLeftClick(){
 		return left;
 	}
-	
+
 	@Override
 	public Located getLocated() {
 		if (lc == null)
@@ -59,19 +59,19 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 		}
 		return locatedBlock;
 	}
-	
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
 		if (MinecraftVersion.MAJOR >= 9 && e.getHand() != EquipmentSlot.HAND) return;
-		
+
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		
+
 		if (!lc.equals(e.getClickedBlock().getLocation()))
 			return;
-		
+
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (left) e.setCancelled(true);
@@ -83,7 +83,8 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
 		placeholders.compose(lc);
-		// TODO remove following, for migration only
+
+		// TODO migration 1.0
 		placeholders.registerIndexed("location", lc.getBlockX() + " " + lc.getBlockY() + " " + lc.getBlockZ());
 	}
 
@@ -97,17 +98,17 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 		section.set("leftClick", left);
 		section.set("location", lc.serialize());
 	}
-	
+
 	public static StageInteractLocation deserialize(ConfigurationSection section, StageController controller) {
 		return new StageInteractLocation(controller, section.getBoolean("leftClick"),
 				BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)));
 	}
 
 	public static class Creator extends StageCreation<StageInteractLocation> {
-		
+
 		private boolean leftClick = false;
 		private Location location;
-		
+
 		public Creator(@NotNull StageCreationContext<StageInteractLocation> context) {
 			super(context);
 		}
@@ -118,7 +119,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 
 			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), event -> setLeftClick(!leftClick));
 		}
-		
+
 		public void setLeftClick(boolean leftClick) {
 			if (this.leftClick != leftClick) {
 				this.leftClick = leftClick;
@@ -140,7 +141,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 					item -> ItemUtils.loreOptionValue(item, Lang.Location.format(getBQLocation())));
 			this.location = location;
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
@@ -166,7 +167,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 		public StageInteractLocation finishStage(StageController controller) {
 			return new StageInteractLocation(controller, leftClick, getBQLocation());
 		}
-		
+
 	}
 
 }
