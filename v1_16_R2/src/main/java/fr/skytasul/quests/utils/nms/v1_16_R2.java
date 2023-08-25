@@ -2,28 +2,18 @@ package fr.skytasul.quests.utils.nms;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
 import net.minecraft.server.v1_16_R2.*;
 
-import io.netty.buffer.ByteBuf;
-
 public class v1_16_R2 extends NMS{
-	
-	@Override
-	public Object bookPacket(ByteBuf buf){
-		return new PacketPlayOutOpenBook(EnumHand.MAIN_HAND);
-	}
 
 	@Override
-	public void sendPacket(Player p, Object packet){
-		Validate.isTrue(packet instanceof Packet, "The object specified is not a packet.");
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket((Packet<?>) packet);
+	public void openBookInHand(Player p) {
+		PacketPlayOutOpenBook packet = new PacketPlayOutOpenBook(EnumHand.MAIN_HAND);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 	}
 
 	@Override

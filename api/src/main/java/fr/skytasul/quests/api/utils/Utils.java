@@ -3,21 +3,11 @@ package fr.skytasul.quests.api.utils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -40,7 +30,7 @@ import fr.skytasul.quests.api.localization.Lang;
  * @author SkytAsul
  */
 public class Utils{
-	
+
 	public static Optional<String> getFilenameExtension(String filename) {
 		return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
 	}
@@ -51,44 +41,44 @@ public class Utils{
 		i = i % 60;
 		return i < 10 ? j + ":0" + i : j + ":" + i;
 	}
-	
+
 	public static String millisToHumanString(long time) {
 		if (time == 0) return "x";
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		long weeks = time / 604_800_000;
 		if (weeks != 0)
 			sb.append(Lang.TimeWeeks.quickFormat("weeks_amount", weeks));
 		time -= weeks * 604_800_000;
-		
+
 		long days = time / 86_400_000;
 		if (sb.length() != 0) sb.append(' ');
 		if (days != 0)
 			sb.append(Lang.TimeDays.quickFormat("days_amount", days));
 		time -= days * 86_400_000;
-		
+
 		long hours = time / 3_600_000;
 		if (sb.length() != 0) sb.append(' ');
 		if (hours != 0)
 			sb.append(Lang.TimeHours.quickFormat("hours_amount", hours));
 		time -= hours * 3_600_000;
-		
+
 		long minutes = time / 60_000;
 		if (sb.length() != 0) sb.append(' ');
 		if (minutes != 0)
 			sb.append(Lang.TimeMinutes.quickFormat("minutes_amount", minutes));
 		time -= minutes * 60_000;
-		
+
 		if (sb.length() == 0) sb.append(Lang.TimeLessMinute.toString());
-		
+
 		return sb.toString();
 	}
 
 	public static String getStringFromItemStack(ItemStack is, String amountColor, boolean showXOne) {
 		return ItemUtils.getName(is, true) + ((is.getAmount() > 1 || showXOne) ? "§r" + amountColor + " x" + is.getAmount() : "");
 	}
-	
+
 	public static void giveItems(Player p, List<ItemStack> items) {
 		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new));
 		if (!leftover.isEmpty()) {
@@ -107,7 +97,7 @@ public class Utils{
 		}
 		return null;
 	}
-	
+
 	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
 		if (value == null) return Collections.emptyList();
 		List<T> list = new ArrayList<>();
@@ -118,13 +108,13 @@ public class Utils{
 		}
 		return list;
 	}
-	
+
 	public static long parseLong(Object obj) {
 		if (obj instanceof Number) return ((Number) obj).longValue();
 		if (obj instanceof String) return Long.parseLong((String) obj);
 		return 0;
 	}
-	
+
 	public static void walkResources(Class<?> clazz, String path, int depth, Consumer<Path> consumer) throws URISyntaxException, IOException {
 		URI uri = clazz.getResource(path).toURI();
 		FileSystem fileSystem = null;
@@ -136,7 +126,7 @@ public class Utils{
 			}else {
 				myPath = Paths.get(uri);
 			}
-			
+
 			try (Stream<Path> walker = Files.walk(myPath, depth)) {
 				walker.forEach(consumer);
 			}
@@ -144,7 +134,7 @@ public class Utils{
 			if (fileSystem != null) fileSystem.close();
 		}
 	}
-	
+
 	public static <T> List<Map<String, Object>> serializeList(Collection<T> objects, Function<T, Map<String, Object>> serialize) {
 		List<Map<String, Object>> ls = new ArrayList<>();
 		for (T obj : objects){
@@ -152,7 +142,7 @@ public class Utils{
 		}
 		return ls;
 	}
-	
+
 	public static <T> List<T> deserializeList(List<Map<?, ?>> serialized, Function<Map<String, Object>, T> deserialize) {
 		List<T> ls = new ArrayList<>();
 		if (serialized != null) {
@@ -162,7 +152,7 @@ public class Utils{
 		}
 		return ls;
 	}
-	
+
 	public static Map<String, Object> mapFromConfigurationSection(ConfigurationSection section){
 		Map<String, Object> map = section.getValues(true);
 		for (Entry<String, Object> entry : section.getValues(true).entrySet()) {
@@ -172,7 +162,7 @@ public class Utils{
 		}
 		return map;
 	}
-	
+
 	public static ConfigurationSection createConfigurationSection(Map<String, Object> content) {
 		MemoryConfiguration section = new MemoryConfiguration();
 		setConfigurationSectionContent(section, content);
@@ -188,7 +178,7 @@ public class Utils{
 			}
 		});
 	}
-	
+
 	public static List<ItemStack> combineItems(List<ItemStack> items) {
 		ArrayList<ItemStack> newItems = new ArrayList<>(items.size());
 		items: for (ItemStack original : items) {
@@ -203,7 +193,7 @@ public class Utils{
 		newItems.trimToSize();
 		return newItems;
 	}
-	
+
 	public static List<ItemStack> extractItems(List<ItemStack> items) {
 		List<ItemStack> newItems = new ArrayList<>(items.size());
 		for (ItemStack original : items) {
@@ -223,12 +213,12 @@ public class Utils{
 		}
 		return newItems;
 	}
-	
+
 	private static SimpleDateFormat cachedFormat = new SimpleDateFormat("yyyyMMddHHmmss");;
 	public static DateFormat getDateFormat(){
 		return cachedFormat;
 	}
-	
+
 	public static String convertLocationToString(Location loc) {
 		String world = loc.getWorld().getName();
 		double x = loc.getX();
@@ -241,7 +231,7 @@ public class Utils{
 		}
 		return world + " " + x + " " + y + " " + z;
 	}
-	
+
 	public static Location convertStringToLocation(String loc) {
 		if (loc != null) {
 			String[] coords = loc.split(" ");
@@ -258,7 +248,7 @@ public class Utils{
 		}
 		return null;
 	}
-	
+
 	public static boolean isQuestItem(ItemStack item) {
 		if (item == null) return false;
 		String lore = Lang.QuestItemLore.toString();
@@ -272,7 +262,8 @@ public class Utils{
 	public static XMaterial mobItem(EntityType type) {
 		if (type == null) return XMaterial.SPONGE;
 		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
-		if (material.isPresent()) return material.get();
+		if (material.isPresent() && material.get().isSupported())
+			return material.get();
 		if (type == EntityType.WITHER) return XMaterial.WITHER_SKELETON_SKULL;
 		if (type == EntityType.IRON_GOLEM) return XMaterial.IRON_BLOCK;
 		if (type == EntityType.SNOWMAN) return XMaterial.SNOW_BLOCK;
@@ -285,7 +276,7 @@ public class Utils{
 		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
 		return XMaterial.SPONGE;
 	}
-	
+
 	public static String clickName(ClickType click) {
 		switch (click) {
 			case LEFT:

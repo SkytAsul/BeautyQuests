@@ -3,17 +3,9 @@ package fr.skytasul.quests.players;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,7 +31,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	private final Cache<Integer, PlayerAccountImplementation> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 	
 	protected final Map<Integer, PlayerAccountImplementation> loadedAccounts = new HashMap<>();
-	private final Map<Integer, String> identifiersIndex = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Integer, String> identifiersIndex = new ConcurrentHashMap<>();
 	
 	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
 	

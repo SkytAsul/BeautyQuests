@@ -45,7 +45,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 	
 	@Override
 	public final void click(T existing, ItemStack item, ClickType clickType) {
-		if (clickType == getRemoveClick(existing)) {
+		if (existing != null && clickType == getRemoveClick(existing)) {
 			remove(existing);
 		}else {
 			if (existing == null) {

@@ -21,8 +21,6 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 public class QuestUtils {
 
@@ -31,11 +29,7 @@ public class QuestUtils {
 		ItemStack old = p.getInventory().getItem(slot);
 		p.getInventory().setItem(slot, book);
 
-		ByteBuf buf = Unpooled.buffer(256);
-		buf.setByte(0, (byte) 0);
-		buf.writerIndex(1);
-
-		NMS.getNMS().sendPacket(p, NMS.getNMS().bookPacket(buf));
+		NMS.getNMS().openBookInHand(p);
 		p.getInventory().setItem(slot, old);
 	}
 

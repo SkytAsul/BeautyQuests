@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,11 +17,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.OutsideEditor;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Flag;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.SecretCommand;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Switch;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.*;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
 import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
@@ -232,7 +227,10 @@ public class CommandsAdmin implements OrphanCommand {
 		
 		QuestUtils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
-			try (Database db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"))) {
+			Database db = null;
+			try {
+				// no try-with-resource because the database is used in another thread
+				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
 				final Database fdb = db;
@@ -246,9 +244,11 @@ public class CommandsAdmin implements OrphanCommand {
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
 					}
 				});
-			}catch (SQLException ex) {
+			} catch (Exception ex) {
 				actor.error("§cConnection to database has failed. Aborting. " + ex.getMessage());
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while connecting to the database for datas migration.", ex);
+				if (db != null)
+					db.close();
 			}
 		});
 	}

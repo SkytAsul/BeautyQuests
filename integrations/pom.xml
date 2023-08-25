@@ -64,6 +64,10 @@
 			<id>bg-repo</id>
 			<url>https://repo.bg-software.com/repository/api/</url>
 		</repository>
+		<repository>
+			<id>phoenix</id>
+			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -91,7 +95,7 @@
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizens-main</artifactId>
-			<version>2.0.31-SNAPSHOT</version>
+			<version>2.0.32-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
@@ -102,9 +106,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.github.znetworkw.znpcservers</groupId>
-			<artifactId>znpcservers</artifactId>
-			<version>3.6</version>
+			<groupId>io.github.gonalez</groupId>
+			<artifactId>znpcs</artifactId>
+			<version>4.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Pyrbu</groupId>
+			<artifactId>ZNPCsPlus</artifactId>
+			<version>1.0.8</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -195,6 +205,18 @@
 			<groupId>com.github.LoneDev6</groupId>
 			<artifactId>api-itemsadder</artifactId>
 			<version>3.2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.Indyuce</groupId>
+			<artifactId>MMOItems-API</artifactId>
+			<version>6.9.4-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency> <!-- Required for MMOItems-API to compile -->
+			<groupId>io.lumine</groupId>
+			<artifactId>MythicLib-dist</artifactId>
+			<version>1.5.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

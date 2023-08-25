@@ -690,6 +690,8 @@ inv:
     repairCostLore: Compares repair cost for armors and swords
     itemsAdder: ItemsAdder
     itemsAdderLore: Compares ItemsAdder IDs
+    mmoItems: MMOItems item
+    mmoItemsLore: Compares MMOItems types and IDs
   editTitle:
     name: Edit Title
     title: §6Title

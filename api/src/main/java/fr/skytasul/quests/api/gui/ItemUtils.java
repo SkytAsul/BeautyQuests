@@ -9,16 +9,11 @@ import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.KnowledgeBookMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
@@ -29,10 +24,10 @@ import net.md_5.bungee.api.ChatColor;
 public final class ItemUtils {
 
 	private ItemUtils() {}
-	
+
 	private static final int LORE_LINE_LENGTH = 40;
 	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
-	
+
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
 	 * @param type material type
@@ -41,13 +36,18 @@ public final class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack item(XMaterial type, String name, String... lore) {
+		if (!type.isSupported()) {
+			QuestsPlugin.getPlugin().getLogger()
+					.warning("Trying to create an item for an unsupported material " + type.name());
+			type = XMaterial.SPONGE;
+		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		im.addItemFlags(ItemFlag.values());
 		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
-	
+
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
 	 * @param type material type
@@ -56,13 +56,18 @@ public final class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack item(XMaterial type, String name, List<String> lore) {
+		if (!type.isSupported()) {
+			QuestsPlugin.getPlugin().getLogger()
+					.warning("Trying to create an item for an unsupported material " + type.name());
+			type = XMaterial.SPONGE;
+		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		im.addItemFlags(ItemFlag.values());
 		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
-	
+
 	/**
 	 * Create an ItemStack instance of a skull item
 	 * @param name name of the item
@@ -77,7 +82,7 @@ public final class ItemUtils {
 		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
-	
+
 	private static ItemMeta applyMeta(ItemMeta im, String name, Object lore) {
 		List<String> editLore = null;
 		if (name != null) {
@@ -93,7 +98,7 @@ public final class ItemUtils {
 			}
 			im.setDisplayName(name);
 		}
-		
+
 		if (lore instanceof List) {
 			List<String> loreList = (List<String>) lore;
 			if (!loreList.isEmpty()) {
@@ -117,24 +122,24 @@ public final class ItemUtils {
 		if (editLore != null) im.setLore(getLoreLines(editLore));
 		return im;
 	}
-	
+
 	public static ItemStack nameAndLore(ItemStack is, String name, String... lore) {
 		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
 		return is;
 	}
-	
+
 	public static ItemStack nameAndLore(ItemStack is, String name, List<String> lore) {
 		is.setItemMeta(applyMeta(is.getItemMeta(), name, lore));
 		return is;
 	}
-	
+
 	public static ItemStack clearVisibleAttributes(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
-		
+
 		// remove name and lore
 		im.setDisplayName(null);
 		im.setLore(null);
-		
+
 		// add flags to hide various descriptions,
 		// depending on the item type/attributes/other things
 		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -142,7 +147,7 @@ public final class ItemUtils {
 		if (is.getType().getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers())) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta || (MinecraftVersion.MAJOR >= 12 && im instanceof KnowledgeBookMeta)) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
-		
+
 		is.setItemMeta(im);
 		return is;
 	}
@@ -157,10 +162,10 @@ public final class ItemUtils {
 		ItemMeta im = is.getItemMeta();
 		im.setLore(getLoreLines(lore));
 		is.setItemMeta(im);
-		
+
 		return is;
 	}
-	
+
 	/**
 	 * Set the lore of an item (override old lore)
 	 * @param is ItemStack instance to edit
@@ -171,10 +176,10 @@ public final class ItemUtils {
 		ItemMeta im = is.getItemMeta();
 		im.setLore(getLoreLines(lore));
 		is.setItemMeta(im);
-		
+
 		return is;
 	}
-	
+
 	public static ItemStack loreOptionValue(ItemStack is, @Nullable Object value) {
 		return lore(is, QuestOption.formatNullableValue(value));
 	}
@@ -194,7 +199,7 @@ public final class ItemUtils {
 			return finalLines;
 		}else return Collections.emptyList();
 	}
-	
+
 	private static List<String> getLoreLines(List<String> lore) {
 		if (lore != null) {
 			List<String> finalLines = new ArrayList<>();
@@ -210,7 +215,7 @@ public final class ItemUtils {
 			return finalLines;
 		}else return Collections.emptyList();
 	}
-	
+
 	/**
 	 * Add some lore of an ItemStack instance, and keep the old lore
 	 * @param is ItemStack instance to edit
@@ -267,7 +272,7 @@ public final class ItemUtils {
 		is.setItemMeta(im);
 		return is;
 	}
-	
+
 	/**
 	 * Add a string at the end of the name of an ItemStack instance
 	 * @param is ItemStack instance to edit
@@ -277,11 +282,11 @@ public final class ItemUtils {
 	public static ItemStack nameAdd(ItemStack is, String add) {
 		return name(is, getName(is) + add);
 	}
-	
+
 	public static String getName(ItemStack is){
 		return getName(is, false);
 	}
-	
+
 	/**
 	 * Get the name of an ItemStack (if no custom name, then it will return the material name)
 	 * @param is ItemStack instance
@@ -293,25 +298,25 @@ public final class ItemUtils {
 		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
 		return is.getItemMeta().getDisplayName();
 	}
-	
+
 	public static boolean hasEnchant(ItemStack is, Enchantment en){
 		return is.getItemMeta().hasEnchant(en);
 	}
-	
+
 	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level){
 		ItemMeta im = is.getItemMeta();
 		if (im.addEnchant(en, level, true))
 			is.setItemMeta(im);
 		return is;
 	}
-	
+
 	public static ItemStack removeEnchant(ItemStack is, Enchantment en){
 		ItemMeta im = is.getItemMeta();
 		if (im.removeEnchant(en))
 			is.setItemMeta(im);
 		return is;
 	}
-	
+
 
 	/**
 	 * Immutable ItemStack instance with lore : <i>inv.stages.laterPage</i> and material : <i>pageItem</i>
@@ -342,13 +347,13 @@ public final class ItemUtils {
 	 * @see #itemNotDone
 	 */
 	public static final ImmutableItemStack itemDone = new ImmutableItemStack(addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0));
-	
+
 	/**
 	 * Immutable ItemStack instance with name: <i>inv.done</i> but red and strikethrough, material: charcoal
 	 * @see #itemDone
 	 */
 	public static final ImmutableItemStack itemNotDone = new ImmutableItemStack(item(XMaterial.CHARCOAL, "§c§l§m" + ChatColor.stripColor(Lang.done.toString())));
-	
+
 	/**
 	 * Get a glass pane ItemStack instance with the color wanted
 	 * @param color DyeColor wanted
@@ -368,7 +373,7 @@ public final class ItemUtils {
 	public static ItemStack itemSwitch(String name, boolean enabled, String... lore){
 		return item(enabled ? XMaterial.LIME_DYE : XMaterial.GRAY_DYE, (enabled ? "§a" : "§7") + name, lore);
 	}
-	
+
 	/**
 	 * Toggle a switch item, created with {@link #itemSwitch(String, boolean, String...)}
 	 * @param itemSwitch switch item
@@ -380,7 +385,7 @@ public final class ItemUtils {
 		setSwitch(itemSwitch, toggled);
 		return toggled;
 	}
-	
+
 	/**
 	 * Set the state of a switch item, created with {@link #itemSwitch(String, boolean, String...)}
 	 * @see #toggleSwitch(ItemStack)
@@ -397,5 +402,5 @@ public final class ItemUtils {
 		}else itemSwitch.setDurability((short) (enable ? 10 : 8));
 		return itemSwitch;
 	}
-	
+
 }

@@ -22,6 +22,7 @@ import fr.skytasul.quests.integrations.mobs.*;
 import fr.skytasul.quests.integrations.npcs.BQCitizens;
 import fr.skytasul.quests.integrations.npcs.BQSentinel;
 import fr.skytasul.quests.integrations.npcs.BQServerNPCs;
+import fr.skytasul.quests.integrations.npcs.BQZNPCsPlus;
 import fr.skytasul.quests.integrations.placeholders.PapiMessageProcessor;
 import fr.skytasul.quests.integrations.placeholders.PlaceholderRequirement;
 import fr.skytasul.quests.integrations.placeholders.QuestsPlaceholders;
@@ -54,6 +55,9 @@ public class IntegrationsLoader {
 		// NPCS
 		manager.addDependency(new BQDependency("ServersNPC",
 				() -> QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs()), null, this::isZnpcsVersionValid));
+
+		manager.addDependency(
+				new BQDependency("ZNPCsPlus", () -> QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus())));
 
 		manager.addDependency(new BQDependency("Citizens", () -> {
 			QuestsAPI.getAPI().addNpcFactory("citizens", new BQCitizens());
@@ -113,6 +117,7 @@ public class IntegrationsLoader {
 		manager.addDependency(new BQDependency("UltimateTimber",
 				() -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), QuestsPlugin.getPlugin())));
 		manager.addDependency(new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload));
+		manager.addDependency(new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload));
 	}
 
 	private void registerPapi() {
@@ -204,7 +209,7 @@ public class IntegrationsLoader {
 	}
 
 	private boolean isZnpcsVersionValid(Plugin plugin) {
-		if (plugin.getClass().getName().equals("io.github.znetworkw.znpcservers.ServersNPC")) // NOSONAR
+		if (plugin.getClass().getName().equals("io.github.gonalez.znpcs.ServersNPC")) // NOSONAR
 			return true;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ("
