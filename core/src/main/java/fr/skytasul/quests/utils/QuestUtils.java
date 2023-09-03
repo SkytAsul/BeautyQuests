@@ -1,5 +1,7 @@
 package fr.skytasul.quests.utils;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -133,10 +135,25 @@ public class QuestUtils {
 		});
 	}
 
+	public static boolean hasAnnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
+		if (clazz.isAnnotationPresent(annotation))
+			return true;
+
+		if (!annotation.isAnnotationPresent(Inherited.class))
+			return false;
+
+		for (Class<?> interf : clazz.getInterfaces()) {
+			if (hasAnnotation(interf, annotation))
+				return true;
+		}
+
+		return false;
+	}
+
 	public static void autoRegister(Object object) {
-		if (!object.getClass().isAnnotationPresent(AutoRegistered.class))
+		if (!hasAnnotation(object.getClass(), AutoRegistered.class))
 			throw new IllegalArgumentException("The class " + object.getClass().getName()
-					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registed as evenet listener.");
+					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registered as an events listener.");
 
 		if (object instanceof Listener) {
 			Bukkit.getPluginManager().registerEvents((Listener) object, BeautyQuests.getInstance());
@@ -144,9 +161,9 @@ public class QuestUtils {
 	}
 
 	public static void autoUnregister(Object object) {
-		if (!object.getClass().isAnnotationPresent(AutoRegistered.class))
+		if (!hasAnnotation(object.getClass(), AutoRegistered.class))
 			throw new IllegalArgumentException("The class " + object.getClass().getName()
-					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registed as evenet listener.");
+					+ " does not have the @AutoRegistered annotation and thus cannot be automatically registered as an events listener.");
 
 		if (object instanceof Listener) {
 			HandlerList.unregisterAll((Listener) object);

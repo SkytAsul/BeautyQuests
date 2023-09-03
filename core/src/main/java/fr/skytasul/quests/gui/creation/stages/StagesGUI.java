@@ -34,35 +34,34 @@ import fr.skytasul.quests.utils.QuestUtils;
 public class StagesGUI extends AbstractGui {
 
 	private static final int SLOT_FINISH = 52;
-	
+
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
 	private static final ItemStack notDone = ItemUtils.lore(ItemUtils.itemNotDone.clone(), Lang.cantFinish.toString());
-	
+
 	private List<Line> lines = new ArrayList<>();
-	
+
 	private final QuestCreationSession session;
 	private final StagesGUI previousBranch;
 
-	public Inventory inv;
 	int page;
 	private boolean stop = false;
 
 	public StagesGUI(QuestCreationSession session) {
 		this(session, null);
 	}
-	
+
 	public StagesGUI(QuestCreationSession session, StagesGUI previousBranch) {
 		this.session = session;
 		this.previousBranch = previousBranch;
 	}
-	
+
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
 		return Bukkit.createInventory(null, 54, Lang.INVENTORY_STAGES.toString());
 	}
 
 	@Override
-	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
 		page = 0;
 		for (int i = 0; i < 20; i++)
 			lines.add(new Line(i, i >= 15));
@@ -99,12 +98,12 @@ public class StagesGUI extends AbstractGui {
 		}
 		return null;
 	}
-	
+
 	public boolean isEmpty(){
 		if (lines.isEmpty()) return true; // if this StagesGUI has never been opened
 		return !getLine(0).isActive() && !getLine(15).isActive();
 	}
-	
+
 	public void deleteStageLine(Line line) {
 		if (line.isActive())
 			line.remove();
@@ -162,9 +161,14 @@ public class StagesGUI extends AbstractGui {
 	}
 
 	private void refresh() {
-		for (int i = 0; i < 3; i++) inv.setItem(i + 46, ItemUtils.item(i == page ? XMaterial.LIME_STAINED_GLASS_PANE : XMaterial.WHITE_STAINED_GLASS_PANE, Lang.regularPage.toString()));
-		inv.setItem(49, ItemUtils.item(page == 3 ? XMaterial.MAGENTA_STAINED_GLASS_PANE : XMaterial.PURPLE_STAINED_GLASS_PANE, Lang.branchesPage.toString()));
-		
+		for (int i = 0; i < 3; i++)
+			getInventory().setItem(i + 46,
+					ItemUtils.item(i == page ? XMaterial.LIME_STAINED_GLASS_PANE : XMaterial.WHITE_STAINED_GLASS_PANE,
+							Lang.regularPage.toString()));
+		getInventory().setItem(49,
+				ItemUtils.item(page == 3 ? XMaterial.MAGENTA_STAINED_GLASS_PANE : XMaterial.PURPLE_STAINED_GLASS_PANE,
+						Lang.branchesPage.toString()));
+
 		lines.forEach(l -> l.lineObj.refresh());
 	}
 
@@ -173,7 +177,7 @@ public class StagesGUI extends AbstractGui {
 		return lines.stream().sorted(Comparator.comparingInt(line -> line.lineId)).filter(line -> line.isActive())
 				.map(line -> line.context).collect(Collectors.toList());
 	}
-	
+
 	private void editBranch(QuestBranchImplementation branch){
 		for (StageController stage : branch.getRegularStages()) {
 			getLine(branch.getRegularStageId(stage)).setStageEdition(stage);
@@ -222,7 +226,7 @@ public class StagesGUI extends AbstractGui {
 			context.setCreation(
 					(StageCreation) type.getCreationSupplier().supply((@NotNull StageCreationContext<T>) context));
 
-			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
+			getInventory().setItem(SLOT_FINISH, ItemUtils.itemDone);
 
 			int maxStages = ending ? 20 : 15;
 			ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type), getLineManageLore(lineId));
@@ -315,7 +319,7 @@ public class StagesGUI extends AbstractGui {
 			if (!isFirst())
 				getLine(lineId - 1).updateLineManageLore();
 			if (isEmpty())
-				inv.setItem(SLOT_FINISH, notDone);
+				getInventory().setItem(SLOT_FINISH, notDone);
 		}
 
 		void descend() {

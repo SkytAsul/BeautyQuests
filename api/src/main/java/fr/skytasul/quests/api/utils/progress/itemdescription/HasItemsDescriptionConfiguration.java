@@ -24,9 +24,6 @@ public interface HasItemsDescriptionConfiguration {
 		int getObjectAmount();
 
 		@Override
-		int getPlayerAmount(@NotNull PlayerAccount account);
-
-		@Override
 		default int getTotalAmount() {
 			return getObjectAmount();
 		}

@@ -36,8 +36,6 @@ public class TitleGUI extends AbstractGui {
 
 	private boolean canFinish = false;
 
-	private Inventory inv;
-
 	public TitleGUI(Consumer<Title> end) {
 		this.end = end;
 	}
@@ -55,39 +53,37 @@ public class TitleGUI extends AbstractGui {
 
 	private void updateFinishState() {
 		canFinish = title != null || subtitle != null;
-		if (inv != null) {
-			Material material = canFinish ? Material.DIAMOND : Material.COAL;
-			ItemStack item = inv.getItem(8);
-			if (item.getType() != material)
-				item.setType(material);
-		}
+		Material material = canFinish ? Material.DIAMOND : Material.COAL;
+		ItemStack item = getInventory().getItem(8);
+		if (item.getType() != material)
+			item.setType(material);
 	}
 
 	public void setTitle(String title) {
 		this.title = title;
-		ItemUtils.lore(inv.getItem(SLOT_TITLE), QuestOption.formatNullableValue(title));
+		ItemUtils.loreOptionValue(getInventory().getItem(SLOT_TITLE), title);
 	}
 
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
-		ItemUtils.lore(inv.getItem(SLOT_SUBTITLE), QuestOption.formatNullableValue(subtitle));
+		ItemUtils.loreOptionValue(getInventory().getItem(SLOT_SUBTITLE), subtitle);
 	}
 
 	public void setFadeIn(int fadeIn) {
 		this.fadeIn = fadeIn;
-		ItemUtils.lore(inv.getItem(SLOT_FADE_IN),
+		ItemUtils.lore(getInventory().getItem(SLOT_FADE_IN),
 				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", fadeIn), fadeIn == Title.FADE_IN));
 	}
 
 	public void setStay(int stay) {
 		this.stay = stay;
-		ItemUtils.lore(inv.getItem(SLOT_STAY),
+		ItemUtils.lore(getInventory().getItem(SLOT_STAY),
 				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", stay), stay == Title.STAY));
 	}
 
 	public void setFadeOut(int fadeOut) {
 		this.fadeOut = fadeOut;
-		ItemUtils.lore(inv.getItem(SLOT_FADE_OUT),
+		ItemUtils.lore(getInventory().getItem(SLOT_FADE_OUT),
 				QuestOption.formatNullableValue(Lang.Ticks.quickFormat("ticks", fadeOut), fadeOut == Title.FADE_OUT));
 	}
 
@@ -154,22 +150,18 @@ public class TitleGUI extends AbstractGui {
 
 	private void startStringEditor(Player p, Lang helpMsg, Consumer<String> setter) {
 		helpMsg.send(p);
-		new TextEditor<String>(p, () -> {
-			p.openInventory(inv);
-		}, msg -> {
+		new TextEditor<String>(p, () -> reopen(p), msg -> {
 			setter.accept(msg);
 			updateFinishState();
-			p.openInventory(inv);
+			reopen(p);
 		}).passNullIntoEndConsumer().start();
 	}
 
 	private void startIntEditor(Player p, Lang helpMsg, Consumer<Integer> setter) {
 		helpMsg.send(p);
-		new TextEditor<>(p, () -> {
-			p.openInventory(inv);
-		}, msg -> {
+		new TextEditor<>(p, () -> reopen(p), msg -> {
 			setter.accept(msg);
-			p.openInventory(inv);
+			reopen(p);
 		}, NumberParser.INTEGER_PARSER_POSITIVE).start();
 	}
 

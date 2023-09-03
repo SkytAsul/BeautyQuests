@@ -13,7 +13,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 
 public class IntegrationManager implements Listener {
 
-	private List<BQDependency> dependencies;
+	private final List<BQDependency> dependencies = new ArrayList<>();
 	private boolean dependenciesTested = false;
 	private boolean dependenciesInitialized = false;
 	private boolean lockDependencies = false;

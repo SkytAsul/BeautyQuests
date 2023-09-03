@@ -11,9 +11,9 @@ import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 
 public class CommandsPools implements OrphanCommand {
 
@@ -25,7 +25,7 @@ public class CommandsPools implements OrphanCommand {
 
 	@Subcommand("resetPlayer")
 	@CommandPermission("beautyquests.command.resetPlayer")
-	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPoolImplementation pool, @Switch boolean timer) {
+	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPool pool, @Switch boolean timer) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		if (timer) {
 			pool.resetPlayerTimer(acc);
@@ -40,7 +40,7 @@ public class CommandsPools implements OrphanCommand {
 
 	@Subcommand("start")
 	@CommandPermission("beautyquests.command.pools.start")
-	public void start(BukkitCommandActor actor, Player player, QuestPoolImplementation pool) {
+	public void start(BukkitCommandActor actor, Player player, QuestPool pool) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		if (!pool.canGive(player)) {
 			Lang.POOL_START_ERROR.send(player, pool, acc);

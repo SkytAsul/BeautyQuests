@@ -12,7 +12,7 @@ public class StageLineImplementation implements StageGuiLine {
 
 	private final @NotNull StagesGUI.Line line;
 	private final @NotNull Map<Integer, LineItem> items = new HashMap<>();
-	
+
 	private int page, maxPage;
 
 	public StageLineImplementation(StagesGUI.Line line) {
@@ -32,9 +32,11 @@ public class StageLineImplementation implements StageGuiLine {
 	}
 
 	@Override
-	public void setItem(int slot, @NotNull ItemStack item, @Nullable StageGuiClickHandler click) {
-		if (items.containsKey(slot))
-			throw new IllegalArgumentException("Slot " + slot + " already taken");
+	public int setItem(int slot, @NotNull ItemStack item, @Nullable StageGuiClickHandler click) {
+		while (items.containsKey(slot))
+			slot++;
+		// this ensures no item is at the slot
+		// if there was an item in the original slot, then a higher slot is selected
 
 		items.put(slot, new LineItem(item, click));
 
@@ -42,6 +44,8 @@ public class StageLineImplementation implements StageGuiLine {
 
 		if (isSlotShown(slot))
 			refresh();
+
+		return slot;
 	}
 
 	@Override

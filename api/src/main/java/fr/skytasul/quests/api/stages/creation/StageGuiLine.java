@@ -12,7 +12,7 @@ public interface StageGuiLine {
 	@Nullable
 	ItemStack getItem(int slot);
 
-	void setItem(int slot, @NotNull ItemStack item, @Nullable StageGuiClickHandler click);
+	int setItem(int slot, @NotNull ItemStack item, @Nullable StageGuiClickHandler click);
 
 	void refreshItem(int slot, @NotNull ItemStack item);
 
