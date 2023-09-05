@@ -22,10 +22,7 @@ import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageType;
-import fr.skytasul.quests.api.stages.creation.StageCreation;
-import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.stages.creation.StageGuiClickEvent;
-import fr.skytasul.quests.api.stages.creation.StageGuiClickHandler;
+import fr.skytasul.quests.api.stages.creation.*;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
@@ -82,6 +79,14 @@ public class StagesGUI extends AbstractGui {
 		}
 	}
 
+	public QuestCreationSession getSession() {
+		return session;
+	}
+
+	public void reopen() {
+		reopen(session.getPlayer());
+	}
+
 	private String[] getLineManageLore(int line) {
 		return new String[] {
 				"§7" + Lang.ClickRight + "/" + Lang.ClickLeft + " > §c" + Lang.stageRemove.toString(),
@@ -104,9 +109,10 @@ public class StagesGUI extends AbstractGui {
 		return !getLine(0).isActive() && !getLine(15).isActive();
 	}
 
-	public void deleteStageLine(Line line) {
-		if (line.isActive())
-			line.remove();
+	public void deleteStageLine(StageGuiLine line) {
+		lines.stream().filter(x -> x.lineObj == line).findAny()
+				.filter(Line::isActive)
+				.ifPresent(Line::remove);
 	}
 
 	@Override
@@ -222,9 +228,10 @@ public class StagesGUI extends AbstractGui {
 		<T extends AbstractStage> StageCreation<T> setStageCreation(StageType<T> type) {
 			lineObj.clearItems();
 
-			context = new StageCreationContextImplementation<>(lineObj, type, ending);
-			context.setCreation(
-					(StageCreation) type.getCreationSupplier().supply((@NotNull StageCreationContext<T>) context));
+			context = new StageCreationContextImplementation<>(lineObj, type, ending, StagesGUI.this);
+			StageCreation<T> creation = type.getCreationSupplier().supply((@NotNull StageCreationContext<T>) context);
+			context.setCreation((StageCreation) creation);
+			creation.setupLine(lineObj);
 
 			getInventory().setItem(SLOT_FINISH, ItemUtils.itemDone);
 
@@ -263,7 +270,7 @@ public class StagesGUI extends AbstractGui {
 			if (lineId != 0 && lineId != 15)
 				getLine(lineId - 1).updateLineManageLore();
 
-			return (StageCreation<T>) context.getCreation();
+			return creation;
 		}
 
 		void setStageEdition(StageController stage) {

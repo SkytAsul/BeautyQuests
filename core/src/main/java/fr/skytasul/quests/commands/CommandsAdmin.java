@@ -44,35 +44,39 @@ import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 
 public class CommandsAdmin implements OrphanCommand {
-	
+
 	@Subcommand ("create")
 	@CommandPermission (value = "beautyquests.command.create")
 	@OutsideEditor
 	public void create(Player player, @Optional @Flag Integer id) {
-		QuestCreationSession session = new QuestCreationSession();
+		QuestCreationSession session = new QuestCreationSession(player);
 		if (id != null) {
 			if (id.intValue() < 0) throw new CommandErrorException(Lang.NUMBER_NEGATIVE.toString());
 			if (QuestsAPI.getAPI().getQuestsManager().getQuest(id) != null)
 				throw new CommandErrorException("Invalid quest ID: another quest exists with ID {0}", id);
-			
+
 			session.setCustomID(id);
 		}
 		session.openStagesGUI(player);
 	}
-	
+
 	@Subcommand ("edit")
 	@CommandPermission (value = "beautyquests.command.edit")
 	@OutsideEditor
 	public void edit(Player player, @Optional Quest quest) {
 		if (quest != null) {
-			new QuestCreationSession((QuestImplementation) quest).openStagesGUI(player);
+			QuestCreationSession session = new QuestCreationSession(player);
+			session.setQuestEdited((QuestImplementation) quest);
+			session.openStagesGUI(player);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(player);
 			new SelectNPC(player, () -> {}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					ChooseQuestGUI.choose(player, npc.getQuests(), clickedQuest -> {
-						new QuestCreationSession((QuestImplementation) clickedQuest).openStagesGUI(player);
+						QuestCreationSession session = new QuestCreationSession(player);
+						session.setQuestEdited((QuestImplementation) quest);
+						session.openStagesGUI(player);
 					}, null, false);
 				}else {
 					Lang.NPC_NOT_QUEST.send(player);
@@ -80,7 +84,7 @@ public class CommandsAdmin implements OrphanCommand {
 			}).start();
 		}
 	}
-	
+
 	@Subcommand ("remove")
 	@CommandPermission (value = "beautyquests.command.remove")
 	@OutsideEditor
@@ -101,7 +105,7 @@ public class CommandsAdmin implements OrphanCommand {
 			}).start();
 		}
 	}
-	
+
 	private void doRemove(BukkitCommandActor sender, Quest quest) {
 		if (sender.isPlayer()) {
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
@@ -113,14 +117,14 @@ public class CommandsAdmin implements OrphanCommand {
 			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
 		}
 	}
-	
-	
+
+
 	@Subcommand ("reload")
 	@CommandPermission ("beautyquests.command.manage")
 	public void reload(BukkitCommandActor actor) {
 		BeautyQuests.getInstance().performReload(actor.getSender());
 	}
-	
+
 	@Subcommand ("save")
 	@CommandPermission ("beautyquests.command.manage")
 	public void save(BukkitCommandActor actor) {
@@ -133,12 +137,12 @@ public class CommandsAdmin implements OrphanCommand {
 			actor.error("Error while saving the data file.");
 		}
 	}
-	
+
 	@Subcommand ("backup")
 	@CommandPermission ("beautyquests.command.manage")
 	public void backup(BukkitCommandActor actor, @Switch boolean force) {
 		if (!force) save(actor);
-		
+
 		boolean success = true;
 		QuestsPlugin.getPlugin().getLoggerExpanded().info("Creating backup due to " + actor.getName() + "'s manual command.");
 		Path backup = BeautyQuests.getInstance().backupDir();
@@ -152,20 +156,20 @@ public class CommandsAdmin implements OrphanCommand {
 		}
 		if (success) Lang.BACKUP_CREATED.send(actor.getSender());
 	}
-	
+
 	@Subcommand ("adminMode")
 	@CommandPermission ("beautyquests.command.adminMode")
 	public void adminMode(BukkitCommandActor actor) {
 		AdminMode.toggle(actor.getSender());
 	}
-	
+
 	@Subcommand ("exitEditor")
 	@SecretCommand
 	public void exitEditor(Player player) {
 		QuestsPlugin.getPlugin().getGuiManager().closeAndExit(player);
 		QuestsPlugin.getPlugin().getEditorManager().leave(player);
 	}
-	
+
 	@Subcommand ("reopenInventory")
 	@SecretCommand
 	public void reopenInventory(Player player) {
@@ -173,7 +177,7 @@ public class CommandsAdmin implements OrphanCommand {
 			QuestsPlugin.getPlugin().getGuiManager().getOpenedGui(player).open(player);
 		}
 	}
-	
+
 	@Subcommand ("list")
 	@CommandPermission ("beautyquests.command.list")
 	public void list(Player player) {
@@ -182,26 +186,26 @@ public class CommandsAdmin implements OrphanCommand {
 		} else
 			MessageUtils.sendMessage(player, "Version not supported", MessageType.DefaultMessageType.PREFIXED);
 	}
-	
+
 	@Subcommand ("downloadTranslations")
 	@CommandPermission ("beautyquests.command.manage")
 	public void downloadTranslations(BukkitCommandActor actor, @Optional String lang, @Switch boolean overwrite) {
 		if (MinecraftVersion.MAJOR < 13)
 			throw new CommandErrorException(Lang.VERSION_REQUIRED.quickFormat("version", "≥ 1.13"));
-		
+
 		if (lang == null)
 			throw new CommandErrorException(Lang.COMMAND_TRANSLATION_SYNTAX.toString());
-		
+
 		String version = MinecraftVersion.VERSION_STRING;
 		String url = MinecraftNames.LANG_DOWNLOAD_URL.replace("%version%", version).replace("%language%", lang);
-		
+
 		try {
 			File destination = new File(BeautyQuests.getInstance().getDataFolder(), lang + ".json");
 			if (destination.isDirectory())
 				throw new CommandErrorException(Lang.ERROR_OCCURED.quickFormat("error", lang + ".json is a directory"));
 			if (!overwrite && destination.exists())
 				throw new CommandErrorException(Lang.COMMAND_TRANSLATION_EXISTS.quickFormat("file_name", lang + ".json"));
-			
+
 			try (ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream())) {
 				destination.createNewFile();
 				try (FileOutputStream output = new FileOutputStream(destination)) {
@@ -218,13 +222,13 @@ public class CommandsAdmin implements OrphanCommand {
 					Lang.ERROR_OCCURED.quickFormat("error", "IO Exception when downloading translation."));
 		}
 	}
-	
+
 	@Subcommand ("migrateDatas")
 	@CommandPermission ("beautyquests.command.manage")
 	public void migrateDatas(BukkitCommandActor actor) {
 		if (!(QuestsPlugin.getPlugin().getPlayersManager() instanceof PlayersManagerYAML))
 			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
-		
+
 		QuestUtils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
 			Database db = null;
@@ -252,7 +256,7 @@ public class CommandsAdmin implements OrphanCommand {
 			}
 		});
 	}
-	
+
 	@Subcommand ("setItem")
 	@CommandPermission ("beautyquests.command.setItem")
 	public void setItem(Player player, ItemHologram position) {
@@ -265,7 +269,7 @@ public class CommandsAdmin implements OrphanCommand {
 		BeautyQuests.getInstance().getDataFile().set(position.name().toLowerCase() + "Item", item.serialize());
 		Lang.ITEM_CHANGED.send(player);
 	}
-	
+
 	@Subcommand ("setFirework")
 	@CommandPermission ("beautyquests.command.setItem")
 	public void setFirework(Player player, @Switch boolean remove) {
@@ -284,7 +288,7 @@ public class CommandsAdmin implements OrphanCommand {
 			}
 		}
 	}
-	
+
 	@Subcommand ("testNPC")
 	@CommandPermission (value = "beautyquests.command.create")
 	@SecretCommand
@@ -292,9 +296,9 @@ public class CommandsAdmin implements OrphanCommand {
 		((BqNpcImplementation) npc).toggleDebug();
 		return npc.toString();
 	}
-	
+
 	public enum ItemHologram {
 		TALK, LAUNCH, NOLAUNCH;
 	}
-	
+
 }

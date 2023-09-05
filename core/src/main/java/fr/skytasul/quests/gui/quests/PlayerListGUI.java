@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.quests;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,6 +60,8 @@ public class PlayerListGUI extends AbstractGui {
 
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		open = player;
+
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 
@@ -181,7 +184,7 @@ public class PlayerListGUI extends AbstractGui {
 	}
 
 	private void toggleCategorySelected() {
-		ItemStack is = getInventory().getItem(cat.ordinal() * 9 + 8);
+		ItemStack is = getInventory().getItem(cat.getSlot() * 9 + 8);
 		ItemMeta im = is.getItemMeta();
 		String name = im.getDisplayName();
 		if (!im.hasEnchant(Enchantment.DURABILITY)) {
@@ -199,61 +202,64 @@ public class PlayerListGUI extends AbstractGui {
 	@Override
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot() % 9) {
-		case 8:
+			case 8:
 				int barSlot = (event.getSlot() - 8) / 9;
-			switch (barSlot){
-			case 0:
-				if (page == 0) break;
-				page--;
-				setItems();
-				break;
-			case 4:
-				page++;
-				setItems();
-				break;
+				switch (barSlot) {
+					case 0:
+						if (page == 0)
+							break;
+						page--;
+						setItems();
+						break;
+					case 4:
+						page++;
+						setItems();
+						break;
 
-			case 1:
-			case 2:
-			case 3:
-				PlayerListCategory category = PlayerListCategory.values()[barSlot];
-				if (category.isEnabled()) setCategory(category);
-				break;
+					case 1:
+					case 2:
+					case 3:
+						Arrays.stream(PlayerListCategory.values()).filter(cat -> cat.getSlot() == barSlot).findAny()
+								.filter(cat -> cat.isEnabled()).ifPresent(this::setCategory);
+						break;
 
-			}
-			break;
-
-		case 7:
-			break;
-
-		default:
-			int id = (int) (event.getSlot() - (Math.floor(event.getSlot() * 1D / 9D) * 2) + page * 35);
-			Quest qu = quests.get(id);
-			if (cat == PlayerListCategory.NOT_STARTED) {
-				if (!qu.getOptionValueOrDef(OptionStartable.class)) break;
-				if (!acc.isCurrent()) break;
-				Player target = acc.getPlayer();
-				if (qu.canStart(target, true)) {
-					event.close();
-					qu.attemptStart(target);
 				}
-			}else {
-				if (event.getClick().isRightClick()) {
-					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
-						QuestUtils.playPluginSound(event.getPlayer(), "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-						new DialogHistoryGUI(acc, qu, event::reopen).open(event.getPlayer());
+				break;
+
+			case 7:
+				break;
+
+			default:
+				int id = (int) (event.getSlot() - (Math.floor(event.getSlot() * 1D / 9D) * 2) + page * 35);
+				Quest qu = quests.get(id);
+				if (cat == PlayerListCategory.NOT_STARTED) {
+					if (!qu.getOptionValueOrDef(OptionStartable.class))
+						break;
+					if (!acc.isCurrent())
+						break;
+					Player target = acc.getPlayer();
+					if (qu.canStart(target, true)) {
+						event.close();
+						qu.attemptStart(target);
 					}
-				} else if (event.getClick().isLeftClick()) {
-					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
-							&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
-						QuestsPlugin.getPlugin().getGuiManager().getFactory()
-								.createConfirmation(() -> qu.cancelPlayer(acc), event::reopen,
-										Lang.INDICATION_CANCEL.format(qu))
-								.open(event.getPlayer());
+				} else {
+					if (event.getClick().isRightClick()) {
+						if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
+								&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+							QuestUtils.playPluginSound(event.getPlayer(), "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+							new DialogHistoryGUI(acc, qu, event::reopen).open(event.getPlayer());
+						}
+					} else if (event.getClick().isLeftClick()) {
+						if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
+								&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
+							QuestsPlugin.getPlugin().getGuiManager().getFactory()
+									.createConfirmation(() -> qu.cancelPlayer(acc), event::reopen,
+											Lang.INDICATION_CANCEL.format(qu))
+									.open(event.getPlayer());
+						}
 					}
 				}
-			}
-			break;
+				break;
 
 		}
 	}

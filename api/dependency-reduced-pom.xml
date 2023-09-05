@@ -45,13 +45,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <parameters>true</parameters>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.4.1</version>
         <configuration>

@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.creation;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.gui.creation.quest.QuestCreationGuiImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.structure.QuestImplementation;
@@ -10,17 +11,19 @@ public class QuestCreationSession {
 	private StagesGUI stagesGUI;
 	private QuestCreationGuiImplementation creationGUI;
 
-	private final QuestImplementation questEdited;
+	private final @NotNull Player player;
+
+	private QuestImplementation questEdited;
 	private boolean stagesEdited = false;
 
 	private int customID = -1;
 
-	public QuestCreationSession() {
-		this(null);
+	public QuestCreationSession(@NotNull Player player) {
+		this.player = player;
 	}
 
-	public QuestCreationSession(QuestImplementation questEdited) {
-		this.questEdited = questEdited;
+	public @NotNull Player getPlayer() {
+		return player;
 	}
 
 	public boolean hasCustomID() {
@@ -41,6 +44,10 @@ public class QuestCreationSession {
 
 	public QuestImplementation getQuestEdited() {
 		return questEdited;
+	}
+
+	public void setQuestEdited(QuestImplementation questEdited) {
+		this.questEdited = questEdited;
 	}
 
 	public void setStagesEdited() {

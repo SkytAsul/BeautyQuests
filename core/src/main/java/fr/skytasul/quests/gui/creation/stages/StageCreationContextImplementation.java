@@ -13,14 +13,17 @@ public class StageCreationContextImplementation<T extends AbstractStage> impleme
 
 	private final @NotNull StageGuiLine line;
 	private final @NotNull StageType<T> type;
+	private final @NotNull StagesGUI gui;
 	private final boolean ending;
 	private @Nullable StagesGUI endingBranch;
 	private @Nullable StageCreation<T> creation;
 
-	public StageCreationContextImplementation(@NotNull StageGuiLine line, @NotNull StageType<T> type, boolean ending) {
+	public StageCreationContextImplementation(@NotNull StageGuiLine line, @NotNull StageType<T> type, boolean ending,
+			StagesGUI gui) {
 		this.line = line;
 		this.type = type;
 		this.ending = ending;
+		this.gui = gui;
 	}
 
 	@Override
@@ -56,12 +59,19 @@ public class StageCreationContextImplementation<T extends AbstractStage> impleme
 	}
 
 	@Override
-	public void remove() {}
+	public void remove() {
+		gui.deleteStageLine(line);
+	}
 
 	@Override
-	public void reopenGui() {}
+	public void reopenGui() {
+		gui.reopen();
+	}
 
 	@Override
-	public void removeAndReopenGui() {}
+	public void removeAndReopenGui() {
+		gui.deleteStageLine(line);
+		gui.reopen();
+	}
 
 }

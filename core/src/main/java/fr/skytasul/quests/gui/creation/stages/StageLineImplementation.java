@@ -5,6 +5,7 @@ import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.stages.creation.StageGuiClickHandler;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 
@@ -40,9 +41,11 @@ public class StageLineImplementation implements StageGuiLine {
 
 		items.put(slot, new LineItem(item, click));
 
+		boolean wasSinglePage = maxPage == 0;
 		computeMaxPage();
 
-		if (isSlotShown(slot))
+		boolean pageArrowChanged = wasSinglePage && maxPage > 0;
+		if (pageArrowChanged || isSlotShown(slot))
 			refresh();
 
 		return slot;
@@ -60,15 +63,17 @@ public class StageLineImplementation implements StageGuiLine {
 	public void removeItem(int slot) {
 		items.remove(slot);
 
+		boolean wasMultiplePage = maxPage != 0;
 		computeMaxPage();
 
-		if (isSlotShown(slot))
+		boolean pageArrowChanged = wasMultiplePage && maxPage == 0;
+		if (pageArrowChanged || isSlotShown(slot))
 			refresh();
 	}
 
 	public void clearItems() {
 		items.clear();
-		maxPage = 1;
+		maxPage = 0;
 		page = 0;
 		clearLine();
 	}
@@ -86,17 +91,22 @@ public class StageLineImplementation implements StageGuiLine {
 		clearLine();
 		this.page = page;
 
-		int pageFirst = page == 0 ? 0 : 8 + page * 7;
-		int pageCapacity = page == 0 ? 8 : 7;
+		int pageFirst = page == 0 ? 0 : 1 + page * 7;
+		int pageCapacity = page == 0 ? (maxPage == 0 ? 9 : 8) : 7;
 		int rawSlot = page == 0 ? 0 : 1;
 		for (int slot = pageFirst; slot < pageFirst + pageCapacity; slot++) {
 			LineItem item = items.get(slot);
 			if (item != null) {
 				setRawItem(rawSlot, item.item);
 				item.item = getRawItem(rawSlot);
-				rawSlot++;
 			}
+			rawSlot++;
 		}
+
+		if (page > 0)
+			setRawItem(0, ItemUtils.itemLaterPage);
+		if (page < maxPage)
+			setRawItem(8, ItemUtils.itemNextPage);
 	}
 
 	@Override
@@ -104,7 +114,7 @@ public class StageLineImplementation implements StageGuiLine {
 		if (rawSlot == 0 && page > 0) {
 			setPage(page - 1);
 			return null;
-		} else if (rawSlot == 8 && page < maxPage - 1) {
+		} else if (rawSlot == 8 && page < maxPage) {
 			setPage(page + 1);
 			return null;
 		} else {
@@ -120,14 +130,14 @@ public class StageLineImplementation implements StageGuiLine {
 		// next lines: 7 slots (1 to 7, 0 is prev page and 8 is next page)
 
 		int last = items.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
-		if (last < 8) {
-			maxPage = 1;
+		if (last <= 8) {
+			maxPage = 0;
 		} else {
-			maxPage = (int) (1 + Math.ceil((last - 8D + 1D) / 7D));
+			maxPage = (int) Math.ceil((last - 8D + 1D) / 7D);
 		}
 
-		if (page >= maxPage) {
-			page = maxPage - 1;
+		if (page > maxPage) {
+			page = maxPage;
 		}
 	}
 
