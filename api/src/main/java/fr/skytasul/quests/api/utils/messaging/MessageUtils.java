@@ -87,8 +87,8 @@ public class MessageUtils {
 				String substring = msg.substring(lastAppend, matcher.start());
 				colors = ChatColorUtils.getLastColors(colors, substring);
 				output.append(substring);
-				Matcher replMatcher = RESET_PATTERN.matcher(replacement);
-				output.append(replMatcher.replaceAll("§r" + colors));
+				if (replacement != null)
+					output.append(RESET_PATTERN.matcher(replacement).replaceAll("§r" + colors));
 				lastAppend = matcher.end();
 			}
 

@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import fr.skytasul.quests.DefaultQuestFeatures;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.npcs.*;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -65,6 +65,8 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		last = internalFactory;
 
 		QuestUtils.autoRegister(internalFactory);
+
+		DefaultQuestFeatures.registerNpcFeatures();
 	}
 
 	@Override

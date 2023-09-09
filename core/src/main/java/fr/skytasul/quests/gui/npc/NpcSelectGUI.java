@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.editors.SelectNPC;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -21,12 +21,15 @@ import fr.skytasul.quests.api.utils.XMaterial;
 public final class NpcSelectGUI {
 
 	private NpcSelectGUI() {}
-	
+
 	public static ItemStack createNPC = ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.createNPC.toString());
 	public static ItemStack selectNPC = ItemUtils.item(XMaterial.STICK, Lang.selectNPC.toString());
 
 	public static AbstractGui select(@NotNull Runnable cancel, @NotNull Consumer<BqNpc> end,
 			boolean nullable) {
+		if (!QuestsPlugin.getPlugin().getNpcManager().isEnabled())
+			throw new IllegalArgumentException("No NPCs plugin registered");
+
 		Builder builder = LayoutedGUI.newBuilder().addButton(1, LayoutedButton.create(createNPC, event -> {
 			new NpcFactoryGUI(BeautyQuests.getInstance().getNpcManager()
 					.getInternalFactories().stream()
@@ -37,7 +40,8 @@ public final class NpcSelectGUI {
 								.open(event.getPlayer());
 					}).open(event.getPlayer());
 		})).addButton(3, LayoutedButton.create(selectNPC, event -> {
-			new SelectNPC(event.getPlayer(), event::reopen, end).start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory()
+					.createNpcSelection(event.getPlayer(), event::reopen, end).start();
 		}));
 		if (nullable)
 			builder.addButton(2, LayoutedButton.create(ItemUtils.itemNone, event -> {

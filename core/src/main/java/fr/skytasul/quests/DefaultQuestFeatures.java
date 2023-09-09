@@ -43,16 +43,12 @@ import net.md_5.bungee.api.ChatColor;
 
 public final class DefaultQuestFeatures {
 
-	private DefaultQuestFeatures() {}
+	private static boolean npcFeaturesRegistered = false;
 
+	private DefaultQuestFeatures() {}
 
 	public static void registerStages() {
 		StageTypeRegistry stages = QuestsAPI.getAPI().getStages();
-		stages.register(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(),
-				StageNPC::deserialize, item(XMaterial.OAK_SIGN, Lang.stageNPC.toString()), StageNPC.Creator::new));
-		stages.register(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(),
-				StageBringBack::deserialize, item(XMaterial.CHEST, Lang.stageBring.toString()),
-				StageBringBack.Creator::new));
 		stages.register(new StageType<>("MOBS", StageMobs.class, Lang.Mobs.name(),
 				StageMobs::deserialize, item(XMaterial.WOODEN_SWORD, Lang.stageMobs.toString()),
 				StageMobs.Creator::new));
@@ -143,8 +139,6 @@ public final class DefaultQuestFeatures {
 				"customMaterial"));
 		QuestsAPI.getAPI().registerQuestOption(
 				new QuestOptionCreator<>("confirmMessage", 15, OptionConfirmMessage.class, OptionConfirmMessage::new, null));
-		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class,
-				OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.getAPI().registerQuestOption(
 				new QuestOptionCreator<>("bypassLimit", 18, OptionBypassLimit.class, OptionBypassLimit::new, false));
 		QuestsAPI.getAPI().registerQuestOption(
@@ -155,10 +149,6 @@ public final class DefaultQuestFeatures {
 				new QuestOptionCreator<>("cancellable", 21, OptionCancellable.class, OptionCancellable::new, true));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("cancelActions", 22, OptionCancelRewards.class,
 				OptionCancelRewards::new, new RewardList()));
-		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class,
-				OptionHologramLaunch::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchItem()));
-		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class,
-				OptionHologramLaunchNo::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchNoItem()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("scoreboard", 27, OptionScoreboardEnabled.class,
 				OptionScoreboardEnabled::new, true));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28,
@@ -182,10 +172,6 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("startMessage", 39, OptionStartMessage.class,
 				OptionStartMessage::new,
 				QuestsConfigurationImplementation.getConfiguration().getPrefix() + Lang.STARTED_QUEST.toString()));
-		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class,
-				OptionStarterNPC::new, null, "starterID"));
-		QuestsAPI.getAPI().registerQuestOption(
-				new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("endRewards", 43, OptionEndRewards.class,
 				OptionEndRewards::new, new RewardList(), "rewardsList"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("endMsg", 44, OptionEndMessage.class,
@@ -337,6 +323,30 @@ public final class DefaultQuestFeatures {
 				return ChatColor.translateAlternateColorCodes('&', string);
 			}
 		});
+	}
+
+	public static void registerNpcFeatures() {
+		if (npcFeaturesRegistered)
+			return;
+		npcFeaturesRegistered = true;
+
+		StageTypeRegistry stages = QuestsAPI.getAPI().getStages();
+		stages.register(new StageType<>("NPC", StageNPC.class, Lang.Talk.name(),
+				StageNPC::deserialize, item(XMaterial.OAK_SIGN, Lang.stageNPC.toString()), StageNPC.Creator::new));
+		stages.register(new StageType<>("ITEMS", StageBringBack.class, Lang.Items.name(),
+				StageBringBack::deserialize, item(XMaterial.CHEST, Lang.stageBring.toString()),
+				StageBringBack.Creator::new));
+
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("starterNPC", 40, OptionStarterNPC.class,
+				OptionStarterNPC::new, null, "starterID"));
+		QuestsAPI.getAPI().registerQuestOption(
+				new QuestOptionCreator<>("startDialog", 41, OptionStartDialog.class, OptionStartDialog::new, null));
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class,
+				OptionHologramText::new, Lang.HologramText.toString()));
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class,
+				OptionHologramLaunch::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchItem()));
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class,
+				OptionHologramLaunchNo::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchNoItem()));
 	}
 
 }

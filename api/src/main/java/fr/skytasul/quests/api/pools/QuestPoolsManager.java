@@ -8,8 +8,9 @@ import fr.skytasul.quests.api.requirements.RequirementList;
 
 public interface QuestPoolsManager {
 
-	public @NotNull QuestPool createPool(@Nullable QuestPool editing, String npcID, @Nullable String hologram, int maxQuests,
-			int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates, RequirementList requirements);
+	public @NotNull QuestPool createPool(@Nullable QuestPool editing, @Nullable String npcID, @Nullable String hologram,
+			int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates,
+			@NotNull RequirementList requirements);
 
 	public void removePool(int id);
 

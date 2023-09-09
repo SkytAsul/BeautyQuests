@@ -28,7 +28,6 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
-import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
@@ -41,34 +40,35 @@ import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
+import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.compatibility.Paper;
 
 public class QuestsListener implements Listener{
-	
+
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().getNpcClicks().contains(e.getClick()))
 			return;
-		
+
 		Player p = e.getPlayer();
 		BqNpc npc = e.getNPC();
-		
+
 		if (QuestsPlugin.getPlugin().getGuiManager().hasGuiOpened(p)
 				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
 			return;
-		
+
 		PlayerAccountImplementation acc = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 		if (acc == null) return;
-		
+
 		Set<Quest> quests = npc.getQuests();
 		quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() || !qu.hasFinished(acc)))
 				.collect(Collectors.toSet());
 		if (quests.isEmpty() && npc.getPools().isEmpty()) return;
-		
+
 		List<QuestImplementation> launcheable = new ArrayList<>();
 		List<QuestImplementation> requirements = new ArrayList<>();
 		List<QuestImplementation> timer = new ArrayList<>();
@@ -87,7 +87,7 @@ public class QuestsListener implements Listener{
 								+ " for player " + p.getName(), ex);
 			}
 		}
-		
+
 		Set<QuestPool> startablePools = npc.getPools().stream().filter(pool -> {
 			try {
 				return pool.canGive(p);
@@ -96,7 +96,7 @@ public class QuestsListener implements Listener{
 				return false;
 			}
 		}).collect(Collectors.toSet());
-		
+
 		e.setCancelled(true);
 		if (!launcheable.isEmpty()) {
 			for (QuestImplementation quest : launcheable) {
@@ -129,7 +129,7 @@ public class QuestsListener implements Listener{
 			e.setCancelled(false);
 		}
 	}
-	
+
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
@@ -141,7 +141,7 @@ public class QuestsListener implements Listener{
 			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
 		}
 	}
-	
+
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
@@ -157,7 +157,7 @@ public class QuestsListener implements Listener{
 			QuestsAPI.getAPI().getQuestsManager().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
 	}
-	
+
 	@EventHandler
 	public void onAccountLeave(PlayerAccountLeaveEvent e) {
 		BeautyQuests.getInstance().getQuestsManager().getQuestsRaw().forEach(x -> x.leave(e.getPlayer()));
@@ -170,12 +170,12 @@ public class QuestsListener implements Listener{
 			Lang.QUEST_ITEM_DROP.send(e.getPlayer());
 		}
 	}
-	
+
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent e) { // firework damage
 		if (e.getDamager().hasMetadata("questFinish")) e.setCancelled(true);
 	}
-	
+
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onCraft(CraftItemEvent e) {
 		for (ItemStack item : e.getInventory().getMatrix()) {
@@ -186,7 +186,7 @@ public class QuestsListener implements Listener{
 			}
 		}
 	}
-	
+
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onEat(PlayerItemConsumeEvent e) {
 		if (Utils.isQuestItem(e.getItem())) {
@@ -194,12 +194,12 @@ public class QuestsListener implements Listener{
 			Lang.QUEST_ITEM_EAT.send(e.getPlayer());
 		}
 	}
-	
+
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent e) {
 		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBreak(BlockBreakEvent e) {
 		if (e.isCancelled()) return;
@@ -219,7 +219,7 @@ public class QuestsListener implements Listener{
 				materialCount = is.getAmount();
 
 		int maxCraftAmount = resultCount * materialCount;
-		
+
 		ItemStack item = e.getRecipe().getResult();
 		if (item.getType() == Material.AIR && e.getRecipe() instanceof ComplexRecipe) {
 			String key = ((ComplexRecipe) e.getRecipe()).getKey().toString();
@@ -227,8 +227,8 @@ public class QuestsListener implements Listener{
 				item = XMaterial.SUSPICIOUS_STEW.parseItem();
 			}
 		}
-		
+
 		Bukkit.getPluginManager().callEvent(new BQCraftEvent(e, item, maxCraftAmount));
 	}
-	
+
 }

@@ -22,7 +22,6 @@ import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
 import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
 import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
-import fr.skytasul.quests.api.editors.SelectNPC;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
@@ -70,7 +69,8 @@ public class CommandsAdmin implements OrphanCommand {
 			session.openStagesGUI(player);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(player);
-			new SelectNPC(player, () -> {}, npc -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(player, () -> {
+			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					ChooseQuestGUI.choose(player, npc.getQuests(), clickedQuest -> {
@@ -93,7 +93,8 @@ public class CommandsAdmin implements OrphanCommand {
 			doRemove(actor, quest);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(actor.requirePlayer());
-			new SelectNPC(actor.getAsPlayer(), () -> {}, npc -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(actor.getAsPlayer(), () -> {
+			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					ChooseQuestGUI.choose(actor.getAsPlayer(), npc.getQuests(), clickedQuest -> {

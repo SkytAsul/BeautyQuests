@@ -1,8 +1,12 @@
 package fr.skytasul.quests.editor;
 
+import java.util.function.Consumer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
+import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.editor.parsers.MaterialParser;
 
@@ -22,6 +26,12 @@ public class DefaultEditorFactory implements EditorFactory {
 			return ANY_PARSER;
 
 		throw new IllegalArgumentException("Material parser must be either for items, for blocks or both, not neither.");
+	}
+
+	@Override
+	public @NotNull Editor createNpcSelection(@NotNull Player player, @NotNull Runnable cancel,
+			@NotNull Consumer<BqNpc> callback) {
+		return new SelectNPC(player, cancel, callback);
 	}
 
 }

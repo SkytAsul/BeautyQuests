@@ -30,6 +30,8 @@ public class NpcFactoryGUI extends PagedGUI<BqInternalNpcFactory> {
 
 	@Override
 	public void open(@NotNull Player player) {
+		if (objects.isEmpty())
+			throw new IllegalStateException("No NPCs factory found");
 		if (objects.size() == 1)
 			callback.accept(objects.get(0));
 		else

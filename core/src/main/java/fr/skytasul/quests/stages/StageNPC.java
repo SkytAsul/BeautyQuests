@@ -21,7 +21,6 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.DialogEditor;
-import fr.skytasul.quests.api.events.internal.BQNPCClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
@@ -41,6 +40,7 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 

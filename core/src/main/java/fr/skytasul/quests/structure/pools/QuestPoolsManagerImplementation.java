@@ -57,9 +57,9 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 	}
 
 	@Override
-	public @NotNull QuestPoolImplementation createPool(@Nullable QuestPool editing, String npcID, @Nullable String hologram,
-			int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff, boolean avoidDuplicates,
-			@NotNull RequirementList requirements) {
+	public @NotNull QuestPoolImplementation createPool(@Nullable QuestPool editing, @Nullable String npcID,
+			@Nullable String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff,
+			boolean avoidDuplicates, @NotNull RequirementList requirements) {
 
 		if (editing != null)
 			((QuestPoolImplementation) editing).unload();

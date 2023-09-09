@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.quests.Quest;
@@ -14,8 +16,10 @@ public interface QuestPool extends HasPlaceholders {
 
 	int getId();
 
+	@Nullable
 	String getNpcId();
 
+	@Nullable
 	String getHologram();
 
 	int getMaxQuests();
@@ -28,22 +32,27 @@ public interface QuestPool extends HasPlaceholders {
 
 	boolean doAvoidDuplicates();
 
+	@NotNull
 	RequirementList getRequirements();
 
-	List<Quest> getQuests();
+	@NotNull
+	List<@NotNull Quest> getQuests();
 
-	void addQuest(Quest quest);
+	void addQuest(@NotNull Quest quest);
 
-	void removeQuest(Quest quest);
+	void removeQuest(@NotNull Quest quest);
 
-	ItemStack getItemStack(String action);
+	@NotNull
+	ItemStack getItemStack(@NotNull String action);
 
-	CompletableFuture<PlayerPoolDatas> resetPlayer(PlayerAccount acc);
+	@NotNull
+	CompletableFuture<PlayerPoolDatas> resetPlayer(@NotNull PlayerAccount acc);
 
-	void resetPlayerTimer(PlayerAccount acc);
+	void resetPlayerTimer(@NotNull PlayerAccount acc);
 
-	boolean canGive(Player p);
+	boolean canGive(@NotNull Player p);
 
-	CompletableFuture<String> give(Player p);
+	@NotNull
+	CompletableFuture<String> give(@NotNull Player p);
 
 }

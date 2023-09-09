@@ -67,9 +67,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
 	private boolean isPaper;
-	
+
 	/* --------- Storage --------- */
-	
+
 	private String lastVersion;
 	private QuestsConfigurationImplementation config;
 
@@ -80,9 +80,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private YamlConfiguration data;
 	private File dataFile;
 	private File saveFolder;
-	
+
 	private Path backupDir = null;
-	
+
 	/* --------- Datas --------- */
 
 	private final @NotNull BqNpcManagerImplementation npcManager = new BqNpcManagerImplementation();
@@ -90,21 +90,21 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable QuestsManagerImplementation quests;
 	private @Nullable QuestPoolsManagerImplementation pools;
 	private @Nullable AbstractPlayersManager players;
-	
+
 	/* ---------- Operations -------- */
 
 	private boolean disable = false;
 	protected boolean loadingFailure = false;
 	protected boolean savingFailure = false;
 	protected boolean loaded = false;
-	
+
 	private @NotNull IntegrationManager integrations = new IntegrationManager();
 	private @Nullable CommandsManagerImplementation command;
 	private @Nullable LoggerExpanded logger;
 	private @Nullable LoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
-	
+
 	/* ---------------------------------------------- */
 
 	@Override
@@ -131,7 +131,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			setEnabled(false);
 		}
 	}
-	
+
 	@Override
 	public void onEnable(){
 		if (disable)
@@ -139,9 +139,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		try {
 			logger.info("------------ BeautyQuests ------------");
-			
+
 			checkPaper();
-			
+
 			loadDefaultIntegrations();
 			integrations.testCompatibilities();
 			Bukkit.getPluginManager().registerEvents(integrations, this);
@@ -155,17 +155,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			loadConfigParameters(true);
 
 			registerCommands();
-			
+
 			try {
 				integrations.initializeCompatibilities();
 			}catch (Exception ex) {
 				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
 			}
-			
-			if (!npcManager.isEnabled()) {
-				throw new LoadingException("No NPC plugin installed - please install Citizens or znpcs");
-			}
-			
+
 			// Launch loading task
 			String pluginVersion = getDescription().getVersion();
 			new BukkitRunnable() {
@@ -180,7 +176,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
 						if (MinecraftVersion.MAJOR >= 16)
 							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
-						
+
 						launchSaveCycle();
 
 						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
@@ -225,7 +221,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}catch (Throwable ex) {
 				logger.severe("An error occurred while disabling command manager.", ex);
 			}
-			
+
 			try {
 				editorManager.leaveAll();
 				guiManager.closeAll();
@@ -233,7 +229,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}catch (Throwable ex) {
 				logger.severe("An error occurred while disabling editing systems.", ex);
 			}
-			
+
 			try {
 				if (!disable) saveAllConfig(true);
 			}catch (Exception e) {
@@ -244,15 +240,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}catch (Exception e) {
 				logger.severe("An error occurred while disabling plugin integrations.", e);
 			}
-			
+
 			getServer().getScheduler().cancelTasks(this);
 		}finally {
 			if (loggerHandler != null) loggerHandler.close();
 		}
 	}
-	
+
 	/* ---------- Various init ---------- */
-	
+
 	private void initApi() throws ReflectiveOperationException {
 		Method setMethod = QuestsAPIProvider.class.getDeclaredMethod("setAPI", QuestsAPI.class);
 		setMethod.setAccessible(true); // NOSONAR
@@ -275,7 +271,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		command.initializeCommands();
 		command.lockCommands(); // we are obligated to register Brigadier during plugin initialization...
 	}
-	
+
 	private void launchSaveCycle(){
 		if (config.saveCycle > 0 && saveTask == null) {
 			int cycle = config.saveCycle * 60 * 20;
@@ -294,7 +290,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimerAsynchronously(this, cycle, cycle).getTaskId());
 		}
 	}
-	
+
 	private void stopSaveCycle(){
 		if (config.saveCycle > 0 && saveTask != null) {
 			saveTask.cancel();
@@ -302,7 +298,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			logger.info("Periodic saves task stopped.");
 		}
 	}
-	
+
 	private void launchMetrics(String pluginVersion) {
 		Metrics metrics = new Metrics(this, 7460);
 		metrics.addCustomChart(new DrilldownPie("customPluginVersion", () -> {
@@ -340,7 +336,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}));
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Started bStats metrics");
 	}
-	
+
 	private void launchUpdateChecker(String pluginVersion) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Starting Spigot updater");
 		UpdateChecker checker;
@@ -367,9 +363,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				.setNotifyOpsOnJoin(false)
 				.checkNow();
 	}
-	
+
 	/* ---------- YAML ---------- */
-	
+
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			File configFile = new File(getDataFolder(), "config.yml");
@@ -381,7 +377,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (init) loadLang();
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
-			
+
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
 			if (dbConfig.getBoolean("enabled")) {
 				db = null;
@@ -394,9 +390,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 					throw new LoadingException("Connection to database has failed.", ex);
 				}
 			}
-			
+
 			players = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
-			
+
 			/*				static initialization				*/
 			if (init) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default stage types.");
@@ -436,7 +432,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 		InternalIntegrations.AccountsHook.isEnabled(); // to initialize the class
 	}
-	
+
 	private YamlConfiguration loadLang() throws LoadingException {
 		try {
 			loadedLanguage = config.getConfig().getString("lang", "en_US");
@@ -445,7 +441,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			throw new LoadingException("Couldn't load language file.", ex);
 		}
 	}
-	
+
 	private void loadDataFile() throws LoadingException {
 		dataFile = new File(getDataFolder(), "data.yml");
 		if (!dataFile.exists()){
@@ -458,7 +454,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
 		data = YamlConfiguration.loadConfiguration(dataFile);
-		
+
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
@@ -471,12 +467,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		data.options().header("Do not edit ANYTHING here.");
 		data.options().copyHeader(true);
 	}
-	
+
 	private void loadAllDatas() throws Throwable {
 		if (disable) return;
 		integrations.lockDependencies();
 		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
-		
+
 		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
 			if (!scFile.exists()) saveResource("scoreboard.yml", true);
@@ -487,13 +483,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		try{
 			if (db == null && backupDir != null)
 				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
-			
+
 			players.load();
 		}catch (Exception ex) {
 			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
 		}
-		
+
 		getAPI().getQuestsHandlers().forEach(handler -> {
 			try {
 				handler.load();
@@ -501,10 +497,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("Cannot load quest handler " + handler.getClass().getName(), ex);
 			}
 		});
-		
+
 		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
 		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
-		
+
 		if (config.firstQuestID != -1) {
 			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
 			QuestImplementation quest = quests.getQuest(config.firstQuestID);
@@ -523,7 +519,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 		}
-		
+
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				players.loadPlayer(p);
@@ -535,7 +531,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload) {
 			if (quests != null) quests.unloadQuests();
-			
+
 			getAPI().getQuestsHandlers().forEach(handler -> {
 				try {
 					handler.unload();
@@ -544,12 +540,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			});
 		}
-		
+
 		if (loaded) {
 			long time = System.currentTimeMillis();
 			data.set("lastID", quests.getLastID());
 			data.set("version", getDescription().getVersion());
-			
+
 			try {
 				players.save();
 			}catch (Exception ex) {
@@ -558,13 +554,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			data.save(dataFile);
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Saved datas (" + (((double) System.currentTimeMillis() - time) / 1000D) + "s)!");
 		}
-		
+
 		if (unload){
 			npcManager.unload();
 			resetDatas();
 		}
 	}
-	
+
 	private void resetDatas(){
 		quests = null;
 		pools = null;
@@ -577,9 +573,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		//HandlerList.unregisterAll(this);
 		loaded = false;
 	}
-	
+
 	/* ---------- Backups ---------- */
-	
+
 	public boolean createFolderBackup(Path backup) {
 		if (!config.backups)
 			return false;
@@ -603,7 +599,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			return false;
 		}
 	}
-	
+
 	public boolean createDataBackup(Path backup) {
 		if (!config.backups)
 			return false;
@@ -622,11 +618,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			return false;
 		}
 	}
-	
+
 	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
 		if (!config.backups)
 			return false;
-		
+
 		logger.info("Creating player datas backup...");
 		Path backupDir = backup.resolve("players");
 		Path playersFolderPath = yamlManager.getDirectory().toPath();
@@ -667,11 +663,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
-	
+
 	public Path backupDir() {
 		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
 	}
-	
+
 	public void performReload(CommandSender sender){
 		try {
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
@@ -682,7 +678,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		try{
 			reloadConfig();
 			loadConfigParameters(false);
@@ -692,7 +688,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		sender.sendMessage("§7...Waiting for loading quests...");
 		new BukkitRunnable() {
 			@Override
@@ -709,7 +705,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}.runTaskLater(BeautyQuests.getInstance(), 20L);
 	}
-	
+
 	@Override
 	public void notifyLoadingFailure() {
 		loadingFailure = true;
@@ -755,16 +751,16 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public @NotNull CommandsManagerImplementation getCommand() {
 		return ensureLoaded(command);
 	}
-	
+
 	@Override
 	public @NotNull QuestsConfigurationImplementation getConfiguration() {
 		return config;
 	}
-	
+
 	public @NotNull FileConfiguration getDataFile() {
 		return data;
 	}
-	
+
 	public @Nullable Database getBQDatabase() {
 		return db;
 	}
@@ -772,15 +768,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public @Nullable ScoreboardManager getScoreboardManager() {
 		return scoreboards;
 	}
-	
+
 	public @NotNull QuestsManagerImplementation getQuestsManager() {
 		return ensureLoaded(quests);
 	}
-	
+
 	public @NotNull QuestPoolsManagerImplementation getPoolsManager() {
 		return ensureLoaded(pools);
 	}
-	
+
 	@Override
 	public @NotNull GuiManager getGuiManager() {
 		return ensureLoaded(guiManager);
@@ -810,7 +806,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public @NotNull AbstractPlayersManager getPlayersManager() {
 		return ensureLoaded(players);
 	}
-	
+
 	public boolean isRunningPaper() {
 		return isPaper;
 	}
@@ -819,7 +815,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public static @NotNull BeautyQuests getInstance() {
 		return instance;
 	}
-	
+
 	public static class LoadingException extends Exception {
 		private static final long serialVersionUID = -2811265488885752109L;
 
@@ -833,11 +829,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			super(cause);
 			this.loggerMessage = loggerMessage;
 		}
-		
+
 		public String getLoggerMessage() {
 			return loggerMessage;
 		}
-		
+
 	}
-	
+
 }

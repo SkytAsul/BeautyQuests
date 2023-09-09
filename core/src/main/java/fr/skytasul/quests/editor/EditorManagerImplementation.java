@@ -19,6 +19,7 @@ import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class EditorManagerImplementation implements EditorManager, Listener {
@@ -51,9 +52,6 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		QuestsPlugin.getPlugin().getGuiManager().closeAndExit(player);
 		QuestsPlugin.getPlugin().getLoggerExpanded()
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
-		editor.begin();
-
-		QuestUtils.autoRegister(editor);
 
 		if (MinecraftVersion.MAJOR > 11) {
 			player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
@@ -63,6 +61,16 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		}
 		if (bar != null)
 			bar.addPlayer(player);
+
+		QuestUtils.autoRegister(editor);
+
+		try {
+			editor.begin();
+		} catch (Exception ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while beginning editor", ex);
+			DefaultErrors.sendGeneric(player, "impossible to begin editor");
+			editor.cancel();
+		}
 
 		return editor;
 	}
