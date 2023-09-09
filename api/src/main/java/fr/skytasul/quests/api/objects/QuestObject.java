@@ -18,36 +18,36 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public abstract class QuestObject extends SerializableObject implements Cloneable, HasPlaceholders {
-	
+
 	protected static final String CUSTOM_DESCRIPTION_KEY = "customDescription";
 
 	private Quest quest;
 	private String customDescription;
-	
+
 	private @Nullable PlaceholderRegistry placeholders;
 
 	protected QuestObject(@NotNull QuestObjectsRegistry registry, @Nullable String customDescription) {
 		super(registry);
 		this.customDescription = customDescription;
 	}
-	
+
 	@Override
 	public QuestObjectCreator getCreator() {
 		return (QuestObjectCreator) super.getCreator();
 	}
-	
+
 	public void attach(@NotNull Quest quest) {
 		this.quest = quest;
 	}
-	
+
 	public void detach() {
 		this.quest = null;
 	}
-	
+
 	public @Nullable Quest getAttachedQuest() {
 		return quest;
 	}
-	
+
 	public @Nullable String getCustomDescription() {
 		return customDescription;
 	}
@@ -59,7 +59,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	public @NotNull String debugName() {
 		return getClass().getSimpleName() + (quest == null ? ", unknown quest" : (", quest " + quest.getId()));
 	}
-	
+
 	public boolean isValid() {
 		return true;
 	}
@@ -80,41 +80,42 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 
 	@Override
 	public abstract @NotNull QuestObject clone();
-	
+
 	@Override
 	public void save(@NotNull ConfigurationSection section) {
 		if (customDescription != null)
 			section.set(CUSTOM_DESCRIPTION_KEY, customDescription);
 	}
-	
+
 	@Override
 	public void load(@NotNull ConfigurationSection section) {
 		if (section.contains(CUSTOM_DESCRIPTION_KEY))
 			customDescription = section.getString(CUSTOM_DESCRIPTION_KEY);
 	}
-	
+
 	public final @Nullable String getDescription(Player player) {
 		String string = customDescription == null ? getDefaultDescription(player) : customDescription;
-		string = MessageUtils.format(string, getPlaceholdersRegistry());
+		if (string != null)
+			string = MessageUtils.format(string, getPlaceholdersRegistry());
 		return string;
 	}
 
 	/**
 	 * Gets the description shown in the GUIs for this quest object.
-	 * 
+	 *
 	 * @param player player to get the description for
 	 * @return the description of this object (nullable)
 	 */
 	protected @Nullable String getDefaultDescription(@NotNull Player p) {
 		return null;
 	}
-	
+
 	public @NotNull String @Nullable [] getItemLore() {
 		LoreBuilder lore = new LoreBuilder();
 		addLore(lore);
 		return lore.toLoreArray();
 	}
-	
+
 	protected void addLore(@NotNull LoreBuilder loreBuilder) {
 		loreBuilder.addClick(getRemoveClick(), "§c" + Lang.Remove.toString());
 		loreBuilder.addClick(getCustomDescriptionClick(), Lang.object_description_set.toString());
@@ -126,14 +127,15 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 			description = "§cerror";
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Could not get quest object description during edition", ex);
 		}
-		loreBuilder.addDescription(Lang.object_description.format(PlaceholderRegistry.of("description",
-				description + (customDescription == null ? " " + Lang.defaultValue : ""))));
+		if (description != null)
+			loreBuilder.addDescription(Lang.object_description.format(PlaceholderRegistry.of("description",
+					description + (customDescription == null ? " " + Lang.defaultValue : ""))));
 	}
 
 	public @NotNull ItemStack getItemStack() {
 		return ItemUtils.lore(getCreator().getItem().clone(), getItemLore());
 	}
-	
+
 	public @Nullable ClickType getRemoveClick() {
 		return ClickType.SHIFT_LEFT;
 	}
@@ -158,7 +160,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 			clickInternal(event);
 		}
 	}
-	
+
 	protected abstract void clickInternal(@NotNull QuestObjectClickEvent event);
 
 }

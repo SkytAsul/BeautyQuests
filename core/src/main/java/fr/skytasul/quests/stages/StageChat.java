@@ -80,7 +80,7 @@ public class StageChat extends AbstractStage implements Listener {
 
 	private boolean check(String message, Player p) {
 		if (placeholders)
-			message = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(p, true, null));
+			message = MessageUtils.finalFormat(message, null, PlaceholdersContext.of(p, true, null));
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text))) return false;
 		if (!hasStarted(p)) return false;
 		if (canUpdate(p)) finishStage(p);

@@ -6,12 +6,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
@@ -148,12 +151,14 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	public void load() {
 		QuestUtils.autoRegister(stage);
+		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		propagateStageHandlers(handler -> handler.stageLoad(this));
 		stage.load();
 	}
 
 	public void unload() {
 		QuestUtils.autoUnregister(stage);
+		HandlerList.unregisterAll(this);
 		propagateStageHandlers(handler -> handler.stageUnload(this));
 		stage.unload();
 	}

@@ -80,7 +80,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			}, this::dataClick));
 
 			buttons.put(6, LayoutedButton.create(() -> {
-				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockTag.toString(),
+				ItemStack item = ItemUtils.item(XMaterial.FILLED_MAP, Lang.blockTag.toString(),
 						QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
 						QuestOption.formatNullableValue(tag, tag == null));
 				if (tag != null)

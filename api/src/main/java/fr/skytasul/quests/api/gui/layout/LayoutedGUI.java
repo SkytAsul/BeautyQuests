@@ -87,7 +87,7 @@ public abstract class LayoutedGUI extends AbstractGui {
 
 		@Override
 		protected final Inventory instanciate(@NotNull Player player) {
-			return Bukkit.createInventory(null, rows, name);
+			return Bukkit.createInventory(null, rows * 9, name);
 		}
 
 	}
@@ -151,7 +151,7 @@ public abstract class LayoutedGUI extends AbstractGui {
 		public @NotNull LayoutedGUI build() {
 			if (buttons.isEmpty())
 				throw new IllegalArgumentException("Cannot build a layouted GUI with no buttons");
-			
+
 			if (type != null)
 				return new LayoutedTypeGUI(name, buttons, closeBehavior, type);
 

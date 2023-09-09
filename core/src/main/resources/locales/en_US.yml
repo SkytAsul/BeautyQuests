@@ -354,8 +354,8 @@ inv:
     mineBlocks: §aBreak blocks
     placeBlocks: §aPlace blocks
     talkChat: §aWrite in chat
-    interact: §aInteract with block
-    interactBlock: §aInteract with block at location
+    interact: §aInteract with a type of block
+    interactLocation: §aInteract with block at location
     fish: §aCatch fishes
     melt: §6Melt items
     enchant: §dEnchant items
@@ -549,6 +549,7 @@ inv:
     mythicMob: §6Select Mythic Mob
     epicBoss: §6Select Epic Boss
     boss: §6Select a Boss
+    advancedSpawners: §6Select an AdvancedSpawners mob
   stageEnding:
     locationTeleport: §eEdit teleport location
     command: §eEdit executed command
@@ -580,9 +581,9 @@ inv:
     loreCancelClick: §cCancel the quest
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
-    timeToWaitRedo: §3§oYou can restart this quest in {time_left}.
-    canRedo: §3§oYou can restart this quest!
-    timesFinished: §3Quest done {times_finished} times.
+    timeToWaitRedo: §7§oYou can restart this quest in {time_left}...
+    canRedo: §e§oYou can restart this quest!
+    timesFinished: §eCompleted §6{times_finished} x§e.
     format:
       normal: §6§l§o{quest_name}
       withId: §6§l§o{quest_name}§r      §e#{quest_id}

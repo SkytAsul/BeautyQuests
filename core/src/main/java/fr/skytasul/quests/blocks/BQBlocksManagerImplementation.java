@@ -1,10 +1,6 @@
 package fr.skytasul.quests.blocks;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +35,7 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 
 	private void registerDefaultTypes() {
 		materialType = (string, options) -> new BQBlockMaterial(options, XMaterial.valueOf(string));
-		registerBlockType(null, materialType);
+		registerBlockType("", materialType);
 
 		if (MinecraftVersion.MAJOR >= 13) {
 			blockdataType = (string, options) -> new Post1_13.BQBlockData(options, string);
