@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.utils.messaging;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.command.CommandSender;
@@ -71,7 +72,7 @@ public class MessageUtils {
 	public static @NotNull String format(@NotNull String msg, @Nullable PlaceholderRegistry placeholders,
 			@NotNull PlaceholdersContext context) {
 		if (placeholders != null) {
-			Matcher matcher = PLACEHOLDER_PATTERN.matcher(msg);
+			Matcher matcher = PLACEHOLDER_PATTERN.matcher(Objects.requireNonNull(msg));
 
 			// re-implementation of the "matcher.appendReplacement" system to allow replacement of colors
 			StringBuilder output = null;

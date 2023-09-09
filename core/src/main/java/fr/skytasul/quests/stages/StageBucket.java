@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescription
 import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 import fr.skytasul.quests.gui.misc.BucketTypeGUI;
 
-public class StageBucket extends AbstractStage implements HasSingleObject {
+public class StageBucket extends AbstractStage implements HasSingleObject, Listener {
 
 	private BucketType bucket;
 	private int amount;
@@ -154,10 +155,10 @@ public class StageBucket extends AbstractStage implements HasSingleObject {
 	}
 
 	public static class Creator extends StageCreation<StageBucket> {
-		
+
 		private BucketType bucket;
 		private int amount;
-		
+
 		public Creator(@NotNull StageCreationContext<StageBucket> context) {
 			super(context);
 		}
@@ -165,7 +166,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject {
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
 			line.setItem(6, ItemUtils.item(XMaterial.REDSTONE, Lang.editBucketAmount.toString()), event -> {
 				Lang.BUCKET_AMOUNT.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
@@ -180,19 +181,19 @@ public class StageBucket extends AbstractStage implements HasSingleObject {
 				}).open(event.getPlayer());
 			});
 		}
-		
+
 		public void setBucket(BucketType bucket) {
 			this.bucket = bucket;
 			ItemStack newItem = ItemUtils.lore(getLine().getItem(7), QuestOption.formatNullableValue(bucket.getName()));
 			newItem.setType(bucket.type.parseMaterial());
 			getLine().refreshItem(7, newItem);
 		}
-		
+
 		public void setAmount(int amount) {
 			this.amount = amount;
 			getLine().refreshItemLore(6, Lang.Amount.quickFormat("amount", amount));
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
@@ -212,7 +213,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject {
 			setBucket(stage.getBucketType());
 			setAmount(stage.getBucketAmount());
 		}
-		
+
 		@Override
 		public StageBucket finishStage(StageController controller) {
 			return new StageBucket(controller, bucket, amount);

@@ -5,6 +5,7 @@ import java.util.Spliterator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -28,17 +29,17 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 
 @LocatableType(types = LocatedType.BLOCK)
-public class StageInteractBlock extends AbstractStage implements Locatable.MultipleLocatable {
+public class StageInteractBlock extends AbstractStage implements Locatable.MultipleLocatable, Listener {
 
 	private final boolean left;
 	private final @NotNull BQBlock block;
-	
+
 	public StageInteractBlock(StageController controller, boolean leftClick, BQBlock block) {
 		super(controller);
 		this.left = leftClick;
 		this.block = block;
 	}
-	
+
 	public BQBlock getBlockType() {
 		return block;
 	}
@@ -46,33 +47,33 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 	public boolean needLeftClick(){
 		return left;
 	}
-	
+
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		if (block == null) return null;
-		
+
 		return QuestsAPI.getAPI().getBlocksManager().getNearbyBlocks(fetcher, Collections.singleton(block));
 	}
-	
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
 		if (MinecraftVersion.MAJOR >= 9 && e.getHand() != EquipmentSlot.HAND) return;
-		
+
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 		}else if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		
+
 		if (!block.applies(e.getClickedBlock()))
 			return;
-		
+
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (left) e.setCancelled(true);
 			finishStage(p);
 		}
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -89,7 +90,7 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 		section.set("leftClick", left);
 		section.set("block", block.getAsString());
 	}
-	
+
 	public static StageInteractBlock deserialize(ConfigurationSection section, StageController controller) {
 		BQBlock block;
 		if (section.contains("material")) {
@@ -102,10 +103,10 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 	}
 
 	public static class Creator extends StageCreation<StageInteractBlock> {
-		
+
 		private boolean leftClick = false;
 		private BQBlock block;
-		
+
 		public Creator(@NotNull StageCreationContext<StageInteractBlock> context) {
 			super(context);
 		}
@@ -116,14 +117,14 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 
 			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), event -> setLeftClick(!leftClick));
 		}
-		
+
 		public void setLeftClick(boolean leftClick) {
 			if (this.leftClick != leftClick) {
 				this.leftClick = leftClick;
 				getLine().refreshItem(6, item -> ItemUtils.setSwitch(item, leftClick));
 			}
 		}
-		
+
 		public void setMaterial(BQBlock block) {
 			if (this.block == null) {
 				getLine().setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), event -> {
@@ -136,7 +137,7 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 			getLine().refreshItem(7, item -> ItemUtils.loreOptionValue(item, block.getName()));
 			this.block = block;
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
@@ -157,7 +158,7 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 		public StageInteractBlock finishStage(StageController controller) {
 			return new StageInteractBlock(controller, leftClick, block);
 		}
-		
+
 	}
 
 }

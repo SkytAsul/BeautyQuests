@@ -139,7 +139,7 @@ dynmap:
 # Describes the way stage with multiple objects are described
 stage description:
   # Available placeholders are: {stage_index}, {stage_amount}, {stage_description}
-  descriptionFormat: "§8({stage_index}/{stage_amount}) §e{stage_description}"
+  description format: "§8({stage_index}/{stage_amount}) §e{stage_description}"
   # Format used for items, mobs, buckets... in stage descriptions.
   # Available placeholders are: {name}, {remaining} (decreasing), {done} (increasing), {total}, {percentage} (0 to 100).
   # Example: "{name} {done}/{total}"

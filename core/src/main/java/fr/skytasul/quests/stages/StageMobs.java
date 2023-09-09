@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
@@ -32,7 +33,7 @@ import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.mobs.Mob;
 
 @LocatableType (types = LocatedType.ENTITY)
-public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable {
+public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable, Listener {
 
 	private boolean shoot = false;
 

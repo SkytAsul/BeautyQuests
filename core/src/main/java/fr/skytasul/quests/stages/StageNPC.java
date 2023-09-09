@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -44,7 +45,7 @@ import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
 @LocatableType(types = LocatedType.ENTITY)
-public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable {
+public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable, Listener {
 
 	private BqNpc npc;
 	private String npcID;

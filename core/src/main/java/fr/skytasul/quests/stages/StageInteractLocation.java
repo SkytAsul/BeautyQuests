@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -27,7 +28,7 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.types.BQLocation;
 
 @LocatableType (types = { LocatedType.BLOCK, LocatedType.OTHER })
-public class StageInteractLocation extends AbstractStage implements Locatable.PreciseLocatable {
+public class StageInteractLocation extends AbstractStage implements Locatable.PreciseLocatable, Listener {
 
 	private final boolean left;
 	private final BQLocation lc;

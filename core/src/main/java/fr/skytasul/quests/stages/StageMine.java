@@ -1,17 +1,13 @@
 package fr.skytasul.quests.stages;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -37,14 +33,14 @@ import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.XMaterial;
 
 @LocatableType (types = LocatedType.BLOCK)
-public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable {
+public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable, Listener {
 
 	private boolean placeCancelled;
-	
+
 	public StageMine(StageController controller, List<CountableObject<BQBlock>> blocks) {
 		super(controller, blocks);
 	}
-	
+
 	public boolean isPlaceCancelled() {
 		return placeCancelled;
 	}
@@ -57,7 +53,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_MINE.toString();
 	}
-	
+
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
@@ -80,7 +76,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 				return;
 		}
 	}
-	
+
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
 		if (QuestsConfigurationImplementation.getConfiguration().usePlayerBlockTracker())
@@ -103,19 +99,19 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 			}
 		}
 	}
-	
+
 	@Override
 	public Spliterator<Located> getNearbyLocated(NearbyFetcher fetcher) {
 		return QuestsAPI.getAPI().getBlocksManager().getNearbyBlocks(fetcher,
 				objects.stream().map(CountableObject::getObject).collect(Collectors.toList()));
 	}
-	
+
 	@Override
 	protected void serialize(ConfigurationSection section) {
 		super.serialize(section);
 		if (placeCancelled) section.set("placeCancelled", placeCancelled);
 	}
-	
+
 	public static StageMine deserialize(ConfigurationSection section, StageController controller) {
 		StageMine stage = new StageMine(controller, new ArrayList<>());
 		stage.deserialize(section);
@@ -125,9 +121,9 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	}
 
 	public static class Creator extends AbstractCountableBlockStage.AbstractCreator<StageMine> {
-		
+
 		private boolean prevent = false;
-		
+
 		public Creator(@NotNull StageCreationContext<StageMine> context) {
 			super(context);
 		}
@@ -135,15 +131,15 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
 			line.setItem(6, ItemUtils.itemSwitch(Lang.preventBlockPlace.toString(), prevent), event -> setPrevent(!prevent));
 		}
-		
+
 		@Override
 		protected ItemStack getBlocksItem() {
 			return ItemUtils.item(XMaterial.STONE_PICKAXE, Lang.editBlocksMine.toString());
 		}
-		
+
 		public void setPrevent(boolean prevent) {
 			if (this.prevent != prevent) {
 				this.prevent = prevent;
@@ -156,7 +152,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 			super.edit(stage);
 			setPrevent(stage.isPlaceCancelled());
 		}
-		
+
 		@Override
 		public StageMine finishStage(StageController controller) {
 			StageMine stage = new StageMine(controller, getImmutableBlocks());

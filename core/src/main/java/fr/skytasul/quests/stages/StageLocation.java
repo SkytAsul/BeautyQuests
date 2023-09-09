@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -29,45 +30,45 @@ import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.types.BQLocation;
 
 @LocatableType (types = LocatedType.OTHER)
-public class StageLocation extends AbstractStage implements Locatable.PreciseLocatable {
+public class StageLocation extends AbstractStage implements Locatable.PreciseLocatable, Listener {
 
 	private final BQLocation lc;
 	private final int radius;
 	private final int radiusSquared;
-	
+
 	public StageLocation(StageController controller, BQLocation lc, int radius) {
 		super(controller);
 		this.lc = lc;
 		this.radius = radius;
 		this.radiusSquared = radius * radius;
 	}
-	
+
 	public BQLocation getLocation() {
 		return lc;
 	}
-	
+
 	@Override
 	public Located getLocated() {
 		return lc;
 	}
-	
+
 	public int getRadius(){
 		return radius;
 	}
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
 				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
 			return; // only rotation
 		if (!lc.isWorld(e.getTo().getWorld())) return;
-		
+
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (lc.distanceSquared(e.getTo()) <= radiusSquared) finishStage(p);
 		}
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -76,7 +77,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		placeholders.registerIndexed("target_z", lc.getBlockZ());
 		placeholders.registerIndexed("target_world", lc.getWorldName());
 	}
-	
+
 	@Override
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_LOCATION.toString();
@@ -93,17 +94,17 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 				BQLocation.deserialize(section.getConfigurationSection("location").getValues(false)),
 				section.getInt("radius"));
 	}
-	
+
 	public static class Creator extends StageCreation<StageLocation> {
-		
+
 		private static final int SLOT_RADIUS = 6;
 		private static final int SLOT_LOCATION = 7;
 		private static final int SLOT_WORLD_PATTERN = 8;
-		
+
 		private Location location;
 		private Pattern pattern;
 		private int radius;
-		
+
 		public Creator(@NotNull StageCreationContext<StageLocation> context) {
 			super(context);
 		}
@@ -134,19 +135,19 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 				}, PatternParser.PARSER).passNullIntoEndConsumer().start();
 			});
 		}
-		
+
 		public void setLocation(Location location) {
 			this.location = location;
 			getLine().refreshItem(SLOT_LOCATION,
 					item -> ItemUtils.loreOptionValue(item, Lang.Location.format(getBQLocation())));
 		}
-		
+
 		public void setRadius(int radius) {
 			this.radius = radius;
 			getLine().refreshItem(SLOT_RADIUS,
 					item -> ItemUtils.lore(item, Lang.stageLocationCurrentRadius.quickFormat("radius", radius)));
 		}
-		
+
 		public void setPattern(Pattern pattern) {
 			this.pattern = pattern;
 			getLine().refreshItem(SLOT_WORLD_PATTERN,
@@ -154,13 +155,13 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 							"",
 							pattern == null ? Lang.NotSet.toString() : QuestOption.formatNullableValue(pattern.pattern())));
 		}
-		
+
 		private BQLocation getBQLocation() {
 			BQLocation loc = new BQLocation(location);
 			if (pattern != null) loc.setWorldPattern(pattern);
 			return loc;
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
@@ -179,12 +180,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 			setRadius(stage.getRadius());
 			setPattern(stage.getLocation().getWorldPattern());
 		}
-		
+
 		@Override
 		public StageLocation finishStage(StageController controller) {
 			return new StageLocation(controller, getBQLocation(), radius);
 		}
-		
+
 	}
-	
+
 }

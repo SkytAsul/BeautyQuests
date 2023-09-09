@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,22 +35,22 @@ import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
  */
-public class StageCraft extends AbstractStage implements HasSingleObject {
+public class StageCraft extends AbstractStage implements HasSingleObject, Listener {
 
 	private final ItemStack result;
 	private final ItemComparisonMap comparisons;
-	
+
 	public StageCraft(StageController controller, ItemStack result, ItemComparisonMap comparisons) {
 		super(controller);
 		this.result = result;
 		this.comparisons = comparisons;
 		if (result.getAmount() == 0) result.setAmount(1);
 	}
-	
+
 	public ItemStack getItem(){
 		return result;
 	}
-	
+
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
@@ -62,14 +63,14 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onCraft(BQCraftEvent event) {
 		Player p = event.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			ItemStack item = event.getResult();
 			if (comparisons.isSimilar(result, item)) {
-				
+
 				int recipeAmount = item.getAmount();
 
 				switch (event.getClickEvent().getClick()) {
@@ -97,7 +98,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 							recipeAmount = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
 						}else recipeAmount = event.getMaxCraftable();
 						break;
-					
+
 					default:
 						cursor = event.getClickEvent().getCursor();
 						if (cursor != null && cursor.getType() != Material.AIR) {
@@ -122,7 +123,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 			}
 		}
 	}
-	
+
 	@Override
 	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
@@ -159,10 +160,10 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 	@Override
 	protected void serialize(ConfigurationSection section) {
 		section.set("result", result.serialize());
-		
+
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
-	
+
 	public static StageCraft deserialize(ConfigurationSection section, StageController controller) {
 		return new StageCraft(controller, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
 	}
@@ -180,12 +181,12 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 	}
 
 	public static class Creator extends StageCreation<StageCraft> {
-		
+
 		private static final int ITEM_SLOT = 6, COMPARISONS_SLOT = 7;
-		
+
 		private ItemStack item;
 		private ItemComparisonMap comparisons = new ItemComparisonMap();
-		
+
 		public Creator(@NotNull StageCreationContext<StageCraft> context) {
 			super(context);
 		}
@@ -193,7 +194,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
 			line.setItem(ITEM_SLOT, ItemUtils.item(XMaterial.CHEST, Lang.editItem.toString()), event -> {
 				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(is -> {
 					if (is != null)
@@ -215,7 +216,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 					item2 -> ItemUtils.lore(item2,
 							QuestOption.formatNullableValue(Utils.getStringFromItemStack(item, "§8", true))));
 		}
-		
+
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
 			getLine().refreshItem(COMPARISONS_SLOT, item -> ItemUtils.lore(item,
@@ -238,7 +239,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject {
 			setItem(stage.getItem());
 			setComparisons(stage.comparisons.clone());
 		}
-		
+
 		@Override
 		public StageCraft finishStage(StageController controller) {
 			return new StageCraft(controller, item, comparisons);

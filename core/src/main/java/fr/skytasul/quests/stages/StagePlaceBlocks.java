@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,8 +20,8 @@ import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.XMaterial;
 
-public class StagePlaceBlocks extends AbstractCountableBlockStage {
-	
+public class StagePlaceBlocks extends AbstractCountableBlockStage implements Listener {
+
 	public StagePlaceBlocks(StageController controller, List<CountableObject<BQBlock>> blocks) {
 		super(controller, blocks);
 	}
@@ -29,7 +30,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_PLACE.toString();
 	}
-	
+
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e) {
 		if (e.isCancelled()) return;
@@ -37,7 +38,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		if (hasStarted(p))
 			event(p, e.getBlock(), 1);
 	}
-	
+
 	public static StagePlaceBlocks deserialize(ConfigurationSection section, StageController controller) {
 		StagePlaceBlocks stage = new StagePlaceBlocks(controller, new ArrayList<>());
 		stage.deserialize(section);
@@ -45,7 +46,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 	}
 
 	public static class Creator extends AbstractCountableBlockStage.AbstractCreator<StagePlaceBlocks> {
-		
+
 		public Creator(@NotNull StageCreationContext<StagePlaceBlocks> context) {
 			super(context);
 		}
@@ -54,7 +55,7 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage {
 		protected ItemStack getBlocksItem() {
 			return ItemUtils.item(XMaterial.STONE, Lang.editBlocksPlace.toString());
 		}
-		
+
 		@Override
 		public StagePlaceBlocks finishStage(StageController controller) {
 			return new StagePlaceBlocks(controller, getImmutableBlocks());
