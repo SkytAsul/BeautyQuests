@@ -153,6 +153,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
 			loadConfigParameters(true);
+			checkLastVersion();
 
 			registerCommands();
 
@@ -454,7 +455,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
 		data = YamlConfiguration.loadConfiguration(dataFile);
+		data.options().header("Do not edit ANYTHING here.");
+		data.options().copyHeader(true);
+	}
 
+	private void checkLastVersion() {
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
@@ -464,8 +469,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				createDataBackup(backupDir);
 			}
 		}else lastVersion = getDescription().getVersion();
-		data.options().header("Do not edit ANYTHING here.");
-		data.options().copyHeader(true);
 	}
 
 	private void loadAllDatas() throws Throwable {

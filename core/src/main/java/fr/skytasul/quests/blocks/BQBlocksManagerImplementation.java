@@ -20,9 +20,6 @@ import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public class BQBlocksManagerImplementation implements BQBlocksManager {
 
-	public static final String BLOCKDATA_HEADER = "blockdata:";
-	public static final String TAG_HEADER = "tag:";
-
 	private final BiMap<String, BQBlockType> types = HashBiMap.create(5);
 
 	private BQBlockType materialType;
@@ -39,10 +36,10 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 
 		if (MinecraftVersion.MAJOR >= 13) {
 			blockdataType = (string, options) -> new Post1_13.BQBlockData(options, string);
-			registerBlockType("blockdata:", blockdataType);
+			registerBlockType("blockdata", blockdataType);
 
 			tagType = (string, options) -> new Post1_13.BQBlockTag(options, string);
-			registerBlockType("tag:", tagType);
+			registerBlockType("tag", tagType);
 		}
 	}
 
@@ -50,23 +47,25 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 	public @NotNull BQBlock deserialize(@NotNull String string) throws IllegalArgumentException {
 		BQBlockType type;
 
+		int headerSeparator = string.indexOf(HEADER_SEPARATOR);
+		int nameIndex = string.lastIndexOf(CUSTOM_NAME_FOOTER);
+
 		String header = "";
-		int separator = string.indexOf(HEADER_SEPARATOR);
-		if (separator != -1) {
-			header = string.substring(0, separator);
-			string = string.substring(separator + 1);
+		int dataStart = 0;
+		int dataEnd = nameIndex == -1 ? string.length() : nameIndex;
+
+		if (headerSeparator != -1 && (nameIndex == -1 || headerSeparator < nameIndex)) {
+			header = string.substring(0, headerSeparator);
+			dataStart = headerSeparator + 1;
 		}
 		type = types.get(header);
 
 		if (type == null)
 			throw new IllegalArgumentException("Unknown block header: " + header);
 
-		int nameIndex = string.lastIndexOf(CUSTOM_NAME_FOOTER);
 		String customName = nameIndex == -1 ? null : string.substring(nameIndex + CUSTOM_NAME_FOOTER.length());
 
-		int dataEnd = nameIndex == -1 ? string.length() : nameIndex;
-
-		return type.deserialize(string.substring(0, dataEnd), new BQBlockOptions(type, customName));
+		return type.deserialize(string.substring(dataStart, dataEnd), new BQBlockOptions(type, customName));
 	}
 
 	@Override

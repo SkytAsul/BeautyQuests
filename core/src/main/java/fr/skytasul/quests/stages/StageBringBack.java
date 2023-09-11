@@ -25,7 +25,6 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
@@ -38,7 +37,7 @@ public class StageBringBack extends StageNPC{
 	protected final ItemComparisonMap comparisons;
 
 	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
-	protected final String[] itemsDescriptions;
+	protected String[] itemsDescriptions;
 
 	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
 		super(controller);
@@ -50,25 +49,6 @@ public class StageBringBack extends StageNPC{
 			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
 			amountsMap.put(item, amount);
 		}
-
-		itemsDescriptions =
-				Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
-
-					@Override
-					public int getPlayerAmount(@NotNull PlayerAccount account) {
-						return item.getAmount();
-					}
-
-					@Override
-					public @NotNull String getObjectName() {
-						return ItemUtils.getName(item);
-					}
-
-					@Override
-					public int getObjectAmount() {
-						return item.getAmount();
-					}
-				}, PlaceholdersContext.of((Player) null, false, null))).toArray(String[]::new);
 	}
 
 	public boolean checkItems(Player p, boolean msg){
@@ -113,9 +93,36 @@ public class StageBringBack extends StageNPC{
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
+
 		placeholders.registerIndexedContextual("items", StageDescriptionPlaceholdersContext.class,
-				context -> ProgressPlaceholders.formatObjectList(context.getDescriptionSource(),
-						QuestsConfiguration.getConfig().getStageDescriptionConfig(), itemsDescriptions));
+				context -> {
+					// We cannot initialize itemsDescription in constructor as a player instance is needed for the
+					// placeholder parsing event though it is not actually used.
+					// Therefore, we initialize itemsDescription the first time we actually use it: now.
+					if (itemsDescriptions == null) {
+						itemsDescriptions =
+								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
+
+									@Override
+									public int getPlayerAmount(@NotNull PlayerAccount account) {
+										return item.getAmount();
+									}
+
+									@Override
+									public @NotNull String getObjectName() {
+										return ItemUtils.getName(item);
+									}
+
+									@Override
+									public int getObjectAmount() {
+										return item.getAmount();
+									}
+								}, context)).toArray(String[]::new);
+					}
+
+					return ProgressPlaceholders.formatObjectList(context.getDescriptionSource(),
+							QuestsConfiguration.getConfig().getStageDescriptionConfig(), itemsDescriptions);
+				});
 	}
 
 	@Override

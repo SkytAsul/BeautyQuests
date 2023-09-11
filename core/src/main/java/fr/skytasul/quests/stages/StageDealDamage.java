@@ -101,6 +101,8 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
 		ProgressPlaceholders.registerProgress(placeholders, "damage", this);
+		placeholders.registerIndexedContextual("damage_remaining", StageDescriptionPlaceholdersContext.class,
+				context -> Integer.toString(getPlayerAmount(context.getPlayerAccount())));
 		placeholders.registerIndexed("target_mobs", getTargetMobsString(targetMobs));
 	}
 

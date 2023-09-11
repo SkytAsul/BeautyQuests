@@ -75,7 +75,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 				.stream()
 				.flatMap(factory -> factory.getIDs()
 						.stream()
-						.map(String::valueOf))
+						.map(id -> getNpcId(factory, id)))
 				.collect(Collectors.toList());
 	}
 
@@ -103,7 +103,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		return npcs.computeIfAbsent(getNpcId(npcFactory, id), this::registerNPC);
 	}
 
-	private BqNpcImplementation registerNPC(String id) {
+	private @Nullable BqNpcImplementation registerNPC(String id) {
 		BqInternalNpcFactory factory;
 		int npcId;
 
@@ -119,7 +119,14 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 			npcId = Integer.parseInt(id.substring(separatorIndex + SEPARATOR.length()));
 		}
 
-		return new BqNpcImplementation(new WrappedInternalNpc(factory, npcId));
+		if (factory == null)
+			throw new IllegalArgumentException("Cannot find factory for NPC " + id + ". Is your NPC plugin installed?");
+
+		BqInternalNpc npc = factory.fetchNPC(npcId);
+		if (npc == null)
+			return null;
+
+		return new BqNpcImplementation(new WrappedInternalNpc(factory, npc));
 	}
 
 	@Override
@@ -167,12 +174,6 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		private final BqInternalNpcFactory factory;
 		private final int id;
 		private BqInternalNpc npc;
-
-		public WrappedInternalNpc(BqInternalNpcFactory factory, int id) {
-			this.factory = factory;
-			this.id = id;
-			this.npc = factory.fetchNPC(id);
-		}
 
 		public WrappedInternalNpc(BqInternalNpcFactory factory, BqInternalNpc npc) {
 			this.factory = factory;

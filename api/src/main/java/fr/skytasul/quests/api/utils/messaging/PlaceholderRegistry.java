@@ -99,7 +99,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	/**
 	 * Adds all the placeholders from the passed placeholders holders to this placeholders registry and
 	 * keeps indexed placeholders.
-	 * 
+	 *
 	 * @param placeholdersHolders holders to get the placeholders from
 	 * @return this placeholder registry
 	 */
@@ -109,7 +109,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 
 	/**
 	 * Adds all the placeholders from the passed placeholders holders to this placeholders registry.
-	 * 
+	 *
 	 * @param withIndexes should the indexed placeholders of the passed placeholders holders be kept as
 	 *        indexed
 	 * @param placeholdersHolders holders to get the placeholders from
@@ -119,7 +119,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 			@NotNull HasPlaceholders @NotNull... placeholdersHolders) {
 		for (HasPlaceholders holder : placeholdersHolders) {
 			this.placeholders.addAll(holder.getPlaceholdersRegistry().placeholders);
-			if (!holder.getPlaceholdersRegistry().indexed.isEmpty())
+			if (withIndexes && !holder.getPlaceholdersRegistry().indexed.isEmpty())
 				this.indexed.addAll(holder.getPlaceholdersRegistry().indexed);
 		}
 		return this;
@@ -128,7 +128,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	/**
 	 * Creates a <i>new</i> placeholders registry containing the placeholders of this instance in
 	 * addition with those from the passed placeholders holders.
-	 * 
+	 *
 	 * @param placeholdersHolders holders to get the placeholders from
 	 * @return a new placeholder registry containing all placeholders
 	 * @see #combine(HasPlaceholders...)
@@ -143,7 +143,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	/**
 	 * Creates a <i>new</i> placeholders registry containing the same placeholders as this instance but
 	 * with the placeholers passed as parameter no longer being indexed.
-	 * 
+	 *
 	 * @param exceptedPlaceholders placeholders no longer being indexed
 	 * @return a copy of this registry without some indexed placeholders
 	 */
@@ -170,7 +170,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	/**
 	 * Creates a <i>new</i> placeholders registry containing the same placeholders as this instance but
 	 * with the indexed placeholers being shifted so that the passed placeholder is the first one.
-	 * 
+	 *
 	 * @param placeholder first placeholder to be indexed
 	 * @return a copy of this registry with the indexed placeholders shifted
 	 */
@@ -216,7 +216,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	/**
 	 * Creates a placeholders registry containing the placeholders of all the passed placeholder
 	 * holders.
-	 * 
+	 *
 	 * @param placeholdersHolders holders to get the placeholders from
 	 * @return a new placeholder registry containing all placeholders
 	 */

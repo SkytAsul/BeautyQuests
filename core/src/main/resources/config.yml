@@ -157,8 +157,9 @@ stage description:
   # Show boss bars for stages with progress
   boss bars: true
   # Format of the boss bar for stages with progress.
-  # Available placeholders are: {quest_name}, {stage_done}, {stage_remaining}, {stage_total}, {stage_percentage}
-  boss bar format: "§6{quest_name}: §e{stage_done}/{stage_total}"
+  # Available placeholders are: {progress_done}, {progress_remaining}, {progress_amount}, {progress_percentage}
+  # and all other placeholders from quest and stage (i.e. {quest_name})
+  boss bar format: "§6{quest_name}: §e{progress_done}/{progress_amount}"
   # Seconds before the progress bar disappear (set it to 0 to make it persistent)
   boss bar timeout: 15
 

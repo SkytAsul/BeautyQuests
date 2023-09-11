@@ -603,7 +603,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private String bossBarFormat;
 		private int bossBarTimeout = 15;
 
-		private ConfigurationSection config;
+		private final ConfigurationSection config;
 
 		public StageDescriptionConfig(ConfigurationSection config) {
 			this.config = config;
@@ -631,19 +631,16 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean update() {
 			boolean result = false;
 
-			if (config == null) {
-				migrateEntry(QuestsConfigurationImplementation.this.config, "stageDescriptionItemsSplit",
-						QuestsConfigurationImplementation.this.config, "stage description");
-				config = QuestsConfigurationImplementation.this.config.getConfigurationSection("stage description");
-				result = true;
-			}
+			ConfigurationSection oldConfig = config.getParent().getConfigurationSection("stageDescriptionItemsSplit");
 
 			result |= migrateEntry(config.getParent(), "stageDescriptionFormat", config, "description format");
-			result |= migrateEntry(config, "prefix", config, "line prefix");
-			result |= migrateEntry(config, "sources", config, "split sources");
-			if (config.contains("amountFormat")) {
-				String amountFormat = config.getString("amountFormat");
-				boolean showXOne = config.getBoolean("showXOne");
+			if (oldConfig != null) {
+				migrateEntry(oldConfig, "prefix", config, "line prefix");
+				migrateEntry(oldConfig, "sources", config, "split sources");
+				migrateEntry(oldConfig, "inlineAlone", config, "inline alone");
+
+				String amountFormat = oldConfig.getString("amountFormat");
+				boolean showXOne = oldConfig.getBoolean("showXOne");
 				String itemNameColor = config.getParent().getString("itemNameColor");
 				String itemAmountColor = config.getParent().getString("itemAmountColor");
 
@@ -652,10 +649,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				config.set("item formats.multiple", multipleFormat);
 				config.set("item formats.single", singleFormat);
 
-				config.set("amountFormat", null);
-				config.set("showXOne", null);
 				config.getParent().set("itemNameColor", null);
 				config.getParent().set("itemAmountColor", null);
+				config.getParent().set("stageDescriptionItemsSplit", null);
+
 				result = true;
 			}
 

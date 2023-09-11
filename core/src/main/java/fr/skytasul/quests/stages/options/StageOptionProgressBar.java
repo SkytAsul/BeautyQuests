@@ -132,7 +132,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			this.acc = PlayersManager.getPlayerAccount(p);
 			this.totalAmount = progress.getTotalAmount();
 			this.placeholders = PlaceholderRegistry.combine(progress); // to make a copy
-			ProgressPlaceholders.registerProgress(placeholders, "stage", progress);
+			ProgressPlaceholders.registerProgress(placeholders, "progress", progress);
 
 			BarStyle style = null;
 			if (totalAmount % 20 == 0) {
@@ -170,6 +170,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 
 			bar.setTitle(MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
 					PlaceholdersContext.of(acc.getPlayer(), true, null)));
+			bar.addPlayer(acc.getPlayer());
 		}
 
 		private void timer() {

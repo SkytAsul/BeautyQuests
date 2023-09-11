@@ -136,6 +136,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (npc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The NPC " + npcID + " does not exist for " + toString());
 		} else {
+			this.npcID = npc.getId(); // TODO migration 1.0
 			initDialogRunner();
 		}
 	}

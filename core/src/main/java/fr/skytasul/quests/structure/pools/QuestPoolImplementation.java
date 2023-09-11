@@ -33,10 +33,10 @@ import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class QuestPoolImplementation implements Comparable<QuestPoolImplementation>, QuestPool {
-	
+
 	private final int id;
-	
-	private final String npcId;
+
+	private String npcId;
 	private final String hologram;
 	private final int maxQuests;
 	private final int questsPerLaunch;
@@ -44,12 +44,12 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	private final long timeDiff;
 	private final boolean avoidDuplicates;
 	private final RequirementList requirements;
-	
+
 	BqNpcImplementation npc;
 	List<Quest> quests = new ArrayList<>();
 
 	private @Nullable PlaceholderRegistry placeholders;
-	
+
 	QuestPoolImplementation(int id, String npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed,
 			long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
 		this.id = id;
@@ -61,82 +61,83 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		this.timeDiff = timeDiff;
 		this.avoidDuplicates = avoidDuplicates;
 		this.requirements = requirements;
-		
+
 		if (npcID != null) {
 			npc = BeautyQuests.getInstance().getNpcManager().getById(npcID);
 			if (npc != null) {
+				this.npcId = npc.getId(); // TODO migration 1.0
 				npc.addPool(this);
 				return;
 			}
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unknown NPC " + npcID + " for quest pool #" + id);
 	}
-	
+
 	@Override
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String getNpcId() {
 		return npcId;
 	}
-	
+
 	@Override
 	public String getHologram() {
 		return hologram;
 	}
-	
+
 	@Override
 	public int getMaxQuests() {
 		return maxQuests;
 	}
-	
+
 	@Override
 	public int getQuestsPerLaunch() {
 		return questsPerLaunch;
 	}
-	
+
 	@Override
 	public boolean isRedoAllowed() {
 		return redoAllowed;
 	}
-	
+
 	@Override
 	public long getTimeDiff() {
 		return timeDiff;
 	}
-	
+
 	@Override
 	public boolean doAvoidDuplicates() {
 		return avoidDuplicates;
 	}
-	
+
 	@Override
 	public RequirementList getRequirements() {
 		return requirements;
 	}
-	
+
 	@Override
 	public List<Quest> getQuests() {
 		return quests;
 	}
-	
+
 	@Override
 	public void addQuest(Quest quest) {
 		quests.add(quest);
 	}
-	
+
 	@Override
 	public void removeQuest(Quest quest) {
 		quests.remove(quest);
 	}
-	
+
 	@Override
 	public int compareTo(QuestPoolImplementation o) {
 		return Integer.compare(id, o.id);
 	}
-	
+
 	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
@@ -171,32 +172,32 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 				Lang.poolItemQuestsList.format(this),
 				"", action);
 	}
-	
+
 	@Override
 	public CompletableFuture<PlayerPoolDatas> resetPlayer(PlayerAccount acc) {
 		return acc.removePoolDatas(this);
 	}
-	
+
 	@Override
 	public void resetPlayerTimer(PlayerAccount acc) {
 		if (!acc.hasPoolDatas(this)) return;
 		acc.getPoolDatas(this).setLastGive(0);
 	}
-	
+
 	public void questCompleted(PlayerAccount acc, Quest quest) {
 		if (!avoidDuplicates) return;
 		PlayerPoolDatasImplementation poolDatas = (PlayerPoolDatasImplementation) acc.getPoolDatas(this);
 		poolDatas.getCompletedQuests().add(quest.getId());
 		poolDatas.updatedCompletedQuests();
 	}
-	
+
 	@Override
 	public boolean canGive(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
-		
+
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
-		
+
 		for (AbstractRequirement requirement : requirements) {
 			try {
 				if (!requirement.test(p)) return false;
@@ -205,22 +206,22 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 				return false;
 			}
 		}
-		
+
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream()
 				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
 		if (notDoneQuests.isEmpty()) { // all quests completed
 			if (!redoAllowed) return false;
 			return quests.stream().anyMatch(quest -> quest.isRepeatable() && quest.canStart(p, false));
 		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return false;
-		
+
 		return notDoneQuests.stream().anyMatch(quest -> quest.canStart(p, false));
 	}
-	
+
 	@Override
 	public CompletableFuture<String> give(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
-		
+
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0)
 			return CompletableFuture
@@ -315,15 +316,15 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of " + datas.getAccount().getNameAndID() + " for pool " + id);
 		return notDoneQuests;
 	}
-	
+
 	void unload() {
 		if (npc != null) npc.removePool(this);
 	}
-	
+
 	public void unloadStarter() {
 		npc = null;
 	}
-	
+
 	public void save(ConfigurationSection config) {
 		config.set("hologram", hologram);
 		config.set("maxQuests", maxQuests);
@@ -335,14 +336,14 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		if (!requirements.isEmpty())
 			config.set("requirements", requirements.serialize());
 	}
-	
+
 	public static QuestPoolImplementation deserialize(int id, ConfigurationSection config) {
 		return new QuestPoolImplementation(id, config.getString("npcID"), config.getString("hologram"),
 				config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"),
 				config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true),
 				RequirementList.deserialize(config.getMapList("requirements")));
 	}
-	
+
 	private static class PoolGiveResult {
 		private final Quest quest;
 		private final String reason;
