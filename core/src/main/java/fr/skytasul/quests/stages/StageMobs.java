@@ -83,7 +83,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 
 	@Override
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
-		return Lang.SCOREBOARD_NONE.toString();
+		return Lang.SCOREBOARD_MOBS.toString();
 	}
 
 	@Override
@@ -92,7 +92,6 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		if (acc.isCurrent() && sendStartMessage()) {
 			MessageUtils.sendRawMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
 					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE, MessageType.DefaultMessageType.PREFIXED));
-			Lang.STAGE_MOBSLIST.send(acc.getPlayer(), this);
 		}
 	}
 

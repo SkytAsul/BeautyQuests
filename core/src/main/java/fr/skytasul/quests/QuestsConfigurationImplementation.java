@@ -613,7 +613,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			itemSingleFormat = config.getString("item formats.single");
 			itemMultipleFormat = config.getString("item formats.multiple");
 			stageDescriptionFormat = config.getString("description format");
-			descPrefix = "{nl}" + config.getString("prefix");
+			descPrefix = "{nl}" + config.getString("line prefix");
 			inlineAlone = config.getBoolean("inline alone");
 			for (String s : config.getStringList("split sources")) {
 				try {

@@ -96,21 +96,13 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 
 	@Override
 	public @Nullable BqNpcImplementation getById(String id) {
-		return npcs.computeIfAbsent(id, this::registerNPC);
-	}
-
-	public @Nullable BqNpcImplementation getById(BqInternalNpcFactory npcFactory, int id) {
-		return npcs.computeIfAbsent(getNpcId(npcFactory, id), this::registerNPC);
-	}
-
-	private @Nullable BqNpcImplementation registerNPC(String id) {
 		BqInternalNpcFactory factory;
 		int npcId;
 
 		int separatorIndex = id.indexOf(SEPARATOR);
 		if (separatorIndex == -1) { // TODO migration 1.0
 			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Loading NPC with id " + id + " from a previous version of the plugin.");
+					.debug("Loading NPC with id " + id + " from a previous version of the plugin.");
 			factory = getMigrationFactory();
 			npcId = Integer.parseInt(id);
 		} else {
@@ -122,11 +114,17 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (factory == null)
 			throw new IllegalArgumentException("Cannot find factory for NPC " + id + ". Is your NPC plugin installed?");
 
-		BqInternalNpc npc = factory.fetchNPC(npcId);
-		if (npc == null)
-			return null;
+		return getByFactoryAndId(factory, npcId);
+	}
 
-		return new BqNpcImplementation(new WrappedInternalNpc(factory, npc));
+	public @Nullable BqNpcImplementation getByFactoryAndId(@NotNull BqInternalNpcFactory factory, int id) {
+		return npcs.computeIfAbsent(getNpcId(factory, id), strId -> {
+			BqInternalNpc npc = factory.fetchNPC(id);
+			if (npc == null)
+				return null;
+
+			return new BqNpcImplementation(new WrappedInternalNpc(factory, npc));
+		});
 	}
 
 	@Override
@@ -143,7 +141,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 			@NotNull NpcClickType click) {
 		if (event != null && event.isCancelled())
 			return;
-		BQNPCClickEvent newEvent = new BQNPCClickEvent(getById(npcFactory, npcID), p, click);
+		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, npcID), p, click);
 		Bukkit.getPluginManager().callEvent(newEvent);
 		if (event != null)
 			event.setCancelled(newEvent.isCancelled());

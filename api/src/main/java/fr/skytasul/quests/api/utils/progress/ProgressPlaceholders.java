@@ -26,11 +26,14 @@ public final class ProgressPlaceholders {
 			.registerIndexedContextual("done", ProgressPlaceholderContext.class,
 					context -> Integer.toString(context.getProgress().getTotalAmount()
 							- context.getProgress().getPlayerAmount(context.getPlayerAccount())))
-			.registerIndexedContextual("amount", ProgressPlaceholderContext.class,
+			.registerIndexedContextual("total", ProgressPlaceholderContext.class,
 					context -> Integer.toString(context.getProgress().getTotalAmount()))
 			.registerIndexedContextual("percentage", ProgressPlaceholderContext.class,
-					context -> Integer.toString((int) (context.getProgress().getPlayerAmount(context.getPlayerAccount())
-							* 100D / context.getProgress().getTotalAmount())));
+					context -> {
+						int perc = (int) (100D - context.getProgress().getPlayerAmount(context.getPlayerAccount()) * 100D
+								/ context.getProgress().getTotalAmount());
+						return Integer.toString(perc);
+					});
 	private static final PlaceholderRegistry DESCRIPTION_REGISTRY = PROGRESS_REGISTRY.with(new PlaceholderRegistry()
 			.registerIndexedContextual("name", ProgressObjectPlaceholderContext.class,
 					context -> context.getProgress().getObjectName()));
@@ -39,7 +42,7 @@ public final class ProgressPlaceholders {
 
 	public static void registerProgress(@NotNull PlaceholderRegistry placeholders, @NotNull String key,
 			@NotNull HasProgress progress) {
-		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|amount|percentage)",
+		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|total|percentage)",
 				PlayerPlaceholdersContext.class, (matcher, context) -> {
 					return PROGRESS_REGISTRY.resolve(matcher.group(1), new ProgressPlaceholderContext(
 							context.getActor(), context.replacePluginPlaceholders(), progress));
@@ -51,7 +54,7 @@ public final class ProgressPlaceholders {
 		placeholders.registerIndexedContextual(key, PlayerPlaceholdersContext.class,
 				context -> formatObject(object, context));
 
-		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|amount|percentage|name)",
+		placeholders.register(Placeholder.ofPatternContextual(key + "_(remaining|done|total|percentage|name)",
 				PlayerPlaceholdersContext.class, (matcher, context) -> {
 					return DESCRIPTION_REGISTRY.resolve(matcher.group(1), new ProgressObjectPlaceholderContext(
 							context.getActor(), context.replacePluginPlaceholders(), object));
@@ -71,7 +74,7 @@ public final class ProgressPlaceholders {
 					objectsDescription);
 		});
 
-		placeholders.register(Placeholder.ofPatternContextual(key + "_(\\d+)(?:_(remaining|done|amount|percentage))?",
+		placeholders.register(Placeholder.ofPatternContextual(key + "_(\\d+)(?:_(remaining|done|total|percentage))?",
 				PlayerPlaceholdersContext.class, (matcher, context) -> {
 					int index = Integer.parseInt(matcher.group(1));
 					CountableObject<T> object = objects.getObject(index);
@@ -126,9 +129,11 @@ public final class ProgressPlaceholders {
 			@NotNull ItemsDescriptionConfiguration configuration, @NotNull String @NotNull... elements) {
 		if (elements.length == 0)
 			return Lang.Unknown.toString();
-		if ((elements.length == 1 && configuration.isAloneSplitInlined()) || configuration.isSourceSplit(source))
-			return MessageUtils.itemsToFormattedString(elements, "§r");
-		return String.join(configuration.getSplitPrefix(), elements);
+		if (elements.length == 1 && configuration.isAloneSplitInlined())
+			return elements[0];
+		if (configuration.isSourceSplit(source))
+			return configuration.getSplitPrefix() + String.join(configuration.getSplitPrefix(), elements);
+		return MessageUtils.itemsToFormattedString(elements, "§r");
 	}
 
 	private static class ProgressPlaceholderContext implements PlayerPlaceholdersContext {

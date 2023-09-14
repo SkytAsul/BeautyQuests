@@ -29,7 +29,7 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 		super(Lang.INVENTORY_MOBS.toString(), DyeColor.ORANGE, objects);
 		this.end = end;
 	}
-	
+
 	@Override
 	public void finish(List<MutableCountableObject<Mob<?>>> objects) {
 		end.accept(objects);
@@ -81,7 +81,7 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 				.addDescription(Lang.Amount.format(mob))
 				.addClick(ClickType.LEFT, Lang.editAmount.toString())
 				.addClick(ClickType.RIGHT, Lang.editMobName.toString())
-				.addClick(ClickType.SHIFT_RIGHT, (mob.getObject().getFactory() instanceof LeveledMobFactory ? "" : "§8§n")
+				.addClick(ClickType.SHIFT_RIGHT, (mob.getObject().getFactory() instanceof LeveledMobFactory ? "" : "§8§m")
 						+ Lang.setLevel.toString());
 		ItemStack item = ItemUtils.item(mob.getObject().getMobItem(), mob.getObject().getName(), loreBuilder.toLoreArray());
 		item.setAmount(Math.min(mob.getAmount(), 64));

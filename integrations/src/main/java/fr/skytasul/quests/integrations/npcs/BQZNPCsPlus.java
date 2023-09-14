@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
@@ -24,7 +25,7 @@ import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.npc.interaction.NPCInteractEvent;
 import lol.pyr.znpcsplus.ZNPCsPlus;
 
-public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable {
+public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable, Listener {
 
 	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 

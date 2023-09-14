@@ -4,22 +4,23 @@ import java.util.function.Consumer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
 
-public class WaitBlockClick extends InventoryClear{
-	
+public class WaitBlockClick extends InventoryClear implements Listener {
+
 	private Consumer<Location> run;
 	private ItemStack item;
-	
+
 	public WaitBlockClick(Player p, Runnable cancel, Consumer<Location> end, ItemStack is) {
 		super(p, cancel);
 		this.run = end;
 		this.item = is;
 	}
-	
+
 	@EventHandler
 	public void onClick(PlayerInteractEvent e){
 		if (e.getPlayer() != player) return;
@@ -42,5 +43,5 @@ public class WaitBlockClick extends InventoryClear{
 		player.getInventory().setHeldItemSlot(4);
 		if (cancel != null) player.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
-	
+
 }

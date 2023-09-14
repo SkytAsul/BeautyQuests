@@ -292,7 +292,8 @@ public final class DefaultQuestFeatures {
 		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
 				.registerContextual("player", PlaceholdersContext.class, context -> context.getActor().getName())
 				.registerContextual("PLAYER", PlaceholdersContext.class, context -> context.getActor().getName())
-				.register("prefix", () -> BeautyQuests.getInstance().getPrefix());
+				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
+				.register("nl", "\n");
 
 		QuestsAPI.getAPI().registerMessageProcessor("default_message_type", 1, new MessageProcessor() {
 			@Override

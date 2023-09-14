@@ -56,6 +56,13 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 		}
 	}
 
+	public void updateAll() throws IOException {
+		for (QuestPoolImplementation pool : pools.values()) {
+			pool.save(config.createSection(Integer.toString(pool.getId())));
+		}
+		config.save(file);
+	}
+
 	@Override
 	public @NotNull QuestPoolImplementation createPool(@Nullable QuestPool editing, @Nullable String npcID,
 			@Nullable String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff,

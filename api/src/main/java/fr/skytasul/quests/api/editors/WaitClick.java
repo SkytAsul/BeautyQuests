@@ -3,13 +3,14 @@ package fr.skytasul.quests.api.editors;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
 
-public class WaitClick extends InventoryClear{
-	
+public class WaitClick extends InventoryClear implements Listener {
+
 	private ItemStack validateItem;
 	private ItemStack noneItem;
 	private Runnable validate;
@@ -18,7 +19,7 @@ public class WaitClick extends InventoryClear{
 	public WaitClick(Player p, Runnable cancel, ItemStack validateItem, Runnable validate) {
 		this(p, cancel, validateItem, validate, null, null);
 	}
-	
+
 	public WaitClick(Player p, Runnable cancel, ItemStack validateItem, Runnable validate, ItemStack noneItem, Runnable none) {
 		super(p, cancel);
 		this.validateItem = validateItem;
@@ -26,7 +27,7 @@ public class WaitClick extends InventoryClear{
 		this.validate = validate;
 		this.none = none;
 	}
-	
+
 	@EventHandler (priority = EventPriority.LOW)
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getPlayer() != player) return;
@@ -58,5 +59,5 @@ public class WaitClick extends InventoryClear{
 		}
 		if (cancel != null) player.getInventory().setItem(8, ItemUtils.itemCancel);
 	}
-	
+
 }

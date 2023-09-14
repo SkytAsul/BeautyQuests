@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
@@ -24,20 +25,20 @@ import io.github.gonalez.znpcs.npc.NPCSkin;
 import io.github.gonalez.znpcs.npc.NPCType;
 import io.github.gonalez.znpcs.npc.event.NPCInteractEvent;
 
-public class BQServerNPCs implements BqInternalNpcFactoryCreatable {
-	
+public class BQServerNPCs implements BqInternalNpcFactoryCreatable, Listener {
+
 	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
 	@Override
 	public int getTimeToWaitForNPCs() {
 		return 45;
 	}
-	
+
 	@Override
 	public Collection<Integer> getIDs() {
 		return NPC.all().stream().map(x -> x.getNpcPojo().getId()).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public boolean isNPC(Entity entity) {
 		Boolean result = cachedNpcs.getIfPresent(entity.getEntityId());
@@ -47,18 +48,18 @@ public class BQServerNPCs implements BqInternalNpcFactoryCreatable {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public BqInternalNpc fetchNPC(int id) {
 		NPC npc = NPC.find(id);
 		return npc == null ? null : new BQServerNPC(npc);
 	}
-	
+
 	@Override
 	public boolean isValidEntityType(EntityType type) {
 		return Arrays.stream(NPCType.values()).map(NPCType::name).anyMatch(name -> name.equals(type.name()));
 	}
-	
+
 	@Override
 	public @NotNull BqInternalNpc create(Location location, EntityType type, String name, @Nullable String skin) {
 		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
@@ -72,56 +73,56 @@ public class BQServerNPCs implements BqInternalNpcFactoryCreatable {
 
 		return new BQServerNPC(npc);
 	}
-	
+
 	@EventHandler
 	public void onInteract(NPCInteractEvent e) {
 		npcClicked(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(),
 				NpcClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
 	}
-	
+
 	public static class BQServerNPC implements BqInternalNpc {
-		
+
 		private final NPC npc;
-		
+
 		private BQServerNPC(NPC npc) {
 			this.npc = npc;
 		}
-		
+
 		public NPC getServerNPC() {
 			return npc;
 		}
-		
+
 		@Override
 		public int getInternalId() {
 			return npc.getNpcPojo().getId();
 		}
-		
+
 		@Override
 		public String getName() {
 			return npc.getNpcPojo().getHologramLines().isEmpty() ? "ID: " + npc.getNpcPojo().getId()
 					: npc.getNpcPojo().getHologramLines().get(0);
 		}
-		
+
 		@Override
 		public boolean isSpawned() {
 			return npc.getBukkitEntity() != null;
 		}
-		
+
 		@Override
 		public Entity getEntity() {
 			return (Entity) npc.getBukkitEntity();
 		}
-		
+
 		@Override
 		public Location getLocation() {
 			return npc.getLocation();
 		}
-		
+
 		@Override
 		public boolean setNavigationPaused(boolean paused) {
 			return true;
 		}
-		
+
 	}
-	
+
 }

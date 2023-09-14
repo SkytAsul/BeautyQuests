@@ -68,7 +68,8 @@ public class Command implements HasPlaceholders {
 	}
 
 	public static Command deserialize(Map<String, Object> map){
-		return new Command((String) map.get("label"), (boolean) map.get("console"), (boolean) map.getOrDefault("parse", Boolean.FALSE), (int) map.getOrDefault("delay", 0));
+		return new Command((String) map.get("label"), (boolean) map.get("console"),
+				(boolean) map.getOrDefault("parse", Boolean.TRUE), (int) map.getOrDefault("delay", 0));
 	}
 
 }

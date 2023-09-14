@@ -110,7 +110,7 @@ public class StageBringBack extends StageNPC{
 
 									@Override
 									public @NotNull String getObjectName() {
-										return ItemUtils.getName(item);
+										return ItemUtils.getName(item, true);
 									}
 
 									@Override
@@ -223,7 +223,7 @@ public class StageBringBack extends StageNPC{
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
 			getLine().refreshItemLore(5,
-					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("amount", this.items.size())));
+					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size())));
 		}
 
 		public void setMessage(String message) {
@@ -235,7 +235,7 @@ public class StageBringBack extends StageNPC{
 			this.comparisons = comparisons;
 			getLine().refreshItemLore(10,
 					QuestOption.formatNullableValue(
-							Lang.AmountComparisons.quickFormat("amount", this.comparisons.getEffective().size()),
+							Lang.AmountComparisons.quickFormat("comparisons_amount", this.comparisons.getEffective().size()),
 							comparisons.isDefault()));
 		}
 

@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.editors.CancellableEditor;
+import fr.skytasul.quests.api.editors.InventoryClear;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
@@ -41,7 +41,7 @@ public class CitizensFactory implements MobFactory<NPC>, Listener {
 		Lang.SELECT_KILL_NPC.send(p);
 		// we cannot use the SelectNPC editor as it uses the BQNPCManager
 		// and if it is registered to another NPC plugin it wouldn't work
-		new CancellableEditor(p, () -> run.accept(null)) {
+		new InventoryClear(p, () -> run.accept(null)) {
 
 			@EventHandler(priority = EventPriority.LOW)
 			private void onNPCClick(NPCRightClickEvent e) {
@@ -65,7 +65,7 @@ public class CitizensFactory implements MobFactory<NPC>, Listener {
 	public NPC fromValue(String value) {
 		return CitizensAPI.getNPCRegistry().getById(Integer.parseInt(value));
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(NPC first, Entity entity) {
 		return first.isSpawned() && first.getEntity().equals(entity);

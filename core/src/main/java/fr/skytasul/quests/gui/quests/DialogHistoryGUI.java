@@ -18,6 +18,7 @@ import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.XMaterial;
@@ -80,9 +81,10 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 
 	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
 		return datas.getQuestFlowStages()
-			.filter(Dialogable.class::isInstance)
-			.map(Dialogable.class::cast)
-			.filter(Dialogable::hasDialog);
+				.map(StageController::getStage)
+				.filter(Dialogable.class::isInstance)
+				.map(Dialogable.class::cast)
+				.filter(Dialogable::hasDialog);
 	}
 
 	class WrappedDialogable {

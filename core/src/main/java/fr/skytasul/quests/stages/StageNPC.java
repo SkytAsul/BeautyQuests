@@ -134,7 +134,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (npcID != null)
 			npc = QuestsPlugin.getPlugin().getNpcManager().getById(npcID);
 		if (npc == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The NPC " + npcID + " does not exist for " + toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("The NPC " + npcID + " does not exist for " + getController().toString());
 		} else {
 			this.npcID = npc.getId(); // TODO migration 1.0
 			initDialogRunner();
@@ -359,11 +360,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 		public void setDialog(Dialog dialog) {
 			this.dialog = dialog;
-			getLine()
-					.refreshItemLore(SLOT_DIALOG,
-							dialog == null ? Lang.NotSet.toString()
-									: QuestOption.formatDescription(
-											Lang.AmountDialogLines.quickFormat("amount", dialog.getMessages().size())));
+			getLine().refreshItemLore(SLOT_DIALOG,
+					dialog == null ? Lang.NotSet.toString()
+							: QuestOption.formatDescription(
+									Lang.AmountDialogLines.quickFormat("lines_amount", dialog.getMessages().size())));
 		}
 
 		public void setHidden(boolean hidden) {

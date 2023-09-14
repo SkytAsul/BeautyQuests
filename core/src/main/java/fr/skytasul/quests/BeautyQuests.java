@@ -184,6 +184,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 							QuestsPlugin.getPlugin().getLoggerExpanded().debug("Migrating from " + lastVersion + " to " + pluginVersion);
 							int updated = quests.updateAll();
 							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
+							pools.updateAll();
 							saveAllConfig(false);
 						}
 					}catch (Throwable e) {
