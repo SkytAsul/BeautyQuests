@@ -1,0 +1,43 @@
+---
+msg:
+  pools:
+    allCompleted: U hebt de Quest voltooid
+    maxQuests: '§cJe kunt niet meer dan {pool_max_quests} quest(s) tegelijk hebben...'
+    noAvailable: '§7Er is geen quest meer beschikbaar...'
+    noTime: '§cJe moet {time_left} wachten voordat je een andere quest kunt doen.'
+  quest:
+    alreadyStarted: '§cJe hebt de quest al begonnen!'
+    cancelling: '§cProces van de vorming van de quest is geannuleerd.'
+    createCancelled: '§cDe creatie of editie is geannuleerd door een andere plugin!'
+    created: '§aGefeliciteerd! Je hebt de quest §e{quest}§a gemaakt met {quest_branches} branches!'
+    editCancelling: '§cProces van quest editie geannuleerd.'
+    edited: '§aGefeliciteerd! Je hebt de quest §e{quest}§a bewerkt met nu {quest_branches} branches!'
+    finished:
+      base: '§aGefeliciteerd! Je hebt de quest §e{quest_name}§a voltooid!'
+      obtain: '§aU krijgt {rewards}!'
+    invalidID: '§cDe quest met de id {quest_id} bestaat niet.'
+    invalidPoolID: De {pool_id} bestaat niet.
+    notStarted: '§cJe doet momenteel niet deze quest.'
+    started: '§aJe hebt de quest §r§f{quest_name}§o§6begonnen!'
+  questItem:
+    craft: '§cJe kan geen Quest voorwerp gebruiken om te craften!'
+    drop: '§cJe kan geen Quest item laten vallen!'
+    eat: '§cJe kan geen Quest item eten!'
+  quests:
+    checkpoint: '§7Zoektocht controlepunt bereikt!'
+    failed: '§cJe hebt de quest {quest_name} gefaald...'
+    maxLaunched: '§cJe kunt niet meer dan {quests_max_amount} quest(s) tegelijk hebben...'
+    updated: '§7Quest §e{quest_name}§7 bijgewerkt.'
+  stageMobs:
+    listMobs: '§aJe moet {mobs} doden.'
+  writeChatMessage: '§aSchrijf vereiste bericht: (Voeg "{SLASH}" toe aan het begin als je een opdracht wilt.)'
+  writeDescriptionText: '§aSchrijf de tekst die het doel van het stadium beschrijft:'
+  writeEndMsg: '§aSchrijf het bericht dat aan het einde van de quest zal worden verstuurd, "null" als je de standaard wilt of "none" als je geen bericht wilt hebben. U kunt "{rewards}" gebruiken die vervangen zal worden door de verkregen beloningen.'
+  writeEndSound: '§aSchrijf het bericht dat zal worden verzonden aan het begin van de quest, "null" als je de standaard wilt of "none" als je geen bericht wilt hebben:'
+  writeMessage: '§aSchrijf het bericht dat naar de speler wordt gestuurd'
+  writeMobAmount: '§aSchrijf de hoeveelheid mobs om te doden:'
+  writeMobName: '§aSchrijf de aangepaste naam van de mob om te doden:'
+  writeNPCText: '§aSchrijf het dialoogvenster dat door de NPC''s tegen de speler wordt gezegd: (Schrijf "help" om hulp te ontvangen.)'
+  writeRegionName: '§aSchrijf de naam van de regio die nodig is voor de stap:'
+  writeStartMessage: '§aSchrijf het bericht dat zal worden verzonden aan het begin van de quest, "null" als je de standaard wilt of "none" als je geen bericht wilt hebben:'
+  writeXPGain: '§aSchrijf de hoeveelheid experience punten die de speler zal krijgen: (Laatste waarde: {xp_amount})'

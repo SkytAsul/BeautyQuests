@@ -1,0 +1,59 @@
+---
+msg:
+  dialogs:
+    skipped: '§8§o Dialog sprunget over.'
+    tooFar: '§7§oDu er for langt væk fra {npc_name}...'
+  experience:
+    edited: '§aDu har ændret XP vundet, fra {old_xp_amount} til {xp_amount} points.'
+  moveToTeleportPoint: '§aGå til den ønskede teleporterings placering.'
+  npcDoesntExist: '§cDen NPC med id {npc_id} eksisterer ikke.'
+  number:
+    negative: '§cDu skal indtaste et positivt tal!'
+  pools:
+    allCompleted: '§7Du har afsluttet alle quests!'
+    maxQuests: '§cDu kan ikke have mere end {pool_max_quests} quest(s) på samme tid...'
+    noAvailable: '§7Der er ikke flere quests tilgængelig...'
+    noTime: '§cDu skal vente {time_left} før du laver en anden quest.'
+  quest:
+    alreadyStarted: '§cDu har allerede startet questen!'
+    cancelling: '§cProces for quest oprettelse annulleret.'
+    createCancelled: '§cOprettelsen eller redigeringen er blevet annulleret af et andet plugin!'
+    created: '§aTillykke! Du har oprettet questen §e{quest}§a som inkluderer {quest_branches} gren(e)!'
+    editCancelling: '§cProces for quest redigering annulleret.'
+    edited: '§aTillykke! Du har redigeret questen §e{quest}§a som inkluderer nu {quest_branches} gren(e)!'
+    finished:
+      base: '§aTillykke! Du er færdig med questen §e{quest_name}§a!'
+      obtain: '§aDu får {rewards}!'
+    invalidID: '§cQuesten med id {quest_id} eksisterer ikke.'
+    invalidPoolID: '§cPoolen {pool_id} eksisterer ikke.'
+    notStarted: '§cDu er ikke på dennne quest i øjeblikket.'
+    started: '§aDu har startet questen §r§e{quest_name}§o§6!'
+  questItem:
+    craft: '§cDu kan ikke bruge et quest element til at crafte!'
+    drop: '§cDu kan ikke smide et quest element!'
+    eat: '§cDu kan ikke spise et quest element!'
+  quests:
+    checkpoint: '§7Quest checkpoint nået!'
+    failed: '§cDu har fejlet questen {quest_name}...'
+    maxLaunched: '§cDu kan ikke have mere end {quests_max_amount} quest(s) på samme tid...'
+    updated: '§7Quest §e{quest_name}§7 opdateret.'
+  regionDoesntExists: '§cDette område eksisterer ikke. (Du skal være i den samme verden. "WorldGuard region")'
+  requirements:
+    money: '§cDu skal have {money}!'
+    waitTime: '§cDu skal vente {time_left} før du kan genstarte denne quest!'
+  restartServer: '§7Genstart din server for at se modifikationerne.'
+  selectNPCToKill: '§aVælg den NPC at dræbe.'
+  stageMobs:
+    listMobs: '§aDu skal dræbe {mobs}.'
+  versionRequired: 'Version påkrævet: §l{version}'
+  writeChatMessage: '§aSkriv krævet besked: (Tilføj "{SLASH}" til begyndelsen, hvis du vil have en kommando.)'
+  writeMessage: '§aSkriv den besked, der vil blive sendt til spilleren'
+  writeMobAmount: '§aSkriv mængden af væsner at dræbe:'
+  writeMobName: '§aSkriv det brugerdefinerede navn på væsnet til at dræbe:'
+  writeNPCText: '§aSkriv den dialog, der vil blive sagt til spilleren af NPC''en: (Skriv "help" for at modtage hjælp.)'
+  writeNpcName: '§aSkriv navnet på NPC''en:'
+  writeNpcSkinName: '§aSkriv navnet på udseendet på NPC''en:'
+  writeQuestName: '§aSkriv navnet på din quest:'
+  writeRegionName: '§aSkriv navnet på den region der kræves for trinet:'
+  writeStartMessage: '§aSkriv den besked, der vil blive sendt i begyndelsen af questen, "null", hvis du ønsker standard eller "none", hvis du ønsker ingen:'
+  writeXPGain: '§aSkriv mængden af erfaringspoint spilleren vil få: (mindste værdi: {xp_amount})'

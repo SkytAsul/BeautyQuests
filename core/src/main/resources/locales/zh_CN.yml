@@ -1,836 +1,801 @@
 ---
-msg:
-  quest:
-    finished:
-      base: '§a恭喜你完成了任务 §o§6{0}§r§a!'
-      obtain: '§a你获得了 {0}!'
-    started: '§a你接受了任务 §r§e{0}§o§6!'
-    created: '§a你成功地创建了 "§e{0}§a" 任务, 包含 {1} 个阶段!'
-    edited: '§a你成功地修改了 "§e{0}§a", 包含 {1} 个阶段!'
-    createCancelled: '§c抱歉，任务创建/编辑已被其他插件取消...'
-    cancelling: '§c已取消创建任务.'
-    editCancelling: '§c已取消编辑任务.'
-    invalidID: '§cID为 {0} 的任务不存在.'
-    invalidPoolID: '§c任务池{0}不存在。'
-    alreadyStarted: '§c你已经接受了这个任务!'
-    notStarted: '§c你未执行这个任务。'
-  quests:
-    maxLaunched: '§c你不能同时进行多于{0}个任务……'
-    nopStep: '§c这个任务没有任何阶段...  :-)'
-    updated: '§7已更新任务 {0} !'
-    checkpoint: '§7已到达任务记录点！'
-    failed: '§6任务{0}失败……'
-  pools:
-    noTime: '§c你必须先等待一会儿才能执行其它任务。'
-    allCompleted: '§7你已完成所有任务！'
-    noAvailable: '§7没有更多可用的任务……'
-    maxQuests: '§c你不能同时进行多于 {0}个任务……'
-  questItem:
-    drop: '§c你不能丢弃任务物品！'
-    craft: '§c你不能用任务物品来合成物品！'
-    eat: '§c你不能吃下任务物品！'
-  stageMobs:
-    noMobs: '§c这个任务阶段没有要杀的怪物 :-)'
-    listMobs: '§a你需要杀死 {0}.'
-  writeNPCText: '输入玩家需要对NPC说的话. 输入 "help" 来获取帮助. (指令不需要输入 /)'
-  writeRegionName: '输入任务阶段所需前往的区域名.'
-  writeXPGain: '输入玩家获得的经验点. 最终获得: §a{0}'
-  writeMobAmount: '输入要击杀的怪物数.'
-  writeMobName: '§a请输入要击杀的自定义怪物名称：'
-  writeChatMessage: '要玩家输入的消息 (在开头加上 {SLASH} 来让玩家输入指令).'
-  writeMessage: '§a输入发送给玩家的消息'
-  writeStartMessage: '§a输入在开始任务时发送给玩家的消息，输入“null”则发送默认消息，输入“none”则不发送消息：'
-  writeEndMsg: '§a输入任务结束时发送的消息，输入“null” 则发送默认消息，输入“none”则不发送。你可以使用 "{0}"显示获得的奖励。'
-  writeEndSound: '§a输入在任务结束时播放给玩家的音效名，输入“null”则使用默认音效，输入“none”则不播放音效：'
-  writeDescriptionText: '任务阶段目标描述.'
-  writeStageText: '任务开始时发送的消息.'
-  moveToTeleportPoint: 前往指定的传送点.
-  writeNpcName: '§a请输入NPC名称：'
-  writeNpcSkinName: '§a请输入NPC皮肤名：'
-  writeQuestName: '§a输入任务名：'
-  writeCommand: '§a输入指令. (开头无需加上斜杠/) 你可以用 {PLAYER}来代表玩家名.'
-  writeHologramText: "§a输入全息文字. (输入 \"none\" 则不显示, 输入 \"null\" 显示默认文本)\n"
-  writeQuestTimer: '§a输入重新开始任务的冷却时间 (单位为分钟)(输入 "null" 则使用默认值)'
-  writeConfirmMessage: '§a请输入玩家确认加入任务的消息: (输入 "null" 则显示默认消息)'
-  writeQuestDescription: '§a请输入显示在玩家任务菜单内的任务描述。'
-  writeQuestMaterial: '§a请输入任务物品材料名。'
-  requirements:
-    quest: '§c你必须先完成任务§e "{0}"§c!'
-    level: '§c你的等级必须是{0}！'
-    job: '§c你的职业等级§e{1}§c必须是{0}！'
-    skill: '§c你的技能等级§e{1}§c必须是{0}！'
-    combatLevel: '§c你的战力等级必须是{0}！'
-    money: '§c你必须拥有{0}!'
-    waitTime: '§c你必须等待{0}才能重启该任务！'
-  experience:
-    edited: '已编辑获得的经验: {0}pts. 改为 {1}pts.'
-  selectNPCToKill: 选择要击杀的NPC.
-  npc:
-    remove: '§a已删除NPC.'
-    talk: '§a和§e{0}§a谈话.'
-  regionDoesntExists: '§c这个区域不存在... (你必须在目标区域同一世界内)'
-  npcDoesntExist: '§cID为{0}的NPC不存在.'
-  objectDoesntExist: '§c特殊物品 (ID为{0}) 不存在.'
-  number:
-    negative: '§c你必须输入正数!'
-    zero: '§c你必须输入大于0的数!'
-    invalid: '§c"{0}" 不是有效的数字.'
-    notInBounds: '§c你的数字必须介于{0}和{1}之间。'
-  errorOccurred: '§c插件发生错误，请联系管理员！错误代码为: {0}'
-  commandsDisabled: '§c你不能在这时输入指令.'
-  indexOutOfBounds: '§c数字 ({0}) 超过了区间 [{1}, {2}].'
-  invalidBlockData: '§c方块数据{0} 无效或者不兼容方块{1}。'
-  invalidBlockTag: '§c无法使用方块标签{0}。'
-  bringBackObjects: 把 {0} 带回给我.
-  inventoryFull: '§c你的背包已满, 任务奖励已掉落在地上.'
-  playerNeverConnected: '§c在玩家{0}身上找不到数据.'
-  playerNotOnline: '§c玩家 {0} 不在线.'
-  playerDataNotFound: '§c找不到玩家{0}的数据。'
-  versionRequired: '需要版本：§l{0}'
-  restartServer: '§7重启服务器查看修改。'
-  dialogs:
-    skipped: '§8§o已跳过对话。'
-    tooFar: '§7§o你离{0}太远了...'
-  command:
-    downloadTranslations:
-      syntax: '§c你必须指定要下载的语言。例如："/quests downloadTranslations en_US"。'
-      notFound: '§c找不到{1}版本的{0}语言。'
-      exists: '§c文件 {0} 已存在。在你的指令后加上 "-overwrite" 覆盖文件。 (/quests downloadTranslations <lang> -overwrite)'
-      downloaded: '§a已下载语言{0}！§7你现在必须打开文件"/plugins/BeautyQuests/config.yml"，更改§ominecraftTranslationsFile§7的值为{0}，然后重启服务器。'
-    checkpoint:
-      noCheckpoint: '§c未找到任务{0}的记录点。'
-      questNotStarted: '§c你没有接受这个任务。'
-    setStage:
-      branchDoesntExist: '§cid为{0}的任务分支不存在。'
-      doesntExist: '§cID为{0}的任务阶段不存在.'
-      next: '§a已跳过该任务阶段.'
-      nextUnavailable: '§c"skip"选项在玩家到达任务分支结尾时无法使用。'
-      set: '§a已进入任务阶段 {0} .'
-    startDialog:
-      impossible: '§c现在无法开始对话。'
-      noDialog: '§c玩家没有待定对话。'
-      alreadyIn: '§c已对玩家播放对话。'
-      success: '§a已为玩家{0}播放任务{1}的对话！'
-    playerNeeded: '§c你必须是玩家才能使用这个指令.'
-    incorrectSyntax: '§c错误用法.'
-    noPermission: '§c你没有足够的权限以执行这个指令! (需要权限: {0})'
-    invalidCommand:
-      quests: '§c指令不存在, 输入 §e/quests help 查看帮助§c.'
-      simple: '§c指令不存在, 输入 §ehelp §c查看帮助(不需要 /)'
-    needItem: '§c你必须在主手手持该物品!'
-    itemChanged: '§a已编辑物品. 更改会在重启后生效.'
-    itemRemoved: '§a已删除全息物品.'
-    removed: '§a成功删除任务 {0}。'
-    leaveAll: '§e你强制结束了{0}个任务. §c出现{1}个错误.'
-    resetPlayer:
-      player: '§6你的所有任务数据 ({0}) 被 {1} 删除了.'
-      remover: '§6已删除{1}的{0}任务信息（和{2}任务池）。'
-    resetPlayerQuest:
-      player: '§6任务数据 {0} 已被 {1} 删除.'
-      remover: '§6{1} 的 {0} 条任务信息已被删除.'
-    resetQuest: '§6已移除{0}的任务数据。'
-    startQuest: '§6你接受了任务 {0} (UUID： {1}).'
-    startQuestNoRequirements: '§c玩家不满足任务{0}的需求……在指令结尾加上 "-overrideRequirements"  无视需求检测。'
-    cancelQuest: '§6你放弃了任务 {0}.'
-    cancelQuestUnavailable: '§c无法取消任务 {0} .'
-    backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
-    backupPlayersFailed: '§c创建玩家数据备份失败.'
-    backupQuestsFailed: '§c创建任务数据备份失败.'
-    adminModeEntered: '§a你已进入管理员模式.'
-    adminModeLeft: '§a你退出了管理员模式.'
-    resetPlayerPool:
-      timer: '§a你已重置{0}任务池计时器{1}。'
-      full: '§a你重置了{0}任务池的{1}数据。'
-    scoreboard:
-      lineSet: '§6你成功地编辑了第 {0} 行.'
-      lineReset: '§6你成功地重置了第 {0} 行.'
-      lineRemoved: '§6你成功地删除了第 {0} 行.'
-      lineInexistant: '§c第 {0} 行不存在.'
-      resetAll: '§6你成功地清空了 {0} 的计分版.'
-      hidden: '§6已隐藏{0}的计分版.'
-      shown: '§6已重新显示{0}的计分版。'
-      own:
-        hidden: '§6已隐藏你的计分板。'
-        shown: '§6已显示你的计分板。'
-    help:
-      header: '§6§lBeautyQuests - §6帮助§r'
-      create: '§6/{0} create: §a创建任务'
-      edit: '§6/{0} edit: §a编辑任务'
-      remove: '§6/{0} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
-      finishAll: '§6/{0} finishAll <玩家名>: §a结束一名玩家所有进行中的任务。'
-      setStage: '§6/{0} setStage <玩家名> <id> [新任务分支] [新任务阶段]: §e跳过玩家当前的任务阶段/开始任务分支/s为任务分支设置任务阶段。'
-      startDialog: '§6/{0} startDialog <player> <quest id>: §e播放NPC任务阶段的待定对话或任务起始对话。'
-      resetPlayer: '§6/{0} resetPlayer <玩家名>: §e删除一名玩家的所有任务数据。'
-      resetPlayerQuest: '§6/{0} resetPlayerQuest <玩家名> [id]: §e删除一名玩家的一个任务数据'
-      seePlayer: '§6/{0} seePlayer <玩家名>: §a查看玩家的任务数据。'
-      reload: '§e/{0} reload: §a保存并重载配置和插件数据 - §c§o不推荐使用'
-      start: '§6/{0} start <玩家名> [id] : §e强制玩家接受任务.'
-      setItem: '§6/{0} setItem <talk|launch> : §e保存全息物品到数据文件内.'
-      setFirework: '§6/{0} setFirework: §e编辑默认结束烟花。'
-      adminMode: '§6/{0} adminMode : §e切换管理员模式 (显示消息)'
-      version: '§6/{0} version: §e查看插件版本.'
-      downloadTranslations: '§6/{0} downloadTranslations <language>: §e下载翻译文件'
-      save: '§6/{0} save: §a手动保存数据.'
-      list: '§e/{0} list: §a查看任务列表 (部分版本无效)'
-  typeCancel: '§a输入 "cancel" 返回到上一条消息.'
-  editor:
-    blockAmount: '§e请输入所需方块数：'
-    blockName: '§a请输入方块名：'
-    blockData: '§a请输入方块数据 (可用的方块数据: {0})：'
-    blockTag: '§a请输入方块标签 (可用标签：§7{0}§a)：'
-    typeBucketAmount: '§a请输入要装满桶的数量:'
-    typeDamageAmount: '输入玩家需要造成的伤害：'
-    goToLocation: '§a前往该任务阶段指定地点。'
-    typeLocationRadius: '§a请输入距离指定位置所需的距离：'
-    typeGameTicks: '§a请输入所需的刻数：'
-    already: '§c你已在编辑器中.'
-    stage:
-      location:
-        typeWorldPattern: '§a输入世界名称的正则表达式：'
-    enter:
-      title: '§6~ 进入编辑器模式 ~'
-      subtitle: '§e输入 "/quests exitEditor" 强制退出任务编辑器。'
-      list: '§c⚠ §7你已进入"list"编辑器。输入"add"添加一行。使用 "help" (无需斜杠) 查看帮助。§e§l输入"close"退出编辑器。'
-    chat: '§6你已进入编辑器模式。输入"/quests exitEditor" 强制退出编辑器。（不推荐使用，最好使用 "close" 或 "cancel" 回到上一个菜单）'
-    npc:
-      enter: '§a点击一个NPC，或输入"cancel"取消.'
-      choseStarter: '§a选择接受任务的NPC.'
-      notStarter: '§c这个NPC没有可以接受的任务...'
-    text:
-      argNotSupported: '§c不支持 {0} 参数.'
-      chooseLvlRequired: '§a输入所需等级:'
-      chooseJobRequired: '§a输入所需的工作名:'
-      choosePermissionRequired: '§a输入开始任务所需权限:'
-      choosePermissionMessage: '§e如果玩家没有所需权限则显示的拒绝消息. (输入 "null" 跳过这步)'
-      choosePlaceholderRequired:
-        identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
-        value: '§a请输入所需的§e%§e{0}§e%§a占位符值：'
-      chooseSkillRequired: '§a输入技能名:'
-      chooseMoneyRequired: '§e输入所需金额:'
-      reward:
-        permissionName: '§a请输入权限名称。'
-        permissionWorld: '§a请输入可编辑权限的世界名，输入"null"则所有世界可编辑。'
-        money: '§e输入获得的钱数:'
-        wait: '§a输入所需等待游戏刻数（1秒=20刻）'
-        random:
-          min: '§a输入给予玩家的最低奖励数量 (包括全部)。'
-          max: '§a输入给予玩家的最高奖励数量 (包括全部)。'
-      chooseObjectiveRequired: '§a请输入目标名。'
-      chooseObjectiveTargetScore: '§a请输入完成任务目标所需目标数。'
-      chooseRegionRequired: '§a请输入所需区域名 (你必须与该区域在同一个世界中)。'
-    selectWantedBlock: '§a用木棍点击开始任务阶段的方块.'
-    itemCreator:
-      itemType: '§a输入物品类型名:'
-      itemAmount: '§e请输入所需物品数：'
-      itemName: '§a输入物品名:'
-      itemLore: '§e修改物品描述. 输入 "help" 查看帮助.'
-      unknownItemType: '§c未知的物品类型.'
-      invalidItemType: '§c无效的物品类型 (必须是物品而不能是方块).'
-      unknownBlockType: '§c未知方块类型。'
-      invalidBlockType: '§c无效的方块类型。'
-    dialog:
-      syntax: '§c正确用法 : {0}{1} <消息>'
-      syntaxRemove: '§c正确用法: remove <id>'
-      player: '§a已为玩家添加消息 "§7{0}§a"。'
-      npc: '§a已为NPC添加消息 "§7{0}§a"。'
-      noSender: '§a已添加无发送者的消息“{0}”。'
-      messageRemoved: '§a已删除消息  "§7{0}§a"。'
-      edited: '§a已编辑消息  "§7{0}§a"。'
-      soundAdded: '§a已为消息 "§7{1}§a"添加音效 "§7{0}§a"。'
-      cleared: '§a已删除{0}条消息.'
-      help:
-        header: '§e§lBeautyQuest  - §6对话编辑器帮助'
-        npc: '§npc <message>: §b添加一条由NPC说出的消息。'
-        player: '§6player <message>: §b添加一条由玩家说出的消息。'
-        nothing: '§6noSender <消息>: §e添加一条没有发送者的消息.'
-        remove: '§6emove <id>: §e删除一条消息.'
-        list: '§elist: §b查看所有的消息.'
-        npcInsert: '§enpcinsert <id> <消息>: §b插入一条由NPC说出的话.'
-        playerInsert: '§eplayerinsert <id> <消息>: §b插入一条由玩家说出的话.'
-        nothingInsert: '§enothinginsert <id> <消息>: §b插入一条没有任何前缀的消息.'
-        edit: '§6edit <id> <message>：§e编辑消息。'
-        addSound: '§eaddsound <id> <音效名>: §b给一条消息添加音效.'
-        clear: '§eclear: §b删除所有消息.'
-        close: '§eclose: §b退出并保存所有消息.'
-        setTime: '§6setTime <id> <时间>: §e设置自动播放下一条消息的时间(单位为刻) 。'
-        npcName: '§6npcname [自定义NPC名称]: §eSet (或重置为默认) 自定义NPC名称'
-        skippable: '§6skippable [true|false]: §e设置是否可跳过对话'
-      timeSet: '§a已编辑消息 {0} 的时间: 现在是 {1} 刻。'
-      timeRemoved: '§a已删除消息{0}的时间。'
-      npcName:
-        set: '§a自定义NPC名称已设置为§7{1}§a (原为§7{0}§a)'
-        unset: '§a自定义NPC名称重置为默认值 (原为§7{0}§a)'
-      skippable:
-        set: '§a对话可跳过状态已设置为§7{1}§a (原为§7{0}§a)'
-        unset: '§a对话可跳过状态已重置为默认§7{1}§a (原为§7{0}§a)'
-    mythicmobs:
-      list: '§a所有的MythocMobs:'
-      isntMythicMob: '§c这个MythicMob不存在.'
-      disabled: '§cMythicMob已关闭.'
-    advancedSpawnersMob: '输入所需击杀的自定义刷怪笼怪物名称：'
-    textList:
-      syntax: '§c正确用法: '
-      added: '§a已添加文本 "§7{0}§a"。'
-      removed: '§a已删除文本 "§7{0}§a"。'
-      help:
-        header: '§6§lBeautyQuests — 编辑器列表帮助'
-        add: '§6add [消息]: §e添加一条文本.'
-        remove: '§6remove [id]: §e删除一条文本.'
-        list: '§6list: §e查看所有已添加的文本.'
-        close: '6close: §e确认添加文本并退出编辑器.'
-    availableElements: '可用元素：§e{0}'
-    noSuchElement: '§c没有这样的元素。可用元素：§e{0}'
-    invalidPattern: '§c无效的正则表达式§4{0}§c。'
-    comparisonTypeDefault: '§a请选择你想要在{0}中使用的比较类型。默认比较类型为：§e§l{1}§r§a。输入§onull§r§a使用。'
-    scoreboardObjectiveNotFound: '§c未知的计分板目标。'
-    pool:
-      hologramText: '请输入该池的自定义全息显示文本（输入“null”使用默认值）。'
-      maxQuests: '输入在该池中可运行的最大任务数。'
-      questsPerLaunch: '输入点击NPC时给予玩家的任务数。'
-      timeMsg: '请输入玩家可接取新任务的等候时间。（默认单位：天）'
-    title:
-      title: '输入标题文本（输入“null”则不显示文本）。'
-      subtitle: '输入副标题文本（输入“null”则不显示文本）。'
-      fadeIn: '输入淡入持续时间，单位为刻（20刻=1秒）。'
-      stay: '输入停留持续时间，单位为刻（20刻=1秒）。'
-      fadeOut: '输入淡出持续时间，单位为刻（20刻=1秒）。'
-    colorNamed: '输入颜色名称。'
-    color: '可以输入十六位格式(#XXXXX)或RGB格式(RED GRE BLU)的颜色。'
-    invalidColor: '你输入的颜色无效，必须是十六位或RGB颜色。'
-    firework:
-      invalid: '这件物品不是有效的烟花。'
-      invalidHand: '你必须在主手手持烟花。'
-      edited: '已编辑任务烟花！'
-      removed: '已移除任务烟花！'
-  writeCommandDelay: '§a请输入指令延迟，单位为刻。'
 advancement:
   finished: Finished
   notStarted: Not started
+description:
+  requirement:
+    class: '{class_name} 职业'
+    combatLevel: 战斗等级 {short_level}
+    faction: '{faction_name} 派系'
+    jobLevel: '{job_name} {short_level}级'
+    level: '{short_level}级'
+    quest: 完成任务 §e{quest_name}
+    skillLevel: '{skill_name} {short_level}级'
+    title: '§8§l要求：'
+  reward:
+    title: '§8§l奖励：'
+indication:
+  cancelQuest: '§7您确定要取消任务 {quest_name}?'
+  closeInventory: '§7你确定要关闭该页面吗？'
+  removeQuest: '§7您确定要删除任务 {quest}?'
+  startQuest: '§7您是否想要接受任务 {quest_name}?'
 inv:
-  validate: '§b§l确认'
-  cancel: '§c§l取消'
-  search: '§e§l搜索'
   addObject: '§a添加一个目标'
+  block:
+    blockData: '§d方块数据(高级)'
+    blockName: '§b自定义方块名称'
+    blockTag: '§d标签 (高级)'
+    blockTagLore: 选择描述可能方块列表的标签。可使用数据包自定义标签。你可以在Minecraft Wiki查询标签列表。
+    material: '§e材料: {block_type}'
+    materialNotItemLore: 所选方块无法显示为物品。它仍正确地存储为{block_material}。
+    name: 选择方块
+  blockAction:
+    location: '§e选择精确位置'
+    material: '§e选择方块材料'
+    name: 选择方块行动
+  blocksList:
+    addBlock: '§a点击添加一个方块.'
+    name: 选择方块
+  buckets:
+    name: 桶的类型
+  cancel: '§c§l取消'
+  cancelActions:
+    name: 取消行动
+  checkpointActions:
+    name: 记录点行动
+  chooseAccount:
+    name: '§5选择哪一个帐号?'
+  chooseQuest:
+    menu: '§a任务菜单'
+    menuLore: 前往任务菜单。
+    name: '§5选择哪一个任务?'
+  classesList.name: 职业列表
+  classesRequired.name: 所需职业
+  command:
+    console: 控制台
+    delay: '§b延迟'
+    name: '§8指令'
+    parse: 解析占位符
+    value: '§b指令'
+  commandsList:
+    console: '§e控制台: {command_console}'
+    name: 指令列表
+    value: '§e指令: {command_label}'
   confirm:
     name: '§8你确认?'
-    'yes': '§a确认'
     'no': '§c让我再想想'
+    'yes': '§a确认'
   create:
-    stageCreate: '§a创建新的阶段'
-    stageRemove: '§c删除这一阶段'
-    stageUp: 上移
-    stageDown: 下移
-    stageType: '§7阶段类型：§e{0}'
-    cantFinish: '§7你必须先创建至少一个任务阶段！'
-    findNPC: '§a寻找一个NPC'
-    bringBack: '§a带回物品'
-    findRegion: '§a找到一片区域'
-    killMobs: '§a击杀怪物'
-    mineBlocks: '§a破坏方块'
-    placeBlocks: '§a放置方块'
-    talkChat: '§a在聊天框内输入'
-    interact: '§a点击方块'
-    fish: '§a钓鱼'
-    melt: '§熔炼物品'
-    enchant: '§附魔物品'
-    craft: '§a合成物品'
-    bucket: '§a装满桶'
-    location: 前往指定位置
-    playTime: '§e游戏时间'
-    breedAnimals: '§a饲养动物'
-    tameAnimals: '§a驯服动物'
-    death: '§c死亡'
-    dealDamage: '§c对怪物造成伤害'
-    eatDrink: '§a食用食物或饮用药水'
-    NPCText: '§e编辑NPC的文本对话'
-    dialogLines: '{0}行'
     NPCSelect: '§e选择或创建NPC'
-    hideClues: 隐藏任务指示 (粒子效果和全息文字)
-    gps: 显示指向任务目标的指南针
-    editMobsKill: '§e编辑要击杀的怪物'
-    mobsKillFromAFar: 需要远程击杀怪物
-    editBlocksMine: '§e编辑要破坏的方块'
-    preventBlockPlace: 防止玩家破坏方块
-    editBlocksPlace: '§e编辑要放置的方块'
-    editMessageType: '§e编辑要输入的消息'
+    NPCText: '§e编辑NPC的文本对话'
+    breedAnimals: '§a饲养动物'
+    bringBack: '§a带回物品'
+    bucket: '§a装满桶'
     cancelMessage: 取消发送
+    cantFinish: '§7你必须先创建至少一个任务阶段！'
+    changeEntityType: '§e更改实体类型'
+    changeTicksRequired: '§e需要更改游玩刻'
+    craft: '§a合成物品'
+    currentRadius: '§e当前距离: §6{radius}'
+    dealDamage: '§c对怪物造成伤害'
+    death: '§c死亡'
+    eatDrink: '§a食用食物或饮用药水'
+    editBlocksMine: '§e编辑要破坏的方块'
+    editBlocksPlace: '§e编辑要放置的方块'
+    editBucketAmount: '§e编辑要装满的桶数量'
+    editBucketType: '§e编辑要装满的桶类型'
+    editFishes: '§e编辑所需的鱼'
+    editItem: '§e编辑要合成的物品'
+    editItemsToEnchant: '§e编辑要附魔的物品'
+    editItemsToMelt: '§e编辑要熔炼的物品'
+    editLocation: '§e编辑位置'
+    editMessageType: '§e编辑要输入的消息'
+    editMobsKill: '§e编辑要击杀的怪物'
+    editRadius: '§e编辑离目的地的距离'
+    enchant: '§附魔物品'
+    findNPC: '§a寻找一个NPC'
+    findRegion: '§a找到一片区域'
+    fish: '§a钓鱼'
+    hideClues: 隐藏任务指示 (粒子效果和全息文字)
     ignoreCase: 忽略消息大小写
+    interact: '§a点击方块'
+    killMobs: '§a击杀怪物'
+    leftClick: 必须左击
+    location: 前往指定位置
+    melt: '§熔炼物品'
+    mineBlocks: '§a破坏方块'
+    mobsKillFromAFar: 需要远程击杀怪物
+    placeBlocks: '§a放置方块'
+    playTime: '§e游戏时间'
+    preventBlockPlace: 防止玩家破坏方块
     replacePlaceholders: 使用PAPI替换{PLAYER}和占位符
-    selectItems: '§b选择所需的物品'
-    selectItemsMessage: '§e编辑询问消息'
-    selectItemsComparisons: '§e选择物品比较式（高级）'
-    selectRegion: '§7选择一片区域'
-    toggleRegionExit: 退出时
-    stageStartMsg: '§e编辑阶段开始的消息'
     selectBlockLocation: '§6选择方块位置'
     selectBlockMaterial: '§e选择方块材料'
-    leftClick: 必须左击
-    editFishes: '§e编辑所需的鱼'
-    editItemsToMelt: '§e编辑要熔炼的物品'
-    editItemsToEnchant: '§e编辑要附魔的物品'
-    editItem: '§e编辑要合成的物品'
-    editBucketType: '§e编辑要装满的桶类型'
-    editBucketAmount: '§e编辑要装满的桶数量'
-    editLocation: '§e编辑位置'
-    editRadius: '§e编辑离目的地的距离'
-    currentRadius: '§e当前距离: §6{0}'
-    changeTicksRequired: '§e需要更改游玩刻'
-    changeEntityType: '§e更改实体类型'
+    selectItems: '§b选择所需的物品'
+    selectItemsComparisons: '§e选择物品比较式（高级）'
+    selectItemsMessage: '§e编辑询问消息'
+    selectRegion: '§7选择一片区域'
     stage:
-      location:
-        worldPattern: '§a设置世界名称模式 §d(高级选项)'
-        worldPatternLore: '如果你想要匹配特定模式的任意世界都能完成任务阶段，请在此输入正则表达式。'
-      death:
-        causes: '§a设置死因 §d(高级)'
-        anyCause: 任何死因
-        setCauses: '{0} 死因'
       dealDamage:
         damage: '§e要造成的伤害'
         targetMobs: '§c要造成伤害的怪物对象'
+      death:
+        anyCause: 任何死因
+        causes: '§a设置死因 §d(高级)'
+        setCauses: '{causes_amount} 死因'
       eatDrink:
         items: '§e编辑要食用或饮用的物品'
-  stages:
-    name: '§8创建任务阶段'
-    nextPage: '§e下一页'
-    laterPage: '§e上一页'
-    endingItem: '§e编辑阶段结束奖励'
-    descriptionTextItem: '§e编辑文本描述'
-    regularPage: '§a普通任务阶段'
-    branchesPage: '§d分支任务阶段'
-    previousBranch: '§e返回上一个分支'
-    newBranch: '§e前往新的任务分支'
-    validationRequirements: '§e验证需求'
-    validationRequirementsLore: 所有需求必须匹配尝试完成阶段的玩家。否则该阶段无法完成。
-  details:
-    hologramLaunch: '§e编辑 “启动” 全息项'
-    hologramLaunchLore: 显示在接受任务的NPC头上的全息文字。
-    hologramLaunchNo: '§e编辑 “启动不可用” 全息项'
-    hologramLaunchNoLore: 在玩家没有接受任务时显示在NPC头上的全息文字。
-    customConfirmMessage: '§e编辑确认接受任务的消息'
-    customConfirmMessageLore: 显示在确认菜单中的消息。
-    customDescription: '§e编辑任务描述'
-    customDescriptionLore: 在GUI中显示在任务名下方的描述。
-    name: '§8最终任务详细设置'
-    multipleTime:
-      itemName: 切换是否可重复
-      itemLore: 任务是否可以多次完成?
-    cancellable: 玩家可取消任务
-    cancellableLore: 允许玩家在任务菜单中取消任务。
-    startableFromGUI: 可从GUI菜单中开始任务
-    startableFromGUILore: 允许玩家在任务菜单中开始任务。
-    scoreboardItem: 启用计分版
-    scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
-    hideNoRequirementsItem: 未满足需求时隐藏
-    hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
-    bypassLimit: 忽略任务上限
-    bypassLimitLore: 如果启用，即使玩家已经达到任务上限也能接受任务。
-    auto: 登录时自动开始任务
-    autoLore: 如果启用，则玩家首次加入服务器时将自动开始该任务。
-    questName: '§a§l编辑任务名'
-    questNameLore: 必须设置一个名称来创建任务。
-    setItemsRewards: '§7编辑获得的物品'
-    removeItemsReward: 从物品栏中移除物品
-    setXPRewards: '§e编辑获得的经验'
-    setCheckpointReward: '§e编辑记录点奖励'
-    setRewardStopQuest: '§c停止任务'
-    setRewardsWithRequirements: '§e需满足需求的奖励'
-    setRewardsRandom: '§d随机奖励'
-    setPermReward: '§e编辑权限'
-    setMoneyReward: '§e编辑获得的金钱'
-    setWaitReward: '§e编辑“等待”奖励'
-    setTitleReward: '§e编辑标题奖励'
-    selectStarterNPC: '§6§l选择接受任务的NPC'
-    selectStarterNPCLore: 点击选中的NPC将开始任务。
-    selectStarterNPCPool: '§c:⚠ 已选择一个任务池'
-    createQuestName: '§l创建任务'
-    createQuestLore: 你必须设定任务名。
-    editQuestName: '§l编辑任务'
-    endMessage: '§a编辑任务结束消息'
-    endMessageLore: 将在任务结束时发送给玩家的消息。
-    endSound: '§e编辑结束音效'
-    endSoundLore: 在任务结束时播放的音效。
-    startMessage: '§e编辑开始消息'
-    startMessageLore: 任务开始时发送给玩家的消息。
-    startDialog: '§e编辑任务开场白'
-    startDialogLore: 当玩家点击任务NPC时，在任务开始之前播放的对话框。
-    editRequirements: '§e编辑需求'
-    editRequirementsLore: 接受任务所需前置。
-    startRewards: '§6开始任务的奖励'
-    startRewardsLore: 玩家接受任务时执行的行动。
-    cancelRewards: '§c取消行动'
-    cancelRewardsLore: 玩家取消该任务时触发的行动。
-    hologramText: '§e全息文字'
-    hologramTextLore: 显示在可接受任务的NPC的头上的全息文字。
-    timer: '§b重启计时器'
-    timerLore: 玩家可以再次开始任务的时间。
-    requirements: '{0} 个任务需求'
-    rewards: '{0} 个奖励'
-    actions: '{0}行动'
-    rewardsLore: 任务接受时执行的行动。
-    customMaterial: '§a编辑任务物品材料名'
-    customMaterialLore: 在任务菜单中代表该任务的物品图标。
-    failOnDeath: 玩家死亡时任务失败
-    failOnDeathLore: 当玩家死亡时是否取消任务？
-    questPool: '§e任务池'
-    questPoolLore: 将该任务加到任务池中
-    firework: '§d任务结束烟花'
-    fireworkLore: 玩家完成任务时发射的烟花
-    fireworkLoreDrop: 把你的自定义烟花放在这里
-    visibility: '§b任务可见度'
-    visibilityLore: 选择在菜单栏何处显示任务，如果安装了卫星地图插件，则在地图上显示任务。
-    keepDatas: 保留玩家数据
-    keepDatasLore: |-
-      强制插件保存玩家数据，即使是已编辑阶段也会保存。
-      §c§l警告§c- 启用此选项可能会损坏你的玩家数据。
-    loreReset: '§e§l所有玩家的进度将被重置'
-    optionValue: '§8数值：§7{0}'
-    defaultValue: '§8(默认值)'
-    requiredParameter: '§7所需参数'
-  itemsSelect:
-    name: 编辑物品
-    none: |-
-      §a把物品放到这里或点击打开物品编辑器.
-  itemSelect:
-    name: 选择物品
-  npcCreate:
-    name: 创建NPC
-    setName: '§a编辑NPC名称'
-    setSkin: '§e编辑NPC皮肤'
-    setType: '§a编辑NPC类型'
-    move:
-      itemName: '§6传送'
-      itemLore: '§a更改NPC位置.'
-    moveItem: '§a§l确认前往'
-  npcSelect:
-    name: 选择还是创建NPC?
-    selectStageNPC: '§6选择 NPC'
-    createStageNPC: '§e创建 NPC'
-  entityType:
-    name: '§5选择生物类型'
-  chooseQuest:
-    name: '§5选择哪一个任务?'
-    menu: '§a任务菜单'
-    menuLore: 前往任务菜单。
-  mobs:
-    name: 选择怪物
-    none: '§a点击添加怪物'
-    clickLore: |-
-      §a§l左击§a以编辑数量。
-      §l§l§nShift§a§l+左击§a以编辑生物名称。
-      §c§l右击§c以删除。
-    setLevel: 设置最低等级
-  mobSelect:
-    name: 选择怪物类型
-    bukkitEntityType: '§e选择一个生物类型'
-    mythicMob: '§6选择一个MythicMob'
-    epicBoss: '§6选择一个Epic Boss'
-    boss: '§6选择一个Boss'
-  stageEnding:
-    locationTeleport: '§a编辑传送点'
-    command: '§a编辑执行的指令'
-  requirements:
-    name: 任务需求
-  rewards:
-    name: 任务奖励
-    commands: '指令: {0}'
-    teleportation: |-
-      §a已选取位置:
-      X: {0}
-      Y: {1}
-      Z: {2}
-      世界: {3}
-    random:
-      rewards: 编辑奖励
-      minMax: 编辑最小和最大值
-  checkpointActions:
-    name: 记录点行动
-  cancelActions:
-    name: 取消行动
-  rewardsWithRequirements:
-    name: 需满足需求的奖励
-  listAllQuests:
-    name: '§8任务'
-  listPlayerQuests:
-    name: '§8{0}的任务'
-  listQuests:
-    notStarted: 没有已开始的任务
-    finished: 已完成的任务
-    inProgress: 进行中的任务
-    loreDialogsHistoryClick: '§7查看对话'
-    loreCancelClick: '§c取消任务'
-    loreStart: '§a§o点击开始任务。'
-    loreStartUnavailable: '§c§o你不满足任务需求，无法开始任务。'
-    timeToWaitRedo: '§3§o你可以在{0}后重启该任务。'
-    canRedo: '§3§o你可以再次接受这个任务!'
-    timesFinished: '§3该任务完成了{0}次。'
-  itemCreator:
-    name: '§8物品编辑器'
-    itemType: '§b物品类型'
-    itemFlags: 开关物品标志显示
-    itemName: '§b物品名'
-    itemLore: '§b物品描述'
-    isQuestItem: '§b任务物品:'
-  command:
-    name: '§8指令'
-    value: '§b指令'
-    console: 控制台
-    parse: 解析占位符
-    delay: '§b延迟'
-  chooseAccount:
-    name: '§5选择哪一个帐号?'
-  listBook:
-    questName: 任务名
-    questStarter: 开始任务方式
-    questRewards: 任务奖励
-    questMultiple: 可重复次数
-    requirements: 任务需求
-    questStages: 任务阶段
-    noQuests: 没有已创建的任务
-  commandsList:
-    name: 指令列表
-    value: '§e指令: {0}'
-    console: '§e控制台: {0}'
-  block:
-    name: 选择方块
-    material: '§e材料: {0}'
-    materialNotItemLore: '所选方块无法显示为物品。它仍正确地存储为{0}。'
-    blockName: '§b自定义方块名称'
-    blockData: '§d方块数据(高级)'
-    blockTag: '§d标签 (高级)'
-    blockTagLore: '选择描述可能方块列表的标签。可使用数据包自定义标签。你可以在Minecraft Wiki查询标签列表。'
-  blocksList:
-    name: 选择方块
-    addBlock: '§a点击添加一个方块.'
-  blockAction:
-    name: 选择方块行动
-    location: '§e选择精确位置'
-    material: '§e选择方块材料'
-  buckets:
-    name: 桶的类型
-  permission:
-    name: 选择权限
-    perm: '§a权限'
-    world: '§a世界'
-    worldGlobal: '§b§l全局'
-    remove: 删除权限
-    removeLore: '§7P将收回权限\n§7而非给予权限。'
-  permissionList:
-    name: 权限列表
-    removed: '§e已移除: §6{0}'
-    world: '§e世界:§6{0}'
-  classesRequired.name: 所需职业
-  classesList.name: 职业列表
-  factionsRequired.name: 所需派系
-  factionsList.name: 派系列表
-  poolsManage:
-    name: 任务池
-    itemName: '§a池#{0}'
-    poolNPC: '§8NPC：§7{0}'
-    poolMaxQuests: '§8最大任务数：§7{0}'
-    poolQuestsPerLaunch: '§8每次给予的任务：§7{0}'
-    poolRedo: '§8可以重新接受已完成的任务：§7{0}'
-    poolTime: '§8任务之间的间隔：§7{0}'
-    poolHologram: '§8全息文本：§7{0}'
-    poolAvoidDuplicates: '§8避免重复：§7{0}'
-    poolQuestsList: '§7{0} §8任务：§7{1}'
-    create: '§a创建一个任务池'
-    edit: '§e> §6§o编辑任务池…… §e<'
-    choose: '§e> §6§o选择该任务池 §e<'
-  poolCreation:
-    name: 创建任务池
-    hologramText: '§e自定义任务池全息显示'
-    maxQuests: '§a最大任务数'
-    questsPerLaunch: 每次启动时开始的任务
-    time: '§b设置任务之间的间隔'
-    redoAllowed: 是否可重复完成
-    avoidDuplicates: 避免重复
-    avoidDuplicatesLore: '§8> §7尝试避免重复\n 同一任务'
-    requirements: '§b开始任务所需前置'
-  poolsList.name: 任务池
-  itemComparisons:
-    name: 物品比较式
-    bukkit: Bukkit原生比较
-    bukkitLore: "使用Bukkit默认项目的比较系统。\n比较材料、耐久度、NBT标签……"
-    customBukkit: Bukkit原生比较 - 无NBT
-    customBukkitLore: "使用Bukkit默认物品比较系统，但除去NBT标签。\n兼容材料名、耐久度等"
-    material: 物品材料
-    materialLore: '比较物品材料（比如石头|stone、铁剑|iron sword）'
-    itemName: 物品名称
-    itemNameLore: 比较物品名称
-    itemLore: 物品描述
-    itemLoreLore: 比较物品描述
-    enchants: 物品附魔
-    enchantsLore: 比较物品附魔
-    repairCost: 修复花费
-    repairCostLore: 比较盔甲和武器的修复花费
-  editTitle:
-    name: 编辑标题
-    title: '§6标题'
-    subtitle: '§e副标题'
-    fadeIn: '§a淡入持续时间'
-    stay: '§b停留持续时间'
-    fadeOut: '§a淡出持续时间'
-  particleEffect:
-    name: 创建粒子特效
-    shape: '§d粒子形状'
-    type: '§e粒子类型'
-    color: '§b粒子颜色'
-  particleList:
-    name: 粒子列表
-    colored: 彩色粒子
+      location:
+        worldPattern: '§a设置世界名称模式 §d(高级选项)'
+        worldPatternLore: 如果你想要匹配特定模式的任意世界都能完成任务阶段，请在此输入正则表达式。
+    stageCreate: '§a创建新的阶段'
+    stageDown: 下移
+    stageRemove: '§c删除这一阶段'
+    stageStartMsg: '§e编辑阶段开始的消息'
+    stageType: '§7阶段类型：§e{stage_type}'
+    stageUp: 上移
+    talkChat: '§a在聊天框内输入'
+    tameAnimals: '§a驯服动物'
+    toggleRegionExit: 退出时
   damageCause:
     name: 造成伤害
   damageCausesList:
     name: 造成伤害列表
-  visibility:
-    name: 任务可见度
-    notStarted: '“未开始”菜单栏'
-    inProgress: '“进行中”菜单栏'
-    finished: '“已完成”菜单栏'
-    maps: '地图（比如Dynmap或BlueMap）'
+  details:
+    actions: '{amount}行动'
+    auto: 登录时自动开始任务
+    autoLore: 如果启用，则玩家首次加入服务器时将自动开始该任务。
+    bypassLimit: 忽略任务上限
+    bypassLimitLore: 如果启用，即使玩家已经达到任务上限也能接受任务。
+    cancelRewards: '§c取消行动'
+    cancelRewardsLore: 玩家取消该任务时触发的行动。
+    cancellable: 玩家可取消任务
+    cancellableLore: 允许玩家在任务菜单中取消任务。
+    createQuestLore: 你必须设定任务名。
+    createQuestName: '§l创建任务'
+    customConfirmMessage: '§e编辑确认接受任务的消息'
+    customConfirmMessageLore: 显示在确认菜单中的消息。
+    customDescription: '§e编辑任务描述'
+    customDescriptionLore: 在GUI中显示在任务名下方的描述。
+    customMaterial: '§a编辑任务物品材料名'
+    customMaterialLore: 在任务菜单中代表该任务的物品图标。
+    defaultValue: '§8(默认值)'
+    editQuestName: '§l编辑任务'
+    editRequirements: '§e编辑需求'
+    editRequirementsLore: 接受任务所需前置。
+    endMessage: '§a编辑任务结束消息'
+    endMessageLore: 将在任务结束时发送给玩家的消息。
+    endSound: '§e编辑结束音效'
+    endSoundLore: 在任务结束时播放的音效。
+    failOnDeath: 玩家死亡时任务失败
+    failOnDeathLore: 当玩家死亡时是否取消任务？
+    firework: '§d任务结束烟花'
+    fireworkLore: 玩家完成任务时发射的烟花
+    fireworkLoreDrop: 把你的自定义烟花放在这里
+    hideNoRequirementsItem: 未满足需求时隐藏
+    hideNoRequirementsItemLore: 如果启用，在未满足需求时任务将不会显示在任务菜单中。
+    hologramLaunch: '§e编辑 “启动” 全息项'
+    hologramLaunchLore: 显示在接受任务的NPC头上的全息文字。
+    hologramLaunchNo: '§e编辑 “启动不可用” 全息项'
+    hologramLaunchNoLore: 在玩家没有接受任务时显示在NPC头上的全息文字。
+    hologramText: '§e全息文字'
+    hologramTextLore: 显示在可接受任务的NPC的头上的全息文字。
+    keepDatas: 保留玩家数据
+    keepDatasLore: '强制插件保存玩家数据，即使是已编辑阶段也会保存。 §c§l警告§c- 启用此选项可能会损坏你的玩家数据。'
+    loreReset: '§e§l所有玩家的进度将被重置'
+    multipleTime:
+      itemLore: 任务是否可以多次完成?
+      itemName: 切换是否可重复
+    name: '§8最终任务详细设置'
+    optionValue: '§8数值：§7{value}'
+    questName: '§a§l编辑任务名'
+    questNameLore: 必须设置一个名称来创建任务。
+    questPool: '§e任务池'
+    questPoolLore: 将该任务加到任务池中
+    removeItemsReward: 从物品栏中移除物品
+    requiredParameter: '§7所需参数'
+    requirements: '{amount} 个任务需求'
+    rewards: '{amount} 个奖励'
+    rewardsLore: 任务接受时执行的行动。
+    scoreboardItem: 启用计分版
+    scoreboardItemLore: 如果禁用，则该任务目标不会显示在计分板上。
+    selectStarterNPC: '§6§l选择接受任务的NPC'
+    selectStarterNPCLore: 点击选中的NPC将开始任务。
+    selectStarterNPCPool: '§c:⚠ 已选择一个任务池'
+    setCheckpointReward: '§e编辑记录点奖励'
+    setItemsRewards: '§7编辑获得的物品'
+    setMoneyReward: '§e编辑获得的金钱'
+    setPermReward: '§e编辑权限'
+    setRewardStopQuest: '§c停止任务'
+    setRewardsRandom: '§d随机奖励'
+    setRewardsWithRequirements: '§e需满足需求的奖励'
+    setTitleReward: '§e编辑标题奖励'
+    setWaitReward: '§e编辑“等待”奖励'
+    setXPRewards: '§e编辑获得的经验'
+    startDialog: '§e编辑任务开场白'
+    startDialogLore: 当玩家点击任务NPC时，在任务开始之前播放的对话框。
+    startMessage: '§e编辑开始消息'
+    startMessageLore: 任务开始时发送给玩家的消息。
+    startRewards: '§6开始任务的奖励'
+    startRewardsLore: 玩家接受任务时执行的行动。
+    startableFromGUI: 可从GUI菜单中开始任务
+    startableFromGUILore: 允许玩家在任务菜单中开始任务。
+    timer: '§b重启计时器'
+    timerLore: 玩家可以再次开始任务的时间。
+    visibility: '§b任务可见度'
+    visibilityLore: 选择在菜单栏何处显示任务，如果安装了卫星地图插件，则在地图上显示任务。
+  editTitle:
+    fadeIn: '§a淡入持续时间'
+    fadeOut: '§a淡出持续时间'
+    name: 编辑标题
+    stay: '§b停留持续时间'
+    subtitle: '§e副标题'
+    title: '§6标题'
+  entityType:
+    name: '§5选择生物类型'
   equipmentSlots:
     name: 装备栏位
-scoreboard:
-  name: '§6§l任务'
-  noLaunched: '§c你没有进行中的任务.'
-  noLaunchedName: '§c§l载入中'
-  noLaunchedDescription: '§c§o载入中'
-  textBetwteenBranch: '§e或'
-  asyncEnd: '§ex'
-  stage:
-    region: '§e找到区域 §6{0}'
-    npc: '§e和NPC谈话 §6{0}'
-    items: '§e将物品带给§6{0}§e:'
-    mobs: '§e击杀 §6{0}'
-    mine: '§e挖掘 {0}'
-    placeBlocks: '§e放置{0}'
-    chat: '§e输入 §6{0}'
-    interact: '§e点击在§6{0}的方块'
-    interactMaterial: '§e点击§6{0}§e方块'
-    fish: '§e钓鱼 §6{0}'
-    melt: '§e熔炼 §6{0}'
-    enchant: '§e附魔 §6{0}'
-    craft: '§e合成 §6{0}'
-    bucket: '§e装满 §6{0}'
-    location: '§e前往位于 §6{3}的坐标§6{0}§e, §6{1}§e, §6{2}§e '
-    playTimeFormatted: '§e游玩 §6{0}'
-    breed: '§e饲养§6{0}'
-    tame: '§e驯服§6{0}'
-    die: '§c死亡'
-    dealDamage:
-      any: '§c造成{0}点伤害'
-      mobs: '§c对{1}造成{0}点伤害'
-    eatDrink: '§e消耗§6{0}'
-indication:
-  startQuest: '§7您是否想要接受任务 {0}?'
-  closeInventory: '§7你确定要关闭该页面吗？'
-  cancelQuest: '§7您确定要取消任务 {0}?'
-  removeQuest: '§7您确定要删除任务 {0}?'
-description:
-  requirement:
-    title: '§8§l要求：'
-    level: '{0}级'
-    jobLevel: '{1} {0}级'
-    combatLevel: '战斗等级 {0}'
-    skillLevel: '{1} {0}级'
-    class: '{0} 职业'
-    faction: '{0} 派系'
-    quest: '完成任务 §e{0}'
-  reward:
-    title: '§8§l奖励：'
+  factionsList.name: 派系列表
+  factionsRequired.name: 所需派系
+  itemComparisons:
+    bukkit: Bukkit原生比较
+    bukkitLore: 使用Bukkit默认项目的比较系统。 比较材料、耐久度、NBT标签……
+    customBukkit: Bukkit原生比较 - 无NBT
+    customBukkitLore: 使用Bukkit默认物品比较系统，但除去NBT标签。 兼容材料名、耐久度等
+    enchants: 物品附魔
+    enchantsLore: 比较物品附魔
+    itemLore: 物品描述
+    itemLoreLore: 比较物品描述
+    itemName: 物品名称
+    itemNameLore: 比较物品名称
+    itemsAdder: ItemsAdder
+    itemsAdderLore: 比较ItemsAdder ID
+    material: 物品材料
+    materialLore: 比较物品材料（比如石头|stone、铁剑|iron sword）
+    name: 物品比较式
+    repairCost: 修复花费
+    repairCostLore: 比较盔甲和武器的修复花费
+  itemCreator:
+    isQuestItem: '§b任务物品:'
+    itemFlags: 开关物品标志显示
+    itemLore: '§b物品描述'
+    itemName: '§b物品名'
+    itemType: '§b物品类型'
+    name: '§8物品编辑器'
+  itemSelect:
+    name: 选择物品
+  itemsSelect:
+    name: 编辑物品
+    none: '§a把物品放到这里或点击打开物品编辑器.'
+  listAllQuests:
+    name: '§8任务'
+  listBook:
+    noQuests: 没有已创建的任务
+    questMultiple: 可重复次数
+    questName: 任务名
+    questRewards: 任务奖励
+    questStages: 任务阶段
+    questStarter: 开始任务方式
+    requirements: 任务需求
+  listPlayerQuests:
+    name: '§8{player_name}的任务'
+  listQuests:
+    canRedo: '§3§o你可以再次接受这个任务!'
+    finished: 已完成的任务
+    inProgress: 进行中的任务
+    loreCancelClick: '§c取消任务'
+    loreDialogsHistoryClick: '§7查看对话'
+    loreStart: '§a§o点击开始任务。'
+    loreStartUnavailable: '§c§o你不满足任务需求，无法开始任务。'
+    notStarted: 没有已开始的任务
+    timeToWaitRedo: '§3§o你可以在{time_left}后重启该任务。'
+    timesFinished: '§3该任务完成了{times_finished}次。'
+  mobSelect:
+    boss: '§6选择一个Boss'
+    bukkitEntityType: '§e选择一个生物类型'
+    epicBoss: '§6选择一个Epic Boss'
+    mythicMob: '§6选择一个MythicMob'
+    name: 选择怪物类型
+  mobs:
+    name: 选择怪物
+    none: '§a点击添加怪物'
+    setLevel: 设置最低等级
+  npcCreate:
+    move:
+      itemLore: '§a更改NPC位置.'
+      itemName: '§6传送'
+    moveItem: '§a§l确认前往'
+    name: 创建NPC
+    setName: '§a编辑NPC名称'
+    setSkin: '§e编辑NPC皮肤'
+    setType: '§a编辑NPC类型'
+  npcSelect:
+    createStageNPC: '§e创建 NPC'
+    name: 选择还是创建NPC?
+    selectStageNPC: '§6选择 NPC'
+  particleEffect:
+    color: '§b粒子颜色'
+    name: 创建粒子特效
+    shape: '§d粒子形状'
+    type: '§e粒子类型'
+  particleList:
+    colored: 彩色粒子
+    name: 粒子列表
+  permission:
+    name: 选择权限
+    perm: '§a权限'
+    remove: 删除权限
+    removeLore: '§7P将收回权限\n§7而非给予权限。'
+    world: '§a世界'
+    worldGlobal: '§b§l全局'
+  permissionList:
+    name: 权限列表
+    removed: '§e已移除: §6{permission_removed}'
+    world: '§e世界:§6{permission_world}'
+  poolCreation:
+    avoidDuplicates: 避免重复
+    avoidDuplicatesLore: '§8> §7尝试避免重复\n 同一任务'
+    hologramText: '§e自定义任务池全息显示'
+    maxQuests: '§a最大任务数'
+    name: 创建任务池
+    questsPerLaunch: 每次启动时开始的任务
+    redoAllowed: 是否可重复完成
+    requirements: '§b开始任务所需前置'
+    time: '§b设置任务之间的间隔'
+  poolsList.name: 任务池
+  poolsManage:
+    choose: '§e> §6§o选择该任务池 §e<'
+    create: '§a创建一个任务池'
+    edit: '§e> §6§o编辑任务池…… §e<'
+    itemName: '§a池#{pool}'
+    name: 任务池
+    poolAvoidDuplicates: '§8避免重复：§7{pool_duplicates}'
+    poolHologram: '§8全息文本：§7{pool_hologram}'
+    poolMaxQuests: '§8最大任务数：§7{pool_max_quests}'
+    poolNPC: '§8NPC：§7{pool_npc_id}'
+    poolQuestsList: '§7{pool_quests_amount} §8任务：§7{pool_quests}'
+    poolQuestsPerLaunch: '§8每次给予的任务：§7{pool_quests_per_launch}'
+    poolRedo: '§8可以重新接受已完成的任务：§7{pool_redo}'
+    poolTime: '§8任务之间的间隔：§7{pool_time}'
+  requirements:
+    name: 任务需求
+  rewards:
+    commands: '指令: {amount}'
+    name: 任务奖励
+    random:
+      minMax: 编辑最小和最大值
+      rewards: 编辑奖励
+  rewardsWithRequirements:
+    name: 需满足需求的奖励
+  search: '§e§l搜索'
+  stageEnding:
+    command: '§a编辑执行的指令'
+    locationTeleport: '§a编辑传送点'
+  stages:
+    branchesPage: '§d分支任务阶段'
+    descriptionTextItem: '§e编辑文本描述'
+    endingItem: '§e编辑阶段结束奖励'
+    laterPage: '§e上一页'
+    name: '§8创建任务阶段'
+    newBranch: '§e前往新的任务分支'
+    nextPage: '§e下一页'
+    previousBranch: '§e返回上一个分支'
+    regularPage: '§a普通任务阶段'
+    validationRequirements: '§e验证需求'
+    validationRequirementsLore: 所有需求必须匹配尝试完成阶段的玩家。否则该阶段无法完成。
+  validate: '§b§l确认'
+  visibility:
+    finished: '“已完成”菜单栏'
+    inProgress: '“进行中”菜单栏'
+    maps: 地图（比如Dynmap或BlueMap）
+    name: 任务可见度
+    notStarted: '“未开始”菜单栏'
 misc:
-  format:
-    prefix: '§6<§e§l任务§r§6> §r'
-    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e{0}'
-  time:
-    weeks: '{0}周'
-    days: '{0}天'
-    hours: '{0}小时'
-    minutes: '{0}分钟'
-    lessThanAMinute: '少于一分钟'
-  stageType:
-    region: 寻找区域
-    npc: 寻找 NPC
-    items: 带回物品
-    mobs: 击杀怪物
-    mine: 破坏方块
-    placeBlocks: 放置方块
-    chat: 在聊天框内说话
-    interact: 与方块交互
-    Fish: 钓鱼
-    Melt: 熔炼物品
-    Enchant: 附魔物品
-    Craft: 合成物品
-    Bucket: 装满桶
-    location: 寻找地点
-    playTime: 游戏时间
-    breedAnimals: 饲养动物
-    tameAnimals: 驯服动物
-    die: 死亡
-    dealDamage: 造成伤害
-    eatDrink: 食用或饮用
-  comparison:
-    equals: 等于{0}
-    different: 不同于{0}
-    less: 精确小于 {0}
-    lessOrEquals: 小于{0}
-    greater: 精确大于{0}
-    greaterOrEquals: 大于{0}
-  requirement:
-    logicalOr: '§d逻辑 或 （前置）'
-    skillAPILevel: '§d所需SkillAPI等级'
-    class: '§b所需职业'
-    faction: '§b所需派系'
-    jobLevel: '§b所需工作等级'
-    combatLevel: '§b所需战斗等级'
-    experienceLevel: '§b所需经验等级'
-    permissions: '§3所需权限'
-    scoreboard: '§d所需分数'
-    region: '§d需要区域'
-    placeholder: '§b所需占位符数值'
-    quest: '§a所需前置任务'
-    mcMMOSkillLevel: '§d所需技能等级'
-    money: '§d所需金额'
-    equipment: '§e所需装备'
+  amount: '§e数量: {amount}'
+  amounts:
+    comparisons: '{comparisons_amount}个对比'
+    dialogLines: '{lines_amount}行'
+    items: '{items_amount}件物品'
+    mobs: '{mobs_amount}个怪物'
+    permissions: '{permissions_amount}个权限'
+  and: 和
   bucket:
-    water: 水桶
     lava: 岩浆桶
     milk: 牛奶桶
     snow: 雪桶
+    water: 水桶
   click:
-    right: 右击
     left: 左击
-    shift-right: Shift+右击
-    shift-left: Shift+左击
     middle: 中键点击
-  amounts:
-    items: '{0}件物品'
-    comparisons: '{0}个对比'
-    dialogLines: '{0}行'
-    permissions: '{0}个权限'
-    mobs: '{0}个怪物'
-  ticks: '{0}刻'
-  questItemLore: '§e§o任务物品'
-  hologramText: '§8§l任务NPC'
-  poolHologramText: '§e有可接受的新任务！'
-  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
-  entityType: '§e生物类型: {0}'
-  entityTypeAny: '§e任何实体'
-  enabled: 已启用
+    right: 右击
+    shift-left: Shift+左击
+    shift-right: Shift+右击
+  comparison:
+    different: 不同于{number}
+    equals: 等于{number}
+    greater: 精确大于{number}
+    greaterOrEquals: 大于{number}
+    less: 精确小于 {number}
+    lessOrEquals: 小于{number}
   disabled: 已关闭
-  unknown: 未知
-  notSet: '§c未设置'
-  unused: '§e§l未设置'
-  used: '§6§l已设置'
-  remove: '§e§o点击鼠标中键删除'
-  removeRaw: 移除
-  reset: 重置
-  or: 或
-  amount: '§e数量: {0}'
-  items: 物品
-  expPoints: 经验点数
-  'yes': '是'
+  enabled: 已启用
+  entityType: '§e生物类型: {entity_type}'
+  entityTypeAny: '§e任何实体'
+  format:
+    prefix: '§6<§e§l任务§r§6> §r'
+  hologramText: '§8§l任务NPC'
   'no': '否'
-  and: 和
+  notSet: '§c未设置'
+  or: 或
+  poolHologramText: '§e有可接受的新任务！'
+  questItemLore: '§e§o任务物品'
+  removeRaw: 移除
+  requirement:
+    class: '§b所需职业'
+    combatLevel: '§b所需战斗等级'
+    equipment: '§e所需装备'
+    experienceLevel: '§b所需经验等级'
+    faction: '§b所需派系'
+    jobLevel: '§b所需工作等级'
+    logicalOr: '§d逻辑 或 （前置）'
+    mcMMOSkillLevel: '§d所需技能等级'
+    money: '§d所需金额'
+    permissions: '§3所需权限'
+    placeholder: '§b所需占位符数值'
+    quest: '§a所需前置任务'
+    region: '§d需要区域'
+    scoreboard: '§d所需分数'
+    skillAPILevel: '§d所需SkillAPI等级'
+  reset: 重置
+  stageType:
+    Bucket: 装满桶
+    Craft: 合成物品
+    Enchant: 附魔物品
+    Fish: 钓鱼
+    Melt: 熔炼物品
+    breedAnimals: 饲养动物
+    chat: 在聊天框内说话
+    dealDamage: 造成伤害
+    die: 死亡
+    eatDrink: 食用或饮用
+    interact: 与方块交互
+    items: 带回物品
+    location: 寻找地点
+    mine: 破坏方块
+    mobs: 击杀怪物
+    npc: 寻找 NPC
+    placeBlocks: 放置方块
+    playTime: 游戏时间
+    region: 寻找区域
+    tameAnimals: 驯服动物
+  ticks: '{ticks}刻'
+  time:
+    days: '{days_amount}天'
+    hours: '{hours_amount}小时'
+    lessThanAMinute: 少于一分钟
+    minutes: '{minutes_amount}分钟'
+    weeks: '{weeks_amount}周'
+  unknown: 未知
+  'yes': '是'
+msg:
+  bringBackObjects: 把 {items} 带回给我.
+  command:
+    adminModeEntered: '§a你已进入管理员模式.'
+    adminModeLeft: '§a你退出了管理员模式.'
+    backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
+    backupPlayersFailed: '§c创建玩家数据备份失败.'
+    backupQuestsFailed: '§c创建任务数据备份失败.'
+    cancelQuest: '§6你放弃了任务 {quest}.'
+    cancelQuestUnavailable: '§c无法取消任务 {quest} .'
+    checkpoint:
+      noCheckpoint: '§c未找到任务{quest}的记录点。'
+      questNotStarted: '§c你没有接受这个任务。'
+    downloadTranslations:
+      downloaded: '§a已下载语言{lang}！§7你现在必须打开文件"/plugins/BeautyQuests/config.yml"，更改§ominecraftTranslationsFile§7的值为{lang}，然后重启服务器。'
+      exists: '§c文件 {file_name} 已存在。在你的指令后加上 "-overwrite" 覆盖文件。 (/quests downloadTranslations <lang> -overwrite)'
+      notFound: '§c找不到{version}版本的{lang}语言。'
+      syntax: '§c你必须指定要下载的语言。例如："/quests downloadTranslations en_US"。'
+    help:
+      adminMode: '§6/{label} adminMode : §e切换管理员模式 (显示消息)'
+      create: '§6/{label} create: §a创建任务'
+      downloadTranslations: '§6/{label} downloadTranslations <language>: §e下载翻译文件'
+      edit: '§6/{label} edit: §a编辑任务'
+      finishAll: '§6/{label} finishAll <玩家名>: §a结束一名玩家所有进行中的任务。'
+      header: '§6§lBeautyQuests - §6帮助§r'
+      list: '§e/{label} list: §a查看任务列表 (部分版本无效)'
+      reload: '§e/{label} reload: §a保存并重载配置和插件数据 - §c§o不推荐使用'
+      remove: '§6/{label} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
+      resetPlayer: '§6/{label} resetPlayer <玩家名>: §e删除一名玩家的所有任务数据。'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <玩家名> [id]: §e删除一名玩家的一个任务数据'
+      save: '§6/{label} save: §a手动保存数据.'
+      seePlayer: '§6/{label} seePlayer <玩家名>: §a查看玩家的任务数据。'
+      setFirework: '§6/{label} setFirework: §e编辑默认结束烟花。'
+      setItem: '§6/{label} setItem <talk|launch> : §e保存全息物品到数据文件内.'
+      setStage: '§6/{label} setStage <玩家名> <id> [新任务分支] [新任务阶段]: §e跳过玩家当前的任务阶段/开始任务分支/s为任务分支设置任务阶段。'
+      start: '§6/{label} start <玩家名> [id] : §e强制玩家接受任务.'
+      startDialog: '§6/{label} startDialog <player> <quest id>: §e播放NPC任务阶段的待定对话或任务起始对话。'
+      version: '§6/{label} version: §e查看插件版本.'
+    invalidCommand:
+      simple: '§c指令不存在, 输入 §ehelp §c查看帮助(不需要 /)'
+    itemChanged: '§a已编辑物品. 更改会在重启后生效.'
+    itemRemoved: '§a已删除全息物品.'
+    leaveAll: '§e你强制结束了{success}个任务. §c出现{errors}个错误.'
+    removed: '§a成功删除任务 {quest_name}。'
+    resetPlayer:
+      player: '§6你的所有任务数据 ({quest_amount}) 被 {deleter_name} 删除了.'
+      remover: '§6已删除{player}的{quest_amount}任务信息（和{quest_pool}任务池）。'
+    resetPlayerPool:
+      full: '§a你重置了{pool}任务池的{player}数据。'
+      timer: '§a你已重置{pool}任务池计时器{player}。'
+    resetPlayerQuest:
+      player: '§6任务数据 {quest} 已被 {deleter_name} 删除.'
+      remover: '§6{quest} 的 {player} 条任务信息已被删除.'
+    resetQuest: '§6已移除{player_amount}的任务数据。'
+    scoreboard:
+      hidden: '§6已隐藏{player_name}的计分版.'
+      lineInexistant: '§c第 {line_id} 行不存在.'
+      lineRemoved: '§6你成功地删除了第 {line_id} 行.'
+      lineReset: '§6你成功地重置了第 {line_id} 行.'
+      lineSet: '§6你成功地编辑了第 {line_id} 行.'
+      own:
+        hidden: '§6已隐藏你的计分板。'
+        shown: '§6已显示你的计分板。'
+      resetAll: '§6你成功地清空了 {player_name} 的计分版.'
+      shown: '§6已重新显示{player_name}的计分版。'
+    setStage:
+      branchDoesntExist: '§cid为{branch_id}的任务分支不存在。'
+      doesntExist: '§cID为{stage_id}的任务阶段不存在.'
+      next: '§a已跳过该任务阶段.'
+      nextUnavailable: '§c"skip"选项在玩家到达任务分支结尾时无法使用。'
+      set: '§a已进入任务阶段 {stage_id} .'
+    startDialog:
+      alreadyIn: '§c已对玩家播放对话。'
+      impossible: '§c现在无法开始对话。'
+      noDialog: '§c玩家没有待定对话。'
+      success: '§a已为玩家{player}播放任务{quest}的对话！'
+    startPlayerPool:
+      error: 为{player}开始任务池{pool}失败。
+      success: '已开始任务池{pool}为{player}。结果：{result}'
+    startQuest: '§6你接受了任务 {quest} (UUID： {player}).'
+    startQuestNoRequirements: '§c玩家不满足任务{quest}的需求……在指令结尾加上 "-overrideRequirements"  无视需求检测。'
+  dialogs:
+    skipped: '§8§o已跳过对话。'
+    tooFar: '§7§o你离{npc_name}太远了...'
+  editor:
+    advancedSpawnersMob: '输入所需击杀的自定义刷怪笼怪物名称：'
+    already: '§c你已在编辑器中.'
+    availableElements: '可用元素：§e{available_elements}'
+    blockAmount: '§e请输入所需方块数：'
+    blockData: '§a请输入方块数据 (可用的方块数据: {available_datas})：'
+    blockName: '§a请输入方块名：'
+    blockTag: '§a请输入方块标签 (可用标签：§7{available_tags}§a)：'
+    chat: '§6你已进入编辑器模式。输入"/quests exitEditor" 强制退出编辑器。（不推荐使用，最好使用 "close" 或 "cancel" 回到上一个菜单）'
+    color: '可以输入十六位格式(#XXXXX)或RGB格式(RED GRE BLU)的颜色。'
+    colorNamed: 输入颜色名称。
+    comparisonTypeDefault: '§a请选择你想要在{available}中使用的比较类型。默认比较类型为：§e§l{default}§r§a。输入§onull§r§a使用。'
+    dialog:
+      cleared: '§a已删除{amount}条消息.'
+      edited: '§a已编辑消息  "§7{msg}§a"。'
+      help:
+        addSound: '§eaddsound <id> <音效名>: §b给一条消息添加音效.'
+        clear: '§eclear: §b删除所有消息.'
+        close: '§eclose: §b退出并保存所有消息.'
+        edit: '§6edit <id> <message>：§e编辑消息。'
+        header: '§e§lBeautyQuest  - §6对话编辑器帮助'
+        list: '§elist: §b查看所有的消息.'
+        nothing: '§6noSender <消息>: §e添加一条没有发送者的消息.'
+        nothingInsert: '§enothinginsert <id> <消息>: §b插入一条没有任何前缀的消息.'
+        npc: '§npc <message>: §b添加一条由NPC说出的消息。'
+        npcInsert: '§enpcinsert <id> <消息>: §b插入一条由NPC说出的话.'
+        npcName: '§6npcname [自定义NPC名称]: §eSet (或重置为默认) 自定义NPC名称'
+        player: '§6player <message>: §b添加一条由玩家说出的消息。'
+        playerInsert: '§eplayerinsert <id> <消息>: §b插入一条由玩家说出的话.'
+        remove: '§6emove <id>: §e删除一条消息.'
+        setTime: '§6setTime <id> <时间>: §e设置自动播放下一条消息的时间(单位为刻) 。'
+        skippable: '§6skippable [true|false]: §e设置是否可跳过对话'
+      messageRemoved: '§a已删除消息  "§7{msg}§a"。'
+      noSender: '§a已添加无发送者的消息“{msg}”。'
+      npc: '§a已为NPC添加消息 "§7{msg}§a"。'
+      npcName:
+        set: '§a自定义NPC名称已设置为§7{new_name}§a (原为§7{old_name}§a)'
+        unset: '§a自定义NPC名称重置为默认值 (原为§7{old_name}§a)'
+      player: '§a已为玩家添加消息 "§7{msg}§a"。'
+      skippable:
+        set: '§a对话可跳过状态已设置为§7{new_state}§a (原为§7{old_state}§a)'
+        unset: '§a对话可跳过状态已重置为默认§7{1}§a (原为§7{old_state}§a)'
+      soundAdded: '§a已为消息 "§7{msg}§a"添加音效 "§7{sound}§a"。'
+      syntaxRemove: '§c正确用法: remove <id>'
+      timeRemoved: '§a已删除消息{msg}的时间。'
+      timeSet: '§a已编辑消息 {msg} 的时间: 现在是 {time} 刻。'
+    enter:
+      list: '§c⚠ §7你已进入"list"编辑器。输入"add"添加一行。使用 "help" (无需斜杠) 查看帮助。§e§l输入"close"退出编辑器。'
+      subtitle: '§e输入 "/quests exitEditor" 强制退出任务编辑器。'
+      title: '§6~ 进入编辑器模式 ~'
+    firework:
+      edited: 已编辑任务烟花！
+      invalid: 这件物品不是有效的烟花。
+      invalidHand: 你必须在主手手持烟花。
+      removed: 已移除任务烟花！
+    goToLocation: '§a前往该任务阶段指定地点。'
+    invalidColor: 你输入的颜色无效，必须是十六位或RGB颜色。
+    invalidPattern: '§c无效的正则表达式§4{input}§c。'
+    itemCreator:
+      invalidBlockType: '§c无效的方块类型。'
+      invalidItemType: '§c无效的物品类型 (必须是物品而不能是方块).'
+      itemAmount: '§e请输入所需物品数：'
+      itemLore: '§e修改物品描述. 输入 "help" 查看帮助.'
+      itemName: '§a输入物品名:'
+      itemType: '§a输入物品类型名:'
+      unknownBlockType: '§c未知方块类型。'
+      unknownItemType: '§c未知的物品类型.'
+    mythicmobs:
+      disabled: '§cMythicMob已关闭.'
+      isntMythicMob: '§c这个MythicMob不存在.'
+      list: '§a所有的MythocMobs:'
+    noSuchElement: '§c没有这样的元素。可用元素：§e{available_elements}'
+    npc:
+      choseStarter: '§a选择接受任务的NPC.'
+      enter: '§a点击一个NPC，或输入"cancel"取消.'
+      notStarter: '§c这个NPC没有可以接受的任务...'
+    pool:
+      hologramText: 请输入该池的自定义全息显示文本（输入“null”使用默认值）。
+      maxQuests: 输入在该池中可运行的最大任务数。
+      questsPerLaunch: 输入点击NPC时给予玩家的任务数。
+      timeMsg: '请输入玩家可接取新任务的等候时间。（默认单位：天）'
+    scoreboardObjectiveNotFound: '§c未知的计分板目标。'
+    selectWantedBlock: '§a用木棍点击开始任务阶段的方块.'
+    stage:
+      location:
+        typeWorldPattern: '§a输入世界名称的正则表达式：'
+    text:
+      argNotSupported: '§c不支持 {arg} 参数.'
+      chooseJobRequired: '§a输入所需的工作名:'
+      chooseLvlRequired: '§a输入所需等级:'
+      chooseMoneyRequired: '§e输入所需金额:'
+      chooseObjectiveRequired: '§a请输入目标名。'
+      chooseObjectiveTargetScore: '§a请输入完成任务目标所需目标数。'
+      choosePermissionMessage: '§e如果玩家没有所需权限则显示的拒绝消息. (输入 "null" 跳过这步)'
+      choosePermissionRequired: '§a输入开始任务所需权限:'
+      choosePlaceholderRequired:
+        identifier: '§e输入所需的占位符名 (§l不用加上 %%§r§e).'
+        value: '§a请输入所需的§e%§e{placeholder}§e%§a占位符值：'
+      chooseRegionRequired: '§a请输入所需区域名 (你必须与该区域在同一个世界中)。'
+      chooseSkillRequired: '§a输入技能名:'
+      reward:
+        money: '§e输入获得的钱数:'
+        permissionName: '§a请输入权限名称。'
+        permissionWorld: '§a请输入可编辑权限的世界名，输入"null"则所有世界可编辑。'
+        random:
+          max: '§a输入给予玩家的最高奖励数量 (包括全部)。'
+          min: '§a输入给予玩家的最低奖励数量 (包括全部)。'
+        wait: '§a输入所需等待游戏刻数（1秒=20刻）'
+    textList:
+      added: '§a已添加文本 "§7{msg}§a"。'
+      help:
+        add: '§6add [消息]: §e添加一条文本.'
+        close: '6close: §e确认添加文本并退出编辑器.'
+        header: '§6§lBeautyQuests — 编辑器列表帮助'
+        list: '§6list: §e查看所有已添加的文本.'
+        remove: '§6remove [id]: §e删除一条文本.'
+      removed: '§a已删除文本 "§7{msg}§a"。'
+      syntax: '§c正确用法: '
+    title:
+      fadeIn: 输入淡入持续时间，单位为刻（20刻=1秒）。
+      fadeOut: 输入淡出持续时间，单位为刻（20刻=1秒）。
+      stay: 输入停留持续时间，单位为刻（20刻=1秒）。
+      subtitle: 输入副标题文本（输入“null”则不显示文本）。
+      title: 输入标题文本（输入“null”则不显示文本）。
+    typeBucketAmount: '§a请输入要装满桶的数量:'
+    typeDamageAmount: '输入玩家需要造成的伤害：'
+    typeGameTicks: '§a请输入所需的刻数：'
+    typeLocationRadius: '§a请输入距离指定位置所需的距离：'
+  errorOccurred: '§c插件发生错误，请联系管理员！错误代码为: {error}'
+  experience:
+    edited: '已编辑获得的经验: {old_xp_amount}pts. 改为 {xp_amount}pts.'
+  indexOutOfBounds: '§c数字 ({index}) 超过了区间 [{min}, {max}].'
+  invalidBlockData: '§c方块数据{block_data} 无效或者不兼容方块{block_material}。'
+  invalidBlockTag: '§c无法使用方块标签{block_tag}。'
+  inventoryFull: '§c你的背包已满, 任务奖励已掉落在地上.'
+  moveToTeleportPoint: 前往指定的传送点.
+  npcDoesntExist: '§cID为{npc_id}的NPC不存在.'
+  number:
+    invalid: '§c"{input}" 不是有效的数字.'
+    negative: '§c你必须输入正数!'
+    notInBounds: '§c你的数字必须介于{min}和{max}之间。'
+    zero: '§c你必须输入大于0的数!'
+  pools:
+    allCompleted: '§7你已完成所有任务！'
+    maxQuests: '§c你不能同时进行多于 {pool_max_quests}个任务……'
+    noAvailable: '§7没有更多可用的任务……'
+    noTime: '§c你必须先等待一会儿才能执行其它任务。'
+  quest:
+    alreadyStarted: '§c你已经接受了这个任务!'
+    cancelling: '§c已取消创建任务.'
+    createCancelled: '§c抱歉，任务创建/编辑已被其他插件取消...'
+    created: '§a你成功地创建了 "§e{quest}§a" 任务, 包含 {quest_branches} 个阶段!'
+    editCancelling: '§c已取消编辑任务.'
+    edited: '§a你成功地修改了 "§e{quest}§a", 包含 {quest_branches} 个阶段!'
+    finished:
+      base: '§a恭喜你完成了任务 §o§6{quest_name}§r§a!'
+      obtain: '§a你获得了 {rewards}!'
+    invalidID: '§cID为 {quest_id} 的任务不存在.'
+    invalidPoolID: '§c任务池{pool_id}不存在。'
+    notStarted: '§c你未执行这个任务。'
+    started: '§a你接受了任务 §r§e{quest_name}§o§6!'
+  questItem:
+    craft: '§c你不能用任务物品来合成物品！'
+    drop: '§c你不能丢弃任务物品！'
+    eat: '§c你不能吃下任务物品！'
+  quests:
+    checkpoint: '§7已到达任务记录点！'
+    failed: '§6任务{quest_name}失败……'
+    maxLaunched: '§c你不能同时进行多于{quests_max_amount}个任务……'
+    updated: '§7已更新任务 {quest_name} !'
+  regionDoesntExists: '§c这个区域不存在... (你必须在目标区域同一世界内)'
+  requirements:
+    combatLevel: '§c你的战力等级必须是{long_level}！'
+    job: '§c你的职业等级§e{job_name}§c必须是{long_level}！'
+    level: '§c你的等级必须是{long_level}！'
+    money: '§c你必须拥有{money}!'
+    quest: '§c你必须先完成任务§e "{quest_name}"§c!'
+    skill: '§c你的技能等级§e{skill_name}§c必须是{long_level}！'
+    waitTime: '§c你必须等待{time_left}才能重启该任务！'
+  restartServer: '§7重启服务器查看修改。'
+  selectNPCToKill: 选择要击杀的NPC.
+  stageMobs:
+    listMobs: '§a你需要杀死 {mobs}.'
+  typeCancel: '§a输入 "cancel" 返回到上一条消息.'
+  versionRequired: '需要版本：§l{version}'
+  writeChatMessage: '要玩家输入的消息 (在开头加上 {SLASH} 来让玩家输入指令).'
+  writeCommand: '§a输入指令. (开头无需加上斜杠/) 你可以用 {PLAYER}来代表玩家名.'
+  writeCommandDelay: '§a请输入指令延迟，单位为刻。'
+  writeConfirmMessage: '§a请输入玩家确认加入任务的消息: (输入 "null" 则显示默认消息)'
+  writeDescriptionText: '任务阶段目标描述.'
+  writeEndMsg: '§a输入任务结束时发送的消息，输入“null” 则发送默认消息，输入“none”则不发送。你可以使用 "{rewards}"显示获得的奖励。'
+  writeEndSound: '§a输入在任务结束时播放给玩家的音效名，输入“null”则使用默认音效，输入“none”则不播放音效：'
+  writeHologramText: '§a输入全息文字. (输入 "none" 则不显示, 输入 "null" 显示默认文本) '
+  writeMessage: '§a输入发送给玩家的消息'
+  writeMobAmount: '输入要击杀的怪物数.'
+  writeMobName: '§a请输入要击杀的自定义怪物名称：'
+  writeNPCText: '输入玩家需要对NPC说的话. 输入 "help" 来获取帮助. (指令不需要输入 /)'
+  writeNpcName: '§a请输入NPC名称：'
+  writeNpcSkinName: '§a请输入NPC皮肤名：'
+  writeQuestDescription: '§a请输入显示在玩家任务菜单内的任务描述。'
+  writeQuestMaterial: '§a请输入任务物品材料名。'
+  writeQuestName: '§a输入任务名：'
+  writeQuestTimer: '§a输入重新开始任务的冷却时间 (单位为分钟)(输入 "null" 则使用默认值)'
+  writeRegionName: '输入任务阶段所需前往的区域名.'
+  writeStageText: '任务开始时发送的消息.'
+  writeStartMessage: '§a输入在开始任务时发送给玩家的消息，输入“null”则发送默认消息，输入“none”则不发送消息：'
+  writeXPGain: '输入玩家获得的经验点. 最终获得: §a{xp_amount}'
+scoreboard:
+  asyncEnd: '§ex'
+  name: '§6§l任务'
+  noLaunched: '§c你没有进行中的任务.'
+  noLaunchedDescription: '§c§o载入中'
+  noLaunchedName: '§c§l载入中'
+  stage:
+    breed: '§e饲养§6{mobs}'
+    bucket: '§e装满 §6{buckets}'
+    chat: '§e输入 §6{text}'
+    craft: '§e合成 §6{items}'
+    dealDamage:
+      any: '§c造成{damage_remaining}点伤害'
+      mobs: '§c对{target_mobs}造成{damage_remaining}点伤害'
+    die: '§c死亡'
+    eatDrink: '§e消耗§6{items}'
+    enchant: '§e附魔 §6{items}'
+    fish: '§e钓鱼 §6{items}'
+    interact: '§e点击在§6{x}的方块'
+    interactMaterial: '§e点击§6{block}§e方块'
+    items: '§e将物品带给§6{dialog_npc_name}§e:'
+    location: '§e前往位于 §6{target_world}的坐标§6{target_x}§e, §6{target_y}§e, §6{target_z}§e '
+    melt: '§e熔炼 §6{items}'
+    mine: '§e挖掘 {blocks}'
+    mobs: '§e击杀 §6{mobs}'
+    npc: '§e和NPC谈话 §6{dialog_npc_name}'
+    placeBlocks: '§e放置{blocks}'
+    playTimeFormatted: '§e游玩 §6{time_remaining_human}'
+    region: '§e找到区域 §6{region_id}'
+    tame: '§e驯服§6{mobs}'
+  textBetwteenBranch: '§e或'

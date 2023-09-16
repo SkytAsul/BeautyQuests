@@ -1,0 +1,222 @@
+---
+advancement:
+  finished: 완료됨
+  notStarted: 시작되지 않음
+description:
+  requirement:
+    class: '직업: {class_name}'
+    level: 레벨 {short_level}
+    skillLevel: 레벨 {short_level}/{skill_name}
+indication:
+  cancelQuest: '§7{quest_name} 퀘스트를 포기 하시겠습니까?'
+  removeQuest: '§7{quest} 퀘스트를 삭제 하시겠습니까?'
+inv:
+  addObject: '§a오브젝트 추가'
+  blocksList:
+    name: 블록 선택
+  cancel: '§c§l취소'
+  chooseQuest:
+    name: 어떤 퀘스트?
+  commandsList:
+    name: 명령어 목록
+  confirm:
+    name: 계속하시겠습니까?
+    'no': '§c아니오'
+    'yes': '§a예'
+  create:
+    NPCText: '§e엔피시 대화 편집'
+    bringBack: '§a아이템 가져오기'
+    cancelMessage: 발송 취소
+    craft: '§a아이템 만들기'
+    currentRadius: '§e현재 거리: §6{radius}'
+    editBlocksMine: '§e부술 블럭 설정'
+    editBucketAmount: '§e채울 양동이의 갯수 편집'
+    editBucketType: '§e채울 양동이 유형 편집'
+    editFishes: '§e잡을 물고기 편집'
+    editItem: '§e만들 아이템 편집'
+    editLocation: '§e좌표 편집'
+    editMessageType: '§e채팅 치기 편집'
+    editMobsKill: '§e죽일 몬스터 설정하기'
+    editRadius: '§e좌표로부터의 거리 편집'
+    findNPC: '§aNPC 찾아가기'
+    findRegion: '§a지역 찾아가기'
+    fish: '§a물고기 잡기'
+    hideClues: 파티클 및 홀로그램 숨기기
+    ignoreCase: 채팅치기 대소문자 구분 여부
+    interact: '§a블럭 상호작용'
+    killMobs: '§a사냥하기'
+    leftClick: 좌클릭만 감지
+    location: '§a특정 좌표로 이동하기'
+    mineBlocks: '§a블럭 부수기'
+    mobsKillFromAFar: 발사체로 죽일지 여부
+    preventBlockPlace: 자신이 설치한 블럭 가능 여부
+    selectBlockLocation: '§e블럭 위치 선택'
+    selectItems: '§e필수 항목 편집'
+    selectRegion: '§7지역 선택'
+    stageCreate: '§a새로운 퀘스트 만들기'
+    stageDown: 아래로 이동하기
+    stageRemove: '§c단계 삭제'
+    stageStartMsg: '§e퀘스트 시작 메시지 편집'
+    stageUp: 위로 이동하기
+    talkChat: '§a채팅치기'
+  details:
+    auto: 접속시 자동으로 수령
+    autoLore: 활성화시 서버에 처음 접속하는 사람에게 해당 퀘스트가 시작됩니다.
+    createQuestLore: 퀘스트 이름을 정해야합니다.
+    customDescriptionLore: 퀘스트 GUI 아래에 설명이 표시됩니다.
+    failOnDeath: 사망 시 실패하기
+    keepDatas: 플레이어 데이터 유지하기
+    questName: 퀘스트 이름 정하기
+    questNameLore: 퀘스트 편집을 끝내기 위해선 퀘스트 이름을 설정해야 합니다.
+    removeItemsReward: 인벤토리에서 아이템 제거
+    scoreboardItem: 스코어보드 활성화하기
+    setItemsRewards: 보상 설정하기
+    setRewardStopQuest: 퀘스트 종료
+    setXPRewards: 보상으로 받을 경험치 양 설정하기
+  itemComparisons:
+    itemLore: 아이템 설명
+    itemName: 아이템 이름
+  itemsSelect:
+    name: 아이템 수정
+  listBook:
+    questStages: 단계
+  listPlayerQuests:
+    name: '{player_name}의 퀘스트'
+  listQuests:
+    canRedo: '§3§o이 퀘스트를 다시 수행할 수 있습니다!'
+    finished: 완료한 퀘스트
+    inProgress: 진행중인 퀘스트
+    loreCancelClick: '§c퀘스트 포기하기'
+    loreDialogsHistoryClick: '§7퀘스트 내용 다시보기'
+    loreStart: '§a클릭해서 퀘스트 시작하기'
+    notStarted: 시작 가능한 퀘스트
+    timeToWaitRedo: '§3§o이 퀘스트는 {time_left} 뒤에 다시 시작할 수 있습니다.'
+    timesFinished: '§3퀘스트를 {times_finished} 번 완료함.'
+  mobSelect:
+    mythicMob: '§6미스틱 몹 선택'
+  mobs:
+    name: 몹 선택하기
+  npcCreate:
+    name: NPC 생성
+    setName: '§eNPC 이름 설정'
+    setSkin: '§eNPC 스킨 설정'
+    setType: '§eNPC 타입 설정'
+  poolsManage:
+    poolQuestsList: '§7{pool_quests_amount} §8퀘스트: §7{pool_quests}'
+  search: '§e§l검색'
+  stages:
+    branchesPage: '§d분기 페이지'
+    descriptionTextItem: '§e퀘스트 설정 설명'
+    endingItem: '§e최종 보상 설정'
+    laterPage: '§e이전 페이지'
+    name: 스테이지 작성
+    newBranch: '§e새 페이지로 이동'
+    nextPage: '§e다음 페이지'
+    previousBranch: '§e이전 지점'
+    regularPage: '§a정규 페이지'
+  validate: '§b§l저장하다.'
+misc:
+  amount: '§e갯수: {amount}'
+  and: 그리고
+  click:
+    left: 좌클릭
+    right: 우클릭
+    shift-left: Shift-좌클릭
+    shift-right: Shift-우클릭
+  comparison:
+    greaterOrEquals: '{number} 이상'
+  disabled: 비활성화
+  enabled: 활성화
+  format:
+    prefix: '§6<§e§l퀘스트§r§6> §r'
+  hologramText: 퀘스트 NPC
+  'no': '아니오'
+  or: 또는
+  stageType:
+    mobs: 사냥하기
+    npc: NPC 찾기
+    region: 지역 찾아가기
+  time:
+    days: '{days_amount}일'
+    hours: '{hours_amount}시간'
+    minutes: '{minutes_amount}분'
+    weeks: '{weeks_amount}주'
+  unknown: 알 수 없음
+  'yes': '예'
+msg:
+  command:
+    invalidCommand:
+      simple: '§c알수없는 커맨드입니다. §ehelp §c를 입력해주세요.'
+    itemChanged: '§a항목이 재편집 되었습니다. 변경사항은 재시작 후 적용될것입니다.'
+    itemRemoved: '§a홀로그램 항목이 제거 되었습니다.'
+    leaveAll: '§a{success}퀘스트를 건너뛰었습니다. §c에러 : {errors}'
+    removed: '§a{quest_name} 퀘스트가 성공적으로 제거되었습니다.'
+    resetPlayer:
+      player: '§6당신의 {quest_amount} 퀘스트(들)에 대한 모든 설명이 {deleter_name}에 의해 삭제되었습니다.'
+    setStage:
+      next: '§a단계를 건너뛰었습니다.'
+      set: '§a스테이지 {stage_id} 이 시작되었습니다.'
+  editor:
+    mythicmobs:
+      disabled: '§c미스틱몹이 비활성화됩니다..'
+      isntMythicMob: '§c이 미스틱 몹은 존재하지 않습니다.'
+      list: '§a모든 미스틱 몹 목록:'
+    textList:
+      help:
+        add: '§6add <message>: §e텍스트를 추가합니다.'
+        close: '§6close: §e추가된 텍스트의 유효성을 확인하십시오.'
+        header: '§6§lBeautyQuests — 리스트 편집 도움말'
+        list: '§6list: §e추가된 모든 텍스트를 확인합니다.'
+        remove: '§6remove <id>: §e텍스트를 삭제합니다.'
+  errorOccurred: '§c에러가 발생했습니다. 관리자에게 문의하세요! §4§lError code: {error}'
+  indexOutOfBounds: '§c {index}는 범위를 벗어난 값입니다! {min} 과 {max} 사이여야 합니다.'
+  number:
+    invalid: '§c{input}는 유효한 숫자가 아닙니다.'
+  pools:
+    allCompleted: '§7모든 퀘스트를 완료했습니다!'
+    maxQuests: '§c당신은 {pool_max_quests}개 이상의 퀘스트를 동시에 가질 수 없습니다...'
+    noAvailable: '§7완료 가능한 퀘스트가 존재하지 않습니다.'
+    noTime: '§c다른 퀘스트를 하기위해 {time_left}만큼 기다려야 합니다.'
+  quest:
+    alreadyStarted: '§c퀘스트를 이미 시작하셨습니다!'
+    cancelling: '§c퀘스트 생성 프로세스가 취소되었습니다.'
+    createCancelled: '§c다른 플러그인으로 인해 생성 또는 수정이 취소되었습니다.'
+    created: '§a축하합니다! {quest_branches} 를(을) 포함하는 퀘스트 §e{quest}§a를(을) 제작했습니다!'
+    editCancelling: '§c퀘스트 에디션의 프로세스가 취소되었습니다.'
+    edited: '§a축하합니다! §e{quest}§a 를(을) 포함한 퀘스트를 수정했습니다.'
+    finished:
+      base: '§a축하합니다! §e{quest_name}§a 퀘스트를 완료하셨습니다.'
+      obtain: '§a{rewards}를 얻었습니다!'
+    invalidID: '§cID가  {quest_id} 인 퀘스트가 존재하지 않습니다.'
+    invalidPoolID: '§c{pool_id}이(가) 존재하지 않습니다.'
+    started: '§r§e{quest_name}§o§6 §a퀘스트를 시작하셨습니다.'
+  questItem:
+    craft: '§c퀘스트용 아이템을 조합에 사용할 수 없습니다!'
+    drop: '§c퀘스트 아이템은 버릴 수 없습니다!'
+    eat: 퀘스트 아이템은 팔 수 없습니다.
+  quests:
+    checkpoint: '§7퀘스트 체크포인트에 도달 하였습니다!'
+    failed: '§c당신은 {quest_name} 퀘스트를 실패했습니다...'
+    maxLaunched: '§c당신은 {quests_max_amount}개 이상의 퀘스트를 동시에 가질 수 없습니다...'
+    updated: '§7퀘스트 §e{quest_name}§7가 업데이트 되었습니다.'
+  requirements:
+    level: '§c퀘스트를 받기 위한 레벨이 부족합니다! {long_level}!'
+    money: '§c{money}를 가져야합니다!'
+    quest: '§c먼저 §e{quest_name}§c 퀘스트를 완료 해야합니다.'
+  stageMobs:
+    listMobs: '§a당신은 {mobs}를 죽여야만 합니다.'
+  versionRequired: '버전 요구 사항: §l{version}'
+  writeCommand: '§a원하는 커맨드를 입력하세요: (커맨드는 "/"와 "{PLAYER}" 를 제외하고 써도 좋습니다. 자동으로 실행하는 사람을 대상으로 설정할 것입니다.)'
+  writeMobAmount: '§a죽일 몹의 수를 적어 주세요:'
+  writeNPCText: '§aNPC가 플레이어에게 말할 대사를 작성해주세요: (도움말을 보려면 "help"를 입력하세요.)'
+  writeNpcName: '§aNPC의 이름을 적어주세요:'
+  writeNpcSkinName: '§aNPC 스킨의 이름을 입력하세요:'
+  writeQuestName: '§a퀘스트의 이름을 입력하세요:'
+  writeRegionName: '§a해당 단계에 필요한 지역의 이름을 입력하세요:'
+  writeXPGain: '§a플레이어가 획득할 경험치량을 입력하세요: (최근 값: {xp_amount})'
+scoreboard:
+  name: '§6§l퀘스트'
+  stage:
+    mine: '&e블록 캐기 {blocks}'
+    mobs: '&e사냥하기 §6{mobs}'
+    region: '§6{region_id} §e지역 찾아가기'
