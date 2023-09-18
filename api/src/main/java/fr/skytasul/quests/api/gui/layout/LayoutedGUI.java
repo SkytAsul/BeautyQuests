@@ -30,7 +30,10 @@ public abstract class LayoutedGUI extends AbstractGui {
 
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
-		buttons.forEach((slot, button) -> button.place(inventory, slot));
+		buttons.forEach((slot, button) -> {
+			if (button.isValid())
+				button.place(inventory, slot);
+		});
 	}
 
 	@Override

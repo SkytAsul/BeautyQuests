@@ -14,43 +14,45 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 
 public abstract class QuestOptionString extends QuestOption<String> {
-	
+
 	public QuestOptionString(Class<? extends QuestOption<?>>... requiredQuestOptions) {
 		super(requiredQuestOptions);
 	}
-	
+
 	@Override
 	public Object save() {
 		return getValue();
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		setValue(config.getString(key));
 	}
-	
+
 	@Override
 	public String cloneValue(String value) {
 		return value;
 	}
-	
+
 	private String[] getLore() {
 		if (getItemDescription() == null) return new String[] { formatValue(getValue()) };
-		
+
 		String description = formatDescription(getItemDescription());
 		return new String[] { description, "", formatValue((isMultiline() && getValue() != null ? "{nl}" : "") + getValue()) };
 	}
-	
+
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(getItemMaterial(), getItemName(), getLore());
 	}
-	
+
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
 		sendIndication(event.getPlayer());
 		if (isMultiline()) {
-			List<String> splitText = getValue() == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(getValue().split("\\{nl\\}")));
+			List<String> splitText = getValue() == null || getValue().isEmpty()
+					? new ArrayList<>()
+					: new ArrayList<>(Arrays.asList(getValue().split("\\{nl\\}")));
 			new TextListEditor(event.getPlayer(), list -> {
 				setValue(list.stream().collect(Collectors.joining("{nl}")));
 				ItemUtils.lore(event.getClicked(), getLore());
@@ -67,19 +69,19 @@ public abstract class QuestOptionString extends QuestOption<String> {
 			}).passNullIntoEndConsumer().start();
 		}
 	}
-	
+
 	public abstract void sendIndication(Player p);
-	
+
 	public abstract XMaterial getItemMaterial();
-	
+
 	public abstract String getItemName();
-	
+
 	public String getItemDescription() {
 		return null;
 	}
-	
+
 	public boolean isMultiline() {
 		return false;
 	}
-	
+
 }

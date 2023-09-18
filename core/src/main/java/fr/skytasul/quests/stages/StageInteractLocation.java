@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import java.util.Objects;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,17 +32,17 @@ import fr.skytasul.quests.utils.types.BQLocation;
 public class StageInteractLocation extends AbstractStage implements Locatable.PreciseLocatable, Listener {
 
 	private final boolean left;
-	private final BQLocation lc;
+	private final @NotNull BQLocation lc;
 
 	private Located.LocatedBlock locatedBlock;
 
-	public StageInteractLocation(StageController controller, boolean leftClick, BQLocation location) {
+	public StageInteractLocation(@NotNull StageController controller, boolean leftClick, @NotNull BQLocation location) {
 		super(controller);
 		this.left = leftClick;
 		this.lc = new BQLocation(location.getWorldName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
 	}
 
-	public BQLocation getLocation() {
+	public @NotNull BQLocation getLocation() {
 		return lc;
 	}
 
@@ -75,7 +76,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
-			if (left) e.setCancelled(true);
+			e.setCancelled(true);
 			finishStage(p);
 		}
 	}
@@ -119,6 +120,13 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 			super.setupLine(line);
 
 			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), event -> setLeftClick(!leftClick));
+			line.setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), event -> {
+				Lang.CLICK_BLOCK.send(event.getPlayer());
+				new WaitBlockClick(event.getPlayer(), event::reopen, obj -> {
+					setLocation(obj);
+					event.reopen();
+				}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
+			});
 		}
 
 		public void setLeftClick(boolean leftClick) {
@@ -128,19 +136,9 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 			}
 		}
 
-		public void setLocation(Location location) {
-			if (this.location == null) {
-				getLine().setItem(7, ItemUtils.item(XMaterial.COMPASS, Lang.blockLocation.toString()), event -> {
-					Lang.CLICK_BLOCK.send(event.getPlayer());
-					new WaitBlockClick(event.getPlayer(), event::reopen, obj -> {
-						setLocation(obj);
-						event.reopen();
-					}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
-				});
-			}
-			getLine().refreshItem(7,
-					item -> ItemUtils.loreOptionValue(item, Lang.Location.format(getBQLocation())));
-			this.location = location;
+		public void setLocation(@NotNull Location location) {
+			this.location = Objects.requireNonNull(location);
+			getLine().refreshItemLoreOptionValue(7, Lang.Location.format(getBQLocation()));
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.gui;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +31,7 @@ public class GuiClickEvent {
 	public @NotNull Player getPlayer() {
 		return player;
 	}
-	
+
 	public @NotNull Gui getGui() {
 		return gui;
 	}
@@ -44,7 +45,7 @@ public class GuiClickEvent {
 	}
 
 	public boolean hasCursor() {
-		return cursor != null;
+		return cursor != null && cursor.getType() != Material.AIR;
 	}
 
 	public int getSlot() {

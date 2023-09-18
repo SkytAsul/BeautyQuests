@@ -19,11 +19,11 @@ import fr.skytasul.quests.gui.items.ItemsGUI;
 public class ItemReward extends AbstractReward {
 
 	public List<ItemStack> items;
-	
+
 	public ItemReward(){
 		this(null, new ArrayList<>());
 	}
-	
+
 	public ItemReward(String customDescription, List<ItemStack> items) {
 		super(customDescription);
 		this.items = items;
@@ -41,22 +41,26 @@ public class ItemReward extends AbstractReward {
 	public AbstractReward clone() {
 		return new ItemReward(getCustomDescription(), items);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
-		return getItemsSizeString();
+		return Lang.AmountItems.toString();
 	}
 
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		placeholders.register("items_amount", this::getItemsSizeString);
+		placeholders.register("items_amount", () -> Integer.toString(getItemsSize()));
+	}
+
+	private int getItemsSize() {
+		return items.stream().mapToInt(ItemStack::getAmount).sum();
 	}
 
 	private String getItemsSizeString() {
-		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
+		return Lang.AmountItems.quickFormat("items_amount", getItemsSize());
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -70,7 +74,7 @@ public class ItemReward extends AbstractReward {
 			event.reopenGUI();
 		}, items).open(event.getPlayer());
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);

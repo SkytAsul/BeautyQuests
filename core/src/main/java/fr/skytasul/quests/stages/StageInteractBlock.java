@@ -1,6 +1,7 @@
 package fr.skytasul.quests.stages;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Spliterator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -69,7 +70,7 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
-			if (left) e.setCancelled(true);
+			e.setCancelled(true);
 			finishStage(p);
 		}
 	}
@@ -116,6 +117,12 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 			super.setupLine(line);
 
 			line.setItem(6, ItemUtils.itemSwitch(Lang.leftClick.toString(), leftClick), event -> setLeftClick(!leftClick));
+			line.setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), event -> {
+				new SelectBlockGUI(false, (newBlock, __) -> {
+					setMaterial(newBlock);
+					event.reopen();
+				}).open(event.getPlayer());
+			});
 		}
 
 		public void setLeftClick(boolean leftClick) {
@@ -125,17 +132,9 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 			}
 		}
 
-		public void setMaterial(BQBlock block) {
-			if (this.block == null) {
-				getLine().setItem(7, ItemUtils.item(XMaterial.STICK, Lang.blockMaterial.toString()), event -> {
-					new SelectBlockGUI(false, (newBlock, __) -> {
-						setMaterial(newBlock);
-						event.reopen();
-					}).open(event.getPlayer());
-				});
-			}
-			getLine().refreshItem(7, item -> ItemUtils.loreOptionValue(item, block.getName()));
-			this.block = block;
+		public void setMaterial(@NotNull BQBlock block) {
+			this.block = Objects.requireNonNull(block);
+			getLine().refreshItemLoreOptionValue(7, block.getName());
 		}
 
 		@Override
