@@ -57,12 +57,5 @@ public class OptionStarterNPC extends QuestOption<BqNpc> {
 			event.reopen();
 		}, true).open(event.getPlayer());
 	}
-	
-	@Override
-	public void onDependenciesUpdated(OptionSet options) {
-		super.onDependenciesUpdated(options);
-		// ItemUtils.lore(item, getLore(options));
-		// TODO wtf ?
-	}
 
 }

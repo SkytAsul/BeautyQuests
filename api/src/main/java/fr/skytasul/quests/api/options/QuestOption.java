@@ -119,7 +119,7 @@ public abstract class QuestOption<T> implements Cloneable {
 		return true;
 	}
 
-	public void onDependenciesUpdated(@NotNull OptionSet options/* , @NotNull ItemStack item TODO wtf */) {}
+	public void onDependenciesUpdated(@NotNull OptionSet options) {}
 
 	public abstract @NotNull ItemStack getItemStack(@NotNull OptionSet options);
 
