@@ -1,12 +1,7 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -58,15 +53,16 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		return map;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public @UnknownNullability Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc,
-			boolean warnNull) {
+	public @NotNull Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc, boolean warnNull) {
 		Map<?, Integer> remaining = getData(acc, "remaining");
-		if (warnNull && remaining == null)
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString());
+		if (warnNull && remaining == null) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString(),
+					"datas" + acc.getNameAndID() + controller.toString(), 10);
+		}
 
 		if (remaining == null || remaining.isEmpty())
-			return (Map) remaining;
+			return Map.of();
 
 		Object object = remaining.keySet().iterator().next();
 		if (object instanceof Integer) {
@@ -95,11 +91,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 
 	@Override
 	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
-		Map<@NotNull UUID, @NotNull Integer> remainings = getPlayerRemainings(account, false);
-		if (remainings == null || remainings.isEmpty())
-			return (Map) remainings;
-
-		return remainings.entrySet().stream()
+		return getPlayerRemainings(account, true)
+				.entrySet().stream()
 				.map(entry -> Map.entry(getObject(entry.getKey()).orElse(null), entry.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
@@ -153,7 +146,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	/**
 	 * When called, this will test the player datas for the passed object. If found, the remaining
 	 * amount will be lowered. If no remaining items are found, the stage will complete.
-	 * 
+	 *
 	 * @param acc player account
 	 * @param p player
 	 * @param object object of the event
@@ -178,7 +171,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 						playerAmounts.put(countableObject.getUUID(), playerAmount - amount);
 				} else
 					continue;
-				
+
 				if (playerAmounts.isEmpty()) {
 					finishStage(p);
 					return true;
@@ -194,7 +187,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	protected boolean objectApplies(@NotNull T object, @UnknownNullability Object other) {
 		return object.equals(other);
 	}
-	
+
 	protected @NotNull T cloneObject(@NotNull T object) {
 		return object;
 	}
@@ -206,7 +199,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	protected abstract @NotNull Object serialize(@NotNull T object);
 
 	protected abstract @NotNull T deserialize(@NotNull Object object);
-	
+
 	@Override
 	protected void serialize(@NotNull ConfigurationSection section) {
 		ConfigurationSection objectsSection = section.createSection("objects");

@@ -190,7 +190,7 @@ public class StagesGUI extends AbstractGui {
 		}
 
 		for (EndingStage stage : branch.getEndingStages()) {
-			getLine(branch.getEndingStageId(stage.getStage())).setStageEdition(stage.getStage(), stage.getBranch());
+			getLine(15 + branch.getEndingStageId(stage.getStage())).setStageEdition(stage.getStage(), stage.getBranch());
 		}
 	}
 
