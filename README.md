@@ -52,11 +52,11 @@ In *pom.xml*, add this to the `repositories` section:
   <url>https://repo.codemc.org/repository/maven-public</url>
 </repository>
 ```
-And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `0.19.7`, `0.20-SNAPSHOT`...)
+And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `1.0-SNAPSHOT`)
 ```xml
 <dependency>
   <groupId>fr.skytasul</groupId>
-  <artifactId>beautyquests-core</artifactId>
+  <artifactId>beautyquests-api</artifactId>
   <version>VERSION</version>
   <scope>provided</scope>
 </dependency>
