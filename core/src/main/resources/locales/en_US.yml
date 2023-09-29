@@ -329,7 +329,7 @@ msg:
       removed: 'Removed the quest firework!'
   writeCommandDelay: '§aWrite the desired command delay, in ticks.'
 advancement:
-  finished: Finished
+  finished: Finished {times_finished} x
   notStarted: Not started
 inv:
   validate: §b§lValidate
