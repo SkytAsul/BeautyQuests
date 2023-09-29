@@ -27,20 +27,21 @@ import fr.skytasul.quests.utils.QuestUtils;
 public class PlayersManagerYAML extends AbstractPlayersManager {
 
 	private static final int ACCOUNTS_THRESHOLD = 1000;
-	
+
 	private final Cache<Integer, PlayerAccountImplementation> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
-	
+	private final Map<Integer, PlayerAccountImplementation> pendingSaveAccounts = new ConcurrentHashMap<>();
+
 	protected final Map<Integer, PlayerAccountImplementation> loadedAccounts = new HashMap<>();
 	private final Map<Integer, String> identifiersIndex = new ConcurrentHashMap<>();
-	
+
 	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
-	
+
 	private int lastAccountID = 0;
-	
+
 	public File getDirectory() {
 		return directory;
 	}
-	
+
 	@Override
 	public void load(AccountFetchRequest request) {
 		String identifier = super.getIdentifier(request.getOfflinePlayer());
@@ -94,7 +95,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			request.notLoaded();
 		}
 	}
-	
+
 	@Override
 	protected CompletableFuture<Void> removeAccount(PlayerAccountImplementation acc) {
 		loadedAccounts.remove(acc.index);
@@ -106,12 +107,12 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	public PlayerQuestDatasImplementation createPlayerQuestDatas(PlayerAccountImplementation acc, Quest quest) {
 		return new PlayerQuestDatasImplementation(acc, quest.getId());
 	}
-	
+
 	@Override
 	public PlayerPoolDatasImplementation createPlayerPoolDatas(PlayerAccountImplementation acc, QuestPool pool) {
 		return new PlayerPoolDatasImplementation(acc, pool.getId());
 	}
-	
+
 	@Override
 	public CompletableFuture<Integer> removeQuestDatas(Quest quest) {
 		return CompletableFuture.supplyAsync(() -> {
@@ -306,7 +307,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			}
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadedAccounts.size() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
-		
+
 		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 					"⚠ WARNING - " + identifiersIndex.size() + " players are registered on this server."
@@ -325,8 +326,9 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		// as the save can take a few seconds and MAY be done asynchronously,
 		// it is possible that the "loadedAccounts" map is being edited concurrently.
 		// therefore, we create a new list to avoid this issue.
-		ArrayList<PlayerAccountImplementation> accountToSave = new ArrayList<>(loadedAccounts.values());
-		for (PlayerAccountImplementation acc : accountToSave) {
+		Set<PlayerAccountImplementation> accountsToSave = new HashSet<>(loadedAccounts.values());
+		accountsToSave.addAll(pendingSaveAccounts.values());
+		for (PlayerAccountImplementation acc : accountsToSave) {
 			try {
 				savePlayerFile(acc);
 			}catch (Exception e) {
@@ -334,12 +336,14 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			}
 		}
 	}
-	
+
 	@Override
 	public void unloadAccount(PlayerAccountImplementation acc) {
 		loadedAccounts.remove(acc.index);
 		unloadedAccounts.put(acc.index, acc);
+		pendingSaveAccounts.put(acc.index, acc);
 		QuestUtils.runAsync(() -> {
+			pendingSaveAccounts.remove(acc.index);
 			try {
 				savePlayerFile(acc);
 			}catch (IOException e) {
