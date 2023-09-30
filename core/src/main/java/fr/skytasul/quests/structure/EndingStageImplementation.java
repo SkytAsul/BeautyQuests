@@ -13,7 +13,7 @@ public class EndingStageImplementation implements EndingStage {
 	public EndingStageImplementation(@NotNull StageControllerImplementation<?> stage,
 			@Nullable QuestBranchImplementation branch) {
 		this.stage = Objects.requireNonNull(stage);
-		this.branch = Objects.requireNonNull(branch);
+		this.branch = branch;
 	}
 
 	@Override
