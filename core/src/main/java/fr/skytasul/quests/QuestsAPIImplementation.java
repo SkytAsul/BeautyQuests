@@ -29,13 +29,12 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	static final QuestsAPIImplementation INSTANCE = new QuestsAPIImplementation();
 
-	private final QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements =
-			new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
-	private final QuestObjectsRegistry<AbstractReward, RewardCreator> rewards =
-			new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
 	private final StageTypeRegistry stages = new StageTypeRegistry();
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
 	private final List<MobStacker> mobStackers = new ArrayList<>();
+
+	private QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements;
+	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 
 	private AbstractHolograms<?> hologramsManager = null;
 	private BossBarManager bossBarManager = null;
@@ -46,6 +45,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private final Set<MessageProcessorInfo> processors = new TreeSet<>();
 
 	private QuestsAPIImplementation() {}
+
+	void setup() {
+		requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
+		rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
+	}
 
 	@Override
 	public @NotNull StageTypeRegistry getStages() {

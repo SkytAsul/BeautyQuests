@@ -142,10 +142,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 			checkPaper();
 
-			loadDefaultIntegrations();
-			integrations.testCompatibilities();
-			Bukkit.getPluginManager().registerEvents(integrations, this);
-
 			saveDefaultConfig();
 			NMS.isValid(); // to force initialization
 
@@ -158,6 +154,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			registerCommands();
 
 			try {
+				loadDefaultIntegrations();
+				integrations.testCompatibilities();
+				Bukkit.getPluginManager().registerEvents(integrations, this);
+
 				integrations.initializeCompatibilities();
 			}catch (Exception ex) {
 				logger.severe("An error occurred while initializing compatibilities. Consider restarting.", ex);
@@ -181,7 +181,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						launchSaveCycle();
 
 						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
-							QuestsPlugin.getPlugin().getLoggerExpanded().debug("Migrating from " + lastVersion + " to " + pluginVersion);
+							logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
 							int updated = quests.updateAll();
 							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
 							pools.updateAll();
@@ -260,7 +260,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void checkPaper() {
 		try {
 			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Paper detected.");
+			logger.debug("Paper detected.");
 		}catch (ClassNotFoundException ex) {
 			isPaper = false;
 			logger.warning("You are not running the Paper software.\n"
@@ -336,11 +336,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				.distinct()
 				.collect(Collectors.toMap(Function.identity(), __ -> 1));
 		}));
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Started bStats metrics");
+		logger.debug("Started bStats metrics");
 	}
 
 	private void launchUpdateChecker(String pluginVersion) {
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Starting Spigot updater");
+		logger.debug("Starting Spigot updater");
 		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
 			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
@@ -397,19 +397,20 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 			/*				static initialization				*/
 			if (init) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default stage types.");
+				getAPI().setup();
+				logger.debug("Initializing default stage types.");
 				DefaultQuestFeatures.registerStages();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default quest options.");
+				logger.debug("Initializing default quest options.");
 				DefaultQuestFeatures.registerQuestOptions();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default item comparisons.");
+				logger.debug("Initializing default item comparisons.");
 				DefaultQuestFeatures.registerItemComparisons();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default rewards.");
+				logger.debug("Initializing default rewards.");
 				DefaultQuestFeatures.registerRewards();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default requirements.");
+				logger.debug("Initializing default requirements.");
 				DefaultQuestFeatures.registerRequirements();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default stage options.");
+				logger.debug("Initializing default stage options.");
 				DefaultQuestFeatures.registerStageOptions();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initializing default miscellenaeous.");
+				logger.debug("Initializing default miscellenaeous.");
 				DefaultQuestFeatures.registerMisc();
 				DefaultQuestFeatures.registerMessageProcessors();
 				getServer().getPluginManager().registerEvents(guiManager = new GuiManagerImplementation(), this);
@@ -454,7 +455,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				throw new LoadingException("Couldn't create data file.", e);
 			}
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
+		logger.debug("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
 		data = YamlConfiguration.loadConfiguration(dataFile);
 		data.options().header("Do not edit ANYTHING here.");
 		data.options().copyHeader(true);
@@ -556,7 +557,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("Error when saving player datas.", ex);
 			}
 			data.save(dataFile);
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Saved datas (" + (((double) System.currentTimeMillis() - time) / 1000D) + "s)!");
+			logger.debug("Saved datas (" + (((double) System.currentTimeMillis() - time) / 1000D) + "s)!");
 		}
 
 		if (unload){

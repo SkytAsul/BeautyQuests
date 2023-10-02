@@ -320,6 +320,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			questConfirmGUI = config.getBoolean("questConfirmGUI");
 			sounds = config.getBoolean("sounds");
 			fireworks = config.getBoolean("fireworks");
+			if (config.contains("pageItem"))
+				pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
+			if (pageItem == null)
+				pageItem = XMaterial.ARROW;
 			if (config.isItemStack("item")) {
 				defaultQuestItem = config.getItemStack("item");
 			} else if (config.isString("item")) {
@@ -327,10 +331,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			} else
 				defaultQuestItem = XMaterial.BOOK.parseItem();
 			defaultQuestItem = ItemUtils.clearVisibleAttributes(defaultQuestItem);
-			if (config.contains("pageItem"))
-				pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-			if (pageItem == null)
-				pageItem = XMaterial.ARROW;
 			startParticleDistance = config.getInt("startParticleDistance");
 			requirementUpdateTime = config.getInt("requirementUpdateTime");
 			finishSound = loadSound("finishSound");

@@ -18,7 +18,7 @@ public class TeleportationReward extends AbstractReward {
 	public Location teleportation;
 
 	public TeleportationReward() {}
-	
+
 	public TeleportationReward(String customDescription, Location teleportation) {
 		super(customDescription);
 		this.teleportation = teleportation;
@@ -34,13 +34,14 @@ public class TeleportationReward extends AbstractReward {
 	public AbstractReward clone() {
 		return new TeleportationReward(getCustomDescription(), teleportation.clone());
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
-		loreBuilder.addDescriptionAsValue(Lang.Location.format(new BQLocation(teleportation)));
+		loreBuilder
+				.addDescriptionAsValue(Lang.Location.format(teleportation == null ? null : new BQLocation(teleportation)));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.MOVE_TELEPORT_POINT.send(event.getPlayer());
@@ -49,17 +50,17 @@ public class TeleportationReward extends AbstractReward {
 			event.reopenGUI();
 		}).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("tp", teleportation.serialize());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		teleportation = Location.deserialize(section.getConfigurationSection("tp").getValues(false));
 	}
-	
+
 }

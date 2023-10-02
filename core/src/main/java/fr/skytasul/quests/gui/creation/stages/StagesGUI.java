@@ -196,13 +196,14 @@ public class StagesGUI extends AbstractGui {
 
 	class Line {
 
-		StageLineImplementation lineObj;
 		int lineId;
+		final boolean ending;
+		StageLineImplementation lineObj;
 		StageCreationContextImplementation<?> context;
-		boolean ending;
 
 		Line(int lineId, boolean ending) {
 			this.lineId = lineId;
+			this.ending = ending;
 			this.lineObj = new StageLineImplementation(this);
 		}
 
@@ -290,7 +291,8 @@ public class StagesGUI extends AbstractGui {
 		}
 
 		void updateLineManageLore() {
-			lineObj.refreshItemLore(0, getLineManageLore(lineId));
+			if (isActive())
+				lineObj.refreshItemLore(0, getLineManageLore(lineId));
 		}
 
 		boolean isFirst() {
@@ -312,7 +314,7 @@ public class StagesGUI extends AbstractGui {
 				for (int i = lineId + 1; i < maxStages; i++) {
 					Line nextLine = getLine(i);
 					nextLine.exchangeLines(lastLine);
-					lastLine = nextLine;
+					// lastLine = nextLine;
 					if (!nextLine.isActive()) {
 						if (nextLine.lineObj.isEmpty())
 							nextLine.setCreationState();
