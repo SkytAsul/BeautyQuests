@@ -314,7 +314,6 @@ public class StagesGUI extends AbstractGui {
 				for (int i = lineId + 1; i < maxStages; i++) {
 					Line nextLine = getLine(i);
 					nextLine.exchangeLines(lastLine);
-					// lastLine = nextLine;
 					if (!nextLine.isActive()) {
 						if (nextLine.lineObj.isEmpty())
 							nextLine.setCreationState();
