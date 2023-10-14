@@ -52,8 +52,6 @@ fireworks: true
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
-# If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
-skip npc gui if only one quest: true
 # Default item shown for a quest in the menus
 item: BOOK
 # Page item material
@@ -89,6 +87,14 @@ dialogs:
   defaultPlayerSound: 'none'
   # Default dialog sound when NPCs are speaking
   defaultNPCSound: 'none'
+
+# - Quest selection -
+# Options related to the behavior when a player click on an NPC which has associated quests
+questsSelection:
+  # If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
+  skip gui if only one quest: true
+  # Hide quests from the GUI if the requirements are not met
+  hide quests without requirement: true
 
 # - Quests Menu -
 # Options related to the "/quests" menu

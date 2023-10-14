@@ -67,6 +67,8 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	public @NotNull CompletableFuture<Boolean> attemptStart(@NotNull Player player);
 
+	public void doNpcClick(@NotNull Player player);
+
 	public default void start(@NotNull Player player) {
 		start(player, false);
 	}

@@ -32,7 +32,6 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
-import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayersManagerDB;
@@ -73,11 +72,11 @@ public class CommandsAdmin implements OrphanCommand {
 			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
-					ChooseQuestGUI.choose(player, npc.getQuests(), clickedQuest -> {
+					QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(clickedQuest -> {
 						QuestCreationSession session = new QuestCreationSession(player);
 						session.setQuestEdited((QuestImplementation) quest);
 						session.openStagesGUI(player);
-					}, null, false);
+					}, null, npc.getQuests()).open(player);
 				}else {
 					Lang.NPC_NOT_QUEST.send(player);
 				}
@@ -97,9 +96,9 @@ public class CommandsAdmin implements OrphanCommand {
 			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
-					ChooseQuestGUI.choose(actor.getAsPlayer(), npc.getQuests(), clickedQuest -> {
+					QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(clickedQuest -> {
 						doRemove(actor, clickedQuest);
-					}, null, false);
+					}, null, npc.getQuests()).open(actor.getAsPlayer());
 				}else {
 					Lang.NPC_NOT_QUEST.send(actor.getAsPlayer());
 				}

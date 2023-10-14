@@ -53,6 +53,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private final FileConfiguration config;
 	private QuestsConfig quests;
 	private DialogsConfig dialogs;
+	private QuestsSelectionConfig selection;
 	private QuestsMenuConfig menu;
 	private StageDescriptionConfig stageDescription;
 	private QuestDescriptionConfig questDescription;
@@ -62,6 +63,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 		quests = new QuestsConfig();
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
+		selection = new QuestsSelectionConfig(config.getConfigurationSection("questsSelection"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
 		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stage description"));
 		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
@@ -70,6 +72,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	boolean update() {
 		boolean result = false;
 		result |= dialogs.update();
+		result |= selection.update();
 		result |= menu.update();
 		result |= stageDescription.update();
 		return result;
@@ -84,6 +87,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			initializeTranslations();
 		quests.init();
 		dialogs.init();
+		selection.init();
 		menu.init();
 		stageDescription.init();
 		questDescription.init();
@@ -204,6 +208,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 
 	@Override
+	public @NotNull QuestsSelectionConfig getQuestsSelectionConfig() {
+		return selection;
+	}
+
+	@Override
 	public @NotNull QuestsMenuConfig getQuestsMenuConfig() {
 		return menu;
 	}
@@ -307,7 +316,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean stageStart = true;
 		private boolean questConfirmGUI = false;
 		private Collection<NpcClickType> npcClicks = Arrays.asList(NpcClickType.RIGHT, NpcClickType.SHIFT_RIGHT);
-		private boolean skipNpcGuiIfOnlyOneQuest = true;
 		private boolean requirementReasonOnMultipleQuests = true;
 		private boolean stageEndRewardsMessage = true;
 
@@ -351,7 +359,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
-			skipNpcGuiIfOnlyOneQuest = config.getBoolean("skip npc gui if only one quest");
 			requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 			stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		}
@@ -409,11 +416,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public Collection<NpcClickType> getNpcClicks() {
 			return npcClicks;
-		}
-
-		@Override
-		public boolean skipNpcGuiIfOnlyOneQuest() {
-			return skipNpcGuiIfOnlyOneQuest;
 		}
 
 		@Override
@@ -540,6 +542,43 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public String getDefaultNPCSound() {
 			return defaultNPCSound;
+		}
+
+	}
+
+	public class QuestsSelectionConfig implements QuestsConfiguration.QuestsSelection {
+
+		private boolean skipGuiIfOnlyOneQuest = true;
+		private boolean hideNoRequirements = true;
+
+		private final ConfigurationSection config;
+
+		private QuestsSelectionConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config.getParent(), "skip npc gui if only one quest", config,
+						"skip gui if only one quest");
+			}
+			return result;
+		}
+
+		private void init() {
+			skipGuiIfOnlyOneQuest = config.getBoolean("skip gui if only one quest");
+			hideNoRequirements = config.getBoolean("hide quests without requirement");
+		}
+
+		@Override
+		public boolean skipGuiIfOnlyOneQuest() {
+			return skipGuiIfOnlyOneQuest;
+		}
+
+		@Override
+		public boolean hideNoRequirements() {
+			return hideNoRequirements;
 		}
 
 	}

@@ -1,9 +1,6 @@
 package fr.skytasul.quests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,18 +25,14 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
-import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
-import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
@@ -101,18 +94,20 @@ public class QuestsListener implements Listener{
 		if (!launcheable.isEmpty()) {
 			for (QuestImplementation quest : launcheable) {
 				if (quest.isInDialog(p)) {
-					quest.clickNPC(p);
+					quest.doNpcClick(p);
 					return;
 				}
 			}
-			ChooseQuestGUI.choose(p, quests, quest -> {
-				((QuestImplementation) quest).clickNPC(p);
-			}, null, true, gui -> {
-				gui.setValidate(__ -> {
-					new PlayerListGUI(acc).open(p);
-				}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
-						QuestOption.formatDescription(Lang.questMenuLore.toString())));
-			});
+
+			Collection<? extends Quest> guiQuests =
+					QuestsConfiguration.getConfig().getQuestsSelectionConfig().hideNoRequirements() ? launcheable : quests;
+			if (guiQuests.size() == 1
+					&& QuestsConfiguration.getConfig().getQuestsSelectionConfig().skipGuiIfOnlyOneQuest()) {
+				guiQuests.iterator().next().doNpcClick(p);
+			} else if (!guiQuests.isEmpty()) {
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestSelection(p, (Collection) guiQuests)
+						.open(p);
+			}
 		}else if (!startablePools.isEmpty()) {
 			QuestPool pool = startablePools.iterator().next();
 			QuestsPlugin.getPlugin().getLoggerExpanded()

@@ -338,7 +338,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return hasOption(OptionStartDialog.class) && getOption(OptionStartDialog.class).getDialogRunner().isPlayerInDialog(p);
 	}
 
-	public void clickNPC(@NotNull Player p) {
+	@Override
+	public void doNpcClick(@NotNull Player p) {
 		if (hasOption(OptionStartDialog.class)) {
 			getOption(OptionStartDialog.class).getDialogRunner().onClick(p);
 		} else

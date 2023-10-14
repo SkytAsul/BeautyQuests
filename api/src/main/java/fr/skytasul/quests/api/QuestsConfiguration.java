@@ -24,6 +24,9 @@ public interface QuestsConfiguration {
 	Dialogs getDialogsConfig();
 
 	@NotNull
+	QuestsSelection getQuestsSelectionConfig();
+
+	@NotNull
 	QuestsMenu getQuestsMenuConfig();
 
 	@NotNull
@@ -55,8 +58,6 @@ public interface QuestsConfiguration {
 		boolean fireworks();
 
 		Collection<NpcClickType> getNpcClicks();
-
-		boolean skipNpcGuiIfOnlyOneQuest();
 
 		ItemStack getDefaultQuestItem();
 
@@ -93,6 +94,14 @@ public interface QuestsConfiguration {
 		String getDefaultPlayerSound();
 
 		String getDefaultNPCSound();
+
+	}
+
+	interface QuestsSelection {
+
+		boolean skipGuiIfOnlyOneQuest();
+
+		boolean hideNoRequirements();
 
 	}
 
