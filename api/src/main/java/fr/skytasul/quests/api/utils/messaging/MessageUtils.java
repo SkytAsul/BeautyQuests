@@ -24,7 +24,7 @@ public class MessageUtils {
 
 	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
 			@Nullable PlaceholderRegistry placeholders) {
-		sendRawMessage(sender, message, placeholders, PlaceholdersContext.of(sender, false, type));
+		sendRawMessage(sender, message, placeholders, PlaceholdersContext.of(sender, true, type));
 	}
 
 	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,
@@ -82,14 +82,23 @@ public class MessageUtils {
 				if (output == null)
 					output = new StringBuilder(msg.length());
 
-				String key = matcher.group(1);
-				String replacement = placeholders.resolve(key, context);
 				String substring = msg.substring(lastAppend, matcher.start());
-				colors = ChatColorUtils.getLastColors(colors, substring);
 				output.append(substring);
-				if (replacement != null)
-					output.append(RESET_PATTERN.matcher(replacement).replaceAll("§r" + colors));
-				lastAppend = matcher.end();
+				colors = ChatColorUtils.getLastColors(colors, substring);
+
+				if (matcher.start() != 0 && msg.charAt(matcher.start() - 1) == '\\') {
+					// means the placeholder has been escaped => we delete the \ character and we continue
+					// (the unchanged placeholder will get pasted next time the parser encounters
+					// another placeholder, or at the end)
+					output.deleteCharAt(output.length() - 1);
+				} else {
+					String key = matcher.group(1);
+					String replacement = placeholders.resolve(key, context);
+					if (replacement != null)
+						output.append(RESET_PATTERN.matcher(replacement).replaceAll("§r" + colors));
+
+					lastAppend = matcher.end();
+				}
 			}
 
 			if (output != null) {

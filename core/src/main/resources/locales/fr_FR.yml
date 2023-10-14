@@ -35,10 +35,10 @@ msg:
   writeXPGain: '§aÉcrivez le nombre de points d’expérience que le joueur va remporter. (Ancien gain : {xp_amount})'
   writeMobAmount: '§aEcrivez le nombre de mobs à tuer :'
   writeMobName: '§aÉcrivez le nom personnalisé du mob à tuer :'
-  writeChatMessage: '§aÉcrivez le message requis (rajoutez "{SLASH}" au début pour en faire une commande.)'
+  writeChatMessage: '§aÉcrivez le message requis (rajoutez "\{SLASH}" au début pour en faire une commande.)'
   writeMessage: '§aÉcrivez le message qui sera envoyé au joueur'
   writeStartMessage: '§aÉcrivez le message qui sera envoyé au début de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas :'
-  writeEndMsg: '§aÉcrivez le message qui sera envoyé à la fin de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas. Vous pouvez utiliser "{rewards}" qui sera remplacé par les récompenses obtenues.'
+  writeEndMsg: '§aÉcrivez le message qui sera envoyé à la fin de la quête, "null" si vous voulez la valeur par défaut ou "none" si vous n''en voulez pas. Vous pouvez utiliser "\{rewards}" qui sera remplacé par les récompenses obtenues.'
   writeEndSound: '§aÉcrivez le nom du son qui sera joué au joueur à la fin de la quête, "null" si vous voulez le son par défaut ou "none" si vous n''en voulez pas :'
   writeDescriptionText: '§aEcrivez le texte qui décrira le but de l''étape :'
   writeStageText: '§aEcrivez le texte qui sera transmis au joueur au début de l''étape :'
@@ -46,7 +46,7 @@ msg:
   writeNpcName: '§aEcrivez le nom du NPC :'
   writeNpcSkinName: '§aEcrivez le nom du skin du NPC :'
   writeQuestName: '§aEcrivez le nom de votre quête :'
-  writeCommand: '§aÉcrivez la commande : (n''écrivez pas le "/" ; le placeholder "{PLAYER}" est pris en charge. Il sera remplacée par le nom du joueur exécuteur.)'
+  writeCommand: '§aÉcrivez la commande : (n''écrivez pas le "/" ; le placeholder "\{player}" est pris en charge. Il sera remplacée par le nom du joueur exécuteur.)'
   writeHologramText: '§aEcrivez le texte de l''hologramme. (tapez "none" si vous ne voulez pas d''hologramme, et "null" si vous voulez le texte par défaut.)'
   writeQuestTimer: '§aRenseignez le temps nécessaire (en minutes) avant de pouvoir refaire la quête. (Tapez "null" si vous voulez le temps par défaut)'
   writeConfirmMessage: '§aÉcrivez le message de confirmation affiché lorsqu''un joueur est sur le point de démarrer la quête : (Tapez "null" si vous voulez le message par défaut).'
@@ -295,7 +295,7 @@ msg:
       removed: 'Feu d''artifice de quête supprimé !'
   writeCommandDelay: '§aIndiquez le délai de commande désiré, en ticks.'
 advancement:
-  finished: Terminée
+  finished: Terminé {times_finished} x
   notStarted: Pas commencée
 inv:
   validate: '§b§lValider'
@@ -345,7 +345,7 @@ inv:
     editMessageType: '§eModifier le message à écrire'
     cancelMessage: Annuler l'envoi
     ignoreCase: Ignorer la casse du message
-    replacePlaceholders: Remplacer {PLAYER} et les placeholders de PAPI
+    replacePlaceholders: 'Remplacer \{PLAYER} et les placeholders de PAPI'
     selectItems: '§eChoisir les items nécessaires'
     selectItemsMessage: '§eModifier le message de demande'
     selectItemsComparisons: '§eSélectionnez les comparaisons d''items (AVANCÉ)'

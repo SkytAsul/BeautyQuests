@@ -38,13 +38,13 @@ msg:
     value: {xp_amount})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
   writeMobName: '§aWrite the custom name of the mob to kill:'
-  writeChatMessage: '§aWrite required message: (Add "{SLASH}" to the beginning if
+  writeChatMessage: '§aWrite required message: (Add "\{SLASH}" to the beginning if
     you want a command.)'
   writeMessage: '§aWrite the message that will be sent to the player'
   writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
     "null" if you want the default one or "none" if you want none:'
   writeEndMsg: '§aWrite the message that will be sent at the end of the quest,
-    "null" if you want the default one or "none" if you want none. You can use "{rewards}" which
+    "null" if you want the default one or "none" if you want none. You can use "\{rewards}" which
     will be replaced with the rewards obtained.'
   writeEndSound: '§aWrite the sound name that will be played to the player at the end of
     the quest, "null" if you want the default one or "none" if you want none:'
@@ -56,7 +56,7 @@ msg:
   writeNpcSkinName: '§aWrite the name of the skin of the NPC:'
   writeQuestName: '§aWrite the name of your quest:'
   writeCommand: '§aWrite the wanted command: (The command is without the "/" and the
-    placeholder "{PLAYER}" is supported. It will be replaced with the name of the
+    placeholder "\{player}" is supported. It will be replaced with the name of the
     executor.)'
   writeHologramText: '§aWrite text of the hologram: (Write "none" if you don''t want
     a hologram and "null" if you want the default text.)'
@@ -379,7 +379,7 @@ inv:
     editMessageType: §eEdit message to write
     cancelMessage: Cancel sending
     ignoreCase: Ignore the case of the message
-    replacePlaceholders: Replace {PLAYER} and placeholders from PAPI
+    replacePlaceholders: 'Replaces \{PLAYER} and placeholders from PAPI'
     selectItems: §eEdit required items
     selectItemsMessage: §eEdit asking message
     selectItemsComparisons: §eSelect items comparisons (ADVANCED)
