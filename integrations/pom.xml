@@ -52,7 +52,7 @@
 		</repository>
 		<repository>
 			<id>citizens</id>
-			<url>http://repo.citizensnpcs.co/</url> <!-- really slow repo -->
+			<url>https://maven.citizensnpcs.co/repo</url> <!-- really slow repo -->
 			<releases>
 				<updatePolicy>interval:10080</updatePolicy>
 			</releases>
