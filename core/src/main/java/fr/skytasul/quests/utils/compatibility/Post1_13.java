@@ -1,12 +1,7 @@
 package fr.skytasul.quests.utils.compatibility;
 
 import java.util.Set;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.Tag;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import fr.skytasul.quests.api.blocks.BQBlock;
@@ -38,10 +33,6 @@ public class Post1_13 {
 	public static class BQBlockData extends BQBlock {
 		
 		private final BlockData data;
-		
-		public BQBlockData(BQBlockOptions options, String stringData) {
-			this(options, Bukkit.createBlockData(stringData));
-		}
 		
 		public BQBlockData(BQBlockOptions options, BlockData data) {
 			super(options);

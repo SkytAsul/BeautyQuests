@@ -165,7 +165,8 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 		event.close();
 		BQBlock block;
 		if (blockData != null) {
-			block = BeautyQuests.getInstance().getAPI().getBlocksManager().createBlockdata(blockData, customName);
+			block = BeautyQuests.getInstance().getAPI().getBlocksManager()
+					.createBlockdata(Bukkit.createBlockData(type.parseMaterial(), blockData), customName);
 		} else if (tag != null) {
 			block = BeautyQuests.getInstance().getAPI().getBlocksManager().createTag(tag, customName);
 		} else {

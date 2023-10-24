@@ -1,7 +1,9 @@
 package fr.skytasul.quests.blocks;
 
 import java.util.*;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.BiMap;
@@ -35,7 +37,7 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 		registerBlockType("", materialType);
 
 		if (MinecraftVersion.MAJOR >= 13) {
-			blockdataType = (string, options) -> new Post1_13.BQBlockData(options, string);
+			blockdataType = (string, options) -> new Post1_13.BQBlockData(options, Bukkit.createBlockData(string));
 			registerBlockType("blockdata", blockdataType);
 
 			tagType = (string, options) -> new Post1_13.BQBlockTag(options, string);
@@ -155,7 +157,7 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 		return new BQBlockMaterial(new BQBlockOptions(materialType, customName), material);
 	}
 
-	public @NotNull BQBlock createBlockdata(@NotNull String blockData, @Nullable String customName) {
+	public @NotNull BQBlock createBlockdata(@NotNull BlockData blockData, @Nullable String customName) {
 		return new Post1_13.BQBlockData(new BQBlockOptions(blockdataType, customName), blockData);
 	}
 
