@@ -19,16 +19,16 @@ public interface BqInternalNpcFactory {
 	boolean isNPC(@NotNull Entity entity);
 
 	@NotNull
-	Collection<@NotNull Integer> getIDs();
+	Collection<@NotNull String> getIDs();
 
 	@Nullable
-	BqInternalNpc fetchNPC(int id);
+	BqInternalNpc fetchNPC(String id);
 
-	default void npcClicked(@Nullable Cancellable event, int npcID, @NotNull Player p, @NotNull NpcClickType click) {
+	default void npcClicked(@Nullable Cancellable event, String npcID, @NotNull Player p, @NotNull NpcClickType click) {
 		QuestsPlugin.getPlugin().getNpcManager().npcClicked(this, event, npcID, p, click);
 	}
 
-	default void npcRemoved(int id) {
+	default void npcRemoved(String id) {
 		QuestsPlugin.getPlugin().getNpcManager().npcRemoved(this, id);
 	}
 

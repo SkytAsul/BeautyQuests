@@ -19,10 +19,7 @@ import fr.skytasul.quests.integrations.maps.BQDynmap;
 import fr.skytasul.quests.integrations.mcmmo.McCombatLevelRequirement;
 import fr.skytasul.quests.integrations.mcmmo.McMMOSkillRequirement;
 import fr.skytasul.quests.integrations.mobs.*;
-import fr.skytasul.quests.integrations.npcs.BQCitizens;
-import fr.skytasul.quests.integrations.npcs.BQSentinel;
-import fr.skytasul.quests.integrations.npcs.BQServerNPCs;
-import fr.skytasul.quests.integrations.npcs.BQZNPCsPlus;
+import fr.skytasul.quests.integrations.npcs.*;
 import fr.skytasul.quests.integrations.placeholders.PapiMessageProcessor;
 import fr.skytasul.quests.integrations.placeholders.PlaceholderRequirement;
 import fr.skytasul.quests.integrations.placeholders.QuestsPlaceholders;
@@ -56,8 +53,7 @@ public class IntegrationsLoader {
 		manager.addDependency(new BQDependency("ServersNPC",
 				() -> QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs()), null, this::isZnpcsVersionValid));
 
-		manager.addDependency(
-				new BQDependency("ZNPCsPlus", () -> QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus())));
+		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
 
 		manager.addDependency(new BQDependency("Citizens", () -> {
 			QuestsAPI.getAPI().addNpcFactory("citizens", new BQCitizens());
@@ -215,6 +211,18 @@ public class IntegrationsLoader {
 		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ("
 				+ plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
 		return false;
+	}
+
+	private void registerZnpcsPlus() {
+		try {
+			Class.forName("lol.pyr.znpcsplus.api.NpcApiProvider");
+			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus());
+		} catch (ClassNotFoundException ex) {
+			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlusOld()); // TODO remove, old version of znpcs+
+
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Your version of ZNPCsPlus will soon not be supported by BeautyQuests.");
+		}
 	}
 
 	public IntegrationsConfiguration getConfig() {

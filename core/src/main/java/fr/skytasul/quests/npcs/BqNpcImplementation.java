@@ -1,17 +1,7 @@
 package fr.skytasul.quests.npcs;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -47,15 +37,15 @@ import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
-	
+
 	private Map<Quest, List<Player>> quests = new TreeMap<>();
 	private Set<QuestPool> pools = new TreeSet<>();
-	
+
 	private List<Entry<Player, Object>> hiddenTickets = new ArrayList<>();
 	private Map<Object, Predicate<Player>> startable = new HashMap<>();
-	
+
 	private BukkitTask launcheableTask;
-	
+
 	/* Holograms */
 	private boolean debug = false;
 	private BukkitTask hologramsTask;
@@ -92,7 +82,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		holograms = hologramText.enabled || hologramLaunch.enabled || hologramLaunchNo.enabled || hologramPool.enabled;
 		launcheableTask = startLauncheableTasks();
 	}
-	
+
 	public @NotNull WrappedInternalNpc getWrappedNpc() {
 		return wrappedNpc;
 	}
@@ -108,7 +98,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	}
 
 	@Override
-	public @NotNull Entity getEntity() {
+	public @Nullable Entity getEntity() {
 		return getNpc().getEntity();
 	}
 
@@ -130,21 +120,21 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	private BukkitTask startLauncheableTasks() {
 		return new BukkitRunnable() {
 			private int timer = 0;
-			
+
 			@Override
 			public void run() {
 				if (!getNpc().isSpawned())
 					return;
 				if (!(getEntity() instanceof LivingEntity)) return;
 				LivingEntity en = (LivingEntity) getEntity();
-				
+
 				if (timer-- == 0) {
 					timer = QuestsConfiguration.getConfig().getQuestsConfig().requirementUpdateTime();
 					return;
 				}
-				
+
 				quests.values().forEach(List::clear);
-				
+
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
 				for (Player p : lc.getWorld().getPlayers()) {
@@ -161,12 +151,12 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 						}
 					}
 				}
-				
+
 				if (QuestsConfigurationImplementation.getConfiguration().showStartParticles()) {
 					quests.forEach((quest, players) -> QuestsConfigurationImplementation.getConfiguration()
 							.getParticleStart().send(en, players));
 				}
-				
+
 				if (hologramPool.canAppear) {
 					for (Player p : playersInRadius) {
 						boolean visible = false;
@@ -213,11 +203,11 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 					hologramLaunch.setVisible(launcheable);
 					hologramLaunchNo.setVisible(unlauncheable);
 				}
-				
+
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
 	}
-	
+
 	private BukkitTask startHologramsTask() {
 		return new BukkitRunnable() {
 			@Override
@@ -230,7 +220,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 					return;
 				}
 				hologramsRemoved = false;
-				
+
 				if (hologramText.canAppear && hologramText.visible) hologramText.refresh(en);
 				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
@@ -238,24 +228,24 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			}
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 1L);
 	}
-	
+
 	@Override
 	public Set<Quest> getQuests() {
 		return quests.keySet();
 	}
-	
+
 	public Hologram getHologramText() {
 		return hologramText;
 	}
-	
+
 	public Hologram getHologramLaunch() {
 		return hologramLaunch;
 	}
-	
+
 	public Hologram getHologramLaunchNo() {
 		return hologramLaunchNo;
 	}
-	
+
 	public void addQuest(Quest quest) {
 		if (quests.containsKey(quest)) return;
 		quests.put(quest, new ArrayList<>());
@@ -266,7 +256,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		addStartablePredicate(p -> quest.canStart(p, false), quest);
 		updatedObjects();
 	}
-	
+
 	public boolean removeQuest(Quest quest) {
 		boolean b = quests.remove(quest) == null;
 		removeStartablePredicate(quest);
@@ -277,25 +267,25 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}
 		return b;
 	}
-	
+
 	@Override
 	public boolean hasQuestStarted(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		return quests.keySet().stream().anyMatch(quest -> quest.hasStarted(acc));
 	}
-	
+
 	@Override
 	public Set<QuestPool> getPools() {
 		return pools;
 	}
-	
+
 	public void addPool(QuestPool pool) {
 		if (!pools.add(pool)) return;
 		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
 		addStartablePredicate(pool::canGive, pool);
 		updatedObjects();
 	}
-	
+
 	public boolean removePool(QuestPool pool) {
 		boolean b = pools.remove(pool);
 		removeStartablePredicate(pool);
@@ -303,22 +293,22 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		if (pools.isEmpty()) hologramPool.delete();
 		return b;
 	}
-	
+
 	@Override
 	public void addStartablePredicate(Predicate<Player> predicate, Object holder) {
 		startable.put(holder, predicate);
 	}
-	
+
 	@Override
 	public void removeStartablePredicate(Object holder) {
 		startable.remove(holder);
 	}
-	
+
 	@Override
 	public void hideForPlayer(Player p, Object holder) {
 		hiddenTickets.add(new AbstractMap.SimpleEntry<>(p, holder));
 	}
-	
+
 	@Override
 	public void removeHiddenForPlayer(Player p, Object holder) {
 		for (Iterator<Entry<Player, Object>> iterator = hiddenTickets.iterator(); iterator.hasNext();) {
@@ -329,12 +319,12 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean canGiveSomething(Player p) {
 		return startable.values().stream().anyMatch(predicate -> predicate.test(p));
 	}
-	
+
 	private void removeHolograms(boolean cancelRefresh) {
 		hologramText.delete();
 		hologramLaunch.delete();
@@ -346,11 +336,11 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			hologramsTask = null;
 		}
 	}
-	
+
 	private boolean isEmpty() {
 		return quests.isEmpty() && pools.isEmpty();
 	}
-	
+
 	private void updatedObjects() {
 		if (isEmpty()) {
 			removeHolograms(true);
@@ -358,7 +348,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			hologramsTask = startHologramsTask();
 		}
 	}
-	
+
 	public void unload() {
 		removeHolograms(true);
 		if (launcheableTask != null) {
@@ -366,7 +356,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			launcheableTask = null;
 		}
 	}
-	
+
 	public void delete(String cause) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removing NPC Starter " + getId());
 		for (Quest qu : quests.keySet()) {
@@ -382,13 +372,13 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}
 		unload();
 	}
-	
+
 	public void toggleDebug() {
 		if (debug)
 			debug = false;
 		else debug = true;
 	}
-	
+
 	@Override
 	public String toString() {
 		String npcInfo = "NPC " + getId() + ", " + quests.size() + " quests, " + pools.size() + " pools";
@@ -406,28 +396,28 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}
 		return npcInfo + " " + hologramsInfo;
 	}
-	
+
 	public class Hologram {
 		final boolean enabled;
 		boolean visible;
 		boolean canAppear;
 		AbstractHolograms<?>.BQHologram hologram;
-		
+
 		String text;
 		ItemStack item;
-		
+
 		public Hologram(boolean visible, boolean enabled, String text) {
 			this.visible = visible;
 			this.enabled = enabled;
 			setText(text);
 		}
-		
+
 		public Hologram(boolean visible, boolean enabled, ItemStack item) {
 			this.visible = visible;
 			this.enabled = enabled;
 			setItem(item);
 		}
-		
+
 		public void refresh(LivingEntity en) {
 			Location lc = QuestUtils.upLocationForEntity(en, getYAdd());
 			if (debug) System.out.println("refreshing " + toString() + " (hologram null: " + (hologram == null) + ")");
@@ -437,26 +427,26 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				hologram.teleport(lc);
 			}
 		}
-		
+
 		public double getYAdd() {
 			return item == null ? 0 : 1;
 		}
-		
+
 		public void setVisible(List<Player> players) {
 			if (hologram != null) hologram.setPlayersVisible(players);
 		}
-		
+
 		public void setVisible(Player p, boolean visibility) {
 			if (hologram != null) hologram.setPlayerVisibility(p, visibility);
 		}
-		
+
 		public void setText(String text) {
 			if (Objects.equals(text, this.text)) return;
 			this.text = text;
 			canAppear = enabled && !StringUtils.isEmpty(text) && !"none".equals(text);
 			delete(); // delete to regenerate with new text
 		}
-		
+
 		public void setItem(ItemStack item) {
 			if (Objects.equals(item, this.item)) return;
 			this.item = item;
@@ -466,21 +456,21 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				this.text = item.getItemMeta().getDisplayName();
 			delete(); // delete to regenerate with new item
 		}
-		
+
 		public void create(Location lc) {
 			if (hologram != null) return;
 			hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(lc, visible);
 			if (text != null) hologram.appendTextLine(text);
 			if (item != null) hologram.appendItem(item);
 		}
-		
+
 		public void delete() {
 			if (debug) System.out.println("deleting " + toString());
 			if (hologram == null) return;
 			hologram.delete();
 			hologram = null;
 		}
-		
+
 		@Override
 		public String toString() {
 			if (!enabled) return "disabled";
@@ -490,7 +480,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 					+ (text == null ? "no text" : "text=" + text) + ", "
 					+ (hologram == null ? " not spawned" : "spawned");
 		}
-		
+
 	}
-	
+
 }

@@ -3,6 +3,7 @@ package fr.skytasul.quests.npcs;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,6 +24,7 @@ import fr.skytasul.quests.utils.QuestUtils;
 public class BqNpcManagerImplementation implements BqNpcManager {
 
 	private static final String SEPARATOR = "#";
+	private static final Pattern FACTORY_KEY_PATTERN = Pattern.compile("[a-zA-Z0-9_-]*");
 
 	private final BiMap<String, BqInternalNpcFactory> internalFactories = HashBiMap.create();
 	private final Map<String, BqNpcImplementation> npcs = new HashMap<>();
@@ -33,8 +35,8 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		return internalFactories.inverse().get(internalFactory);
 	}
 
-	private String getNpcId(BqInternalNpcFactory factory, int id) {
-		return getFactoryKey(factory) + SEPARATOR + id;
+	private String getNpcId(BqInternalNpcFactory factory, String internalId) {
+		return getFactoryKey(factory) + SEPARATOR + internalId;
 	}
 
 	private BqInternalNpcFactory getMigrationFactory() {
@@ -58,6 +60,8 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 	public void addInternalFactory(@NotNull String key, @NotNull BqInternalNpcFactory internalFactory) {
 		if (internalFactories.containsKey(key))
 			throw new IllegalArgumentException("Npc factory " + key + " is already registered");
+		if (!FACTORY_KEY_PATTERN.matcher(key).matches())
+			throw new IllegalArgumentException("Invalid factory key " + key);
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().info("Adding " + key + " as a npc factory");
 		internalFactories.put(key, internalFactory);
@@ -97,29 +101,29 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 	@Override
 	public @Nullable BqNpcImplementation getById(String id) {
 		BqInternalNpcFactory factory;
-		int npcId;
+		String internalId;
 
 		int separatorIndex = id.indexOf(SEPARATOR);
 		if (separatorIndex == -1) { // TODO migration 1.0
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.debug("Loading NPC with id " + id + " from a previous version of the plugin.");
 			factory = getMigrationFactory();
-			npcId = Integer.parseInt(id);
+			internalId = id;
 		} else {
 			String factoryKey = id.substring(0, separatorIndex);
 			factory = internalFactories.get(factoryKey);
-			npcId = Integer.parseInt(id.substring(separatorIndex + SEPARATOR.length()));
+			internalId = id.substring(separatorIndex + SEPARATOR.length());
 		}
 
 		if (factory == null)
 			throw new IllegalArgumentException("Cannot find factory for NPC " + id + ". Is your NPC plugin installed?");
 
-		return getByFactoryAndId(factory, npcId);
+		return getByFactoryAndId(factory, internalId);
 	}
 
-	public @Nullable BqNpcImplementation getByFactoryAndId(@NotNull BqInternalNpcFactory factory, int id) {
-		return npcs.computeIfAbsent(getNpcId(factory, id), strId -> {
-			BqInternalNpc npc = factory.fetchNPC(id);
+	public @Nullable BqNpcImplementation getByFactoryAndId(@NotNull BqInternalNpcFactory factory, String internalId) {
+		return npcs.computeIfAbsent(getNpcId(factory, internalId), strId -> {
+			BqInternalNpc npc = factory.fetchNPC(internalId);
 			if (npc == null)
 				return null;
 
@@ -128,23 +132,26 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 	}
 
 	@Override
-	public void npcRemoved(BqInternalNpcFactory npcFactory, int id) {
-		String npcId = getNpcId(npcFactory, id);
+	public void npcRemoved(BqInternalNpcFactory npcFactory, String internalId) {
+		String npcId = getNpcId(npcFactory, internalId);
 		BqNpcImplementation npc = npcs.get(npcId);
-		if (npc == null) return;
+		if (npc == null)
+			return;
 		npc.delete("NPC " + npcId + " removed");
 		npcs.remove(npcId);
 	}
 
 	@Override
-	public void npcClicked(BqInternalNpcFactory npcFactory, @Nullable Cancellable event, int npcID, @NotNull Player p,
-			@NotNull NpcClickType click) {
+	public void npcClicked(BqInternalNpcFactory npcFactory, @Nullable Cancellable event, String internalId,
+			@NotNull Player p, @NotNull NpcClickType click) {
 		if (event != null && event.isCancelled())
 			return;
-		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, npcID), p, click);
-		Bukkit.getPluginManager().callEvent(newEvent);
-		if (event != null)
-			event.setCancelled(newEvent.isCancelled());
+
+		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, internalId), p, click);
+		if (event == null)
+			QuestUtils.runOrSync(() -> Bukkit.getPluginManager().callEvent(newEvent));
+		else
+			QuestUtils.tunnelEventCancelling(event, newEvent);
 	}
 
 	@Override
@@ -152,7 +159,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		npcs.forEach((id, npc) -> {
 			if (npc.getWrappedNpc().factory != npcFactory)
 				return;
-			BqInternalNpc newInternal = npcFactory.fetchNPC(npc.getWrappedNpc().id);
+			BqInternalNpc newInternal = npcFactory.fetchNPC(npc.getWrappedNpc().internalId);
 			if (newInternal == null) {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.warning("Unable to find NPC with ID " + id + " after a NPCs manager reload.");
@@ -170,17 +177,17 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 	class WrappedInternalNpc {
 
 		private final BqInternalNpcFactory factory;
-		private final int id;
+		private final String internalId;
 		private BqInternalNpc npc;
 
 		public WrappedInternalNpc(BqInternalNpcFactory factory, BqInternalNpc npc) {
 			this.factory = factory;
 			this.npc = npc;
-			this.id = npc.getInternalId();
+			this.internalId = npc.getInternalId();
 		}
 
 		public @NotNull String getId() {
-			return getNpcId(factory, id);
+			return getNpcId(factory, internalId);
 		}
 
 		public @NotNull BqInternalNpc getNpc() {

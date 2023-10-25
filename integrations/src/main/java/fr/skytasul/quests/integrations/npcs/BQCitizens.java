@@ -38,34 +38,36 @@ public class BQCitizens implements BqInternalNpcFactoryCreatable, Listener {
 	}
 
 	@Override
-	public BqInternalNpc fetchNPC(int id) {
-		NPC npc = CitizensAPI.getNPCRegistry().getById(id);
+	public BqInternalNpc fetchNPC(String internalId) {
+		NPC npc = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(internalId));
 		return npc == null ? null : new BQCitizensNPC(npc);
 	}
 
 	@Override
-	public Collection<Integer> getIDs() {
-		return StreamSupport.stream(CitizensAPI.getNPCRegistry().sorted().spliterator(), false).map(NPC::getId).collect(Collectors.toList());
+	public Collection<String> getIDs() {
+		return StreamSupport.stream(CitizensAPI.getNPCRegistry().sorted().spliterator(), false)
+				.map(npc -> Integer.toString(npc.getId()))
+				.collect(Collectors.toList());
 	}
 
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCRightClick(NPCRightClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		npcClicked(e, e.getNPC().getId(), e.getClicker(),
+		npcClicked(e, Integer.toString(e.getNPC().getId()), e.getClicker(),
 				e.getClicker().isSneaking() ? NpcClickType.SHIFT_RIGHT : NpcClickType.RIGHT);
 	}
 
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onNPCLeftClick(NPCLeftClickEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		npcClicked(e, e.getNPC().getId(), e.getClicker(),
+		npcClicked(e, Integer.toString(e.getNPC().getId()), e.getClicker(),
 				e.getClicker().isSneaking() ? NpcClickType.SHIFT_LEFT : NpcClickType.LEFT);
 	}
 
 	@EventHandler
 	public void onNPCRemove(NPCRemoveEvent e) {
 		if (e.getNPC().getOwningRegistry() != CitizensAPI.getNPCRegistry()) return;
-		npcRemoved(e.getNPC().getId());
+		npcRemoved(Integer.toString(e.getNPC().getId()));
 	}
 
 	@EventHandler
@@ -108,8 +110,8 @@ public class BQCitizens implements BqInternalNpcFactoryCreatable, Listener {
 		}
 
 		@Override
-		public int getInternalId() {
-			return npc.getId();
+		public String getInternalId() {
+			return Integer.toString(npc.getId());
 		}
 
 		@Override

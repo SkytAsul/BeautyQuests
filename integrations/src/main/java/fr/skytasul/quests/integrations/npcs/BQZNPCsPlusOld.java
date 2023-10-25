@@ -17,15 +17,15 @@ import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
-import io.github.gonalez.znpcs.ServersNPC;
-import io.github.gonalez.znpcs.configuration.ConfigurationConstants;
-import io.github.gonalez.znpcs.npc.NPC;
-import io.github.gonalez.znpcs.npc.NPCModel;
-import io.github.gonalez.znpcs.npc.NPCSkin;
-import io.github.gonalez.znpcs.npc.NPCType;
-import io.github.gonalez.znpcs.npc.event.NPCInteractEvent;
+import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
+import io.github.znetworkw.znpcservers.npc.NPC;
+import io.github.znetworkw.znpcservers.npc.NPCModel;
+import io.github.znetworkw.znpcservers.npc.NPCSkin;
+import io.github.znetworkw.znpcservers.npc.NPCType;
+import io.github.znetworkw.znpcservers.npc.interaction.NPCInteractEvent;
+import lol.pyr.znpcsplus.ZNPCsPlus;
 
-public class BQServerNPCs implements BqInternalNpcFactoryCreatable, Listener {
+public class BQZNPCsPlusOld implements BqInternalNpcFactoryCreatable, Listener {
 
 	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
@@ -63,11 +63,13 @@ public class BQServerNPCs implements BqInternalNpcFactoryCreatable, Listener {
 	}
 
 	@Override
-	public @NotNull BqInternalNpc create(Location location, EntityType type, String name, @Nullable String skin) {
+	public @NotNull BqInternalNpc create(@NotNull Location location, @NotNull EntityType type, @NotNull String name,
+			@Nullable String skin) {
 		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
 		int id = ids.size();
-		while (ids.contains(id)) id++;
-		NPC npc = ServersNPC.createNPC(id, NPCType.valueOf(type.name()), location, name);
+		while (ids.contains(id))
+			id++;
+		NPC npc = ZNPCsPlus.createNPC(id, NPCType.valueOf(type.name()), location, name);
 		npc.getNpcPojo().getFunctions().put("look", true);
 
 		if (type == EntityType.PLAYER)

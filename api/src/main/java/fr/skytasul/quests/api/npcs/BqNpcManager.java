@@ -34,10 +34,10 @@ public interface BqNpcManager {
 	@Nullable
 	BqNpc getById(String id);
 
-	void npcRemoved(@NotNull BqInternalNpcFactory internalFactory, int id);
+	void npcRemoved(@NotNull BqInternalNpcFactory internalFactory, String internalId);
 
-	void npcClicked(@NotNull BqInternalNpcFactory internalFactory, @Nullable Cancellable event, int npcID, @NotNull Player p,
-			@NotNull NpcClickType click);
+	void npcClicked(@NotNull BqInternalNpcFactory internalFactory, @Nullable Cancellable event, String internalId,
+			@NotNull Player p, @NotNull NpcClickType click);
 
 	void reload(@NotNull BqInternalNpcFactory internalFactory);
 

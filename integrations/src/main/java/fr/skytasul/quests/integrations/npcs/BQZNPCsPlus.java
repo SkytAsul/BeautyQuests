@@ -1,10 +1,6 @@
 package fr.skytasul.quests.integrations.npcs;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -12,22 +8,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
-import io.github.znetworkw.znpcservers.configuration.ConfigurationConstants;
-import io.github.znetworkw.znpcservers.npc.NPC;
-import io.github.znetworkw.znpcservers.npc.NPCModel;
-import io.github.znetworkw.znpcservers.npc.NPCSkin;
-import io.github.znetworkw.znpcservers.npc.NPCType;
-import io.github.znetworkw.znpcservers.npc.interaction.NPCInteractEvent;
-import lol.pyr.znpcsplus.ZNPCsPlus;
+import lol.pyr.znpcsplus.api.NpcApiProvider;
+import lol.pyr.znpcsplus.api.event.NpcInteractEvent;
+import lol.pyr.znpcsplus.api.interaction.InteractionType;
+import lol.pyr.znpcsplus.api.npc.NpcEntry;
+import lol.pyr.znpcsplus.util.NpcLocation;
 
 public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable, Listener {
-
-	private Cache<Integer, Boolean> cachedNpcs = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
 	@Override
 	public int getTimeToWaitForNPCs() {
@@ -35,89 +25,83 @@ public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable, Listener {
 	}
 
 	@Override
-	public Collection<Integer> getIDs() {
-		return NPC.all().stream().map(x -> x.getNpcPojo().getId()).collect(Collectors.toList());
+	public Collection<String> getIDs() {
+		return NpcApiProvider.get().getNpcRegistry().getAllIds();
 	}
 
 	@Override
 	public boolean isNPC(Entity entity) {
-		Boolean result = cachedNpcs.getIfPresent(entity.getEntityId());
-		if (result == null) {
-			result = NPC.all().stream().anyMatch(npc1 -> npc1.getEntityID() == entity.getEntityId());
-			cachedNpcs.put(entity.getEntityId(), result);
-		}
-		return result;
+		return false;
 	}
 
 	@Override
-	public BqInternalNpc fetchNPC(int id) {
-		NPC npc = NPC.find(id);
-		return npc == null ? null : new BQServerNPC(npc);
+	public BqInternalNpc fetchNPC(String internalId) {
+		NpcEntry npc = NpcApiProvider.get().getNpcRegistry().getById(internalId);
+		return npc == null ? null : new BQZnpcPlus(npc);
 	}
 
 	@Override
 	public boolean isValidEntityType(EntityType type) {
-		return Arrays.stream(NPCType.values()).map(NPCType::name).anyMatch(name -> name.equals(type.name()));
+		return NpcApiProvider.get().getNpcTypeRegistry().getByName(type.name()) != null;
 	}
 
 	@Override
 	public @NotNull BqInternalNpc create(@NotNull Location location, @NotNull EntityType type, @NotNull String name,
 			@Nullable String skin) {
-		List<Integer> ids = ConfigurationConstants.NPC_LIST.stream().map(NPCModel::getId).collect(Collectors.toList());
-		int id = ids.size();
-		while (ids.contains(id))
-			id++;
-		NPC npc = ZNPCsPlus.createNPC(id, NPCType.valueOf(type.name()), location, name);
-		npc.getNpcPojo().getFunctions().put("look", true);
+		String id;
+		int i = 1;
+		while (NpcApiProvider.get().getNpcRegistry().getById(id = name + "-" + i) != null) {
+			i++;
+		}
 
-		if (type == EntityType.PLAYER)
-			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
+		NpcEntry npc = NpcApiProvider.get().getNpcRegistry().create(
+				id,
+				location.getWorld(),
+				NpcApiProvider.get().getNpcTypeRegistry().getByName(type.name()),
+				new NpcLocation(location));
 
-		return new BQServerNPC(npc);
+		return new BQZnpcPlus(npc);
 	}
 
 	@EventHandler
-	public void onInteract(NPCInteractEvent e) {
-		npcClicked(null, e.getNpc().getNpcPojo().getId(), e.getPlayer(),
-				NpcClickType.of(e.isLeftClick(), e.getPlayer().isSneaking()));
+	public void onInteract(NpcInteractEvent e) {
+		npcClicked(null, e.getEntry().getId(), e.getPlayer(),
+				NpcClickType.of(e.getClickType() == InteractionType.LEFT_CLICK, e.getPlayer().isSneaking()));
 	}
 
-	public static class BQServerNPC implements BqInternalNpc {
+	public static class BQZnpcPlus implements BqInternalNpc {
 
-		private final NPC npc;
+		private final NpcEntry npc;
 
-		private BQServerNPC(NPC npc) {
+		private BQZnpcPlus(NpcEntry npc) {
 			this.npc = npc;
 		}
 
-		public NPC getServerNPC() {
-			return npc;
-		}
-
 		@Override
-		public int getInternalId() {
-			return npc.getNpcPojo().getId();
+		public String getInternalId() {
+			return npc.getId();
 		}
 
 		@Override
 		public String getName() {
-			return npc.getNpcPojo().getHologramLines().isEmpty() ? "ID: " + npc.getNpcPojo().getId()
-					: npc.getNpcPojo().getHologramLines().get(0);
+			return npc.getNpc().getHologram().lineCount() == 0
+					? "ID: " + npc.getId()
+					: npc.getNpc().getHologram().getLine(0);
 		}
 
 		@Override
 		public boolean isSpawned() {
-			return npc.getBukkitEntity() != null;
+			return npc.getNpc().isEnabled();
 		}
 
 		@Override
 		public Entity getEntity() {
-			return (Entity) npc.getBukkitEntity();
+			return null;
 		}
 
 		@Override
 		public Location getLocation() {
-			return npc.getLocation();
+			return npc.getNpc().getLocation().toBukkitLocation(npc.getNpc().getWorld());
 		}
 
 		@Override

@@ -2,6 +2,8 @@ package fr.skytasul.quests.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -10,12 +12,15 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -24,7 +29,9 @@ import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
 
-public class QuestUtils {
+public final class QuestUtils {
+
+	private QuestUtils() {}
 
 	public static void openBook(Player p, ItemStack book) {
 		int slot = p.getInventory().getHeldItemSlot();
@@ -87,6 +94,27 @@ public class QuestUtils {
 
 	public static void runAsync(Runnable run) {
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
+	}
+
+	public static void tunnelEventCancelling(@NotNull Cancellable eventFrom, @NotNull Event eventTo) {
+		Cancellable eventToCancellable = (Cancellable) eventTo; // to force type checking at the beginning
+
+		CompletableFuture<Boolean> cancelled = new CompletableFuture<>();
+		QuestUtils.runOrSync(() -> {
+			try {
+				Bukkit.getPluginManager().callEvent(eventTo);
+				cancelled.complete(eventToCancellable.isCancelled());
+			} catch (Exception ex) {
+				cancelled.completeExceptionally(ex);
+			}
+		});
+		try {
+			eventFrom.setCancelled(cancelled.get());
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static void playPluginSound(Player p, String sound, float volume) {
