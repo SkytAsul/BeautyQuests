@@ -26,27 +26,27 @@ import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
-	
+
 	static final List<Particle> PARTICLES = Arrays.stream(Particle.values()).filter(particle -> {
 		if (particle.getDataType() == Void.class) return true;
 		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
 		return false;
 	}).collect(Collectors.toList());
-	
+
 	private final Consumer<ParticleEffect> end;
-	
+
 	private Particle particle;
 	private ParticleShape shape;
 	private Color color;
-	
+
 	public ParticleEffectGUI(Consumer<ParticleEffect> end) {
 		this(end, Particle.FLAME, ParticleShape.POINT, Color.AQUA);
 	}
-	
+
 	public ParticleEffectGUI(Consumer<ParticleEffect> end, ParticleEffect effect) {
 		this(end, effect.getParticle(), effect.getShape(), effect.getColor());
 	}
-	
+
 	public ParticleEffectGUI(Consumer<ParticleEffect> end, Particle particle, ParticleShape shape, Color color) {
 		super(Lang.INVENTORY_PARTICLE_EFFECT.toString(), new HashMap<>(), new DelayCloseBehavior(() -> end.accept(null)), 1);
 		this.end = end;
@@ -54,6 +54,10 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 		this.shape = shape;
 		this.color = color;
 
+		initButtons();
+	}
+
+	private void initButtons() {
 		buttons.put(1, LayoutedButton.create(XMaterial.FIREWORK_STAR, Lang.particle_shape.toString(),
 				() -> Arrays.asList(QuestOption.formatNullableValue(shape)), this::shapeClick));
 		buttons.put(3, LayoutedButton.create(XMaterial.PAPER, Lang.particle_type.toString(),
@@ -105,9 +109,9 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 	private void cancelClick(LayoutedClickEvent event) {
 		end.accept(null);
 	}
-	
+
 	private void doneClick(LayoutedClickEvent event) {
 		end.accept(new ParticleEffect(particle, shape, color));
 	}
-	
+
 }
