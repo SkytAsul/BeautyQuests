@@ -74,7 +74,7 @@ public class CommandsAdmin implements OrphanCommand {
 				if (!npc.getQuests().isEmpty()) {
 					QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(clickedQuest -> {
 						QuestCreationSession session = new QuestCreationSession(player);
-						session.setQuestEdited((QuestImplementation) quest);
+						session.setQuestEdited((QuestImplementation) clickedQuest);
 						session.openStagesGUI(player);
 					}, null, npc.getQuests()).open(player);
 				}else {
