@@ -26,7 +26,7 @@ public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable, Listener {
 
 	@Override
 	public Collection<String> getIDs() {
-		return NpcApiProvider.get().getNpcRegistry().getAllIds();
+		return NpcApiProvider.get().getNpcRegistry().getAllPlayerMadeIds();
 	}
 
 	@Override
@@ -59,6 +59,7 @@ public class BQZNPCsPlus implements BqInternalNpcFactoryCreatable, Listener {
 				location.getWorld(),
 				NpcApiProvider.get().getNpcTypeRegistry().getByName(type.name()),
 				new NpcLocation(location));
+		npc.enableEverything();
 
 		return new BQZnpcPlus(npc);
 	}
