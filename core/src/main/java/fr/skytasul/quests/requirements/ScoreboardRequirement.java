@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.ScoreboardObjectiveParser;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -21,11 +23,13 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	public ScoreboardRequirement() {
 		this(null, null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
-	
+
 	public ScoreboardRequirement(String customDescription, String customReason, String objectiveName, double target,
 			ComparisonMethod comparison) {
 		super(customDescription, customReason, target, comparison);
-		if (objectiveName != null) this.objectiveName = objectiveName;
+
+		if (objectiveName != null)
+			setObjectiveName(objectiveName);
 	}
 
 	@Override
@@ -33,16 +37,28 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 		return objective.getScore(p.getName()).getScore();
 	}
 
+	@Override
+	public boolean isValid() {
+		return objective != null;
+	}
+
+	@Override
+	protected @NotNull String getInvalidReason() {
+		return "cannot find scoreboard objective " + objectiveName;
+	}
+
 	private void setObjectiveName(String name) {
 		objectiveName = name;
 		objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(name);
+		if (objective == null)
+			QuestsPlugin.getPlugin().getLogger().warning("Cannot find scoreboard objective " + name);
 	}
 
 	@Override
 	public Class<? extends Number> numberClass() {
 		return Double.class;
 	}
-	
+
 	@Override
 	protected String getPlaceholderName() {
 		return "score";
@@ -52,13 +68,13 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	public void sendHelpString(Player p) {
 		Lang.CHOOSE_SCOREBOARD_TARGET.send(p);
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription("§8Objective name: §7" + objectiveName);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_SCOREBOARD_OBJECTIVE.send(event.getPlayer());
@@ -74,7 +90,7 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 			event.reopenGUI();
 		}, new ScoreboardObjectiveParser()).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);

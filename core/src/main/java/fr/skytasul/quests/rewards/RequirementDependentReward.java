@@ -25,71 +25,71 @@ import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.XMaterial;
 
 public class RequirementDependentReward extends AbstractReward {
-	
+
 	private RequirementList requirements;
 	private RewardList rewards;
-	
+
 	public RequirementDependentReward() {
 		this(null, new RequirementList(), new RewardList());
 	}
-	
+
 	public RequirementDependentReward(String customDescription, RequirementList requirements,
 			RewardList rewards) {
 		super(customDescription);
 		this.requirements = requirements;
 		this.rewards = rewards;
 	}
-	
+
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
 		requirements.attachQuest(quest);
 		rewards.attachQuest(quest);
 	}
-	
+
 	@Override
 	public void detach() {
 		super.detach();
 		requirements.forEach(AbstractRequirement::detach);
 		rewards.forEach(AbstractReward::detach);
 	}
-	
+
 	@Override
 	public List<String> give(Player p) throws InterruptingBranchException {
-		if (requirements.stream().allMatch(requirement -> requirement.test(p)))
+		if (requirements.allMatch(p, false))
 			return rewards.giveRewards(p);
 		return null;
 	}
-	
+
 	@Override
 	public boolean isAsync() {
 		return rewards.stream().anyMatch(AbstractReward::isAsync);
 	}
-	
+
 	@Override
 	public AbstractReward clone() {
 		return new RequirementDependentReward(getCustomDescription(), new RequirementList(requirements),
 				new RewardList(rewards));
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
-		return requirements.stream().allMatch(req -> req.test(p)) ?
-				rewards
+		return requirements.allMatch(p, false)
+				? rewards
 				.stream()
 				.map(xreq -> xreq.getDescription(p))
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining("{JOIN}"))
 				: null;
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(rewards.getSizeString());
 		loreBuilder.addDescription(requirements.getSizeString());
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		LayoutedGUI.newBuilder()
@@ -105,7 +105,7 @@ public class RequirementDependentReward extends AbstractReward {
 				.build()
 				.open(event.getPlayer());
 	}
-	
+
 	private void editRequirements(LayoutedClickEvent event) {
 		QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.OTHER, newRequirements -> {
 			requirements = new RequirementList(newRequirements);
@@ -126,12 +126,12 @@ public class RequirementDependentReward extends AbstractReward {
 		section.set("requirements", requirements.serialize());
 		section.set("rewards", rewards.serialize());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		requirements = RequirementList.deserialize(section.getMapList("requirements"));
 		rewards = RewardList.deserialize(section.getMapList("rewards"));
 	}
-	
+
 }

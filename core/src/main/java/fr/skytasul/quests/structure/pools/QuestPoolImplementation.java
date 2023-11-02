@@ -22,7 +22,6 @@ import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.XMaterial;
@@ -198,14 +197,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
 
-		for (AbstractRequirement requirement : requirements) {
-			try {
-				if (!requirement.test(p)) return false;
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot test requirement " + requirement.getClass().getSimpleName() + " in pool " + id + " for player " + p.getName(), ex);
-				return false;
-			}
-		}
+		if (!requirements.allMatch(p, false))
+			return false;
 
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream()
 				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
@@ -255,7 +248,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	private CompletableFuture<PoolGiveResult> giveOne(Player p, PlayerAccount acc, PlayerPoolDatas datas,
 			boolean hadOne) {
-		if (!requirements.testPlayer(p, !hadOne))
+		if (!requirements.allMatch(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));
 
 		List<Quest> notCompleted = avoidDuplicates ? quests.stream()

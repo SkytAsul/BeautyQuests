@@ -64,6 +64,10 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		return true;
 	}
 
+	protected @NotNull String getInvalidReason() {
+		return "invalid";
+	}
+
 	@Override
 	public final @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {

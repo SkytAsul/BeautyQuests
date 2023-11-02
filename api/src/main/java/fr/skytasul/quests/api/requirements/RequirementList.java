@@ -21,13 +21,17 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 		super(requirements);
 	}
 
-	public boolean testPlayer(@NotNull Player p, boolean message) {
+	public boolean allMatch(@NotNull Player p, boolean message) {
+		boolean match = true;
 		for (AbstractRequirement requirement : this) {
 			try {
-				if (!requirement.test(p)) {
-					if (message && !requirement.sendReason(p))
-						continue; // means a reason has not yet been sent
-					return false;
+				if (!requirement.isValid() || !requirement.test(p)) {
+					if (!message || requirement.sendReason(p))
+						return false;
+
+					// if we are here, it means a reason has not yet been sent
+					// so we continue until a reason is sent OR there is no more requirement
+					match = false;
 				}
 			} catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
@@ -36,7 +40,21 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 				return false;
 			}
 		}
-		return true;
+		return match;
+	}
+
+	public boolean anyMatch(@NotNull Player p) {
+		for (AbstractRequirement requirement : this) {
+			try {
+				if (requirement.isValid() && requirement.test(p))
+					return true;
+			} catch (Exception ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+						"Cannot test requirement " + requirement.getClass().getSimpleName() + " for player " + p.getName(),
+						ex);
+			}
+		}
+		return false;
 	}
 
 	public void attachQuest(@NotNull Quest quest) {

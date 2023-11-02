@@ -294,7 +294,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class)
 				|| (QuestsConfiguration.getConfig().getQuestsConfig().requirementReasonOnMultipleQuests()
 						|| getOption(OptionStarterNPC.class).getValue().getQuests().size() == 1));
-		return getOptionValueOrDef(OptionRequirements.class).testPlayer(p, sendMessage);
+		return getOptionValueOrDef(OptionRequirements.class).allMatch(p, sendMessage);
 	}
 
 	public boolean testQuestLimit(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {

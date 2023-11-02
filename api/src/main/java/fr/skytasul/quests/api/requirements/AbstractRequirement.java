@@ -79,10 +79,6 @@ public abstract class AbstractRequirement extends QuestObject {
 	protected @Nullable String getDefaultReason(@NotNull Player player) {
 		return null;
 	}
-	
-	protected @NotNull String getInvalidReason() {
-		return "invalid requirement";
-	}
 
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {

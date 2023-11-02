@@ -21,22 +21,22 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class OptionRequirements extends QuestOptionObject<AbstractRequirement, RequirementCreator, RequirementList>
 		implements QuestDescriptionProvider {
-	
+
 	@Override
 	protected AbstractRequirement deserialize(Map<String, Object> map) {
 		return AbstractRequirement.deserialize(map);
 	}
-	
+
 	@Override
 	protected String getSizeString() {
 		return RequirementList.getSizeString(getValue().size());
 	}
-	
+
 	@Override
 	protected QuestObjectsRegistry<AbstractRequirement, RequirementCreator> getObjectsRegistry() {
 		return QuestsAPI.getAPI().getRequirements();
 	}
-	
+
 	@Override
 	protected RequirementList instanciate(Collection<AbstractRequirement> objects) {
 		return new RequirementList(objects);
@@ -46,28 +46,28 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 	public XMaterial getItemMaterial() {
 		return XMaterial.NETHER_STAR;
 	}
-	
+
 	@Override
 	public String getItemName() {
 		return Lang.editRequirements.toString();
 	}
-	
+
 	@Override
 	public String getItemDescription() {
 		return Lang.editRequirementsLore.toString();
 	}
-	
+
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		if (!context.getPlayerAccount().isCurrent()) return null;
 		if (!context.getDescriptionOptions().showRequirements()) return null;
 		if (context.getCategory() != PlayerListCategory.NOT_STARTED) return null;
-		
+
 		List<String> requirements = getValue().stream()
 				.map(x -> {
 					String description = x.getDescription(context.getPlayerAccount().getPlayer());
 					if (description != null)
-						description = MessageUtils.format(x.test(context.getPlayerAccount().getPlayer())
+						description = MessageUtils.format(x.isValid() && x.test(context.getPlayerAccount().getPlayer())
 								? context.getDescriptionOptions().getRequirementsValid()
 								: context.getDescriptionOptions().getRequirementsInvalid(),
 								PlaceholderRegistry.of("requirement_description", description));
@@ -76,11 +76,11 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		if (requirements.isEmpty()) return null;
-		
+
 		requirements.add(0, Lang.RDTitle.toString());
 		return requirements;
 	}
-	
+
 	@Override
 	public String getDescriptionId() {
 		return "requirements";
@@ -90,5 +90,5 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 	public double getDescriptionPriority() {
 		return 30;
 	}
-	
+
 }

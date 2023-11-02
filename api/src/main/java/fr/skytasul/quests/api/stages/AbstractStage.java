@@ -22,9 +22,9 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 @AutoRegistered
 public abstract class AbstractStage implements HasPlaceholders {
-	
+
 	protected final @NotNull StageController controller;
-	
+
 	private @Nullable String startMessage = null;
 	private @Nullable String customText = null;
 	private @NotNull RewardList rewards = new RewardList();
@@ -33,18 +33,18 @@ public abstract class AbstractStage implements HasPlaceholders {
 	private @NotNull List<@NotNull StageOption> options;
 
 	private @Nullable PlaceholderRegistry placeholders;
-	
+
 	protected AbstractStage(@NotNull StageController controller) {
 		this.controller = controller;
 
 		options = controller.getStageType().getOptionsRegistry().getCreators().stream().map(SerializableCreator::newObject)
 				.collect(Collectors.toList());
 	}
-	
+
 	public @NotNull StageController getController() {
 		return controller;
 	}
-	
+
 	public @NotNull Quest getQuest() {
 		return controller.getBranch().getQuest();
 	}
@@ -52,15 +52,15 @@ public abstract class AbstractStage implements HasPlaceholders {
 	public void setStartMessage(@Nullable String text) {
 		this.startMessage = text;
 	}
-	
+
 	public @Nullable String getStartMessage() {
 		return startMessage;
 	}
-	
+
 	public @NotNull RewardList getRewards() {
 		return rewards;
 	}
-	
+
 	public void setRewards(@NotNull RewardList rewards) {
 		this.rewards = rewards;
 		rewards.attachQuest(getQuest());
@@ -86,15 +86,15 @@ public abstract class AbstractStage implements HasPlaceholders {
 	public @Nullable String getCustomText() {
 		return customText;
 	}
-	
+
 	public void setCustomText(@Nullable String message) {
 		this.customText = message;
 	}
-	
+
 	public boolean sendStartMessage(){
 		return startMessage == null && QuestsConfiguration.getConfig().getQuestsConfig().playerStageStartMessage();
 	}
-	
+
 	public boolean hasAsyncEnd() {
 		return rewards.hasAsync();
 	}
@@ -120,34 +120,34 @@ public abstract class AbstractStage implements HasPlaceholders {
 	}
 
 	protected final boolean canUpdate(@NotNull Player player, boolean msg) {
-		return validationRequirements.testPlayer(player, msg);
+		return validationRequirements.allMatch(player, msg);
 	}
-	
+
 	/**
 	 * Called internally when a player finish stage's objectives
-	 * 
+	 *
 	 * @param player Player who finish the stage
 	 */
 	protected final void finishStage(@NotNull Player player) {
 		controller.finishStage(player);
 	}
-	
+
 	/**
 	 * Called internally to test if a player has the stage started
-	 * 
+	 *
 	 * @param player Player to test
 	 * @see QuestBranch#hasStageLaunched(PlayerAccount, AbstractStage)
 	 */
 	protected final boolean hasStarted(@NotNull Player player) {
 		return controller.hasStarted(PlayersManager.getPlayerAccount(player));
 	}
-	
+
 	/**
 	 * Called when the stage starts (player can be offline)
 	 * @param acc PlayerAccount for which the stage starts
 	 */
 	public void started(@NotNull PlayerAccount acc) {}
-	
+
 	/**
 	 * Called when the stage ends (player can be offline)
 	 * @param acc PlayerAccount for which the stage ends
@@ -158,16 +158,16 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * Called when an account with this stage launched joins
 	 */
 	public void joined(@NotNull Player player) {}
-	
+
 	/**
 	 * Called when an account with this stage launched leaves
 	 */
 	public void left(@NotNull Player player) {}
-	
+
 	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
 
 	public abstract @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context);
-	
+
 	protected final void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
 		controller.updateObjective(p, dataKey, dataValue);
 	}
@@ -187,29 +187,29 @@ public abstract class AbstractStage implements HasPlaceholders {
 		rewards.detachQuest();
 		validationRequirements.detachQuest();
 	}
-	
+
 	/**
 	 * Called when the stage loads
 	 */
 	public void load() {}
-	
+
 	protected void serialize(@NotNull ConfigurationSection section) {}
-	
+
 	public final void save(@NotNull ConfigurationSection section) {
 		serialize(section);
-		
+
 		section.set("stageType", controller.getStageType().getID());
 		section.set("customText", customText);
 		if (startMessage != null) section.set("text", startMessage);
-		
+
 		if (!rewards.isEmpty())
 			section.set("rewards", rewards.serialize());
 		if (!validationRequirements.isEmpty())
 			section.set("requirements", validationRequirements.serialize());
-		
+
 		options.stream().filter(StageOption::shouldSave).forEach(option -> option.save(section.createSection("options." + option.getCreator().getID())));
 	}
-	
+
 	public final void load(@NotNull ConfigurationSection section) {
 		if (section.contains("text"))
 			startMessage = section.getString("text");
