@@ -87,13 +87,17 @@ public class Message implements Cloneable {
 		PlaceholderRegistry registry = new PlaceholderRegistry()
 				.registerIndexed("player_name", p.getName())
 				.registerIndexed("npc_name_message", npcCustomName)
-				.registerIndexed("text", text)
 				.registerIndexed("message_id", id + 1)
 				.registerIndexed("message_count", size);
 		if (npc != null)
 			registry.compose(npc);
 
-		String sent = null;
+		String sent = MessageUtils.finalFormat(text, registry.withoutIndexes("npc_name_message", "player_name"),
+				PlaceholdersContext.of(p, true, null));
+		// ugly trick to have placeholders parsed in the message
+
+		registry.registerIndexed("text", sent);
+
 		switch (sender) {
 			case PLAYER:
 				sent = MessageUtils.finalFormat(Lang.SelfText.toString(), registry.withoutIndexes("npc_name_message"),
@@ -104,8 +108,7 @@ public class Message implements Cloneable {
 						PlaceholdersContext.of(p, true, null));
 				break;
 			case NOSENDER:
-				sent = MessageUtils.finalFormat(text, registry.withoutIndexes("npc_name_message", "player_name"),
-						PlaceholdersContext.of(p, true, null));
+				sent = text;
 				break;
 		}
 		return sent;
