@@ -101,7 +101,7 @@ public class StagesGUI extends AbstractGui {
 			if (l.lineId == id)
 				return l;
 		}
-		return null;
+		throw new IllegalArgumentException("Unknown line " + id);
 	}
 
 	public boolean isEmpty(){
@@ -283,6 +283,7 @@ public class StagesGUI extends AbstractGui {
 			StageCreation creation = setStageCreation(stage.getStageType());
 
 			if (branch != null) {
+				context.getEndingBranch().repopulate(session.getPlayer());
 				context.getEndingBranch().editBranch((QuestBranchImplementation) branch);
 			}
 

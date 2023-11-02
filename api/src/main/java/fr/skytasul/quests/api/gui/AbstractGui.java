@@ -36,9 +36,10 @@ public abstract class AbstractGui implements Gui {
 
 	public final void repopulate(@NotNull Player player) {
 		if (inventory == null)
-			return;
+			inventory = instanciate(player);
+		else
+			inventory.clear();
 
-		inventory.clear();
 		populate(player, inventory);
 	}
 
@@ -47,10 +48,10 @@ public abstract class AbstractGui implements Gui {
 	protected abstract void populate(@NotNull Player player, @NotNull Inventory inventory);
 
 	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {}
-	
+
 	@Override
 	public @NotNull CloseBehavior onClose(@NotNull Player player) {
 		return StandardCloseBehavior.CONFIRM;
 	}
-	
+
 }
