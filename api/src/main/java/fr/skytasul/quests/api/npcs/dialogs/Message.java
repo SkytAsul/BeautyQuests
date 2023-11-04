@@ -108,7 +108,7 @@ public class Message implements Cloneable {
 						PlaceholdersContext.of(p, true, null));
 				break;
 			case NOSENDER:
-				sent = text;
+				// nothing to do: the placeholders has already been parsed
 				break;
 		}
 		return sent;
