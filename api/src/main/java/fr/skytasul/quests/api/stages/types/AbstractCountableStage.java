@@ -62,7 +62,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		}
 
 		if (remaining == null || remaining.isEmpty())
-			return Map.of();
+			return Collections.emptyMap();
 
 		Object object = remaining.keySet().iterator().next();
 		if (object instanceof Integer) {
@@ -93,7 +93,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
 		return getPlayerRemainings(account, true)
 				.entrySet().stream()
-				.map(entry -> Map.entry(getObject(entry.getKey()).orElse(null), entry.getValue()))
+				.map(entry -> new AbstractMap.SimpleEntry<>(getObject(entry.getKey()).orElse(null), entry.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 

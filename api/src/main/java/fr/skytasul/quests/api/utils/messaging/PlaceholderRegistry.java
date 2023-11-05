@@ -148,7 +148,7 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 	 * @return a copy of this registry without some indexed placeholders
 	 */
 	public @NotNull PlaceholderRegistry withoutIndexes(@NotNull Placeholder @NotNull... exceptedPlaceholders) {
-		PlaceholderRegistry result = new PlaceholderRegistry(this.placeholders.toArray(Placeholder[]::new));
+		PlaceholderRegistry result = new PlaceholderRegistry(this.placeholders.toArray(new Placeholder[0]));
 
 		out: for (Placeholder placeholder : indexed) { // NOSONAR: very simple label use
 			for (Placeholder exceptedPlaceholder : exceptedPlaceholders) {
