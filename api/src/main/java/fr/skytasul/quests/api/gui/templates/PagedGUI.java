@@ -35,18 +35,18 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	protected Player player;
 	protected int page = 0;
 	protected int maxPage;
-	
+
 	private String name;
 	private DyeColor color;
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
 	private ItemStack validationItem = ItemUtils.itemDone;
 	protected LevenshteinComparator<T> comparator;
-	
+
 	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
 		this(name, color, objects, null, null);
 	}
-	
+
 	protected PagedGUI(String name, DyeColor color, Collection<T> objects, Consumer<List<T>> validate, Function<T, String> searchName) {
 		this.name = name;
 		this.color = color;
@@ -54,7 +54,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		this.validate = validate;
 		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
 	}
-	
+
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
 		return Bukkit.createInventory(null, 45, name);
@@ -64,7 +64,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
 		this.player = player;
 		calcMaxPages();
-		
+
 		setBarItem(0, ItemUtils.itemLaterPage);
 		setBarItem(4, ItemUtils.itemNextPage);
 		if (validate != null) setBarItem(2, validationItem);
@@ -72,10 +72,10 @@ public abstract class PagedGUI<T> extends AbstractGui {
 
 		for (int i = 0; i < 5; i++)
 			inventory.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
-		
+
 		setItems();
 	}
-	
+
 	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
 		if (this.validate != null) throw new IllegalStateException("A validation has already be added.");
 		if (this.getInventory() != null)
@@ -85,13 +85,13 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		this.validationItem = validationItem;
 		return this;
 	}
-	
+
 	public PagedGUI<T> sortValuesByName() {
 		Validate.notNull(comparator);
 		sortValues(comparator.getFunction());
 		return this;
 	}
-	
+
 	public <C extends Comparable<C>> PagedGUI<T> sortValues(Function<T, C> mapper) {
 		objects.sort((o1, o2) -> {
 			C map1;
@@ -102,11 +102,11 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		});
 		return this;
 	}
-	
+
 	protected void calcMaxPages() {
 		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
 	}
-	
+
 	protected void setItems() {
 		for (int i = 0; i < 35; i++) setMainItem(i, null);
 		for (int i = page * 35; i < objects.size(); i++){
@@ -115,14 +115,14 @@ public abstract class PagedGUI<T> extends AbstractGui {
 			setMainItem(i - page * 35, getItemStack(obj));
 		}
 	}
-	
+
 	private int setMainItem(int mainSlot, ItemStack is){
 		int line = (int) Math.floor(mainSlot * 1.0 / 7.0);
 		int slot = mainSlot + (2 * line);
 		setItem(is, slot);
 		return slot;
 	}
-	
+
 	private int setBarItem(int barSlot, ItemStack is){
 		int slot = barSlot * 9 + 8;
 		setItem(is, slot);
@@ -143,7 +143,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param object T object to get the slot from
 	 * @return slot in the inventory, -1 if the object is on another page
@@ -151,12 +151,12 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	public int getObjectSlot(T object){
 		int index = objects.indexOf(object);
 		if (index < page*35 || index > (page + 1)*35) return -1;
-		
+
 		int line = (int) Math.floor(index * 1.0 / 7.0);
-		return index + (2 * line);
+		return index + (2 * line) - page * 35;
 	}
 
-	
+
 	@Override
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot() % 9) {
@@ -173,7 +173,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 				page++;
 				setItems();
 				break;
-				
+
 			case 2:
 				validate.accept(objects);
 				break;
@@ -189,10 +189,10 @@ public abstract class PagedGUI<T> extends AbstractGui {
 				break;
 			}
 			break;
-			
+
 		case 7:
 			break;
-			
+
 		default:
 			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
 			int objectSlot = event.getSlot() - line * 2 + page * 35;
@@ -200,7 +200,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 			//inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 	}
-	
+
 	public final void reopen() {
 		reopen(player);
 	}
