@@ -131,6 +131,10 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 		setStage(-2);
 	}
 
+	public Map<String, Object> getRawAdditionalDatas() {
+		return additionalDatas;
+	}
+
 	@Override
 	public <T> T getAdditionalData(String key) {
 		return (T) additionalDatas.get(key);

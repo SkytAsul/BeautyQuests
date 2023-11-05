@@ -1,19 +1,8 @@
 package fr.skytasul.quests.players;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -42,11 +31,11 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	public final String POOLS_DATAS_TABLE;
 
 	private final Database db;
-	
+
 	private final Map<SavableData<?>, SQLDataSaver<?>> accountDatas = new HashMap<>();
 	private String getAccountDatas;
 	private String resetAccountDatas;
-	
+
 	/* Accounts statements */
 	private String getAccountsIDs;
 	private String insertAccount;
@@ -65,13 +54,13 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	private String updateStage;
 	private String updateDatas;
 	private String updateFlow;
-	
+
 	/* Pool datas statements */
 	private String insertPoolData;
 	private String removePoolData;
 	private String getPoolData;
 	private String getPoolAccountData;
-	
+
 	private String updatePoolLastGive;
 	private String updatePoolCompletedQuests;
 
@@ -85,7 +74,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	public Database getDatabase() {
 		return db;
 	}
-	
+
 	@Override
 	public void addAccountData(SavableData<?> data) {
 		super.addAccountData(data);
@@ -99,7 +88,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				.map(x -> "`" + x.getWrappedData().getColumnName() + "` = " + x.getDefaultValueString())
 				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE `id` = ?"));
 	}
-	
+
 	private void retrievePlayerDatas(PlayerAccountImplementation acc) {
 		try (Connection connection = db.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(getQuestsData)) {
@@ -137,7 +126,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while fetching account datas of " + acc.debugName(), ex);
 		}
 	}
-	
+
 	@Override
 	public void load(AccountFetchRequest request) {
 		try (Connection connection = db.getConnection()) {
@@ -187,7 +176,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading account of " + request.getDebugPlayerName(), ex);
 		}
 	}
-	
+
 	@Override
 	protected CompletableFuture<Void> removeAccount(PlayerAccountImplementation acc) {
 		return CompletableFuture.runAsync(() -> {
@@ -220,12 +209,12 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			}
 		});
 	}
-	
+
 	@Override
 	public PlayerPoolDatasImplementation createPlayerPoolDatas(PlayerAccountImplementation acc, QuestPool pool) {
 		return new PlayerPoolDatasDB(acc, pool.getId());
 	}
-	
+
 	@Override
 	public CompletableFuture<Void> playerPoolDataRemoved(PlayerPoolDatasImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
@@ -289,19 +278,19 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?";
 
 			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?";
-			
+
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
 			updateBranch = prepareDatasStatement("current_branch");
 			updateStage = prepareDatasStatement("current_stage");
 			updateDatas = prepareDatasStatement("additional_datas");
 			updateFlow = prepareDatasStatement("quest_flow");
-			
+
 			insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)";
 			removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
 			getPoolData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?";
 			getPoolAccountData = "SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
-			
+
 			updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?";
 			updatePoolCompletedQuests = "UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?";
 		}catch (SQLException e) {
@@ -317,7 +306,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	public void save() {
 		cachedAccounts.values().forEach(x -> saveAccount(x, false));
 	}
-	
+
 	private void createTables() throws SQLException {
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
@@ -348,14 +337,14 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					+ "PRIMARY KEY (`id`)"
 					+ ")");
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
-			
+
 			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
 				if (!columns.contains("quest_flow")) { // 0.19
 					statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 							+ " ADD COLUMN quest_flow VARCHAR(8000) DEFAULT NULL");
 					QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated database with quest_flow column.");
 				}
-				
+
 				if (!columns.contains("additional_datas") || columns.contains("stage_0_datas")) { // 0.20
 					// tests for stage_0_datas: it's in the case the server crashed/stopped during the migration process.
 					if (!columns.contains("additional_datas")) {
@@ -363,11 +352,11 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 								+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
 						QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
 					}
-					
+
 					QuestUtils.runAsync(this::migrateOldQuestDatas);
 				}
 			});
-			
+
 			upgradeTable(connection, ACCOUNTS_TABLE, columns -> {
 				for (SQLDataSaver<?> data : accountDatas.values()) {
 					if (!columns.contains(data.getWrappedData().getColumnName().toLowerCase())) {
@@ -393,15 +382,15 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			columnsConsumer.accept(columns);
 		}
 	}
-	
+
 	private void migrateOldQuestDatas() {
 		QuestsPlugin.getPlugin().getLoggerExpanded().info("---- CAUTION ----\n"
 				+ "BeautyQuests will now migrate old quest datas in database to the newest format.\n"
 				+ "This may take a LONG time. Players should NOT enter the server during this time, "
 				+ "or serious data loss can occur.");
-		
+
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
-			
+
 			int deletedDuplicates =
 					statement.executeUpdate("DELETE R1 FROM " + QUESTS_DATAS_TABLE + " R1"
 							+ " JOIN " + QUESTS_DATAS_TABLE + " R2"
@@ -409,7 +398,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 							+ " AND R1.quest_id = R2.quest_id"
 							+ " AND R1.id < R2.id;");
 			if (deletedDuplicates > 0) QuestsPlugin.getPlugin().getLoggerExpanded().info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
-			
+
 			int batchCount = 0;
 			PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
 			ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
@@ -419,7 +408,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					String stageDatas = result.getString("stage_" + i + "_datas");
 					if (stageDatas != null && !"{}".equals(stageDatas)) datas.put("stage" + i, CustomizedObjectTypeAdapter.deserializeNullable(stageDatas, Map.class));
 				}
-				
+
 				if (datas.isEmpty()) continue;
 				migration.setString(1, CustomizedObjectTypeAdapter.serializeNullable(datas));
 				migration.setInt(2, result.getInt("id"));
@@ -429,7 +418,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Migrating " + batchCount + "quest datas...");
 			int migrated = migration.executeBatch().length;
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Migrated " + migrated + " quest datas.");
-			
+
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
 					+ " DROP COLUMN `stage_0_datas`,"
 					+ " DROP COLUMN `stage_1_datas`,"
@@ -444,30 +433,32 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					+ "The plugin failed to migrate old quest datas in database.", ex);
 		}
 	}
-	
+
 	public static synchronized String migrate(Database db, PlayersManagerYAML yaml) throws SQLException {
 		try (Connection connection = db.getConnection()) {
+			PlayersManagerDB manager = new PlayersManagerDB(db);
+
 			ResultSet result = connection.getMetaData().getTables(null, null, "%", null);
 			while (result.next()) {
 				String tableName = result.getString(3);
-				if (tableName.equals("player_accounts") || tableName.equals("player_quests")) {
+				if (tableName.equals(manager.ACCOUNTS_TABLE) || tableName.equals(manager.QUESTS_DATAS_TABLE)
+						|| tableName.equals(manager.POOLS_DATAS_TABLE)) {
 					result.close();
 					return "§cTable \"" + tableName + "\" already exists. Please drop it before migration.";
 				}
 			}
 			result.close();
-			
-			PlayersManagerDB manager = new PlayersManagerDB(db);
+
 			manager.createTables();
-			
+
 			PreparedStatement insertAccount =
 					connection.prepareStatement("INSERT INTO " + manager.ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
 			PreparedStatement insertQuestData =
 					connection.prepareStatement("INSERT INTO " + manager.QUESTS_DATAS_TABLE
-							+ " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `additional_datas`, `quest_flow`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			PreparedStatement insertPoolData =
 					connection.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
-			
+
 			int amount = 0, failed = 0;
 			yaml.loadAllAccounts();
 			for (PlayerAccountImplementation acc : yaml.loadedAccounts.values()) {
@@ -476,7 +467,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					insertAccount.setString(2, acc.abstractAcc.getIdentifier());
 					insertAccount.setString(3, acc.getOfflinePlayer().getUniqueId().toString());
 					insertAccount.executeUpdate();
-					
+
 					for (Entry<Integer, PlayerQuestDatasImplementation> entry : acc.questDatas.entrySet()) {
 						insertQuestData.setInt(1, acc.index);
 						insertQuestData.setInt(2, entry.getKey());
@@ -484,13 +475,12 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 						insertQuestData.setLong(4, entry.getValue().getTimer());
 						insertQuestData.setInt(5, entry.getValue().getBranch());
 						insertQuestData.setInt(6, entry.getValue().getStage());
-						for (int i = 0; i < 5; i++) {
-							Map<String, Object> stageDatas = entry.getValue().getStageDatas(i);
-							insertQuestData.setString(7 + i, stageDatas == null ? null : CustomizedObjectTypeAdapter.GSON.toJson(stageDatas));
-						}
+						insertQuestData.setString(7, entry.getValue().getRawAdditionalDatas().isEmpty() ? null
+								: CustomizedObjectTypeAdapter.serializeNullable(entry.getValue().getRawAdditionalDatas()));
+						insertQuestData.setString(8, entry.getValue().getQuestFlow());
 						insertQuestData.executeUpdate();
 					}
-					
+
 					for (Entry<Integer, PlayerPoolDatasImplementation> entry : acc.poolDatas.entrySet()) {
 						insertPoolData.setInt(1, acc.index);
 						insertPoolData.setInt(2, entry.getKey());
@@ -498,22 +488,22 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 						insertPoolData.setString(4, getCompletedQuestsString(entry.getValue().getCompletedQuests()));
 						insertPoolData.executeUpdate();
 					}
-					
+
 					amount++;
 				}catch (Exception ex) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to migrate datas for account " + acc.debugName(), ex);
 					failed++;
 				}
 			}
-			
+
 			insertAccount.close();
 			insertQuestData.close();
 			insertPoolData.close();
-			
+
 			return "§aMigration succeed! " + amount + " accounts migrated, " + failed + " accounts failed to migrate.\n§oDatabase saving system is §lnot§r§a§o enabled. You need to reboot the server with the line \"database.enabled\" set to true.";
 		}
 	}
-	
+
 	@Override
 	public void unloadAccount(PlayerAccountImplementation acc) {
 		QuestUtils.runAsync(() -> saveAccount(acc, true));
@@ -525,7 +515,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			.map(PlayerQuestDatasDB.class::cast)
 				.forEach(x -> x.flushAll(stop));
 	}
-	
+
 	protected static String getCompletedQuestsString(Set<Integer> completedQuests) {
 		return completedQuests.isEmpty() ? null : completedQuests.stream().map(x -> Integer.toString(x)).collect(Collectors.joining(";"));
 	}
@@ -534,7 +524,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
-		
+
 		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
@@ -557,13 +547,13 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					result.getString("quest_flow"));
 			this.dbId = result.getInt("id");
 		}
-		
+
 		@Override
 		public void incrementFinished() {
 			super.incrementFinished();
 			setDataStatement(updateFinished, getTimesFinished(), false);
 		}
-		
+
 		@Override
 		public void setTimer(long timer) {
 			super.setTimer(timer);
@@ -581,26 +571,26 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			super.setStage(stage);
 			setDataStatement(updateStage, stage, false);
 		}
-		
+
 		@Override
 		public <T> T setAdditionalData(String key, T value) {
 			T additionalData = super.setAdditionalData(key, value);
 			setDataStatement(updateDatas, super.additionalDatas.isEmpty() ? null : CustomizedObjectTypeAdapter.serializeNullable(super.additionalDatas), true);
 			return additionalData;
 		}
-		
+
 		@Override
 		public void addQuestFlow(StageController finished) {
 			super.addQuestFlow(finished);
 			setDataStatement(updateFlow, getQuestFlow(), true);
 		}
-		
+
 		@Override
 		public void resetQuestFlow() {
 			super.resetQuestFlow();
 			setDataStatement(updateFlow, null, true);
 		}
-		
+
 		private void setDataStatement(String dataStatement, Object data, boolean allowNull) {
 			if (disabled) return;
 			try {
@@ -611,7 +601,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					cachedDatas.get(dataStatement).setValue(data);
 				}else {
 					BukkitRunnable runnable = new BukkitRunnable() {
-						
+
 						@Override
 						public void run() {
 							if (disabled) return;
@@ -660,7 +650,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				datasLock.unlock();
 			}
 		}
-		
+
 		protected void flushAll(boolean stop) {
 			try {
 				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
@@ -680,7 +670,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				Thread.currentThread().interrupt();
 			}
 		}
-		
+
 		protected void stop() {
 			disabled = true;
 			datasLock.lock();
@@ -691,7 +681,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			cachedDatas.clear();
 			datasLock.unlock();
 		}
-		
+
 		private void createDataRow(Connection connection) throws SQLException {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Inserting DB row of quest " + questID + " for account " + acc.index);
 			try (PreparedStatement insertStatement = connection.prepareStatement(insertQuestData, new String[] {"id"})) {
@@ -708,30 +698,30 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Created row " + dbId + " for quest " + questID + ", account " + acc.index);
 			}
 		}
-		
+
 	}
-	
+
 	public class PlayerPoolDatasDB extends PlayerPoolDatasImplementation {
-		
+
 		public PlayerPoolDatasDB(PlayerAccountImplementation acc, int poolID) {
 			super(acc, poolID);
 		}
-		
+
 		public PlayerPoolDatasDB(PlayerAccountImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
 			super(acc, poolID, lastGive, completedQuests);
 		}
-		
+
 		@Override
 		public void setLastGive(long lastGive) {
 			super.setLastGive(lastGive);
 			updateData(updatePoolLastGive, lastGive);
 		}
-		
+
 		@Override
 		public void updatedCompletedQuests() {
 			updateData(updatePoolCompletedQuests, getCompletedQuestsString(getCompletedQuests()));
 		}
-		
+
 		private void updateData(String dataStatement, Object data) {
 			try (Connection connection = db.getConnection()) {
 				try (PreparedStatement statement = connection.prepareStatement(getPoolAccountData)) {
@@ -755,19 +745,19 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's pool datas.", ex);
 			}
 		}
-		
+
 	}
-	
+
 	public class PlayerAccountDB extends PlayerAccountImplementation {
-		
+
 		public PlayerAccountDB(AbstractAccount account, int index) {
 			super(account, index);
 		}
-		
+
 		@Override
 		public <T> void setData(SavableData<T> data, T value) {
 			super.setData(data, value);
-			
+
 			SQLDataSaver<T> dataSaver = (SQLDataSaver<T>) accountDatas.get(data);
 			try (Connection connection = db.getConnection();
 					PreparedStatement statement = connection.prepareStatement(dataSaver.getUpdateStatement())) {
@@ -778,11 +768,11 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while saving account data " + data.getId() + " to database", ex);
 			}
 		}
-		
+
 		@Override
 		public void resetDatas() {
 			super.resetDatas();
-			
+
 			if (resetAccountDatas != null) {
 				try (Connection connection = db.getConnection();
 						PreparedStatement statement = connection.prepareStatement(resetAccountDatas)) {
@@ -793,7 +783,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				}
 			}
 		}
-		
+
 	}
 
 }
