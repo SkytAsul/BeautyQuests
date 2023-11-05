@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
@@ -186,20 +187,23 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			event.setCancelled(true);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onOpen(InventoryOpenEvent event) {
-		if (!event.isCancelled())
-			return;
-		if (players.containsKey(event.getPlayer())) {
+		if (event.isCancelled() && players.containsKey(event.getPlayer())) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("The opening of a BeautyQuests menu for player "
 					+ event.getPlayer().getName() + " has been cancelled by another plugin.");
 		}
 	}
 
 	private void ensureSameInventory(Gui gui, Inventory inventory) {
-		if (gui.getInventory() != inventory)
+		if (gui.getInventory() != inventory) {
+			String expectedName = gui.getInventory().getType().name() + " (" + gui.getClass().getSimpleName() + ")";
+			String foundName = inventory == null ? "null" : inventory.getType().name();
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.debug("Player shall have a " + expectedName + " inventory but had a " + foundName + " inventory.");
 			throw new IllegalStateException(
 					"The inventory opened by the player is not the same as the one registered by the plugin");
+		}
 	}
 
 }
