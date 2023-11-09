@@ -32,15 +32,15 @@ public class Mob<D> implements Cloneable {
 		this.factory = factory;
 		this.data = data;
 	}
-	
+
 	public @NotNull MobFactory<D> getFactory() {
 		return factory;
 	}
-	
+
 	public @NotNull D getData() {
 		return data;
 	}
-	
+
 	public @NotNull String getName() {
 		if (formattedName == null) {
 			if (customName != null) {
@@ -54,13 +54,14 @@ public class Mob<D> implements Cloneable {
 		}
 		return formattedName;
 	}
-	
+
 	public @NotNull List<@Nullable String> getDescriptiveLore() {
 		return factory.getDescriptiveLore(data);
 	}
 
 	public void setCustomName(@Nullable String customName) {
 		this.customName = customName;
+		formattedName = null;
 	}
 
 	public @Nullable Double getMinLevel() {
@@ -69,6 +70,7 @@ public class Mob<D> implements Cloneable {
 
 	public void setMinLevel(@Nullable Double minLevel) {
 		this.minLevel = minLevel;
+		formattedName = null;
 	}
 
 	public @NotNull XMaterial getMobItem() {
@@ -79,15 +81,15 @@ public class Mob<D> implements Cloneable {
 			return XMaterial.SPONGE;
 		}
 	}
-	
+
 	public boolean applies(@Nullable Object data) {
 		return factory.mobApplies(this.data, data);
 	}
-	
+
 	public boolean appliesEntity(@NotNull Entity entity) {
 		return factory.bukkitMobApplies(data, entity);
 	}
-	
+
 	public double getLevel(@NotNull Entity entity) {
 		if (!(factory instanceof LeveledMobFactory))
 			throw new UnsupportedOperationException(
@@ -132,15 +134,15 @@ public class Mob<D> implements Cloneable {
 			map.put("name", customName);
 		if (minLevel != null)
 			map.put("minLevel", minLevel);
-		
+
 		return map;
 	}
-	
+
 	@SuppressWarnings ("rawtypes")
 	public static Mob<?> deserialize(Map<String, Object> map) {
 		String factoryName = (String) map.get("factoryName");
 		String value = (String) map.get("value");
-		
+
 		MobFactory<?> factory = MobFactory.getMobFactory(factoryName);
 		if (factory == null) throw new IllegalArgumentException("The factory " + factoryName + " is not installed in BeautyQuests.");
 		Object object = factory.fromValue(value);
