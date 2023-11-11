@@ -10,6 +10,10 @@
 		<artifactId>beautyquests-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
+	
+	<properties>
+        <junit.version>5.10.1</junit.version>
+	</properties>
 
 	<build>
 		<plugins>
@@ -140,6 +144,19 @@
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>9.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
