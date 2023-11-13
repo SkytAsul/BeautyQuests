@@ -41,24 +41,7 @@ public class CitizensFactory implements MobFactory<NPC>, Listener {
 		Lang.SELECT_KILL_NPC.send(p);
 		// we cannot use the SelectNPC editor as it uses the BQNPCManager
 		// and if it is registered to another NPC plugin it wouldn't work
-		new InventoryClear(p, () -> run.accept(null)) {
-
-			@EventHandler(priority = EventPriority.LOW)
-			private void onNPCClick(NPCRightClickEvent e) {
-				if (e.getClicker() != player)
-					return;
-				e.setCancelled(true);
-				stop();
-				run.accept(e.getNPC());
-			}
-
-			@Override
-			public void begin() {
-				super.begin();
-				Lang.NPC_EDITOR_ENTER.send(p);
-			}
-
-		}.start();
+		new CitizensNpcClickEditor(p, () -> run.accept(null), p, run).start();
 	}
 
 	@Override
@@ -96,6 +79,32 @@ public class CitizensFactory implements MobFactory<NPC>, Listener {
 		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
 		if (en.getKiller() == null) return;
 		callEvent(e, e.getNPC(), en, en.getKiller());
+	}
+
+	private class CitizensNpcClickEditor extends InventoryClear implements Listener {
+		private final Player p;
+		private final Consumer<NPC> run;
+
+		private CitizensNpcClickEditor(Player p, Runnable cancel, Player p2, Consumer<NPC> run) {
+			super(p, cancel);
+			this.p = p2;
+			this.run = run;
+		}
+
+		@EventHandler(priority = EventPriority.LOW)
+		private void onNPCClick(NPCRightClickEvent e) {
+			if (e.getClicker() != player)
+				return;
+			e.setCancelled(true);
+			stop();
+			run.accept(e.getNPC());
+		}
+
+		@Override
+		public void begin() {
+			super.begin();
+			Lang.NPC_EDITOR_ENTER.send(p);
+		}
 	}
 
 }
