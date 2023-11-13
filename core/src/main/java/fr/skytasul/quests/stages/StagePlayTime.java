@@ -163,7 +163,8 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
 
-			line.removeItem(SLOT_REQUIREMENTS);
+			line.refreshItemName(SLOT_REQUIREMENTS,
+					"§n" + Lang.validationRequirements + "§c " + Lang.Disabled.toString().toUpperCase());
 
 			line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), event -> {
 				Lang.GAME_TICKS.send(event.getPlayer());
