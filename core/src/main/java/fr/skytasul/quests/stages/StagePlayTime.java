@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -31,23 +32,23 @@ import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	private final long playTicks;
-	
+
 	private Map<Player, BukkitTask> tasks = new HashMap<>();
-	
+
 	public StagePlayTime(StageController controller, long ticks) {
 		super(controller);
 		this.playTicks = ticks;
 	}
-	
+
 	public long getTicksToPlay() {
 		return playTicks;
 	}
-	
+
 	@Override
 	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
 		return Lang.SCOREBOARD_PLAY_TIME.toString();
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -55,19 +56,19 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 				context -> Utils.millisToHumanString(getPlayerAmount(context.getPlayerAccount())));
 		ProgressPlaceholders.registerProgress(placeholders, "time", this);
 	}
-	
+
 	private long getRemaining(PlayerAccount acc) {
 		long remaining = Utils.parseLong(getData(acc, "remainingTime"));
 		long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
 		long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
 		return remaining - playedTicks;
 	}
-	
+
 	private void launchTask(Player p, long remaining) {
 		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
 				remaining < 0 ? 0 : remaining));
 	}
-	
+
 	@Override
 	public int getPlayerAmount(@NotNull PlayerAccount account) {
 		return (int) (getRemaining(account) * 50L);
@@ -84,7 +85,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		updateObjective(p, "lastJoin", System.currentTimeMillis());
 		launchTask(p, Utils.parseLong(getData(p, "remainingTime")));
 	}
-	
+
 	@Override
 	public void left(Player p) {
 		super.left(p);
@@ -101,7 +102,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		task.cancel();
 		updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));
 	}
-	
+
 	@Override
 	public void started(PlayerAccount acc) {
 		super.started(acc);
@@ -109,7 +110,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		if (acc.isCurrent())
 			launchTask(acc.getPlayer(), playTicks);
 	}
-	
+
 	@Override
 	public void ended(PlayerAccount acc) {
 		super.ended(acc);
@@ -124,7 +125,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		datas.put("remainingTime", playTicks);
 		datas.put("lastJoin", System.currentTimeMillis());
 	}
-	
+
 	@Override
 	public void unload() {
 		super.unload();
@@ -133,16 +134,25 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	@Override
+	public void setValidationRequirements(@NotNull RequirementList validationRequirements) {
+		super.setValidationRequirements(validationRequirements);
+		if (!validationRequirements.isEmpty())
+			QuestsPlugin.getPlugin().getLogger().warning(validationRequirements.size()
+					+ " requirements are set for a \"play time\" stage, but requirements are unsupported for this stage type.\n"
+					+ controller.toString());
+	}
+
+	@Override
 	protected void serialize(ConfigurationSection section) {
 		section.set("playTicks", playTicks);
 	}
-	
+
 	public static StagePlayTime deserialize(ConfigurationSection section, StageController controller) {
 		return new StagePlayTime(controller, section.getLong("playTicks"));
 	}
-	
+
 	public static class Creator extends StageCreation<StagePlayTime> {
-		
+
 		private long ticks;
 
 		public Creator(@NotNull StageCreationContext<StagePlayTime> context) {
@@ -152,7 +162,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		@Override
 		public void setupLine(@NotNull StageGuiLine line) {
 			super.setupLine(line);
-			
+
+			line.removeItem(SLOT_REQUIREMENTS);
+
 			line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), event -> {
 				Lang.GAME_TICKS.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
@@ -161,12 +173,12 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 				}, MinecraftTimeUnit.TICK.getParser()).start();
 			});
 		}
-		
+
 		public void setTicks(long ticks) {
 			this.ticks = ticks;
 			getLine().refreshItemLoreOptionValue(7, Lang.Ticks.quickFormat("ticks", ticks + " ticks"));
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
@@ -176,18 +188,18 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 				context.reopenGui();
 			}, MinecraftTimeUnit.TICK.getParser()).start();
 		}
-		
+
 		@Override
 		public void edit(StagePlayTime stage) {
 			super.edit(stage);
 			setTicks(stage.playTicks);
 		}
-		
+
 		@Override
 		public StagePlayTime finishStage(StageController controller) {
 			return new StagePlayTime(controller, ticks);
 		}
-		
+
 	}
-	
+
 }

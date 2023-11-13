@@ -24,6 +24,11 @@ import fr.skytasul.quests.api.stages.options.StageOption;
 
 public abstract class StageCreation<T extends AbstractStage> {
 
+	protected static final int SLOT_REWARDS = 1;
+	protected static final int SLOT_DESCRIPTION = 2;
+	protected static final int SLOT_MESSAGE = 3;
+	protected static final int SLOT_REQUIREMENTS = 4;
+
 	private static final ItemStack ENDING_ITEM = ItemUtils.item(XMaterial.BAKED_POTATO, Lang.ending.toString());
 	private static final ItemStack DESCRITPION_MESSAGE_ITEM =
 			ItemUtils.item(XMaterial.OAK_SIGN, Lang.descMessage.toString());
@@ -33,14 +38,14 @@ public abstract class StageCreation<T extends AbstractStage> {
 					QuestOption.formatDescription(Lang.validationRequirementsLore.toString()));
 
 	protected final @NotNull StageCreationContext<T> context;
-	
+
 	private List<AbstractReward> rewards;
 	private List<AbstractRequirement> requirements;
-	
+
 	private List<StageOption<T>> options;
-	
+
 	private String customDescription, startMessage;
-	
+
 	protected StageCreation(@NotNull StageCreationContext<T> context) {
 		this.context = context;
 	}
@@ -48,55 +53,55 @@ public abstract class StageCreation<T extends AbstractStage> {
 	public @NotNull StageCreationContext<T> getCreationContext() {
 		return context;
 	}
-	
+
 	public @NotNull StageGuiLine getLine() {
 		return context.getLine();
 	}
-	
+
 	public List<AbstractReward> getRewards() {
 		return rewards;
 	}
-	
+
 	public void setRewards(List<AbstractReward> rewards) {
 		this.rewards = rewards;
 		getLine().refreshItemLore(1, QuestOption.formatDescription(RewardList.getSizeString(rewards.size())));
 	}
-	
+
 	public List<AbstractRequirement> getRequirements() {
 		return requirements;
 	}
-	
+
 	public void setRequirements(List<AbstractRequirement> requirements) {
 		getLine().refreshItemLore(4, QuestOption.formatDescription(RequirementList.getSizeString(requirements.size())));
 		this.requirements = requirements;
 	}
-	
+
 	public String getCustomDescription() {
 		return customDescription;
 	}
-	
+
 	public void setCustomDescription(String customDescription) {
 		this.customDescription = customDescription;
 		getLine().refreshItemLore(2, QuestOption.formatNullableValue(customDescription));
 	}
-	
+
 	public String getStartMessage() {
 		return startMessage;
 	}
-	
+
 	public void setStartMessage(String startMessage) {
 		this.startMessage = startMessage;
 		getLine().refreshItemLore(3, QuestOption.formatNullableValue(startMessage));
 	}
-	
+
 	public void setupLine(@NotNull StageGuiLine line) {
-		line.setItem(1, ENDING_ITEM.clone(),
+		line.setItem(SLOT_REWARDS, ENDING_ITEM.clone(),
 				event -> QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.STAGE, rewards -> {
 					setRewards(rewards);
 					event.reopen();
 				}, rewards).open(event.getPlayer()));
 
-		line.setItem(2, DESCRITPION_MESSAGE_ITEM.clone(), event -> {
+		line.setItem(SLOT_DESCRIPTION, DESCRITPION_MESSAGE_ITEM.clone(), event -> {
 			Lang.DESC_MESSAGE.send(event.getPlayer());
 			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 				setCustomDescription(obj);
@@ -104,7 +109,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			}).passNullIntoEndConsumer().start();
 		});
 
-		line.setItem(3, START_MESSAGE_ITEM.clone(), event -> {
+		line.setItem(SLOT_MESSAGE, START_MESSAGE_ITEM.clone(), event -> {
 			Lang.START_TEXT.send(event.getPlayer());
 			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 				setStartMessage(obj);
@@ -112,7 +117,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 			}).passNullIntoEndConsumer().start();
 		});
 
-		line.setItem(4, VALIDATION_REQUIREMENTS_ITEM.clone(), event -> {
+		line.setItem(SLOT_REQUIREMENTS, VALIDATION_REQUIREMENTS_ITEM.clone(), event -> {
 			QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.STAGE, requirements -> {
 				setRequirements(requirements);
 				event.reopen();
@@ -129,7 +134,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		setRequirements(new ArrayList<>());
 		setCustomDescription(null);
 		setStartMessage(null);
-		
+
 		options = context.getType().getOptionsRegistry().getCreators().stream().map(SerializableCreator::newObject)
 				.collect(Collectors.toList());
 		options.forEach(option -> option.startEdition(this));
@@ -144,7 +149,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 		setRequirements(stage.getValidationRequirements());
 		setStartMessage(stage.getStartMessage());
 		setCustomDescription(stage.getCustomText());
-		
+
 		options = stage.getOptions().stream().map(StageOption::clone).map(x -> (StageOption<T>) x).collect(Collectors.toList());
 		options.forEach(option -> option.startEdition(this));
 	}
@@ -166,5 +171,5 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * @return AsbtractStage created
 	 */
 	protected abstract @NotNull T finishStage(@NotNull StageController branch);
-	
+
 }
