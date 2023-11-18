@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -82,7 +81,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
-		Validate.notNull(datas, "Account " + acc.debugName() + " does not have datas for " + toString());
+		if (datas == null) {
+			QuestsPlugin.getPlugin().getLogger()
+					.severe("Account " + acc.debugName() + " did not have data for " + toString() + ". Creating some.");
+			datas = new HashMap<>();
+			stage.initPlayerDatas(acc, datas);
+		}
+
 		datas.put(dataKey, dataValue);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
 
