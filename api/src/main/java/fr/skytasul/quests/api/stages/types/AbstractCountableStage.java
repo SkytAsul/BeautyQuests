@@ -57,7 +57,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		Map<?, Integer> remaining = getData(acc, "remaining");
 		if (warnNull && remaining == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"Cannot retrieve stage datas for " + acc.getNameAndID() + " on " + super.toString(),
+					"Cannot retrieve remaining amounts for " + acc.getNameAndID() + " on " + controller.toString(),
 					"datas" + acc.getNameAndID() + controller.toString(), 10);
 		}
 
@@ -91,7 +91,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 
 	@Override
 	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
-		return getPlayerRemainings(account, true)
+		return getPlayerRemainings(account, false)
 				.entrySet().stream()
 				.map(entry -> new AbstractMap.SimpleEntry<>(getObject(entry.getKey()).orElse(null), entry.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -161,7 +161,6 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		for (CountableObject<T> countableObject : objects) {
 			if (objectApplies(countableObject.getObject(), object)) {
 				Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
-				if (playerAmounts == null) return true;
 				if (playerAmounts.containsKey(countableObject.getUUID())) {
 					int playerAmount = playerAmounts.remove(countableObject.getUUID());
 					if (playerAmount <= amount) {

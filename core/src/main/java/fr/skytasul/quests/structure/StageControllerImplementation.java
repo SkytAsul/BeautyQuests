@@ -20,6 +20,7 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -83,7 +84,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
 		if (datas == null) {
 			QuestsPlugin.getPlugin().getLogger()
-					.severe("Account " + acc.debugName() + " did not have data for " + toString() + ". Creating some.");
+					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
 			datas = new HashMap<>();
 			stage.initPlayerDatas(acc, datas);
 		}
@@ -97,8 +98,21 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public <D> @Nullable D getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
-		Map<String, Object> stageDatas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
-		return stageDatas == null ? null : (D) stageDatas.get(dataKey);
+		PlayerQuestDatas playerDatas = acc.getQuestDatas(branch.getQuest());
+		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
+
+		if (datas == null) {
+			if (!hasStarted(acc))
+				throw new IllegalStateException("Trying to fetch data of not launched stage");
+
+			QuestsPlugin.getPlugin().getLogger()
+					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
+			datas = new HashMap<>();
+			stage.initPlayerDatas(acc, datas);
+			acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		}
+
+		return (D) datas.get(dataKey);
 	}
 
 	@Override
