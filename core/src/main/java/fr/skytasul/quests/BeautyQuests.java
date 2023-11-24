@@ -495,6 +495,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			logger.severe("Error while loading player datas.", ex);
 		}
 
+		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
+		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
+
 		getAPI().getQuestsHandlers().forEach(handler -> {
 			try {
 				handler.load();
@@ -502,9 +505,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("Cannot load quest handler " + handler.getClass().getName(), ex);
 			}
 		});
-
-		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
-		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
 
 		if (config.firstQuestID != -1) {
 			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
