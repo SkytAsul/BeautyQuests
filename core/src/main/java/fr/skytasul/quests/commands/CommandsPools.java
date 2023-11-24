@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Switch;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.EntitySelector;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
 import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
@@ -40,15 +41,17 @@ public class CommandsPools implements OrphanCommand {
 
 	@Subcommand("start")
 	@CommandPermission("beautyquests.command.pools.start")
-	public void start(BukkitCommandActor actor, Player player, QuestPool pool) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		if (!pool.canGive(player)) {
-			Lang.POOL_START_ERROR.send(player, pool, acc);
-			return;
-		}
+	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPool pool) {
+		for (Player player : players) {
+			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			if (!pool.canGive(player)) {
+				Lang.POOL_START_ERROR.send(player, pool, acc);
+				return;
+			}
 
-		pool.give(player).thenAccept(
-				result -> Lang.POOL_START_SUCCESS.send(player, pool, acc, PlaceholderRegistry.of("result", result)));
+			pool.give(player).thenAccept(
+					result -> Lang.POOL_START_SUCCESS.send(player, pool, acc, PlaceholderRegistry.of("result", result)));
+		}
 	}
 
 }
