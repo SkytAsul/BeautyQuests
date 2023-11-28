@@ -401,6 +401,11 @@ public enum Lang implements Locale {
 
 	stageEatDrinkItems("inv.create.stage.eatDrink.items"),
 
+	stagePlayTimeChangeTimeMode("inv.create.stage.playTime.changeTimeMode"),
+	stagePlayTimeModeOnline("inv.create.stage.playTime.modes.online"),
+	stagePlayTimeModeOffline("inv.create.stage.playTime.modes.offline"),
+	stagePlayTimeModeRealtime("inv.create.stage.playTime.modes.realtime"),
+
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
 	laterPage("inv.stages.laterPage"),

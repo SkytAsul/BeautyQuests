@@ -413,6 +413,12 @@ inv:
         targetMobs: '§cMobs to damage'
       eatDrink:
         items: '§eEdit items to eat or drink'
+      playTime:
+        changeTimeMode: 'Change time counting strategy'
+        modes:
+          online: 'Player has to be connected to the server'
+          offline: 'Player can be offline, but server has to be running for the time to be counted'
+          realtime: 'Time is counted even if the player and the server are offline'
   stages:
     name: Create stages
     nextPage: §eNext page
