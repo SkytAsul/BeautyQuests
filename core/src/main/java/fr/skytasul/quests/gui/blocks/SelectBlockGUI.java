@@ -89,7 +89,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			}, this::tagClick));
 		}
 
-		buttons.put(8, LayoutedButton.create(ItemUtils.itemDone, this::doneClick));
+		buttons.put(8, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
 	}
 
 	private void amountClick(LayoutedClickEvent event) {

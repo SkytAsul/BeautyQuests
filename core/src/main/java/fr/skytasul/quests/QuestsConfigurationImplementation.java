@@ -52,6 +52,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	private final FileConfiguration config;
 	private QuestsConfig quests;
+	private GuiConfig gui;
 	private DialogsConfig dialogs;
 	private QuestsSelectionConfig selection;
 	private QuestsMenuConfig menu;
@@ -62,6 +63,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		this.config = config;
 
 		quests = new QuestsConfig();
+		gui = new GuiConfig(config.getConfigurationSection("gui"));
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		selection = new QuestsSelectionConfig(config.getConfigurationSection("questsSelection"));
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
@@ -71,6 +73,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean update() {
 		boolean result = false;
+		result |= gui.update();
 		result |= dialogs.update();
 		result |= selection.update();
 		result |= menu.update();
@@ -86,6 +89,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
 		quests.init();
+		gui.init();
 		dialogs.init();
 		selection.init();
 		menu.init();
@@ -172,6 +176,15 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return null;
 	}
 
+	private static ItemStack loadItem(ConfigurationSection config, String key, ItemStack def) {
+		if (config.isItemStack(key))
+			return config.getItemStack(key);
+		if (config.isString(key))
+			return XMaterial.matchXMaterial(config.getString(key)).map(XMaterial::parseItem).orElse(def);
+		QuestsPlugin.getPlugin().getLogger().warning("Cannot load item " + key + " from config");
+		return def;
+	}
+
 	private String loadSound(String key) {
 		String sound = config.getString(key);
 		try {
@@ -200,6 +213,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	@Override
 	public @NotNull Quests getQuestsConfig() {
 		return quests;
+	}
+
+	@Override
+	public @NotNull Gui getGuiConfig() {
+		return gui;
 	}
 
 	@Override
@@ -309,7 +327,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private String finishSound = "ENTITY_PLAYER_LEVELUP";
 		private String nextStageSound = "ITEM_FIRECHARGE_USE";
 		private ItemStack defaultQuestItem = XMaterial.BOOK.parseItem();
-		private XMaterial pageItem = XMaterial.ARROW;
 		private int startParticleDistance;
 		private int requirementUpdateTime;
 		private boolean sendUpdate = true;
@@ -328,16 +345,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			questConfirmGUI = config.getBoolean("questConfirmGUI");
 			sounds = config.getBoolean("sounds");
 			fireworks = config.getBoolean("fireworks");
-			if (config.contains("pageItem"))
-				pageItem = XMaterial.matchXMaterial(config.getString("pageItem")).orElse(XMaterial.ARROW);
-			if (pageItem == null)
-				pageItem = XMaterial.ARROW;
-			if (config.isItemStack("item")) {
-				defaultQuestItem = config.getItemStack("item");
-			} else if (config.isString("item")) {
-				defaultQuestItem = XMaterial.matchXMaterial(config.getString("item")).orElse(XMaterial.BOOK).parseItem();
-			} else
-				defaultQuestItem = XMaterial.BOOK.parseItem();
+			defaultQuestItem = loadItem(config, "item", XMaterial.BOOK.parseItem());
 			defaultQuestItem = ItemUtils.clearVisibleAttributes(defaultQuestItem);
 			startParticleDistance = config.getInt("startParticleDistance");
 			requirementUpdateTime = config.getInt("requirementUpdateTime");
@@ -421,11 +429,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public ItemStack getDefaultQuestItem() {
 			return defaultQuestItem;
-		}
-
-		@Override
-		public XMaterial getPageMaterial() {
-			return pageItem;
 		}
 
 		@Override
@@ -542,6 +545,52 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public String getDefaultNPCSound() {
 			return defaultNPCSound;
+		}
+
+	}
+
+	public class GuiConfig implements QuestsConfiguration.Gui {
+
+		private ItemStack previousPageItem;
+		private ItemStack nextPageItem;
+		private boolean verticalSeparator;
+
+		private final ConfigurationSection config;
+
+		private GuiConfig(ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private boolean update() {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config.getParent(), "pageItem", config, "previous page item");
+
+				if (!config.contains("next page item", true))
+					config.set("next page item", config.get("previous page item"));
+			}
+			return result;
+		}
+
+		private void init() {
+			previousPageItem = loadItem(config, "previous page item", XMaterial.ARROW.parseItem());
+			nextPageItem = loadItem(config, "next page item", XMaterial.ARROW.parseItem());
+			verticalSeparator = config.getBoolean("vertical separator");
+		}
+
+		@Override
+		public ItemStack getPreviousPageItem() {
+			return previousPageItem;
+		}
+
+		@Override
+		public ItemStack getNextPageItem() {
+			return nextPageItem;
+		}
+
+		@Override
+		public boolean showVerticalSeparator() {
+			return verticalSeparator;
 		}
 
 	}

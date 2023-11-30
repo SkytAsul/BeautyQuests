@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -85,7 +86,7 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 				locations.put(loc, visible);
 				inventory.setItem(i, ItemUtils.itemSwitch(loc.getName(), visible));
 			}
-			inventory.setItem(4, ItemUtils.itemDone);
+			inventory.setItem(4, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 		}
 		
 		@Override

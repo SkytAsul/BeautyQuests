@@ -54,8 +54,6 @@ fireworks: true
 npcClick: [RIGHT, SHIFT_RIGHT]
 # Default item shown for a quest in the menus
 item: BOOK
-# Page item material
-pageItem: ARROW
 # Maxmium distance where starting particles are shown
 startParticleDistance: 20
 # Number of seconds before the plugin checks every requirements for the player to show the starting particle
@@ -64,6 +62,16 @@ requirementUpdateTime: 1
 requirementReasonOnMultipleQuests: true
 # Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
 stageEndRewardsMessage: true
+
+# - GUIs-
+# Some options related to graphical user interfaces
+gui:
+  # Previous page item
+  previous page item: ARROW
+  # Next page item
+  next page item: ARROW
+  # Show a vertical separator made of glass pane between the items pane and the arrow buttons
+  vertical separator: true
 
 # - Dialogs -
 # Various options related to dialogs 

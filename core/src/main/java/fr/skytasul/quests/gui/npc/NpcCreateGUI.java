@@ -56,8 +56,8 @@ public class NpcCreateGUI extends AbstractGui {
 		setName("§cno name selected");
 		setSkin("Knight");
 		setType(EntityType.PLAYER);
-		inventory.setItem(7, ItemUtils.itemCancel);
-		inventory.setItem(8, ItemUtils.itemDone);
+		inventory.setItem(7, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
+		inventory.setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 	}
 	
 	private void setName(String name) {

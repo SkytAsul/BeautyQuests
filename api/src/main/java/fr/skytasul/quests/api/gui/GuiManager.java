@@ -23,4 +23,8 @@ public interface GuiManager {
 
 	public void setFactory(@NotNull GuiFactory factory);
 
+	public @NotNull ItemFactory getItemFactory();
+
+	public void setItemFactory(@NotNull ItemFactory factory);
+
 }

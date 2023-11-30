@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
@@ -19,6 +18,9 @@ public interface QuestsConfiguration {
 
 	@NotNull
 	Quests getQuestsConfig();
+
+	@NotNull
+	Gui getGuiConfig();
 
 	@NotNull
 	Dialogs getDialogsConfig();
@@ -61,8 +63,6 @@ public interface QuestsConfiguration {
 
 		ItemStack getDefaultQuestItem();
 
-		XMaterial getPageMaterial();
-
 		double startParticleDistance();
 
 		int requirementUpdateTime();
@@ -70,6 +70,16 @@ public interface QuestsConfiguration {
 		boolean requirementReasonOnMultipleQuests();
 
 		boolean stageEndRewardsMessage();
+
+	}
+
+	interface Gui {
+
+		ItemStack getPreviousPageItem();
+
+		ItemStack getNextPageItem();
+
+		boolean showVerticalSeparator();
 
 	}
 

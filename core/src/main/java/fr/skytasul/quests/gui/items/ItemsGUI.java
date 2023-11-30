@@ -42,7 +42,7 @@ public class ItemsGUI extends AbstractGui {
 
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
-		inv.setItem(size - 1, ItemUtils.itemDone);
+		inv.setItem(size - 1, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 		
 		for (int i = 0; i < size - 1; i++) {
 			if (i < items.size()) {

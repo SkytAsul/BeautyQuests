@@ -1,13 +1,7 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.AbstractMap;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;

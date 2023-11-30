@@ -52,8 +52,8 @@ public class ItemCreatorGUI extends AbstractGui {
 		inventory.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
 		inventory.setItem(6, ItemUtils.item(XMaterial.BOOK, Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
 		if (allowCancel)
-			inventory.setItem(8, ItemUtils.itemCancel);
-		inventory.setItem(17, ItemUtils.itemDone);
+			inventory.setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
+		inventory.setItem(17, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 		inventory.getItem(17).setType(Material.COAL);
 	}
 

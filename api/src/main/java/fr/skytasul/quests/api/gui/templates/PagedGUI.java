@@ -14,7 +14,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
@@ -36,23 +39,30 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	protected int page = 0;
 	protected int maxPage;
 
+	private final int columns;
+	private final int dataSlots;
+
 	private String name;
 	private DyeColor color;
 	protected List<T> objects;
 	protected Consumer<List<T>> validate;
-	private ItemStack validationItem = ItemUtils.itemDone;
+	private ItemStack validationItem = QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone();
 	protected LevenshteinComparator<T> comparator;
 
-	protected PagedGUI(String name, DyeColor color, Collection<T> objects) {
+	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<T> objects) {
 		this(name, color, objects, null, null);
 	}
 
-	protected PagedGUI(String name, DyeColor color, Collection<T> objects, Consumer<List<T>> validate, Function<T, String> searchName) {
+	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<T> objects,
+			@Nullable Consumer<List<T>> validate, @Nullable Function<T, String> searchName) {
 		this.name = name;
 		this.color = color;
 		this.objects = new ArrayList<>(objects);
 		this.validate = validate;
 		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
+
+		columns = QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator() ? 7 : 8;
+		dataSlots = columns * 5;
 	}
 
 	@Override
@@ -65,15 +75,21 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		this.player = player;
 		calcMaxPages();
 
-		setBarItem(0, ItemUtils.itemLaterPage);
-		setBarItem(4, ItemUtils.itemNextPage);
+		setBarItem(0, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage());
+		setBarItem(4, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNextPage());
 		if (validate != null) setBarItem(2, validationItem);
 		if (comparator != null) setBarItem(3, itemSearch);
 
-		for (int i = 0; i < 5; i++)
-			inventory.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
+		displaySeparator();
 
 		setItems();
+	}
+
+	private void displaySeparator() {
+		if (color != null && QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator()) {
+			for (int i = 0; i < 5; i++)
+				getInventory().setItem(i * 9 + columns, ItemUtils.itemSeparator(color));
+		}
 	}
 
 	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
@@ -103,28 +119,43 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		return this;
 	}
 
+	public void setSeparatorColor(@Nullable DyeColor color) {
+		this.color = color;
+		if (getInventory() != null)
+			displaySeparator();
+	}
+
+	public void setObjects(@NotNull Collection<T> objects) {
+		this.objects = new ArrayList<>(objects);
+		page = 0;
+		calcMaxPages();
+		setItems();
+	}
+
 	protected void calcMaxPages() {
 		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
 	}
 
 	protected void setItems() {
-		for (int i = 0; i < 35; i++) setMainItem(i, null);
-		for (int i = page * 35; i < objects.size(); i++){
-			if (i == (page + 1) * 35) break;
+		for (int i = 0; i < dataSlots; i++)
+			setMainItem(i, null);
+		for (int i = page * dataSlots; i < objects.size(); i++) {
+			if (i == (page + 1) * dataSlots)
+				break;
 			T obj = objects.get(i);
-			setMainItem(i - page * 35, getItemStack(obj));
+			setMainItem(i - page * dataSlots, getItemStack(obj));
 		}
 	}
 
 	private int setMainItem(int mainSlot, ItemStack is){
-		int line = (int) Math.floor(mainSlot * 1.0 / 7.0);
-		int slot = mainSlot + (2 * line);
+		int line = (int) Math.floor(mainSlot * 1.0 / columns);
+		int slot = mainSlot + ((9 - columns) * line);
 		setItem(is, slot);
 		return slot;
 	}
 
-	private int setBarItem(int barSlot, ItemStack is){
-		int slot = barSlot * 9 + 8;
+	protected int setBarItem(int barSlot, ItemStack is) {
+		int slot = barSlot * 9 + 8; // always at last column so +8
 		setItem(is, slot);
 		return slot;
 	}
@@ -150,19 +181,30 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	 */
 	public int getObjectSlot(T object){
 		int index = objects.indexOf(object);
-		if (index < page*35 || index > (page + 1)*35) return -1;
+		if (index < page * dataSlots || index > (page + 1) * dataSlots)
+			return -1;
 
-		int line = (int) Math.floor(index * 1.0 / 7.0);
-		return index + (2 * line) - page * 35;
+		int line = (int) Math.floor(index * 1.0 / columns);
+		return index + ((9 - columns) * line) - page * dataSlots;
 	}
 
 
 	@Override
 	public void onClick(GuiClickEvent event) {
-		switch (event.getSlot() % 9) {
-		case 8:
+		int column = event.getSlot() % 9;
+		if (column == 8) {
 			int barSlot = (event.getSlot() - 8) / 9;
-			switch (barSlot){
+			barClick(event, barSlot);
+		} else if (!QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator() || column != 7) {
+			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
+			int objectSlot = event.getSlot() - line * (9 - columns) + page * dataSlots;
+			click(objects.get(objectSlot), event.getClicked(), event.getClick());
+			// inv.setItem(slot, getItemStack(objects.get(objectSlot)));
+		}
+	}
+
+	protected void barClick(GuiClickEvent event, int barSlot) {
+		switch (barSlot) {
 			case 0:
 				if (page == 0) break;
 				page--;
@@ -180,7 +222,6 @@ public abstract class PagedGUI<T> extends AbstractGui {
 
 			case 3:
 				new TextEditor<String>(player, this::reopen, obj -> {
-					//objects.stream().filter(x -> getName(x).contains((String) obj));
 					objects.sort(comparator.setReference(obj));
 					page = 0;
 					setItems();
@@ -188,17 +229,6 @@ public abstract class PagedGUI<T> extends AbstractGui {
 				}).start();
 				break;
 			}
-			break;
-
-		case 7:
-			break;
-
-		default:
-			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
-			int objectSlot = event.getSlot() - line * 2 + page * 35;
-			click(objects.get(objectSlot), event.getClicked(), event.getClick());
-			//inv.setItem(slot, getItemStack(objects.get(objectSlot)));
-		}
 	}
 
 	public final void reopen() {

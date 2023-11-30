@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -33,7 +34,7 @@ public class StagesGUI extends AbstractGui {
 	private static final int SLOT_FINISH = 52;
 
 	private static final ItemStack stageCreate = ItemUtils.item(XMaterial.SLIME_BALL, Lang.stageCreate.toString());
-	private static final ItemStack notDone = ItemUtils.lore(ItemUtils.itemNotDone.clone(), Lang.cantFinish.toString());
+	private static final ItemStack notDone = ItemUtils.lore(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNotDone().clone(), Lang.cantFinish.toString());
 
 	private List<Line> lines = new ArrayList<>();
 
@@ -65,17 +66,17 @@ public class StagesGUI extends AbstractGui {
 		lines.get(0).setCreationState();
 		lines.get(15).setCreationState();
 
-		inv.setItem(45, ItemUtils.itemLaterPage);
-		inv.setItem(50, ItemUtils.itemNextPage);
+		inv.setItem(45, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage());
+		inv.setItem(50, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNextPage());
 
-		inv.setItem(SLOT_FINISH, isEmpty() ? notDone : ItemUtils.itemDone);
-		inv.setItem(53, previousBranch == null ? ItemUtils.itemCancel
+		inv.setItem(SLOT_FINISH, isEmpty() ? notDone : QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
+		inv.setItem(53, previousBranch == null ? QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel()
 				: ItemUtils.item(XMaterial.FILLED_MAP, Lang.previousBranch.toString()));
 		refresh();
 
 		if (session.isEdition() && this == session.getStagesGUI()) {
 			editBranch(session.getQuestEdited().getBranchesManager().getBranch(0));
-			inv.setItem(SLOT_FINISH, ItemUtils.itemDone);
+			inv.setItem(SLOT_FINISH, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 		}
 	}
 
@@ -234,7 +235,7 @@ public class StagesGUI extends AbstractGui {
 			context.setCreation((StageCreation) creation);
 			creation.setupLine(lineObj);
 
-			getInventory().setItem(SLOT_FINISH, ItemUtils.itemDone);
+			getInventory().setItem(SLOT_FINISH, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 
 			int maxStages = ending ? 20 : 15;
 			ItemStack manageItem = ItemUtils.item(XMaterial.BARRIER, Lang.stageType.format(type), getLineManageLore(lineId));

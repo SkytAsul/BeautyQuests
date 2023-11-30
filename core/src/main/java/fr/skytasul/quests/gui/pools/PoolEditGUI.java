@@ -107,8 +107,8 @@ public class PoolEditGUI extends AbstractGui {
 		inv.setItem(SLOT_DUPLICATE, ItemUtils.itemSwitch(Lang.poolAvoidDuplicates.toString(), avoidDuplicates, Lang.poolAvoidDuplicatesLore.toString()));
 		inv.setItem(SLOT_REQUIREMENTS, ItemUtils.item(XMaterial.NETHER_STAR, Lang.poolRequirements.toString(), getRequirementsLore()));
 
-		inv.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
-		inv.setItem(SLOT_CREATE, ItemUtils.itemDone);
+		inv.setItem(SLOT_CANCEL, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
+		inv.setItem(SLOT_CREATE, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 	}
 
 	@Override

@@ -97,7 +97,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		options.calculateDependencies();
 
 		buttons.put(QuestOptionCreator.calculateSlot(3),
-				LayoutedButton.create(ItemUtils.itemLaterPage, event -> session.openStagesGUI(event.getPlayer())));
+				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(), event -> session.openStagesGUI(event.getPlayer())));
 	
 		doneButtonSlot = QuestOptionCreator.calculateSlot(5);
 		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -99,7 +99,7 @@ public class RequirementDependentReward extends AbstractReward {
 				.addButton(1,
 						LayoutedButton.create(XMaterial.CHEST, () -> "§a" + rewards.getSizeString(),
 								Collections.emptyList(), this::editRewards))
-				.addButton(4, LayoutedButton.create(ItemUtils.itemDone, __ -> event.reopenGUI()))
+				.addButton(4, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), __ -> event.reopenGUI()))
 				.setName(Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString())
 				.setCloseBehavior(StandardCloseBehavior.REOPEN)
 				.build()

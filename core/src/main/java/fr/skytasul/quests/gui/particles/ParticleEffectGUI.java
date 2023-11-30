@@ -10,6 +10,7 @@ import org.bukkit.Particle;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.ColorParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -79,8 +80,8 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 				return ParticleEffect.canHaveColor(particle);
 			}
 		});
-		buttons.put(7, LayoutedButton.create(ItemUtils.itemCancel, this::cancelClick));
-		buttons.put(8, LayoutedButton.create(ItemUtils.itemDone, this::doneClick));
+		buttons.put(7, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel(), this::cancelClick));
+		buttons.put(8, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
 	}
 
 	private void shapeClick(LayoutedClickEvent event) {

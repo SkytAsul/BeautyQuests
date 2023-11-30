@@ -5,7 +5,7 @@ import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.stages.creation.StageGuiClickHandler;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 
@@ -104,9 +104,9 @@ public class StageLineImplementation implements StageGuiLine {
 		}
 
 		if (page > 0)
-			setRawItem(0, ItemUtils.itemLaterPage);
+			setRawItem(0, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage());
 		if (page < maxPage)
-			setRawItem(8, ItemUtils.itemNextPage);
+			setRawItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNextPage());
 	}
 
 	@Override

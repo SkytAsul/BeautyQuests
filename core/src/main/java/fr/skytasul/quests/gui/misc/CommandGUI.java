@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -16,14 +17,14 @@ import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Command;
 
 public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
-	
+
 	private Consumer<Command> end;
-	
+
 	private String cmd;
 	private boolean console = false;
 	private boolean parse = false;
 	private int delay = 0;
-	
+
 	private final @NotNull LayoutedButton doneButton;
 
 	public CommandGUI(Consumer<Command> end, Runnable cancel) {
@@ -40,7 +41,7 @@ public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 		buttons.put(5, LayoutedButton.createLoreValue(XMaterial.CLOCK, Lang.commandDelay.toString(), () -> delay,
 				this::delayClick));
 		buttons.put(8,
-				LayoutedButton.create(() -> cmd == null ? ItemUtils.itemNotDone : ItemUtils.itemDone, this::doneClick));
+				LayoutedButton.create(() -> cmd == null ? QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNotDone() : QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
 	}
 
 	public CommandGUI setFromExistingCommand(@Nullable Command cmd) {
@@ -54,7 +55,7 @@ public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 		}
 		return this;
 	}
-	
+
 	private void commandClick(LayoutedClickEvent event) {
 		Lang.COMMAND.send(event.getPlayer());
 		new TextEditor<String>(event.getPlayer(), event::reopen, cmd -> {

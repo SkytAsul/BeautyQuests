@@ -13,10 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.gui.Gui;
-import fr.skytasul.quests.api.gui.GuiClickEvent;
-import fr.skytasul.quests.api.gui.GuiFactory;
-import fr.skytasul.quests.api.gui.GuiManager;
+import fr.skytasul.quests.api.gui.*;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.close.OpenCloseBehavior;
@@ -30,9 +27,11 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 	private Map<Player, Gui> players = new HashMap<>();
 	private boolean dismissClose = false;
 	private GuiFactory factory;
+	private ItemFactory itemFactory;
 
 	public GuiManagerImplementation() {
 		setFactory(new DefaultGuiFactory());
+		setItemFactory(new DefaultItemFactory());
 	}
 
 	@Override
@@ -90,6 +89,16 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 	@Override
 	public void setFactory(@NotNull GuiFactory factory) {
 		this.factory = factory;
+	}
+
+	@Override
+	public @NotNull ItemFactory getItemFactory() {
+		return itemFactory;
+	}
+
+	@Override
+	public void setItemFactory(@NotNull ItemFactory factory) {
+		this.itemFactory = factory;
 	}
 
 	@EventHandler

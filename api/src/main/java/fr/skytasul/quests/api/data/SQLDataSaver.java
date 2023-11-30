@@ -1,10 +1,6 @@
 package fr.skytasul.quests.api.data;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

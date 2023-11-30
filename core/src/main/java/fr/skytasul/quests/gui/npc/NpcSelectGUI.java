@@ -44,7 +44,7 @@ public final class NpcSelectGUI {
 					.createNpcSelection(event.getPlayer(), event::reopen, end).start();
 		}));
 		if (nullable)
-			builder.addButton(2, LayoutedButton.create(ItemUtils.itemNone, event -> {
+			builder.addButton(2, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNone(), event -> {
 				event.close();
 				end.accept(null);
 			}));

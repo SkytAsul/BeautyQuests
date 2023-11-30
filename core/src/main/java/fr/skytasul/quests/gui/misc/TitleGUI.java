@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -100,8 +101,8 @@ public class TitleGUI extends AbstractGui {
 		inventory.setItem(SLOT_STAY, ItemUtils.item(XMaterial.CLOCK, Lang.title_stay.toString()));
 		inventory.setItem(SLOT_FADE_OUT, ItemUtils.item(XMaterial.CLOCK, Lang.title_fadeOut.toString()));
 
-		inventory.setItem(7, ItemUtils.itemCancel);
-		inventory.setItem(8, ItemUtils.itemDone.toMutableStack());
+		inventory.setItem(7, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
+		inventory.setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 
 		// updating lores
 		setTitle(title);

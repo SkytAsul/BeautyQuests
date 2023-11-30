@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.stages.types.Locatable.MultipleLocatable;
 
 /**
  * This interface indicates that an object can provide some locations on demand.

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.QuestsPlugin;
 
 public class WaitClick extends InventoryClear implements Listener {
 
@@ -38,7 +38,7 @@ public class WaitClick extends InventoryClear implements Listener {
 			run = validate;
 		}else if (e.getItem().equals(noneItem)){
 			run = none;
-		}else if (ItemUtils.itemCancel.equals(e.getItem())) {
+		} else if (QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel().equals(e.getItem())) {
 			run = cancel;
 		}else return;
 		e.setCancelled(true);
@@ -57,7 +57,8 @@ public class WaitClick extends InventoryClear implements Listener {
 			player.getInventory().setHeldItemSlot(3);
 			player.getInventory().setItem(5, noneItem);
 		}
-		if (cancel != null) player.getInventory().setItem(8, ItemUtils.itemCancel);
+		if (cancel != null)
+			player.getInventory().setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
 	}
 
 }

@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.WorldParser;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -45,7 +46,7 @@ public class PermissionGUI extends AbstractGui {
 				world == null ? Lang.worldGlobal.toString() : "§b" + world));
 		inventory.setItem(2, ItemUtils.itemSwitch(Lang.permRemove.toString(), take, Lang.permRemoveLore.toString()));
 
-		ItemStack done = ItemUtils.itemDone.toMutableStack();
+		ItemStack done = QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone();
 		if (perm == null) done.setType(Material.COAL);
 		inventory.setItem(4, done);
 	}
@@ -81,7 +82,7 @@ public class PermissionGUI extends AbstractGui {
 			break;
 		}
 	}
-	
+
 	private void updatePerm(Player p, String perm) {
 		this.perm = perm;
 		ItemUtils.lore(getInventory().getItem(0), perm == null ? Lang.NotSet.toString() : "§b" + perm);
@@ -98,5 +99,5 @@ public class PermissionGUI extends AbstractGui {
 	public CloseBehavior onClose(Player p) {
 		return StandardCloseBehavior.REOPEN;
 	}
-	
+
 }
