@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
@@ -102,9 +101,9 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			default:
 				throw new UnsupportedOperationException();
 		}
+		quests.sort(null);
 
 		setObjects(quests);
-		sortValues(Function.identity());
 	}
 
 	@Override
