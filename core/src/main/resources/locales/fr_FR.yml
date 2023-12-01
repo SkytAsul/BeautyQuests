@@ -379,6 +379,12 @@ inv:
         targetMobs: '§cMobs à heurter'
       eatDrink:
         items: '§eModifier les objets à manger ou à boire'
+      playTime:
+        changeTimeMode: 'Changer le mode de comptage du temps'
+        modes:
+          online: 'Le joueur doit être connecté sur le serveur'
+          offline: 'Le joueur peut être hors ligne, mais le serveur doit être lancé pour que le temps soit décompté.'
+          realtime: 'Le temps est décompté même si le joueur et le serveur sont hors ligne.'
   stages:
     name: Créer les étapes
     nextPage: '§ePage suivante'

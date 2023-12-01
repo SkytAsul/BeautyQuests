@@ -1,519 +1,92 @@
 ---
-advancement:
-  finished: Abgeschlossen
-  notStarted: Nicht gestartet
-description:
-  requirement:
-    class: Klasse {class_name}
-    combatLevel: Kampflevel {short_level}
-    faction: Fraktion {faction_name}
-    jobLevel: Level {short_level} für {job_name}
-    quest: Quest beenden §e{quest_name}
-    skillLevel: Level {short_level} für {skill_name}
-    title: '§8§lAnforderungen:'
-  reward:
-    title: '§8§lBelohnungen:'
-indication:
-  cancelQuest: '§7Bist du sicher, dass du die Quest {quest_name} abbrechen möchtest?'
-  closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
-  removeQuest: '§7Bist du sicher, dass du die Quest {quest} entfernen möchtest?'
-  startQuest: '§7Möchtest du die Quest {quest_name} starten?'
-inv:
-  addObject: '§aFüge ein Ziel hinzu'
-  block:
-    blockData: '§dBlockdaten (fortgeschritten)'
-    blockName: '§bEigener Blockname'
-    blockTag: '§dTag (Erweitert)'
-    blockTagLore: Wähle einen Tag, welcher eine Liste von möglichen Blöcken beschreibt. Tags können durch Datapacks angepasst werden. Du kannst eine Liste von Tags im Minecraft Wiki finden.
-    materialNotItemLore: Dieser Block kann momentan nicht als Item angezeigt werden. Er wird immer noch korrekt als {block_material} gespeichert.
-    name: Block auswählen
-  blockAction:
-    location: '§eWähle einen genauen Ort aus'
-    material: '§eWähle ein Blockmaterial'
-    name: Blockaktion auswählen
-  blocksList:
-    addBlock: '§aKlicke, um einen Block hinzuzufügen.'
-    name: Blöcke auswählen
-  buckets:
-    name: Eimertyp
-  cancel: '§c§lAbbrechen'
-  cancelActions:
-    name: Aktionen abbrechen
-  checkpointActions:
-    name: Checkpoint-Aktionen
-  chooseAccount:
-    name: Welcher Account?
-  chooseQuest:
-    menu: '§aQuests Menu'
-    menuLore: Ruft dich zu deinem Quest-Menü zurück.
-    name: Welche Quest?
-  classesList.name: Klassenliste
-  classesRequired.name: Klassen erforderlich
-  command:
-    console: Konsole
-    delay: '§bVerzögerung'
-    name: Befehl
-    parse: Platzhalter analysieren
-    value: '§eBefehl'
-  commandsList:
-    console: '§eKonsole: {command_console}'
-    name: Befehlliste
-    value: '§eBefehl: {command_label}'
-  confirm:
-    name: Bist du sicher?
-    'no': '§cAbbrechen'
-    'yes': '§aBestätigen'
-  create:
-    NPCSelect: '§eNPC auswählen oder erstellen'
-    NPCText: '§eDialog bearbeiten'
-    breedAnimals: '§aZüchte Tiere'
-    bringBack: '§aItems zurückbringen'
-    bucket: '§aEimer befüllen'
-    cancelMessage: Senden abbrechen
-    cantFinish: '§7Du musst mindestens eine Stufe erstellen, bevor du die Questerstellung fertigstellen kannst!'
-    changeEntityType: '§eObjekttyp ändern'
-    changeTicksRequired: '§eÄndere die erforderlichen gespielten Ticks'
-    craft: '§aItem herstellen'
-    currentRadius: '§eAktuelle Entfernung: §6{radius}'
-    dealDamage: '§cSchaden an Mobs zufügen'
-    death: '§csterben'
-    eatDrink: '§aEssen oder trinken Sie Essen oder Tränke'
-    editBlocksMine: '§eDie zu zerstörenden Blöcke bearbeiten'
-    editBlocksPlace: '§eDie zu plazierenden Blöcke bearbeiten'
-    editBucketAmount: '§eAnzahl an zu befüllenden Eimern bearbeiten'
-    editBucketType: '§eTyp des zu befüllenden Eimers bearbeiten'
-    editFishes: '§eDie zu fangenden Fische bearbeiten'
-    editItem: '§eHerzustellendes Item bearbeiten'
-    editItemsToEnchant: '§eBearbeite Items zum Verzaubern'
-    editItemsToMelt: '§eBearbeite Items zum Schmelzen'
-    editLocation: '§ePosition bearbeiten'
-    editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
-    editMobsKill: '§eDie zu tötenden Mobs bearbeiten'
-    editRadius: '§eEntfernung von Position bearbeiten'
-    enchant: '§dVerzauberte Gegenstände'
-    findNPC: '§aNPC finden'
-    findRegion: '§aRegion finden'
-    fish: '§aFische fangen'
-    hideClues: Partikel und Hologramme verstecken
-    ignoreCase: Fall der Nachricht ignorieren
-    interact: '§aMit Block interagieren'
-    killMobs: '§aMobs töten'
-    leftClick: Muss Linksklick sein
-    location: '§aZu Position gehen'
-    melt: '§6Schmelze Elemente'
-    mineBlocks: '§aBlöcke zerstören'
-    mobsKillFromAFar: Muss mit Projektil getötet werden
-    placeBlocks: '§aPlatziere Blöcke'
-    playTime: '§eSpielzeit'
-    preventBlockPlace: Spieler daran hindern, ihre eigenen Blöcke zu zerstören
-    replacePlaceholders: Ersetze {PLAYER} und Platzhalter von PAPI
-    selectBlockLocation: '§eBlockposition auswählen'
-    selectBlockMaterial: '§eWähle Blockmaterial'
-    selectItems: '§eBenötigte Items auswählen'
-    selectItemsComparisons: '§eWähle Gegenstandsvergleiche (ERWEITERT)'
-    selectItemsMessage: '§eFragenachricht bearbeiten'
-    selectRegion: '§7Region auswählen'
-    stage:
-      dealDamage:
-        damage: '§eSchaden zu erledigen'
-        targetMobs: '§cMobs zu Schaden'
-      death:
-        anyCause: Jede Todesursache
-        causes: '§aSetze Todesursache §d(FORTGESCHRITTEN)'
-        setCauses: '{causes_amount} Todesursache(n)'
-      eatDrink:
-        items: '§eBearbeite Items um zu essen oder zu trinken'
-      location:
-        worldPattern: '§aSetze Weltennamenmuster §d(FORTGESCHRITTEN)'
-        worldPatternLore: Wenn du möchtest, dass die Stage für eine Welt, die einem bestimmten Muster entspricht, abgeschlossen wird, gib hier einen Regex (regulärer Ausdruck) ein.
-    stageCreate: '§aNeuen Schritt erstellen'
-    stageDown: Eins runter
-    stageRemove: '§cDiesen Schritt löschen'
-    stageStartMsg: '§eStartnachricht bearbeiten'
-    stageType: '§7Stufentyp: §e{stage_type}'
-    stageUp: Eins höher
-    talkChat: '§aIm Chat schreiben'
-    tameAnimals: '§aZähme Tiere'
-    toggleRegionExit: Beim Verlassen
-  details:
-    actions: '{amount} Aktion(en)'
-    auto: Beim ersten Beitritt automatisch starten
-    autoLore: Wenn aktiviert, wird die Quest automatisch gestartet, wenn der Spieler zum ersten Mal den Server betritt.
-    bypassLimit: Questlimit nicht zählen
-    bypassLimitLore: Wenn aktiviert, ist die Quest startbar, auch wenn der Spieler seine maximale Anzahl an begonnenen Quests erreicht hat.
-    cancelRewards: '§cAbbrechen von Aktionen'
-    cancelRewardsLore: Aktionen wenn Spieler diese Quest abbrechen.
-    cancellable: Vom Spieler abbrechbar
-    cancellableLore: Ermöglicht dem Spieler, die Quest durch das Quest-Menü abzubrechen.
-    createQuestLore: Du musst einen Questnamen definieren.
-    createQuestName: '§lQuest erstellen'
-    customConfirmMessage: '§eQuestbestätigungsnachricht bearbeiten'
-    customConfirmMessageLore: Meldung, die in der Bestätigungs-GUI angezeigt wird, wenn ein Spieler die Quest startet.
-    customDescription: '§eBearbeite Quest Beschreibung'
-    customDescriptionLore: Beschreibung, die unter dem Namen der Quest in GUIs steht.
-    customMaterial: '§eBearbeite das Material des Questgegenstandes'
-    customMaterialLore: Angezeigter Gegenstand dieser Quest im Questmenü.
-    defaultValue: '§8(Standardwert)'
-    editQuestName: '§lQuest bearbeiten'
-    editRequirements: '§eAnforderungen bearbeiten'
-    editRequirementsLore: Alle Anforderungen müssen auf den Spieler zutreffen, bevor er mit der Quest beginnen kann.
-    endMessage: '§eAbschlussnachricht bearbeiten'
-    endMessageLore: Nachricht, die am Ende der Quest an den Spieler gesendet wird.
-    endSound: '§eBearbeite den end sound'
-    endSoundLore: Ton, der am Ende einer Quest abgespielt wird.
-    failOnDeath: Im Todesfall fehlschlagen
-    failOnDeathLore: Wird die Quest abgebrochen, wenn der Spieler stirbt?
-    firework: '§dEnding Feuerwerk'
-    fireworkLore: Feuerwerk startet, wenn der Spieler die Quest beendet hat
-    fireworkLoreDrop: Lege dein eigenes Feuerwerk hierher
-    hideNoRequirementsItem: Verstecken, wenn die Anforderungen nicht erfüllt sind
-    hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
-    hologramLaunch: '§e„Starten“‐Hologramm‐Item bearbeiten'
-    hologramLaunchLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest starten kann.
-    hologramLaunchNo: '§e„Starten nicht verfügbar“‐Hologramm‐Item bearbeiten'
-    hologramLaunchNoLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest NICHT starten kann.
-    hologramText: '§eHologrammtext'
-    hologramTextLore: Text, der auf dem Hologramm über dem Kopf des Starter NPCs angezeigt wird.
-    keepDatas: Spielerdaten beibehalten
-    keepDatasLore: 'Erzwinge das Plugin die Daten der Spieler zu speichern, obwohl Stufen bearbeitet wurden. §c§lWARNUNG §c- Aktivieren dieser Option kann die Daten deiner Spieler zerstören.'
-    loreReset: '§e§lDer Fortschritt aller Spieler wird zurückgesetzt'
-    multipleTime:
-      itemLore: Kann die Quest mehrmals abgeschlossen werden?
-      itemName: Wiederholbar ein-/ausschalten
-    name: Letzte Questdetails
-    optionValue: '§8Wert: §7{value}'
-    questName: '§a§lQuestname bearbeiten'
-    questNameLore: Ein Name muss gesetzt werden, um die Questerstellung abzuschließen.
-    questPool: '§eQuestgruppe'
-    questPoolLore: Füge diese Quest einer Questgruppe hinzu
-    removeItemsReward: '§eEntferne Items vom Inventar'
-    requiredParameter: '§7Benötigter Parameter'
-    requirements: '{amount} Anforderung(en)'
-    rewards: '{amount} Belohnung(en)'
-    rewardsLore: Aktionen die durchgeführt werden wenn die Quest endet.
-    scoreboardItem: Scoreboard aktivieren
-    scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
-    selectStarterNPC: '§e§lNPC‐Starter auswählen'
-    selectStarterNPCLore: Ein Klick auf den ausgewählten NPC startet die Quest
-    selectStarterNPCPool: '§c⚠: Eine Questgruppe ist ausgewählt'
-    setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
-    setItemsRewards: '§eBelohnungs‐Items bearbeiten'
-    setMoneyReward: '§eGeldbelohnung bearbeiten'
-    setPermReward: '§eBerechtigungen bearbeiten'
-    setRewardStopQuest: '§cQuest stoppen'
-    setRewardsRandom: '§dZufällige Belohnungen'
-    setRewardsWithRequirements: '§eBelohnungen mit Voraussetzungen'
-    setTitleReward: '§eTitelbelohnung bearbeiten'
-    setWaitReward: '§e"Warte"-Belohnung bearbeiten'
-    setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
-    startDialog: '§eStart‐Dialog bearbeiten'
-    startDialogLore: Dialog, der vor dem Start der Quests angezeigt wird, wenn Spieler auf den Starter NPC klicken.
-    startMessage: '§eStartnachricht bearbeiten'
-    startMessageLore: Nachricht, die am Anfang der Quest an den Spieler gesendet wird.
-    startRewards: '§6Startbelohnungen'
-    startRewardsLore: Aktionen die durchgeführt werden wenn die Quest startet.
-    startableFromGUI: Über GUI startbar
-    startableFromGUILore: Ermöglicht dem Spieler, die Quest aus dem Quest-Menü zu starten.
-    timer: '§bNeustart Timer'
-    timerLore: Zeit, bis der Spieler die Quest wieder starten kann.
-    visibility: '§bQuest Sichtbarkeit'
-    visibilityLore: Legen Sie fest, in welchen Tabs des Menüs die Quest angezeigt wird und ob die Quest auf dynamischen Karten sichtbar ist.
-  editTitle:
-    fadeIn: '§aEinblendedauer'
-    fadeOut: '§aAusblendedauer'
-    name: Titel bearbeiten
-    stay: '§bEinblendedauer'
-    subtitle: '§eUntertitel'
-    title: '§6Titel'
-  entityType:
-    name: Objekttyp auswählen
-  factionsList.name: Fraktionsliste
-  factionsRequired.name: Fraktionen benötigt
-  itemComparisons:
-    bukkit: Bukkit nativer Vergleich
-    bukkitLore: Nutzt das Standard Bukkit Gegenstandsvergleichsystem. Vergleicht Material, Haltbarkeit, NBT Tags...
-    customBukkit: Bukkit nativer Vergleich - KEIN NBT
-    customBukkitLore: Nutzt das Standard Bukkit Gegenstandsvergleichsystem, aber löscht NBT Tags. Vergleicht Material, Haltbarkeit...
-    enchants: Gegenstände verzaubert
-    enchantsLore: Vergleicht Gegenstandsverzauberungen
-    itemLore: Gegenstands-Beschreibung
-    itemLoreLore: Vergleicht Gegenstands-Beschreibungen
-    itemName: Gegenstandsname
-    itemNameLore: Vergleicht Gegenstandsnamen
-    itemsAdder: ItemsAdder
-    itemsAdderLore: Vergleicht ItemsAdder-IDs
-    material: Gegenstandsmaterial
-    materialLore: Vergleicht Gegenstandsmaterial (z.B Stein, Eisenschwert...)
-    name: Itemvergleiche
-    repairCost: Reparaturkosten
-    repairCostLore: Vergleicht Reparaturkosten für Rüstungen und Schwerter
-  itemCreator:
-    isQuestItem: '§bQuest‐Item:'
-    itemFlags: Item‐Flags umschalten
-    itemLore: '§bItem‐Beschreibung'
-    itemName: '§bItem‐Name'
-    itemType: '§bItem‐Typ'
-    name: Item‐Ersteller
-  itemSelect:
-    name: Item auswählen
-  itemsSelect:
-    name: Items bearbeiten
-    none: '§aBewege ein Item hierher oder klicke, um den Item‐Editor zu öffnen.'
-  listAllQuests:
-    name: Quests
-  listBook:
-    noQuests: Es wurden zuvor keine Quests erstellt.
-    questMultiple: Mehrfachverwendung
-    questName: Name
-    questRewards: Belohnungen
-    questStages: Schritte
-    questStarter: Starter
-    requirements: Vorraussetzungen
-  listPlayerQuests:
-    name: 'Quests von {player_name}'
-  listQuests:
-    canRedo: '§3§oDu kannst diese Quest erneut starten!'
-    finished: Abgeschlossene Quests
-    inProgress: Laufende Quests
-    loreCancelClick: '§cQuest abbrechen'
-    loreDialogsHistoryClick: '§7Dialoge anzeigen'
-    loreStart: '§a§oKlicke, um die Quest zu starten.'
-    loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
-    notStarted: Nicht gestartete Quests
-    timeToWaitRedo: '§3§oDu kannst diese Quest in {time_left} erneut starten.'
-    timesFinished: '§3Quest {times_finished} mal(e) erledigt.'
-  mobSelect:
-    boss: '§6Wähle einen Boss'
-    bukkitEntityType: '§eObjekttyp auswählen'
-    epicBoss: '§6Wähle einen Epic Boss'
-    mythicMob: '§6Mythic Mob auswählen'
-    name: Wähle den Mobtyp
-  mobs:
-    name: Mobs auswählen
-    none: '§aKlicke, um ein Mob hinzuzufügen.'
-    setLevel: Mindestlevel festlegen
-  npcCreate:
-    move:
-      itemLore: '§aDie NPC‐Position ändern.'
-      itemName: '§eBewegen'
-    moveItem: '§a§lPosition bestätigen'
-    name: NPC erstellen
-    setName: '§eNPC‐Name bearbeiten'
-    setSkin: '§eNPC‐Skin bearbeiten'
-    setType: '§eNPC‐Typ bearbeiten'
-  npcSelect:
-    createStageNPC: '§eNPC erstellen'
-    name: Auswählen oder erstellen?
-    selectStageNPC: '§eExistierenden NPC auswählen'
-  particleEffect:
-    color: '§bPartikelfarbe'
-    name: Erstelle einen Partikeleffekt
-    shape: '§dPartikel Muster'
-    type: '§ePartikel Typ'
-  particleList:
-    colored: Farbige Partikel
-    name: Partikel Liste
-  permission:
-    name: Berechtigung auswählen
-    perm: '§aBerechtigung'
-    remove: Berechtigung entfernen
-    removeLore: '§7Berechtigung wird genommen\n§7statt zu geben.'
-    world: '§aWelt'
-    worldGlobal: '§b§lGlobal'
-  permissionList:
-    name: Berechtigungsliste
-    removed: '§eGenommen: §6{permission_removed}'
-    world: '§eWelt: §6{permission_world}'
-  poolCreation:
-    avoidDuplicates: Duplikate vermeiden
-    avoidDuplicatesLore: '§8> §7Versuche es zu vermeiden,\n  immer wieder die gleiche Quest zu absolvieren'
-    hologramText: '§eBenutzerdefiniertes Hologramm der Gruppe'
-    maxQuests: '§aMax. Quests'
-    name: Questgruppen Erstellung
-    questsPerLaunch: '§aPro Start gestartete Quests'
-    redoAllowed: Ist Wiederholen erlaubt
-    requirements: '§bAnforderungen, um eine Quest zu starten'
-    time: '§bLege die Zeit zwischen Quests fest'
-  poolsList.name: Questgruppen
-  poolsManage:
-    choose: '§e> §6§oWähle diese Gruppe §e<'
-    create: '§aErstelle eine Questgruppe'
-    edit: '§e> §6§oBearbeite die Gruppe... §e<'
-    itemName: '§aGruppe #{pool}'
-    name: Questgruppen
-    poolAvoidDuplicates: '§8Duplikate vermeiden: §7{pool_duplicates}'
-    poolHologram: '§8Hologramm-Text: §7{pool_hologram}'
-    poolMaxQuests: '§8Max. Quests: §7{pool_max_quests}'
-    poolQuestsList: '§7{pool_quests_amount} §8Quest(s): §7{pool_quests}'
-    poolQuestsPerLaunch: '§8Quests pro Start vergeben: §7{pool_quests_per_launch}'
-    poolRedo: '§8Kann abgeschlossene Quests wiederholen: §7{pool_redo}'
-    poolTime: '§8Zeit zwischen Quests: §7{pool_time}'
-  requirements:
-    name: Anforderungen
-  rewards:
-    commands: 'Befehle: {amount}'
-    name: Belohnungen
-    random:
-      minMax: Bearbeite das min und max
-      rewards: Belohnungen bearbeiten
-  rewardsWithRequirements:
-    name: Belohnungen mit Voraussetzungen
-  search: '§e§lSuche'
-  stageEnding:
-    command: '§eAuszuführenden Befehl bearbeiten'
-    locationTeleport: '§eTeleportationsposition bearbeiten'
-  stages:
-    branchesPage: '§dZweig‐Schritte'
-    descriptionTextItem: '§eBeschreibung bearbeiten'
-    endingItem: '§eAbschlussbelohnung bearbeiten'
-    laterPage: '§eVorherige Seite'
-    name: Schritte erstellen
-    newBranch: '§eZum neuen Zweig gehen'
-    nextPage: '§eNächste Seite'
-    previousBranch: '§eZurück zum vorherigen Zweig'
-    regularPage: '§aReguläre Schritte'
-    validationRequirements: '§eValidierungsanforderungen'
-    validationRequirementsLore: Alle Anforderungen müssen dem Spieler entsprechen, der versucht, den Schritt zu beenden. Ist dies nicht der Fall, kann der Schritt nicht beendet werden.
-  validate: '§b§lBestätigen'
-misc:
-  amount: '§eAnzahl: {amount}'
-  and: und
-  bucket:
-    lava: Lavaeimer
-    milk: Milcheimer
-    water: Wassereimer
-  click:
-    left: Linksklick
-    middle: Mittelklick
-    right: Rechtsklick
-    shift-left: Shift-Linksklick
-    shift-right: Shift-Rechtsklick
-  comparison:
-    different: anders als {number}
-    equals: gleich wie {number}
-    greater: strikt größer als {number}
-    greaterOrEquals: größer als {number}
-    less: strikt weniger als {number}
-    lessOrEquals: weniger als {number}
-  disabled: Deaktiviert
-  enabled: Aktiviert
-  entityType: '§eObjekttyp: {entity_type}'
-  entityTypeAny: '§eJedes Objekt'
-  format:
-    editorPrefix: '§a'
-    prefix: '§6<§e§lQuests§r§6> §r'
-  hologramText: '§8§lQuest‐NPC'
-  'no': 'Nein'
-  notSet: '§cnicht gesetzt'
-  or: oder
-  poolHologramText: '§eNeue Quest verfügbar!'
-  questItemLore: '§e§oQuest‐Item'
-  removeRaw: Entfernen
-  requirement:
-    class: '§bBenötigte Klasse(n)'
-    combatLevel: '§bKampflevel benötigt'
-    experienceLevel: '§bErfahrungslevel benötigt'
-    faction: '§bBenötigte Fraktion(en)'
-    jobLevel: '§bJob‐Level benötigt'
-    logicalOr: '§dLogisch ODER (Voraussetzungen)'
-    mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
-    money: '§dGeld benötigt'
-    permissions: '§3Benötigte Berechtigung(en)'
-    placeholder: '§bPlatzhalter‐Wert benötigt'
-    quest: '§aQuest benötigt'
-    region: '§dRegion erforderlich'
-    scoreboard: '§dPunktestand erforderlich'
-    skillAPILevel: '§bAPI-Level benötigt'
-  stageType:
-    Bucket: Eimer befüllen
-    Craft: Item herstellen
-    Fish: Fische fangen
-    breedAnimals: Züchte Tiere
-    chat: Im Chat schreiben
-    interact: Mit Block interagieren
-    items: Items zurückbringen
-    location: Position finden
-    mine: Blöcke zerstören
-    mobs: Mobs töten
-    npc: NPC finden
-    placeBlocks: Blöcke platzieren
-    playTime: Spielzeit
-    region: Region finden
-    tameAnimals: Zähme Tiere
-  ticks: '{ticks} Ticks'
-  time:
-    days: '{days_amount} Tage'
-    hours: '{hours_amount} Stunden'
-    lessThanAMinute: weniger als eine Minute
-    minutes: '{minutes_amount} Minuten'
-    weeks: '{weeks_amount} Wochen'
-  unknown: unbekannt
-  'yes': 'Ja'
 msg:
+  quest:
+    finished:
+      base: '§aGlückwunsch! Du hast die Quest §e{quest_name}§a abgeschlossen!'
+      obtain: '§aDu erhälst {rewards}!'
+    started: '§aDu hast die Quest §r§e{quest_name}§o§6 gestartet!'
+    created: '§aGlückwunsch! Du hast die Quest §e{quest}§a mit {quest_branches} Zweig(en) erstellt!'
+    edited: '§aGlückwunsch! Du hast die Quest §e{quest}§a bearbeitet, die jetzt {quest_branches} Zweig(e) enthält!'
+    createCancelled: '§cDie Erstellung oder Bearbeitung wurde von einem anderen Plugin abgebrochen!'
+    cancelling: '§cErstellung der Quest abgebrochen.'
+    editCancelling: '§cBearbeitung der Quest abgebrochen.'
+    invalidID: '§cDie Quest mit der ID {quest_id} existiert nicht.'
+    invalidPoolID: '§cDie Gruppe {pool_id} existiert nicht.'
+    alreadyStarted: '§cDu hast die Quest bereits gestartet!'
+    notStarted: '§cDu machst diese Quest momentan nicht.'
+  quests:
+    maxLaunched: '§cDu kannst nicht mehr als {quests_max_amount} Quest(s) gleichzeitig haben...'
+    updated: '§7Quest §e{quest_name}§7 aktualisiert.'
+    checkpoint: '§7Quest-Checkpoint erreicht!'
+    failed: '§cDu hast die Quest {quest_name} fehlgeschlagen...'
+  pools:
+    noTime: '§cDu musst warten, bevor du eine andere Quest absolvieren kannst.'
+    allCompleted: '§7Du hast alle Quests abgeschlossen!'
+    noAvailable: '§7Es ist keine Quest mehr verfügbar...'
+    maxQuests: '§cDu kannst nicht mehr als {pool_max_quests} Quest(s) gleichzeitig haben...'
+  questItem:
+    drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
+    craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
+    eat: Du kannst Quest Items nicht Essen!
+  stageMobs:
+    listMobs: '§aDu musst {mobs} töten.'
+  writeNPCText: '§aSchreibe den Dialog, den der NPC mit dem Spieler führt: (Schreibe „help”, um Hilfe zu erhalten.)'
+  writeRegionName: '§aSchreibe den für den Schritt benötigten Namen der Region:'
+  writeXPGain: '§aSchreibe die Menge an Erfahrungspunkten, die der Spieler erhalten wird: (Letzter Wert: {xp_amount})'
+  writeMobAmount: '§aSchreibe die zu tötende Mob‐Menge:'
+  writeMobName: '§aSchreibe den benutzerdefinierten Namen des zu tötenden Mobs:'
+  writeMessage: '§aSchreibe die Nachricht die an den Spieler gesendet wird'
+  writeStartMessage: '§aSchreibe die Nachricht, die zu Beginn der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst:'
+  writeEndSound: '§aSchreibe den Tonnamen, der am Ende der Quest dem Spieler abgespielt wird, "null" wenn Sie die Standardeinstellung oder "keine" wollen, wenn Sie keine wollen:'
+  writeDescriptionText: '§aSchreibe einen Text, der das Ziel des Schrittes beschreibt:'
+  writeStageText: '§aSchreibe den am Anfang des Schrittes zum Spieler gesendete Text:'
+  moveToTeleportPoint: '§aGehe zur gewünschten Teleportationsposition.'
+  writeNpcName: '§aSchreibe den Namen des NPCs:'
+  writeNpcSkinName: '§aSchreibe den Namen des NPC‐Skins:'
+  writeQuestName: '§a Schreibe den Namen der Quest:'
+  writeHologramText: '§aSchreibe den Text des Hologramms: (Schreibe „none”, wenn du kein Hologramm haben möchtest und „null”, wenn du den Standard‐Text verwenden willst.)'
+  writeQuestTimer: '§aSchreibe die benötigte Zeit (in Minuten), bevor ein Spieler die Quest erneut starten kann: (Schreibe „null“, wenn der Standard‐Timer verwendet werden soll.)'
+  writeConfirmMessage: '§aSchreibe die Bestätigungsnachricht, die beim Startversuch der Quest dem Spieler gezeigt wird: (Schreibe „null“, wenn die Standard‐Nachricht verwendet werden soll.)'
+  writeQuestDescription: '§aGebe die Beschreibung der Quest ein, welche in der Quest-GUI des Spielers angezeigt werden soll.'
+  writeQuestMaterial: '§aSchreibe das Material des Questgegenstandes.'
+  requirements:
+    quest: '§cDu musst die Quest §e{quest_name}§c abgeschlossen haben!'
+    level: '§cDein Level muss {long_level} sein!'
+    job: '§cDein Level für den Job §e{job_name}§c muss {long_level} sein!'
+    skill: '§cDein Level für die Fertigkeit §e{skill_name}§c muss {long_level} sein!'
+    combatLevel: '§cDein Kampflevel muss {long_level} sein!'
+    money: '§cDu benötigst {money}!'
+    waitTime: '§cDu musst {time_left} warten, bevor du die Quest erneut starten kannst!'
+  experience:
+    edited: '§aDu hast die Erfahrungsgewinnung von {old_xp_amount} auf {xp_amount} Punkt(e) gesetzt.'
+  selectNPCToKill: '§aWähle den zu tötenden NPC.'
+  regionDoesntExists: '§cDie Region existiert nicht. (Du musst dich in der selben Welt befinden.)'
+  npcDoesntExist: '§cDer NPC mit der ID {npc_id} existiert nicht.'
+  number:
+    negative: '§cDu musst eine positive Zahl eingeben!'
+    zero: '§cDie Zahl darf nicht 0 sein!'
+    invalid: '§c{input} ist keine gültige Zahl.'
+    notInBounds: '§cDeine Zahl muss zwischen {min} und {max} liegen.'
+  errorOccurred: '§cEin Fehler ist aufgetreten; kontaktiere einen Administrator! §4§lFehlercode: {error}'
+  indexOutOfBounds: '§cDie Zahl {index} ist außerhalb der Grenze! Sie muss zwischen {min} und {max} liegen.'
+  invalidBlockData: '§cDie Blockdaten {block_data} sind ungültig oder inkompatibel mit dem Block {block_material}.'
+  invalidBlockTag: '§cNicht verfügbarer Blocktag {block_tag}.'
   bringBackObjects: Bring mir {items} zurück.
+  inventoryFull: '§cDein Inventar ist voll, das Item wurde auf den Boden gelegt.'
+  versionRequired: 'Benötigte Version: §l{version}'
+  restartServer: '§7Starte deinen Server neu, um die Änderungen zu sehen.'
+  dialogs:
+    skipped: 'Dialog übersprungen.'
+    tooFar: '§7§oDu bist zu weit von {npc_name}...'
   command:
-    adminModeEntered: '§aDu hast den Admin‐Modus betreten.'
-    adminModeLeft: '§aDu hast den Admin‐Modus verlassen.'
-    backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
-    backupPlayersFailed: '§cDas Sichern von allen Spielerinformationen ist fehlgeschlagen.'
-    backupQuestsFailed: '§cDas Sichern von allen Quests ist fehlgeschlagen.'
-    cancelQuest: '§6Du hast die Quest {quest} abgebrochen.'
-    cancelQuestUnavailable: '§cDie Quest {quest} kann nicht abgebrochen werden.'
+    downloadTranslations:
+      syntax: '§cDu musst eine Sprache auswählen zum downloaden. Beispiel: "/quests downloadTranslations en_US".'
+      notFound: '§cSprache {lang} nicht gefunden für die Version {version}.'
+      exists: '§cDie Datei {file_name} existiert bereits. Füge "-Overwrite "true" an deinen Befehl an, um ihn zu überschreiben. (/quests downloadTranslations <lang> -overwrite true)'
+      downloaded: '§aSprache {lang} wurde heruntergeladen! §7Du musst nun die Datei "/plugins/BeautyQuests/config.yml" bearbeiten, um den Wert von §ominecraftTranslationsFile§7 mit {lang} zu ändern. Der Server muss anschliessend neu gestartet werden.'
     checkpoint:
       noCheckpoint: '§cKein Checkpoint für die Quest {quest} gefunden.'
       questNotStarted: '§cDu machst diese Quest nicht.'
-    downloadTranslations:
-      downloaded: '§aSprache {lang} wurde heruntergeladen! §7Du musst nun die Datei "/plugins/BeautyQuests/config.yml" bearbeiten, um den Wert von §ominecraftTranslationsFile§7 mit {lang} zu ändern. Der Server muss anschliessend neu gestartet werden.'
-      exists: '§cDie Datei {file_name} existiert bereits. Füge "-Overwrite "true" an deinen Befehl an, um ihn zu überschreiben. (/quests downloadTranslations <lang> -overwrite true)'
-      notFound: '§cSprache {lang} nicht gefunden für die Version {version}.'
-      syntax: '§cDu musst eine Sprache auswählen zum downloaden. Beispiel: "/quests downloadTranslations en_US".'
-    help:
-      adminMode: '§6/{label} adminMode: §eSchalte den Admin‐Modus (für die Anzeige von Protokollnachrichten) für dich um.'
-      create: '§6/{label} create: §eErstelle eine Quest.'
-      downloadTranslations: '§6/{label} heruntergeladene Übersetzung <language>: §eDownloads einer Vanille-Übersetzungsdatei'
-      edit: '§6/{label} edit: §eBearbeite eine Quest.'
-      finishAll: '§6/{label} finishAll <Spieler>: §eBeende alle Quests eines Spielers.'
-      header: '§6§lBeautyQuests — Hilfe'
-      list: '§6/{label} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
-      reload: '§6/{label} reload: §eSpeichere und und lade alle Konfigurationen und Dateien neu. (§cveraltet§e)'
-      remove: '§6/{label} remove <ID>: §eLösche eine Quest mit der angegebenen ID oder klicke auf den NPC, wenn nicht definiert.'
-      resetPlayer: '§6/{label} resetPlayer <Spieler>: §eEntferne alle Informationen eines Spielers.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <Spieler> [ID]: §eLösche Informationen einer Quest für einen Spieler.'
-      save: '§6/{label} save: §eFühre eine manuelle Plugin‐Speicherung durch.'
-      seePlayer: '§6/{label} seePlayer <Spieler>: §eSieh dir die Informationen eines Spielers an.'
-      setFirework: '§6/{label} SetFeuerwerk: §eBearbeite das standardmäßig end Feuerwerk.'
-      setItem: '§6/{label} setItem <talk|launch>: §eSpeichere das Hologramm‐Item.'
-      setStage: '§6/{label} setStage <Spieler> <ID> [neuer Zweig] [neuer Schritt]: §eÜberspringe den aktuellen Schritt/starte einen Zweig/setze einen Schritt für einen Zweig.'
-      start: '§6/{label} start <Spieler> [ID]: §eErzwinge das Starten einer Quest.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eStartet den ausstehenden Dialog für eine NPC-Stufe oder den Startdialog für eine Quest.'
-      version: '§6/{label} version: §eLass dir die aktuelle Plugin‐Version anzeigen.'
-    invalidCommand:
-      simple: '§cDieser Befehl existiert nicht, schreibe §ehelp§c.'
-    itemChanged: '§aDas Item wurde bearbeitet. Die Änderungen werden nach einem Neustart angewendet.'
-    itemRemoved: '§aDas Hologramm‐Item wurde entfernt.'
-    leaveAll: '§aDu hast das Ende von {success} Quest(s) erzwungen. Fehler: {errors}'
-    removed: '§aDie Quest {quest_name} wurde erfolgreich entfernt.'
-    resetPlayer:
-      player: '§6Alle Informationen deiner {quest_amount} Quest(s) wurde/wurden von {deleter_name} gelöscht.'
-      remover: '§6{quest_amount} Questinformation(en) (und {quest_pool} Gruppen) von {player} wurde(n) gelöscht.'
-    resetPlayerPool:
-      full: '§aDu hast die {pool} Gruppendaten auf {player} zurückgesetzt.'
-      timer: '§aDu hast den {pool} Gruppentimer auf {player} zurückgesetzt.'
-    resetPlayerQuest:
-      player: '§6Alle Informationen über die Quest {quest} wurden von {deleter_name} gelöscht.'
-      remover: '§6{player} Questinformation(en) von {quest} wurde(n) gelöscht.'
-    resetQuest: '§6Quest Daten wurden für {player_amount} Spieler entfernt.'
-    scoreboard:
-      hidden: '§6Das Scoreboard des Spielers {player_name} wurde versteckt.'
-      lineInexistant: '§cDie Zeile {line_id} existiert nicht.'
-      lineRemoved: '§6Du hast die Zeile {line_id} erfolgreich entfernt.'
-      lineReset: '§6Du hast die Zeile {line_id} erfolgreich zurückgesetzt.'
-      lineSet: '§6Du hast die Zeile {line_id} erfolgreich bearbeitet.'
-      own:
-        hidden: '§6Dein Scoreboard ist jetzt versteckt.'
-        shown: Dein Scoreboard wird wieder angezeigt.
-      resetAll: '§6Du hast das Scoreboard des Spielers {player_name} erfolgreich zurückgesetzt.'
-      shown: '§6Das Scoreboard des Spielers {player_name} wurde angezeigt.'
     setStage:
       branchDoesntExist: '§cDer Zweig mit der ID {branch_id} existiert nicht.'
       doesntExist: '§cDer Schritt mit der ID {stage_id} existiert nicht.'
@@ -521,245 +94,674 @@ msg:
       nextUnavailable: '§cDie „Überspringen“‐Option ist nicht verfügbar, wenn der Spieler am Ende eines Zweiges ist.'
       set: '§aSchritt {stage_id} gestartet.'
     startDialog:
-      alreadyIn: '§cDer Spieler spielt bereits einen Dialog.'
       impossible: '§cKann den Dialog jetzt nicht starten.'
       noDialog: '§cDer Spieler hat keinen ausstehenden Dialog.'
+      alreadyIn: '§cDer Spieler spielt bereits einen Dialog.'
       success: '§aStartete Dialog für Spieler {player} in Quest {quest}!'
-    startPlayerPool:
-      error: Der Pool {pool} für {player} konnte nicht gestartet werden.
-      success: 'Pool {pool} bis {player}gestartet. Ergebnis: {result}'
-    startQuest: '§6Du hast den Start der Quest {quest} erzwungen. (Spieler‐UUID: {player})'
+    invalidCommand:
+      simple: '§cDieser Befehl existiert nicht, schreibe §ehelp§c.'
+    itemChanged: '§aDas Item wurde bearbeitet. Die Änderungen werden nach einem Neustart angewendet.'
+    itemRemoved: '§aDas Hologramm‐Item wurde entfernt.'
+    removed: '§aDie Quest {quest_name} wurde erfolgreich entfernt.'
+    leaveAll: '§aDu hast das Ende von {success} Quest(s) erzwungen. Fehler: {errors}'
+    resetPlayer:
+      player: '§6Alle Informationen deiner {quest_amount} Quest(s) wurde/wurden von {deleter_name} gelöscht.'
+      remover: '§6{quest_amount} Questinformation(en) (und {quest_pool} Gruppen) von {player} wurde(n) gelöscht.'
+    resetPlayerQuest:
+      player: '§6Alle Informationen über die Quest {quest} wurden von {deleter_name} gelöscht.'
+      remover: '§6{player} Questinformation(en) von {quest} wurde(n) gelöscht.'
+    resetQuest: '§6Quest Daten wurden für {player_amount} Spieler entfernt.'
     startQuestNoRequirements: '§cDer Spieler erfüllt nicht die Anforderungen für die Quest {quest}... Füge "-OverrideRequirements am Ende deines Befehls hinzu, um die Anforderungsüberprüfung zu umgehen.'
-  dialogs:
-    skipped: Dialog übersprungen.
-    tooFar: '§7§oDu bist zu weit von {npc_name}...'
+    cancelQuest: '§6Du hast die Quest {quest} abgebrochen.'
+    cancelQuestUnavailable: '§cDie Quest {quest} kann nicht abgebrochen werden.'
+    backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
+    backupPlayersFailed: '§cDas Sichern von allen Spielerinformationen ist fehlgeschlagen.'
+    backupQuestsFailed: '§cDas Sichern von allen Quests ist fehlgeschlagen.'
+    adminModeEntered: '§aDu hast den Admin‐Modus betreten.'
+    adminModeLeft: '§aDu hast den Admin‐Modus verlassen.'
+    resetPlayerPool:
+      timer: '§aDu hast den {pool} Gruppentimer auf {player} zurückgesetzt.'
+      full: '§aDu hast die {pool} Gruppendaten auf {player} zurückgesetzt.'
+    startPlayerPool:
+      error: 'Der Pool {pool} für {player} konnte nicht gestartet werden.'
+      success: 'Pool {pool} bis {player}gestartet. Ergebnis: {result}'
+    scoreboard:
+      lineSet: '§6Du hast die Zeile {line_id} erfolgreich bearbeitet.'
+      lineReset: '§6Du hast die Zeile {line_id} erfolgreich zurückgesetzt.'
+      lineRemoved: '§6Du hast die Zeile {line_id} erfolgreich entfernt.'
+      lineInexistant: '§cDie Zeile {line_id} existiert nicht.'
+      resetAll: '§6Du hast das Scoreboard des Spielers {player_name} erfolgreich zurückgesetzt.'
+      hidden: '§6Das Scoreboard des Spielers {player_name} wurde versteckt.'
+      shown: '§6Das Scoreboard des Spielers {player_name} wurde angezeigt.'
+      own:
+        hidden: '§6Dein Scoreboard ist jetzt versteckt.'
+        shown: Dein Scoreboard wird wieder angezeigt.
+    help:
+      header: '§6§lBeautyQuests — Hilfe'
+      create: '§6/{label} create: §eErstelle eine Quest.'
+      edit: '§6/{label} edit: §eBearbeite eine Quest.'
+      remove: '§6/{label} remove <ID>: §eLösche eine Quest mit der angegebenen ID oder klicke auf den NPC, wenn nicht definiert.'
+      finishAll: '§6/{label} finishAll <Spieler>: §eBeende alle Quests eines Spielers.'
+      setStage: '§6/{label} setStage <Spieler> <ID> [neuer Zweig] [neuer Schritt]: §eÜberspringe den aktuellen Schritt/starte einen Zweig/setze einen Schritt für einen Zweig.'
+      startDialog: '§6/{label} startDialog <player> <quest id>: §eStartet den ausstehenden Dialog für eine NPC-Stufe oder den Startdialog für eine Quest.'
+      resetPlayer: '§6/{label} resetPlayer <Spieler>: §eEntferne alle Informationen eines Spielers.'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <Spieler> [ID]: §eLösche Informationen einer Quest für einen Spieler.'
+      seePlayer: '§6/{label} seePlayer <Spieler>: §eSieh dir die Informationen eines Spielers an.'
+      reload: '§6/{label} reload: §eSpeichere und und lade alle Konfigurationen und Dateien neu. (§cveraltet§e)'
+      start: '§6/{label} start <Spieler> [ID]: §eErzwinge das Starten einer Quest.'
+      setItem: '§6/{label} setItem <talk|launch>: §eSpeichere das Hologramm‐Item.'
+      setFirework: '§6/{label} SetFeuerwerk: §eBearbeite das standardmäßig end Feuerwerk.'
+      adminMode: '§6/{label} adminMode: §eSchalte den Admin‐Modus (für die Anzeige von Protokollnachrichten) für dich um.'
+      version: '§6/{label} version: §eLass dir die aktuelle Plugin‐Version anzeigen.'
+      downloadTranslations: '§6/{label} heruntergeladene Übersetzung <language>: §eDownloads einer Vanille-Übersetzungsdatei'
+      save: '§6/{label} save: §eFühre eine manuelle Plugin‐Speicherung durch.'
+      list: '§6/{label} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
+  typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
   editor:
-    advancedSpawnersMob: 'Schreibe den Namen des benutzerdefinierten Spawnermob zum Töten:'
-    already: '§cDu befindest dich bereits im Editor.'
-    availableElements: 'Verfügbare Elemente: §e{available_elements}'
     blockAmount: '§aSchreibe die Anzahl der Blöcke:'
-    blockData: '§aSchreibe die Blockdaten (verfügbare Blockdaten: {available_datas}):'
     blockName: '§aSchreibe den Namen des Blocks:'
+    blockData: '§aSchreibe die Blockdaten (verfügbare Blockdaten: {available_datas}):'
     blockTag: '§aSchreibe den Blocktag (verfügbare Blocktags: §7{available_tags}§a):'
-    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests exitEditor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
-    color: 'Geben Sie eine Farbe im Hexadezimalformat (#XXXXX) oder RGB Format (RED GRE BLU) ein.'
-    colorNamed: Geben Sie den Namen einer Farbe ein.
-    comparisonTypeDefault: '§aWählen Sie den Vergleichstyp unter {available}aus. Der Standardvergleich ist: §e§l{default}§r§a. Geben Sie §onull§r§a ein, um ihn zu verwenden.'
-    dialog:
-      cleared: '§a{amount} entfernte Nachricht(en).'
-      edited: '§aNachricht "§7{msg}§a" bearbeitet.'
-      help:
-        addSound: '§6addSound <ID> <Geräusch>: §eFüge ein Geräusch einer Nachricht hinzu.'
-        clear: '§6clear: §eEntferne alle Nachrichten.'
-        close: '§6close: §eBestätige alle Nachrichten.'
-        edit: '§6edit <id> <message>: §eBearbeite eine Nachricht.'
-        header: '§6§lBeautyQuests — Dialogbearbeitungs‐Hilfe'
-        list: '§6list: §eSchaue dir alle Nachrichten an.'
-        nothing: '§6noSender <Nachricht>: §eFüge eine Nachricht ohne Absender hinzu.'
-        nothingInsert: '§6nothingInsert <ID> <Nachricht>: §eFüge eine Nachricht ohne Präfix ein.'
-        npc: '§6npc <Nachricht>: §eFüge eine vom NPC gesagte Nachricht hinzu.'
-        npcInsert: '§6npcInsert <ID> <Nachricht>: §eFüge eine vom NPC gesagte Nachricht ein.'
-        npcName: '§6npcName [benutzerdefinierter NPC-Name]: §eSetze (oder zurücksetzen auf Standard) des benutzerdefinierten Namens des NPCs im Dialog'
-        player: '§6player <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht hinzu.'
-        playerInsert: '§6playerInsert <ID> <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht ein.'
-        remove: '§6remove <ID>: §eEntferne eine Nachricht.'
-        setTime: '§6setTime <id> <time>: §eSetze die Zeit (in Ticks) bevor die nächste automatische Nachricht gesendet wird.'
-        skippable: '§6Überspringbar [true|falsch]: §eLegen Sie fest, ob der Dialog übersprungen werden kann oder nicht'
-      messageRemoved: '§aNachricht "§7{msg}§a" entfernt.'
-      noSender: '§aNachricht "§7{msg}§a" ohne einen Absender hinzugefügt.'
-      npc: '§aNachricht "§7{msg}§a" für den NPC hinzugefügt.'
-      npcName:
-        set: '§aBenutzerdefinierter NPC-Name wurde zu §7{new_name}§a gesetzt (alter Name war §7{old_name}§a)'
-        unset: '§aBenutzerdefinierter NPC-Name wurde auf Standard gesetzt (alter Name war §7{old_name}§a)'
-      player: '§aNachricht "§7{msg}§a" für den Spieler hinzugefügt.'
-      skippable:
-        set: '§aDer dialogbare Status ist nun auf §7{new_state}§a gesetzt (war §7{old_state}§a)'
-        unset: '§aDer überspringbare Status wird auf Standard zurückgesetzt (war §7{old_state}§a)'
-      soundAdded: '§aTon "§7{sound}§a" für die Nachricht "§7{msg}§a" hinzugefügt.'
-      syntaxRemove: '§cKorrekte Syntax: remove <ID>'
-      timeRemoved: '§aDie Zeit wurde für die Nachricht {msg} entfernt.'
-      timeSet: '§aDie Zeit für die Nachricht {msg} wurde bearbeitet: jetzt {time} Ticks.'
-    enter:
-      list: '§c⚠ §7Du befindest dich in einem "Listen"-Editor. Verwende "add", um Zeilen hinzuzufügen. Siehe "help" (ohne Schrägstrich) für Hilfe. §e§lTippe "close", um den Editor zu verlassen.'
-      subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
-      title: '§6~ Editor‐Modus ~'
-    firework:
-      edited: Feuerwerk Quest bearbeitet!
-      invalid: Dieser Gegenstand ist kein gültiges Feuerwerk.
-      invalidHand: Du musst ein Feuerwerk in deiner Main Hand halten.
-      removed: Das Questfeuerwerk entfernt!
+    typeBucketAmount: '§aSchreibe die Anzahl an zu füllenden Eimern:'
+    typeDamageAmount: 'Schreibe die Menge an Schaden, die der Spieler zufügen muss:'
     goToLocation: '§aGehe zur gewünschten Position für den Schritt.'
-    invalidColor: Die eingegebene Farbe ist ungültig. Sie muss entweder Hexadezimal- oder RGB sein.
-    invalidPattern: '§cUngültiges regex-Muster §4{input}§c.'
-    itemCreator:
-      invalidBlockType: '§cUngültiger Blocktyp.'
-      invalidItemType: '§cUngültiges Item. (Das Item darf kein Block sein.)'
-      itemAmount: '§aSchreibe die Menge des/der Item(s):'
-      itemLore: '§aÄndere die Item‐Beschreibung: (Schreibe „help“ für Hilfe.)'
-      itemName: '§aSchreibe den Item‐Namen:'
-      itemType: '§aSchreibe den Namen des gewünschten Items:'
-      unknownBlockType: '§cUnbekannter Blocktyp.'
-      unknownItemType: '§cUnbekanntes Item.'
-    mythicmobs:
-      disabled: '§cMythicMob ist deaktiviert.'
-      isntMythicMob: '§cDieser Mythic Mob existiert nicht.'
-      list: '§aEine Liste aller Mythic Mobs:'
-    noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{available_elements}'
-    npc:
-      choseStarter: '§aWähle den NPC, der die Quest startet.'
-      enter: '§aKlicke auf einen NPC oder schreibe „cancel”.'
-      notStarter: '§cDieser NPC ist kein Queststarter.'
-    pool:
-      hologramText: Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).
-      maxQuests: Lege die maximale Anzahl an Quests fest, die aus dieser Gruppe gestartet werden können.
-      questsPerLaunch: Schreibe die Anzahl der Quests, die du bei einem Klick auf den NPC erhalten hast.
-      timeMsg: 'Schreibe die Zeit, bevor Spieler eine neue Quest annehmen können (Standardeinheit: Tage).'
-    scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
-    selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
+    typeLocationRadius: '§aSchreibe die benötigte Distanz von der Position:'
+    typeGameTicks: '§aSchreibe die benötigten Spiel-Ticks:'
+    already: '§cDu befindest dich bereits im Editor.'
     stage:
       location:
         typeWorldPattern: '§aSchreibe einen Regex für Weltnamen:'
+    enter:
+      title: '§6~ Editor‐Modus ~'
+      subtitle: '§6Schreibe „/quests exitEditor”, um das Verlassen zu erzwingen.'
+      list: '§c⚠ §7Du befindest dich in einem "Listen"-Editor. Verwende "add", um Zeilen hinzuzufügen. Siehe "help" (ohne Schrägstrich) für Hilfe. §e§lTippe "close", um den Editor zu verlassen.'
+    chat: '§6Du bist zurzeit im Editor‐Modus. Schreibe „/quests exitEditor“, um das Verlassen des Editors zu erzwingen. (Nicht empfohlen, erwäge die Verwendung von Befehlen wie „close“ oder „cancel“, um zum vorherigen Inventar zurückzukehren.)'
+    npc:
+      enter: '§aKlicke auf einen NPC oder schreibe „cancel”.'
+      choseStarter: '§aWähle den NPC, der die Quest startet.'
+      notStarter: '§cDieser NPC ist kein Queststarter.'
     text:
       argNotSupported: '§cDas Argument {arg} wird nicht unterstützt.'
-      chooseJobRequired: '§aSchreibe den Namen des gewünschten Jobs:'
       chooseLvlRequired: '§aSchreibe die Anzahl der benötigten Level:'
-      chooseMoneyRequired: '§aSchreibe die Menge an benötigtem Geld:'
-      chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
-      chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
-      choosePermissionMessage: '§aDu kannst eine Verweigerungs‐Nachricht für Spieler ohne ausreichende Berechtigungen festlegen. (Um diesen Schritt zu überspringen, schreibe „null”.)'
+      chooseJobRequired: '§aSchreibe den Namen des gewünschten Jobs:'
       choosePermissionRequired: '§aSchreibe die benötigte Berechtigung, um die Quest zu starten:'
+      choosePermissionMessage: '§aDu kannst eine Verweigerungs‐Nachricht für Spieler ohne ausreichende Berechtigungen festlegen. (Um diesen Schritt zu überspringen, schreibe „null”.)'
       choosePlaceholderRequired:
         identifier: '§aSchreibe den Namen des benötigten Platzhalters ohne die Prozentzeichen:'
         value: '§aSchreibe den erforderlichen Wert für den Platzhalter §e%§e{placeholder}§e%§a:'
-      chooseRegionRequired: '§aSchreibe den Namen der benötigten Region (du musst in der gleichen Welt sein).'
       chooseSkillRequired: '§aSchreibe den Namen der benötigten Fähigkeit:'
+      chooseMoneyRequired: '§aSchreibe die Menge an benötigtem Geld:'
       reward:
-        money: '§aSchreibe die zu bekommende Menge an Geld:'
         permissionName: '§aGebe den Namen der Berechtigung ein.'
         permissionWorld: '§aGebe die Welt an, in welcher die Berechtigung bearbeitet werden soll, oder "null" wenn es Global gelten soll.'
-        random:
-          max: '§aSchreibe die maximale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
-          min: '§aSchreibe die minimale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
+        money: '§aSchreibe die zu bekommende Menge an Geld:'
         wait: '§aSchreibe die Anzahl von Game Ticks, zum warten: (1 Sekunde = 20 Game Ticks)'
-    textList:
-      added: '§aText "§7{msg}§a" hinzugefügt.'
+        random:
+          min: '§aSchreibe die minimale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
+          max: '§aSchreibe die maximale Anzahl an Belohungen, die an einem Spieler gegeben werden (inklusive).'
+      chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
+      chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
+      chooseRegionRequired: '§aSchreibe den Namen der benötigten Region (du musst in der gleichen Welt sein).'
+    selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
+    itemCreator:
+      itemType: '§aSchreibe den Namen des gewünschten Items:'
+      itemAmount: '§aSchreibe die Menge des/der Item(s):'
+      itemName: '§aSchreibe den Item‐Namen:'
+      itemLore: '§aÄndere die Item‐Beschreibung: (Schreibe „help“ für Hilfe.)'
+      unknownItemType: '§cUnbekanntes Item.'
+      invalidItemType: '§cUngültiges Item. (Das Item darf kein Block sein.)'
+      unknownBlockType: '§cUnbekannter Blocktyp.'
+      invalidBlockType: '§cUngültiger Blocktyp.'
+    dialog:
+      syntaxRemove: '§cKorrekte Syntax: remove <ID>'
+      player: '§aNachricht "§7{msg}§a" für den Spieler hinzugefügt.'
+      npc: '§aNachricht "§7{msg}§a" für den NPC hinzugefügt.'
+      noSender: '§aNachricht "§7{msg}§a" ohne einen Absender hinzugefügt.'
+      messageRemoved: '§aNachricht "§7{msg}§a" entfernt.'
+      edited: '§aNachricht "§7{msg}§a" bearbeitet.'
+      soundAdded: '§aTon "§7{sound}§a" für die Nachricht "§7{msg}§a" hinzugefügt.'
+      cleared: '§a{amount} entfernte Nachricht(en).'
       help:
-        add: '§6add <message>: §eFüge einen Text hinzu.'
-        close: '§6close: §eBestätige die hinzugefügten Texte.'
-        header: '§6§lBeautyQuests — Listen‐Editor‐Hilfe'
-        list: '§6list: §eSieh dir alle hinzugefügten Texte an.'
-        remove: '§6remove <ID>: §eEntferne einen Text.'
-      removed: '§aText "§7{msg}§a" entfernt.'
+        header: '§6§lBeautyQuests — Dialogbearbeitungs‐Hilfe'
+        npc: '§6npc <Nachricht>: §eFüge eine vom NPC gesagte Nachricht hinzu.'
+        player: '§6player <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht hinzu.'
+        nothing: '§6noSender <Nachricht>: §eFüge eine Nachricht ohne Absender hinzu.'
+        remove: '§6remove <ID>: §eEntferne eine Nachricht.'
+        list: '§6list: §eSchaue dir alle Nachrichten an.'
+        npcInsert: '§6npcInsert <ID> <Nachricht>: §eFüge eine vom NPC gesagte Nachricht ein.'
+        playerInsert: '§6playerInsert <ID> <Nachricht>: §eFüge eine vom Spieler gesagte Nachricht ein.'
+        nothingInsert: '§6nothingInsert <ID> <Nachricht>: §eFüge eine Nachricht ohne Präfix ein.'
+        edit: '§6edit <id> <message>: §eBearbeite eine Nachricht.'
+        addSound: '§6addSound <ID> <Geräusch>: §eFüge ein Geräusch einer Nachricht hinzu.'
+        clear: '§6clear: §eEntferne alle Nachrichten.'
+        close: '§6close: §eBestätige alle Nachrichten.'
+        setTime: '§6setTime <id> <time>: §eSetze die Zeit (in Ticks) bevor die nächste automatische Nachricht gesendet wird.'
+        npcName: '§6npcName [benutzerdefinierter NPC-Name]: §eSetze (oder zurücksetzen auf Standard) des benutzerdefinierten Namens des NPCs im Dialog'
+        skippable: '§6Überspringbar [true|falsch]: §eLegen Sie fest, ob der Dialog übersprungen werden kann oder nicht'
+      timeSet: '§aDie Zeit für die Nachricht {msg} wurde bearbeitet: jetzt {time} Ticks.'
+      timeRemoved: '§aDie Zeit wurde für die Nachricht {msg} entfernt.'
+      npcName:
+        set: '§aBenutzerdefinierter NPC-Name wurde zu §7{new_name}§a gesetzt (alter Name war §7{old_name}§a)'
+        unset: '§aBenutzerdefinierter NPC-Name wurde auf Standard gesetzt (alter Name war §7{old_name}§a)'
+      skippable:
+        set: '§aDer dialogbare Status ist nun auf §7{new_state}§a gesetzt (war §7{old_state}§a)'
+        unset: '§aDer überspringbare Status wird auf Standard zurückgesetzt (war §7{old_state}§a)'
+    mythicmobs:
+      list: '§aEine Liste aller Mythic Mobs:'
+      isntMythicMob: '§cDieser Mythic Mob existiert nicht.'
+      disabled: '§cMythicMob ist deaktiviert.'
+    advancedSpawnersMob: 'Schreibe den Namen des benutzerdefinierten Spawnermob zum Töten:'
+    textList:
       syntax: '§cKorrekte Syntax: '
+      added: '§aText "§7{msg}§a" hinzugefügt.'
+      removed: '§aText "§7{msg}§a" entfernt.'
+      help:
+        header: '§6§lBeautyQuests — Listen‐Editor‐Hilfe'
+        add: '§6add <message>: §eFüge einen Text hinzu.'
+        remove: '§6remove <ID>: §eEntferne einen Text.'
+        list: '§6list: §eSieh dir alle hinzugefügten Texte an.'
+        close: '§6close: §eBestätige die hinzugefügten Texte.'
+    availableElements: 'Verfügbare Elemente: §e{available_elements}'
+    noSuchElement: '§cDieses Element existiert nicht. Erlaubte Elemente sind: §e{available_elements}'
+    invalidPattern: '§cUngültiges regex-Muster §4{input}§c.'
+    comparisonTypeDefault: '§aWählen Sie den Vergleichstyp unter {available}aus. Der Standardvergleich ist: §e§l{default}§r§a. Geben Sie §onull§r§a ein, um ihn zu verwenden.'
+    scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
+    pool:
+      hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
+      maxQuests: 'Lege die maximale Anzahl an Quests fest, die aus dieser Gruppe gestartet werden können.'
+      questsPerLaunch: 'Schreibe die Anzahl der Quests, die du bei einem Klick auf den NPC erhalten hast.'
+      timeMsg: 'Schreibe die Zeit, bevor Spieler eine neue Quest annehmen können (Standardeinheit: Tage).'
     title:
-      fadeIn: Schreibe die "Einblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).
-      fadeOut: Schreibe die "Ausblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).
-      stay: Schreibe die "Bleibe"-Dauer, in Ticks (20 Ticks = 1 Sekunde).
-      subtitle: Schreibe den Untertiteltext (oder "null", wenn du keinen möchtest).
-      title: Schreibe den Titeltext (oder "null", wenn du keinen möchtest).
-    typeBucketAmount: '§aSchreibe die Anzahl an zu füllenden Eimern:'
-    typeDamageAmount: 'Schreibe die Menge an Schaden, die der Spieler zufügen muss:'
-    typeGameTicks: '§aSchreibe die benötigten Spiel-Ticks:'
-    typeLocationRadius: '§aSchreibe die benötigte Distanz von der Position:'
-  errorOccurred: '§cEin Fehler ist aufgetreten; kontaktiere einen Administrator! §4§lFehlercode: {error}'
-  experience:
-    edited: '§aDu hast die Erfahrungsgewinnung von {old_xp_amount} auf {xp_amount} Punkt(e) gesetzt.'
-  indexOutOfBounds: '§cDie Zahl {index} ist außerhalb der Grenze! Sie muss zwischen {min} und {max} liegen.'
-  invalidBlockData: '§cDie Blockdaten {block_data} sind ungültig oder inkompatibel mit dem Block {block_material}.'
-  invalidBlockTag: '§cNicht verfügbarer Blocktag {block_tag}.'
-  inventoryFull: '§cDein Inventar ist voll, das Item wurde auf den Boden gelegt.'
-  moveToTeleportPoint: '§aGehe zur gewünschten Teleportationsposition.'
-  npcDoesntExist: '§cDer NPC mit der ID {npc_id} existiert nicht.'
-  number:
-    invalid: '§c{input} ist keine gültige Zahl.'
-    negative: '§cDu musst eine positive Zahl eingeben!'
-    notInBounds: '§cDeine Zahl muss zwischen {min} und {max} liegen.'
-    zero: '§cDie Zahl darf nicht 0 sein!'
-  pools:
-    allCompleted: '§7Du hast alle Quests abgeschlossen!'
-    maxQuests: '§cDu kannst nicht mehr als {pool_max_quests} Quest(s) gleichzeitig haben...'
-    noAvailable: '§7Es ist keine Quest mehr verfügbar...'
-    noTime: '§cDu musst warten, bevor du eine andere Quest absolvieren kannst.'
-  quest:
-    alreadyStarted: '§cDu hast die Quest bereits gestartet!'
-    cancelling: '§cErstellung der Quest abgebrochen.'
-    createCancelled: '§cDie Erstellung oder Bearbeitung wurde von einem anderen Plugin abgebrochen!'
-    created: '§aGlückwunsch! Du hast die Quest §e{quest}§a mit {quest_branches} Zweig(en) erstellt!'
-    editCancelling: '§cBearbeitung der Quest abgebrochen.'
-    edited: '§aGlückwunsch! Du hast die Quest §e{quest}§a bearbeitet, die jetzt {quest_branches} Zweig(e) enthält!'
-    finished:
-      base: '§aGlückwunsch! Du hast die Quest §e{quest_name}§a abgeschlossen!'
-      obtain: '§aDu erhälst {rewards}!'
-    invalidID: '§cDie Quest mit der ID {quest_id} existiert nicht.'
-    invalidPoolID: '§cDie Gruppe {pool_id} existiert nicht.'
-    notStarted: '§cDu machst diese Quest momentan nicht.'
-    started: '§aDu hast die Quest §r§e{quest_name}§o§6 gestartet!'
-  questItem:
-    craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
-    drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
-    eat: Du kannst Quest Items nicht Essen!
-  quests:
-    checkpoint: '§7Quest-Checkpoint erreicht!'
-    failed: '§cDu hast die Quest {quest_name} fehlgeschlagen...'
-    maxLaunched: '§cDu kannst nicht mehr als {quests_max_amount} Quest(s) gleichzeitig haben...'
-    updated: '§7Quest §e{quest_name}§7 aktualisiert.'
-  regionDoesntExists: '§cDie Region existiert nicht. (Du musst dich in der selben Welt befinden.)'
-  requirements:
-    combatLevel: '§cDein Kampflevel muss {long_level} sein!'
-    job: '§cDein Level für den Job §e{job_name}§c muss {long_level} sein!'
-    level: '§cDein Level muss {long_level} sein!'
-    money: '§cDu benötigst {money}!'
-    quest: '§cDu musst die Quest §e{quest_name}§c abgeschlossen haben!'
-    skill: '§cDein Level für die Fertigkeit §e{skill_name}§c muss {long_level} sein!'
-    waitTime: '§cDu musst {time_left} warten, bevor du die Quest erneut starten kannst!'
-  restartServer: '§7Starte deinen Server neu, um die Änderungen zu sehen.'
-  selectNPCToKill: '§aWähle den zu tötenden NPC.'
-  stageMobs:
-    listMobs: '§aDu musst {mobs} töten.'
-  typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
-  versionRequired: 'Benötigte Version: §l{version}'
-  writeChatMessage: '§aSchreibe die benötigte Nachricht: (Füge „{SLASH}” zum Anfang hinzu, wenn du einen Befehl ausdrücken möchtest.)'
-  writeCommand: '§aSchreibe den gewünschten Befehl: (Den Befehl ohne den Schrägstrich schreiben. Unterstützter Platzhalter: „{PLAYER}“; welcher mit dem Namen des Spielers, der den Befehl ausgeführt hat, ersetzt wird.)'
+      title: 'Schreibe den Titeltext (oder "null", wenn du keinen möchtest).'
+      subtitle: 'Schreibe den Untertiteltext (oder "null", wenn du keinen möchtest).'
+      fadeIn: 'Schreibe die "Einblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
+      stay: 'Schreibe die "Bleibe"-Dauer, in Ticks (20 Ticks = 1 Sekunde).'
+      fadeOut: 'Schreibe die "Ausblende"-Dauer, in Ticks (20 ticks = 1 Sekunde).'
+    colorNamed: 'Geben Sie den Namen einer Farbe ein.'
+    color: 'Geben Sie eine Farbe im Hexadezimalformat (#XXXXX) oder RGB Format (RED GRE BLU) ein.'
+    invalidColor: 'Die eingegebene Farbe ist ungültig. Sie muss entweder Hexadezimal- oder RGB sein.'
+    firework:
+      invalid: 'Dieser Gegenstand ist kein gültiges Feuerwerk.'
+      invalidHand: 'Du musst ein Feuerwerk in deiner Main Hand halten.'
+      edited: 'Feuerwerk Quest bearbeitet!'
+      removed: 'Das Questfeuerwerk entfernt!'
   writeCommandDelay: '§aGebe die gewünschte Befehl Verzögerung in Ticks an.'
-  writeConfirmMessage: '§aSchreibe die Bestätigungsnachricht, die beim Startversuch der Quest dem Spieler gezeigt wird: (Schreibe „null“, wenn die Standard‐Nachricht verwendet werden soll.)'
-  writeDescriptionText: '§aSchreibe einen Text, der das Ziel des Schrittes beschreibt:'
-  writeEndMsg: '§aSchreibe die Nachricht, die am Ende der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst. Du kannst "{rewards}" verwenden, das dann durch die erhaltenen Belohnungen ersetzt wird.'
-  writeEndSound: '§aSchreibe den Tonnamen, der am Ende der Quest dem Spieler abgespielt wird, "null" wenn Sie die Standardeinstellung oder "keine" wollen, wenn Sie keine wollen:'
-  writeHologramText: '§aSchreibe den Text des Hologramms: (Schreibe „none”, wenn du kein Hologramm haben möchtest und „null”, wenn du den Standard‐Text verwenden willst.)'
-  writeMessage: '§aSchreibe die Nachricht die an den Spieler gesendet wird'
-  writeMobAmount: '§aSchreibe die zu tötende Mob‐Menge:'
-  writeMobName: '§aSchreibe den benutzerdefinierten Namen des zu tötenden Mobs:'
-  writeNPCText: '§aSchreibe den Dialog, den der NPC mit dem Spieler führt: (Schreibe „help”, um Hilfe zu erhalten.)'
-  writeNpcName: '§aSchreibe den Namen des NPCs:'
-  writeNpcSkinName: '§aSchreibe den Namen des NPC‐Skins:'
-  writeQuestDescription: '§aGebe die Beschreibung der Quest ein, welche in der Quest-GUI des Spielers angezeigt werden soll.'
-  writeQuestMaterial: '§aSchreibe das Material des Questgegenstandes.'
-  writeQuestName: '§a Schreibe den Namen der Quest:'
-  writeQuestTimer: '§aSchreibe die benötigte Zeit (in Minuten), bevor ein Spieler die Quest erneut starten kann: (Schreibe „null“, wenn der Standard‐Timer verwendet werden soll.)'
-  writeRegionName: '§aSchreibe den für den Schritt benötigten Namen der Region:'
-  writeStageText: '§aSchreibe den am Anfang des Schrittes zum Spieler gesendete Text:'
-  writeStartMessage: '§aSchreibe die Nachricht, die zu Beginn der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst:'
-  writeXPGain: '§aSchreibe die Menge an Erfahrungspunkten, die der Spieler erhalten wird: (Letzter Wert: {xp_amount})'
+advancement:
+  notStarted: Nicht gestartet
+inv:
+  validate: '§b§lBestätigen'
+  cancel: '§c§lAbbrechen'
+  search: '§e§lSuche'
+  addObject: '§aFüge ein Ziel hinzu'
+  confirm:
+    name: Bist du sicher?
+    'yes': '§aBestätigen'
+    'no': '§cAbbrechen'
+  create:
+    stageCreate: '§aNeuen Schritt erstellen'
+    stageRemove: '§cDiesen Schritt löschen'
+    stageUp: Eins höher
+    stageDown: Eins runter
+    stageType: '§7Stufentyp: §e{stage_type}'
+    cantFinish: '§7Du musst mindestens eine Stufe erstellen, bevor du die Questerstellung fertigstellen kannst!'
+    findNPC: '§aNPC finden'
+    bringBack: '§aItems zurückbringen'
+    findRegion: '§aRegion finden'
+    killMobs: '§aMobs töten'
+    mineBlocks: '§aBlöcke zerstören'
+    placeBlocks: '§aPlatziere Blöcke'
+    talkChat: '§aIm Chat schreiben'
+    interact: '§aMit Block interagieren'
+    fish: '§aFische fangen'
+    melt: '§6Schmelze Elemente'
+    enchant: '§dVerzauberte Gegenstände'
+    craft: '§aItem herstellen'
+    bucket: '§aEimer befüllen'
+    location: '§aZu Position gehen'
+    playTime: '§eSpielzeit'
+    breedAnimals: '§aZüchte Tiere'
+    tameAnimals: '§aZähme Tiere'
+    death: '§csterben'
+    dealDamage: '§cSchaden an Mobs zufügen'
+    eatDrink: '§aEssen oder trinken Sie Essen oder Tränke'
+    NPCText: '§eDialog bearbeiten'
+    NPCSelect: '§eNPC auswählen oder erstellen'
+    hideClues: Partikel und Hologramme verstecken
+    editMobsKill: '§eDie zu tötenden Mobs bearbeiten'
+    mobsKillFromAFar: Muss mit Projektil getötet werden
+    editBlocksMine: '§eDie zu zerstörenden Blöcke bearbeiten'
+    preventBlockPlace: Spieler daran hindern, ihre eigenen Blöcke zu zerstören
+    editBlocksPlace: '§eDie zu plazierenden Blöcke bearbeiten'
+    editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
+    cancelMessage: Senden abbrechen
+    ignoreCase: Fall der Nachricht ignorieren
+    selectItems: '§eBenötigte Items auswählen'
+    selectItemsMessage: '§eFragenachricht bearbeiten'
+    selectItemsComparisons: '§eWähle Gegenstandsvergleiche (ERWEITERT)'
+    selectRegion: '§7Region auswählen'
+    toggleRegionExit: Beim Verlassen
+    stageStartMsg: '§eStartnachricht bearbeiten'
+    selectBlockLocation: '§eBlockposition auswählen'
+    selectBlockMaterial: '§eWähle Blockmaterial'
+    leftClick: Muss Linksklick sein
+    editFishes: '§eDie zu fangenden Fische bearbeiten'
+    editItemsToMelt: '§eBearbeite Items zum Schmelzen'
+    editItemsToEnchant: '§eBearbeite Items zum Verzaubern'
+    editItem: '§eHerzustellendes Item bearbeiten'
+    editBucketType: '§eTyp des zu befüllenden Eimers bearbeiten'
+    editBucketAmount: '§eAnzahl an zu befüllenden Eimern bearbeiten'
+    editLocation: '§ePosition bearbeiten'
+    editRadius: '§eEntfernung von Position bearbeiten'
+    currentRadius: '§eAktuelle Entfernung: §6{radius}'
+    changeTicksRequired: '§eÄndere die erforderlichen gespielten Ticks'
+    changeEntityType: '§eObjekttyp ändern'
+    stage:
+      location:
+        worldPattern: '§aSetze Weltennamenmuster §d(FORTGESCHRITTEN)'
+        worldPatternLore: 'Wenn du möchtest, dass die Stage für eine Welt, die einem bestimmten Muster entspricht, abgeschlossen wird, gib hier einen Regex (regulärer Ausdruck) ein.'
+      death:
+        causes: '§aSetze Todesursache §d(FORTGESCHRITTEN)'
+        anyCause: Jede Todesursache
+        setCauses: '{causes_amount} Todesursache(n)'
+      dealDamage:
+        damage: '§eSchaden zu erledigen'
+        targetMobs: '§cMobs zu Schaden'
+      eatDrink:
+        items: '§eBearbeite Items um zu essen oder zu trinken'
+  stages:
+    name: Schritte erstellen
+    nextPage: '§eNächste Seite'
+    laterPage: '§eVorherige Seite'
+    endingItem: '§eAbschlussbelohnung bearbeiten'
+    descriptionTextItem: '§eBeschreibung bearbeiten'
+    regularPage: '§aReguläre Schritte'
+    branchesPage: '§dZweig‐Schritte'
+    previousBranch: '§eZurück zum vorherigen Zweig'
+    newBranch: '§eZum neuen Zweig gehen'
+    validationRequirements: '§eValidierungsanforderungen'
+    validationRequirementsLore: Alle Anforderungen müssen dem Spieler entsprechen, der versucht, den Schritt zu beenden. Ist dies nicht der Fall, kann der Schritt nicht beendet werden.
+  details:
+    hologramLaunch: '§e„Starten“‐Hologramm‐Item bearbeiten'
+    hologramLaunchLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest starten kann.
+    hologramLaunchNo: '§e„Starten nicht verfügbar“‐Hologramm‐Item bearbeiten'
+    hologramLaunchNoLore: Hologramm, das über dem Kopf des Starter NPCs angezeigt wird, wenn der Spieler die Quest NICHT starten kann.
+    customConfirmMessage: '§eQuestbestätigungsnachricht bearbeiten'
+    customConfirmMessageLore: Meldung, die in der Bestätigungs-GUI angezeigt wird, wenn ein Spieler die Quest startet.
+    customDescription: '§eBearbeite Quest Beschreibung'
+    customDescriptionLore: Beschreibung, die unter dem Namen der Quest in GUIs steht.
+    name: Letzte Questdetails
+    multipleTime:
+      itemName: Wiederholbar ein-/ausschalten
+      itemLore: Kann die Quest mehrmals abgeschlossen werden?
+    cancellable: Vom Spieler abbrechbar
+    cancellableLore: Ermöglicht dem Spieler, die Quest durch das Quest-Menü abzubrechen.
+    startableFromGUI: Über GUI startbar
+    startableFromGUILore: Ermöglicht dem Spieler, die Quest aus dem Quest-Menü zu starten.
+    scoreboardItem: Scoreboard aktivieren
+    scoreboardItemLore: Wenn deaktiviert, wird die Quest nicht über das Scoreboard verfolgt.
+    hideNoRequirementsItem: Verstecken, wenn die Anforderungen nicht erfüllt sind
+    hideNoRequirementsItemLore: Wenn aktiviert, wird die Quest nicht im Questmenü angezeigt, wenn die Anforderungen nicht erfüllt sind.
+    bypassLimit: Questlimit nicht zählen
+    bypassLimitLore: Wenn aktiviert, ist die Quest startbar, auch wenn der Spieler seine maximale Anzahl an begonnenen Quests erreicht hat.
+    auto: Beim ersten Beitritt automatisch starten
+    autoLore: Wenn aktiviert, wird die Quest automatisch gestartet, wenn der Spieler zum ersten Mal den Server betritt.
+    questName: '§a§lQuestname bearbeiten'
+    questNameLore: Ein Name muss gesetzt werden, um die Questerstellung abzuschließen.
+    setItemsRewards: '§eBelohnungs‐Items bearbeiten'
+    removeItemsReward: '§eEntferne Items vom Inventar'
+    setXPRewards: '§eBelohnungserfahrungspunkte bearbeiten'
+    setCheckpointReward: '§eBearbeite Checkpoint Belohnungen'
+    setRewardStopQuest: '§cQuest stoppen'
+    setRewardsWithRequirements: '§eBelohnungen mit Voraussetzungen'
+    setRewardsRandom: '§dZufällige Belohnungen'
+    setPermReward: '§eBerechtigungen bearbeiten'
+    setMoneyReward: '§eGeldbelohnung bearbeiten'
+    setWaitReward: '§e"Warte"-Belohnung bearbeiten'
+    setTitleReward: '§eTitelbelohnung bearbeiten'
+    selectStarterNPC: '§e§lNPC‐Starter auswählen'
+    selectStarterNPCLore: Ein Klick auf den ausgewählten NPC startet die Quest
+    selectStarterNPCPool: '§c⚠: Eine Questgruppe ist ausgewählt'
+    createQuestName: '§lQuest erstellen'
+    createQuestLore: Du musst einen Questnamen definieren.
+    editQuestName: '§lQuest bearbeiten'
+    endMessage: '§eAbschlussnachricht bearbeiten'
+    endMessageLore: Nachricht, die am Ende der Quest an den Spieler gesendet wird.
+    endSound: '§eBearbeite den end sound'
+    endSoundLore: Ton, der am Ende einer Quest abgespielt wird.
+    startMessage: '§eStartnachricht bearbeiten'
+    startMessageLore: Nachricht, die am Anfang der Quest an den Spieler gesendet wird.
+    startDialog: '§eStart‐Dialog bearbeiten'
+    startDialogLore: Dialog, der vor dem Start der Quests angezeigt wird, wenn Spieler auf den Starter NPC klicken.
+    editRequirements: '§eAnforderungen bearbeiten'
+    editRequirementsLore: Alle Anforderungen müssen auf den Spieler zutreffen, bevor er mit der Quest beginnen kann.
+    startRewards: '§6Startbelohnungen'
+    startRewardsLore: Aktionen die durchgeführt werden wenn die Quest startet.
+    cancelRewards: '§cAbbrechen von Aktionen'
+    cancelRewardsLore: Aktionen wenn Spieler diese Quest abbrechen.
+    hologramText: '§eHologrammtext'
+    hologramTextLore: Text, der auf dem Hologramm über dem Kopf des Starter NPCs angezeigt wird.
+    timer: '§bNeustart Timer'
+    timerLore: Zeit, bis der Spieler die Quest wieder starten kann.
+    requirements: '{amount} Anforderung(en)'
+    rewards: '{amount} Belohnung(en)'
+    actions: '{amount} Aktion(en)'
+    rewardsLore: Aktionen die durchgeführt werden wenn die Quest endet.
+    customMaterial: '§eBearbeite das Material des Questgegenstandes'
+    customMaterialLore: Angezeigter Gegenstand dieser Quest im Questmenü.
+    failOnDeath: Im Todesfall fehlschlagen
+    failOnDeathLore: Wird die Quest abgebrochen, wenn der Spieler stirbt?
+    questPool: '§eQuestgruppe'
+    questPoolLore: Füge diese Quest einer Questgruppe hinzu
+    firework: '§dEnding Feuerwerk'
+    fireworkLore: Feuerwerk startet, wenn der Spieler die Quest beendet hat
+    fireworkLoreDrop: Lege dein eigenes Feuerwerk hierher
+    visibility: '§bQuest Sichtbarkeit'
+    visibilityLore: Legen Sie fest, in welchen Tabs des Menüs die Quest angezeigt wird und ob die Quest auf dynamischen Karten sichtbar ist.
+    keepDatas: Spielerdaten beibehalten
+    keepDatasLore: |-
+      Erzwinge das Plugin die Daten der Spieler zu speichern, obwohl Stufen bearbeitet wurden. §c§lWARNUNG §c- Aktivieren dieser Option kann die Daten deiner Spieler zerstören.
+    loreReset: '§e§lDer Fortschritt aller Spieler wird zurückgesetzt'
+    optionValue: '§8Wert: §7{value}'
+    defaultValue: '§8(Standardwert)'
+    requiredParameter: '§7Benötigter Parameter'
+  itemsSelect:
+    name: Items bearbeiten
+    none: |-
+      §aBewege ein Item hierher oder klicke, um den Item‐Editor zu öffnen.
+  itemSelect:
+    name: Item auswählen
+  npcCreate:
+    name: NPC erstellen
+    setName: '§eNPC‐Name bearbeiten'
+    setSkin: '§eNPC‐Skin bearbeiten'
+    setType: '§eNPC‐Typ bearbeiten'
+    move:
+      itemName: '§eBewegen'
+      itemLore: '§aDie NPC‐Position ändern.'
+    moveItem: '§a§lPosition bestätigen'
+  npcSelect:
+    name: Auswählen oder erstellen?
+    selectStageNPC: '§eExistierenden NPC auswählen'
+    createStageNPC: '§eNPC erstellen'
+  entityType:
+    name: Objekttyp auswählen
+  chooseQuest:
+    name: Welche Quest?
+    menu: '§aQuests Menu'
+    menuLore: Ruft dich zu deinem Quest-Menü zurück.
+  mobs:
+    name: Mobs auswählen
+    none: '§aKlicke, um ein Mob hinzuzufügen.'
+    editAmount: Betrag bearbeiten
+    editMobName: Mob-Namen bearbeiten
+    setLevel: Mindestlevel festlegen
+  mobSelect:
+    name: Wähle den Mobtyp
+    bukkitEntityType: '§eObjekttyp auswählen'
+    mythicMob: '§6Mythic Mob auswählen'
+    epicBoss: '§6Wähle einen Epic Boss'
+    boss: '§6Wähle einen Boss'
+  stageEnding:
+    locationTeleport: '§eTeleportationsposition bearbeiten'
+    command: '§eAuszuführenden Befehl bearbeiten'
+  requirements:
+    name: Anforderungen
+  rewards:
+    name: Belohnungen
+    commands: 'Befehle: {amount}'
+    random:
+      rewards: Belohnungen bearbeiten
+      minMax: Bearbeite das min und max
+  checkpointActions:
+    name: Checkpoint-Aktionen
+  cancelActions:
+    name: Aktionen abbrechen
+  rewardsWithRequirements:
+    name: Belohnungen mit Voraussetzungen
+  listAllQuests:
+    name: Quests
+  listPlayerQuests:
+    name: 'Quests von {player_name}'
+  listQuests:
+    notStarted: Nicht gestartete Quests
+    finished: Abgeschlossene Quests
+    inProgress: Laufende Quests
+    loreDialogsHistoryClick: '§7Dialoge anzeigen'
+    loreCancelClick: '§cQuest abbrechen'
+    loreStart: '§a§oKlicke, um die Quest zu starten.'
+    loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
+    canRedo: '§3§oDu kannst diese Quest erneut starten!'
+  itemCreator:
+    name: Item‐Ersteller
+    itemType: '§bItem‐Typ'
+    itemFlags: Item‐Flags umschalten
+    itemName: '§bItem‐Name'
+    itemLore: '§bItem‐Beschreibung'
+    isQuestItem: '§bQuest‐Item:'
+  command:
+    name: Befehl
+    value: '§eBefehl'
+    console: Konsole
+    parse: Platzhalter analysieren
+    delay: '§bVerzögerung'
+  chooseAccount:
+    name: Welcher Account?
+  listBook:
+    questName: Name
+    questStarter: Starter
+    questRewards: Belohnungen
+    questMultiple: Mehrfachverwendung
+    requirements: Vorraussetzungen
+    questStages: Schritte
+    noQuests: Es wurden zuvor keine Quests erstellt.
+  commandsList:
+    name: Befehlliste
+    value: '§eBefehl: {command_label}'
+    console: '§eKonsole: {command_console}'
+  block:
+    name: Block auswählen
+    materialNotItemLore: 'Dieser Block kann momentan nicht als Item angezeigt werden. Er wird immer noch korrekt als {block_material} gespeichert.'
+    blockName: '§bEigener Blockname'
+    blockData: '§dBlockdaten (fortgeschritten)'
+    blockTag: '§dTag (Erweitert)'
+    blockTagLore: 'Wähle einen Tag, welcher eine Liste von möglichen Blöcken beschreibt. Tags können durch Datapacks angepasst werden. Du kannst eine Liste von Tags im Minecraft Wiki finden.'
+  blocksList:
+    name: Blöcke auswählen
+    addBlock: '§aKlicke, um einen Block hinzuzufügen.'
+  blockAction:
+    name: Blockaktion auswählen
+    location: '§eWähle einen genauen Ort aus'
+    material: '§eWähle ein Blockmaterial'
+  buckets:
+    name: Eimertyp
+  permission:
+    name: Berechtigung auswählen
+    perm: '§aBerechtigung'
+    world: '§aWelt'
+    worldGlobal: '§b§lGlobal'
+    remove: Berechtigung entfernen
+    removeLore: '§7Berechtigung wird genommen\n§7statt zu geben.'
+  permissionList:
+    name: Berechtigungsliste
+    removed: '§eGenommen: §6{permission_removed}'
+    world: '§eWelt: §6{permission_world}'
+  classesRequired.name: Klassen erforderlich
+  classesList.name: Klassenliste
+  factionsRequired.name: Fraktionen benötigt
+  factionsList.name: Fraktionsliste
+  poolsManage:
+    name: Questgruppen
+    poolMaxQuests: '§8Max. Quests: §7{pool_max_quests}'
+    poolQuestsPerLaunch: '§8Quests pro Start vergeben: §7{pool_quests_per_launch}'
+    poolRedo: '§8Kann abgeschlossene Quests wiederholen: §7{pool_redo}'
+    poolTime: '§8Zeit zwischen Quests: §7{pool_time}'
+    poolHologram: '§8Hologramm-Text: §7{pool_hologram}'
+    poolAvoidDuplicates: '§8Duplikate vermeiden: §7{pool_duplicates}'
+    poolQuestsList: '§7{pool_quests_amount} §8Quest(s): §7{pool_quests}'
+    create: '§aErstelle eine Questgruppe'
+    edit: '§e> §6§oBearbeite die Gruppe... §e<'
+    choose: '§e> §6§oWähle diese Gruppe §e<'
+  poolCreation:
+    name: Questgruppen Erstellung
+    hologramText: '§eBenutzerdefiniertes Hologramm der Gruppe'
+    maxQuests: '§aMax. Quests'
+    questsPerLaunch: '§aPro Start gestartete Quests'
+    time: '§bLege die Zeit zwischen Quests fest'
+    redoAllowed: Ist Wiederholen erlaubt
+    avoidDuplicates: Duplikate vermeiden
+    avoidDuplicatesLore: '§8> §7Versuche es zu vermeiden,\n  immer wieder die gleiche Quest zu absolvieren'
+    requirements: '§bAnforderungen, um eine Quest zu starten'
+  poolsList.name: Questgruppen
+  itemComparisons:
+    name: Itemvergleiche
+    bukkit: Bukkit nativer Vergleich
+    customBukkit: Bukkit nativer Vergleich - KEIN NBT
+    material: Gegenstandsmaterial
+    materialLore: 'Vergleicht Gegenstandsmaterial (z.B Stein, Eisenschwert...)'
+    itemName: Gegenstandsname
+    itemNameLore: Vergleicht Gegenstandsnamen
+    itemLore: Gegenstands-Beschreibung
+    itemLoreLore: Vergleicht Gegenstands-Beschreibungen
+    enchants: Gegenstände verzaubert
+    enchantsLore: Vergleicht Gegenstandsverzauberungen
+    repairCost: Reparaturkosten
+    repairCostLore: Vergleicht Reparaturkosten für Rüstungen und Schwerter
+    itemsAdder: ItemsAdder
+    itemsAdderLore: Vergleicht ItemsAdder-IDs
+  editTitle:
+    name: Titel bearbeiten
+    title: '§6Titel'
+    subtitle: '§eUntertitel'
+    fadeIn: '§aEinblendedauer'
+    stay: '§bEinblendedauer'
+    fadeOut: '§aAusblendedauer'
+  particleEffect:
+    name: Erstelle einen Partikeleffekt
+    shape: '§dPartikel Muster'
+    type: '§ePartikel Typ'
+    color: '§bPartikelfarbe'
+  particleList:
+    name: Partikel Liste
+    colored: Farbige Partikel
+  damageCause:
+    name: Schadensursache
+  damageCausesList:
+    name: Schadensverursachungsliste
+  questObjects:
+    setCustomDescription: 'Eigene Beschreibung festlegen'
 scoreboard:
-  asyncEnd: '§ex'
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'
-  noLaunchedDescription: '§c§oLaden'
   noLaunchedName: '&c&lLaden'
-  stage:
-    breed: '§eZüchte §6{mobs}'
-    bucket: '§eBefülle §6{buckets}'
-    chat: '§eSchreibe §6{text}'
-    craft: '§eStelle §6{items} §eher'
-    fish: '§eAngle §6{items}'
-    interact: '§eKlicke auf den Block bei §6{x}'
-    interactMaterial: '§eKlicke auf einen §6{block}§e Block'
-    items: '§eBringe Items zu §6{dialog_npc_name}§e:'
-    location: '§eGehe zu: §6{target_x}§e, §6{target_y}§e, §6{target_z}§e in §6{target_world}'
-    mine: '§eBaue {blocks} ab'
-    mobs: '§eTöte §6{mobs}'
-    npc: '§eSprich mit dem NPC §6{dialog_npc_name}'
-    placeBlocks: '§ePlatziere {blocks}'
-    region: '§eFinde Region §6{region_id}'
-    tame: '§eZähme §6{mobs}'
+  noLaunchedDescription: '§c§oLaden'
   textBetwteenBranch: '§e oder'
+  asyncEnd: '§ex'
+  stage:
+    region: '§eFinde Region §6{region_id}'
+    npc: '§eSprich mit dem NPC §6{dialog_npc_name}'
+    mobs: '§eTöte §6{mobs}'
+    mine: '§eBaue {blocks} ab'
+    placeBlocks: '§ePlatziere {blocks}'
+    chat: '§eSchreibe §6{text}'
+    interactMaterial: '§eKlicke auf einen §6{block}§e Block'
+    fish: '§eAngle §6{items}'
+    melt: '§6{items} §eschmelzen'
+    enchant: '§6{items} §everzaubern'
+    craft: '§eStelle §6{items} §eher'
+    bucket: '§eBefülle §6{buckets}'
+    location: '§eGehe zu: §6{target_x}§e, §6{target_y}§e, §6{target_z}§e in §6{target_world}'
+    breed: '§eZüchte §6{mobs}'
+    tame: '§eZähme §6{mobs}'
+    die: '§csterben'
+indication:
+  startQuest: '§7Möchtest du die Quest {quest_name} starten?'
+  closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
+  cancelQuest: '§7Bist du sicher, dass du die Quest {quest_name} abbrechen möchtest?'
+  removeQuest: '§7Bist du sicher, dass du die Quest {quest} entfernen möchtest?'
+description:
+  requirement:
+    title: '§8§lAnforderungen:'
+    jobLevel: 'Level {short_level} für {job_name}'
+    combatLevel: 'Kampflevel {short_level}'
+    skillLevel: 'Level {short_level} für {skill_name}'
+    class: 'Klasse {class_name}'
+    faction: 'Fraktion {faction_name}'
+    quest: 'Quest beenden §e{quest_name}'
+  reward:
+    title: '§8§lBelohnungen:'
+misc:
+  format:
+    prefix: '§6<§e§lQuests§r§6> §r'
+    editorPrefix: '§a'
+  time:
+    weeks: '{weeks_amount} Wochen'
+    days: '{days_amount} Tage'
+    hours: '{hours_amount} Stunden'
+    minutes: '{minutes_amount} Minuten'
+    lessThanAMinute: 'weniger als eine Minute'
+  stageType:
+    region: Region finden
+    npc: NPC finden
+    items: Items zurückbringen
+    mobs: Mobs töten
+    mine: Blöcke zerstören
+    placeBlocks: Blöcke platzieren
+    chat: Im Chat schreiben
+    interact: Mit Block interagieren
+    Fish: Fische fangen
+    Craft: Item herstellen
+    Bucket: Eimer befüllen
+    location: Position finden
+    playTime: Spielzeit
+    breedAnimals: Züchte Tiere
+    tameAnimals: Zähme Tiere
+  comparison:
+    equals: gleich wie {number}
+    different: anders als {number}
+    less: strikt weniger als {number}
+    lessOrEquals: weniger als {number}
+    greater: strikt größer als {number}
+    greaterOrEquals: größer als {number}
+  requirement:
+    logicalOr: '§dLogisch ODER (Voraussetzungen)'
+    skillAPILevel: '§bAPI-Level benötigt'
+    class: '§bBenötigte Klasse(n)'
+    faction: '§bBenötigte Fraktion(en)'
+    jobLevel: '§bJob‐Level benötigt'
+    combatLevel: '§bKampflevel benötigt'
+    experienceLevel: '§bErfahrungslevel benötigt'
+    permissions: '§3Benötigte Berechtigung(en)'
+    scoreboard: '§dPunktestand erforderlich'
+    region: '§dRegion erforderlich'
+    placeholder: '§bPlatzhalter‐Wert benötigt'
+    quest: '§aQuest benötigt'
+    mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
+    money: '§dGeld benötigt'
+  bucket:
+    water: Wassereimer
+    lava: Lavaeimer
+    milk: Milcheimer
+    snow: Schnee-Eimer
+  click:
+    right: Rechtsklick
+    left: Linksklick
+    shift-right: Shift-Rechtsklick
+    shift-left: Shift-Linksklick
+    middle: Mittelklick
+  ticks: '{ticks} Ticks'
+  questItemLore: '§e§oQuest‐Item'
+  hologramText: '§8§lQuest‐NPC'
+  poolHologramText: '§eNeue Quest verfügbar!'
+  entityType: '§eObjekttyp: {entity_type}'
+  entityTypeAny: '§eJedes Objekt'
+  enabled: Aktiviert
+  disabled: Deaktiviert
+  unknown: unbekannt
+  notSet: '§cnicht gesetzt'
+  removeRaw: Entfernen
+  reset: Zurücksetzen
+  or: oder
+  amount: '§eAnzahl: {amount}'
+  'yes': 'Ja'
+  'no': 'Nein'
+  and: und
