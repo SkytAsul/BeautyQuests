@@ -51,6 +51,7 @@ public enum Lang implements Locale {
 	QUEST_ITEM_DROP("msg.questItem.drop"),
 	QUEST_ITEM_CRAFT("msg.questItem.craft"),
 	QUEST_ITEM_EAT("msg.questItem.eat"),
+	QUEST_ITEM_PLACE("msg.questItem.place"),
 
 	STAGE_MOBSLIST("msg.stageMobs.listMobs"),
 

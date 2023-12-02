@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -193,6 +194,14 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent e) {
 		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
+	}
+
+	@EventHandler
+	public void onPlace(BlockPlaceEvent e) {
+		if (Utils.isQuestItem(e.getItemInHand())) {
+			e.setCancelled(true);
+			Lang.QUEST_ITEM_PLACE.send(e.getPlayer());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

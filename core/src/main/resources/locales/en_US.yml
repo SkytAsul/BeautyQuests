@@ -26,9 +26,10 @@ msg:
     noAvailable: §7There is no more quest available...
     maxQuests: §cYou cannot have more than {pool_max_quests} quest(s) at the same time...
   questItem:
-    drop: §cYou can't drop a quest item!
-    craft: §cYou can't use a quest item to craft!
+    drop: §cYou cannot drop a quest item!
+    craft: §cYou cannot use a quest item to craft!
     eat: §cYou cannot eat a quest item!
+    place: §cYou cannot place a quest item!
   stageMobs:
     listMobs: §aYou must kill {mobs}.
   writeNPCText: '§aWrite the dialog that will be said to the player by the NPC: (Write
