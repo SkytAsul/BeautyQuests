@@ -73,6 +73,7 @@ public class ItemCreatorGUI extends AbstractGui {
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 					type = obj;
 					event.reopen();
+					refresh();
 				}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false)).start();
 				break;
 
@@ -82,6 +83,7 @@ public class ItemCreatorGUI extends AbstractGui {
 					amount = /* Math.min(obj, 64) */ obj;
 					ItemUtils.name(event.getClicked(), Lang.Amount.quickFormat("amount", amount));
 					event.reopen();
+					refresh();
 				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 				break;
 
@@ -95,6 +97,7 @@ public class ItemCreatorGUI extends AbstractGui {
 				new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
 					name = obj;
 					event.reopen();
+					refresh();
 				}).start();
 				break;
 
@@ -103,6 +106,7 @@ public class ItemCreatorGUI extends AbstractGui {
 				new TextListEditor(event.getPlayer(), list -> {
 					lore = list;
 					event.reopen();
+					refresh();
 				}, lore).start();
 				break;
 
