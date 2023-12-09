@@ -1,9 +1,6 @@
 package fr.skytasul.quests.structure;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -125,26 +122,19 @@ public class QuestBranchImplementation implements QuestBranch {
 			throw new IllegalArgumentException("Account does not have this branch launched");
 		if (asyncReward.contains(acc)) return Lang.SCOREBOARD_ASYNC_END.toString();
 		if (datas.isInEndingStages()) {
-			StringBuilder stb = new StringBuilder();
-			int i = 0;
-			for (EndingStage ending : endStages) {
-				i++;
-				stb.append(ending.getStage().getDescriptionLine(acc, source));
-				if (i != endStages.size()){
-					stb.append("{nl}");
-					stb.append(Lang.SCOREBOARD_BETWEEN_BRANCHES.toString());
-					stb.append("{nl}");
-				}
-			}
-			return stb.toString();
+			return endStages.stream()
+					.map(stage -> stage.getStage().getDescriptionLine(acc, source))
+					.filter(Objects::nonNull)
+					.collect(Collectors.joining("{nl}" + Lang.SCOREBOARD_BETWEEN_BRANCHES + " {nl}"));
 		}
 		if (datas.getStage() < 0)
 			return "§cerror: no stage set for branch " + getId();
 		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
 
+		String descriptionLine = regularStages.get(datas.getStage()).getDescriptionLine(acc, source);
 		return MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getStageDescriptionFormat(),
 				PlaceholderRegistry.of("stage_index", datas.getStage() + 1, "stage_amount", regularStages.size(),
-						"stage_description", regularStages.get(datas.getStage()).getDescriptionLine(acc, source)));
+						"stage_description", descriptionLine == null ? "" : descriptionLine));
 	}
 
 	@Override

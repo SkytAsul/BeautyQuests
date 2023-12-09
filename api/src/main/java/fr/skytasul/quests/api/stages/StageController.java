@@ -21,7 +21,7 @@ public interface StageController {
 
 	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue);
 
-	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
+	public @Nullable String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
 
 	public <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey);
 

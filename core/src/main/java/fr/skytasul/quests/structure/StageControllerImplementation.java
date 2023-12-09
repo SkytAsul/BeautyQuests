@@ -116,11 +116,19 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@Override
-	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
+	public @Nullable String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
 		try {
+			String description = stage.getCustomText();
+			if (description != null) {
+				if (description.equals("none"))
+					return null;
+				description = "§e" + description;
+			}
+
 			StageDescriptionPlaceholdersContext context = StageDescriptionPlaceholdersContext.of(true, acc, source, null);
-			String description =
-					stage.getCustomText() == null ? stage.getDefaultDescription(context) : ("§e" + stage.getCustomText());
+			if (description == null)
+				description = stage.getDefaultDescription(context);
+
 			return MessageUtils.finalFormat(description, stage.getPlaceholdersRegistry(), context);
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe(

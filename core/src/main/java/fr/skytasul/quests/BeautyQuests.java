@@ -436,10 +436,21 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		InternalIntegrations.AccountsHook.isEnabled(); // to initialize the class
 	}
 
-	private YamlConfiguration loadLang() throws LoadingException {
+	private void loadLang() throws LoadingException {
 		try {
 			loadedLanguage = config.getConfig().getString("lang", "en_US");
-			return Locale.loadLang(this, Lang.values(), loadedLanguage);
+			Locale.loadLang(this, Lang.values(), loadedLanguage);
+
+			Pattern oldPlaceholders = Pattern.compile("\\{\\d\\}");
+			for (Lang l : Lang.values()) {
+				if (oldPlaceholders.matcher(l.getValue()).find()) {
+					logger.warning(
+							"Found old placeholder format in /plugins/BeautyQuests/locales/" + loadedLanguage + ".yml.");
+					logger.warning(
+							"This means you probably have not deleted the locales folder after upgrading from a pre-1.0 version."
+									+ " Expect some bugs with message formatting.");
+				}
+			}
 		}catch (Exception ex) {
 			throw new LoadingException("Couldn't load language file.", ex);
 		}
