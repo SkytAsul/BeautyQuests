@@ -5,20 +5,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class EntityTypeGUI extends PagedGUI<EntityType>{
 
@@ -54,13 +52,13 @@ public class EntityTypeGUI extends PagedGUI<EntityType>{
 
 	@Override
 	public void click(EntityType existing, ItemStack item, ClickType clickType){
-		Inventories.closeAndExit(p);
+		close(player);
 		run.accept(existing);
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REOPEN;
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REOPEN;
 	}
 
 	private static String getName(EntityType object) {

@@ -4,17 +4,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import fr.skytasul.quests.utils.ReflectUtils;
 
-import io.netty.buffer.ByteBuf;
-
 public class NullNMS extends NMS {
-	
-	@Override
-	public Object bookPacket(ByteBuf buf) {
-		throw new UnsupportedOperationException("Your version is not compatible.");
-	}
 
 	@Override
 	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
@@ -22,7 +14,7 @@ public class NullNMS extends NMS {
 	}
 	
 	@Override
-	public void sendPacket(Player p, Object packet) {
+	public void openBookInHand(Player p) {
 		throw new UnsupportedOperationException("Your version is not compatible.");
 	}
 	

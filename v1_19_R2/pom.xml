@@ -8,13 +8,14 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>0.20.1</version>
+		<version>1.0</version>
 	</parent>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
 	</properties>
 
 	<repositories>

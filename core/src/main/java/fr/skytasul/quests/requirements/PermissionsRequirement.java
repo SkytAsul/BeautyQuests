@@ -4,33 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class PermissionsRequirement extends AbstractRequirement {
 
-	public List<Permission> permissions;
-	public String message;
-	
+	private List<Permission> permissions;
+
 	public PermissionsRequirement() {
-		this(new ArrayList<>(), null);
+		this(null, null, new ArrayList<>());
 	}
-	
-	public PermissionsRequirement(List<Permission> permissions, String message) {
+
+	public PermissionsRequirement(String customDescription, String customReason, List<Permission> permissions) {
+		super(customDescription, customReason);
 		this.permissions = permissions;
-		this.message = message;
 	}
 
 	@Override
@@ -40,62 +39,71 @@ public class PermissionsRequirement extends AbstractRequirement {
 		}
 		return true;
 	}
-	
+
 	@Override
-	public void sendReason(Player p){
-		if (message != null) Utils.IsendMessage(p, message, true);
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("permissions_amount", permissions.size());
 	}
 
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + Lang.AmountPermissions.format(permissions.size()), "§8> Message: §7" + (message == null ? Lang.NotSet.toString() : message), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(Lang.AmountPermissions.format(this));
 	}
-	
+
+	@Override
+	protected void sendCustomReasonHelpMessage(Player p) {
+		Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
+	}
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<Permission>(Lang.INVENTORY_PERMISSION_LIST.toString(), DyeColor.PURPLE, permissions) {
-			
+
 			@Override
 			public ItemStack getObjectItemStack(Permission object) {
-				return ItemUtils.item(XMaterial.PAPER, object.toString(), "", Lang.RemoveMid.toString());
+				return ItemUtils.item(XMaterial.PAPER, object.toString(), createLoreBuilder(object).toLoreArray());
 			}
-			
+
 			@Override
 			public void createObject(Function<Permission, ItemStack> callback) {
-				Lang.CHOOSE_PERM_REQUIRED.send(p);
-				new TextEditor<String>(p, () -> p.openInventory(inv), obj -> {
+				Lang.CHOOSE_PERM_REQUIRED.send(player);
+				new TextEditor<String>(player, this::reopen, obj -> {
 					callback.apply(Permission.fromString(obj));
-				}).useStrippedMessage().enter();
+				}).useStrippedMessage().start();
 			}
-			
+
 			@Override
 			public void finish(List<Permission> objects) {
 				permissions = objects;
-				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
-				new TextEditor<String>(p, event::reopenGUI, obj -> {
-					message = obj;
+				Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(player);
+				new TextEditor<String>(player, event::reopenGUI, obj -> {
+					setCustomReason(obj);
 					event.reopenGUI();
-				}).passNullIntoEndConsumer().enter();
+				}).passNullIntoEndConsumer().start();
 			}
-			
-		}.create(event.getPlayer());
+
+		}.open(event.getPlayer());
 	}
-	
+
 	@Override
 	public AbstractRequirement clone() {
-		return new PermissionsRequirement(new ArrayList<>(permissions), message);
+		return new PermissionsRequirement(getCustomDescription(), getCustomReason(), new ArrayList<>(permissions));
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("permissions", permissions.stream().map(Permission::toString).collect(Collectors.toList()));
-		if (message != null) section.set("message", message);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		permissions = section.getStringList("permissions").stream().map(Permission::fromString).collect(Collectors.toList());
-		if (section.contains("message")) message = section.getString("message");
+		if (section.contains("message")) // TODO migration 0.20.1 and before
+			setCustomReason(section.getString("message"));
 	}
 
 	public static class Permission {
@@ -122,5 +130,5 @@ public class PermissionsRequirement extends AbstractRequirement {
 			return new Permission(string.substring(neg ? 1 : 0), !neg);
 		}
 	}
-	
+
 }

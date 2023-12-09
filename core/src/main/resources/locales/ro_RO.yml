@@ -1,0 +1,91 @@
+---
+inv:
+  confirm:
+    'no': '§cAnuleaza'
+  create:
+    bringBack: '§aAdu obiecte inapoi'
+    bucket: '§aUmple galeti'
+    cancelMessage: Anuleaza trimiterea
+    craft: '§aCrafteaza Iteme'
+    enchant: '§dEnchanteaza iteme'
+    findNPC: '§aGaseste NPC'
+    findRegion: '§aGaseste regiune'
+    fish: '§aPrinde pesti'
+    interact: '§aInteractioneaza cu blocuri'
+    killMobs: '§aOmoara Monstri'
+    location: '§aDu-te la locatie'
+    melt: '§6Topeste Iteme'
+    mineBlocks: '§aSparge blockuri'
+    placeBlocks: '§aPlaseaza blocuri'
+    playTime: '§eTimp jucat'
+    stageCreate: '§aCreaza un nou pas'
+    stageRemove: '§cSterge acest pas'
+    talkChat: '§aScrie in chat'
+misc:
+  amounts:
+    dialogLines: '{lines_amount} linie(i)'
+    items: '{items_amount} item(e)'
+    mobs: '{mobs_amount} mob(i)'
+    permissions: '{permissions_amount} permisiune(i)'
+  bucket:
+    lava: Galeata cu Lava
+    milk: Galeata cu Lapte
+    snow: Galeata cu Zapada
+  click:
+    left: Click Stanga
+    right: Click Dreapta
+    shift-left: Shift Click-Stanga
+    shift-right: Shift Click-Dreapta
+msg:
+  command:
+    downloadTranslations:
+      notFound: '§cLimba{lang} nu a fost gasita pentru versiunea {version}.'
+      syntax: '§cTrebuie sa specifici o limba pentru descarcare.Exemplu: "/quests downloadTranslations en_US".'
+  dialogs:
+    tooFar: '§7§oEsti prea departe de {npc_name}...'
+  editor:
+    textList:
+      added: '§aText "§7{msg}§a" adaugat.'
+      help:
+        add: '§6add <message>: §eAdauga un text.'
+        close: '§6close: §eValideaza textul adaugat.'
+        header: '§6§lBeautyQuest-uri - Ajutor editor lista'
+        list: '§6list: §eVezi toate textele adaugate.'
+        remove: '§6remove <id>: §eElimina un text.'
+      removed: '§aText "§7{msg}§a" sters.'
+      syntax: '§cSintaxa corecta: '
+  number:
+    invalid: '§c{input} nu este un numar valid.'
+    notInBounds: '§cNumarul tau trebuie sa fie intre {min} si {max}.'
+  pools:
+    allCompleted: '§7Ai completat toate misiunile!'
+    maxQuests: '§cNu poti avea mai mult de {pool_max_quests} misiuni in acelasi timp...'
+    noAvailable: '§7Nu mai sunt misiuni disponibile...'
+    noTime: '§cTrebuie sa asteptati {time_left} inainte de a incepe o alta misiune.'
+  quest:
+    alreadyStarted: '§cAi inceput deja misiunea!'
+    cancelling: '§cProcesul de creare a misiunii a fost anulat.'
+    createCancelled: '§cCrearea sau editarea a fost anulata de un alt plugin!'
+    created: '§aFelicitari! Ai creat misiunea §e{quest}§a care include {quest_branches} ramura(uri)!'
+    editCancelling: '§cProcesul de editare al misiunii a fost anulat.'
+    edited: '§aFelicitari! Ai editat misiunea §e{quest}§a care include {quest_branches} ramura(uri)!'
+    finished:
+      base: '§aFelicitari! Ai terminat misiunea §e{quest_name}§a!'
+      obtain: '§aAi obtinut {rewards}!'
+    invalidID: '§cMisiunea cu id-ul {quest_id} nu exista.'
+    invalidPoolID: '§cGruparea {pool_id} nu exista.'
+    notStarted: '§cMomentan nu faci aceasta misiune.'
+    started: '§aAi inceput misiunea §r§e{quest_name}§o§6!'
+  questItem:
+    craft: '§cNu poti folosi un obiect de la misiuni pentru a crafta!'
+    drop: '§cNu poti arunca un obiect care apartine misunii!'
+    eat: '§cNu poti manca un obiect de quest!'
+  quests:
+    checkpoint: '§7Ai ajuns la destinatie!'
+    failed: '§cAi esuat misiunea {quest_name}...'
+    maxLaunched: '§cNu poti avea mai mult de {quests_max_amount} misiuni in acelasi timp...'
+    updated: '§7Misiunea §e{quest_name}§7 a fost actualizata.'
+  stageMobs:
+    listMobs: '§aTrebuie sa omori {mobs}.'
+  versionRequired: 'Versiune necesara: §l{version}'
+  writeStartMessage: '§aScrie mesajul care va fi trimis la inceputul questului, "null" dacă doresti cel implicit sau "none" dacă doresti niciunul:'

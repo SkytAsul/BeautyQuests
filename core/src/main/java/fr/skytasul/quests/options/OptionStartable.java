@@ -2,11 +2,11 @@ package fr.skytasul.quests.options;
 
 import java.util.Arrays;
 import java.util.List;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
 
 public class OptionStartable extends QuestOptionBoolean implements QuestDescriptionProvider {
 	
@@ -25,8 +25,8 @@ public class OptionStartable extends QuestOptionBoolean implements QuestDescript
 	
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (context.getCategory() != Category.NOT_STARTED || !context.getPlayerAccount().isCurrent()) return null;
-		return context.getQuest().isLauncheable(context.getPlayerAccount().getPlayer(), context.getPlayerAccount(), false) ? STARTABLE : NOT_STARTABLE;
+		if (context.getCategory() != PlayerListCategory.NOT_STARTED || !context.getPlayerAccount().isCurrent()) return null;
+		return context.getQuest().canStart(context.getPlayerAccount().getPlayer(), false) ? STARTABLE : NOT_STARTABLE;
 	}
 	
 	@Override

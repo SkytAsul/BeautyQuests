@@ -5,21 +5,21 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
-import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 
-public class StageTame extends AbstractEntityStage {
-	
-	public StageTame(QuestBranch branch, EntityType entity, int amount) {
-		super(branch, entity, amount);
+public class StageTame extends AbstractEntityStage implements Listener {
+
+	public StageTame(StageController controller, EntityType entity, int amount) {
+		super(controller, entity, amount);
 	}
-	
+
 	@EventHandler
 	public void onTame(EntityTameEvent e) {
 		if (e.getOwner() instanceof Player) {
@@ -27,33 +27,33 @@ public class StageTame extends AbstractEntityStage {
 			event(p, e.getEntityType());
 		}
 	}
-	
+
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
-		return Lang.SCOREBOARD_TAME.format(getMobsLeft(acc));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_TAME.toString();
 	}
-	
-	public static StageTame deserialize(ConfigurationSection section, QuestBranch branch) {
+
+	public static StageTame deserialize(ConfigurationSection section, StageController controller) {
 		String type = section.getString("entityType");
-		return new StageTame(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
+		return new StageTame(controller, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
-	
+
 	public static class Creator extends AbstractEntityStage.AbstractCreator<StageTame> {
-		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+
+		public Creator(@NotNull StageCreationContext<StageTame> context) {
+			super(context);
 		}
-		
+
 		@Override
 		protected boolean canUseEntity(EntityType type) {
 			return Tameable.class.isAssignableFrom(type.getEntityClass());
 		}
-		
+
 		@Override
-		protected StageTame finishStage(QuestBranch branch) {
-			return new StageTame(branch, entity, amount);
+		protected StageTame finishStage(StageController controller) {
+			return new StageTame(controller, entity, amount);
 		}
-		
+
 	}
-	
+
 }

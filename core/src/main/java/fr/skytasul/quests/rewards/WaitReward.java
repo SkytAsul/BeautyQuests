@@ -1,25 +1,25 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class WaitReward extends AbstractReward {
 	
 	private int delay;
 	
-	public WaitReward() {
-		this(0);
-	}
+	public WaitReward() {}
 	
-	public WaitReward(int delay) {
+	public WaitReward(String customDescription, int delay) {
+		super(customDescription);
 		this.delay = delay;
 	}
 	
@@ -29,8 +29,19 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(Lang.Ticks.format(delay)), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(getTicksString());
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("delay", this::getTicksString);
+	}
+
+	private @NotNull String getTicksString() {
+		return Lang.Ticks.quickFormat("ticks", delay);
 	}
 	
 	@Override
@@ -39,7 +50,7 @@ public class WaitReward extends AbstractReward {
 		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
 			delay = obj;
 			event.reopenGUI();
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}
 	
 	@Override
@@ -54,16 +65,18 @@ public class WaitReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new WaitReward(delay);
+		return new WaitReward(getCustomDescription(), delay);
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("delay", delay);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		delay = section.getInt("delay");
 	}
 	

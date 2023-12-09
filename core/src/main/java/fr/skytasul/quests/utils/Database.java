@@ -4,15 +4,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import javax.sql.DataSource;
-
 import org.bukkit.configuration.ConfigurationSection;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
 
 public class Database implements Closeable {
 
@@ -56,11 +53,11 @@ public class Database implements Closeable {
 
 	@Override
 	public void close() {
-		BeautyQuests.logger.info("Closing database pool...");
+		QuestsPlugin.getPlugin().getLoggerExpanded().info("Closing database pool...");
 		try {
 			((Closeable) source).close();
 		}catch (IOException ex) {
-			BeautyQuests.logger.severe("An error occurred while closing database pool.", ex);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while closing database pool.", ex);
 		}
 	}
 

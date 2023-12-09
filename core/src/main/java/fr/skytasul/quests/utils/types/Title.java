@@ -2,8 +2,7 @@ package fr.skytasul.quests.utils.types;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.localization.Lang;
 
 public class Title {
 	
@@ -43,7 +42,7 @@ public class Title {
 	
 	@Override
 	public String toString() {
-		return title + ", " + subtitle + ", " + Lang.Ticks.format(fadeIn + stay + fadeOut);
+		return title + ", " + subtitle + ", " + Lang.Ticks.quickFormat("ticks", fadeIn + stay + fadeOut);
 	}
 	
 	public void serialize(ConfigurationSection section) {

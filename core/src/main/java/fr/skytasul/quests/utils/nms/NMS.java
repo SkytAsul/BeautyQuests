@@ -4,17 +4,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ReflectUtils;
-
-import io.netty.buffer.ByteBuf;
 
 public abstract class NMS{
 	
@@ -37,8 +33,6 @@ public abstract class NMS{
 			}
 		}
 	}
-	
-	public abstract Object bookPacket(ByteBuf buf);
 	
 	public abstract double entityNameplateHeight(Entity en); // can be remplaced by Entity.getHeight from 1.11
 	
@@ -64,7 +58,7 @@ public abstract class NMS{
 		return craftReflect;
 	}
 	
-	public abstract void sendPacket(Player p, Object packet);
+	public abstract void openBookInHand(Player p);
 	
 	public static NMS getNMS() {
 		return nms;
@@ -74,47 +68,25 @@ public abstract class NMS{
 		return versionValid;
 	}
 	
-	public static int getMCVersion() {
-		return versionMajor;
-	}
-	
-	public static int getNMSMinorVersion() {
-		return versionMinorNMS;
-	}
-	
-	public static String getVersionString() {
-		return versionString;
-	}
-	
 	private static boolean versionValid = false;
 	private static NMS nms;
-	private static int versionMajor;
-	private static int versionMinorNMS;
-	private static String versionString;
 	
 	static {
-		versionString = Bukkit.getBukkitVersion().split("-R")[0];
-		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
-		String[] versions = version.split("_");
-		versionMajor = Integer.parseInt(versions[1]); // 1.X
-		if (versionMajor >= 17) {
-			// e.g. Bukkit.getBukkitVersion() -> 1.17.1-R0.1-SNAPSHOT
-			versions = versionString.split("\\.");
-			versionMinorNMS = versions.length <= 2 ? 0 : Integer.parseInt(versions[2]);
-		}else versionMinorNMS = Integer.parseInt(versions[2].substring(1)); // 1.X.Y
-		
 		try {
-			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).newInstance();
+			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + MinecraftVersion.VERSION_NMS).newInstance();
 			versionValid = true;
-			BeautyQuests.logger.info("Loaded valid Minecraft version " + version + ".");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.info("Loaded valid Minecraft version " + MinecraftVersion.VERSION_NMS + ".");
 		}catch (ClassNotFoundException ex) {
-			BeautyQuests.logger.warning("The Minecraft version " + version + " is not supported by BeautyQuests.");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("The Minecraft version " + MinecraftVersion.VERSION_NMS + " is not supported by BeautyQuests.");
 		}catch (Exception ex) {
-			BeautyQuests.logger.warning("An error ocurred when loading Minecraft Server version " + version + " compatibilities.", ex);
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error ocurred when loading Minecraft Server version "
+					+ MinecraftVersion.VERSION_NMS + " compatibilities.", ex);
 		}
 		if (!versionValid) {
 			nms = new NullNMS();
-			BeautyQuests.logger.warning("Some functionnalities of the plugin have not been enabled.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Some functionnalities of the plugin have not been enabled.");
 		}
 	}
 	

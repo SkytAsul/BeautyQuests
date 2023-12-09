@@ -1,20 +1,19 @@
 package fr.skytasul.quests.requirements;
 
 import org.bukkit.entity.Player;
-
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
-import fr.skytasul.quests.utils.ComparisonMethod;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.ComparisonMethod;
 
 public class LevelRequirement extends TargetNumberRequirement {
 	
 	public LevelRequirement() {
-		this(0, ComparisonMethod.GREATER_OR_EQUAL);
+		this(null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
 	}
 	
-	public LevelRequirement(double target, ComparisonMethod comparison) {
-		super(target, comparison);
+	public LevelRequirement(String customDescription, String customReason, double target, ComparisonMethod comparison) {
+		super(customDescription, customReason, target, comparison);
 	}
 
 	@Override
@@ -23,8 +22,8 @@ public class LevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public void sendReason(Player p){
-		Lang.REQUIREMENT_LEVEL.send(p, getFormattedValue());
+	protected String getDefaultReason(Player player) {
+		return Lang.REQUIREMENT_LEVEL.format(this);
 	}
 	
 	@Override
@@ -38,13 +37,18 @@ public class LevelRequirement extends TargetNumberRequirement {
 	}
 	
 	@Override
-	public String getDescription(Player p) {
-		return Lang.RDLevel.format(Integer.toString((int) target));
+	protected String getPlaceholderName() {
+		return "level";
 	}
-	
+
+	@Override
+	public String getDefaultDescription(Player p) {
+		return Lang.RDLevel.format(this);
+	}
+
 	@Override
 	public AbstractRequirement clone() {
-		return new LevelRequirement(target, comparison);
+		return new LevelRequirement(getCustomDescription(), getCustomReason(), target, comparison);
 	}
 
 }

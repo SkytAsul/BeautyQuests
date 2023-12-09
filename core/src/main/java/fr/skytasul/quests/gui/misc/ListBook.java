@@ -5,13 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class ListBook{
 
@@ -22,10 +20,11 @@ public class ListBook{
 		im.setTitle("Quests list");
 		im.setAuthor("BeautyQuests");
 		
-		QuestsAPI.getQuests().getQuests().stream().sorted().forEach(qu -> {
+		QuestsAPI.getAPI().getQuestsManager().getQuests().stream().sorted().forEach(qu -> {
 			StringBuilder stb = new StringBuilder(formatLine(Lang.BOOK_NAME.toString(), qu.getName())
-					+ formatLine("ID", qu.getID() + "")
-					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(), qu.getOption(OptionStarterNPC.class).getValue().getName()) : "")
+					+ formatLine("ID", qu.getId() + "")
+					+ ((qu.hasOption(OptionStarterNPC.class)) ? formatLine(Lang.BOOK_STARTER.toString(),
+							qu.getOption(OptionStarterNPC.class).getValue().getNpc().getName()) : "")
 					//+ formatLine(Lang.BOOK_REWARDS.toString(), qu.getRewards().exp + " XP §3" + Lang.And.toString() + " §1" + qu.getRewards().itemsSize() + " " + Lang.Item.toString())
 					+ formatLine(Lang.BOOK_SEVERAL.toString(), (qu.isRepeatable()) ? Lang.Yes.toString() : Lang.No.toString())
 					/*+ formatLine(Lang.BOOK_LVL.toString(), "" + qu.lvlRequired)
@@ -33,15 +32,17 @@ public class ListBook{
 					+ formatLine(Lang.BOOK_REQUIREMENTS.toString(), qu.getOptionValueOrDef(OptionRequirements.class).size() + "")
 					+ "\n"
 					+ formatLine(Lang.BOOK_STAGES.toString(), "")
-					+ qu.getBranchesManager().getBranches().stream().mapToInt(QuestBranch::getStageSize).sum() + " stages in " + qu.getBranchesManager().getBranchesAmount() + " branches");
+					+ qu.getBranchesManager().getBranches().stream().mapToInt(branch -> branch.getRegularStages().size())
+							.sum()
+					+ " stages in " + qu.getBranchesManager().getBranches().size() + " branches");
 			im.addPage(stb.toString());
 		});
-		if (QuestsAPI.getQuests().getQuests().isEmpty()) {
+		if (QuestsAPI.getAPI().getQuestsManager().getQuests().isEmpty()) {
 			im.addPage(Lang.BOOK_NOQUEST.toString());
 		}
 		
 		is.setItemMeta(im);
-		Utils.openBook(p, is);
+		QuestUtils.openBook(p, is);
 	}
 	
 	private static String formatLine(String title, String object){

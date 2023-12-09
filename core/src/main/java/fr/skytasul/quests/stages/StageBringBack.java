@@ -1,62 +1,56 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.QuestsConfiguration;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.ItemsGUI;
-import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.dialogs.Message;
+import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import fr.skytasul.quests.gui.items.ItemsGUI;
 
 public class StageBringBack extends StageNPC{
-	
+
 	protected final ItemStack[] items;
 	protected final String customMessage;
 	protected final ItemComparisonMap comparisons;
-	
+
 	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
-	protected final String splitted;
-	protected final String line;
-	
-	public StageBringBack(QuestBranch branch, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
-		super(branch);
+	protected String[] itemsDescriptions;
+
+	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
+		super(controller);
 		this.customMessage = customMessage;
 		this.comparisons = comparisons;
-		
+
 		this.items = items;
 		for (ItemStack item : items) {
 			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
 			amountsMap.put(item, amount);
 		}
-
-		String[] array = new String[items.length]; // create messages on beginning
-		for (int i = 0; i < array.length; i++){
-			array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT));
-		}
-		splitted = Utils.descriptionLines(Source.FORCESPLIT, array);
-		if (QuestsConfiguration.showDescriptionItemsXOne(Source.FORCESPLIT)){
-			for (int i = 0; i < array.length; i++){
-				array[i] = QuestsConfiguration.getItemNameColor() + Utils.getStringFromItemStack(items[i], QuestsConfiguration.getItemAmountColor(), false);
-			}
-		}
-		line = Utils.descriptionLines(Source.FORCELINE, array);
 	}
-	
+
 	public boolean checkItems(Player p, boolean msg){
 		boolean done = true;
 		for (Entry<ItemStack, Integer> en : amountsMap.entrySet()) {
@@ -71,51 +65,81 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public void sendNeedMessage(Player p) {
-		String message = getMessage();
-		if (message != null && !message.isEmpty() && !message.equals("none"))
-			Lang.NpcText.sendWP(p, npcName(), Utils.format(message, line), 1, 1);
+		new Message(MessageUtils.format(getMessage(), getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext.of(true,
+				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC).sendMessage(p, getNPC(),
+						getNpcName(), 1, 1);
 	}
-	
+
 	public void removeItems(Player p){
 		for(ItemStack is : items){
 			comparisons.removeItems(p.getInventory(), is);
 		}
 		p.updateInventory();
 	}
-	
+
 	public ItemStack[] getItems(){
 		return items;
 	}
-	
+
 	protected String getMessage() {
 		return customMessage == null ? Lang.NEED_OBJECTS.toString() : customMessage;
 	}
 
 	@Override
-	public String descriptionLine(PlayerAccount acc, Source source){
-		return Utils.format(Lang.SCOREBOARD_ITEMS.toString() + " " + (QuestsConfiguration.splitDescription(source) ? splitted : line), npcName());
-	}
-	
-	@Override
-	protected Object[] descriptionFormat(PlayerAccount acc, Source source){
-		return new String[]{QuestsConfiguration.splitDescription(source) ? splitted : line, npcName()};
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_ITEMS.toString();
 	}
 
 	@Override
-	public void start(PlayerAccount acc) {
-		super.start(acc);
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+
+		placeholders.registerIndexedContextual("items", StageDescriptionPlaceholdersContext.class,
+				context -> {
+					// We cannot initialize itemsDescription in constructor as a player instance is needed for the
+					// placeholder parsing event though it is not actually used.
+					// Therefore, we initialize itemsDescription the first time we actually use it: now.
+					if (itemsDescriptions == null) {
+						itemsDescriptions =
+								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
+
+									@Override
+									public int getPlayerAmount(@NotNull PlayerAccount account) {
+										return item.getAmount();
+									}
+
+									@Override
+									public @NotNull String getObjectName() {
+										return ItemUtils.getName(item, true);
+									}
+
+									@Override
+									public int getObjectAmount() {
+										return item.getAmount();
+									}
+								}, context)).toArray(String[]::new);
+					}
+
+					return ProgressPlaceholders.formatObjectList(context.getDescriptionSource(),
+							QuestsConfiguration.getConfig().getStageDescriptionConfig(), itemsDescriptions);
+				});
+	}
+
+	@Override
+	public void started(PlayerAccount acc) {
+		super.started(acc);
 		if (acc.isCurrent() && sendStartMessage())
 			sendNeedMessage(acc.getPlayer());
 	}
-	
+
 	@Override
 	protected void initDialogRunner() {
 		super.initDialogRunner();
-		
-		getNPC().addStartablePredicate((p, acc) -> {
+
+		getNPC().addStartablePredicate(p -> {
 			return canUpdate(p, false) && checkItems(p, false);
 		}, this);
-		
+
 		dialogRunner.addTest(p -> {
 			if (getNPC().canGiveSomething(p)) {
 				// if the NPC can offer something else to the player
@@ -128,16 +152,16 @@ public class StageBringBack extends StageNPC{
 			return true;
 		});
 		dialogRunner.addTestCancelling(p -> checkItems(p, true));
-		
+
 		dialogRunner.addEndAction(this::removeItems);
 	}
-	
+
 	@Override
 	public void unload() {
 		super.unload();
 		if (getNPC() != null) getNPC().removeStartablePredicate(this);
 	}
-	
+
 	@Override
 	public void serialize(ConfigurationSection section) {
 		super.serialize(section);
@@ -145,21 +169,21 @@ public class StageBringBack extends StageNPC{
 		if (customMessage != null) section.set("customMessage", customMessage);
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
-	
-	public static StageBringBack deserialize(ConfigurationSection section, QuestBranch branch) {
+
+	public static StageBringBack deserialize(ConfigurationSection section, StageController controller) {
 		ItemStack[] items = section.getList("items").toArray(new ItemStack[0]);
 		String customMessage = section.getString("customMessage", null);
 		ItemComparisonMap comparisons;
 		if (section.contains("itemComparisons")) {
 			comparisons = new ItemComparisonMap(section.getConfigurationSection("itemComparisons"));
 		}else comparisons = new ItemComparisonMap();
-		StageBringBack st = new StageBringBack(branch, items, customMessage, comparisons);
+		StageBringBack st = new StageBringBack(controller, items, customMessage, comparisons);
 		st.loadDatas(section);
 		return st;
 	}
 
 	public abstract static class AbstractCreator<T extends StageBringBack> extends StageNPC.AbstractCreator<T> {
-		
+
 		private static final ItemStack stageItems = ItemUtils.item(XMaterial.CHEST, Lang.stageItems.toString());
 		private static final ItemStack stageMessage = ItemUtils.item(XMaterial.PAPER, Lang.stageItemsMessage.toString());
 		private static final ItemStack stageComparison = ItemUtils.item(XMaterial.PRISMARINE_SHARD, Lang.stageItemsComparison.toString());
@@ -167,51 +191,60 @@ public class StageBringBack extends StageNPC{
 		protected List<ItemStack> items;
 		protected String message = null;
 		protected ItemComparisonMap comparisons = new ItemComparisonMap();
-		
-		public AbstractCreator(Line line, boolean ending) {
-			super(line, ending);
-			
-			line.setItem(5, stageItems, (p, item) -> {
+
+		protected AbstractCreator(@NotNull StageCreationContext<T> context) {
+			super(context);
+		}
+
+		@Override
+		public void setupLine(@NotNull StageGuiLine line) {
+			super.setupLine(line);
+
+			line.setItem(5, stageItems, event -> {
 				new ItemsGUI(items -> {
 					setItems(items);
-					reopenGUI(p, true);
-				}, items).create(p);
+					event.reopen();
+				}, items).open(event.getPlayer());
 			});
-			line.setItem(9, stageMessage, (p, item) -> {
-				new TextEditor<String>(p, () -> reopenGUI(p, false), x -> {
+			line.setItem(9, stageMessage, event -> {
+				new TextEditor<String>(event.getPlayer(), event::reopen, x -> {
 					setMessage(x);
-					reopenGUI(p, false);
-				}).passNullIntoEndConsumer().enter();
+					event.reopen();
+				}).passNullIntoEndConsumer().start();
 			});
-			line.setItem(10, stageComparison, (p, item) -> {
+			line.setItem(10, stageComparison, event -> {
 				new ItemComparisonGUI(comparisons, () -> {
 					setComparisons(comparisons);
-					reopenGUI(p, true);
-				}).create(p);
+					event.reopen();
+				}).open(event.getPlayer());
 			});
 		}
-		
+
 		public void setItems(List<ItemStack> items) {
 			this.items = Utils.combineItems(items);
-			line.editItem(5, ItemUtils.lore(line.getItem(5), Lang.optionValue.format(Lang.AmountItems.format(this.items.size()))));
+			getLine().refreshItemLore(5,
+					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size())));
 		}
-		
+
 		public void setMessage(String message) {
 			this.message = message;
-			line.editItem(9, ItemUtils.lore(line.getItem(9), message == null ? Lang.optionValue.format(Lang.NEED_OBJECTS.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(message)));
+			getLine().refreshItemLore(9, QuestOption.formatNullableValue(message, Lang.NEED_OBJECTS));
 		}
-		
+
 		public void setComparisons(ItemComparisonMap comparisons) {
 			this.comparisons = comparisons;
-			line.editItem(10, ItemUtils.lore(line.getItem(10), Lang.optionValue.format(Lang.AmountComparisons.format(this.comparisons.getEffective().size()))));
+			getLine().refreshItemLore(10,
+					QuestOption.formatNullableValue(
+							Lang.AmountComparisons.quickFormat("comparisons_amount", this.comparisons.getEffective().size()),
+							comparisons.isDefault()));
 		}
-		
+
 		@Override
 		public void start(Player p) {
 			new ItemsGUI(items -> {
 				setItems(items);
 				super.start(p);
-			}, Collections.emptyList()).create(p);
+			}, Collections.emptyList()).open(p);
 		}
 
 		@Override
@@ -221,20 +254,20 @@ public class StageBringBack extends StageNPC{
 			setMessage(stage.customMessage);
 			setComparisons(stage.comparisons.clone());
 		}
-		
+
 	}
-	
+
 	public static class Creator extends AbstractCreator<StageBringBack> {
-		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+
+		public Creator(@NotNull StageCreationContext<StageBringBack> context) {
+			super(context);
 		}
-		
+
 		@Override
-		protected StageBringBack createStage(QuestBranch branch) {
-			return new StageBringBack(branch, items.toArray(new ItemStack[0]), message, comparisons);
+		protected StageBringBack createStage(StageController controller) {
+			return new StageBringBack(controller, items.toArray(new ItemStack[0]), message, comparisons);
 		}
-		
+
 	}
 
 }

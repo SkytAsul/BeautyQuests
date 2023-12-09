@@ -1,0 +1,500 @@
+---
+msg:
+  quest:
+    finished:
+      base: '§a축하합니다! §e{quest_name}§a 퀘스트를 완료하셨습니다.'
+      obtain: '§a{rewards}를 얻었습니다!'
+    started: '§r§e{quest_name}§o§6 §a퀘스트를 시작하셨습니다.'
+    created: '§a축하합니다! {quest_branches} 를(을) 포함하는 퀘스트 §e{quest}§a를(을) 제작했습니다!'
+    edited: '§a축하합니다! §e{quest}§a 를(을) 포함한 퀘스트를 수정했습니다.'
+    createCancelled: '§c다른 플러그인으로 인해 생성 또는 수정이 취소되었습니다.'
+    cancelling: '§c퀘스트 생성 프로세스가 취소되었습니다.'
+    editCancelling: '§c퀘스트 에디션의 프로세스가 취소되었습니다.'
+    invalidID: '§cID가  {quest_id} 인 퀘스트가 존재하지 않습니다.'
+    invalidPoolID: '§c{pool_id}이(가) 존재하지 않습니다.'
+    alreadyStarted: '§c퀘스트를 이미 시작하셨습니다!'
+    notStarted: '§8§l[퀘스트 시스템] §c현재 해당 퀘스트를 할 수 없습니다'
+  quests:
+    maxLaunched: '§c당신은 {quests_max_amount}개 이상의 퀘스트를 동시에 가질 수 없습니다...'
+    updated: '§7퀘스트 §e{quest_name}§7가 업데이트 되었습니다.'
+    checkpoint: '§7퀘스트 체크포인트에 도달 하였습니다!'
+    failed: '§c당신은 {quest_name} 퀘스트를 실패했습니다...'
+  pools:
+    noTime: '§c다른 퀘스트를 하기위해 {time_left}만큼 기다려야 합니다.'
+    allCompleted: '§7모든 퀘스트를 완료했습니다!'
+    noAvailable: '§7완료 가능한 퀘스트가 존재하지 않습니다.'
+    maxQuests: '§c당신은 {pool_max_quests}개 이상의 퀘스트를 동시에 가질 수 없습니다...'
+  questItem:
+    drop: '§c퀘스트 아이템은 버릴 수 없습니다!'
+    craft: '§c퀘스트용 아이템을 조합에 사용할 수 없습니다!'
+    eat: 퀘스트 아이템은 팔 수 없습니다.
+  stageMobs:
+    listMobs: '§a당신은 {mobs}를 죽여야만 합니다.'
+  writeNPCText: '§aNPC가 플레이어에게 말할 대사를 작성해주세요: (도움말을 보려면 "help"를 입력하세요.)'
+  writeRegionName: '§a해당 단계에 필요한 지역의 이름을 입력하세요:'
+  writeXPGain: '§a플레이어가 획득할 경험치량을 입력하세요: (최근 값: {xp_amount})'
+  writeMobAmount: '§a죽일 몹의 수를 적어 주세요:'
+  writeMobName: '§8§l[퀘스트 시스템] §a해당 퀘스트에 죽일 몹의 대상을 작성하세요!'
+  writeChatMessage: '§8§l[퀘스트 시스템] §a해당 퀘스트의 작성시킬 메시지를 작성하세요! : (커맨드는 "\{SLASH}" 를 원하시는 명령어 앞에 추가하여 주십시오 )'
+  writeMessage: '§8§l[퀘스트 시스템] §a플레이어에게 보여질 메시지를 작성하세요'
+  writeStartMessage: '§8§l[퀘스트 시스템] §a퀘스트가 시작될때 보낼 메시지를 작성해주세요! §e 기본값 : null / 없음 : none'
+  writeEndMsg: '§8§l[퀘스트 시스템] §a퀘스트가 끝날때 보낼 메시지를 작성해주세요! §e 기본값 : null / 없음 : none'
+  writeEndSound: '§8§l[퀘스트 시스템] §a퀘스트가 끝날때 재생될 소리를 작성해주세요! §e 기본값 : null / 없음 : none'
+  writeDescriptionText: '§8§l[퀘스트 시스템] §a퀘스트의 내용 묘사에 쓰일 문장을 작성해주세요'
+  writeStageText: '§8§l[퀘스트 시스템] §a퀘스트의 첫번째 단계에 보여줄 메시지를 작성해주세요!'
+  moveToTeleportPoint: '§8§l[퀘스트 시스템] §a지정된 순간이동 지점에 이동합니다'
+  writeNpcName: '§aNPC의 이름을 적어주세요:'
+  writeNpcSkinName: '§aNPC 스킨의 이름을 입력하세요:'
+  writeQuestName: '§a퀘스트의 이름을 입력하세요:'
+  writeCommand: '§8§l[퀘스트 시스템]  §a원하는 커맨드를 입력하세요: (커맨드는 "/"와 "{player}" 를 제외하고 써도 좋습니다. 자동으로 실행하는 사람을 대상으로 설정할 것입니다.)'
+  writeHologramText: '§8§l[퀘스트 시스템]  §a홀로그램의 내용을 작성해 주십시오! §e "기본값" : null / "없음" : none'
+  writeQuestTimer: '§8§l[퀘스트 시스템] §a퀘스트 진행에 필요한 쿨타임을 작성해주세요 §e "기본값" : null / "없음" : none )'
+  writeConfirmMessage: '§8§l[퀘스트 시스템] §a퀘스트 시작에 보여질 확인 메시지를 작성해 주세요! §e "기본값" : null / "없음" : none )'
+  writeQuestDescription: '§8§l[퀘스트 시스템] §a플레이어의 퀘스트 창에 보여질 퀘스트의 설명을 작성해주세요!'
+  writeQuestMaterial: '§8§l[퀘스트 시스템] §a퀘스트 아이템의 타입을 작성해주세요'
+  requirements:
+    quest: '§c먼저 §e{quest_name}§c 퀘스트를 완료 해야합니다.'
+    level: '§c퀘스트를 받기 위한 레벨이 부족합니다! {long_level}!'
+    job: '§8§l[퀘스트 시스템] §c{job_name}의 레벨이 {long_level} 이 되어야 합니다!'
+    skill: '§8§l[퀘스트 시스템] §c{skill_name}의 레벨이 {long_level} 이 되어야 합니다!'
+    combatLevel: '§8§l[퀘스트 시스템] §a §c퀘스트를 받기 위한 레벨이 부족합니다! {long_level}!'
+    money: '§c{money}를 가져야합니다!'
+    waitTime: '§8§l[퀘스트 시스템]§c이 퀘스트를 다시 하기 위해 당신은 총 {time_left} 분(초)를 기다려야 합니다.'
+  experience:
+    edited: '§8§l[퀘스트 시스템] §a퀘스트 수락 조건을 경험치 필요량 {old_xp_amount}에서 {xp_amount} 으로 수정하였습니다'
+  selectNPCToKill: '§8§l[퀘스트 시스템] §a죽일 NPC를 선택하세요!'
+  regionDoesntExists: '§8§l[퀘스트 시스템] §a해당 지역은 존재하지 않습니다. (같은 월드에 있어야 합니다)'
+  npcDoesntExist: '§8§l[퀘스트 시스템] §aID가 {npc_id} 인 퀘스트가 존재하지 않습니다.'
+  number:
+    negative: '§8§l[퀘스트 시스템] §a양수를 입력해야합니다!'
+    zero: '§8§l[퀘스트 시스템] §a0보다 큰 수를 입력해야 합니다!'
+    invalid: '§c{input}는 유효한 숫자가 아닙니다.'
+    notInBounds: '§8§l[퀘스트 시스템] §a{min}부터 {max}까지의 수를 입력해야 합니다!'
+  errorOccurred: '§c에러가 발생했습니다. 관리자에게 문의하세요! §4§lError code: {error}'
+  indexOutOfBounds: '§c {index}는 범위를 벗어난 값입니다! {min} 과 {max} 사이여야 합니다.'
+  invalidBlockData: '§8§l[퀘스트 시스템] §a해당 블럭 데이터 {block_data}는 유효하지 않거나 {block_material}과 맞지 않습니다!'
+  invalidBlockTag: '§8§l[퀘스트 시스템] §a{block_tag}는 이용할 수 없는 블럭입니다!'
+  bringBackObjects: '§8§l[퀘스트 시스템] §a{items}를 들고 다시 오세요!'
+  inventoryFull: '§8§l[퀘스트 시스템] §a당신의 인벤토리에 공간이 없습니다! 지급된 아이템에 땅에 떨어졌으니 찾아보세요!'
+  versionRequired: '버전 요구 사항: §l{version}'
+  restartServer: '§8§l[퀘스트 시스템] §a수정된 데이터를 보기 위해 서버를 재시작 합니다.'
+  dialogs:
+    skipped: '§8§l[퀘스트 시스템] §a대화가 스킵되었습니다.'
+    tooFar: '§8§l[퀘스트 시스템] §a{npc_name}에게서 떨어져서 퀘스트를 받지 못하였습니다..'
+  command:
+    downloadTranslations:
+      syntax: '§8§l[퀘스트 시스템] §a언어를 다운로드하여 적용하세요! 예시: "/quests downloadTranslations en_US".'
+      notFound: '§8§l[퀘스트 시스템] §a{version}에서 {lang}를 찾지 못하였습니다.'
+      exists: '§8§l[퀘스트 시스템] §a파일 {file_name}은 이미 존재합니다. "-overwrite"를 추가하여 그것을 덮어씌울 수 있습니다! §e(/quests downloadTranslations <lang> -overwrite)'
+      downloaded: '§8§l[퀘스트 시스템] §a{lang}언어를 다운로드 하였습니다!'
+    checkpoint:
+      noCheckpoint: '§8§l[퀘스트 시스템] §a퀘스트 {quest}에서 체크포인트를 찾지 못하였습니다.'
+      questNotStarted: '§8§l[퀘스트 시스템] §c현재 해당 퀘스트를 할 수 없습니다'
+    setStage:
+      branchDoesntExist: '§8§l[퀘스트 시스템] §aID가 {branch_id} 인 분기점이 존재하지 않습니다.'
+      doesntExist: '§8§l[퀘스트 시스템] §aID가 {stage_id} 인 퀘스트 스테이지가 존재하지 않습니다.'
+      next: '§a단계를 건너뛰었습니다.'
+      nextUnavailable: '§8§l[퀘스트 시스템] §a"스킵" 선택지는 퀘스트의 마지막 단계에 있을때 사용할 수 없습니다!'
+      set: '§a스테이지 {stage_id} 이 시작되었습니다.'
+    startDialog:
+      impossible: '§8§l[퀘스트 시스템] §a현재 대화를 시작할 수 없습니다.'
+      noDialog: '§8§l[퀘스트 시스템] §a해당 플레이어는 보류중인 대화가 없습니다.'
+      alreadyIn: '§8§l[퀘스트 시스템] §a해당 플레이어는 이미 해당 대화를 진행중 입니다!'
+      success: '§8§l[퀘스트 시스템] §a플레이어 {player}가 퀘스트 {quest}를 진행하였습니다!'
+    invalidCommand:
+      simple: '§c알수없는 커맨드입니다. §ehelp §c를 입력해주세요.'
+    itemChanged: '§a항목이 재편집 되었습니다. 변경사항은 재시작 후 적용될것입니다.'
+    itemRemoved: '§a홀로그램 항목이 제거 되었습니다.'
+    removed: '§a{quest_name} 퀘스트가 성공적으로 제거되었습니다.'
+    leaveAll: '§a{success}퀘스트를 건너뛰었습니다. §c에러 : {errors}'
+    resetPlayer:
+      player: '§6당신의 {quest_amount} 퀘스트(들)에 대한 모든 설명이 {deleter_name}에 의해 삭제되었습니다.'
+      remover: '§8§l[퀘스트 시스템] §a플레이어 {player}의 {quest_amount}개의 퀘스트 정보, {quest_pool}풀이 삭제되었습니다.'
+    resetPlayerQuest:
+      player: '§8§l[퀘스트 시스템] §a당신의 {quest} 퀘스트(들)에 대한 모든 설명이 {deleter_name}에 의해 삭제되었습니다.'
+      remover: '§8§l[퀘스트 시스템] §a퀘스트 {quest}의 플레이어 {player} 정보가 삭제되었습니다!'
+    resetQuest: '§8§l[퀘스트 시스템]§e {player_amount}명의 플레이어의 퀘스트 데이터를 삭제하였습니다.'
+    startQuest: '§8§l[퀘스트 시스템]§e 플레이어 {player}에게 퀘스트 {quest}를 강제로 시작하게 하였습니다!'
+    startQuestNoRequirements: '§8§l[퀘스트 시스템]§e 플레이어가 퀘스트 {quest}의 요구 사항을 충족하지 않습니다... 요구 사항 확인을 우회하려면 명령 끝에 "-overrideRequirements"를 추가하세요.'
+    cancelQuest: '§8§l[퀘스트 시스템]§e 당신은 {quest} 퀘스트를 취소하였습니다.'
+    cancelQuestUnavailable: '§8§l[퀘스트 시스템]§e {quest} 퀘스트는 취소 할 수 없습니다.'
+    backupCreated: '§8§l[퀘스트 시스템]§e 성공적으로 모든 플레이어의 퀘스트 데이터를 백업하였습니다!'
+    backupPlayersFailed: '§8§l[퀘스트 시스템]§e 모든 플레이어의 백업을 생성하는데 실패하였습니다.'
+    backupQuestsFailed: '§8§l[퀘스트 시스템]§e 백업을 생성하는데 실패하였습니다.'
+    adminModeEntered: '§8§l[퀘스트 시스템]§e Admin 모드에 진입하였습니다.'
+    adminModeLeft: '§8§l[퀘스트 시스템]§e Admin 모드가 종료되었습니다.'
+    resetPlayerPool:
+      timer: '§8§l[퀘스트 시스템]§e 플레이어 {player}의 반복 타이머 {pool}을 초기화하였습니다.'
+      full: '§8§l[퀘스트 시스템]§e 플레이어 {player}의 반복 데이터 {pool}을 초기화하였습니다.'
+    startPlayerPool:
+      error: '§8§l[퀘스트 시스템]§e 플레이어 {player} 에게서 풀 {pool}을 시작하는데 실패하였습니다.'
+      success: '§8§l[퀘스트 시스템]§e 플레이어 {player}에게 풀 {pool}을 시작시켰습니다. 결과 : {result}'
+    scoreboard:
+      lineSet: '§8§l[퀘스트 시스템]§e 성공적으로 {line_id} 를 수정하였습니다.'
+      lineReset: '§8§l[퀘스트 시스템]§e 성공적으로 {line_id} 를 리셋하였습니다.'
+      lineRemoved: '§8§l[퀘스트 시스템]§e 성공적으로 {line_id} 를 제거하였습니다.'
+      lineInexistant: '§8§l[퀘스트 시스템]§e {line_id}이(가) 존재하지 않습니다.'
+      resetAll: '§8§l[퀘스트 시스템]§e 성공적으로 플레이어 {player}의 스코어보드를 초기화하였습니다.'
+      hidden: '§8§l[퀘스트 시스템]§e 플레이어 {player}의 스코어보드가 사라졌습니다.'
+      shown: '§8§l[퀘스트 시스템]§e 플레이어 {player}의 스코어보드가 나타났습니다.'
+      own:
+        hidden: '§8§l[퀘스트 시스템]§e 스코어보드가 사라졌습니다.'
+        shown: '§8§l[퀘스트 시스템]§e 스코어보드가 나타났습니다.'
+    help:
+      header: '§8§l[퀘스트 시스템]§e 도움말'
+      create: '§8§l[퀘스트 시스템]§e /{label} create: 퀘스트를 생성합니다.'
+      edit: '§8§l[퀘스트 시스템]§e /{label} eidt: 퀘스트를 수정합니다.'
+      remove: '§8§l[퀘스트 시스템]§e /{label} remove <id>: 특정 아이디 또는 NPC를 클릭하여 퀘스트를 삭제합니다.'
+      finishAll: '§8§l[퀘스트 시스템]§e /{label} finishAll <player>: 플레이어의 모든 퀘스트를 완료시킵니다.'
+      setStage: '§8§l[퀘스트 시스템]§e /{label} setStage <player> <id> [새로운 분기점] [새로운 스테이지]: 현재 스테이지를 스킵하거나, branch를 시작, 분기점의 스테이지로 설정합니다.'
+      startDialog: '§8§l[퀘스트 시스템]§e /{label} startDialog <player> <quest id>: NPC와의 대화를 시작시킵니다.'
+      resetPlayer: '§8§l[퀘스트 시스템]§e /{label} resetPlayer <player>: 플레이어에 대한 모든 정보를 삭제합니다.'
+      resetPlayerQuest: '§8§l[퀘스트 시스템]§e /{label} resetPlayerQuest <player> [id]: 플레이어의 퀘스트 정보를 삭제합니다.'
+      seePlayer: '§8§l[퀘스트 시스템]§e /{label} seePlayer <player>: 플레이어에 대한 모든 정보를 열람합니다.'
+      reload: '§8§l[퀘스트 시스템]§e /{label} reload: 콘피그 파일은 리로드하고 저장합니다.'
+      start: '§8§l[퀘스트 시스템]§e /{label} start <player> [id]: 퀘스트를 강제적으로 시작시킵니다.'
+      setItem: '§8§l[퀘스트 시스템]§e /{label} setItem <talk|launch>: 홀로그램 아이템을 저장합니다.'
+      setFirework: '§8§l[퀘스트 시스템]§e /{label} setFirework: 기본 엔딩 폭죽을 수정합니다.'
+      adminMode: '§8§l[퀘스트 시스템]§e /{label} adminMode: 어드민 모드를 활성화 합니다.'
+      version: '§8§l[퀘스트 시스템]§e /{label} version: 현재 플러그인 버전을 봅니다.'
+      downloadTranslations: '§8§l[퀘스트 시스템]§e /{label} downloadTranslations <language>: 언어 파일을 다운로드 합니다.'
+      save: '§8§l[퀘스트 시스템]§e /{label} save: 플러그인을 저장합니다.'
+      list: '§8§l[퀘스트 시스템]§e /{label} list: 퀘스트 목록을 봅니다.'
+  typeCancel: '§8§l[퀘스트 시스템]§e "cancel"을 작성하여 이전 내용으로 돌아올 수 있습니다.'
+  editor:
+    blockAmount: '§8§l[퀘스트 시스템] §e아이템의 개수를 입력하세요:'
+    blockName: '§8§l[퀘스트 시스템] §e아이템의 이름을 입력하세요:'
+    blockData: '§8§l[퀘스트 시스템]§e 블럭 데이터를 입력하세요 (available blockdatas: §7{available_datas}§a):'
+    blockTag: '§8§l[퀘스트 시스템]§e 블럭 태그를 입력하세요 (available blockdatas: §7{available_tags}§a):'
+    typeBucketAmount: '§8§l[퀘스트 시스템]§e 채울 양동이의 갯수를 입력하세요:'
+    typeDamageAmount: '§8§l[퀘스트 시스템]§e 플레이어가 입힐 데미지의 양을 입력하세요:'
+    goToLocation: '§8§l[퀘스트 시스템]§e 해당 스테이지의 원하는 위치에 가세요!'
+    typeLocationRadius: '§8§l[퀘스트 시스템] §a위치에서 부터 요구되는 거리를 작성해주세요.'
+    typeGameTicks: '§8§l[퀘스트 시스템] §a요구하는 게임 틱을 작성해주세요'
+    already: '§8§l[퀘스트 시스템] §a이미 편집 모드에 있습니다.'
+    stage:
+      location:
+        typeWorldPattern: '§8§l[퀘스트 시스템]§e 월드 이름을 입력하세요:'
+    enter:
+      title: '§8§l[퀘스트 시스템] §a에디터 모드'
+      subtitle: '§8§l[퀘스트 시스템] §a강제적으로 에디터를 나가시려면 "/quests exitEditor"를 입력해 주세요!'
+      list: '§8§l[퀘스트 시스템] §c⚠ §7당신은 "목록" 에디터에 입장하였습니다. "add"를 작성해 줄을 추가하세요. 도움말을 보시려면 "help" 를 작성해주세요! §e§l에디터를 종료하려면 "close"를 입력하세요.'
+    chat: '§8§l[퀘스트 시스템] §a현제 에디터 모드에 있습니다. 강제적으로 에디터를 나가시려면 "/quests exitEditor"를 입력해 주세요!'
+    npc:
+      enter: '§8§l[퀘스트 시스템] §aNPC를 클릭하세요! 또는 "cancel"을 작성해주세요!'
+      choseStarter: '§8§l[퀘스트 시스템] §a퀘스트를 시작할 NPC를 선택해주세요!'
+      notStarter: '§8§l[퀘스트 시스템] §a해당 NPC는 퀘스트가 적용되지 않았습니다.'
+    text:
+      argNotSupported: '§8§l[퀘스트 시스템] §a{arg}는 지원되지 않습니다.'
+      chooseLvlRequired: '§8§l[퀘스트 시스템] §e요구할 레벨의 양을 입력하세요:'
+      chooseJobRequired: '§8§l[퀘스트 시스템] §e원하시는 직업의 이름을 입력하세요:'
+      choosePermissionRequired: '§8§l[퀘스트 시스템] §e요구할 펄미션을 입력하세요:'
+      choosePermissionMessage: '§8§l[퀘스트 시스템] §e해당 플레이어가 펄미션을 보유하고 있지 않을시, 보여질 거부 메시지를 입력하세요: ( "null"을 입력시 해당 단계를 스킵합니다. )'
+      choosePlaceholderRequired:
+        identifier: '§8§l[퀘스트 시스템] §e요구되는 placeholder의 이름(%제외)을 입력하세요:'
+        value: '§8§l[퀘스트 시스템] §eplaceholder {placeholder}의 요구되는 값을 입력하세요:'
+      chooseSkillRequired: '§8§l[퀘스트 시스템] §e요구되는 스킬의 이름을 입력하세요:'
+      chooseMoneyRequired: '§8§l[퀘스트 시스템] §e요구할 돈의 양을 입력하세요:'
+      reward:
+        permissionName: '§8§l[퀘스트 시스템] §e펄미션의 이름을 입력하세요!'
+        permissionWorld: '§8§l[퀘스트 시스템] §e펄미션이 수정될 월드를 입력하세요! 동일하게 하려면 "null"을 입력하세요!'
+        money: '§8§l[퀘스트 시스템] §e받을 돈의 양을 입력하세요:'
+        wait: '§8§l[퀘스트 시스템] §e기다릴 틱의 양을 입력하세요: ( 1초당 20틱 )'
+        random:
+          min: '§8§l[퀘스트 시스템] §e플레이어에게 지급할 보상의 최소 양을 입력하세요'
+          max: '§8§l[퀘스트 시스템] §e플레이어에게 지급할 보상의 최대 양을 입력하세요'
+      chooseObjectiveRequired: '§8§l[퀘스트 시스템] §e오브젝티브 이름을 입력하세요'
+      chooseObjectiveTargetScore: '§8§l[퀘스트 시스템] §e해당 오브젝티브의 목표 점수를 입력하세요'
+      chooseRegionRequired: '§8§l[퀘스트 시스템] §e요구되는 지역의 이름을 입력하세요 (같은 월드에 있어야합니다)'
+      chooseRequirementCustomReason: '§8§l[퀘스트 시스템] §e수락 조건의 커스텀 이유를 입력하세요! 플레이어가 요구 사항을 충족하지 못하더라도 퀘스트를 시작하려고 하면 이 메시지가 채팅에 표시됩니다.'
+      chooseRequirementCustomDescription: '§8§l[퀘스트 시스템] §e수락 조건의 커스텀 설명을 작성하세요! 이것은 메뉴에 있는 퀘스트의 설명에 나타납니다!'
+      chooseRewardCustomDescription: '§8§l[퀘스트 시스템] §e해당 보상의 커스텀 설명을 작성하세요! 이것은 메뉴에 있는 퀘스트의 설명에 나타납니다!'
+    selectWantedBlock: '§8§l[퀘스트 시스템] §e막대기로 해당 단계에 원하는 블럭을 클릭하세요!'
+    itemCreator:
+      itemType: '§8§l[퀘스트 시스템] §e원하는 아이템 타입을 입력하세요:'
+      itemAmount: '§8§l[퀘스트 시스템] §e아이템의 개수를 입력하세요:'
+      itemName: '§8§l[퀘스트 시스템] §e아이템의 이름을 입력하세요:'
+      itemLore: '§8§l[퀘스트 시스템] §e아이템의 Lore를 설정하세요: ("help"를 입력시 도움말을 볼 수 있습니다!)'
+      unknownItemType: '§8§l[퀘스트 시스템] §e알려지지 않은 아이템 타입입니다.'
+      invalidItemType: '§8§l[퀘스트 시스템] §e유효하지 않은 타입입니다. (블럭은 적용되지 않습니다.)'
+      unknownBlockType: '§8§l[퀘스트 시스템] §e알려지지 않은 블럭 타입입니다.'
+      invalidBlockType: '§8§l[퀘스트 시스템] §e알려지지 않은 블럭 타입입니다.'
+    dialog:
+      syntaxMessage: '§8§l[퀘스트 시스템] §e알맞지 않은 명령어 입니다. 명령어 : {command} <message>'
+      syntaxRemove: '§8§l[퀘스트 시스템] §e알맞지 않은 명령어 입니다. 명령어 : remove <id>'
+      player: '§8§l[퀘스트 시스템] §e플레이어 메시지 §7"{msg}" §e가 추가되었습니다.'
+      npc: '§8§l[퀘스트 시스템] §eNPC 메시지 §7"{msg}" §e가 추가되었습니다.'
+      noSender: '§8§l[퀘스트 시스템] §e메시지 §7"{msg}" §e가 추가되었습니다.'
+      messageRemoved: '§8§l[퀘스트 시스템] §e메시지 §7"{msg}" §e가 삭제 되었습니다.'
+      edited: '§8§l[퀘스트 시스템] §e메시지 §7"{msg}" §e가 수정되었습니다.'
+      soundAdded: '§8§l[퀘스트 시스템] §e메시지 §7"{msg}" §e에 사운드 "§7{sound}" §e가 추가되었습니다.'
+      cleared: '§8§l[퀘스트 시스템] §7{amount} §e개의 메시지가 삭제되었습니다.'
+      help:
+        header: '§8§l[퀘스트 시스템]§e 대화 편집 도움말'
+        npc: '§8§l[퀘스트 시스템]§e npc <message>: NPC가 말하는 메시지를 추가합니다.'
+        player: '§8§l[퀘스트 시스템]§e player<message>: 플레이어가 말할 메시지를 추가합니다.'
+        nothing: '§8§l[퀘스트 시스템]§e noSender <message>: 발언자 없는 메시지를 추가합니다.'
+        remove: '§8§l[퀘스트 시스템]§e remove <id>: §e텍스트를 삭제합니다.'
+        list: '§8§l[퀘스트 시스템]§e list: §e추가된 모든 텍스트를 확인합니다.'
+        npcInsert: '§8§l[퀘스트 시스템]§e npc <message>: NPC가 말하는 메시지를 추가합니다.'
+        playerInsert: '§8§l[퀘스트 시스템]§e playerinsert <id> <message>: 플레이어가 말하는 메시지를 추가합니다.'
+        nothingInsert: '§8§l[퀘스트 시스템]§e notinginsert <id> <message>: 발언자 없이 말하는 메시지를 추가합니다.'
+        edit: '§8§l[퀘스트 시스템]§e edit <id> <message>: 해당되는 id의 메시지를 수정합니다'
+    mythicmobs:
+      list: '§a모든 미스틱 몹 목록:'
+      isntMythicMob: '§c이 미스틱 몹은 존재하지 않습니다.'
+      disabled: '§c미스틱몹이 비활성화됩니다..'
+    textList:
+      help:
+        header: '§6§lBeautyQuests — 리스트 편집 도움말'
+        add: '§6add <message>: §e텍스트를 추가합니다.'
+        remove: '§6remove <id>: §e텍스트를 삭제합니다.'
+        list: '§6list: §e추가된 모든 텍스트를 확인합니다.'
+        close: '§6close: §e추가된 텍스트의 유효성을 확인하십시오.'
+advancement:
+  notStarted: 시작되지 않음
+inv:
+  validate: '§b§l저장하다.'
+  cancel: '§c§l취소'
+  search: '§e§l검색'
+  addObject: '§a오브젝트 추가'
+  confirm:
+    name: 계속하시겠습니까?
+    'yes': '§a예'
+    'no': '§c아니오'
+  create:
+    stageCreate: '§a새로운 퀘스트 만들기'
+    stageRemove: '§c단계 삭제'
+    stageUp: 위로 이동하기
+    stageDown: 아래로 이동하기
+    stageType: '§7스테이지 타입 : §e{stage_type}'
+    cantFinish: '§7당신은 해당 퀘스트 제작을 끝내기 전에 최소 하나의 스테이지를 생성해야 합니다!'
+    findNPC: '§aNPC 찾아가기'
+    bringBack: '§a아이템 가져오기'
+    findRegion: '§a지역 찾아가기'
+    killMobs: '§a사냥하기'
+    mineBlocks: '§a블럭 부수기'
+    placeBlocks: '§a블럭 설치'
+    talkChat: '§a채팅치기'
+    interact: '§a블럭 상호작용'
+    interactLocation: '§a위치에 있는 블럭과 상호작용'
+    fish: '§a물고기 잡기'
+    melt: '§6아이템 녹이기'
+    enchant: '§d아이템 인챈트하기'
+    craft: '§a아이템 만들기'
+    bucket: '§a양동이 채우기'
+    location: '§a특정 좌표로 이동하기'
+    playTime: '§e시간 조정'
+    breedAnimals: '§e동물에게 먹이 주기'
+    tameAnimals: '§e동물 길들이기'
+    death: '§e죽기'
+    dealDamage: '§e몬스터에게 데미지 입히기'
+    eatDrink: '§e음식 섭취'
+    NPCText: '§e엔피시 대화 편집'
+    NPCSelect: '§eNPC선택 혹은 생성'
+    hideClues: 파티클 및 홀로그램 숨기기
+    editMobsKill: '§e죽일 몬스터 설정하기'
+    mobsKillFromAFar: 발사체로 죽일지 여부
+    editBlocksMine: '§e부술 블럭 설정'
+    preventBlockPlace: 자신이 설치한 블럭 가능 여부
+    editBlocksPlace: '§e설치할 블럭 편집'
+    editMessageType: '§e채팅 치기 편집'
+    cancelMessage: 발송 취소
+    ignoreCase: 채팅치기 대소문자 구분 여부
+    selectItems: '§e필수 항목 편집'
+    selectItemsMessage: '§e퀘스트 시작 메시지 편집'
+    selectRegion: '§7지역 선택'
+    toggleRegionExit: '§e퇴장'
+    stageStartMsg: '§e퀘스트 시작 메시지 편집'
+    selectBlockLocation: '§e블럭 위치 선택'
+    selectBlockMaterial: '§e블럭 타입 선택'
+    leftClick: 좌클릭만 감지
+    editFishes: '§e잡을 물고기 편집'
+    editItemsToMelt: '§e녹일 아이템 편집'
+    editItemsToEnchant: '§e인첸트 할 아이템 편집'
+    editItem: '§e만들 아이템 편집'
+    editBucketType: '§e채울 양동이 유형 편집'
+    editBucketAmount: '§e채울 양동이의 갯수 편집'
+    editLocation: '§e좌표 편집'
+    editRadius: '§e좌표로부터의 거리 편집'
+    currentRadius: '§e현재 거리: §6{radius}'
+    changeTicksRequired: '§e요구될 틱 수정'
+    changeEntityType: '§e엔티티 타입 수정'
+  stages:
+    name: 스테이지 작성
+    nextPage: '§e다음 페이지'
+    laterPage: '§e이전 페이지'
+    endingItem: '§e최종 보상 설정'
+    descriptionTextItem: '§e퀘스트 설정 설명'
+    regularPage: '§a정규 페이지'
+    branchesPage: '§d분기 페이지'
+    previousBranch: '§e이전 지점'
+    newBranch: '§e새 페이지로 이동'
+  details:
+    hologramLaunch: '§e"launch" 홀로그램 아이템 편집'
+    hologramLaunchNo: '§e"launch 이용불가" 홀로그램 아이템 편집'
+    customDescriptionLore: 퀘스트 GUI 아래에 설명이 표시됩니다.
+    scoreboardItem: 스코어보드 활성화하기
+    auto: 접속시 자동으로 수령
+    autoLore: 활성화시 서버에 처음 접속하는 사람에게 해당 퀘스트가 시작됩니다.
+    questName: 퀘스트 이름 정하기
+    questNameLore: 퀘스트 편집을 끝내기 위해선 퀘스트 이름을 설정해야 합니다.
+    setItemsRewards: 보상 설정하기
+    removeItemsReward: 인벤토리에서 아이템 제거
+    setXPRewards: 보상으로 받을 경험치 양 설정하기
+    setCheckpointReward: '§e체크포인트 보상 편집'
+    setRewardStopQuest: 퀘스트 종료
+    setRewardsWithRequirements: '§e조건 보상'
+    setRewardsRandom: '§e랜덤 보상'
+    setPermReward: '§e펄미션 편집'
+    createQuestLore: 퀘스트 이름을 정해야합니다.
+    failOnDeath: 사망 시 실패하기
+    keepDatas: 플레이어 데이터 유지하기
+  itemsSelect:
+    name: 아이템 수정
+  npcCreate:
+    name: NPC 생성
+    setName: '§eNPC 이름 설정'
+    setSkin: '§eNPC 스킨 설정'
+    setType: '§eNPC 타입 설정'
+  chooseQuest:
+    name: 어떤 퀘스트?
+  mobs:
+    name: 몹 선택하기
+  mobSelect:
+    mythicMob: '§6미스틱 몹 선택'
+  listPlayerQuests:
+    name: '{player_name}의 퀘스트'
+  listQuests:
+    notStarted: 시작 가능한 퀘스트
+    finished: 완료한 퀘스트
+    inProgress: 진행중인 퀘스트
+    loreDialogsHistoryClick: '§7퀘스트 내용 다시보기'
+    loreCancelClick: '§c퀘스트 포기하기'
+    loreStart: '§a클릭해서 퀘스트 시작하기'
+    canRedo: '§3§o이 퀘스트를 다시 수행할 수 있습니다!'
+  listBook:
+    questStages: 단계
+  commandsList:
+    name: 명령어 목록
+  blocksList:
+    name: 블록 선택
+  permissionList:
+    name: 권한 리스트
+    world: '§e월드: §6{permission_world}'
+  classesRequired.name: '§e클래스가 필요합니다.'
+  classesList.name: 클래스 리스트
+  poolsManage:
+    poolQuestsList: '§7{pool_quests_amount} §8퀘스트: §7{pool_quests}'
+  itemComparisons:
+    itemName: 아이템 이름
+    itemLore: 아이템 설명
+  questObjects:
+    description: '§8설명 : §7{description}'
+scoreboard:
+  name: '§6§l퀘스트'
+  noLaunched: '§진행중인 퀘스트가 없습니다.'
+  noLaunchedName: '§e§l로딩중..'
+  noLaunchedDescription: '§e§l로딩중..'
+  textBetwteenBranch: '§e 또는'
+  asyncEnd: '§eX'
+  stage:
+    region: '§6{region_id} §e지역 찾아가기'
+    npc: '§eNPC {dialog_npc_name}와 대화하세요'
+    items: '§eNPC {dialog_npc_name}에게 {items}을 가지고 오세요'
+    mobs: '&e사냥하기 §6{mobs}'
+    mine: '&e블록 캐기 {blocks}'
+    placeBlocks: '§e{blocks}을 설치하세요'
+    chat: '§e{text}을 입력하세요'
+    interact: '§e좌표 x : {x} y : {y} z : {z} 의 블럭을 클릭하세요'
+    interactMaterial: '§e{block} 블럭을 클릭하세요'
+    fish: '§e{items}을 낚으세요'
+    melt: '§e{items}을 녹이세요'
+    enchant: '§e{items}을 인챈트 하세요'
+    craft: '§e{items}을 제작하세요'
+    bucket: '§e{buckets}을 채우세요'
+    playTimeFormatted: '§e{time_remaining_human}을 기다리세요'
+    breed: '§e{mobs}에게 먹이를 주세요'
+    tame: '§e{mobs}을 길들이세요'
+    die: '§e죽으세요'
+    dealDamage:
+      any: '§e{damage_remaining}데미지를 입히세요'
+      mobs: '§e{target_mobs}에게 {damage_remaining} 데미지를 입히세요'
+    eatDrink: '§e{items}를 섭취하세요'
+indication:
+  startQuest: '§7{quest_name} 퀘스트를 시작 하시겠습니까?'
+  closeInventory: '§7 퀘스트 창을 닫으시겠습니까?'
+  cancelQuest: '§7{quest_name} 퀘스트를 포기 하시겠습니까?'
+  removeQuest: '§7{quest} 퀘스트를 삭제 하시겠습니까?'
+  removePool: '§ePool {pool}을 제거하시겠습니까?'
+description:
+  requirement:
+    title: '§8§l수락 조건 :'
+    level: '레벨 {short_level}'
+    jobLevel: '§e{job_name}의 레벨 {short_level}'
+    combatLevel: '§e전투 레벨 {short_level}'
+    skillLevel: '레벨 {short_level}/{skill_name}'
+    class: '직업: {class_name}'
+    quest: '§e{quest_name} 퀘스트 끝내기'
+  reward:
+    title: '§8§l보상 :'
+misc:
+  format:
+    prefix: '§6<§e§l퀘스트§r§6> §r'
+    npcText: '§e{message_id}/{message_count}/ §e§l{npc_name_message}: §r§e{text}'
+    selfText: '§6[{message_id}/{message_count}] §e§l{player_name}:§r§e {text}'
+  time:
+    weeks: '{weeks_amount}주'
+    days: '{days_amount}일'
+    hours: '{hours_amount}시간'
+    minutes: '{minutes_amount}분'
+    lessThanAMinute: '몇 초'
+  stageType:
+    region: 지역 찾아가기
+    npc: NPC 찾기
+    mobs: 사냥하기
+  comparison:
+    greaterOrEquals: '{number} 이상'
+  requirement:
+    placeholder: '§dPlaceHolder 값이 필요합니다.'
+    quest: '§d퀘스트가 필요합니다.'
+    mcMMOSkillLevel: '§d스킬 레벨이 필요합니다.'
+    money: '§d돈이 필요합니다.'
+    equipment: '§e장비가 필요합니다.'
+  bucket:
+    water: 물 양동이
+    lava: 용암 양동이
+    milk: 우유 양동이
+    snow: 눈 양동이
+  click:
+    right: 우클릭
+    left: 좌클릭
+    shift-right: Shift-우클릭
+    shift-left: Shift-좌클릭
+    middle: 중간 버튼 클릭
+  amounts:
+    items: '아이템 {items_amount} 개'
+    dialogLines: '{lines_amount} 줄'
+    permissions: '펄미션 {permissions_amount} 개'
+    mobs: '몬스터 {mobs_amount} 마리'
+    xp: '경험치 양 {xp_amount}'
+  ticks: '{ticks} 틱'
+  location: |-
+    위치 : x {x} y{y} z{z}
+    월드 이름 : {world}
+  questItemLore: '§e§o 퀘스트 아이템'
+  hologramText: 퀘스트 NPC
+  poolHologramText: '§e새 퀘스트를 받을 수 있습니다!'
+  entityType: '§e엔티티 타입 : {entity_type}'
+  entityTypeAny: '§e아무 엔티티'
+  enabled: 활성화
+  disabled: 비활성화
+  unknown: 알 수 없음
+  notSet: '§e설정되지 않았습니다.'
+  removeRaw: 제거
+  reset: 초기화
+  or: 또는
+  amount: '§e갯수: {amount}'
+  'yes': '예'
+  'no': '아니오'
+  and: 그리고

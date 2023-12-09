@@ -5,16 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.bukkit.DyeColor;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
-
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.gui.templates.StaticPagedGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class DamageCausesGUI extends ListGUI<DamageCause> {
 	
@@ -57,7 +55,8 @@ public class DamageCausesGUI extends ListGUI<DamageCause> {
 	
 	@Override
 	public void createObject(Function<DamageCause, ItemStack> callback) {
-		new StaticPagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS, cause -> callback.apply(cause), DamageCause::name).create(p);
+		new StaticPagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS,
+				callback::apply, DamageCause::name).open(player);
 	}
 	
 }

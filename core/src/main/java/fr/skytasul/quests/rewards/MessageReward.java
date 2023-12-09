@@ -1,15 +1,18 @@
 package fr.skytasul.quests.rewards;
 
+import java.util.Collections;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class MessageReward extends AbstractReward {
 
@@ -17,24 +20,32 @@ public class MessageReward extends AbstractReward {
 	
 	public MessageReward() {}
 	
-	public MessageReward(String text){
+	public MessageReward(String customDescription, String text) {
+		super(customDescription);
 		this.text = text;
 	}
 
 	@Override
 	public List<String> give(Player p) {
-		Utils.sendOffMessage(p, text);
-		return null;
+		MessageUtils.sendMessage(p, text, MessageType.DefaultMessageType.OFF);
+		return Collections.emptyList();
 	}
 
 	@Override
 	public AbstractReward clone() {
-		return new MessageReward(text);
+		return new MessageReward(getCustomDescription(), text);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { Lang.optionValue.format(text), "", Lang.RemoveMid.toString() };
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.register("message", () -> text);
+	}
+
+	@Override
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(text);
 	}
 	
 	@Override
@@ -43,16 +54,18 @@ public class MessageReward extends AbstractReward {
 		new TextEditor<String>(event.getPlayer(), event::cancel, obj -> {
 			this.text = obj;
 			event.reopenGUI();
-		}).enter();
+		}).start();
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("text", text);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		text = section.getString("text");
 	}
 	

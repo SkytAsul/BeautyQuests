@@ -1,45 +1,56 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.BeautyQuests;
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
-import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class CheckpointReward extends AbstractReward {
 	
-	private List<AbstractReward> actions;
+	private RewardList actions;
 	
 	public CheckpointReward() {
-		this(new ArrayList<>());
+		this(null, new RewardList());
 	}
 	
-	public CheckpointReward(List<AbstractReward> actions) {
+	public CheckpointReward(String customDescription, RewardList actions) {
+		super(customDescription);
 		this.actions = actions;
 	}
 	
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		actions.forEach(rew -> rew.attach(quest));
+		actions.attachQuest(quest);
 	}
 	
 	@Override
 	public void detach() {
 		super.detach();
-		actions.forEach(AbstractReward::detach);
+		actions.detachQuest();
 	}
 	
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("actions_amount", this::getActionsSizeString);
+	}
+
+	private @NotNull String getActionsSizeString() {
+		return Lang.actions.quickFormat("amount", actions.size());
+	}
+
 	@Override
 	public List<String> give(Player p) {
 		Lang.QUEST_CHECKPOINT.send(p);
@@ -48,38 +59,41 @@ public class CheckpointReward extends AbstractReward {
 	
 	public void applies(Player p) {
 		try {
-			Utils.giveRewards(p, actions);
+			actions.giveRewards(p);
 		} catch (InterruptingBranchException e) {
-			BeautyQuests.logger.warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to interrupt branching in a checkpoint reward (useless). " + toString());
 		}
 	}
 	
 	@Override
 	public AbstractReward clone() {
-		return new CheckpointReward(new ArrayList<>(actions));
+		return new CheckpointReward(getCustomDescription(), new RewardList(actions));
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.actions.format(actions.size())), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(getActionsSizeString());
 	}
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		QuestsAPI.getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
-			actions = rewards;
+		QuestsAPI.getAPI().getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
+			actions = new RewardList(rewards);
 			event.reopenGUI();
-		}, actions, null).create(event.getPlayer());
+		}, actions, null).open(event.getPlayer());
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
-		section.set("actions", SerializableObject.serializeList(actions));
+		super.save(section);
+		section.set("actions", actions.serialize());
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
-		actions = SerializableObject.deserializeList(section.getMapList("actions"), AbstractReward::deserialize);
+		super.load(section);
+		actions = RewardList.deserialize(section.getMapList("actions"));
 	}
 	
 }

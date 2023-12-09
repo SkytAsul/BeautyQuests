@@ -5,21 +5,21 @@ import org.bukkit.entity.Breedable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
-import fr.skytasul.quests.gui.creation.stages.Line;
-import fr.skytasul.quests.players.PlayerAccount;
-import fr.skytasul.quests.structure.QuestBranch;
-import fr.skytasul.quests.structure.QuestBranch.Source;
-import fr.skytasul.quests.utils.Lang;
 
-public class StageBreed extends AbstractEntityStage {
-	
-	public StageBreed(QuestBranch branch, EntityType entity, int amount) {
-		super(branch, entity, amount);
+public class StageBreed extends AbstractEntityStage implements Listener {
+
+	public StageBreed(StageController controller, EntityType entity, int amount) {
+		super(controller, entity, amount);
 	}
-	
+
 	@EventHandler
 	public void onBreed(EntityBreedEvent e) {
 		if (e.getBreeder() instanceof Player) {
@@ -27,33 +27,33 @@ public class StageBreed extends AbstractEntityStage {
 			event(p, e.getEntityType());
 		}
 	}
-	
+
 	@Override
-	protected String descriptionLine(PlayerAccount acc, Source source) {
-		return Lang.SCOREBOARD_BREED.format(getMobsLeft(acc));
+	public @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context) {
+		return Lang.SCOREBOARD_BREED.toString();
 	}
 
-	public static StageBreed deserialize(ConfigurationSection section, QuestBranch branch) {
+	public static StageBreed deserialize(ConfigurationSection section, StageController controller) {
 		String type = section.getString("entityType");
-		return new StageBreed(branch, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
+		return new StageBreed(controller, "any".equals(type) ? null : EntityType.valueOf(type), section.getInt("amount"));
 	}
-	
+
 	public static class Creator extends AbstractEntityStage.AbstractCreator<StageBreed> {
-		
-		public Creator(Line line, boolean ending) {
-			super(line, ending);
+
+		public Creator(@NotNull StageCreationContext<StageBreed> context) {
+			super(context);
 		}
-		
+
 		@Override
 		protected boolean canUseEntity(EntityType type) {
 			return Breedable.class.isAssignableFrom(type.getEntityClass());
 		}
-		
+
 		@Override
-		protected StageBreed finishStage(QuestBranch branch) {
-			return new StageBreed(branch, entity, amount);
+		protected StageBreed finishStage(StageController controller) {
+			return new StageBreed(controller, entity, amount);
 		}
-		
+
 	}
-	
+
 }

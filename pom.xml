@@ -6,19 +6,43 @@
 
 	<groupId>fr.skytasul</groupId>
 	<artifactId>beautyquests-parent</artifactId>
-	<version>0.20.1</version>
+	<version>1.0</version>
 	<packaging>pom</packaging>
 
-	<name>beautyquests</name>
+	<name>BeautyQuests</name>
+	<description>A Spigot quests plugin based on a simple-to-use graphical
+		interface.</description>
 	<url>https://github.com/SkytAsul/BeautyQuests/</url>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>SkytAsul</name>
+			<email>skytasul@gmail.com</email>
+			<url>https://github.com/SkytAsul</url>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/SkytAsul/BeautyQuests.git</connection>
+		<developerConnection>scm:git:ssh://github.com:SkytAsul/BeautyQuests.git</developerConnection>
+		<url>http://github.com/SkytAsul/BeautyQuests/tree/master</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.release>8</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<build.number>unknown</build.number>
-		<human.version>0.20.1</human.version>
+		<human.version>1.0</human.version>
 	</properties>
 
 	<repositories>
@@ -28,8 +52,21 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+		<repository>
+			<id>codemc-releases</id>
+			<url>https://repo.codemc.org/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>codemc-snapshots</id>
+			<url>https://repo.codemc.io/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<modules>
+		<module>api</module>
 		<module>core</module>
+		<module>integrations</module>
 		<module>v1_9_R1</module>
 		<module>v1_9_R2</module>
 		<module>v1_12_R1</module>
@@ -43,6 +80,8 @@
 		<module>v1_19_R1</module>
 		<module>v1_19_R2</module>
 		<module>v1_19_R3</module>
+		<module>v1_20_R1</module>
+		<module>v1_20_R2</module>
 		<module>dist</module>
 	</modules>
 

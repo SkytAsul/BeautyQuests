@@ -3,22 +3,21 @@ package fr.skytasul.quests.rewards;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.gui.templates.ListGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.CommandGUI;
-import fr.skytasul.quests.gui.templates.ListGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.gui.misc.CommandGUI;
 import fr.skytasul.quests.utils.types.Command;
 
 public class CommandReward extends AbstractReward {
@@ -27,7 +26,8 @@ public class CommandReward extends AbstractReward {
 
 	public CommandReward() {}
 	
-	public CommandReward(List<Command> list){
+	public CommandReward(String customDescription, List<Command> list) {
+		super(customDescription);
 		if (list != null) this.commands.addAll(list);
 	}
 
@@ -42,21 +42,26 @@ public class CommandReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new CommandReward(commands);
+		return new CommandReward(getCustomDescription(), commands);
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + Lang.commands.format(commands.size()), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(getCommandsSizeString());
 	}
-	
+
+	private @NotNull String getCommandsSizeString() {
+		return Lang.commands.quickFormat("amount", commands.size());
+	}
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		Inventories.create(event.getPlayer(), new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
+		new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
 			
 			@Override
 			public void createObject(Function<Command, ItemStack> callback) {
-				new CommandGUI(callback::apply, this::reopen).create(p);
+				new CommandGUI(callback::apply, this::reopen).open(player);
 			}
 			
 			@Override
@@ -64,12 +69,16 @@ public class CommandReward extends AbstractReward {
 				new CommandGUI(command -> {
 					updateObject(object, command);
 					reopen();
-				}, this::reopen).setFromExistingCommand(object).create(p);
+				}, this::reopen).setFromExistingCommand(object).open(player);
 			}
 
 			@Override
 			public ItemStack getObjectItemStack(Command cmd) {
-				return ItemUtils.item(XMaterial.CHAIN_COMMAND_BLOCK, Lang.commandsListValue.format(cmd.label), Lang.commandsListConsole.format(cmd.console ? Lang.Yes : Lang.No));
+				return ItemUtils.item(XMaterial.CHAIN_COMMAND_BLOCK, Lang.commandsListValue.format(cmd),
+						createLoreBuilder(cmd)
+								.addDescription(Lang.commandsListConsole
+										.format(cmd.getPlaceholdersRegistry().shifted("command_console")))
+								.toLoreArray());
 			}
 			
 			@Override
@@ -78,16 +87,18 @@ public class CommandReward extends AbstractReward {
 				event.reopenGUI();
 			}
 			
-		});
+		}.open(event.getPlayer());
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("commands", Utils.serializeList(commands, Command::serialize));
 	}
 
 	@Override
 	public void load(ConfigurationSection section){
+		super.load(section);
 		commands.addAll(Utils.deserializeList(section.getMapList("commands"), Command::deserialize));
 	}
 

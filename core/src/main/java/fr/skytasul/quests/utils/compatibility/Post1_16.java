@@ -5,8 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.SmithItemEvent;
-
-import fr.skytasul.quests.api.events.BQCraftEvent;
+import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 
 public class Post1_16 implements Listener {
 	

@@ -1,151 +1,137 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
+import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
+import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
+import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
-import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.rewards.RewardList;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class RequirementDependentReward extends AbstractReward {
-	
-	private List<AbstractRequirement> requirements;
-	private List<AbstractReward> rewards;
-	
+
+	private RequirementList requirements;
+	private RewardList rewards;
+
 	public RequirementDependentReward() {
-		this(new ArrayList<>(), new ArrayList<>());
+		this(null, new RequirementList(), new RewardList());
 	}
-	
-	public RequirementDependentReward(List<AbstractRequirement> requirements, List<AbstractReward> rewards) {
+
+	public RequirementDependentReward(String customDescription, RequirementList requirements,
+			RewardList rewards) {
+		super(customDescription);
 		this.requirements = requirements;
 		this.rewards = rewards;
 	}
-	
+
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
-		requirements.forEach(req -> req.attach(quest));
-		rewards.forEach(rew -> rew.attach(quest));
+		requirements.attachQuest(quest);
+		rewards.attachQuest(quest);
 	}
-	
+
 	@Override
 	public void detach() {
 		super.detach();
 		requirements.forEach(AbstractRequirement::detach);
 		rewards.forEach(AbstractReward::detach);
 	}
-	
+
 	@Override
 	public List<String> give(Player p) throws InterruptingBranchException {
-		if (requirements.stream().allMatch(requirement -> requirement.test(p))) return Utils.giveRewards(p, rewards);
+		if (requirements.allMatch(p, false))
+			return rewards.giveRewards(p);
 		return null;
 	}
-	
+
 	@Override
 	public boolean isAsync() {
 		return rewards.stream().anyMatch(AbstractReward::isAsync);
 	}
-	
+
 	@Override
 	public AbstractReward clone() {
-		return new RequirementDependentReward(new ArrayList<>(requirements), new ArrayList<>(rewards));
+		return new RequirementDependentReward(getCustomDescription(), new RequirementList(requirements),
+				new RewardList(rewards));
 	}
-	
+
 	@Override
-	public String getDescription(Player p) {
-		return requirements.stream().allMatch(req -> req.test(p)) ?
-				rewards
+	public String getDefaultDescription(Player p) {
+		return requirements.allMatch(p, false)
+				? rewards
 				.stream()
 				.map(xreq -> xreq.getDescription(p))
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining("{JOIN}"))
 				: null;
 	}
-	
+
 	@Override
-	public String[] getLore() {
-		return new String[] { QuestOption.formatDescription(Lang.requirements.format(requirements.size()) + ", " + Lang.actions.format(rewards.size())), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescription(rewards.getSizeString());
+		loreBuilder.addDescription(requirements.getSizeString());
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		new CustomInventory() {
-			
-			private Inventory inv;
-			
-			@Override
-			public Inventory open(Player p) {
-				inv = Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString());
-				
-				inv.setItem(0, ItemUtils.item(XMaterial.NETHER_STAR, "§b" + Lang.requirements.format(requirements.size())));
-				inv.setItem(1, ItemUtils.item(XMaterial.CHEST, "§a" + Lang.rewards.format(rewards.size())));
-				
-				inv.setItem(4, ItemUtils.itemDone);
-				
-				return inv = p.openInventory(inv).getTopInventory();
-			}
-			
-			private void reopen() {
-				Inventories.put(event.getPlayer(), this, inv);
-				event.getPlayer().openInventory(inv);
-			}
-			
-			@Override
-			public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-				switch (slot) {
-				case 0:
-					QuestsAPI.getRequirements().createGUI(QuestObjectLocation.OTHER, requirements -> {
-						RequirementDependentReward.this.requirements = requirements;
-						ItemUtils.name(current, "§b" + Lang.requirements.format(requirements.size()));
-						reopen();
-					}, requirements).create(p);
-					break;
-				case 1:
-					QuestsAPI.getRewards().createGUI(QuestObjectLocation.OTHER, rewards -> {
-						RequirementDependentReward.this.rewards = rewards;
-						ItemUtils.name(current, "§a" + Lang.rewards.format(rewards.size()));
-						reopen();
-					}, rewards).create(p);
-					break;
-				case 4:
-					event.reopenGUI();
-					break;
-				}
-				return false;
-			}
-		}.create(event.getPlayer());
+		LayoutedGUI.newBuilder()
+				.addButton(0,
+						LayoutedButton.create(XMaterial.NETHER_STAR, () -> "§b" + requirements.getSizeString(),
+								Collections.emptyList(), this::editRequirements))
+				.addButton(1,
+						LayoutedButton.create(XMaterial.CHEST, () -> "§a" + rewards.getSizeString(),
+								Collections.emptyList(), this::editRewards))
+				.addButton(4, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), __ -> event.reopenGUI()))
+				.setName(Lang.INVENTORY_REWARDS_WITH_REQUIREMENTS.toString())
+				.setCloseBehavior(StandardCloseBehavior.REOPEN)
+				.build()
+				.open(event.getPlayer());
 	}
-	
+
+	private void editRequirements(LayoutedClickEvent event) {
+		QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.OTHER, newRequirements -> {
+			requirements = new RequirementList(newRequirements);
+			event.refreshItemReopen();
+		}, requirements).open(event.getPlayer());
+	}
+
+	private void editRewards(LayoutedClickEvent event) {
+		QuestsAPI.getAPI().getRewards().createGUI(QuestObjectLocation.OTHER, newRewards -> {
+			rewards = new RewardList(newRewards);
+			event.refreshItemReopen();
+		}, rewards).open(event.getPlayer());
+	}
+
 	@Override
 	public void save(ConfigurationSection section) {
-		section.set("requirements", SerializableObject.serializeList(requirements));
-		section.set("rewards", SerializableObject.serializeList(rewards));
+		super.save(section);
+		section.set("requirements", requirements.serialize());
+		section.set("rewards", rewards.serialize());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
-		requirements = SerializableObject.deserializeList(section.getMapList("requirements"), AbstractRequirement::deserialize);
-		rewards = SerializableObject.deserializeList(section.getMapList("rewards"), AbstractReward::deserialize);
+		super.load(section);
+		requirements = RequirementList.deserialize(section.getMapList("requirements"));
+		rewards = RewardList.deserialize(section.getMapList("rewards"));
 	}
-	
+
 }

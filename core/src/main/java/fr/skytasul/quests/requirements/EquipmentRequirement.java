@@ -8,16 +8,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableMap;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
-import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.misc.ItemComparisonGUI;
-import fr.skytasul.quests.gui.misc.ItemGUI;
-import fr.skytasul.quests.gui.templates.StaticPagedGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 
 public class EquipmentRequirement extends AbstractRequirement {
 	
@@ -27,7 +27,9 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	public EquipmentRequirement() {}
 	
-	public EquipmentRequirement(EquipmentSlot slot, ItemStack item, ItemComparisonMap comparisons) {
+	public EquipmentRequirement(String customDescription, String customReason, EquipmentSlot slot, ItemStack item,
+			ItemComparisonMap comparisons) {
+		super(customDescription, customReason);
 		this.slot = slot;
 		this.item = item;
 		this.comparisons = comparisons;
@@ -41,16 +43,15 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public AbstractRequirement clone() {
-		return new EquipmentRequirement(slot, item, comparisons);
+		return new EquipmentRequirement(getCustomDescription(), getCustomReason(), slot, item, comparisons);
 	}
 	
 	@Override
-	public String[] getLore() {
-		if (slot == null) return null;
-		return new String[] {
-				QuestOption.formatNullableValue(slot.name() + " > " + ItemUtils.getName(item)),
-				"",
-				Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		if (slot != null) {
+			loreBuilder.addDescription(slot.name() + ": " + ItemUtils.getName(item));
+		}
 	}
 	
 	@Override
@@ -63,19 +64,24 @@ public class EquipmentRequirement extends AbstractRequirement {
 				return;
 			}
 			
-			new ItemGUI(newItem -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(newItem -> {
+				if (newItem == null) {
+					event.cancel();
+					return;
+				}
+
 				slot = newSlot;
 				item = newItem;
 				
-				new ItemComparisonGUI(comparisons, event::reopenGUI).create(event.getPlayer());
-				
-			}, event::cancel).create(event.getPlayer());
+				new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
+			}, true).open(event.getPlayer());
 			
-		}).allowCancel().create(event.getPlayer());
+		}).allowCancel().open(event.getPlayer());
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("slot", slot.name());
 		section.set("item", item);
 		if (!comparisons.isDefault()) section.set("comparisons", comparisons.getNotDefault());
@@ -83,6 +89,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		slot = EquipmentSlot.valueOf(section.getString("slot"));
 		item = section.getItemStack("item");
 		comparisons = section.contains("comparisons") ? new ItemComparisonMap(section.getConfigurationSection("comparisons")) : new ItemComparisonMap();

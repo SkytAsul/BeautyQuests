@@ -1,19 +1,16 @@
 package fr.skytasul.quests.options;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class OptionTimer extends QuestOption<Integer> {
 	
@@ -51,17 +48,16 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		Lang.TIMER.send(p);
-		new TextEditor<>(p, () -> gui.reopen(p), obj -> {
-			setValue(obj.intValue());
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
-		}, () -> {
-			resetValue();
-			ItemUtils.lore(item, getLore());
-			gui.reopen(p);
-		}, MinecraftTimeUnit.MINUTE.getParser()).enter();
+	public void click(QuestCreationGuiClickEvent event) {
+		Lang.TIMER.send(event.getPlayer());
+		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
+			if (obj == null)
+				resetValue();
+			else
+				setValue(obj.intValue());
+			ItemUtils.lore(event.getClicked(), getLore());
+			event.reopen();
+		}, MinecraftTimeUnit.MINUTE.getParser()).passNullIntoEndConsumer().start();
 	}
 	
 }

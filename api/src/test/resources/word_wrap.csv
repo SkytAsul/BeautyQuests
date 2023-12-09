@@ -1,0 +1,17 @@
+string,line,critical,expected,
+"Hello there, it's me",12,15,"Hello there,",it's me
+"§aHello there, it's me", 12, 15, "§aHello there,", "§ait's me"
+"§aHello §cthere, it's me", 12, 16, "§aHello §cthere,", "§cit's me"
+"§aHello §cthere, it's me", 13, 17, "§aHello §cthere,", "§cit's me"
+"§aHello §lthere, it's me", 12, 16, "§aHello §lthere,", "§a§lit's me"
+"§aHello §c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme"
+"§aHello §c§a§o§c§lthere, it's me", 12, 16, "§aHello", "§c§lthere, it's", "§c§lme"
+"§aHello §x§1§1§1§1§1§2there, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2there,", "§x§1§1§1§1§1§2it's me"
+"§aHello §x§1§1§1§1§1§2there, it's me", 12, 14, "§aHello there,", "it's me"
+"§aHello §x§1§1§1§1§1§2there, it's me", 12, 12, "§aHello", "§athere,", "it's me"
+"§aHello §x§1§1§1§1§1§2§lthere, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2§lthere,", "§x§1§1§1§1§1§2§lit's me"
+"§aHello §x§1§1§1§1§1§2the§lre, it's me", 12, 30, "§aHello §x§1§1§1§1§1§2the§lre,", "§x§1§1§1§1§1§2§lit's me"
+"§aHello §x§1§1§1§1§1§2there, §lit's me, owo §ofellas §nowo", 26, 100, "§aHello §x§1§1§1§1§1§2there, §lit's me, owo", "§x§1§1§1§1§1§2§l§ofellas §nowo"
+"1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow §ostranger§x§B§B§E§E§D§D?", 40, 100, "1 §x§B§B§E§E§D§DHello there, §lhow are you, fellow", "§x§B§B§E§E§D§D§l§ostranger§x§B§B§E§E§D§D?"
+"§aHello, thisisaverylongword and thisisa§lverylongword", 10, 25, "§aHello,", "§athisisaver", "§aylongword", "§aand", "§athisisa§lv", "§a§lerylongwor", "§a§ld"
+"§bVery_much_§along_word_§dwith_colors_§cinside_and_useless_words_after", 20, 50, "idk"

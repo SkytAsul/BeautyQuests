@@ -1,15 +1,15 @@
 package fr.skytasul.quests.options;
 
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
-import fr.skytasul.quests.utils.Lang;
 
 public class OptionCancellable extends QuestOptionBoolean {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return QuestsConfiguration.getMenuConfig().allowPlayerCancelQuest();
+		return QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest();
 	}
 	
 	@Override

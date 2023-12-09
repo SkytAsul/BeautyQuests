@@ -1,73 +1,56 @@
 package fr.skytasul.quests.gui.quests;
 
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
-import org.apache.commons.lang.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.QuestsConfiguration;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.structure.Quest;
-import fr.skytasul.quests.utils.Lang;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class ChooseQuestGUI extends PagedGUI<Quest> {
-	
-	private Consumer<Quest> run;
-	private boolean canSkip;
-	
-	public CustomInventory openLastInv(Player p) {
-		p.openInventory(inv);
-		return this;
-	}
-	
-	public ChooseQuestGUI(Collection<Quest> quests, Consumer<Quest> run) {
-		this(quests, run, false);
-	}
 
-	public ChooseQuestGUI(Collection<Quest> quests, Consumer<Quest> run, boolean canSkip) {
+	private @NotNull Consumer<Quest> run;
+	private @Nullable Runnable cancel;
+
+	public ChooseQuestGUI(@NotNull Collection<@NotNull Quest> quests, @NotNull Consumer<@NotNull Quest> run,
+			@Nullable Runnable cancel) {
 		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);
-		Validate.notNull(run, "Runnable cannot be null");
-		super.objects.sort(Comparator.naturalOrder());
-		
-		this.run = run;
-		this.canSkip = canSkip;
-	}
-	
-	@Override
-	public Inventory open(Player p){
-		if (objects.size() == 0) {
-			run.accept(null);
-			return null;
-		} else if (objects.size() == 1 && canSkip && QuestsConfiguration.skipNpcGuiIfOnlyOneQuest()) {
-			run.accept(objects.get(0));
-			return null;
-		}
 
-		return super.open(p);
-	}
-	
-	@Override
-	public CloseBehavior onClose(Player p, Inventory inv){
-		return CloseBehavior.REMOVE;
+		this.run = Objects.requireNonNull(run);
+		this.cancel = cancel;
+
+		Collections.sort(objects); // to have quests in ID ordering
 	}
 
 	@Override
 	public ItemStack getItemStack(Quest object) {
-		return ItemUtils.nameAndLore(object.getQuestItem().clone(), ChatColor.YELLOW + object.getName(), object.getDescription());
+		return ItemUtils.nameAndLore(object.getQuestItem().clone(), Lang.formatId.format(object),
+				"§7" + object.getDescription());
 	}
 
 	@Override
 	public void click(Quest existing, ItemStack item, ClickType clickType) {
-		if (inv != null) Inventories.closeAndExit(p);
-		run.accept(existing);
+		close(player);
+		QuestUtils.runSync(() -> run.accept(existing));
+	}
+
+	@Override
+	public @NotNull CloseBehavior onClose(@NotNull Player player) {
+		if (cancel != null)
+			return new DelayCloseBehavior(cancel);
+		return StandardCloseBehavior.REMOVE;
 	}
 
 }

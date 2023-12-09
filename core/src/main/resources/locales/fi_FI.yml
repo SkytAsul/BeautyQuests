@@ -1,0 +1,320 @@
+---
+msg:
+  quest:
+    finished:
+      base: '§aOnnittelut! Olet suorittanut tehtävän §e{quest_name}§!'
+      obtain: '§aPalkintosi: {rewards}!'
+    started: '§aOlet aloittanut tehtävän §r§e{quest_name}§o§6!'
+    created: '§aHienoa! Loit tehtävän: §e{quest}§a, jossa on {quest_branches} sivutehtävä(ä)!'
+    edited: '§aHienoa! Muokkasit tehtävää: §e{quest}§a, jossa on nyt {quest_branches} sivutehtävä(ä)!'
+    createCancelled: '§cTehtävän luonti tai muokkaus on peruttu toisen lisäosan toimesta!'
+    cancelling: '§cTehtävän luominen peruttu.'
+    editCancelling: '§cTehtävän muokkaaminen peruttu.'
+    invalidID: '§cTehtävä tunnuksella {quest_id} ei ole olemassa.'
+    alreadyStarted: '§cOlet jo aloittanut tehtävän!'
+    notStarted: '§cEt ole tällä hetkellä tekemässä tätä tehtävää.'
+  quests:
+    maxLaunched: '§cSinulla ei voi olla enempää kuin {quests_max_amount} tehtävä(ä) samanaikaisesti...'
+    updated: '§7Tehtävä §e{quest_name}§7 päivitetty.'
+    checkpoint: '§7Tehtävän välipiste saavutettu!'
+    failed: '§cOlet epäonnistunut tehtävässä: {quest_name}...'
+  pools:
+    noTime: '§cSinun täytyy odottaa {time_left} ennen kuin aloitat toista tehtävää.'
+    allCompleted: '§7Olet suorittanut kaikki tehtävät!'
+    noAvailable: '§7Tehtäviä ei ole enää saatavilla.'
+    maxQuests: '§cSinulla ei voi olla enempää kuin {pool_max_quests} tehtävä(ä) samanaikaisesti...'
+  questItem:
+    drop: '§cEt voi pudottaa tehtävääsi liittyviä esineitä!'
+    craft: '§cEt voi käyttää tehtäväesinettä tavaran luomiseen!'
+    eat: '§cEt voi syödä tehtäväesinettä!'
+  stageMobs:
+    listMobs: '§aSinun täytyy tappaa {mobs}.'
+  writeNPCText: '§aKirjoita vuoropuhelu, jonka NPC sanoo pelaajalle: (Kirjoita "help" saadaksesi apua.)'
+  writeRegionName: '§aKirjoita vaiheen vaatiman alueen nimi:'
+  writeXPGain: '§aKirjoita määrä kokemuspisteitä eli XP, jotka pelaaja saa: (Viimeinen arvo: {xp_amount})'
+  writeMobAmount: '§aKirjoita hirviöiden määrä, joka pelaajan on tapettava:'
+  writeMobName: '§aKirjoita tietyn hirviön nimi, joka pelaajan on tapettava:'
+  writeMessage: '§aKirjoita viesti, joka lähetetään pelaajalle'
+  writeStartMessage: '§aKirjoita viesti, joka lähetetään tehtävän alussa, ja "null" jos haluat sen olevan oletus tai "none", jos et halua viestiä:'
+  writeDescriptionText: '§aKirjoita teksti, joka kuvaa vaiheen tavoitetta:'
+  writeStageText: '§aKirjoita teksti, joka lähetetään pelaajalle vaiheen alussa:'
+  moveToTeleportPoint: '§aMene haluttuun teleporttauksen sijaintiin.'
+  writeNpcName: '§aKirjoita NPC:n nimi:'
+  writeNpcSkinName: '§aKirjoita NPC:n skinin nimi:'
+  writeQuestName: '§aKirjoita tehtävän nimi:'
+  writeHologramText: '§aKirjoita hologrammin teksti: (Kirjoita "none" jos et halua hologrammia ja "null" jos haluat oletustekstin.)'
+  writeQuestTimer: '§aKirjoita vaadittu aika (minuutteina) ennen kuin voit käynnistää tehtävän uudelleen: (Kirjoita "null" jos haluat oletusajan.)'
+  writeConfirmMessage: '§aKirjoita vahvistusviesti näytettäessä, kun pelaaja on aikeissa aloittaa tehtävän: (Kirjoita "null" jos haluat oletusviestin.)'
+  writeQuestDescription: '§aKirjoita etsinnän kuvaus, joka näkyy pelaajan etsinnän graafisessa käyttöliittymässä eli GUIssa.'
+  writeQuestMaterial: '§aKirjoita tehtävän esine.'
+  requirements:
+    quest: '§cSinun on täytynyt suorittaa ensin tehtävä §e{quest_name}§c!'
+    level: '§cTasosi on oltava {long_level}!'
+    money: '§cSinulla täytyy olla {money}!'
+    waitTime: '§cSinun täytyy odottaa {time_left} ennen kuin voit käynnistää tämän tehtävän uudelleen!'
+  selectNPCToKill: '§aValitse NPC, mikä pelaajan pitää tappaa.'
+  regionDoesntExists: '§cTätä aluetta ei ole olemassa. (Sinun täytyy olla samassa maailmassa.)'
+  npcDoesntExist: '§cNPC tunnisteella: {npc_id} ei ole olemassa.'
+  number:
+    negative: '§cSinun täytyy antaa positiivinen numero!'
+    zero: '§cSinun täytyy syöttää muu numero kuin 0!'
+    invalid: '§c{input} ei ole kelvollinen numero.'
+    notInBounds: '§cNumeron täytyy olla {min} ja {max} välissä.'
+  errorOccurred: '§cTapahtui virhe, ole hyvä ja ota yhteyttä ylläpitäjään! §4§lVirhekoodi: {error}'
+  indexOutOfBounds: '§cNumero {index} on yli sallitun rajan! Numeron pitää olla {min}-{max}.'
+  bringBackObjects: Tuo minulle takaisin {items}.
+  inventoryFull: '§cSinun tavaraluettelosi on täynnä, tavara on pudonnut maahan.'
+  versionRequired: 'Tarvitaan versio: §l{version}'
+  restartServer: '§7Käynnistä palvelin uudelleen nähdäksesi muutokset.'
+  dialogs:
+    skipped: '§8§o vuoropuhelu ohitettu.'
+    tooFar: '§7Olet liian kaukana {npc_name}sta...'
+  command:
+    checkpoint:
+      noCheckpoint: '§cTehtävälle: {quest} ei löytynyt välipistettä.'
+      questNotStarted: '§cEt tee tätä tehtävää.'
+    setStage:
+      branchDoesntExist: '§cSivua tunnuksella {branch_id} ei ole olemassa.'
+    startDialog:
+      alreadyIn: '§cPelaaja on jo vuoropuhelussa.'
+    leaveAll: '§aPakotit {success} tehtävä(ä) valmiiksi. Virheitä: {errors}'
+    startQuest: '§7Olet pakottanut aloittamaan tehtävän {quest} pelaajalle {player}.'
+    cancelQuest: '§7Olet peruuttanut tehtävän {quest}.'
+    adminModeEntered: '§aOlet nyt admin-tilassa.'
+    adminModeLeft: '§aOlet lähtenyt admin-tilasta.'
+    scoreboard:
+      lineSet: '§6Olet onnistuneesti muokannut riviä {line_id}.'
+      lineReset: '§6Olet onnistuneesti nollannut rivin {line_id}.'
+      lineRemoved: '§6Olet onnistuneesti poistanut rivin {line_id}.'
+      lineInexistant: '§cRiviä {line_id} ei ole olemassa.'
+    help:
+      header: '§6§lBeautyQuests — Ohje'
+      resetPlayer: '§6/{label} resetPlayer <player>: §ePoista kaikki tiedot pelaajasta.'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §ePoista pelaajan tiedot tehtävästä.'
+      seePlayer: '§6/{label} seePlayer <player>: §eNäytä pelaajaa koskevat tiedot.'
+      reload: '§6/{label} reload: §eTallenna ja lataa kaikki asetukset ja tiedostot. (§cpoistettu käytöstä§e)'
+      start: '§6/{label} start <player> [id]: §ePakota pelaaja aloittamaan tehtävä.'
+      setItem: '§6/{label} setItem <talk|launch>: §eTallenna hologrammi.'
+      setFirework: '§6/{label} setFirework: §eMuokkaa oletusilotulitusta.'
+      adminMode: '§6/{label} adminMode: §eVaihda admin-tila pois tai päälle. (Hyödyllinen pienten lokiviestien näyttämiseen.)'
+      version: '§6/{label} version: §eKatso nykyinen lisäosan versio.'
+      downloadTranslations: '§6/{label} downloadTranslations <language>: §eLataa vanilla-pelistä käännöstiedosto.'
+      save: '§6/{label} save: §eTee manuaalinen lisäosan tallennus.'
+      list: '§6/{label} list: §eTarkasta tehtävälista. (Vain tuetuille versioille.)'
+  typeCancel: '§aKirjoita "peruuta" palataksesi viimeiseen tekstiin.'
+  editor:
+    blockAmount: '§aKirjoita palikoiden määrä:'
+    blockName: '§aKirjoita palikan nimi:'
+    blockData: '§aKirjoita palikan tiedot (saatavilla olevat tiedot: §7{available_datas}§a):'
+    blockTag: '§aKirjoita palikan tägi (saatavilla olevat tägit: §7{available_tags}§a):'
+    typeBucketAmount: '§aKirjoita täytettävien sankojen määrä.'
+    typeDamageAmount: 'Kirjoita määrä, joka pelaajan on tehtävä'
+    goToLocation: '§aSiirry haluttuun kohtaan vaiheessa.'
+    typeLocationRadius: '§aKirjoita tarvittava etäisyys sijainnista:'
+    typeGameTicks: '§aKirjoita vaaditut Minecraft-tickit:'
+    already: '§cOlet jo muokkaamassa.'
+    stage:
+      location:
+        typeWorldPattern: '§aKirjoita regex maailman nimille:'
+    enter:
+      title: '§6~ Muokkaus tila ~'
+      subtitle: '§6Kirjoita "/quests exitEditor" poistuaksesi editorista.'
+      list: '§c⚠ §7Olet nyt "listan" editorissa. Käytä "add" lisätäksesi rivejä. Vie "help" (ilman / -merkkiä) saadaksesi apua. §e§lKirjoita "close" poistuaksesi editorista.'
+    chat: '§6Olet tällä hetkellä Editor-tilassa. Kirjoita "/quests exitEditor" lähteäksesi editorista. (Ei suositella, harkitse "sulje" tai "peruuta" komentojen käyttämistä palataksesi edelliseen näkymään.)'
+    npc:
+      enter: '§aKlikkaa NPC tai kirjoita "cancel".'
+      choseStarter: '§aValitse NPC, joka aloittaa tehtävän.'
+      notStarter: '§cTämä NPC ei ole tehtävän käynnistäjä.'
+    text:
+      argNotSupported: '§cArgumenttia {arg} ei tueta.'
+      chooseLvlRequired: '§aKirjoita tarvittava määrä tasoja:'
+      chooseJobRequired: '§aKirjoita halutun työn nimi:'
+      choosePermissionRequired: '§aKirjoita vaadittu käyttöoikeus, jotta tehtävä voidaan aloittaa:'
+      choosePermissionMessage: '§aVoit valita hylkäysviestin, jos pelaajalla ei ole vaadittua käyttöoikeutta. (Ohita tämä vaihe, kirjoittamalla "null".)'
+      choosePlaceholderRequired:
+        identifier: '§aKirjoita vaaditun paikkamerkin nimi ilman prosenttilukua:'
+        value: '§aKirjoita paikkamerkille vaadittu arvo §e%§e{placeholder}§e%§a:'
+      chooseSkillRequired: '§aKirjoita vaaditun taidon nimi:'
+      chooseMoneyRequired: '§aKirjoita tarvittava rahamäärä:'
+      reward:
+        permissionName: '§aKirjoita käyttöoikeuden nimi.'
+        permissionWorld: '§aKirjoita maailma, jossa lupaa muokataan, tai "null" jos haluat kaikki maailmat.'
+        money: '§aKirjoita rahamäärä, jonka pelaaja saa:'
+        wait: '§aKirjoita odotettavien pelin tickien määrä (1 sekunti = 20 tickiä)'
+        random:
+          min: '§aKirjoita pelaajalle annettujen palkintojen vähimmäismäärä (mukaan lukien).'
+          max: '§aKirjoita pelaajalle annettujen palkintojen enimmäismäärä (mukaan lukien).'
+      chooseObjectiveRequired: '§aKirjoita kohteen nimi.'
+      chooseObjectiveTargetScore: '§aKirjoita kohteen tavoite pistemäärä.'
+      chooseRegionRequired: '§aKirjoita vaaditun alueen nimi (sinun täytyy olla samassa maailmassa).'
+      chooseRequirementCustomReason: 'Kirjoita mukautettu syy tähän vaatimukseen. Jos pelaaja ei täytä vaatimusta, mutta yrittää käynnistää tehtävän joka tapauksessa, tämä viesti näkyy chatissa.'
+      chooseRequirementCustomDescription: 'Kirjoita mukautettu kuvaus tälle vaatimukselle. Se tulee näkymään valikossa olevan tehtävän kuvauksessa.'
+advancement:
+  notStarted: Ei aloitettu
+inv:
+  validate: '§b§lVahvista'
+  cancel: '§c§lPeruuta'
+  search: '§e§lHaku'
+  addObject: '§aLisää objekti'
+  confirm:
+    name: Oletko varma?
+    'yes': '§aVahvista'
+    'no': '§cPeruuta'
+  create:
+    stageCreate: '§aLuo uusi vaihe'
+    stageRemove: '§cPoista tämä vaihe'
+    stageUp: Siirrä ylös
+    stageDown: Siirrä alas
+    stageType: '§7Vaiheen tyyppi: §e{stage_type}'
+    findNPC: '§aLöydä NPC'
+    bringBack: '§aTuo takaisin esineitä'
+    findRegion: '§aEtsi alue'
+    killMobs: '§aTapa hirviöitä'
+    mineBlocks: '§aRiko palikoita'
+    placeBlocks: '§aAseta palikoita'
+    talkChat: '§aKirjoita chattiin'
+    fish: '§aKalasta'
+    melt: '§7Sulata esineitä'
+    enchant: '§dLumoa esineitä'
+    craft: '§aLuo tavaraoita'
+    bucket: '§aTäytä sankoja'
+    location: '§aMene sijaintiin'
+    playTime: '§ePelaa'
+    breedAnimals: '§aKasvata eläin(tä)'
+    tameAnimals: '§aKesytä eläin(tä)'
+    death: '§cKuole'
+    dealDamage: '§cTee vahingoa hirviöön'
+    eatDrink: '§aSyö tai juo ruokaa tai juomia'
+    NPCText: '§eMuokkaa vuoropuhelua'
+    NPCSelect: '§eValitse tai luo NPC'
+    hideClues: Piilota hiukkaset ja hologrammit
+  stages:
+    nextPage: '§eSeuraava sivu'
+    laterPage: '§eEdellinen sivu'
+  chooseQuest:
+    name: Mikä tehtävistä?
+    menu: '§aTehtävävalikko'
+  requirements:
+    name: Vaatimukset
+  rewards:
+    name: Palkinnot
+    commands: 'Komennot: {amount}'
+  listAllQuests:
+    name: Tehtävät
+  listPlayerQuests:
+    name: '{player_name} tehtävät'
+  listQuests:
+    notStarted: Aloittamattomat tehtävät
+    finished: Suoritetut tehtävät
+    inProgress: Käynnissä olevat tehtävät
+    loreDialogsHistoryClick: '§7Näytä vuoropuhelut'
+    loreCancelClick: '§cPeruuta tehtävä'
+    loreStart: '§a§oKlikkaa aloittaaksesi tehtävän.'
+    loreStartUnavailable: '§c§oEt täytä vaatimuksia aloittaaksesi tehtävän.'
+    timeToWaitRedo: '§7§oVoit käynnistää tämän tehtävän uudelleen {time_left}...'
+    canRedo: '§e§oVoit aloittaa tämän tehtävän uudelleen!'
+    timesFinished: '§eSuoritettu §6{times_finished} x§e.'
+    format:
+      normal: '§6§l§o{quest_name}'
+      withId: '§6§l§o{quest_name}§f §e#{quest_id}'
+  listBook:
+    questName: Nimi
+    questStarter: Aloitus
+    questRewards: Palkinnot
+    questMultiple: Useita kertoja
+    requirements: Vaatimukset
+    questStages: Vaiheet
+  poolCreation:
+    maxQuests: '§aMaksimimäärä tehtäviä'
+    requirements: '§bVaatimukset aloittaaksesi tehtävän'
+  itemComparisons:
+    material: Esine
+    itemName: Esineen nimi
+    itemLore: Esineen tieto
+    enchants: Esineen lumous
+  editTitle:
+    title: '§7Otsikko'
+    subtitle: '§eAlaotsikko'
+  visibility:
+    notStarted: '"Aloittamattomat tehtävät" valikko'
+    inProgress: '"Kesken olevat tehtävät" valikko'
+    finished: '"Suoritetut tehtävät" valikko'
+  questObjects:
+    description: '§8Kuvaus: §7{description}'
+scoreboard:
+  name: '§6§lTehtävät'
+  noLaunched: '§cEi tehtäviä käynnissä.'
+  noLaunchedName: '§c§lLadataan'
+  noLaunchedDescription: '§c§oLadataan'
+  textBetwteenBranch: '§e tai'
+  asyncEnd: '§ex'
+  stage:
+    region: '§eEtsi alue: §6{region_id}'
+    npc: '§eKeskustele NPClle: §6{dialog_npc_name}'
+    items: '§eTuo esineitä §6{dialog_npc_name}lle§e: {items}'
+    mobs: '§eTapa §6{mobs}'
+    mine: '§eHakkaa {blocks}'
+    placeBlocks: '§eAseta {blocks}'
+    chat: '§eKirjoita §6{text}'
+    interact: '§eKlikkaa kuutiota koordinaateissa: §6{x} {y} {z}'
+    interactMaterial: '§eKlikkaa §6{block}§e kuutiota'
+    fish: '§eKalasta §6{items}'
+    melt: '§eSulata §6{items}'
+    enchant: '§eLumoa §6{items}'
+    craft: '§eLuo §6{items}'
+    bucket: '§eTäytä §6{buckets}'
+    location: '§eMene koordinaatteihin: §6{target_x}§e, §6{target_y}§e, §6{target_z}§e §6{target_world}'
+    playTimeFormatted: '§ePelaa §6{time_remaining_human}'
+    breed: '§eKasvata §6{mobs}'
+    tame: '§eKesytä §6{mobs}'
+    die: '§cKuole'
+    dealDamage:
+      any: '§cVahingoita {damage_remaining} vahinkoa'
+      mobs: '§cVahingoita {damage_remaining} vahinkoa hirviöön: {target_mobs}'
+    eatDrink: '§ePue §6{items}'
+indication:
+  startQuest: '§7Haluatko aloittaa tehtävän {quest_name}?'
+description:
+  requirement:
+    title: '§8§lVaatimukset:'
+misc:
+  stageType:
+    location: Etsi sijainti
+    playTime: Peliaika
+    breedAnimals: Kasvata eläin(tä)
+    tameAnimals: Kesytä eläin(tä)
+    die: Kuole
+    dealDamage: Tee vahinkoa
+    eatDrink: Syö tai juo
+  comparison:
+    equals: yhtä suuri kuin {number}
+    different: erilainen kuin {number}
+    less: paljon vähemmän kuin {number}
+    lessOrEquals: pienempi kuin {number}
+    greater: paljon suurempi kuin {number}
+    greaterOrEquals: suurempi kuin {number}
+  requirement:
+    logicalOr: '§dLooginen TAI (vaatimukset)'
+    permissions: '§3Vaadittu käyttöoikeus'
+    quest: '§aTehtävä vaaditaan'
+  bucket:
+    water: Vesiämpäri
+    lava: Laavaämpäri
+    milk: Maitoämpäri
+    snow: Lumiämpäri
+  click:
+    right: Oikea-klikkaus
+    left: Vasen-klikkaus
+    shift-right: Shift + oikea-klikkaus
+    shift-left: Shift + vasen-klikkaus
+    middle: Keski-klikkaus
+  amounts:
+    items: '{items_amount} esine(ttä)'
+  questItemLore: '§e§oTehtäväesine'
+  hologramText: '§8§lTehtävä NPC'
+  poolHologramText: '§eUusi tehtävä saatavilla!'
+  entityType: '§eKohdetyyppi: {entity_type}'
+  or: tai
+  'yes': 'Kyllä'
+  'no': 'Ei'
+  and: ja

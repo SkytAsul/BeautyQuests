@@ -1,6 +1,4 @@
 # - General configuration -
-# Number of minutes before the quest can be redone
-redoMinuts: 5
 # Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, pt_BR, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
 lang: en_US
 # (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
@@ -13,11 +11,6 @@ enablePrefix: true
 saveCycle: 15
 # Enable "periodic save" message in console
 saveCycleMessage: true
-# Maximum amount of quests that can be started at the same time by a player.
-# This limit can also be set by player by giving the permission "beautyquests.start.<max launched quests>"
-# to a group or a player with your permissions plugin.
-# It is possible not to count some quests in this limit with the "Bypass limit" quest option.
-maxLaunchedQuests: 0
 # Database configuration
 database:
   enabled: false
@@ -33,6 +26,13 @@ database:
     playerPools: "player_pools"
 
 # - Quests behaviors -
+# Number of minutes before the quest can be redone
+redoMinuts: 5
+# Maximum amount of quests that can be started at the same time by a player.
+# This limit can also be set by player by giving the permission "beautyquests.start.<max launched quests>"
+# to a group or a player with your permissions plugin.
+# It is possible not to count some quests in this limit with the "Bypass limit" quest option.
+maxLaunchedQuests: 0
 # Enable or disable the scoreboards - more options in scoreboard.yml
 scoreboards: true
 # Enable or disable message when a quest is updated (next stage)
@@ -49,19 +49,11 @@ finishSound: ENTITY_PLAYER_LEVELUP
 nextStageSound: ITEM_FIRECHARGE_USE
 # Enable or disable end fireworks
 fireworks: true
-# Show a progress bar (bossbar) when a player has to kill some mobs for a quest
-mobsProgressBar: false
-# Amount of seconds before the progress bar will disappear (set it to 0 to make it persistent)
-progressBarTimeoutSeconds: 15
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
-# If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
-skip npc gui if only one quest: true
 # Default item shown for a quest in the menus
 item: BOOK
-# Page item material
-pageItem: ARROW
 # Maxmium distance where starting particles are shown
 startParticleDistance: 20
 # Number of seconds before the plugin checks every requirements for the player to show the starting particle
@@ -70,6 +62,16 @@ requirementUpdateTime: 1
 requirementReasonOnMultipleQuests: true
 # Enables the sending of the "you obtain xxx" when a player terminates a stage with end rewards
 stageEndRewardsMessage: true
+
+# - GUIs-
+# Some options related to graphical user interfaces
+gui:
+  # Previous page item
+  previous page item: ARROW
+  # Next page item
+  next page item: ARROW
+  # Show a vertical separator made of glass pane between the items pane and the arrow buttons
+  vertical separator: true
 
 # - Dialogs -
 # Various options related to dialogs 
@@ -84,12 +86,23 @@ dialogs:
   disableClick: false
   # Enables the dialog history in the Quests menu
   history: true
+  # Limits the maximum amount of messages per history page.
+  # If -1 then the plugin will try to put as many messages as possible until the page is full.
+  max messages per history page: -1
   # Maximum distance the player can be from the NPC for the dialog to continue. 0 to disable.
   maxDistance: 15
   # Default dialog sound when players are speaking
   defaultPlayerSound: 'none'
   # Default dialog sound when NPCs are speaking
   defaultNPCSound: 'none'
+
+# - Quest selection -
+# Options related to the behavior when a player click on an NPC which has associated quests
+questsSelection:
+  # If enabled, the "choose a quest from this NPC" GUI will not open if there is only 1 quest attached to the NPC
+  skip gui if only one quest: true
+  # Hide quests from the GUI if the requirements are not met
+  hide quests without requirement: true
 
 # - Quests Menu -
 # Options related to the "/quests" menu
@@ -102,24 +115,20 @@ questsMenu:
   allowPlayerCancelQuest: true
 
 # - Integrations -
-# Enable GPS integration
-gps: false
-# Enable or disable SkillAPI experience overriding in xp reward/requirement
-skillAPIoverride: true
 # Enable or disable AccountsHook managing player accounts
 accountsHook: false
 # If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
 # using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
 usePlayerBlockTracker: true
-# (HolographicDisplays) Disable the hologram above NPC's head
+# (Holograms) Disable the hologram above NPC's head
 disableTextHologram: false
-# (HolographicDisplays) Value added to the hologram height (decimal value)
+# (Holograms) Value added to the hologram height (decimal value)
 hologramsHeight: 0.0
-# (HolographicDisplays) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
+# (Holograms) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
 holoLaunchItemName: BOOK
-# (HolographicDisplays) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
+# (Holograms) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
 holoTalkItemName: COAL
-# (HolographicDisplays) Is the custom name of the hologram in datas.yml shown
+# (Holograms) Is the custom name of the hologram in datas.yml shown
 showCustomHologramName: true
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
@@ -131,9 +140,9 @@ startedQuestsPlaceholder:
   splitPlaceholderFormat: "§6{questName}\n{questDescription}"
   # Format of the empty placeholder %beautyquests_started_ordered%. Available placeholders: {questName} and {questDescription}
   inlinePlaceholderFormat: "§6{questName}§e: §o{questDescription}"
-# dynmap integration options
+# dynmap and BlueMap integration options
 dynmap:
-  # Name of the marker set. To disable dynmap integration, put an empty string
+  # Name of the marker set. To disable dynmap or BlueMap integration, put an empty string
   markerSetName: ""
   # Icon for quest markers
   markerIcon: "bookshelf"
@@ -141,24 +150,32 @@ dynmap:
   minZoom: 0
 
 # - Stage descriptions -
-# {0} = stage index, {1} = stage amount, {2} = stage description}
-stageDescriptionFormat: "§8({0}/{1}) §e{2}"
-# Prefix before object's name in lists (example: §6first, §6second and §6third)
-itemNameColor: "§6§o"
-# Prefix before object's amount in lists (example: first§ex2, second§ex7 and third§ex4)
-itemAmountColor: "§e"
 # Describes the way stage with multiple objects are described
-stageDescriptionItemsSplit:
-  # Prefix before each line
-  prefix: "§e- §6"
-  # Format of object amounts. Placeholders: {0} = remaining (decreasing), {1} = done (increasing), {2} = total, {3} = percentage (0 to 100). Example: "{1}/{2}"
-  amountFormat: "x{0}"
-  # Show amount format if there is only one object remaining
-  showXOne: true
+stage description:
+  # Available placeholders are: {stage_index}, {stage_amount}, {stage_description}
+  description format: "§8({stage_index}/{stage_amount}) §e{stage_description}"
+  # Format used for items, mobs, buckets... in stage descriptions.
+  # Available placeholders are: {name}, {remaining} (decreasing), {done} (increasing), {total}, {percentage} (0 to 100).
+  # Example: "{name} {done}/{total}"
+  item formats:
+    # Used in the case there is only one item left
+    single: "§6§o{name}"
+    # Used in the case there are multiple items left
+    multiple: "§6§o{name}§e x{remaining}"
+  # Prefix before each split line
+  line prefix: "§e- §6"
   # When there is only one object, do not put it on a new line
-  inlineAlone: true
+  inline alone: true
   # From which sources the text has to be split (available sources: SCOREBOARD, MENU, PLACEHOLDER)
-  sources: [SCOREBOARD, MENU, PLACEHOLDER]
+  split sources: [SCOREBOARD, MENU, PLACEHOLDER]
+  # Show boss bars for stages with progress
+  boss bars: true
+  # Format of the boss bar for stages with progress.
+  # Available placeholders are: {progress_done}, {progress_remaining}, {progress_total}, {progress_percentage}
+  # and all other placeholders from quest and stage (i.e. {quest_name})
+  boss bar format: "§6{quest_name}: §e{progress_done}/{progress_total}"
+  # Seconds before the progress bar disappear (set it to 0 to make it persistent)
+  boss bar timeout: 15
 
 # - Quest descriptions -
 # How is formatted the quest description in GUIs
@@ -167,14 +184,14 @@ questDescription:
     # Enable the requirements section for quest description
     display: true
     # How to format requirements which match the player
-    valid: §a ✔ §7{0}
+    valid: §a ✔ §7{requirement_description}
     # How to format requirements which do not match the player
-    invalid: §c ✖ §7{0}
+    invalid: §c ✖ §7{requirement_description}
   rewards:
     # Enable the rewards section for quest description
     display: true
     # How to format rewards
-    format: §7- {0}
+    format: §7- {reward_description}
 
 # - Particles configuration -
 # enabled: will the particle be shown?

@@ -1,0 +1,267 @@
+---
+msg:
+  quest:
+    finished:
+      base: '§aGefeliciteerd! Je hebt de quest §e{quest_name}§a voltooid!'
+      obtain: '§aU krijgt {rewards}!'
+    started: '§aJe hebt de quest §r§f{quest_name}§o§6begonnen!'
+    created: '§aGefeliciteerd! Je hebt de quest §e{quest}§a gemaakt met {quest_branches} branches!'
+    edited: '§aGefeliciteerd! Je hebt de quest §e{quest}§a bewerkt met nu {quest_branches} branches!'
+    createCancelled: '§cDe creatie of editie is geannuleerd door een andere plugin!'
+    cancelling: '§cProces van de vorming van de quest is geannuleerd.'
+    editCancelling: '§cProces van quest editie geannuleerd.'
+    invalidID: '§cDe quest met de id {quest_id} bestaat niet.'
+    invalidPoolID: De {pool_id} bestaat niet.
+    alreadyStarted: '§cJe hebt de quest al begonnen!'
+    notStarted: '§cJe doet momenteel niet deze quest.'
+  quests:
+    maxLaunched: '§cJe kunt niet meer dan {quests_max_amount} quest(s) tegelijk hebben...'
+    updated: '§7Quest §e{quest_name}§7 bijgewerkt.'
+    checkpoint: '§7Zoektocht controlepunt bereikt!'
+    failed: '§cJe hebt de quest {quest_name} gefaald...'
+  pools:
+    noTime: '§cJe moet {time_left} wachten voordat je een andere quest kunt doen.'
+    allCompleted: U hebt de Quest voltooid
+    noAvailable: '§7Er is geen quest meer beschikbaar...'
+    maxQuests: '§cJe kunt niet meer dan {pool_max_quests} quest(s) tegelijk hebben...'
+  questItem:
+    drop: '§cJe kan geen Quest item laten vallen!'
+    craft: '§cJe kan geen Quest voorwerp gebruiken om te craften!'
+    eat: '§cJe kan geen Quest item eten!'
+  stageMobs:
+    listMobs: '§aJe moet {mobs} doden.'
+  writeNPCText: '§aSchrijf het dialoogvenster dat door de NPC''s tegen de speler wordt gezegd: (Schrijf "help" om hulp te ontvangen.)'
+  writeRegionName: '§aSchrijf de naam van de regio die nodig is voor de stap:'
+  writeXPGain: '§aSchrijf de hoeveelheid experience punten die de speler zal krijgen: (Laatste waarde: {xp_amount})'
+  writeMobAmount: '§aSchrijf de hoeveelheid mobs om te doden:'
+  writeMobName: '§aSchrijf de aangepaste naam van de mob om te doden:'
+  writeChatMessage: '§aTyp verplicht bericht: (Voeg "{SLASH}" toe aan het begin van je bericht als je een commando wilt uitvoeren.)'
+  writeMessage: '§aSchrijf het bericht dat naar de speler wordt gestuurd'
+  writeStartMessage: '§aSchrijf het bericht dat zal worden verzonden aan het begin van de quest, "null" als je de standaard wilt of "none" als je geen bericht wilt hebben:'
+  writeEndMsg: '§aTyp het bericht dat aan het einde van de Quest zal worden verstuurd. Typ "null" als je de standaard wilt of "none" als je géén bericht wilt hebben. Gebruik "\{rewards}". Dit zal vervangen worden door de beloningen.'
+  writeEndSound: '§aSchrijf het bericht dat zal worden verzonden aan het begin van de quest, "null" als je de standaard wilt of "none" als je geen bericht wilt hebben:'
+  writeDescriptionText: '§aSchrijf de tekst die het doel van het stadium beschrijft:'
+  writeStageText: '§aTyp het bericht dat aan het begin van deze stap naar de speler wordt verstuurd:'
+  moveToTeleportPoint: '§aGa naar de gewenste teleportatie locatie.'
+  writeNpcName: '§aTyp de naam van de NPC:'
+  writeNpcSkinName: '§aTyp de naam op van de skin van de NPC:'
+  writeQuestName: '§aTyp de naam van je quest:'
+  writeCommand: '§aTyp het gewenste commando: (Het commando is zonder de "/" en de placeholder "\{player}" wordt ondersteund en zal worden vervangen door de naam van degene die het commando uitvoert.)'
+  writeHologramText: '§aTyp de tekst van deze hologram: (Typ "none" als je geen hologram wilt en "null" wilt als je een standaard tekst wilt.)'
+  writeQuestTimer: '§aTyp de tijd (in minuten) voordat je de quest kunt herstarten: (Schrijf "null" als je een standaard timer wilt.)'
+  writeConfirmMessage: '§aTyp het bevestigingsbericht dat de speler krijgt wanneer die op het punt staat de quest te starten: (Schrijf "null" als je een standaardbericht wilt.)'
+  writeQuestDescription: '§aTyp de beschrijving van de quest. Deze wordt getoond in de quest GUI van de speler.'
+  writeQuestMaterial: '§aTyp het materiaal van het quest item.'
+  requirements:
+    quest: '§cJe moet eerst de §e{quest_name} quest voltooien!'
+    level: '§cJe moet level {long_level} zijn!'
+    job: '§cJe level voor de job §e{job_name}§c moet {long_level} zijn!'
+    skill: '§cJe level voor de job §e{skill_name}§c moet {long_level} zijn!'
+    combatLevel: '§cJe vecht-level moet {long_level} zijn!'
+    money: '§cJe moet {money} hebben!'
+    waitTime: '§cJe moet {time_left} wachten voordat je deze quest kan herstarten!'
+  experience:
+    edited: '§aJe hebt de experience bonus veranderd van {old_xp_amount} naar {xp_amount}.'
+  selectNPCToKill: '§aSelecteer de NPC om te doden.'
+  regionDoesntExists: '§cDeze regio bestaat niet. (Je moet in dezelfde wereld zijn.)'
+  npcDoesntExist: '§cDe NPC met de id {npc_id} bestaat niet.'
+  number:
+    negative: '§cJe moet een positief getal invoeren!'
+    zero: '§cJe moet een ander nummer dan 0 invoeren!'
+    invalid: '§c{input} is geen geldig nummer.'
+    notInBounds: '§cJouw nummer moet tussen {min} en {max} liggen.'
+  errorOccurred: '§cEr is een fout opgetreden, neem contact op met een adminstrator! §4§lError code: {error}'
+  indexOutOfBounds: '§cHet nummer {index} is buiten bereik! Dit moet tussen {min} en {max} zijn.'
+  invalidBlockData: '§cDe blockdata {block_data} is ongeldig of niet compatibel met het blok {block_material}.'
+  invalidBlockTag: '§cBlok-tag {block_tag} is niet beschikbaar.'
+  bringBackObjects: Breng mij {items} terug.
+  inventoryFull: '§cJe inventaris is vol. Je item is gevallen op de vloer.'
+  versionRequired: 'Versie vereist: §l{version}'
+  restartServer: '§7Herstart de server om je wijzigingen toe te passen.'
+  dialogs:
+    skipped: '§8§o Gesprek overgeslagen.'
+    tooFar: '§7§oJe bent te ver weg van {npc_name}...'
+  command:
+    downloadTranslations:
+      syntax: '§cJe moet een taal specificeren om te downloaden. Voorbeeld: "/quests downloadTranslations du_NL".'
+      notFound: '§cTaal {lang} niet gevonden voor versie {version}.'
+      exists: '§cHet bestand {file_name} bestaat al. Voeg "-overwrite" aan het eind toe om te overschrijven. (/quests downloadTranslations <lang> -overwrite)'
+      downloaded: "§aTaal {lang} is gedownload! §7Je moet nu het bestand \"/plugins/BeautyQuests/config.yml\" bewerken om de waarde van §ominecraftTranslationsFile§7 naar {lang} te wijzigen. Herstart \ndaarna de server."
+    checkpoint:
+      noCheckpoint: '§cGeen checkpoint gevonden voor de {quest} quest.'
+      questNotStarted: '§cJe bent momenteel niet bezig met deze quest.'
+    setStage:
+      branchDoesntExist: '§cDe vertakking met de id {branch_id} bestaat niet.'
+      doesntExist: '§cDe fase met de id {stage_id} bestaat niet.'
+      next: '§aDeze fase is overgeslagen.'
+      nextUnavailable: '§cDe "skip" optie is niet beschikbaar wanneer de speler aan het einde van een vertakking is.'
+      set: '§aFase {stage_id} gelanceerd.'
+    startDialog:
+      impossible: '§cHet is momenteel niet mogelijk om een conversatie te starten.'
+      noDialog: '§cDe speler heeft geen openstaande conversatie.'
+      alreadyIn: '§cDe speler zit momenteel al in een conversatie.'
+      success: '§aConversatie voor speler {player} in de {quest} quest is gestart!'
+    invalidCommand:
+      simple: '§cDit commando bestaat niet, typ §ehelp§c.'
+    itemChanged: '§aDit item is bewerkt. De wijzigingen zullen toegepast worden na een restart.'
+    itemRemoved: '§aDe hologram item is verwijderd.'
+    removed: '§aDe quest {quest_name} is succesvol verwijderd.'
+    leaveAll: '§aJe hebt het einde van {success} quest(s) geforceerd. Errors: {errors}'
+    resetPlayer:
+      player: '§6Alle informatie van je {quest_amount} quest(s) is/zijn verwijderd door {deleter_name}.'
+      remover: '§6{quest_amount} quest informatie(s) (en {quest_pool} pools) van {player} heeft/zijn verwijderd.'
+    resetPlayerQuest:
+      player: '§6Alle informatie van de {quest} quest is/zijn verwijderd door {deleter_name}.'
+      remover: '§6{player} informatie over de quest {quest} heeft/zijn verwijderd.'
+    resetQuest: '§6Data van de quest voor {player_amount} spelers verwijderd.'
+    startQuest: '§6Je hebt quest {quest} op {player} geforceerd.'
+    startQuestNoRequirements: '§cDe speler voldoet niet aan de minimale eisen voor de quest {quest}... Voeg "-overrideRequirements" toe aan het einde van je commando om de controle van de vereisten te omzeilen.'
+    cancelQuest: '§6Je hebt de quest {quest} geannuleerd.'
+    cancelQuestUnavailable: '§cDe quest "{quest}" kan niet worden gestopt.'
+    backupCreated: '§6Je hebt een back-ups gemaakt van alle quests en spelersinformatie.'
+    backupPlayersFailed: '§cMaken van een back-up voor alle spelersinformatie is mislukt.'
+    backupQuestsFailed: '§cHet maken van een back-up voor alle quests, is mislukt.'
+    adminModeEntered: '§aJe hebt de Admin modus geactiveerd.'
+    adminModeLeft: '§aJe hebt de Admin modus gedeactiveerd.'
+    resetPlayerPool:
+      timer: '§aJe hebt de {pool} pool timer van {player} gereset.'
+      full: '§aJe hebt de {pool} pool data van {player} gereset.'
+    startPlayerPool:
+      error: 'Het starten van de pool {pool} voor {player}, is mislukt.'
+      success: 'Begonnen met {pool} naar {player}. Resultaat: {result}'
+    scoreboard:
+      lineSet: '§6Je hebt regel {line_id} bewerkt.'
+      lineReset: '§6Je hebt regel {line_id} gereset.'
+      lineRemoved: '§6Je hebt lijn {line_id} verwijderd.'
+      lineInexistant: '§cRegel {line_id} bestaat niet.'
+      resetAll: '§6Je hebt de scorebord van {player_name} gereset.'
+      hidden: '§6De scorebord van {player_name} is verborgen.'
+      shown: '§6De scorebord van {player_name} is getoond.'
+      own:
+        hidden: '§6Je scorebord is verborgen.'
+        shown: '§6Je scorebord is zichtbaar.'
+    help:
+      header: '§6§lBeautyQuests — Help'
+      create: '§6/{label} create: §eCreate a quest.'
+      edit: '§6/{label} edit: §eBewerk een quest.'
+      remove: '§6/{label} remove <id>: §eVerwijder een quest met een opgegeven id of klik op de NPC wanneer je geed id gedefinieerd.'
+      finishAll: '§6/{label} finishAll <player>: §eVoltooi alle quests van een speler.'
+      setStage: '§6/{label} setStage <player> <id> [nieuwe branch] [nieuwe fase]: §eSla de huidige fase over/start de vertakking/set een fase in voor een branche.'
+      startDialog: '§6/{label} startDialog <player> <quest id>: §eStart de eerstvolgende conversatie voor een NPC status of het startgesprek voor een quest.'
+      resetPlayer: '§6/{label} resetPlayer <player>: §eVerwijder alle informatie van een speler.'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eVerwijder informatie van een quest voor een speler.'
+      seePlayer: '§6/{label} seePlayer <player>: §eBekijk informatie van een speler.'
+      reload: '§6/{label} reload: §eSlaat op en herlaad alle configuraties en bestanden. (§cdeprecated§)'
+      start: '§6/{label} start <player> [id]: §eForceer het starten van een quest.'
+      setItem: '§6/{label} setItem <talk|launch>: §eOpslaan van het hologram item.'
+      setFirework: '§6/{label} setFirework: §eBewerk het standaard einde van vuurwerk.'
+      adminMode: '§6/{label} adminMode: §eSchakel de Admin modus. aan/uit (Handig voor het weergeven van kleine log berichten.)'
+      version: '§6/{label} versie: §eBekijk de huidige versie van de plugin.'
+      downloadTranslations: '§6/{label} downloadTranslations <language>: §eDownload een standaard vertaling-file.'
+      save: '§6/{label} save: §eLaat een handmatige plugin opslaan.'
+      list: '§6/{label} list: §eBekijk de lijst van alle quests. (Alleen voor ondersteunde versies).'
+  typeCancel: '§aTyp "cancel" om terug te gaan naar de laatste tekst.'
+  editor:
+    blockAmount: '§aTyp de hoeveelheid blokken in:'
+    blockName: '§aTyp de naam van het blok:'
+    blockData: '§aTyp de blokdata (beschikbare blokdatas: §7{available_datas}§a):'
+    blockTag: '§aTyp de blok-tag (beschikbare tags: §7{available_tags}§a):'
+    typeBucketAmount: '§aTyp hoeveel emmers er gevuld moeten worden:'
+    typeDamageAmount: 'Typ de hoeveelheid schade die spelers moeten aanrichten:'
+    goToLocation: '§aGa naar de gewenste locatie voor het speelveld.'
+    typeLocationRadius: '§aTyp de vereiste afstand vanaf de locatie:'
+    typeGameTicks: '§aTyp de vereiste gameticks:'
+    already: '§cJe bent al in de editor.'
+    stage:
+      location:
+        typeWorldPattern: '§aSchrijf een regex voor wereldnamen:'
+    enter:
+      title: '§6~ Editor Modus ~'
+      subtitle: '§6Typ "/quests exitEditor" om de editor geforceerd te stoppen.'
+      list: '§c⚠️ §7Je hebt een "list" editor geopend. Gebruik "add" om lijnen toe te voegen. Raadpleeg "help" (zonder slash) voor hulp. §e§lTyp "close" om de editor af te sluiten.'
+    chat: '§6Je bent momenteel in de Editor Modus. Typ "/quests exitEditor" om de editor gedwongen te verlaten. (Hoewel dit niet is aanbevolen, overweeg het gebruik van commando''s zoals "close" of "cancel" om terug te komen op de vorige inventaris.)'
+    npc:
+      enter: '§aKlik op een NPC, of typ "annuleren".'
+      choseStarter: '§aKies de NPC waar spelers de quest beginnen.'
+      notStarter: '§cDeze NPC is geen starter van een quest.'
+    text:
+      argNotSupported: '§cHet argument {arg} wordt niet ondersteund.'
+      chooseLvlRequired: '§aTyp het vereiste aantal levels:'
+      chooseJobRequired: '§aTyp de naam van de gewenste taak:'
+      choosePermissionRequired: '§aTyp de vereiste rechten om de quest te starten:'
+      choosePermissionMessage: '§aJe kunt een afwijzend bericht kiezen als de speler niet de vereiste rechten heeft. (Wil je dit overslaan? Typ "null".)'
+      choosePlaceholderRequired:
+        identifier: '§aTyp de naam van de vereiste placeholder zónder percentage symbolen:'
+        value: '§aTyp de vereiste waarde van de placeholder §e%§e{placeholder}§e%§a:'
+      chooseSkillRequired: '§aTyp de naam van de vereiste vaardigheid:'
+      chooseMoneyRequired: '§aTyp het minimale bedrag:'
+      reward:
+        permissionName: '§aTyp de naam de machtiging.'
+        permissionWorld: '§aTyp de wereld waarin de rechten worden bewerkt of "null" als je deze globaal wilt instellen.'
+        money: '§aTyp het geldbedrag dat de speler ontvangt:'
+        wait: '§aTyp het aantal game ticks dat de speler moet wachten: (1 seconde = 20 game ticks)'
+        random:
+          min: '§aTyp het minimaal aantal beloningen dat de speler krijgt (inclusief).'
+          max: '§aTyp het maximaal aantal beloningen dat de speler krijgt (inclusief).'
+      chooseObjectiveRequired: '§aTyp de naam van het doel.'
+      chooseObjectiveTargetScore: '§aWelke score moet men halen voor het doel?'
+      chooseRegionRequired: '§aTyp de naam van de vereiste regio (je moet in dezelfde wereld zijn).'
+      chooseRequirementCustomReason: 'Typ de reden voor dit vereiste. Als de speler niet aan de vereiste voldoet, maar probeert toch de quest te starten, zal dit bericht verschijnen in de chat.'
+      chooseRequirementCustomDescription: 'Type de beschrijving voor dit vereiste. Dit is de quest-beschrijving die je terugziet in het menu.'
+      chooseRewardCustomDescription: 'Typ de beschrijving voor de beloning. Dit verschijnt in de beschrijving van de quest in het menu.'
+    selectWantedBlock: '§aKlik met de stok op het gewenste blok voor deze fase van de quest.'
+    itemCreator:
+      itemType: '§aTyp de naam van het gewenste item type:'
+      itemAmount: '§aTyp de hoeveelheid items:'
+      itemName: '§aTyp de naam van het item:'
+      itemLore: '§aWijzig de lore van het item: (Schrijf "help" voor hulp.)'
+      unknownItemType: '§cOnbekend item type.'
+      invalidItemType: '§cOngeldig item type. (Het item kan geen blok zijn.)'
+      unknownBlockType: Onbekend blok-type
+      invalidBlockType: Ongeldige blok-type
+    dialog:
+      syntaxMessage: '§cCorrecte syntax: {command} <message>'
+      syntaxRemove: '§cCorrecte syntax: remove <id>'
+      player: '§aBericht "§7{msg}§a" toegevoegd aan de speler.'
+      npc: '§aBericht "§7{msg}§a" toegevoegd aan de NPC.'
+      noSender: '§aBericht "§7{msg}§a" toegevoegd zonder afzender.'
+      messageRemoved: '§aBericht "§7{msg}§a" verwijderd.'
+      edited: '§aBericht "§7{msg}§a" aangepast.'
+      soundAdded: '§aGeluid "§7{sound}§a" toegevoegd voor het bericht "§7{msg}§a".'
+      cleared: '§aVerwijderd §2§l{amount}§a bericht(en).'
+      help:
+        header: '§6§lBeautyQuests — Conversatie-editor help'
+        npc: '§6npc <message>: §eVoeg een bericht toe dat de NPC zegt.'
+        player: '§6player <message>: §eVoeg een bericht toe dat de speler zegt.'
+        nothing: '§6noSender <message>: §eVoeg een bericht toe zonder afzender.'
+        remove: '§6remove <id>: §eVerwijder een bericht.'
+        list: '§6list: §eBekijk alle berichten.'
+        npcInsert: '§6npc <message>: §eTyp een bericht dat de NPC zegt.'
+        playerInsert: '§6playerInsert <id> <message>: §eTyp een bericht dat de speler zegt.'
+        nothingInsert: '§6Niet-invoegen <id> <message>: §eTyp een bericht zonder een voorvoegsel.'
+        edit: '§6edit <id> <message>: §eBewerk een bericht.'
+        addSound: '§6addSound <id> <sound>: §eVoeg een geluid toe aan een bericht.'
+        clear: '§6clear: §eVerwijder alle berichten.'
+        close: '§6close: §eValideer alle berichten.'
+        setTime: '§6setTime <id> <time>: §eStel de tijd in, in game ticks, voordat het volgende bericht automatisch wordt afgespeeld. (1 seconde = 20 game ticks.)'
+        npcName: '§6npcName [NPC-naam aanpassen]: §eStel (of reset naar standaard) aangepaste naam van de NPC in, in de conversatie.'
+        skippable: '§6skippable [true|false] §eStel in of men de conversatie mag skippen of niet'
+inv:
+  details:
+    setPermReward: '§eBewerk rechten'
+  permission:
+    name: Kies rechten
+    perm: '§aRechten'
+    world: '§aWereld'
+    worldGlobal: '§b§lGlobaal'
+    remove: Verwijder rechten
+    removeLore: '§7Rechten zal van\n§7 worden afgenomen in plaats van gegeven.'
+  permissionList:
+    name: Rechten Lijst
+    removed: '§7Afgenomen: §6{permission_removed}'
+    world: '§eWereld: §6{permission_world}'
+misc:
+  requirement:
+    permissions: '§3Recht(en) vereist'
+  amounts:
+    permissions: '{permissions_amount} recht(en)'

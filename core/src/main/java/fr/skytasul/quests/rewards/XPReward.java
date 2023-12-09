@@ -2,19 +2,16 @@ package fr.skytasul.quests.rewards;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
-import fr.skytasul.quests.QuestsConfiguration;
+import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.compatibility.DependenciesManager;
-import fr.skytasul.quests.utils.compatibility.SkillAPI;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class XPReward extends AbstractReward {
 
@@ -22,50 +19,63 @@ public class XPReward extends AbstractReward {
 
 	public XPReward() {}
 
-	public XPReward(int exp) {
+	public XPReward(String customDescription, int exp) {
+		super(customDescription);
 		this.exp = exp;
 	}
 
 	@Override
 	public List<String> give(Player p) {
-		if (DependenciesManager.skapi.isEnabled() && QuestsConfiguration.xpOverridedSkillAPI()) {
-			SkillAPI.giveExp(p, exp);
-		}else p.giveExp(exp);
-		return Arrays.asList(exp + " " + Lang.Exp.toString());
+		p.giveExp(exp);
+		return Arrays.asList(getXpAmountString());
 	}
 
 	@Override
 	public AbstractReward clone() {
-		return new XPReward(exp);
+		return new XPReward(getCustomDescription(), exp);
 	}
 	
 	@Override
-	public String getDescription(Player p) {
-		return exp + " " + Lang.Exp.toString();
+	public String getDefaultDescription(Player p) {
+		return getXpAmountString();
 	}
 	
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + exp + " " + Lang.Exp.toString(), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder.addDescriptionAsValue(getXpAmountString());
+	}
+
+	@Override
+	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
+		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.registerIndexed("xp_amount", this::getXpAmountString);
+	}
+
+	private @NotNull String getXpAmountString() {
+		return Lang.AmountXp.quickFormat("xp_amount", exp);
 	}
 	
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		Utils.sendMessage(event.getPlayer(), Lang.XP_GAIN.toString(), exp);
+		Lang.XP_GAIN.send(event.getPlayer(), this);
 		new TextEditor<>(event.getPlayer(), event::cancel, obj -> {
-			Utils.sendMessage(event.getPlayer(), Lang.XP_EDITED.toString(), exp, obj);
+			int old = exp;
 			exp = obj;
+			Lang.XP_EDITED.send(event.getPlayer(), PlaceholderRegistry.of("old_xp_amount", old).with(this));
 			event.reopenGUI();
-		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}
 	
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("xp", exp);
 	}
 	
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		exp = section.getInt("xp");
 	}
 	

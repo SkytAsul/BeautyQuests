@@ -1,13 +1,12 @@
 package fr.skytasul.quests.options;
 
 import org.bukkit.entity.Player;
-
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionString;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class OptionHologramText extends QuestOptionString {
 	
@@ -37,7 +36,8 @@ public class OptionHologramText extends QuestOptionString {
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return !QuestsConfiguration.isTextHologramDisabled() && QuestsAPI.hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
+		return !QuestsConfigurationImplementation.getConfiguration().isTextHologramDisabled()
+				&& QuestsAPI.getAPI().hasHologramsManager() && options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 	
 }

@@ -1,36 +1,30 @@
 package fr.skytasul.quests.gui.pools;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
+import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.parsers.DurationParser;
+import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.AbstractGui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.editors.TextEditor;
-import fr.skytasul.quests.editors.checkers.DurationParser;
-import fr.skytasul.quests.editors.checkers.DurationParser.MinecraftTimeUnit;
-import fr.skytasul.quests.editors.checkers.NumberParser;
-import fr.skytasul.quests.gui.CustomInventory;
-import fr.skytasul.quests.gui.Inventories;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.npc.SelectGUI;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.XMaterial;
 
-public class PoolEditGUI implements CustomInventory {
-	
+public class PoolEditGUI extends AbstractGui {
+
 	private static final int SLOT_NPC = 1;
 	private static final int SLOT_HOLOGRAM = 2;
 	private static final int SLOT_MAX_QUESTS = 3;
@@ -41,21 +35,20 @@ public class PoolEditGUI implements CustomInventory {
 	private static final int SLOT_REQUIREMENTS = 8;
 	private static final int SLOT_CANCEL = 12;
 	private static final int SLOT_CREATE = 14;
-	
+
 	private final Runnable end;
-	
+
 	private String hologram;
 	private int maxQuests = 1;
 	private int questsPerLaunch = 1;
 	private boolean redoAllowed = true;
 	private long timeDiff = TimeUnit.DAYS.toMillis(1);
-	private int npcID = -1;
+	private String npcID = null;
 	private boolean avoidDuplicates = true;
-	private List<AbstractRequirement> requirements = new ArrayList<>();
-	
-	private boolean canFinish = false;
+	private RequirementList requirements = new RequirementList();
+
 	private QuestPool editing;
-	
+
 	public PoolEditGUI(Runnable end, QuestPool editing) {
 		this.end = end;
 		this.editing = editing;
@@ -65,53 +58,47 @@ public class PoolEditGUI implements CustomInventory {
 			questsPerLaunch = editing.getQuestsPerLaunch();
 			redoAllowed = editing.isRedoAllowed();
 			timeDiff = editing.getTimeDiff();
-			npcID = editing.getNPCID();
+			npcID = editing.getNpcId();
 			avoidDuplicates = editing.doAvoidDuplicates();
 			requirements = editing.getRequirements();
 		}
 	}
-	
+
 	private String[] getNPCLore() {
-		return new String[] { "§8> " + Lang.requiredParameter.toString(), "", QuestOption.formatNullableValue("NPC #" + npcID) };
+		return new String[] {"§8> " + Lang.requiredParameter.toString(), "",
+				QuestOption.formatNullableValue("NPC " + npcID)};
 	}
-	
+
 	private String[] getHologramLore() {
-		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : Lang.optionValue.format(hologram) };
+		return new String[] { "", hologram == null ? QuestOption.formatNullableValue(Lang.PoolHologramText.toString()) + " " + Lang.defaultValue.toString() : QuestOption.formatNullableValue(hologram) };
 	}
-	
+
 	private String[] getMaxQuestsLore() {
-		return new String[] { "", Lang.optionValue.format(maxQuests) };
+		return new String[] { "", QuestOption.formatNullableValue(maxQuests) };
 	}
-	
+
 	private String[] getQuestsPerLaunchLore() {
 		return new String[] { "", QuestOption.formatNullableValue(Integer.toString(questsPerLaunch), questsPerLaunch == 1) };
 	}
-	
+
 	private String[] getTimeLore() {
-		return new String[] { "", Lang.optionValue.format(Utils.millisToHumanString(timeDiff)) };
+		return new String[] {"", QuestOption.formatNullableValue(Utils.millisToHumanString(timeDiff))};
 	}
-	
+
 	private String[] getRequirementsLore() {
-		return new String[] { "", QuestOption.formatDescription(Lang.requirements.format(requirements.size())) };
+		return new String[] {"", QuestOption.formatDescription(requirements.getSizeString())};
 	}
-	
-	private void reopen(Player p, Inventory inv, boolean reimplement) {
-		if (reimplement) Inventories.put(p, this, inv);
-		p.openInventory(inv);
-	}
-	
-	private void handleDoneButton(Inventory inv) {
-		boolean newState = /*name != null &&*/ npcID != -1;
-		if (newState == canFinish) return;
-		inv.getItem(SLOT_CREATE).setType((newState ? XMaterial.DIAMOND : XMaterial.CHARCOAL).parseMaterial());
-		canFinish = newState;
-	}
-	
+
 	@Override
-	public Inventory open(Player p) {
-		Inventory inv = Bukkit.createInventory(null, 18, Lang.INVENTORY_POOL_CREATE.toString());
-		
-		inv.setItem(SLOT_NPC, ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
+	protected Inventory instanciate(@NotNull Player player) {
+		return Bukkit.createInventory(null, 18, Lang.INVENTORY_POOL_CREATE.toString());
+	}
+
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
+		if (QuestsPlugin.getPlugin().getNpcManager().isEnabled())
+			inv.setItem(SLOT_NPC,
+					ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
 		inv.setItem(SLOT_HOLOGRAM, ItemUtils.item(XMaterial.OAK_SIGN, Lang.poolEditHologramText.toString(), getHologramLore()));
 		inv.setItem(SLOT_MAX_QUESTS, ItemUtils.item(XMaterial.REDSTONE, Lang.poolMaxQuests.toString(), getMaxQuestsLore()));
 		inv.setItem(SLOT_QUESTS_PER_LAUNCH, ItemUtils.item(XMaterial.GUNPOWDER, Lang.poolQuestsPerLaunch.toString(), getQuestsPerLaunchLore()));
@@ -119,82 +106,76 @@ public class PoolEditGUI implements CustomInventory {
 		inv.setItem(SLOT_REDO, ItemUtils.itemSwitch(Lang.poolRedo.toString(), redoAllowed));
 		inv.setItem(SLOT_DUPLICATE, ItemUtils.itemSwitch(Lang.poolAvoidDuplicates.toString(), avoidDuplicates, Lang.poolAvoidDuplicatesLore.toString()));
 		inv.setItem(SLOT_REQUIREMENTS, ItemUtils.item(XMaterial.NETHER_STAR, Lang.poolRequirements.toString(), getRequirementsLore()));
-		
-		inv.setItem(SLOT_CANCEL, ItemUtils.itemCancel);
-		inv.setItem(SLOT_CREATE, ItemUtils.item(XMaterial.CHARCOAL, Lang.done.toString()));
-		handleDoneButton(inv);
-		
-		return p.openInventory(inv).getTopInventory();
+
+		inv.setItem(SLOT_CANCEL, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
+		inv.setItem(SLOT_CREATE, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 	}
-	
+
 	@Override
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click) {
-		switch (slot) {
+	public void onClick(GuiClickEvent event) {
+		switch (event.getSlot()) {
 		case SLOT_NPC:
-			new SelectGUI(() -> reopen(p, inv, true), npc -> {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
 				npcID = npc.getId();
-				ItemUtils.lore(current, getNPCLore());
-				handleDoneButton(inv);
-				reopen(p, inv, true);
-			}).create(p);
+				ItemUtils.lore(event.getClicked(), getNPCLore());
+				reopen(event.getPlayer());
+			}, false).open(event.getPlayer());
 			break;
 		case SLOT_HOLOGRAM:
-			Lang.POOL_HOLOGRAM_TEXT.send(p);
-			new TextEditor<String>(p, () -> reopen(p, inv, false), msg -> {
+			Lang.POOL_HOLOGRAM_TEXT.send(event.getPlayer());
+			new TextEditor<String>(event.getPlayer(), event::reopen, msg -> {
 				hologram = msg;
-				ItemUtils.lore(current, getHologramLore());
-				reopen(p, inv, false);
-			}).passNullIntoEndConsumer().enter();
+				ItemUtils.lore(event.getClicked(), getHologramLore());
+				reopen(event.getPlayer());
+			}).passNullIntoEndConsumer().start();
 			break;
 		case SLOT_MAX_QUESTS:
-			Lang.POOL_MAXQUESTS.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			Lang.POOL_MAXQUESTS.send(event.getPlayer());
+			new TextEditor<>(event.getPlayer(), event::reopen, msg -> {
 				maxQuests = msg;
-				ItemUtils.lore(current, getMaxQuestsLore());
-				reopen(p, inv, false);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				ItemUtils.lore(event.getClicked(), getMaxQuestsLore());
+				reopen(event.getPlayer());
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 		case SLOT_QUESTS_PER_LAUNCH:
-			Lang.POOL_QUESTS_PER_LAUNCH.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			Lang.POOL_QUESTS_PER_LAUNCH.send(event.getPlayer());
+			new TextEditor<>(event.getPlayer(), event::reopen, msg -> {
 				questsPerLaunch = msg;
-				ItemUtils.lore(current, getQuestsPerLaunchLore());
-				reopen(p, inv, false);
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enter();
+				ItemUtils.lore(event.getClicked(), getQuestsPerLaunchLore());
+				reopen(event.getPlayer());
+			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 			break;
 		case SLOT_TIME:
-			Lang.POOL_TIME.send(p);
-			new TextEditor<>(p, () -> reopen(p, inv, false), msg -> {
+			Lang.POOL_TIME.send(event.getPlayer());
+			new TextEditor<>(event.getPlayer(), event::reopen, msg -> {
 				timeDiff = msg * 1000;
-				ItemUtils.lore(current, getTimeLore());
-				reopen(p, inv, false);
-			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).enter();
+				ItemUtils.lore(event.getClicked(), getTimeLore());
+				reopen(event.getPlayer());
+			}, new DurationParser(MinecraftTimeUnit.SECOND, MinecraftTimeUnit.DAY)).start();
 			break;
 		case SLOT_REDO:
-			redoAllowed = ItemUtils.toggle(current);
+			redoAllowed = ItemUtils.toggleSwitch(event.getClicked());
 			break;
 		case SLOT_DUPLICATE:
-			avoidDuplicates = ItemUtils.toggle(current);
+			avoidDuplicates = ItemUtils.toggleSwitch(event.getClicked());
 			break;
 		case SLOT_REQUIREMENTS:
-			QuestsAPI.getRequirements().createGUI(QuestObjectLocation.POOL, requirements -> {
-				PoolEditGUI.this.requirements = requirements;
-				ItemUtils.lore(current, getRequirementsLore());
-				reopen(p, inv, true);
-			}, requirements).create(p);
+			QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.POOL, newRequirements -> {
+				requirements = new RequirementList(newRequirements);
+				ItemUtils.lore(event.getClicked(), getRequirementsLore());
+				reopen(event.getPlayer());
+			}, requirements).open(event.getPlayer());
 			break;
-		
+
 		case SLOT_CANCEL:
 			end.run();
 			break;
 		case SLOT_CREATE:
-			if (canFinish) {
-				BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff, avoidDuplicates, requirements);
-				end.run();
-			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+			BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, questsPerLaunch,
+					redoAllowed, timeDiff, avoidDuplicates, requirements);
+			end.run();
 			break;
 		}
-		return true;
 	}
-	
+
 }

@@ -3,19 +3,18 @@ package fr.skytasul.quests.gui.pools;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.PagedGUI;
-import fr.skytasul.quests.structure.pools.QuestPool;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.utils.XMaterial;
 
 public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
@@ -32,19 +31,21 @@ public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	
 	@Override
 	public void click(QuestPool existing, ItemStack clicked, ClickType click) {
-		if (click == ClickType.MIDDLE) {
+		if (click == ClickType.SHIFT_LEFT) {
 			if (existing != null) {
-				BeautyQuests.getInstance().getPoolsManager().removePool(existing.getID());
-				get().create(p);
+				BeautyQuests.getInstance().getGuiManager().getFactory().createConfirmation(() -> {
+					BeautyQuests.getInstance().getPoolsManager().removePool(existing.getId());
+					get().open(player);
+				}, this::reopen, Lang.INDICATION_REMOVE_POOL.format(existing)).open(player);
 			}
 		}else {
-			new PoolEditGUI(() -> get().create(p), existing).create(p);
+			new PoolEditGUI(() -> get().open(player), existing).open(player);
 		}
 	}
 	
 	@Override
-	public CloseBehavior onClose(Player p, Inventory inv) {
-		return CloseBehavior.REMOVE;
+	public CloseBehavior onClose(Player p) {
+		return StandardCloseBehavior.REMOVE;
 	}
 	
 	public static PoolsManageGUI get() {

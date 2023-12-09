@@ -1,61 +1,66 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
+import fr.skytasul.quests.api.editors.WaitClick;
+import fr.skytasul.quests.api.gui.LoreBuilder;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.editors.WaitClick;
-import fr.skytasul.quests.gui.npc.NPCGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
+import fr.skytasul.quests.gui.npc.NpcCreateGUI;
+import fr.skytasul.quests.utils.QuestUtils;
+import fr.skytasul.quests.utils.types.BQLocation;
 
 public class TeleportationReward extends AbstractReward {
 
 	public Location teleportation;
 
 	public TeleportationReward() {}
-	
-	public TeleportationReward(Location teleportation){
+
+	public TeleportationReward(String customDescription, Location teleportation) {
+		super(customDescription);
 		this.teleportation = teleportation;
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		Utils.runOrSync(() -> p.teleport(teleportation));
+	public List<String> give(Player player) {
+		QuestUtils.runOrSync(() -> player.teleport(teleportation));
 		return null;
 	}
 
 	@Override
 	public AbstractReward clone() {
-		return new TeleportationReward(teleportation.clone());
+		return new TeleportationReward(getCustomDescription(), teleportation.clone());
 	}
-	
+
 	@Override
-	public String[] getLore() {
-		return new String[] { "§8> §7" + Utils.locationToString(teleportation), "", Lang.RemoveMid.toString() };
+	protected void addLore(LoreBuilder loreBuilder) {
+		super.addLore(loreBuilder);
+		loreBuilder
+				.addDescriptionAsValue(Lang.Location.format(teleportation == null ? null : new BQLocation(teleportation)));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.MOVE_TELEPORT_POINT.send(event.getPlayer());
-		new WaitClick(event.getPlayer(), event::cancel, NPCGUI.validMove.clone(), () -> {
+		new WaitClick(event.getPlayer(), event::cancel, NpcCreateGUI.validMove.clone(), () -> {
 			teleportation = event.getPlayer().getLocation();
 			event.reopenGUI();
-		}).enter();
+		}).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
+		super.save(section);
 		section.set("tp", teleportation.serialize());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
+		super.load(section);
 		teleportation = Location.deserialize(section.getConfigurationSection("tp").getValues(false));
 	}
-	
+
 }

@@ -2,22 +2,19 @@ package fr.skytasul.quests.options;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import fr.skytasul.quests.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.creation.FinishGUI;
-import fr.skytasul.quests.utils.Lang;
-import fr.skytasul.quests.utils.Utils;
-import fr.skytasul.quests.utils.XMaterial;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.utils.QuestUtils;
 
 public class OptionFirework extends QuestOption<FireworkMeta> {
 	
@@ -66,34 +63,32 @@ public class OptionFirework extends QuestOption<FireworkMeta> {
 	}
 	
 	@Override
-	public void click(FinishGUI gui, Player p, ItemStack item, int slot, ClickType click) {
-		if (click == ClickType.SHIFT_RIGHT) {
-			resetValue();
-			ItemUtils.lore(item, getLore());
-		}else if (click == ClickType.RIGHT) {
-			setValue(null);
-			Lang.FIREWORK_REMOVED.send(p);
-			ItemUtils.lore(item, getLore());
-		}
-	}
-	
-	@Override
-	public boolean clickCursor(FinishGUI gui, Player p, ItemStack item, ItemStack cursor, int slot) {
-		ItemMeta cursorMeta = cursor.getItemMeta();
-		if (cursorMeta instanceof FireworkMeta) {
-			setValue((FireworkMeta) cursorMeta);
-			ItemUtils.lore(item, getLore());
-			Utils.runSync(() -> p.setItemOnCursor(null));
-			Lang.FIREWORK_EDITED.send(p);
+	public void click(QuestCreationGuiClickEvent event) {
+		if (event.hasCursor()) {
+			ItemMeta cursorMeta = event.getCursor().getItemMeta();
+			if (cursorMeta instanceof FireworkMeta) {
+				setValue((FireworkMeta) cursorMeta);
+				ItemUtils.lore(event.getClicked(), getLore());
+				QuestUtils.runSync(() -> event.getPlayer().setItemOnCursor(null));
+				Lang.FIREWORK_EDITED.send(event.getPlayer());
+			} else {
+				Lang.FIREWORK_INVALID.send(event.getPlayer());
+			}
 		}else {
-			Lang.FIREWORK_INVALID.send(p);
+			if (event.getClick() == ClickType.SHIFT_RIGHT) {
+				resetValue();
+				ItemUtils.lore(event.getClicked(), getLore());
+			} else if (event.getClick() == ClickType.RIGHT) {
+				setValue(null);
+				Lang.FIREWORK_REMOVED.send(event.getPlayer());
+				ItemUtils.lore(event.getClicked(), getLore());
+			}
 		}
-		return true;
 	}
 	
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
-		return QuestsConfiguration.doFireworks();
+		return QuestsConfiguration.getConfig().getQuestsConfig().fireworks();
 	}
 	
 }

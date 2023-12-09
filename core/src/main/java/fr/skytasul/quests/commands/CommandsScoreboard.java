@@ -1,26 +1,27 @@
 package fr.skytasul.quests.commands;
 
 import org.bukkit.entity.Player;
-
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Range;
+import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
+import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
+import fr.skytasul.quests.api.commands.revxrsal.exception.InvalidSubcommandException;
+import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.scoreboards.Scoreboard;
-import fr.skytasul.quests.utils.Lang;
-
-import revxrsal.commands.annotation.Default;
-import revxrsal.commands.annotation.Optional;
-import revxrsal.commands.annotation.Range;
-import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.bukkit.BukkitCommandActor;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.command.ExecutableCommand;
-import revxrsal.commands.orphan.OrphanCommand;
 
 public class CommandsScoreboard implements OrphanCommand {
 	
 	@Default
 	@CommandPermission ("beautyquests.command.scoreboard.toggle")
 	public void scoreboardToggle(Player player, ExecutableCommand command, Scoreboard scoreboard, @Optional String subcommand) {
-		if (subcommand != null) throw new revxrsal.commands.exception.InvalidSubcommandException(command.getPath(), subcommand);
+		if (subcommand != null)
+			throw new InvalidSubcommandException(command.getPath(), subcommand);
 		if (scoreboard.isForceHidden()) {
 			scoreboard.show(true);
 			Lang.COMMAND_SCOREBOARD_OWN_SHOWN.send(player);
@@ -30,27 +31,37 @@ public class CommandsScoreboard implements OrphanCommand {
 		}
 	}
 	
+	private PlaceholderRegistry getLineRegistry(int line) {
+		return PlaceholderRegistry.of("line_id", line);
+	}
+
+	private PlaceholderRegistry getPlayerRegistry(Player player) {
+		return PlaceholderRegistry.of("player_name", player.getName());
+	}
+
 	@Subcommand ("setline")
 	@CommandPermission ("beautyquests.command.scoreboard")
 	public void setline(BukkitCommandActor actor, Player player, Scoreboard scoreboard, @Range (min = 0) int line, String text) {
 		scoreboard.setCustomLine(line, text);
-		Lang.COMMAND_SCOREBOARD_LINESET.send(actor.getSender(), line);
+		Lang.COMMAND_SCOREBOARD_LINESET.send(actor.getSender(), getLineRegistry(line));
 	}
 	
 	@Subcommand ("removeline")
 	@CommandPermission ("beautyquests.command.scoreboard")
 	public void removeline(BukkitCommandActor actor, Player player, Scoreboard scoreboard, @Range (min = 0) int line) {
 		if (scoreboard.removeLine(line)) {
-			Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(actor.getSender(), line);
-		}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(actor.getSender(), line);
+			Lang.COMMAND_SCOREBOARD_LINEREMOVE.send(actor.getSender(), getLineRegistry(line));
+		} else
+			Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(actor.getSender(), getLineRegistry(line));
 	}
 	
 	@Subcommand ("resetline")
 	@CommandPermission ("beautyquests.command.scoreboard")
 	public void resetline(BukkitCommandActor actor, Player player, Scoreboard scoreboard, @Range (min = 0) int line) {
 		if (scoreboard.resetLine(line)) {
-			Lang.COMMAND_SCOREBOARD_LINERESET.send(actor.getSender(), line);
-		}else Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(actor.getSender(), line);
+			Lang.COMMAND_SCOREBOARD_LINERESET.send(actor.getSender(), getLineRegistry(line));
+		} else
+			Lang.COMMAND_SCOREBOARD_LINENOEXIST.send(actor.getSender(), getLineRegistry(line));
 	}
 	
 	@Subcommand ("resetall")
@@ -58,21 +69,21 @@ public class CommandsScoreboard implements OrphanCommand {
 	public void resetall(BukkitCommandActor actor, Player player) {
 		BeautyQuests.getInstance().getScoreboardManager().removePlayerScoreboard(player);
 		BeautyQuests.getInstance().getScoreboardManager().create(player);
-		Lang.COMMAND_SCOREBOARD_RESETALL.send(actor.getSender(), player.getName());
+		Lang.COMMAND_SCOREBOARD_RESETALL.send(actor.getSender(), getPlayerRegistry(player));
 	}
 	
 	@Subcommand ("show")
 	@CommandPermission ("beautyquests.command.scoreboard")
 	public void show(BukkitCommandActor actor, Player player, Scoreboard scoreboard) {
 		scoreboard.show(true);
-		Lang.COMMAND_SCOREBOARD_SHOWN.send(actor.getSender(), player.getName());
+		Lang.COMMAND_SCOREBOARD_SHOWN.send(actor.getSender(), getPlayerRegistry(player));
 	}
 	
 	@Subcommand ("hide")
 	@CommandPermission ("beautyquests.command.scoreboard")
 	public void hide(BukkitCommandActor actor, Player player, Scoreboard scoreboard) {
 		scoreboard.hide(true);
-		Lang.COMMAND_SCOREBOARD_HIDDEN.send(actor.getSender(), player.getName());
+		Lang.COMMAND_SCOREBOARD_HIDDEN.send(actor.getSender(), getPlayerRegistry(player));
 	}
 	
 }

@@ -1,0 +1,799 @@
+---
+advancement:
+  finished: Bitti
+  notStarted: Başlatılmadı
+description:
+  requirement:
+    class: Sınıf {class_name}
+    combatLevel: Dövüş seviyesi {short_level}
+    faction: Grup {faction_name}
+    jobLevel: '{job_name} için Seviye {short_level}'
+    level: Seviye {short_level}
+    quest: '§e{quest_name} §rGörevini bitir'
+    skillLevel: '{skill_name} için Seviye {short_level}'
+    title: '§8§lGereksinimler:'
+  reward:
+    title: '§8§lÖdüller:'
+indication:
+  cancelQuest: '§7{quest_name} görevini iptal etmek istediğinizden emin misiniz?'
+  closeInventory: Arayüzü(GUI'yi) kapatmak istediğinizden emin misiniz?
+  removeQuest: '§7{quest} görevini kaldırmak istediğinizden emin misiniz?'
+  startQuest: '§7{quest_name} görevini başlatmak istiyor musunuz?'
+inv:
+  addObject: '§aBir nesne ekle'
+  block:
+    blockData: '§dBlokverisi (GELİŞMİŞ)'
+    blockName: '§bÖzel blok adı'
+    blockTag: '§dTag (gelişmiş)'
+    blockTagLore: Olası blokların listesini açıklayan bir etiket seçin. Etiketler, veri paketleri kullanılarak özelleştirilebilir. Etiketlerin listesini Minecraft wiki'sinde bulabilirsiniz.
+    material: '§eMateryal: {block_type}'
+    materialNotItemLore: Seçilen blok bir öğe olarak görüntülenemez. Hâlâ {block_material} olarak doğru bir şekilde saklanıyor.
+    name: Blok seç
+  blockAction:
+    location: Kesin bir konum seçin
+    material: '§eBlok malzemesini seçin'
+    name: Blok eylemini seçin
+  blocksList:
+    addBlock: '§aBir Blok eklemek için tıklayın.'
+    name: Blokları seçin
+  buckets:
+    name: Kova türü
+  cancel: '§c§lİptal et'
+  cancelActions:
+    name: İşlemi iptal et
+  checkpointActions:
+    name: Kontrol noktası eylemleri
+  chooseAccount:
+    name: What account?
+  chooseQuest:
+    menu: '§aGörevler Menüsü'
+    menuLore: Sizi Görevler Menünüze götürür.
+    name: Hangi görev?
+  classesList.name: Sınıfların listesi
+  classesRequired.name: Gerekli sınıflar
+  command:
+    console: Konsol
+    delay: '§bGecikme'
+    name: Komut
+    parse: Placeholders Ayrıştırma
+    value: '§eKomut'
+  commandsList:
+    console: '§eKonsol: {command_console}'
+    name: Komut Listesi
+    value: '§eKomut: {command_label}'
+  confirm:
+    name: Emin misin?
+    'no': '§cİptal et'
+    'yes': '§aOnayla'
+  create:
+    NPCSelect: '§eNPC''yi seçin veya oluşturun'
+    NPCText: '§eDiyaloğu düzenle'
+    breedAnimals: '§aHayvanları çiftleştir'
+    bringBack: '§aEşyaları geri getir'
+    bucket: '§aKovayı doldur'
+    cancelMessage: Göndermeyi iptal et
+    cantFinish: '§7Görev oluşturmayı tamamlamadan önce en az bir aşama oluşturmalısınız!'
+    changeEntityType: '§eVarlık türünü değiştir'
+    changeTicksRequired: '§eGerekli ticks miktarını değiştirin'
+    craft: '§aEşyayı Üret'
+    currentRadius: '§eMevcut uzaklık: §6{radius}'
+    dealDamage: '§cMoblara hasar verin'
+    death: '§cÖl'
+    eatDrink: '§aYiyecek veya iksir yiyin veya için'
+    editBlocksMine: '§eKırılacak blokları düzenleyin'
+    editBlocksPlace: '§eKoyulacak blokları düzenleyin'
+    editBucketAmount: '§eDoldurulacak kova miktarını düzenleyin'
+    editBucketType: '§eDoldurulacak kova türünü düzenleyin'
+    editFishes: '§eYakalanacak balıkları düzenleyin'
+    editItem: '§eOluşturulacak öğeyi düzenleyin'
+    editItemsToEnchant: '§eBüyülenecek öğeleri düzenleyin'
+    editItemsToMelt: '§eEritilecek öğeleri düzenleyin'
+    editLocation: '§eKonumunu düzenle'
+    editMessageType: '§eYazılacak mesajı düzenleyin'
+    editMobsKill: '§eÖldürülecek mobları düzenleyin'
+    editRadius: '§eKonuma olan uzaklığı düzenleyin'
+    enchant: '§dEşyaları büyüle'
+    findNPC: '§aNPC''yi bul'
+    findRegion: '§aBölge bul'
+    fish: '§aBalık tut'
+    hideClues: Parçacıkları ve hologramları gizleyin
+    ignoreCase: Mesajın büyük/küçük harf durumunu yoksay
+    interact: '§aBlok ile etkileşime gir'
+    killMobs: '§aMobları öldür'
+    leftClick: Tıklama sol tıklama olmalıdır
+    location: '§aKonuma git'
+    melt: '§6Eşyaları ısıt'
+    mineBlocks: '§aBlokları kır'
+    mobsKillFromAFar: fırlatılan bir eşya ile öldürülmesi gerekiyor
+    placeBlocks: '§aBlokları koy'
+    playTime: '§eOynama süresi'
+    preventBlockPlace: Oyuncuların kendi bloklarını kırmalarını önleyin
+    replacePlaceholders: PAPI'den {PLAYER} ve yer tutucularını değiştirin
+    selectBlockLocation: '§eBlok konumunu seçin'
+    selectBlockMaterial: '§eBlok malzemesini seçin'
+    selectItems: '§eGerekli eşyaları düzenle'
+    selectItemsComparisons: '§eÜrün karşılaştırmalarını seçin (GELİŞMİŞ)'
+    selectItemsMessage: '§eSorma mesajını düzenle'
+    selectRegion: '§7Bölge seç'
+    stage:
+      dealDamage:
+        damage: '§eVerilecek hasar'
+        targetMobs: '§cMoblara verilecek zarar'
+      death:
+        anyCause: Herhangi bir ölüm nedeni
+        causes: '§aÖlüm nedenlerini ayarla §d(GELİŞMİŞ)'
+        setCauses: '{causes_amount} ölüm nedeni'
+      eatDrink:
+        items: '§eYiyecek veya içecek eşyalarını düzenleyin'
+      location:
+        worldPattern: '§aDünya adı kalıbını ayarla §d(GELİŞMİŞ)'
+        worldPatternLore: Belirli bir kalıpla eşleşen herhangi bir dünya için aşamanın tamamlanmasını istiyorsanız, buraya bir normal ifade (regular expression) girin.
+    stageCreate: '§aYeni bir adım oluştur'
+    stageDown: Aşağı taşı
+    stageRemove: '§cBu adımı sil'
+    stageStartMsg: '§eBaşlangıç ​​mesajını düzenle'
+    stageType: '§7Aşama tipi: §e{stage_type}'
+    stageUp: Yukarı taşı
+    talkChat: '§aSohbete yaz'
+    tameAnimals: '§aHayvanları besle'
+    toggleRegionExit: Çıkışta
+  damageCause:
+    name: Hasar nedeni
+  damageCausesList:
+    name: Hasar nedenlerinin listesi
+  details:
+    actions: '{amount} işlem'
+    auto: İlk katılımda otomatik olarak başlat
+    autoLore: Etkinleştirilirse, oyuncu sunucuya ilk kez katıldığında görev otomatik olarak başlatılacaktır.
+    bypassLimit: Görev sınırını sayma
+    bypassLimitLore: Etkinleştirilirse, oyuncu maksimum başlatılan görev sayısına ulaşmış olsa bile görev başlatılabilir.
+    cancelRewards: '§cEylemleri iptal et'
+    cancelRewardsLore: Oyuncular bu görevi iptal ettiğinde gerçekleştirilen eylemler.
+    cancellable: Oyuncu tarafından iptal edilebilir
+    cancellableLore: Oyuncunun, Görevler Menüsü aracılığıyla görevi iptal etmesine izin verir.
+    createQuestLore: Bir görev adı tanımlamanız gerekir.
+    createQuestName: '§lGörev oluştur'
+    customConfirmMessage: '§eGörev onay mesajını düzenle'
+    customConfirmMessageLore: Bir oyuncu göreve başlamak üzereyken Onay GUI'sinde görüntülenen mesaj.
+    customDescription: '§eGörev açıklamasını düzenle'
+    customDescriptionLore: GUI'lerde görev adının altında gösterilen açıklama.
+    customMaterial: '§eGörev öğesi malzemesini düzenle'
+    customMaterialLore: Görevler Menüsünde bu görevin temsilcisi olan öğe.
+    defaultValue: '§8(varsayılan değer)'
+    editQuestName: '§lGörevi düzenle'
+    editRequirements: '§eGereksinimleri düzenle'
+    editRequirementsLore: Göreve başlayabilmesi için her gereksinim oyuncuya uygulanmalıdır.
+    endMessage: '§eBitiş mesajını düzenle'
+    endMessageLore: Görevin sonunda oyuncuya gönderilecek mesaj.
+    endSound: '§eBitiş sesini düzenle'
+    endSoundLore: Görevin sonunda çalınacak ses.
+    failOnDeath: Ölümde başarısızlık
+    failOnDeathLore: Oyuncu öldüğünde görev iptal edilecek mi?
+    firework: '§dHavai Fişekleri Bitirmek'
+    fireworkLore: Oyuncu görevi bitirdiğinde havai fişek fırlatılır
+    fireworkLoreDrop: Özel havai fişeklerinizi buraya bırakın
+    hideNoRequirementsItem: Gereksinimler karşılanmadığında gizle
+    hideNoRequirementsItemLore: Etkinleştirilirse, gereksinimler karşılanmadığında görev, Görevler Menüsünde görüntülenmez.
+    hologramLaunch: '§e"launch" yazarak hologram öğesini düzenleyin'
+    hologramLaunchLore: Oyuncu bir göreve başlayabileceğinde, başlayan NPC'nin başının üzerinde görüntülenen hologram.
+    hologramLaunchNo: '§e"launch unavailable" hologram öğesini düzenleyin'
+    hologramLaunchNoLore: Oyuncu göreve BAŞLAMADIĞINDA, Başlangıç ​​NPC'sinin başının üzerinde görüntülenen hologram.
+    hologramText: '§eHologram metni'
+    hologramTextLore: Başlangıç ​​NPC'sinin başının üzerindeki hologramda görüntülenen metin.
+    keepDatas: Oyuncu verilerini koru
+    keepDatasLore: 'Aşamalar düzenlenmiş olsa bile eklentiyi oyuncu verilerini korumaya zorlayın. §c§lUYARI §c- bu seçeneğin etkinleştirilmesi oyuncularınızın verilerini bozabilir.'
+    loreReset: '§e§lTüm oyuncuların ilerlemesi sıfırlanacak'
+    multipleTime:
+      itemLore: Görev birkaç kez yapılabilir mi?
+      itemName: Tekrarlanabilirliği değiştir
+    name: Son görev detayları
+    optionValue: '§8Değer: §7{value}'
+    questName: '§a§lGörev adını düzenle'
+    questNameLore: Görev oluşturmayı tamamlamak için bir ad belirlenmelidir.
+    questPool: '§eGörev Grubu'
+    questPoolLore: Bu görevi bir görev grubuna ekle
+    removeItemsReward: '§eÖğeleri envanterden kaldır'
+    requiredParameter: '§7Gerekli parametre'
+    requirements: '{amount} gereksinim'
+    rewards: '{amount} ödül'
+    rewardsLore: Görev sona erdiğinde gerçekleştirilen eylemler.
+    scoreboardItem: Scoreboard'ı etkinleştir
+    scoreboardItemLore: Devre dışı bırakılırsa, görev scoreboardta izlenmeyecektir.
+    selectStarterNPC: '§e§lNPC başlatıcıyı seçin'
+    selectStarterNPCLore: Seçilen NPC'ye tıklamak görevi başlatacaktır.
+    selectStarterNPCPool: '§c⚠ Bir görev grubu seçildi'
+    setCheckpointReward: '§eKontrol noktası ödüllerini düzenle'
+    setItemsRewards: '§eÖdül eşyalarını düzenle'
+    setMoneyReward: '§ePara ödülünü düzenle'
+    setPermReward: '§eİzinleri düzenle'
+    setRewardStopQuest: '§cGörevi durdur'
+    setRewardsRandom: '§dRastgele ödüller'
+    setRewardsWithRequirements: '§eGereksinimlere sahip ödüller'
+    setTitleReward: '§eBaşlık ödülünü düzenle'
+    setWaitReward: '§e"wait" ödülünü düzenle'
+    setXPRewards: '§eÖdül deneyimini düzenle'
+    startDialog: '§eBaşlangıç ​​diyaloğunu düzenle'
+    startDialogLore: Görevler başlamadan önce oyuncular Başlangıç NPC'ye tıkladığında başlayacak olan diyalog.
+    startMessage: '§eBaşlama ​mesajını düzenle'
+    startMessageLore: Görevin başında oyuncuya gönderilecek mesaj.
+    startRewards: '§6Ödülleri başlat'
+    startRewardsLore: Görev başladığında gerçekleştirilen eylemler.
+    startableFromGUI: GUI'den başlatılabilir
+    startableFromGUILore: Oyuncunun görevi Görevler Menüsünden başlatmasına izin verir.
+    timer: '§bZamanlayıcıyı yeniden başlat'
+    timerLore: Oyuncunun göreve yeniden başlayabilmesi için geçen süre.
+    visibility: '§bGörev görünürlüğü'
+    visibilityLore: Görevin menünün hangi sekmelerinde gösterileceğini ve görevin dinamik haritalarda görünüp görünmeyeceğini seçin.
+  editTitle:
+    fadeIn: '§aFade-in süresi'
+    fadeOut: '§aFade-out süresi'
+    name: Başlığı düzenle
+    stay: '§bBekleme süresi'
+    subtitle: '§eAlt yazı'
+    title: '§6Başlık'
+  entityType:
+    name: Varlık türünü seç
+  equipmentSlots:
+    name: Ekipman slotları
+  factionsList.name: ' Grupların listesi'
+  factionsRequired.name: Gruplar gerekli
+  itemComparisons:
+    bukkit: Bukkit yerel karşılaştırması
+    bukkitLore: Bukkit varsayılan öğe karşılaştırma sistemini kullanır. Malzemeyi, dayanıklılığı, nbt etiketlerini karşılaştırır...
+    customBukkit: Bukkit yerel karşılaştırması - NBT YOK
+    customBukkitLore: Bukkit varsayılan öğe karşılaştırma sistemini kullanır, ancak NBT etiketlerini siler. Malzemeyi, dayanıklılığı karşılaştırır...
+    enchants: Eşyaların büyüleri
+    enchantsLore: Büyülü öğeleri karşılaştırır
+    itemLore: Eşya bilgisi
+    itemLoreLore: Öğelerin bilgisini karşılaştırır
+    itemName: Eşya adı
+    itemNameLore: Öğe adlarını karşılaştırır
+    itemsAdder: ItemsAdder
+    itemsAdderLore: ItemsAdder ID'lerini karşılaştırır
+    material: Öğe malzemesi
+    materialLore: Öğe malzemesini karşılaştırır (ör. taş, demir kılıç...)
+    name: Ürün karşılaştırmaları
+    repairCost: Onarım maliyeti
+    repairCostLore: Zırhlar ve kılıçlar için onarım maliyetlerini karşılaştırır
+  itemCreator:
+    isQuestItem: '§bGörev eşyası:'
+    itemFlags: Öğe işaretlerini değiştir
+    itemLore: '§bEşya bilgisi'
+    itemName: '§bÖğe adı'
+    itemType: '§bEşya türü'
+    name: Eşya oluşturucu
+  itemSelect:
+    name: Ögeleri seçin
+  itemsSelect:
+    name: Ürünleri Düzenle
+    none: '§aBir öğeyi buraya taşıyın veya öğe düzenleyiciyi açmak için tıklayın.'
+  listAllQuests:
+    name: Görevler
+  listBook:
+    noQuests: Daha önce hiçbir görev oluşturulmadı.
+    questMultiple: Birkaç defa
+    questName: Ad
+    questRewards: Ödüller
+    questStages: Aşamalar/Evreler
+    questStarter: Başlangıç
+    requirements: Gereksinimler
+  listPlayerQuests:
+    name: '{player_name}''in görevleri'
+  listQuests:
+    canRedo: '§3§oBu görevi yeniden başlatabilirsiniz!'
+    finished: Biten görevler
+    inProgress: Devam eden görevler
+    loreCancelClick: '§cGörevi iptal et'
+    loreDialogsHistoryClick: '§7Diyalogları görüntüle'
+    loreStart: '§a§oGörevi başlatmak için tıklayın.'
+    loreStartUnavailable: '§c§oGörevi başlatmak için gereksinimleri karşılamıyorsunuz.'
+    notStarted: Başlatılmamış görevler
+    timeToWaitRedo: '§3§oBu göreve {time_left} içinde yeniden başlatabilirsiniz.'
+    timesFinished: '§3Görev {times_finished} defa tamamlandı.'
+  mobSelect:
+    boss: '§6Boss seçin'
+    bukkitEntityType: '§eVarlık türünü seçin'
+    epicBoss: '§6Epic Boss''u seçin'
+    mythicMob: '§6Mythic Mob''u seçin'
+    name: Mob türünü seçin
+  mobs:
+    name: Mob seçin
+    none: '§aBir mob eklemek için tıklayın.'
+    setLevel: Minimum seviyeyi ayarla
+  npcCreate:
+    move:
+      itemLore: '§aNPC konumunu değiştirin.'
+      itemName: '§eHareket'
+    moveItem: '§a§lYeri doğrula'
+    name: NPC Oluştur
+    setName: '§eNPC adını düzenle'
+    setSkin: '§eNPC cildini düzenle'
+    setType: '§eNPC türünü düzenle'
+  npcSelect:
+    createStageNPC: '§eNpc oluştur'
+    name: Seç veya oluştur
+    selectStageNPC: '§eMevcut NPC''yi seçin'
+  particleEffect:
+    color: '§bParçacık rengi'
+    name: Parçacık efekti oluştur
+    shape: '§dParçacık şekli'
+    type: '§eParçacık türü'
+  particleList:
+    colored: Renklendirimiş parçacık
+    name: Parçacıkların listesi
+  permission:
+    name: İzinleri seç
+    perm: '§aİzin'
+    remove: İzni Kaldır
+    removeLore: '§7İzin vermek yerine çıkarılacak.'
+    world: '§aDünya'
+    worldGlobal: '§b§lKüresel'
+  permissionList:
+    name: İzin Listesi
+    removed: '§eÇıkarılan: §6{permission_removed}'
+    world: '§eDünya: §6{permission_world}'
+  poolCreation:
+    avoidDuplicates: Kopyalardan kaçının
+    avoidDuplicatesLore: '§8> §7Aynı görevi tekrar\n  tekrar yapmaktan kaçınmaya çalışın'
+    hologramText: '§eÖzel grup hologramı'
+    maxQuests: '§8Maks. görevler'
+    name: Görev grubu oluşturma
+    questsPerLaunch: '§aBaşlatma başına başlatılan görevler'
+    redoAllowed: Yinelemeye izin veriliyor mu?
+    requirements: '§bGörev başlatmak için gerekenler'
+    time: '§bGörevler arasındaki süreyi ayarlayın'
+  poolsList.name: Görev grupları
+  poolsManage:
+    choose: '§e> §6§oBu grubu seç §e<'
+    create: '§aBir görev grubu oluşturun'
+    edit: '§e> §6§oGrubu düzenle... §e<'
+    itemName: '§aGrup #{pool}'
+    name: Görev grupları
+    poolAvoidDuplicates: '§8Kopyalardan kaçının: §7{pool_duplicates}'
+    poolHologram: '§8Hologram metni: §7{pool_hologram}'
+    poolMaxQuests: '§8Maks. görevler: §7{pool_max_quests}'
+    poolQuestsList: '§7{pool_quests_amount} §8Görev: §7{pool_quests}'
+    poolQuestsPerLaunch: '§8Başlatma başına verilen görevler: §7{pool_quests_per_launch}'
+    poolRedo: '§8Tamamlanan görevleri yeniden yapabilir: §7{pool_redo}'
+    poolTime: '§8Görevler arasındaki süre: §7{pool_time}'
+  requirements:
+    name: Gereksinimler
+  rewards:
+    commands: 'Komutan: {amount}'
+    name: Ödüller
+    random:
+      minMax: Minimum ve maksimumu düzenle
+      rewards: Ödülleri düzenle
+  rewardsWithRequirements:
+    name: Gereksinimlere sahip ödüller
+  search: '§e§lAra'
+  stageEnding:
+    command: '§eYürütülen komutu düzenle'
+    locationTeleport: '§eIşınlanma konumunu düzenle'
+  stages:
+    branchesPage: '§dİş Aşamaları'
+    descriptionTextItem: '§eAçıklamayı düzenle'
+    endingItem: '§eBitiş ödüllerini düzenle'
+    laterPage: '&eÖnceki sayfaya dön'
+    name: Aşamaları oluştur
+    newBranch: '§eyeni işe git'
+    nextPage: '&eSonraki sayfaya ilerle'
+    previousBranch: '§eÖnceki işe dön'
+    regularPage: '§aDüzenli aşamalar'
+    validationRequirements: '§eDoğrulama gereksinimleri'
+    validationRequirementsLore: Tüm gereksinimler, aşamayı tamamlamaya çalışan oyuncuyla eşleşmelidir. Değilse, aşama tamamlanamaz.
+  validate: '§b§lDoğrula'
+  visibility:
+    finished: '"Bitti" menüsünün sekmesi'
+    inProgress: '"Devam etmekte" menüsünün sekmesi'
+    maps: Haritalar (dynmap veya BlueMap gibi)
+    name: Görev görünürlüğü
+    notStarted: '"Başlatılmadı" menüsünün sekmesi'
+misc:
+  amount: '§eMiktar: {amount}'
+  amounts:
+    comparisons: '{comparisons_amount} karşılaştırma'
+    dialogLines: '{lines_amount} satır'
+    items: '{items_amount} öğe'
+    mobs: '{mobs_amount} mob'
+    permissions: '{permissions_amount} yetki'
+  and: ve
+  bucket:
+    lava: Lav kovası
+    milk: Süt kovası
+    snow: Kar kovası
+    water: Su kovası
+  click:
+    left: Sol tık
+    middle: Tekerleğe tıkla
+    right: Sağ tık
+    shift-left: Shift + sol tıkla
+    shift-right: Shift + sağ tıkla
+  comparison:
+    different: '{number}''dan farklıdır'
+    equals: '{number}''a eşittir'
+    greater: kesinlikle {number} değerinden daha fazla
+    greaterOrEquals: '{number}''dan daha fazla'
+    less: kesinlikle {number} değerinden daha az
+    lessOrEquals: '{number} miktarından daha az'
+  disabled: Devre dışı
+  enabled: Etkin
+  entityType: '§eVarlık türü: {entity_type}'
+  entityTypeAny: '§eHer hangi bir varlık'
+  format:
+    prefix: '§6<§e§lGörevler§r§6> §r'
+  hologramText: '§8§lGörev Adamı'
+  'no': 'Hayır'
+  notSet: '§cayarlanmadı'
+  or: veya
+  poolHologramText: '§eYeni görev mevcut!'
+  questItemLore: '§e§oGörev Eşyası'
+  removeRaw: Kaldır
+  requirement:
+    class: '§bGerekli Sınıf(lar)'
+    combatLevel: '§bDövüş seviyesi gerekli'
+    equipment: '§eGerekli ekipman'
+    experienceLevel: '§bDeneyim seviyeleri gerekli'
+    faction: '§bGrup(lar) gerekli'
+    jobLevel: '§İş seviyesi gerekli'
+    logicalOr: Mantıksal VEYA (gereksinimler)
+    mcMMOSkillLevel: '§dYetenek seviyesi gerekli'
+    money: '§dPara gerekli'
+    permissions: '§3Yetki(ler) gerekli'
+    placeholder: '§bPlaceholder değeri gerekli'
+    quest: '§aGörev gerekli'
+    region: '§dBölge gerekli'
+    scoreboard: '§dPuan gerekli'
+    skillAPILevel: SkillAPI seviyesi gerekli
+  reset: Sıfırla
+  stageType:
+    Bucket: Kovayı doldur
+    Craft: Eşyayı Üret
+    Enchant: Eşyaları büyüle
+    Fish: Balık tut
+    Melt: Eşyaları ısıt
+    breedAnimals: Hayvanları çiftleştir
+    chat: Sohbete yaz
+    dealDamage: Hasar ver
+    die: Öl
+    eatDrink: Ye yada iç
+    interact: Blok ile etkileşime gir
+    items: Eşyaları geri getir
+    location: Konumu bul
+    mine: Blokları kır
+    mobs: Mobları öldür
+    npc: NPC Bul
+    placeBlocks: Blokları koy
+    playTime: Oynama süresi
+    region: Bölge bul
+    tameAnimals: Hayvanları besle
+  time:
+    days: '{days_amount} gün'
+    hours: '{hours_amount} saat'
+    lessThanAMinute: bir dakikadan az bir sürede
+    minutes: '{minutes_amount} dakika'
+    weeks: '{weeks_amount} hafta'
+  unknown: bilinmeyen
+  'yes': 'Evet'
+msg:
+  bringBackObjects: '{items} geri getir.'
+  command:
+    adminModeEntered: '§aYönetici Moduna girdiniz.'
+    adminModeLeft: '§aYönetici Modundan ayrıldınız.'
+    backupCreated: '§6Tüm görevlerin ve oyuncu bilgilerinin yedeklerini başarıyla oluşturdunuz.'
+    backupPlayersFailed: '§cTüm oyuncu bilgileri için bir yedek oluşturma başarısız oldu.'
+    backupQuestsFailed: '§cTüm görevler için bir yedek oluşturma başarısız oldu.'
+    cancelQuest: '§6{quest} görevini iptal ettin.'
+    cancelQuestUnavailable: '§c{quest} görevi iptal edilemez.'
+    checkpoint:
+      noCheckpoint: '§c{quest} görevi için kontrol noktası bulunamadı.'
+      questNotStarted: '§cBu görevi yapmıyorsunuz.'
+    downloadTranslations:
+      downloaded: '§a{lang} dili indirildi! §f§oMinecraftTranslationsFile''ın §7değerini {lang} ile değiştirmek için "/plugins/BeautyQuests/config.yml" dosyasını düzenlemeli ve ardından sunucuyu yeniden başlatmalısınız.'
+      exists: '§c{file_name} dosyası zaten var. Üzerine yazmak için komutunuza "-overwrite" ekleyin. (/quests downloadTranslations <lang> -overwrite)'
+      notFound: '{version} sürümü için {lang} dili bulunamadı.'
+      syntax: '§cİndirmek için bir dil belirtmelisiniz. Örnek: "/quests downloadTranslations tr_TR".'
+    help:
+      adminMode: '§6/{label} adminMode: §eYönetici Modunu değiştirin. (Küçük günlük mesajlarını görüntülemek için kullanışlıdır.)'
+      create: '§6/{label} create: §eKullanarak bir görev oluşturun.'
+      downloadTranslations: '§6/{label} downloadTranslations <language>: §eBir vanilla çeviri dosyası indirir.'
+      edit: '§6/{label} düzenle: §eKullanarak bir görevi düzenleyin.'
+      finishAll: '§6/{label} finishAll <oyuncu>: §eBir oyuncunun tüm görevlerini tamamlayın.'
+      header: '§6§lBeautyQuests — Yardım'
+      list: '§6/{label} list: §eGörev listesine bakın. (Yalnızca desteklenen sürümler için.)'
+      reload: '§6/{label} reload: §eTüm yapılandırmaları ve dosyaları kaydedin ve yeniden yükleyin. (§ckullanımdan kaldırıldı§e)'
+      remove: '§6/{label} remove <id>: §eBelirli bir ID''ye sahip bir görevi silin veya tanımlanmamışsa NPC''ye tıklayın.'
+      resetPlayer: '§6/{label} resetPlayer <oyuncu>: §eBir oyuncuyla ilgili tüm bilgileri kaldırın.'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <oyuncu> [id]: §eBir oyuncu için bir görevin bilgilerini silin.'
+      save: '§6/{label} save: §eManuel bir eklenti kaydetme yapın.'
+      seePlayer: '§6/{label} seePlayer <oyuncu>: §eBir oyuncu hakkındaki bilgileri görüntüleyin.'
+      setFirework: '§6/{label} setFirework: §eVarsayılan biten havai fişekleri düzenleyin.'
+      setItem: '§6/{label} setItem <talk|launch>: §eHologram öğesini kaydedin.'
+      setStage: '§6/{label} setStage <oyuncu> <id> [yeni iş] [yeni aşama]: §eGeçerli aşamayı atla, iş için bir aşama ayarla.'
+      start: '§6/{label} start <oyuncu> [id]: §eBir görevin başlamasını zorla.'
+      startDialog: '§6/{label} startDialog <oyuncu> <görev id''si>: §eBir NPC aşaması için bekleyen diyaloğu veya bir görev için başlangıç ​​diyaloğunu başlatır.'
+      version: '§6/{label} version: §eGeçerli eklenti sürümüne bakın.'
+    invalidCommand:
+      simple: '§cBu komut mevcut değil,§e help §cyazın.'
+    itemChanged: '§aÖğe düzenlendi. Değişiklikler yeniden başlatmanın ardından etkili olacaktır.'
+    itemRemoved: '§aHologram öğesi kaldırıldı.'
+    leaveAll: '§a{success} görev(ler)inin bitirilmesini zorladınız. Hatalar: {errors}'
+    removed: '§a{quest_name} görevi başarıyla kaldırıldı.'
+    resetPlayer:
+      player: '§6{quest_amount} görevinizin tüm bilgileri {deleter_name} tarafından silindi.'
+      remover: '{quest_amount} görev bilgisi (ve {quest_pool} grupları) {player} silindi.'
+    resetPlayerPool:
+      full: '§a{pool} grup verilerini {player}''den sıfırlarsınız.'
+      timer: '§a{pool} grubunun zamanlayıcısını {player}''den sıfırlarsınız.'
+    resetPlayerQuest:
+      player: '§6{quest} göreviyle ilgili tüm bilgiler {deleter_name} tarafından silindi.'
+      remover: '§6{quest} adlı kişinin {player} görev bilgisi silindi.'
+    resetQuest: '§6{player_amount} oyuncu için görevin verileri kaldırıldı.'
+    scoreboard:
+      hidden: '§6{player_name} oyuncusunun puan tablosu gizlendi.'
+      lineInexistant: '§c{line_id} satırı mevcut değil.'
+      lineRemoved: '§6{line_id} satırını başarıyla kaldırdınız.'
+      lineReset: '§6{line_id} satırını başarıyla sıfırladınız.'
+      lineSet: '§6{line_id} satırını başarıyla düzenlediniz.'
+      own:
+        hidden: '§6Puan tablonuz artık gizlidir.'
+        shown: '§6Puan tablonuz tekrar görünür.'
+      resetAll: '§6{player_name} adlı oyuncunun puan tablosunu başarıyla sıfırladınız.'
+      shown: '§6{player_name} oyuncusunun scoreboard''ı gösterildi.'
+    setStage:
+      branchDoesntExist: '§c{branch_id} adlı id''ye sahip bir iş mevcut değil.'
+      doesntExist: '§c{stage_id} adlı id''ye sahip bir sahne mevcut değil.'
+      next: '§aAşama atlandı.'
+      nextUnavailable: Oyuncu bir işin sonundayken "skip" seçeneği kullanılamaz.
+      set: '§aAşama {stage_id} başlatıldı.'
+    startDialog:
+      alreadyIn: '§cOyuncu zaten bir diyalogda.'
+      impossible: '§cDiyaloğu şimdi başlatmak imkansız.'
+      noDialog: '§cOyuncunun beklenen bir diyaloğu yok.'
+      success: '§a{quest} görevinde {player} oyuncusu için diyalog başlatıldı!'
+    startPlayerPool:
+      error: '{player} için {pool} grubu başlatılamadı.'
+      success: '{player} için {pool} grubu başladı. Sonuç: {result}'
+    startQuest: '§6{quest} görevinin başlatılmasını zorunlu kıldınız (Oyuncu UUID: {player}).'
+    startQuestNoRequirements: '§cOyuncu, {quest} görevinin gereksinimlerini karşılamıyor... Gereksinim kontrolünü atlamak için komutunuzun sonuna "-overrideRequirements" ifadesini ekleyin.'
+  dialogs:
+    skipped: '§8§oDiyalog atlandı.'
+    tooFar: '{npc_name}''den çok uzaktasınız...'
+  editor:
+    advancedSpawnersMob: 'Öldürmek için özel spawnerın mob''unun adını yazın'
+    already: '§cZaten editördesiniz.'
+    availableElements: 'Kullanılabilir elementler: §e{available_elements}'
+    blockAmount: '§aBlokların sayısını yazın:'
+    blockData: '§aBlok verilerini yaz (kullanılabilir blok veriler: §7{available_datas}§a):'
+    blockName: '§aBloğun ismini yazın:'
+    blockTag: '§aBlok etiketini yazın (mevcut etiketler: §7{available_tags}§a):'
+    chat: '§6Şu anda Editör Modundasınız. Düzenleyiciden ayrılmaya zorlamak için "/quests exitEditor" yazın. (Kesinlikle tavsiye edilmez, önceki envantere geri dönmek için "close" veya "cancel" gibi komutları kullanmayı deneyin.)'
+    color: 'Onaltılık biçimde (#XXXXX) veya RGB biçiminde (KIRMIZI YEŞİL MAVİ) bir renk girin.'
+    colorNamed: Bir rengin adını girin.
+    comparisonTypeDefault: '§a{available} arasından istediğiniz karşılaştırma türünü seçin. Varsayılan karşılaştırma: §e§l{default}§r§a. Kullanmak için §onull§r§a yazın.'
+    dialog:
+      cleared: '§2§l{amount}§a mesaj kaldırıldı.'
+      edited: '§a"§7{msg}§a" mesajı düzenlendi.'
+      help:
+        addSound: '§6addSound <id> <ses>: §eBir mesaja ses ekleyin.'
+        clear: '§6clear: §eTüm mesajları kaldır.'
+        close: '§6close: §eTüm mesajları doğrular.'
+        edit: '§6edit <id> <mesaj>: §eBir mesajı düzenleyin.'
+        header: '§6§lBeautyQuests — Diyalog düzenleyici yardımı'
+        list: '§6list: §eTüm mesajları görüntüleyin.'
+        nothing: '§6noSender <message>: §eGöndereni olmayan bir mesaj ekleyin.'
+        nothingInsert: '§6nothingInsert <id> <mesaj>: §eHerhangi bir ön ek olmadan bir mesaj ekleyin.'
+        npc: '§6npc <mesaj>: §eNPC tarafından söylenen bir mesaj ekleyin.'
+        npcInsert: '§6npcInsert <id> <mesaj>: §eNPC tarafından söylenen bir mesaj ekleyin.'
+        npcName: '§6npcName [özel NPC adı]: §eDiyalogdaki NPC''nin özel adını ayarlayın (veya varsayılana sıfırlayın).'
+        player: '§6player <mesaj>: §eOyuncu tarafından söylenen bir mesaj ekleyin.'
+        playerInsert: '§6playerInsert <id> <mesaj>: §eOyuncu tarafından söylenen bir mesaj ekleyin.'
+        remove: '§6<id> öğesini kaldır: §eBir mesajı kaldırın.'
+        setTime: '§6setTime <id> <zaman>: §eBir sonraki mesaj otomatik olarak oynatılmadan önceki süreyi (ticks ile) ayarlayın.'
+        skippable: '§6skippable [true|false]: §eDiyaloğun atlanıp atlanamayacağını ayarlayın.'
+      messageRemoved: '§a"§7{msg}§a" mesajı kaldırıldı.'
+      noSender: '§a"§7{msg}§a" mesajı, gönderen olmadan eklendi.'
+      npc: '§aNPC için "§7{msg}§a" mesajı eklendi.'
+      npcName:
+        set: '§aÖzel NPC adı §7{new_name}§a olarak ayarlandı (önceden §7{old_name}§a idi)'
+        unset: '§aÖzel NPC adı varsayılana sıfırlandı (önceden §7{old_name}§a idi)'
+      player: '§aOyuncu için "§7{msg}§a" mesajı eklendi.'
+      skippable:
+        set: '§aDiyaloğun atlanabilirlik durumu artık §7{new_state}§a olarak ayarlandı (önceden §7{old_state}§a idi)'
+        unset: '§aDiyaloğun atlanabilirlik durumu varsayılana sıfırlandı (önceden {old_state} idi)'
+      soundAdded: '§a"§7{msg}§a" mesajına "§7{sound}§a" sesi eklendi.'
+      syntaxRemove: '§cDoğru sözdizimi(syntax): remove <id>'
+      timeRemoved: '§a{msg} mesajı için zaman kaldırıldı.'
+      timeSet: '§a{msg} mesajı için zaman düzenlendi: şimdi {time} ticks.'
+    enter:
+      list: '§c⚠ §7Bir "liste" düzenleyicisine girdiniz. Satır eklemek için "add"''ı kullanın. Yardım için "help" (eğik çizgi olmadan) bakın. §e§lDüzenleyiciden çıkmak için "close" yazın.'
+      subtitle: '§6Düzenleyiciden çıkmaya zorlamak için "/quests exitEditor" yazın.'
+      title: '§6~ Editör Modu ~'
+    firework:
+      edited: Havai fişek görevi düzenlendi!
+      invalid: Bu öğe geçerli bir havai fişek değil.
+      invalidHand: Ana elinizde bir havai fişek tutmalısınız.
+      removed: Havai fişek görevi kaldırıldı!
+    goToLocation: '§aAşama için istenen konuma gidin.'
+    invalidColor: Girdiğiniz renk geçersiz. Onaltılık veya RGB olmalıdır.
+    invalidPattern: '§cGeçersiz normal ifade kalıbı §4{input}§c.'
+    itemCreator:
+      invalidBlockType: '§cGeçersiz blok türü.'
+      invalidItemType: '§cGeçersiz eşya türü. (Öğe bir blok olamaz.)'
+      itemAmount: '§aEşyanın miktarını yazın:'
+      itemLore: '§aEşya bilgisini değiştirin: (Yardım için "help" yazın.)'
+      itemName: '§aEşyanın adını yazın:'
+      itemType: '§aİstenen öğe türünün adını yazın:'
+      unknownBlockType: '§cBilinmeyen blok türü'
+      unknownItemType: '§cBilinmeyen eşya türü.'
+    mythicmobs:
+      disabled: '§cMythicMob devre dışı bırakıldı.'
+      isntMythicMob: '§cBu MythicMob mevcut değil.'
+      list: '§aTüm Mythic Mobs''un listesi:'
+    noSuchElement: '§cBöyle bir unsur yoktur. İzin verilen öğeler: §e{available_elements}'
+    npc:
+      choseStarter: '§aGörevi başlatan NPC''yi seçin.'
+      enter: '§aBir NPC''ye tıklayın veya "cancel" yazın.'
+      notStarter: '§cBu NPC bir görev başlatıcı değil.'
+    pool:
+      hologramText: Bu grup için özel hologram metnini yazın (veya varsayılanı istiyorsanız "null").
+      maxQuests: Bu grupta başlatılabilecek maksimum görev sayısını yazın.
+      questsPerLaunch: Oyuncular NPC'ye tıkladığında verilen görev miktarını yazın.
+      timeMsg: 'Oyuncuların yeni bir göreve başlamadan önceki zamanı yazın. (varsayılan birim: gün)'
+    scoreboardObjectiveNotFound: '§cBilinmeyen scoreboard hedefi.'
+    selectWantedBlock: '§aAşama için aranan bloğun üzerine çubukla tıklayın.'
+    stage:
+      location:
+        typeWorldPattern: '§aDünya adları için bir normal ifade yazın:'
+    text:
+      argNotSupported: '§c{arg} bağımsız değişkeni desteklenmiyor.'
+      chooseJobRequired: '§aAranan işin adını yazın:'
+      chooseLvlRequired: '§aGerekli seviye miktarını yazın:'
+      chooseMoneyRequired: '§aGerekli para miktarını yazın:'
+      chooseObjectiveRequired: '§aHedefin adını yazın.'
+      chooseObjectiveTargetScore: '§aHedef için hedef puanı yazın.'
+      choosePermissionMessage: '§aOyuncu gerekli izne sahip değilse bir ret mesajı seçebilirsiniz. (Bu adımı atlamak için "null" yazın.)'
+      choosePermissionRequired: '§aGörevi başlatmak için gerekli izni yazın:'
+      choosePlaceholderRequired:
+        identifier: '§aGerekli placeholder adını yüzde işareti olmadan yazın:'
+        value: '§a{placeholder} Placeholder için gereken değeri yazın:'
+      chooseRegionRequired: '§aGerekli bölgenin adını yazın (aynı dünyada olmalısınız).'
+      chooseSkillRequired: '§aGerekli yeteneğin adını yazın:'
+      reward:
+        money: '§aAlınan paranın miktarını yazın:'
+        permissionName: '§aYetki izninin adını yazın.'
+        permissionWorld: '§aİznin düzenlenmesi gereken dünyayı yazın, eğer genel olması gerekiyorsa "null" değerini girin.'
+        random:
+          max: Oyuncuya verilen maksimum ödül miktarını (dahil) yazın.
+          min: Oyuncuya verilen minimum ödül miktarını (dahil) yazın.
+        wait: '§aBeklenecek ticks miktarını yazın: (1 saniye = 20 ticks)'
+    textList:
+      added: '§a"§7{msg}§a" metni eklendi.'
+      help:
+        add: '§6add <mesaj>: §eBir metin ekleyin.'
+        close: '§6close: §eEklenen metinleri doğrular.'
+        header: '§6§lBeautyQuests — Liste düzenleyici yardımı'
+        list: '§6list: §eEklenen tüm metinleri görüntüleyin.'
+        remove: '§6remove <id>: §eBir metni kaldırın.'
+      removed: '§a"§7{msg}§a" metni kaldırılıdı.'
+      syntax: '§cDoğru sözdizimi(Syntax):'
+    title:
+      fadeIn: '"Fade-in" süresini ticks cinsinden yazın (20 ticks = 1 saniye).'
+      fadeOut: '"Fade-out" süresini ticks halinde yazın (20 ticks = 1 saniye).'
+      stay: '"stay" süresini ticks olarak yazın (20 ticks = 1 saniye).'
+      subtitle: Altyazı metnini yazın (veya istemiyorsanız "null").
+      title: Başlık metnini yazın (veya istemiyorsanız "null").
+    typeBucketAmount: '§aDoldurulacak kova miktarını yazın:'
+    typeDamageAmount: 'Oyuncunun vermesi gereken hasar miktarını yazın:'
+    typeGameTicks: '§aGerekli oyun ticks''ini yazın:'
+    typeLocationRadius: '§aKonumdan gereken mesafeyi yazın:'
+  errorOccurred: '§cBir hata oluştu, bir yönetici ile iletişime geçin! Hata kodu: {error}'
+  experience:
+    edited: '§aDeneyim kazanımını {old_xp_amount}''''den {xp_amount} puana yükselttiniz.'
+  indexOutOfBounds: '§c{index} sayısı sınırların dışında! {min} ile {max} arasında olmalıdır.'
+  invalidBlockData: '§c{block_data} blok verileri geçersiz veya {block_material} bloğuyla uyumsuz.'
+  invalidBlockTag: '{block_tag} adlı blok etiketi kullanılamıyor.'
+  inventoryFull: '§cEnvanteriniz dolu, bu yüzden eşya yere düştü.'
+  moveToTeleportPoint: '§aİstenilen ışınlanma konumuna gidin.'
+  npcDoesntExist: '§c{npc_id} adlı id''ye sahip bir NPC mevcut değil.'
+  number:
+    invalid: '§c{input} geçersiz bir sayıdır.'
+    negative: '§cPozitif bir sayı girmelisin!'
+    notInBounds: '§cSayınız {min} ile {max} arasında olmalıdır.'
+    zero: '§c0 dışında bir sayı girmelisiniz!'
+  pools:
+    allCompleted: '§7Tüm görevleri tamamladın!'
+    maxQuests: '§cBir seferde {pool_max_quests} görev(ler)den fazlasına sahip olamazsın...'
+    noAvailable: '§7Daha fazla görev kalmadı...'
+    noTime: '§cBaşka bir görev yapmadan önce {time_left} beklemelisin.'
+  quest:
+    alreadyStarted: '§cGöreve zaten başladınız!'
+    cancelling: '§cGörev oluşturma süreci iptal edildi.'
+    createCancelled: '§cOluşturma veya düzenleme başka bir eklenti tarafından iptal edildi!'
+    created: '§aTebrikler! {quest_branches} sınıfını içeren §e{quest}§a görevini oluşturdun!'
+    editCancelling: '§cGörev düzenleme süreci iptal edildi.'
+    edited: '§aTebrikler! {quest_branches} sınıfını içeren §e{quest}§a görevini düzenledin!'
+    finished:
+      base: '§aTebrikler! §e{quest_name}§a görevini bitirdiniz!'
+      obtain: '§a{rewards} elde ettin!'
+    invalidID: '§c{quest_id} adlı id''ye sahip bir görev mevcut değil.'
+    invalidPoolID: '§c{pool_id} grubu mevcut değil.'
+    notStarted: '&cŞu anda bu görevi yapamazsın.'
+    started: '§e{quest_name}§a görevine başladın§o§6!'
+  questItem:
+    craft: '§cÜretim yapmak için görev eşyasını kullanamazsın!'
+    drop: '§cBir görev eşyasını yere atamazsın!'
+    eat: '§cGörev eşyalarını yemek niyetine yiyemezsin!'
+  quests:
+    checkpoint: '§7Görev kontrol noktasına ulaşıldı!'
+    failed: '§c{quest_name} görevinde başarısız oldun...'
+    maxLaunched: '§cBir seferde {quests_max_amount} görev(ler)den fazlasına sahip olamazsın...'
+    updated: '§e{quest_name}§7 adlı görev güncellendi.'
+  regionDoesntExists: '§cBöyle bir bölge mevcut değil. (Aynı dünyada olmalısınız.)'
+  requirements:
+    combatLevel: '§cDövüş seviyeniz {long_level} olmalıdır!'
+    job: '§e{job_name}§c işi için seviyeniz {long_level} olmalıdır!'
+    level: '§cSeviyen {long_level} olmalıdır!'
+    money: '§c{money} sahibi olmalısın!'
+    quest: '§e{quest_name}§c görevini tamamlamış olmalısın!'
+    skill: '§e{skill_name}§c yeteneği için seviyeniz {long_level} olmalıdır!'
+    waitTime: '§cBu görevi yeniden başlatabilmek için {time_left} süre boyunca beklemelisiniz!'
+  restartServer: '§7Değişiklikleri görmek için sunucunuzu yeniden başlatın.'
+  selectNPCToKill: '§aNPC''yi öldürmek için seçim yap.'
+  stageMobs:
+    listMobs: '§a{mobs} öldürmelisiniz.'
+  typeCancel: '§aSon metne geri dönmek için "cancel" yazın.'
+  versionRequired: 'Gerekli versiyon: §l{version}'
+  writeChatMessage: '§aGerekli mesajı yazın: (Bir komut eklemek istiyorsanız başına "{SLASH}" ekleyin.)'
+  writeCommand: '§aKomutu yazın: ("/" yazmayın; "{PLAYER}" yer tutucusu desteklidir. Yürütücü oyuncunun adıyla değiştirilecektir.)'
+  writeCommandDelay: '§aİstenen komut gecikmesini ticks halinde yazın.'
+  writeConfirmMessage: '§aBir oyuncu göreve başlamak üzereyken gösterilen onay mesajını yazın: (Varsayılan mesajı istiyorsanız "null" yazın.)'
+  writeDescriptionText: '§aAşamanın amacını açıklayan bir metin yazın:'
+  writeEndMsg: Görev sonunda gönderilecek mesajı varsayılan olarak istiyorsanız "null", istemiyorsanız "none" olarak yazın. Elde edilen ödüllerle değiştirilecekse "{rewards}" yazabilirsiniz.
+  writeEndSound: '§aGörevin sonunda oyuncuya çalınacak ses adını varsayılan olarak istiyorsanız "null", istemiyorsanız "none" olarak yazın:'
+  writeHologramText: '§aHologramın metnini yazın: (Bir hologram istemiyorsanız "none", varsayılan metni istiyorsanız "null" yazın.)'
+  writeMessage: '§aOyuncuya gönderilecek mesajı yazın.'
+  writeMobAmount: '§aÖldürülecek canlıların miktarını yazın:'
+  writeMobName: '§aÖldürülecek canlının özel adını yazın:'
+  writeNPCText: '§aOyuncuya NPC tarafından söylenecek olan diyaloğu yazın: (Yardım almak için "help" yazın.)'
+  writeNpcName: '§aNPC''nin adını yazın:'
+  writeNpcSkinName: '§aNPC''nin cildini değiştirmek için cildin adını yazın:'
+  writeQuestDescription: '§aOyuncunun görev arayüzünde(GUI) görüntülenecek bir görev açıklaması yazın.'
+  writeQuestMaterial: '§aGörev öğesinin materyalini yazın.'
+  writeQuestName: '§aGörevinizin ismini yazın:'
+  writeQuestTimer: '§aGörevi yeniden başlatmadan önce gerekli zamanı (dakika olarak) yazın: (Varsayılan zamanlayıcıyı istiyorsanız "null" yazın.)'
+  writeRegionName: '§aAdım için gerekli bölgenin adını yazın:'
+  writeStageText: '§aAşamanın başında oyuncuya gönderilecek metni yazın:'
+  writeStartMessage: '§aGörevin başında gönderilecek mesajı varsayılan olarak göndermek istiyorsanız "null", istemiyorsanız "none" olarak yazın:'
+  writeXPGain: '§aOyuncunun elde edeceği deneyim puanı miktarını yazın: (Son değer: {xp_amount})'
+scoreboard:
+  asyncEnd: '§ex'
+  name: '§6§lGörevler'
+  noLaunched: '§cDevam eden görev yok.'
+  noLaunchedDescription: '§c§oYükleniyor'
+  noLaunchedName: '§c§lYükleniyor'
+  stage:
+    breed: '§6{mobs} §eÇiftleştir'
+    bucket: '§6{buckets}§e''yı doldurun'
+    chat: '§6{text}§e''yı yazın'
+    craft: '§eÜretim §6{items}'
+    dealDamage:
+      any: '§c{damage_remaining} hasar ver'
+      mobs: '§c{target_mobs} kişiye {damage_remaining} hasar verin'
+    die: '§cÖl'
+    eatDrink: '{§60} §eTüket'
+    enchant: '§eBüyü §6{items}'
+    fish: '§eBalık §6{items}'
+    interact: '§6{x}§e''daki bloğa tıklayın'
+    interactMaterial: '§eBir §6{block}§e bloğa tıklayın'
+    items: '§eÖğeleri §6{dialog_npc_name}§e''e getirin:'
+    location: '§6{target_x}§e, §6{target_y}§e, §6{target_z}§e, §6{target_world}''ya git.'
+    melt: '§eEritme §6{items}'
+    mine: '§e{blocks} Kaz'
+    mobs: '§6{mobs}§e''yı öldür'
+    npc: '§eNPC §6{dialog_npc_name}§e ile konuşun'
+    placeBlocks: '§e{blocks}''yı Koy'
+    playTimeFormatted: '§eOyna §6{time_remaining_human}'
+    region: '§6{region_id}§e bölgesini bulun'
+    tame: '§eEvcilleştirme §6{mobs}'
+  textBetwteenBranch: '§e veya'

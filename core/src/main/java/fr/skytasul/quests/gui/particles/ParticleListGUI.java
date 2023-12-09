@@ -4,17 +4,15 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Particle;
 import org.bukkit.inventory.ItemStack;
-
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.gui.ItemUtils;
-import fr.skytasul.quests.gui.templates.StaticPagedGUI;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.ParticleEffect;
-import fr.skytasul.quests.utils.XMaterial;
 
 public class ParticleListGUI extends StaticPagedGUI<Particle> {
 	

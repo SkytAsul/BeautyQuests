@@ -2,45 +2,41 @@
 msg:
   quest:
     finished:
-      base: '§aПоздравляем! Вы успешно выполнили квест §e{0}§a!'
-      obtain: '§aВы получили {0}!'
-    started: '§aВы начали квест §r§e{0}§o§6!'
-    created: '§aПоздравляем! Вы создали квест §е{0}§a, в который входит {1} ответвление(я)!'
-    edited: '§aПоздравляем! Вы отредактировали квест §е{0}§a, в который входит {1} ответвление(я)!'
+      base: '§aПоздравляем! Вы успешно выполнили квест §e{quest_name}§a!'
+      obtain: '§aВы получили {rewards}!'
+    started: '§aВы начали квест §r§e{quest_name}§o§6!'
+    created: '§aПоздравляем! Вы создали квест §е{quest}§a, в который входит {quest_branches} ответвление(я)!'
+    edited: '§aПоздравляем! Вы отредактировали квест §е{quest}§a, в который входит {quest_branches} ответвление(я)!'
     createCancelled: '§cСоздание или редактирование было отменено другим плагином!'
     cancelling: '§cПроцесс создания квеста был прерван.'
     editCancelling: '§cПроцесс редактирования квеста был прерван.'
-    invalidID: '§cКвест под номером {0}, не найден.'
-    invalidPoolID: '§cВетка {0} не существует.'
+    invalidID: '§cКвест под номером {quest_id}, не найден.'
+    invalidPoolID: '§cВетка {pool_id} не существует.'
     alreadyStarted: '§cВы уже начали квест!'
     notStarted: '§cВ данный момент вы не выполняете этот квест.'
   quests:
-    maxLaunched: '§cВы не можете взять больше {0} задания(й) одновременно...'
-    nopStep: '§cУ этого квеста нету каких либо этапов.'
-    updated: '§7Квест §e{0}§7 был обновлён.'
+    maxLaunched: '§cВы не можете взять больше {quests_max_amount} задания(й) одновременно...'
+    updated: '§7Квест §e{quest_name}§7 был обновлён.'
     checkpoint: '§7Квест достиг контрольной точки!'
-    failed: '§cВы провалили задание {0}...'
+    failed: '§cВы провалили задание {quest_name}...'
   pools:
-    noTime: '§cВы должны подождать {0} перед выполнением другого задания.'
+    noTime: '§cВы должны подождать {time_left} перед выполнением другого задания.'
     allCompleted: '§7Вы завершили все задания!'
     noAvailable: '§7Заданий больше не осталось...'
-    maxQuests: '§cУ вас не может быть более {0} заданий одновременно...'
+    maxQuests: '§cУ вас не может быть более {pool_max_quests} заданий одновременно...'
   questItem:
     drop: '§cВы не можете выбросить предмет из задания!'
     craft: '§cВы не можете использовать предмет задания для крафта!'
     eat: '§cВы не можете съесть это!'
   stageMobs:
-    noMobs: '§cНа этом этапе не нужно убивать мобов.'
-    listMobs: '§aВам нужно убить {0}.'
+    listMobs: '§aВам нужно убить {mobs}.'
   writeNPCText: '§aНапишите диалог, который будет отправлен игроку от NPC: (Напишите "help" для помощи.)'
   writeRegionName: '§aВведите название региона, необходимого для этапа:'
-  writeXPGain: '§aНапишите количество очков опыта, которые получит игрок: (Крайнее значение: {0})'
+  writeXPGain: '§aНапишите количество очков опыта, которые получит игрок: (Крайнее значение: {xp_amount})'
   writeMobAmount: '§aНапишите количество мобов для убийства:'
   writeMobName: '§aЗапишите Имя моба которого надо убить:'
-  writeChatMessage: '§aНапишите требуемое сообщение: (Добавьте "{SLASH}" в начало если вы хотите выполнить команду.)'
   writeMessage: '§aНапишите сообщение, которое будет отправлено игроку'
   writeStartMessage: '§aНапишите сообщение, которое будет отправлено в начале задания: «null», если вы хотите использовать значение по умолчанию, или «none», если вы не хотите:'
-  writeEndMsg: '§aНапишите сообщение, которое будет отправлено в конце квеста, "null", если вы хотите стандартное сообщение или "none", если вы не хотите никакое. Вы можете использовать "{0}", оно будет заменено на награду'
   writeEndSound: '§aНапишите сообщение, которое будет отправлено в начале задания: «null», если вы хотите использовать значение по умолчанию, или «none», если вы не хотите:'
   writeDescriptionText: '§aНапишите текст, который описывает цель этапа:'
   writeStageText: '§aНапишите текст, который будет отправлен игроку в начале этапа:'
@@ -48,136 +44,125 @@ msg:
   writeNpcName: '§aНапишите название NPC:'
   writeNpcSkinName: '§aНапишите название скина NPC:'
   writeQuestName: '§aНапишите название вашего квеста:'
-  writeCommand: '§aВведите нужную команду: (Команда без "/" и заполнения"{PLAYER} поддерживается. Оно будет заменено на имя исполнителя команды.)'
   writeHologramText: '§aЗапишите текст голограммы: (Напишите "none", если вы не желаете добавлять голограмму и «null", если хотите текст по умолчанию.)'
   writeQuestTimer: '§aЗапишите необходимое время (в минутах), прежде чем вы сможете перезагрузить квест: (Напишите "null", если вы хотите установить время по умолчанию.)'
   writeConfirmMessage: '§aНапишите сообщение для подтверждения, которое будет показано когда игрок собирается начать задание: (Напишите "null", если вы хотите отправить сообщение по умолчанию.)'
   writeQuestDescription: '§aНапишите описание квеста, которое будет отображаться в квестовом интерфейсе игрока.'
   writeQuestMaterial: '§aНапишите материал квестового предмета.'
   requirements:
-    quest: '§cВы должны выполнить квест §e{0}§c!'
-    level: '§cВаш уровень должен быть {0}!'
-    job: '§cВаш уровень для работы §e{1}должен быть {0}!'
-    skill: '§cВаш уровень навыка §e{1}§c должен быть {0}!'
-    combatLevel: '§cВаш уровень боя должен быть {0}!'
-    money: '§cВы должны иметь {0}!'
-    waitTime: '§o{0} минут(ы), прежде чем вы сможете перезапустить задание!'
+    quest: '§cВы должны выполнить квест §e{quest_name}§c!'
+    level: '§cВаш уровень должен быть {long_level}!'
+    job: '§cВаш уровень для работы §e{job_name}должен быть {long_level}!'
+    skill: '§cВаш уровень навыка §e{skill_name}§c должен быть {long_level}!'
+    combatLevel: '§cВаш уровень боя должен быть {long_level}!'
+    money: '§cВы должны иметь {money}!'
+    waitTime: '§o{time_left} минут(ы), прежде чем вы сможете перезапустить задание!'
   experience:
-    edited: '§aВы изменили добычу опыта с {0} до {1} очков.'
+    edited: '§aВы изменили добычу опыта с {old_xp_amount} до {xp_amount} очков.'
   selectNPCToKill: '§aВыберите NPC для удаления.'
-  npc:
-    remove: '§aNPC удален.'
-    talk: '§aПойдите и поговорите с NPC по имени §e{0}§a.'
   regionDoesntExists: '§cЭтот регион не существует. (Вы должны быть в том же мире.)'
-  npcDoesntExist: '§cNPC с идентификатором {0} не существует.'
-  objectDoesntExist: '§cУказанный предмет с идентификатором {0} не существует.'
+  npcDoesntExist: '§cNPC с идентификатором {npc_id} не существует.'
   number:
     negative: '§cВы должны ввести положительное число!'
     zero: '§cВы должны ввести число, отличное от 0!'
-    invalid: '§c{0} не допустимое число.'
-    notInBounds: Число должно быть между {0} и {1}
-  errorOccurred: '§cПроизошла ошибка, свяжитесь с администратором! §4§lКод ошибки: {0}'
-  commandsDisabled: '§cВ настоящее время у вас нет прав на выполнение команд!'
-  indexOutOfBounds: '§cЧисло {0} за пределами! Оно должно между {1} и {2}.'
-  invalidBlockData: '§cДанные блока {0} недопустимы или несовместимы с блоком {1}.'
-  invalidBlockTag: '§cНедоступный блочный тег {0}.'
-  bringBackObjects: Принеси мне {0}.
+    invalid: '§c{input} не допустимое число.'
+    notInBounds: Число должно быть между {min} и {max}
+  errorOccurred: '§cПроизошла ошибка, свяжитесь с администратором! §4§lКод ошибки: {error}'
+  indexOutOfBounds: '§cЧисло {index} за пределами! Оно должно между {min} и {max}.'
+  invalidBlockData: '§cДанные блока {block_data} недопустимы или несовместимы с блоком {block_material}.'
+  invalidBlockTag: '§cНедоступный блочный тег {block_tag}.'
+  bringBackObjects: Принеси мне {items}.
   inventoryFull: '§cВаш инвентарь переполнен, предмет выпал на землю.'
-  playerNeverConnected: '§cНе удалось найти информацию о игроке {0}.'
-  playerNotOnline: '§cИгрок {0} не в сети.'
-  playerDataNotFound: '§cДанные игрока {0} не найдены.'
-  versionRequired: 'Требуемая версия: §l{0}'
+  versionRequired: 'Требуемая версия: §l{version}'
   restartServer: '§7Перезагрузите сервер, чтобы увидеть изменения.'
   dialogs:
     skipped: '§8§o Диалог пропущен.'
-    tooFar: '§7§oТы слишком далеко от {0}...'
+    tooFar: '§7§oТы слишком далеко от {npc_name}...'
   command:
     downloadTranslations:
       syntax: '§cНеобходимо указать язык для загрузки. Пример: "/quests downloadTranslations ru_RU".'
-      notFound: '§cЯзык {0} не найден для версии {1}.'
-      exists: '§cФайл {0} уже существует. Добавьте "-overwrite" к вашей команде, чтобы перезаписать ее. (/quests downloadTranslations <lang> -overwrite)'
-      downloaded: '§aЯзык {0} загружен! §7Вы должны отредактировать файл "/plugins/BeautyQuests/config.yml", чтобы изменить значение §ominecraftTranslationsFile§7 с {0}, а затем перезапустить сервер.'
+      notFound: '§cЯзык {lang} не найден для версии {version}.'
+      exists: '§cФайл {file_name} уже существует. Добавьте "-overwrite" к вашей команде, чтобы перезаписать ее. (/quests downloadTranslations <lang> -overwrite)'
+      downloaded: '§aЯзык {lang} загружен! §7Вы должны отредактировать файл "/plugins/BeautyQuests/config.yml", чтобы изменить значение §ominecraftTranslationsFile§7 с {lang}, а затем перезапустить сервер.'
     checkpoint:
-      noCheckpoint: '§cКонтрольная точка для задания {0} не найдена.'
+      noCheckpoint: '§cКонтрольная точка для задания {quest} не найдена.'
       questNotStarted: '§cВы не выполняете это задание.'
     setStage:
-      branchDoesntExist: '§cОтветвление с id {0} не существует.'
-      doesntExist: '§cЭтап с идентификатором {0} не существует.'
+      branchDoesntExist: '§cОтветвление с id {branch_id} не существует.'
+      doesntExist: '§cЭтап с идентификатором {stage_id} не существует.'
       next: '§aЭтап пропущен.'
       nextUnavailable: '§c"Пропустить" недоступно, когда игрок находится в конце ответвления.'
-      set: '§Этап {0} запущен.'
+      set: '§Этап {stage_id} запущен.'
     startDialog:
       impossible: '§cНевозможно запустить диалог сейчас.'
       noDialog: У игрока нет ожидающего диалога.
       alreadyIn: '§cИгрок уже воспроизводит диалог.'
-      success: '§aЗапущен диалог для игрока {0} в квесте {1}!'
-    playerNeeded: '§cВы должны быть игроком, чтобы выполнить эту команду!'
-    incorrectSyntax: '§cНеверный синтаксис.'
-    noPermission: '§cУ Вас недостаточно прав для выполнения данной команды! (Требуется: {0})'
+      success: '§aЗапущен диалог для игрока {player} в квесте {quest}!'
     invalidCommand:
-      quests: '§cЭта команда не существует, напишите §e/quests help§c.'
       simple: '§cЭта команда не существует, напишите §ehelp§c.'
-    needItem: '§cВы должны держать предмет в вашей основной руке!'
     itemChanged: '§aПредмет отредактирован. Изменения вступят в силу после перезапуска.'
     itemRemoved: '§aГолографический предмет удален.'
-    removed: '§aКвест {0} успешно удален.'
-    leaveAll: '§aВы принудительно завершили {0} квест(а). Ошибки: {1}'
+    removed: '§aКвест {quest_name} успешно удален.'
+    leaveAll: '§aВы принудительно завершили {success} квест(а). Ошибки: {errors}'
     resetPlayer:
-      player: '§6Все данные вашего {0} задания удалены/были удалены пользователем {1}.'
-      remover: '§6{0} информация о задание(ях) (и {2} этапах) {1} удалена.'
+      player: '§6Все данные вашего {quest_amount} задания удалены/были удалены пользователем {deleter_name}.'
+      remover: '§6{quest_amount} информация о задание(ях) (и {quest_pool} этапах) {player} удалена.'
     resetPlayerQuest:
-      player: '§6Все данные о квесте {0} были удалены пользователем {1}.'
-      remover: '§6{0} Данные о квесте(ах) {1} удалены.'
-    resetQuest: '§6Удалены данные квеста для {0} игроков.'
-    startQuest: '§6Вы принудительно начали задание {0} (UUID игрока: {1}).'
-    startQuestNoRequirements: '§cИгрок не соответствует требованиям для выполнения задания {0}... Добавьте "-overrideRequirements" в конце вашей команды, чтобы обойти проверку требований.'
-    cancelQuest: '§6Вы отменили квест {0}.'
-    cancelQuestUnavailable: '§cЗадание {0} не может быть отменено.'
+      player: '§6Все данные о квесте {quest} были удалены пользователем {deleter_name}.'
+      remover: '§6{player} Данные о квесте(ах) {quest} удалены.'
+    resetQuest: '§6Удалены данные квеста для {player_amount} игроков.'
+    startQuest: 'Вы принудительно запустили задание {quest} для {player}.'
+    startQuestNoRequirements: '§cИгрок не соответствует требованиям для выполнения задания {quest}... Добавьте "-overrideRequirements" в конце вашей команды, чтобы обойти проверку требований.'
+    cancelQuest: '§6Вы отменили квест {quest}.'
+    cancelQuestUnavailable: '§cЗадание {quest} не может быть отменено.'
     backupCreated: '§6Вы успешно создали резервную копию всех квестов и информации о игроках.'
     backupPlayersFailed: '§cНе удалось создать резервную копию всей информации о игроках.'
     backupQuestsFailed: '§cНе удалось создать резервную копию всех квестов.'
     adminModeEntered: '§aВы вошли в режим администратора.'
     adminModeLeft: '§aВы вышли из режима администратора.'
     resetPlayerPool:
-      timer: '§aВы сбросили значение таймера {0} на {1}.'
-      full: '§aВы сбросили данные {0} из {1}.'
+      timer: '§aВы сбросили значение таймера {pool} на {player}.'
+      full: '§aВы сбросили данные {pool} из {player}.'
+    startPlayerPool:
+      error: 'Не удалось запустить пул {pool} для {player}.'
+      success: 'Запустил пул {pool} для {player}. Результат: {result}'
     scoreboard:
-      lineSet: '§6Вы успешно отредактировали строку {0}.'
-      lineReset: '§6Вы успешно сбросили строку {0}.'
-      lineRemoved: '§6Вы успешно удалили строку {0}.'
-      lineInexistant: '§cСтрока {0} не существует.'
-      resetAll: '§6Вы успешно сбросили табло игрока {0}.'
-      hidden: '§6Табло игрока {0} был скрыт.'
-      shown: '§6Табло игрока {0} показано.'
+      lineSet: '§6Вы успешно отредактировали строку {line_id}.'
+      lineReset: '§6Вы успешно сбросили строку {line_id}.'
+      lineRemoved: '§6Вы успешно удалили строку {line_id}.'
+      lineInexistant: '§cСтрока {line_id} не существует.'
+      resetAll: '§6Вы успешно сбросили табло игрока {player_name}.'
+      hidden: '§6Табло игрока {player_name} был скрыт.'
+      shown: '§6Табло игрока {player_name} показано.'
       own:
         hidden: '§6Ваше табло теперь скрыто.'
         shown: '§6Снова отобразится ваше табло.'
     help:
       header: '§6§lBeautyQuests — Помощь'
-      create: '§6/{0} create: §eСоздать квест.'
-      edit: '§6/{0} edit: §eОтредактировать квест.'
-      remove: '§6/{0} remove <id>: §eУдалить квест с указанным идентификатором или нажать на NPC, если квест не будет определен.'
-      finishAll: '§6/{0} finishAll <игрок>: §eЗавершить все квесты игрока.'
-      setStage: '§6/{0} setStage <игрок> <id> [новое ответвление] [новый этап]: §eПропустить текущий этап/запустить ответвление/установить этап для ответвления.'
-      startDialog: '§6/{0} startDialog <player> <quest id>: Запускает ожидающий диалог для этапа NPC или начальный диалог для задания.'
-      resetPlayer: '§6/{0} resetPlayer <игрок>: §eУдалить всю информацию о игроке.'
-      resetPlayerQuest: '§6/{0} resetPlayerQuest <игрок> [id]: §eУдалить информацию о квестах игрока.'
-      seePlayer: '§6/{0} seePlayer <игрок>: §e Посмотреть информацию об игроке.'
-      reload: '§6/{0} reload: §eСохранить и перезагрузить все настройки и файлы. (§cустарело§e)'
-      start: '§6/{0} start <игрок> [id]: §eПринудительно начинает квест.'
-      setItem: '§6/{0} setitem <talk|launch>: §eСохранить голографический предмет.'
-      setFirework: '§6/{0} setFirework: Отредактируйте конечный фейерверк по умолчанию.'
-      adminMode: '§6/{0} adminMode: §eПереключить режим администратора. (полезно для отображения небольших log сообщений.)'
-      version: '§6/{0} version: §eПосмотреть текущую версию плагина.'
-      downloadTranslations: '§6/{0} downloadTranslations <language>: §eЗагружает файл ванильного перевода'
-      save: '§6/{0} save: §eСохранить справочник плагина.'
-      list: '§6/{0} list: §eПосмотреть список заданий. (Только для поддерживаемых версий.)'
+      create: '§6/{label} create: §eСоздать квест.'
+      edit: '§6/{label} edit: §eОтредактировать квест.'
+      remove: '§6/{label} remove <id>: §eУдалить квест с указанным идентификатором или нажать на NPC, если квест не будет определен.'
+      finishAll: '§6/{label} finishAll <игрок>: §eЗавершить все квесты игрока.'
+      setStage: '§6/{label} setStage <игрок> <id> [новое ответвление] [новый этап]: §eПропустить текущий этап/запустить ответвление/установить этап для ответвления.'
+      startDialog: '§6/{label} startDialog <player> <quest id>: Запускает ожидающий диалог для этапа NPC или начальный диалог для задания.'
+      resetPlayer: '§6/{label} resetPlayer <игрок>: §eУдалить всю информацию о игроке.'
+      resetPlayerQuest: '§6/{label} resetPlayerQuest <игрок> [id]: §eУдалить информацию о квестах игрока.'
+      seePlayer: '§6/{label} seePlayer <игрок>: §e Посмотреть информацию об игроке.'
+      reload: '§6/{label} reload: §eСохранить и перезагрузить все настройки и файлы. (§cустарело§e)'
+      start: '§6/{label} start <игрок> [id]: §eПринудительно начинает квест.'
+      setItem: '§6/{label} setitem <talk|launch>: §eСохранить голографический предмет.'
+      setFirework: '§6/{label} setFirework: Отредактируйте конечный фейерверк по умолчанию.'
+      adminMode: '§6/{label} adminMode: §eПереключить режим администратора. (полезно для отображения небольших log сообщений.)'
+      version: '§6/{label} version: §eПосмотреть текущую версию плагина.'
+      downloadTranslations: '§6/{label} downloadTranslations <language>: §eЗагружает файл ванильного перевода'
+      save: '§6/{label} save: §eСохранить справочник плагина.'
+      list: '§6/{label} list: §eПосмотреть список заданий. (Только для поддерживаемых версий.)'
   typeCancel: '§aНапишите "cancel", чтобы вернуться к прежнему тексту.'
   editor:
     blockAmount: '§aНапишите количество блоков:'
     blockName: '§aНапишите название блока:'
-    blockData: '§aЗапишите данные блоков (доступные данные: {0}):'
-    blockTag: '§aНапишите тег блока (доступные теги: §7{0}§a):'
+    blockData: '§aЗапишите данные блоков (доступные данные: {available_datas}):'
+    blockTag: '§aНапишите тег блока (доступные теги: §7{available_tags}§a):'
     typeBucketAmount: '§aНапишите количество вёдер для заполнения:'
     typeDamageAmount: 'Напишите количество урона, который игрок должен нанести:'
     goToLocation: '§aПерейдите в нужное место для этапа.'
@@ -197,14 +182,14 @@ msg:
       choseStarter: '§aВыберите NPC который начинает квест.'
       notStarter: '§cЭтот NPC не начинает квест.'
     text:
-      argNotSupported: '§cАргумент {0} не поддерживается.'
+      argNotSupported: '§cАргумент {arg} не поддерживается.'
       chooseLvlRequired: '§aНапишите необходимое количество уровней:'
       chooseJobRequired: '§aНапишите имя нужной работы:'
       choosePermissionRequired: '§aНапишите необходимое разрешение для запуска квеста:'
       choosePermissionMessage: '§aВы можете выбрать сообщение об отказе игроку, если у него нет необходимого разрешения. (Чтобы пропустить этот шаг, напишите "null".)'
       choosePlaceholderRequired:
         identifier: '§aЗапишите имя необходимого плейсхолдера без процентов символов:'
-        value: '§aЗапишите необходимое значение для заполнителя §e%§e{0}§e%§a:'
+        value: '§aЗапишите необходимое значение для заполнителя §e%§e{placeholder}§e%§a:'
       chooseSkillRequired: '§aНапишите название необходимого навыка:'
       chooseMoneyRequired: '§aНапишите количество предметов:'
       reward:
@@ -218,6 +203,9 @@ msg:
       chooseObjectiveRequired: '§aЗапишите название цели.'
       chooseObjectiveTargetScore: '§aНапишите целевой показатель для цели.'
       chooseRegionRequired: '§aВведите название нужного региона (вы должны быть в том же мире).'
+      chooseRequirementCustomReason: 'Напишите пользовательскую причину для этого требования. Если игрок не соответствует требованиям, но все равно пытается начать квест, это сообщение появится в чате.'
+      chooseRequirementCustomDescription: 'Напишите пользовательское описание для этого требования. Это появится в описании квеста в меню.'
+      chooseRewardCustomDescription: 'Напишите пользовательское описание для этой награды. Это появится в описании квеста в меню.'
     selectWantedBlock: '§aНажмите с палкой на нужном блоке для сцены.'
     itemCreator:
       itemType: '§aНапишите название блока для добычи:'
@@ -229,15 +217,14 @@ msg:
       unknownBlockType: '§cНеизвестный тип блока.'
       invalidBlockType: '§cНедопустимый тип блока.'
     dialog:
-      syntax: '§cCorrect syntax: {0}{1} <сообщение>'
       syntaxRemove: '§cCorrect syntax: удалить <id>'
-      player: '§aСообщение "§7{0}§a" добавлено для игрока.'
-      npc: '§aСообщение "§7{0}§a" добавлено для NPC.'
-      noSender: '§aСообщение "§7{0}§a" добавлено без отправителя.'
-      messageRemoved: '§aСообщение "§7{0}§a" удалено.'
-      edited: '§aСообщение "§7{0}§a" отредактировано.'
-      soundAdded: '§aЗвук "§7{0}§a" добавлен для сообщения "§7{1}§a".'
-      cleared: '§a{0} удаленное(ых) сообщение(й).'
+      player: '§aСообщение "§7{msg}§a" добавлено для игрока.'
+      npc: '§aСообщение "§7{msg}§a" добавлено для NPC.'
+      noSender: '§aСообщение "§7{msg}§a" добавлено без отправителя.'
+      messageRemoved: '§aСообщение "§7{msg}§a" удалено.'
+      edited: '§aСообщение "§7{msg}§a" отредактировано.'
+      soundAdded: '§aЗвук "§7{sound}§a" добавлен для сообщения "§7{msg}§a".'
+      cleared: '§a{amount} удаленное(ых) сообщение(й).'
       help:
         header: '§6§lBeautyQuests — помощь редактора диалогов'
         npc: '§6npc <сообщение>: §eДобавить сообщение, которое будет отправлено NPC.'
@@ -255,14 +242,14 @@ msg:
         setTime: '§6setTime <id> <время>: §eУстановить время (в тактах) до того как следующее сообщение воспроизведется автоматически.'
         npcName: '§6npcName [настраиваемое имя NPC]: §eУстановить (или сбросить) пользовательское имя NPC в диалоговом окне'
         skippable: '§6skippable [true|false]: §eУстановите, можно ли пропустить диалоговое окно или нет'
-      timeSet: '§aВремя отредактировано для сообщения {0}: Теперь {1} тактов.'
-      timeRemoved: '§aВремя было удалено для сообщения {0}.'
+      timeSet: '§aВремя отредактировано для сообщения {msg}: Теперь {time} тактов.'
+      timeRemoved: '§aВремя было удалено для сообщения {msg}.'
       npcName:
-        set: '§aПользовательское имя NPC установлено на §7{1}§a (было §7{0}§a)'
-        unset: '§aПользовательское имя NPC возвращено к стандартному (было §7{0}§a)'
+        set: '§aПользовательское имя NPC установлено на §7{new_name}§a (было §7{old_name}§a)'
+        unset: '§aПользовательское имя NPC возвращено к стандартному (было §7{old_name}§a)'
       skippable:
-        set: '§aСтатус пропуска диалогового окна теперь установлен на §7{1}§a (был §7{0}§a)'
-        unset: '§aСтатус пропуска диалогового окна сбрасывается на значение по умолчанию (был §7{0}§a)'
+        set: '§aСтатус пропуска диалогового окна теперь установлен на §7{new_state}§a (был §7{old_state}§a)'
+        unset: '§aСтатус пропуска диалогового окна сбрасывается на значение по умолчанию (был §7{old_state}§a)'
     mythicmobs:
       list: '§aСписок всех Mythic Mobs:'
       isntMythicMob: '§cЭтот Mythic Mob не существует.'
@@ -270,18 +257,18 @@ msg:
     advancedSpawnersMob: 'Напишите имя пользовательского моба-спавнера, которого нужно убить:'
     textList:
       syntax: '§cПравильный синтаксис: '
-      added: '§aТекст "§7{0}§a" добавлен.'
-      removed: '§aТекст "§7{0}§a" удален.'
+      added: '§aТекст "§7{msg}§a" добавлен.'
+      removed: '§aТекст "§7{msg}§a" удален.'
       help:
         header: '§6§lBeautyQuests — помощь редактора диалогов'
         add: '§6add <сообщение>: §eДобавить текст.'
         remove: '§6remove <id>: §eУдалить сообщение.'
         list: '§6close: §eПодтвердить все сообщения.'
         close: '§6close: §eПроверить добавленные тексты.'
-    availableElements: 'Доступные элементы: §e{0}'
-    noSuchElement: '§cНет такого элемента. Допустимые элементы: §e{0}'
-    invalidPattern: '§cНедопустимый шаблон регулярного выражения §4{0}§c.'
-    comparisonTypeDefault: '§aВыберите нужный вам тип сравнения среди {0}. Сравнение по умолчанию: §e§l{1}§r§a. Введите §onull§r§a, чтобы использовать его.'
+    availableElements: 'Доступные элементы: §e{available_elements}'
+    noSuchElement: '§cНет такого элемента. Допустимые элементы: §e{available_elements}'
+    invalidPattern: '§cНедопустимый шаблон регулярного выражения §4{input}§c.'
+    comparisonTypeDefault: '§aВыберите нужный вам тип сравнения среди {available}. Сравнение по умолчанию: §e§l{default}§r§a. Введите §onull§r§a, чтобы использовать его.'
     scoreboardObjectiveNotFound: '§cНеизвестный объект таблицы.'
     pool:
       hologramText: 'Напишите пользовательский текст голограммы для этого бассейна (или напишите "null", если вы хотите использовать текст по умолчанию).'
@@ -304,7 +291,6 @@ msg:
       removed: 'Удален фейерверк квеста!'
   writeCommandDelay: '§aНапишите нужную задержку команд в галочках.'
 advancement:
-  finished: Завершено
   notStarted: Не начато
 inv:
   validate: '§b§lПодтвердить'
@@ -320,7 +306,7 @@ inv:
     stageRemove: '§cУдалить этот этап'
     stageUp: Переместиться выше
     stageDown: Переместить ниже
-    stageType: '§7Тип этапа: §e{0}'
+    stageType: '§7Тип этапа: §e{stage_type}'
     cantFinish: '§7Вы должны создать хотя бы один этап, чтобы закончить создание квеста!'
     findNPC: '§aНайти NPC'
     bringBack: '§aВернуть предметы'
@@ -343,10 +329,8 @@ inv:
     dealDamage: '§cНаносить урон мобам'
     eatDrink: '§aЕшьте или пейте пищу, зелья'
     NPCText: '§eОтредактировать диалог'
-    dialogLines: '{0} Линия'
     NPCSelect: '§eВыберите или создайте NPC'
     hideClues: Скрыть частицы и голограммы
-    gps: Отображает компас, указанный на цель
     editMobsKill: '§eСменить мобов, для убийства'
     mobsKillFromAFar: Требует убийства снарядом
     editBlocksMine: '§eСменить блоки для разрушения'
@@ -355,7 +339,6 @@ inv:
     editMessageType: '§eРедактировать сообщение для записи'
     cancelMessage: Отменить отправку
     ignoreCase: Игнорировать регистр сообщения
-    replacePlaceholders: Заменить {PLAYER} и заполнители из PAPI
     selectItems: '§eОтредактировать требуемые предметы'
     selectItemsMessage: '§eРедактировать запрашивающее сообщение'
     selectItemsComparisons: '§eВыбор сравнения товаров (ADVANCED) (РАСШИРЕННЫЙ)'
@@ -373,7 +356,7 @@ inv:
     editBucketAmount: '§aНапишите количество вёдер для заполнения'
     editLocation: '§eРедактировать местоположение'
     editRadius: '§eРедактировать расстояние от места'
-    currentRadius: '§eТекущее расстояние: §6{0}'
+    currentRadius: '§eТекущее расстояние: §6{radius}'
     changeTicksRequired: '§eТребуются изменения галочек игры'
     changeEntityType: '§eИзменить тип объекта'
     stage:
@@ -383,7 +366,7 @@ inv:
       death:
         causes: '§aУстановить причины смерти §d(ДОПОЛНИТЕЛЬНО)'
         anyCause: Любая причина смерти
-        setCauses: '{0} причина(ы) смерти'
+        setCauses: '{causes_amount} причина(ы) смерти'
       dealDamage:
         damage: '§eНаносить урон'
         targetMobs: '§cМобы, наносящие урон'
@@ -463,9 +446,9 @@ inv:
     hologramTextLore: Текст отображается на голограмме над головой стартового NPC.
     timer: '§bПерезапустить таймер'
     timerLore: Время до того, как игрок сможет снова начать квест.
-    requirements: '{0} требование(я)'
-    rewards: '{0} награда(ы)'
-    actions: '{0} действие(s)'
+    requirements: '{amount} требование(я)'
+    rewards: '{amount} награда(ы)'
+    actions: '{amount} действие(s)'
     rewardsLore: Действия, выполняемые по окончании квеста.
     customMaterial: '§eРедактировать материал квестового предмета '
     customMaterialLore: Предмет этого квеста в меню квестов.
@@ -480,17 +463,15 @@ inv:
     visibilityLore: Выберите, на каких вкладках меню будет отображаться задание, и будет ли оно отображаться на динамических картах.
     keepDatas: Сохранять данные игроков
     keepDatasLore: |-
-      Заставить плагин сохранять данные игроков, даже если этапы были отредактированы.
-      §c§lПРЕДУПРЕЖДЕНИЕ§c- включение этой опции может нарушить данные ваших игроков.
+      Заставить плагин сохранять данные игроков, даже если этапы были отредактированы. §c§lПРЕДУПРЕЖДЕНИЕ§c- включение этой опции может нарушить данные ваших игроков.
     loreReset: '§e§lДостижения всех игроков будут сброшены'
-    optionValue: '§fЗначение: §7{0}'
+    optionValue: '§fЗначение: §7{value}'
     defaultValue: '§f(значение по умолчанию)'
     requiredParameter: '§7Необходимый параметр'
   itemsSelect:
     name: Редактировать предметы
     none: |-
-      §aПереместите предмет здесь или
-      кликните, чтобы открыть редактор предметов
+      §aПереместите предмет здесь или кликните, чтобы открыть редактор предметов
   itemSelect:
     name: Выбрать предмет
   npcCreate:
@@ -515,10 +496,8 @@ inv:
   mobs:
     name: Выберите мобов
     none: '§aНажмите, чтобы добавить моба.'
-    clickLore: |-
-      §a§lЛевый клик§a для редактирования количества.
-      §a§l§nShift§a§l + левый клик§a для редактирования имени моба.
-      §c§lПравый клик§c для удаления.
+    editAmount: Редактировать сумму
+    editMobName: Изменить название моба
     setLevel: Установите минимальный уровень
   mobSelect:
     name: Установите тип моба
@@ -531,15 +510,10 @@ inv:
     command: '§eРедактировать выполненную команду'
   requirements:
     name: Требования
+    setReason: Установите пользовательскую причину
   rewards:
     name: Награды
-    commands: 'Команды: {0}'
-    teleportation: |-
-      §aВыбрано:
-      X: {0}
-      Y: {1}
-      Z: {2}
-      World: {3}
+    commands: 'Команды: {amount}'
     random:
       rewards: Редактировать награды
       minMax: Редактировать минимальное и максимальное значение
@@ -552,7 +526,7 @@ inv:
   listAllQuests:
     name: Квесты
   listPlayerQuests:
-    name: 'Задания {0}'
+    name: 'Задания {player_name}'
   listQuests:
     notStarted: Не начатые квесты
     finished: Завершенные квесты
@@ -561,9 +535,7 @@ inv:
     loreCancelClick: '§cОтменить квест'
     loreStart: '§a§oНажмите, чтобы начать задание.'
     loreStartUnavailable: '§c§oВы не соответствуете требованиям для начала задания.'
-    timeToWaitRedo: '§3§oВы можете возобновить это задание через {0}.'
     canRedo: '§3§oВы можете перевыполнить этот квест!'
-    timesFinished: '§3задание выполнен {0} раз.'
   itemCreator:
     name: Создатель предмета
     itemType: '§bТип предмета'
@@ -589,11 +561,11 @@ inv:
     noQuests: Ранее заданий не создано.
   commandsList:
     name: Список команд
-    value: '§Команды: {0}'
-    console: '§eКонсоль: {0}'
+    value: '§Команды: {command_label}'
+    console: '§eКонсоль: {command_console}'
   block:
     name: Выбрать блок
-    material: '§eМатериал: {0}'
+    material: '§eМатериал: {block_type}'
     blockData: '§dБлокировать данные (дополнительно)'
   blocksList:
     name: Выбрать блок
@@ -613,23 +585,21 @@ inv:
     removeLore: '§7Разрешение будет снято\n§7вместо данного.'
   permissionList:
     name: Список разрешений
-    removed: '§eСнятый: §6{0}'
-    world: '§eМир: §6{0}'
+    removed: '§eСнятый: §6{permission_removed}'
+    world: '§eМир: §6{permission_world}'
   classesRequired.name: Требуются классы
   classesList.name: Список классов
   factionsRequired.name: Требуются фракции
   factionsList.name: Список фракций
   poolsManage:
     name: Объединенные задания
-    itemName: '§aОбъединенные #{0}'
-    poolNPC: '§8NPC: §7{0}'
-    poolMaxQuests: '§8Максимум заданий: §7{0}'
-    poolQuestsPerLaunch: '§8Количество заданий, выдаваемых за запуск: §7{0}'
-    poolRedo: '§8Можно переделывать выполненные задания: §7{0}'
-    poolTime: '§8Время между заданиями: §7{0}'
-    poolHologram: '§8Текст голограммы: §7{0}'
-    poolAvoidDuplicates: '§8Избегайте дублирования: §7{0}'
-    poolQuestsList: '§7{0} §8задание(й): §7{1}'
+    poolMaxQuests: '§8Максимум заданий: §7{pool_max_quests}'
+    poolQuestsPerLaunch: '§8Количество заданий, выдаваемых за запуск: §7{pool_quests_per_launch}'
+    poolRedo: '§8Можно переделывать выполненные задания: §7{pool_redo}'
+    poolTime: '§8Время между заданиями: §7{pool_time}'
+    poolHologram: '§8Текст голограммы: §7{pool_hologram}'
+    poolAvoidDuplicates: '§8Избегайте дублирования: §7{pool_duplicates}'
+    poolQuestsList: '§7{pool_quests_amount} §8задание(й): §7{pool_quests}'
     create: '§aСоздать Объединенные задания'
     edit: '§e> §6§oРедактировать Объединенные... §e<'
     choose: '§e> §6§oВыберите этот список §e<'
@@ -647,9 +617,9 @@ inv:
   itemComparisons:
     name: Сравнение предметов
     bukkit: Bukkit родное сравнение
-    bukkitLore: "Использует систему сравнения элементов Bukkit по умолчанию.\nСравнивает материал, долговечность, NBT..."
+    bukkitLore: "Использует систему сравнения товаров Bukkit по умолчанию.\nСравнивает материал, долговечность, NBT теги..."
     customBukkit: Bukkit родное сравнение - NO NBT
-    customBukkitLore: "Использует систему сравнения элементов Bukkit по умолчанию, но стирает теги NBT.\nСравнивает материал, прочность ..."
+    customBukkitLore: "Использует систему сравнения товаров Bukkit по умолчанию, но стирает теги NBT.\nСравнивает материал, долговечность..."
     material: Материал предмета
     materialLore: 'Сравнивает материал предмета (например, камень, железный меч ...)'
     itemName: Название предмета
@@ -682,49 +652,46 @@ scoreboard:
   textBetwteenBranch: '§e или'
   asyncEnd: '§бывший'
   stage:
-    region: '§eНайти регион §6{0}'
-    npc: '§eПоговорить с NPC §6{0}'
-    items: '§eВерните предметы:'
-    mobs: '§eУбить §6{0}'
-    mine: '§eДобыть {0}'
-    placeBlocks: '§eРазместить {0}'
-    chat: '§eНаписать §6{0}'
-    interact: '§eНажмите на блок в §6{0}'
-    interactMaterial: '§eКликните на §6{0}§e блок'
-    fish: '§eНаловить §6{0}'
-    craft: '§eСоздать §6{0}'
-    bucket: '§eЗаполнить §6{0}'
-    location: '§eИди к §6{0}§e, §6{1}§e, §6{2}§e в §6{3}'
-    breed: '§eПорода §6{0}'
-    tame: '§eПриручить §6{0}'
+    region: '§eНайти регион §6{region_id}'
+    npc: '§eПоговорить с NPC §6{dialog_npc_name}'
+    mobs: '§eУбить §6{mobs}'
+    mine: '§eДобыть {blocks}'
+    placeBlocks: '§eРазместить {blocks}'
+    chat: '§eНаписать §6{text}'
+    interactMaterial: '§eКликните на §6{block}§e блок'
+    fish: '§eНаловить §6{items}'
+    craft: '§eСоздать §6{items}'
+    bucket: '§eЗаполнить §6{buckets}'
+    location: '§eИди к §6{target_x}§e, §6{target_y}§e, §6{target_z}§e в §6{target_world}'
+    breed: '§eПорода §6{mobs}'
+    tame: '§eПриручить §6{mobs}'
+    die: '§cЭта'
 indication:
-  startQuest: '§7Вы хотите начать квест {0}?'
+  startQuest: '§7Вы хотите начать квест {quest_name}?'
   closeInventory: '§7Вы уверены, что хотите закрыть этот интерфейс?'
-  cancelQuest: '§7Вы уверены, что хотите отменить квест {0}?'
-  removeQuest: '§7Вы уверены, что хотите удалить квест {0}?'
+  cancelQuest: '§7Вы уверены, что хотите отменить квест {quest_name}?'
+  removeQuest: '§7Вы уверены, что хотите удалить квест {quest}?'
+  removePool: '§7 Вы уверены, что хотите удалить пул {pool}?'
 description:
   requirement:
     title: '§8§lТребования:'
-    level: 'Уровень {0}'
-    jobLevel: 'Уровень {0} для {1}'
-    combatLevel: 'Боевой уровень {0}'
-    skillLevel: 'Уровень {0} для {1}'
-    class: 'Класс {0}'
-    faction: 'Фракция {0}'
-    quest: 'Закончите квест §e{0}'
+    level: 'Уровень {short_level}'
+    jobLevel: 'Уровень {short_level} для {job_name}'
+    combatLevel: 'Боевой уровень {short_level}'
+    skillLevel: 'Уровень {short_level} для {skill_name}'
+    class: 'Класс {class_name}'
+    faction: 'Фракция {faction_name}'
+    quest: 'Закончите квест §e{quest_name}'
   reward:
     title: '§8§lНаграды:'
 misc:
   format:
     prefix: '§6<§e§lКвесты§r§6> §r'
-    npcText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    selfText: '§6[{2}/{3}] §e§l{0}:§r§e {1}'
-    offText: '§r§e{0}'
   time:
-    weeks: '{0} недель'
-    days: '{0} дней'
-    hours: '{0} часов'
-    minutes: '{0} минут'
+    weeks: '{weeks_amount} недель'
+    days: '{days_amount} дней'
+    hours: '{hours_amount} часов'
+    minutes: '{minutes_amount} минут'
     lessThanAMinute: 'меньше минуты'
   stageType:
     region: Найти регион
@@ -742,13 +709,14 @@ misc:
     playTime: Время игры
     breedAnimals: Разводите животных
     tameAnimals: Приручить животных
+    dealDamage: Наносит урон
   comparison:
-    equals: равно {0}
-    different: отличается от {0}
-    less: строго меньше {0}
-    lessOrEquals: меньше чем {0}
-    greater: строго больше {0}
-    greaterOrEquals: больше чем {0}
+    equals: равно {number}
+    different: отличается от {number}
+    less: строго меньше {number}
+    lessOrEquals: меньше чем {number}
+    greater: строго больше {number}
+    greaterOrEquals: больше чем {number}
   requirement:
     logicalOr: '§dЛогическое ИЛИ (требования)(requirements)'
     skillAPILevel: '§bтребуемый уровень SkillAPI'
@@ -773,25 +741,21 @@ misc:
     left: ЛКМ
     shift-right: Shift+щелчок правой
     shift-left: Shift+щелчок левой
-  ticks: '{0} тиков'
+  amounts:
+    comparisons: '{comparisons_amount} сравнение(ы)'
+  ticks: '{ticks} тиков'
   questItemLore: '§e§oКвестовый предмет'
   hologramText: '§8§lКвестовый NPC'
   poolHologramText: '§eДоступно новое задание!'
-  mobsProgression: '§6§l{0}: §r§e{1}/{2}'
-  entityType: '§eТип объекта: {0}'
+  entityType: '§eТип объекта: {entity_type}'
   entityTypeAny: '§eЛюбая сущность'
   enabled: Включено
   disabled: Выключено
   unknown: неизвестно
   notSet: '§cне установлено'
-  unused: '§2§lНеиспользованный'
-  used: '§a§lИспользовать'
-  remove: '§7СКМ, чтобы удалить'
   reset: Перезагрузка
   or: или
-  amount: '§eКоличество: {0}'
-  items: Предметы
-  expPoints: опыта
+  amount: '§eКоличество: {amount}'
   'yes': 'Да'
   'no': 'Нет'
   and: и

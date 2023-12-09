@@ -2,11 +2,12 @@ package fr.skytasul.quests.options;
 
 import java.util.ArrayList;
 import java.util.List;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.gui.quests.PlayerListGUI.Category;
-import fr.skytasul.quests.utils.Lang;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.structure.QuestImplementation;
 
 public class OptionRepeatable extends QuestOptionBoolean implements QuestDescriptionProvider {
 	
@@ -22,16 +23,17 @@ public class OptionRepeatable extends QuestOptionBoolean implements QuestDescrip
 	
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (context.getCategory() != Category.FINISHED) return null;
+		if (context.getCategory() != PlayerListCategory.FINISHED) return null;
 		
 		List<String> lore = new ArrayList<>(4);
-		if (context.getQuest().testTimer(context.getPlayerAccount(), false)) {
+		QuestImplementation quest = (QuestImplementation) context.getQuest();
+		if (quest.testTimer(context.getPlayerAccount(), false)) {
 			lore.add(Lang.canRedo.toString());
 		}else {
-			lore.add(Lang.timeWait.format(context.getQuest().getTimeLeft(context.getPlayerAccount())));
+			lore.add(Lang.timeWait.quickFormat("time_left", quest.getTimeLeft(context.getPlayerAccount())));
 		}
 		lore.add(null);
-		lore.add(Lang.timesFinished.format(context.getQuestDatas().getTimesFinished()));
+		lore.add(Lang.timesFinished.quickFormat("times_finished", context.getQuestDatas().getTimesFinished()));
 		return lore;
 	}
 	
