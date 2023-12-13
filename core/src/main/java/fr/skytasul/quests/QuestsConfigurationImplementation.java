@@ -566,7 +566,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			if (config.getParent() != null) {
 				result |= migrateEntry(config.getParent(), "pageItem", config, "previous page item");
 
-				if (!config.contains("next page item", true))
+				if (config.get("next page item", null) == null) // just like config.contains(..., true) but for 1.8
 					config.set("next page item", config.get("previous page item"));
 			}
 			return result;
