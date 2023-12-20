@@ -1,1 +1,0 @@
-./libs.sh mvn jars/

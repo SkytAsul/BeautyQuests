@@ -5,4 +5,4 @@
 *.jardesc
 target/
 .settings/
-/core/jars/
+/integrations/jars/

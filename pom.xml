@@ -6,7 +6,7 @@
 
 	<groupId>fr.skytasul</groupId>
 	<artifactId>beautyquests-parent</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>BeautyQuests</name>
@@ -42,7 +42,7 @@
 		<maven.compiler.release>8</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<build.number>unknown</build.number>
-		<human.version>1.0.1</human.version>
+		<human.version>1.0.2</human.version>
 	</properties>
 
 	<repositories>
