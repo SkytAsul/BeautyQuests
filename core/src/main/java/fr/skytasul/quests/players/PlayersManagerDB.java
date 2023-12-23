@@ -78,15 +78,16 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	@Override
 	public void addAccountData(SavableData<?> data) {
 		super.addAccountData(data);
-		accountDatas.put(data, new SQLDataSaver<>(data, "UPDATE " + ACCOUNTS_TABLE + " SET `" + data.getColumnName() + "` = ? WHERE `id` = ?"));
+		accountDatas.put(data,
+				new SQLDataSaver<>(data, "UPDATE " + ACCOUNTS_TABLE + " SET " + data.getColumnName() + " = ? WHERE id = ?"));
 		getAccountDatas = accountDatas.keySet()
 				.stream()
-				.map(x -> "`" + x.getColumnName() + "`")
-				.collect(Collectors.joining(", ", "SELECT ", " FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?"));
+				.map(SavableData::getColumnName)
+				.collect(Collectors.joining(", ", "SELECT ", " FROM " + ACCOUNTS_TABLE + " WHERE id = ?"));
 		resetAccountDatas = accountDatas.values()
 				.stream()
-				.map(x -> "`" + x.getWrappedData().getColumnName() + "` = " + x.getDefaultValueString())
-				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE `id` = ?"));
+				.map(x -> x.getWrappedData().getColumnName() + " = " + x.getDefaultValueString())
+				.collect(Collectors.joining(", ", "UPDATE " + ACCOUNTS_TABLE + " SET ", " WHERE id = ?"));
 	}
 
 	private void retrievePlayerDatas(PlayerAccountImplementation acc) {
@@ -269,15 +270,15 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		try {
 			createTables();
 
-			getAccountsIDs = "SELECT `id`, `identifier` FROM " + ACCOUNTS_TABLE + " WHERE `player_uuid` = ?";
-			insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (`identifier`, `player_uuid`) VALUES (?, ?)";
-			deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE `id` = ?";
+			getAccountsIDs = "SELECT id, identifier FROM " + ACCOUNTS_TABLE + " WHERE player_uuid = ?";
+			insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (identifier, player_uuid) VALUES (?, ?)";
+			deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE id = ?";
 
-			insertQuestData = "INSERT INTO " + QUESTS_DATAS_TABLE + " (`account_id`, `quest_id`) VALUES (?, ?)";
-			removeQuestData = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ? AND `quest_id` = ?";
-			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE `account_id` = ?";
+			insertQuestData = "INSERT INTO " + QUESTS_DATAS_TABLE + " (account_id, quest_id) VALUES (?, ?)";
+			removeQuestData = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE account_id = ? AND quest_id = ?";
+			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE account_id = ?";
 
-			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE `quest_id` = ?";
+			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE quest_id = ?";
 
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");
@@ -286,20 +287,21 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			updateDatas = prepareDatasStatement("additional_datas");
 			updateFlow = prepareDatasStatement("quest_flow");
 
-			insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (`account_id`, `pool_id`) VALUES (?, ?)";
-			removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
-			getPoolData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ?";
-			getPoolAccountData = "SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE `account_id` = ? AND `pool_id` = ?";
+			insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (account_id, pool_id) VALUES (?, ?)";
+			removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ? AND pool_id = ?";
+			getPoolData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ?";
+			getPoolAccountData = "SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ? AND pool_id = ?";
 
-			updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET `last_give` = ? WHERE `account_id` = ? AND `pool_id` = ?";
-			updatePoolCompletedQuests = "UPDATE " + POOLS_DATAS_TABLE + " SET `completed_quests` = ? WHERE `account_id` = ? AND `pool_id` = ?";
+			updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET last_give = ? WHERE account_id = ? AND pool_id = ?";
+			updatePoolCompletedQuests =
+					"UPDATE " + POOLS_DATAS_TABLE + " SET completed_quests = ? WHERE account_id = ? AND pool_id = ?";
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private String prepareDatasStatement(String column) throws SQLException {
-		return "UPDATE " + QUESTS_DATAS_TABLE + " SET `" + column + "` = ? WHERE `id` = ?";
+		return "UPDATE " + QUESTS_DATAS_TABLE + " SET " + column + " = ? WHERE id = ?";
 	}
 
 	@Override
@@ -310,33 +312,33 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	private void createTables() throws SQLException {
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
-					+ " `id` int NOT NULL AUTO_INCREMENT ,"
-					+ " `identifier` text NOT NULL ,"
-					+ " `player_uuid` char(36) NOT NULL ,"
+					+ " id " + db.getType().getSerialType() + " ,"
+					+ " identifier TEXT NOT NULL ,"
+					+ " player_uuid CHAR(36) NOT NULL ,"
 					+ accountDatas.values().stream().map(data -> " " + data.getColumnDefinition() + " ,").collect(Collectors.joining())
-					+ " PRIMARY KEY (`id`)"
+					+ " PRIMARY KEY (id)"
 					+ " )");
 			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
-					" `id` int NOT NULL AUTO_INCREMENT ," +
-					" `account_id` int(11) NOT NULL," +
-					" `quest_id` int(11) NOT NULL," +
-					" `finished` INT(11) DEFAULT NULL," +
-					" `timer` bigint(20) DEFAULT NULL," +
-					" `current_branch` tinyint(4) DEFAULT NULL," +
-					" `current_stage` tinyint(4) DEFAULT NULL," +
-					" `additional_datas` longtext DEFAULT NULL," +
-					" `quest_flow` VARCHAR(8000) DEFAULT NULL," +
-					" PRIMARY KEY (`id`)" +
+					" id " + db.getType().getSerialType() + " ," +
+					" account_id INT NOT NULL," +
+					" quest_id INT NOT NULL," +
+					" finished INT DEFAULT NULL," +
+					" timer BIGINT DEFAULT NULL," +
+					" current_branch SMALLINT DEFAULT NULL," +
+					" current_stage SMALLINT DEFAULT NULL," +
+					" additional_datas " + db.getType().getLongTextType() + " DEFAULT NULL," +
+					" quest_flow VARCHAR(8000) DEFAULT NULL," +
+					" PRIMARY KEY (id)" +
 					")");
 			statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
-					+ "`id` int NOT NULL AUTO_INCREMENT, "
-					+ "`account_id` int(11) NOT NULL, "
-					+ "`pool_id` int(11) NOT NULL, "
-					+ "`last_give` bigint(20) DEFAULT NULL, "
-					+ "`completed_quests` varchar(1000) DEFAULT NULL, "
-					+ "PRIMARY KEY (`id`)"
+					+ " id " + db.getType().getSerialType() + " ,"
+					+ "account_id INT NOT NULL, "
+					+ "pool_id INT NOT NULL, "
+					+ "last_give BIGINT DEFAULT NULL, "
+					+ "completed_quests VARCHAR(1000) DEFAULT NULL, "
+					+ "PRIMARY KEY (id)"
 					+ ")");
-			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT(11) DEFAULT 0");
+			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT DEFAULT 0");
 
 			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
 				if (!columns.contains("quest_flow")) { // 0.19
@@ -349,7 +351,8 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					// tests for stage_0_datas: it's in the case the server crashed/stopped during the migration process.
 					if (!columns.contains("additional_datas")) {
 						statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
-								+ " ADD COLUMN `additional_datas` longtext DEFAULT NULL AFTER `current_stage`");
+								+ " ADD COLUMN additional_datas " + db.getType().getLongTextType()
+								+ " DEFAULT NULL AFTER current_stage");
 						QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated table " + QUESTS_DATAS_TABLE + " with additional_datas column.");
 					}
 
@@ -400,8 +403,11 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			if (deletedDuplicates > 0) QuestsPlugin.getPlugin().getLoggerExpanded().info("Deleted " + deletedDuplicates + " duplicated rows in the " + QUESTS_DATAS_TABLE + " table.");
 
 			int batchCount = 0;
-			PreparedStatement migration = connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET `additional_datas` = ? WHERE `id` = ?");
-			ResultSet result = statement.executeQuery("SELECT `id`, `stage_0_datas`, `stage_1_datas`, `stage_2_datas`, `stage_3_datas`, `stage_4_datas` FROM " + QUESTS_DATAS_TABLE);
+			PreparedStatement migration =
+					connection.prepareStatement("UPDATE " + QUESTS_DATAS_TABLE + " SET additional_datas = ? WHERE id = ?");
+			ResultSet result = statement.executeQuery(
+					"SELECT id, stage_0_datas, stage_1_datas, stage_2_datas, stage_3_datas, stage_4_datas FROM "
+							+ QUESTS_DATAS_TABLE);
 			while (result.next()) {
 				Map<String, Object> datas = new HashMap<>();
 				for (int i = 0; i < 5; i++) {
@@ -420,11 +426,11 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Migrated " + migrated + " quest datas.");
 
 			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE
-					+ " DROP COLUMN `stage_0_datas`,"
-					+ " DROP COLUMN `stage_1_datas`,"
-					+ " DROP COLUMN `stage_2_datas`,"
-					+ " DROP COLUMN `stage_3_datas`,"
-					+ " DROP COLUMN `stage_4_datas`;");
+					+ " DROP COLUMN stage_0_datas,"
+					+ " DROP COLUMN stage_1_datas,"
+					+ " DROP COLUMN stage_2_datas,"
+					+ " DROP COLUMN stage_3_datas,"
+					+ " DROP COLUMN stage_4_datas;");
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Updated database by deleting old stage_[0::4]_datas columns.");
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("---- CAUTION ----\n"
 					+ "The data migration succeeded. Players can now safely connect.");
@@ -452,12 +458,14 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			manager.createTables();
 
 			PreparedStatement insertAccount =
-					connection.prepareStatement("INSERT INTO " + manager.ACCOUNTS_TABLE + " (`id`, `identifier`, `player_uuid`) VALUES (?, ?, ?)");
+					connection.prepareStatement(
+							"INSERT INTO " + manager.ACCOUNTS_TABLE + " (id, identifier, player_uuid) VALUES (?, ?, ?)");
 			PreparedStatement insertQuestData =
 					connection.prepareStatement("INSERT INTO " + manager.QUESTS_DATAS_TABLE
-							+ " (`account_id`, `quest_id`, `finished`, `timer`, `current_branch`, `current_stage`, `additional_datas`, `quest_flow`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+							+ " (account_id, quest_id, finished, timer, current_branch, current_stage, additional_datas, quest_flow) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			PreparedStatement insertPoolData =
-					connection.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE + " (`account_id`, `pool_id`, `last_give`, `completed_quests`) VALUES (?, ?, ?, ?)");
+					connection.prepareStatement("INSERT INTO " + manager.POOLS_DATAS_TABLE
+							+ " (account_id, pool_id, last_give, completed_quests) VALUES (?, ?, ?, ?)");
 
 			int amount = 0, failed = 0;
 			yaml.loadAllAccounts();
