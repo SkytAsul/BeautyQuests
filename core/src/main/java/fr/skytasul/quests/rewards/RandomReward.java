@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -24,29 +25,29 @@ import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class RandomReward extends AbstractReward {
-	
+
 	private RewardList rewards;
 	private int min, max;
-	
+
 	public RandomReward() {
 		this(null, new RewardList(), 1, 1);
 	}
-	
+
 	public RandomReward(String customDescription, RewardList rewards, int min, int max) {
 		super(customDescription);
 		this.rewards = rewards;
 		this.min = min;
 		this.max = max;
 	}
-	
+
 	public void setMinMax(int min, int max) {
 		this.min = Math.min(min, max);
 		this.max = Math.max(min, max);
-		
+
 		if (max > rewards.size())
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Random reward with max amount (" + max + ") greater than amount of rewards available (" + rewards.size() + ") in " + debugName());
 	}
-	
+
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
@@ -71,10 +72,10 @@ public class RandomReward extends AbstractReward {
 	public List<String> give(Player p) throws InterruptingBranchException {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int amount = min == max ? min : random.nextInt(min, max + 1);
-		
+
 		List<AbstractReward> left = new ArrayList<>(rewards);
 		List<String> msg = new ArrayList<>();
-		
+
 		for (int i = 0; i < amount; i++) {
 			if (left.isEmpty()) break;
 			AbstractReward reward = left.remove(random.nextInt(left.size()));
@@ -87,20 +88,20 @@ public class RandomReward extends AbstractReward {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
 			}
 		}
-		
+
 		return msg;
 	}
-	
+
 	@Override
 	public boolean isAsync() {
 		return rewards.stream().anyMatch(AbstractReward::isAsync);
 	}
-	
+
 	@Override
 	public AbstractReward clone() {
 		return new RandomReward(getCustomDescription(), new RewardList(rewards), min, max);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
 		return rewards
@@ -109,7 +110,7 @@ public class RandomReward extends AbstractReward {
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining("{JOIN}"));
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -117,6 +118,11 @@ public class RandomReward extends AbstractReward {
 		loreBuilder.addDescriptionRaw("§8 | min: §7" + min + "§8 | max: §7" + max);
 		loreBuilder.addClick(ClickType.LEFT, Lang.rewardRandomRewards.toString());
 		loreBuilder.addClick(ClickType.RIGHT, Lang.rewardRandomMinMax.toString());
+	}
+
+	@Override
+	protected @Nullable ClickType getCustomDescriptionClick() {
+		return ClickType.SHIFT_RIGHT;
 	}
 
 	@Override
@@ -137,7 +143,7 @@ public class RandomReward extends AbstractReward {
 			}, NumberParser.INTEGER_PARSER_POSITIVE).start();
 		}
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
@@ -145,12 +151,12 @@ public class RandomReward extends AbstractReward {
 		section.set("min", min);
 		section.set("max", max);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		rewards = RewardList.deserialize(section.getMapList("rewards"));
 		setMinMax(section.getInt("min"), section.getInt("max"));
 	}
-	
+
 }
