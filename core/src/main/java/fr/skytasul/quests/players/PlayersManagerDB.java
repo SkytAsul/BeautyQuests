@@ -338,7 +338,6 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 					+ "completed_quests VARCHAR(1000) DEFAULT NULL, "
 					+ "PRIMARY KEY (id)"
 					+ ")");
-			statement.execute("ALTER TABLE " + QUESTS_DATAS_TABLE + " MODIFY COLUMN finished INT DEFAULT 0");
 
 			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
 				if (!columns.contains("quest_flow")) { // 0.19
