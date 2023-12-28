@@ -151,7 +151,7 @@
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>9.4.0</version>
+			<version>9.8.0</version>
 		</dependency>
 
 		<dependency>
