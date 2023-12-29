@@ -15,21 +15,23 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class RegionRequirement extends AbstractRequirement {
-	
+
 	private String worldName;
 	private String regionName;
 	private ProtectedRegion region;
-	
+
+	private boolean mustBeHighest;
+
 	public RegionRequirement() {
 		this(null, null, null, null);
 	}
-	
+
 	public RegionRequirement(String customDescription, String customReason, String worldName, String regionName) {
 		super(customDescription, customReason);
 		this.worldName = worldName;
 		setRegionName(regionName);
 	}
-	
+
 	private void setRegionName(String regionName) {
 		this.regionName = regionName;
 		if (worldName != null) {
@@ -37,7 +39,7 @@ public class RegionRequirement extends AbstractRequirement {
 			if (region == null) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Region " + regionName + " no longer exist in world " + worldName);
 		}
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -50,15 +52,12 @@ public class RegionRequirement extends AbstractRequirement {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription(QuestOption.formatNullableValue(regionName));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Player p = event.getPlayer();
 		Lang.CHOOSE_REGION_REQUIRED.send(p);
-		new TextEditor<String>(p, () -> {
-			if (regionName == null) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, obj -> {
+		new TextEditor<String>(p, event::cancel, obj -> {
 			this.region = BQWorldGuard.getInstance().getRegion(obj, p.getWorld());
 			if (region != null) {
 				this.worldName = p.getWorld().getName();
@@ -66,18 +65,20 @@ public class RegionRequirement extends AbstractRequirement {
 				event.reopenGUI();
 			}else {
 				Lang.REGION_DOESNT_EXIST.send(p);
-				event.remove();
+				event.cancel();
 			}
 		}).useStrippedMessage().start();
 	}
-	
+
 	@Override
 	public boolean test(Player p) {
-		if (region == null) return false;
-		if (regionName.equals("__global__")) return p.getWorld().getName().equals(worldName);
-		return BQWorldGuard.getInstance().isInRegion(region, p.getLocation());
+		if (region == null)
+			return false;
+		if (!p.getWorld().getName().equals(worldName))
+			return false;
+		return BQWorldGuard.getInstance().isInRegion(region, p.getLocation(), mustBeHighest);
 	}
-	
+
 	@Override
 	protected String getInvalidReason() {
 		return "required region " + regionName + " in " + worldName + " does not exist";
@@ -92,19 +93,22 @@ public class RegionRequirement extends AbstractRequirement {
 	public AbstractRequirement clone() {
 		return new RegionRequirement(getCustomDescription(), getCustomReason(), worldName, regionName);
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("world", worldName);
 		section.set("region", regionName);
+		if (mustBeHighest)
+			section.set("mustBeHighest", true);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		worldName = section.getString("world");
 		setRegionName(section.getString("region"));
+		mustBeHighest = section.getBoolean("mustBeHighest", false);
 	}
-	
+
 }

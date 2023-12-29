@@ -63,7 +63,8 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		if (BQWorldGuard.getInstance().doHandleEntry()) return; // on WG 7.0 or higher
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
-			if (world.equals(e.getTo().getWorld()) && BQWorldGuard.getInstance().isInRegion(region, e.getTo()) == !exit) {
+			if (world.equals(e.getTo().getWorld())
+					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
 				finishStage(e.getPlayer());
 			}
 		}
@@ -77,8 +78,9 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
 			return;
 		}
-		if (e.getRegionsEntered().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
-			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) finishStage(e.getPlayer());
+		if (e.getPlayer().getWorld().equals(world) && e.getRegionsEntered().contains(region)) {
+			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
+				finishStage(e.getPlayer());
 		}
 	}
 
@@ -90,7 +92,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
 			return;
 		}
-		if (e.getRegionsExited().stream().anyMatch(eventRegion -> eventRegion.getId().equals(region.getId()))) {
+		if (e.getPlayer().getWorld().equals(world) && e.getRegionsExited().contains(region)) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
 				finishStage(e.getPlayer());
 		}

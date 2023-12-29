@@ -6,7 +6,9 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.SessionManager;
@@ -22,16 +24,16 @@ import fr.skytasul.quests.api.utils.XMaterial;
 public class BQWorldGuard {
 
 	private static BQWorldGuard instance;
-	
+
 	private WorldGuardPlugin plugin = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
 	private Method region;
-	
+
 	private Method get;
 	private Method adapt;
 	private Object container;
-	
+
 	private boolean handleEntry = false;
-	
+
 	protected BQWorldGuard() {
 		if (plugin == null) throw new MissingDependencyException("WorldGuard");
 		try {
@@ -48,7 +50,7 @@ public class BQWorldGuard {
 					handleEntry = true;
 					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Now using WorldGuard entry API.");
 					WorldGuardEntryHandler.FACTORY.registerSessions(sessionManager);
-					
+
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -61,7 +63,7 @@ public class BQWorldGuard {
 			}
 		}
 	}
-	
+
 	private void disable() {
 		if (handleEntry) {
 			handleEntry = false;
@@ -69,11 +71,11 @@ public class BQWorldGuard {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unregistered from WorldGuard entry API.");
 		}
 	}
-	
+
 	public boolean doHandleEntry() {
 		return handleEntry;
 	}
-	
+
 	public RegionManager getRegionManager(World world) {
 		try {
 			if (region != null) return (RegionManager) region.invoke(plugin, world);
@@ -87,7 +89,7 @@ public class BQWorldGuard {
 	public String getRegionID(Object region) {
 		return ((ProtectedRegion) region).getId();
 	}
-	
+
 	public World getWorld(String id) {
 		for (World w : Bukkit.getWorlds()){
 			try{
@@ -99,28 +101,33 @@ public class BQWorldGuard {
 		return null;
 	}
 
-	public boolean isInRegion(ProtectedRegion region, Location to) {
-		return region.contains(to.getBlockX(), to.getBlockY(), to.getBlockZ());
+	public boolean isInRegion(ProtectedRegion region, Location to, boolean mustBeHighest) {
+		ApplicableRegionSet regions = getRegionManager(to.getWorld())
+				.getApplicableRegions(BlockVector3.at(to.getBlockX(), to.getBlockY(), to.getBlockZ()));
+		if (mustBeHighest) {
+			return regions.getRegions().iterator().next().equals(region);
+		} else
+			return regions.getRegions().contains(region);
 	}
-	
+
 	public boolean regionExists(String name, World w) {
 		return getRegionManager(w).getRegion(name) != null;
 	}
-	
+
 	public ProtectedRegion getRegion(String name, World w) {
 		if (w == null) return null;
 		return getRegionManager(w).getRegion(name);
 	}
-	
+
 	public static void initialize() {
 		Validate.isTrue(instance == null, "BQ WorldGuard integration already initialized.");
 		instance = new BQWorldGuard();
-		
+
 		QuestsAPI.getAPI().getStages().register(new StageType<>("REGION", StageArea.class, Lang.Find.name(), StageArea::deserialize,
 				ItemUtils.item(XMaterial.WOODEN_AXE, Lang.stageGoTo.toString()), StageArea.Creator::new));
 		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("regionRequired", RegionRequirement.class, ItemUtils.item(XMaterial.WOODEN_AXE, Lang.RRegion.toString()), RegionRequirement::new));
 	}
-	
+
 	public static void unload() {
 		instance.disable();
 	}
@@ -128,5 +135,5 @@ public class BQWorldGuard {
 	public static BQWorldGuard getInstance() {
 		return instance;
 	}
-	
+
 }
