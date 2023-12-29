@@ -6,7 +6,7 @@
 
 	<groupId>fr.skytasul</groupId>
 	<artifactId>beautyquests-parent</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>pom</packaging>
 
 	<name>BeautyQuests</name>
