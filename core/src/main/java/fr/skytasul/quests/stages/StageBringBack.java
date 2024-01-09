@@ -65,9 +65,12 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public void sendNeedMessage(Player p) {
-		new Message(MessageUtils.format(getMessage(), getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext.of(true,
-				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC).sendMessage(p, getNPC(),
-						getNpcName(), 1, 1);
+		String text = getMessage();
+		if ("none".equals(text))
+			return;
+		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
+				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
+		msg.sendMessage(p, getNPC(), getNpcName(), 1, 1);
 	}
 
 	public void removeItems(Player p){
