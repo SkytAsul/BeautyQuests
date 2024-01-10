@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -71,12 +73,23 @@ public interface Locale {
 
 	public static void loadStrings(@NotNull Locale @NotNull [] locales, @NotNull YamlConfiguration defaultConfig,
 			@NotNull YamlConfiguration config) {
+		List<String> missing = new ArrayList<>();
 		for (Locale l : locales) {
 			String value = config.getString(l.getPath(), null);
-			if (value == null) value = defaultConfig.getString(l.getPath(), null);
+			if (value == null) {
+				value = defaultConfig.getString(l.getPath(), null);
+				missing.add(l.getPath());
+			}
 			if (value == null)
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unavailable string in config for key " + l.getPath());
 			l.setValue(ChatColorUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', value == null ? "§cunknown string" : value)));
+		}
+
+		if (!missing.isEmpty()) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("The file is not fully translated! " + missing.size() + " missing translations.");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.debug("Missing translations: " + String.join(", ", missing));
 		}
 	}
 
