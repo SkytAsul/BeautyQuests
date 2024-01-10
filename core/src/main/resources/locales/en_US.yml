@@ -127,7 +127,7 @@ msg:
     leaveAll: '§aYou have forced the end of {success} quest(s). Errors: {errors}'
     resetPlayer:
       player: §6All informations of your {quest_amount} quest(s) has/have been deleted by {deleter_name}.
-      remover: §6{quest_amount} quest information(s) (and {quest_pool} pools) of {player} has/have been deleted.
+      remover: §6{quest_amount} quest information(s) (and {quest_pool} pools) of {player_name} has/have been deleted.
     resetPlayerQuest:
       player: §6All informations about the quest {quest} have been deleted by {deleter_name}.
       remover: §6{player} informations of quest {quest} has/have been deleted.
