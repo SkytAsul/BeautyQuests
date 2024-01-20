@@ -34,26 +34,27 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 		return false;
 	}).collect(Collectors.toList());
 
-	private final Consumer<ParticleEffect> end;
+	private final @NotNull Consumer<ParticleEffect> end;
 
-	private Particle particle;
-	private ParticleShape shape;
-	private Color color;
+	private @NotNull Particle particle;
+	private @NotNull ParticleShape shape;
+	private @NotNull Color color;
 
-	public ParticleEffectGUI(Consumer<ParticleEffect> end) {
+	public ParticleEffectGUI(@NotNull Consumer<ParticleEffect> end) {
 		this(end, Particle.FLAME, ParticleShape.POINT, Color.AQUA);
 	}
 
-	public ParticleEffectGUI(Consumer<ParticleEffect> end, ParticleEffect effect) {
+	public ParticleEffectGUI(@NotNull Consumer<ParticleEffect> end, @NotNull ParticleEffect effect) {
 		this(end, effect.getParticle(), effect.getShape(), effect.getColor());
 	}
 
-	public ParticleEffectGUI(Consumer<ParticleEffect> end, Particle particle, ParticleShape shape, Color color) {
+	public ParticleEffectGUI(@NotNull Consumer<ParticleEffect> end, @NotNull Particle particle, @NotNull ParticleShape shape,
+			@Nullable Color color) {
 		super(Lang.INVENTORY_PARTICLE_EFFECT.toString(), new HashMap<>(), new DelayCloseBehavior(() -> end.accept(null)), 1);
 		this.end = end;
 		this.particle = particle;
 		this.shape = shape;
-		this.color = color;
+		this.color = color == null ? Color.AQUA : color;
 
 		initButtons();
 	}

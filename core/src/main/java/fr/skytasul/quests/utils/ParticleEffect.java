@@ -9,6 +9,8 @@ import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -17,14 +19,14 @@ public class ParticleEffect {
 
 	private static Random random = new Random();
 
-	private final ParticleType type;
-	private final ParticleShape shape;
-	private final Color color;
+	private final @NotNull ParticleType type;
+	private final @NotNull ParticleShape shape;
+	private final @Nullable Color color;
 
 	private final double[] colors;
 	private final Object dustColor;
 
-	public ParticleEffect(Particle bukkitType, ParticleShape shape, Color color) {
+	public ParticleEffect(@NotNull Particle bukkitType, @NotNull ParticleShape shape, @Nullable Color color) {
 		Validate.notNull(bukkitType);
 		this.type = new ParticleType(bukkitType);
 		this.shape = shape;
@@ -46,15 +48,15 @@ public class ParticleEffect {
 		}
 	}
 
-	public Particle getParticle() {
+	public @NotNull Particle getParticle() {
 		return type.particle;
 	}
 
-	public ParticleShape getShape() {
+	public @NotNull ParticleShape getShape() {
 		return shape;
 	}
 
-	public Color getColor() {
+	public @Nullable Color getColor() {
 		return color;
 	}
 
