@@ -3,7 +3,6 @@ package fr.skytasul.quests.stages;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,10 +32,9 @@ public class StagePlaceBlocks extends AbstractCountableBlockStage implements Lis
 
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e) {
-		if (e.isCancelled()) return;
-		Player p = e.getPlayer();
-		if (hasStarted(p))
-			event(p, e.getBlock(), 1);
+		if (e.isCancelled())
+			return;
+		event(e.getPlayer(), e.getBlock(), 1);
 	}
 
 	public static StagePlaceBlocks deserialize(ConfigurationSection section, StageController controller) {
