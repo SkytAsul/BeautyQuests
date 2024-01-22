@@ -8,14 +8,13 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>1.0.2</version>
+		<version>${revision}</version>
 	</parent>
 
 	<repositories>
 		<repository>
 			<id>placeholderapi</id>
-			<url>
-				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 		<repository>
 			<id>dynmap</id>
@@ -78,9 +77,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>fr.skytasul</groupId>
+			<groupId>fr.skytasul</groupId>				
 			<artifactId>beautyquests-api</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 			<scope>provided</scope>
 		</dependency>
 

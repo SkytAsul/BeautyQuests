@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>1.0.2</version>
+		<version>${revision}</version>
 	</parent>
 
 	<build>
@@ -30,6 +30,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.2.1</version>
 				<configuration>
+        			<createDependencyReducedPom>false</createDependencyReducedPom>
 					<relocations>
 						<relocation>
 							<pattern>org.bstats</pattern>
@@ -97,7 +98,7 @@
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-api</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 			<scope>provided</scope>
 		</dependency>
 
