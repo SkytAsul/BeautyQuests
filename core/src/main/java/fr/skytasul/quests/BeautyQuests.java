@@ -10,14 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bstats.bukkit.Metrics;
-import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
@@ -27,6 +25,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -328,13 +327,17 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (size > 5) return "5 - 10";
 			return "0 - 5";
 		}));
-		metrics.addCustomChart(new AdvancedPie("hooks", () -> { // replace with bar chart when bStats add them back
+		metrics.addCustomChart(new DrilldownPie("hooks_v2", () -> {
 			return integrations.getDependencies()
-				.stream()
-				.filter(dep -> dep.isEnabled())
-				.map(dep -> dep.getFoundPlugin().getName())
-				.distinct()
-				.collect(Collectors.toMap(Function.identity(), __ -> 1));
+					.stream()
+					.filter(dep -> dep.isEnabled())
+					.map(dep -> dep.getFoundPlugin())
+					.distinct()
+					.collect(Collectors.toMap(Plugin::getName, plugin -> {
+						Map<String, Integer> entry = new HashMap<>();
+						entry.put(plugin.getDescription().getVersion(), 1);
+						return entry;
+					}));
 		}));
 		logger.debug("Started bStats metrics");
 	}
