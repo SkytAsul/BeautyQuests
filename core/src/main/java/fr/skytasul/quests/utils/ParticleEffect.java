@@ -112,7 +112,8 @@ public class ParticleEffect {
 		}
 
 		for (Player p : players) {
-			p.spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
+			if (p.getWorld() == lc.getWorld())
+				p.spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
 		}
 	}
 
