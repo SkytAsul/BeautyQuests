@@ -5,8 +5,8 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 
 public interface HasProgress {
 
-	int getPlayerAmount(@NotNull PlayerAccount account);
+	long getPlayerAmount(@NotNull PlayerAccount account);
 
-	int getTotalAmount();
+	long getTotalAmount();
 
 }

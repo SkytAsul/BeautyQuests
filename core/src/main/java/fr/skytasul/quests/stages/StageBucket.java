@@ -56,7 +56,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public long getObjectAmount() {
 		return amount;
 	}
 
@@ -70,7 +70,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
-				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
+				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
@@ -81,7 +81,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	}
 
 	@Override
-	public int getPlayerAmount(PlayerAccount acc) {
+	public long getPlayerAmount(PlayerAccount acc) {
 		return getData(acc, "amount");
 	}
 

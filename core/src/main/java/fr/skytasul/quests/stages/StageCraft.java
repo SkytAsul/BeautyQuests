@@ -55,7 +55,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
 		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasStarted(p) && canUpdate(p, true)) {
-			int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
+			long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
 			if (amount <= 0) {
 				finishStage(p);
 			}else {
@@ -114,7 +114,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
+				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
 				if (amount <= 0) {
 					finishStage(p);
 				}else {
@@ -131,9 +131,9 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	}
 
 	@Override
-	public int getPlayerAmount(PlayerAccount acc) {
-		Integer amount = getData(acc, "amount");
-		return amount == null ? 0 : amount.intValue();
+	public long getPlayerAmount(PlayerAccount acc) {
+		Long amount = getData(acc, "amount");
+		return amount == null ? 0 : amount.longValue();
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public long getObjectAmount() {
 		return result.getAmount();
 	}
 

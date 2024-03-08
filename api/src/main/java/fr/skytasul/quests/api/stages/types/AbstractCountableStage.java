@@ -103,20 +103,20 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	}
 
 	@Override
-	public int getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
+	public long getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
 		// we do not use default implementation in HasMultipleObjects to avoid conversion from UUID to
 		// CountableObject
 		return getPlayerRemainings(account, false).get(object.getUUID());
 	}
 
 	@Override
-	public int getPlayerAmount(@NotNull PlayerAccount account) {
+	public long getPlayerAmount(@NotNull PlayerAccount account) {
 		// same as in getPlayerAmount
 		return getPlayerRemainings(account, false).values().stream().mapToInt(Integer::intValue).sum();
 	}
 
 	@Override
-	public int getTotalAmount() {
+	public long getTotalAmount() {
 		return objects.stream().mapToInt(CountableObject::getAmount).sum();
 	}
 

@@ -88,13 +88,13 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 	}
 
 	@Override
-	public int getPlayerAmount(@NotNull PlayerAccount account) {
-		return (int) Math.ceil(getPlayerAmountDouble(account));
+	public long getPlayerAmount(@NotNull PlayerAccount account) {
+		return (long) Math.ceil(getPlayerAmountDouble(account));
 	}
 
 	@Override
-	public int getTotalAmount() {
-		return (int) damage;
+	public long getTotalAmount() {
+		return (long) damage;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 		super.createdPlaceholdersRegistry(placeholders);
 		ProgressPlaceholders.registerProgress(placeholders, "damage", this);
 		placeholders.registerIndexedContextual("damage_remaining", StageDescriptionPlaceholdersContext.class,
-				context -> Integer.toString(getPlayerAmount(context.getPlayerAccount())));
+				context -> Long.toString(getPlayerAmount(context.getPlayerAccount())));
 		placeholders.registerIndexed("target_mobs", getTargetMobsString(targetMobs));
 	}
 

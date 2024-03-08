@@ -97,13 +97,13 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	@Override
-	public int getPlayerAmount(@NotNull PlayerAccount account) {
-		return (int) (getRemaining(account) * 50L);
+	public long getPlayerAmount(@NotNull PlayerAccount account) {
+		return getRemaining(account) * 50L;
 	}
 
 	@Override
-	public int getTotalAmount() {
-		return (int) (playTicks * 50L);
+	public long getTotalAmount() {
+		return playTicks * 50L;
 	}
 
 	@Override

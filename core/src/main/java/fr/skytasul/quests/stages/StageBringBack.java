@@ -107,7 +107,7 @@ public class StageBringBack extends StageNPC{
 								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 									@Override
-									public int getPlayerAmount(@NotNull PlayerAccount account) {
+									public long getPlayerAmount(@NotNull PlayerAccount account) {
 										return item.getAmount();
 									}
 
@@ -117,7 +117,7 @@ public class StageBringBack extends StageNPC{
 									}
 
 									@Override
-									public int getObjectAmount() {
+									public long getObjectAmount() {
 										return item.getAmount();
 									}
 								}, context)).toArray(String[]::new);
