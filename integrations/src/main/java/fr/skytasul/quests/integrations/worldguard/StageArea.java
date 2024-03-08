@@ -221,7 +221,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		@Override
 		public void edit(StageArea stage) {
 			super.edit(stage);
-			setRegion(stage.getRegion().getId(), BQWorldGuard.getInstance().getWorld(stage.getRegion().getId()).getName());
+			setRegion(stage.getRegion().getId(), stage.world.getName());
 			setExit(stage.exit);
 		}
 

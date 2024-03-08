@@ -90,17 +90,6 @@ public class BQWorldGuard {
 		return ((ProtectedRegion) region).getId();
 	}
 
-	public World getWorld(String id) {
-		for (World w : Bukkit.getWorlds()){
-			try{
-				if (getRegionManager(w).hasRegion(id)) return w;
-			}catch (Exception ex){
-				continue;
-			}
-		}
-		return null;
-	}
-
 	public boolean isInRegion(ProtectedRegion region, Location to, boolean mustBeHighest) {
 		ApplicableRegionSet regions = getRegionManager(to.getWorld())
 				.getApplicableRegions(BlockVector3.at(to.getBlockX(), to.getBlockY(), to.getBlockZ()));
