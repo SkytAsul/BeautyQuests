@@ -659,12 +659,16 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
 					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
 							.forEach(run -> {
-                                try {
-									run.cancel(true);
-                                    run.get();
-                                } catch (InterruptedException | ExecutionException e) {
-									QuestsPlugin.getPlugin().getLogger().severe(e.getMessage());
-                                }
+								run.cancel(true);
+								boolean success = false;
+								while (!success) {
+									try {
+										run.get();
+										success = true;
+									} catch (InterruptedException | ExecutionException e) {
+										QuestsPlugin.getPlugin().getLogger().severe(e.getMessage());
+									}
+								}
                             });
 					if (!cachedDatas.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
 					if (stop) disabled = true;
