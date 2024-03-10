@@ -10,12 +10,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.Scheduler;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.DrilldownPie;
@@ -28,7 +34,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.jeff_media.updatechecker.UpdateCheckSource;
@@ -65,7 +70,8 @@ import fr.skytasul.quests.utils.nms.NMS;
 public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private static BeautyQuests instance;
-	private BukkitRunnable saveTask;
+	private SchedulerTaskInter saveTask;
+	private static Scheduler scheduler;
 	private boolean isPaper;
 
 	/* --------- Storage --------- */
@@ -110,7 +116,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	@Override
 	public void onLoad(){
 		instance = this;
-
+		scheduler = new Energie(this).getScheduler(Energie.SchedulerSoft.MINECRAFT);
 		loggerHandler = null;
 		try{
 			if (!getDataFolder().exists()) getDataFolder().mkdir();
@@ -165,33 +171,30 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 			// Launch loading task
 			String pluginVersion = getDescription().getVersion();
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					try {
-						long lastMillis = System.currentTimeMillis();
-						loadAllDatas();
-						getLogger().info(quests.getQuestsAmount() + " quests loaded ("
-								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
+			getScheduler().runDelayed(SchedulerType.SYNC, schedulerTaskInter -> {
+				try {
+					long lastMillis = System.currentTimeMillis();
+					loadAllDatas();
+					getLogger().info(quests.getQuestsAmount() + " quests loaded ("
+							+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
-						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
-						if (MinecraftVersion.MAJOR >= 16)
-							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
+					getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
+					if (MinecraftVersion.MAJOR >= 16)
+						getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
 
-						launchSaveCycle();
+					launchSaveCycle();
 
-						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
-							logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
-							int updated = quests.updateAll();
-							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
-							pools.updateAll();
-							saveAllConfig(false);
-						}
-					}catch (Throwable e) {
-						logger.severe("An error occurred while loading plugin datas.", e);
+					if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
+						logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
+						int updated = quests.updateAll();
+						if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
+						pools.updateAll();
+						saveAllConfig(false);
 					}
+				}catch (Throwable e) {
+					logger.severe("An error occurred while loading plugin datas.", e);
 				}
-			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
+			}, npcManager.getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();
@@ -243,7 +246,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("An error occurred while disabling plugin integrations.", e);
 			}
 
-			getServer().getScheduler().cancelTasks(this);
+			getScheduler().cancelAllTask();
 		}finally {
 			if (loggerHandler != null) loggerHandler.close();
 		}
@@ -277,19 +280,17 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void launchSaveCycle(){
 		if (config.saveCycle > 0 && saveTask == null) {
 			int cycle = config.saveCycle * 60 * 20;
-			saveTask = new BukkitRunnable() {
-				@Override
-				public void run() {
-					try {
-						saveAllConfig(false);
-						if (config.saveCycleMessage)
-							logger.info("Datas saved ~ periodic save");
-					}catch (Exception e) {
-						logger.severe("Error when saving!", e);
-					}
+			scheduler.runAtFixedRate(SchedulerType.ASYNC, asyncTask -> {
+				saveTask = asyncTask;
+				try {
+					saveAllConfig(false);
+					if (config.saveCycleMessage)
+						logger.info("Datas saved ~ periodic save");
+				}catch (Exception e) {
+					logger.severe("Error when saving!", e);
 				}
-			};
-			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.runTaskTimerAsynchronously(this, cycle, cycle).getTaskId());
+			}, cycle, cycle);
+			logger.info("Periodic saves task started (" + cycle + " ticks). Task ID: " + saveTask.getTaskId());
 		}
 	}
 
@@ -340,6 +341,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private void launchUpdateChecker(String pluginVersion) {
+		if (Energie.isFolia()) {
+			logger.debug("Spigot updater disabled");
+			return;
+		}
 		logger.debug("Starting Spigot updater");
 		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
@@ -536,7 +541,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}
 
-		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+		getScheduler().runDelayed(SchedulerType.SYNC, syncTask -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				players.loadPlayer(p);
 			}
@@ -706,20 +711,18 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		sender.sendMessage("§7...Waiting for loading quests...");
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				try {
-					data = YamlConfiguration.loadConfiguration(dataFile);
-					loadAllDatas();
-					sender.sendMessage("§a " + quests.getQuests().size() + " quests loaded");
-					sender.sendMessage("§a§lPlugin entierely reloaded from files !");
-				} catch (Throwable e) {
-					sender.sendMessage("§cError when loading the data file. §lOperation failed!");
-					e.printStackTrace();
-				}
+
+		getScheduler().runDelayed(SchedulerType.SYNC, syncTask -> {
+			try {
+				data = YamlConfiguration.loadConfiguration(dataFile);
+				loadAllDatas();
+				sender.sendMessage("§a " + quests.getQuests().size() + " quests loaded");
+				sender.sendMessage("§a§lPlugin entierely reloaded from files !");
+			} catch (Throwable e) {
+				sender.sendMessage("§cError when loading the data file. §lOperation failed!");
+				e.printStackTrace();
 			}
-		}.runTaskLater(BeautyQuests.getInstance(), 20L);
+		}, 20L);
 	}
 
 	@Override
@@ -809,6 +812,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
+
+	@Override
 	public @NotNull IntegrationManager getIntegrationManager() {
 		return integrations;
 	}
@@ -831,6 +839,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public static @NotNull BeautyQuests getInstance() {
 		return instance;
 	}
+
 
 	public static class LoadingException extends Exception {
 		private static final long serialVersionUID = -2811265488885752109L;

@@ -2,10 +2,13 @@ package fr.skytasul.quests.api.npcs.dialogs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -34,30 +37,28 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getConfig().getDialogsConfig().getDefaultTime() : wait;
 	}
 
-	public BukkitTask sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
-		BukkitTask task = null;
+	public SchedulerTaskInter sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
+		AtomicReference<SchedulerTaskInter> task = new AtomicReference<>(null);
 
 		String sent = formatMessage(p, npc, npcCustomName, id, size);
 		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
-				task = new BukkitRunnable() {
-					int time = 40;
-
-					@Override
-					public void run() {
-						if (!p.isOnline()) {
-							cancel();
-							return;
-						}
-
-						time += 40;
-						if (time > getWaitTime())
-							cancel();
-						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+				AtomicInteger time = new AtomicInteger(40);
+				QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
+					if (schedulerTaskInter == null) return;
+					task.set(schedulerTaskInter);
+					if (!p.isOnline()) {
+						schedulerTaskInter.cancel();
+						return;
 					}
-				}.runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), 40, 40);
+
+					time.addAndGet(40);
+					if (time.get() > getWaitTime())
+						schedulerTaskInter.cancel();
+					p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+				}, 40, 40);
 			}
 		} else
 			p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
@@ -68,7 +69,7 @@ public class Message implements Cloneable {
 				p.playSound(p.getLocation(), sentSound, 1, 1);
 		}
 
-		return task;
+		return task.get();
 	}
 
 	private String getSound() {

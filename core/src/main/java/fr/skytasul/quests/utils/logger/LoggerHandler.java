@@ -1,5 +1,9 @@
 package fr.skytasul.quests.utils.logger;
 
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
+import org.bukkit.plugin.Plugin;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,15 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
 
 public class LoggerHandler extends Handler implements ILoggerHandler {
 
@@ -30,8 +32,9 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");
 	private Date date = new Date(System.currentTimeMillis());
-	
-	private BukkitRunnable run;
+
+	private Runnable run;
+	private ScheduledFuture<?> scheduledFuture;
 	private boolean something = false;
 	
 	private List<String> errors = new ArrayList<>();
@@ -102,9 +105,9 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 		write("Logger was open during " + Utils.millisToHumanString(endDate.getTime() - launchDate.getTime()));
 		write("---- BEAUTYQUESTS LOGGER - CLOSED " + endDate.toString() + " ----");
 		if (!isEnabled()) return;
-		if (run != null) {
-			run.cancel();
-			run = null;
+		if (scheduledFuture != null) {
+			scheduledFuture.cancel(true);
+			scheduledFuture = null;
 		}
 		stream.close();
 		stream = null;
@@ -113,15 +116,12 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	public void launchFlushTimer() {
 		if (run != null) return;
 		if (!isEnabled()) return;
-		run = new BukkitRunnable() {
-			@Override
-			public void run() {
-				if (!something) return;
-				stream.flush();
-				something = false;
-			}
+		run = () -> {
+			if (!something) return;
+			stream.flush();
+			something = false;
 		};
-		run.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 50L);
+		scheduledFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(run, 2L * 50, 50L * 50, TimeUnit.MILLISECONDS);
 	}
 
 	@Override

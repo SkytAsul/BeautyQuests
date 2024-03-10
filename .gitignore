@@ -1,6 +1,7 @@
 /bin/
 /doc/
 .classpath
+.idea
 .project
 *.jardesc
 target/

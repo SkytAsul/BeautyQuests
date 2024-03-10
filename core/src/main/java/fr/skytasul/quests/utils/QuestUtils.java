@@ -6,6 +6,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -78,10 +80,7 @@ public final class QuestUtils {
 	}
 
 	public static void runOrSync(Runnable run) {
-		if (Bukkit.isPrimaryThread()) {
-			run.run();
-		} else
-			Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+		BeautyQuests.getInstance().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
 	}
 
 	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
@@ -89,11 +88,11 @@ public final class QuestUtils {
 	}
 
 	public static void runSync(Runnable run) {
-		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+		BeautyQuests.getInstance().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
 	}
 
 	public static void runAsync(Runnable run) {
-		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
+		BeautyQuests.getInstance().getScheduler().runTask(SchedulerType.ASYNC, schedulerTaskInter -> run.run());
 	}
 
 	public static void tunnelEventCancelling(@NotNull Cancellable eventFrom, @NotNull Event eventTo) {

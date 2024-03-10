@@ -1,19 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -43,6 +31,20 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @LocatableType(types = LocatedType.ENTITY)
 public class StageNPC extends AbstractStage implements Locatable.PreciseLocatable, Dialogable, Listener {
@@ -53,7 +55,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	protected DialogRunnerImplementation dialogRunner = null;
 	protected boolean hide = false;
 
-	private BukkitTask task;
+	private SchedulerTaskInter task;
 
 	private List<Player> cached = new ArrayList<>();
 	protected AbstractHolograms<?>.BQHologram hologram;
@@ -65,12 +67,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private void launchRefreshTask() {
 		if (npc == null)
 			return;
-		task = new BukkitRunnable() {
-			List<Player> tmp = new ArrayList<>();
-
-			@Override
-			public void run() {
-				Entity en = npc.getNpc().getEntity();
+		CopyOnWriteArrayList<Player> tmp = new CopyOnWriteArrayList<>();
+		BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
+			task = schedulerTaskInter;
+			Entity en = npc.getNpc().getEntity();
 				if (en == null)
 					return;
 				if (!en.getType().isAlive())
@@ -100,8 +100,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 						return;
 					QuestsConfigurationImplementation.getConfiguration().getParticleTalk().send(en, tmp);
 				}
-			}
-		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 6L);
+		}, 20L, 6L);
 	}
 
 	private void createHoloLaunch() {

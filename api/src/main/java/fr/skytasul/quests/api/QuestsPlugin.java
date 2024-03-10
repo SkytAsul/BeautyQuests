@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api;
 
+import fr.euphyllia.energie.model.Scheduler;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.commands.CommandsManager;
@@ -32,6 +33,8 @@ public interface QuestsPlugin extends Plugin {
 	public @NotNull EditorManager getEditorManager();
 
 	public @NotNull BqNpcManager getNpcManager();
+
+	public Scheduler getScheduler();
 
 	public @NotNull IntegrationManager getIntegrationManager();
 
