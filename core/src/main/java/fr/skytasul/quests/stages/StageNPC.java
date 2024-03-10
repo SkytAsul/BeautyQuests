@@ -67,7 +67,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private void launchRefreshTask() {
 		if (npc == null)
 			return;
-		CopyOnWriteArrayList<Player> tmp = new CopyOnWriteArrayList<>();
+		List<Player> tmp = new ArrayList<>();
 		BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
 			task = schedulerTaskInter;
 			Entity en = npc.getNpc().getEntity();
