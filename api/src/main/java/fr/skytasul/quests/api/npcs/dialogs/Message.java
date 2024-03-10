@@ -2,6 +2,8 @@ package fr.skytasul.quests.api.npcs.dialogs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,7 +40,7 @@ public class Message implements Cloneable {
 	}
 
 	public SchedulerTaskInter sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
-		AtomicReference<SchedulerTaskInter> task = new AtomicReference<>(null);
+		CompletableFuture<SchedulerTaskInter> future = new CompletableFuture<>();
 
 		String sent = formatMessage(p, npc, npcCustomName, id, size);
 		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
@@ -47,8 +49,7 @@ public class Message implements Cloneable {
 			if (getWaitTime() > 60) {
 				AtomicInteger time = new AtomicInteger(40);
 				QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
-					if (schedulerTaskInter == null) return;
-					task.set(schedulerTaskInter);
+					future.complete(schedulerTaskInter);
 					if (!p.isOnline()) {
 						schedulerTaskInter.cancel();
 						return;
@@ -69,8 +70,12 @@ public class Message implements Cloneable {
 				p.playSound(p.getLocation(), sentSound, 1, 1);
 		}
 
-		return task.get();
-	}
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	private String getSound() {
 		String sentSound = sound;
