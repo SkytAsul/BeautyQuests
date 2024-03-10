@@ -71,7 +71,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private static BeautyQuests instance;
 	private SchedulerTaskInter saveTask;
-	private static Scheduler scheduler;
+	private Scheduler scheduler;
 	private boolean isPaper;
 
 	/* --------- Storage --------- */
