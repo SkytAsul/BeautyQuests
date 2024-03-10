@@ -7,3 +7,4 @@
 target/
 .settings/
 /integrations/jars/
+*.iml
