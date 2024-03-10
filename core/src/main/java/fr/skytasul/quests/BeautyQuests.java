@@ -812,7 +812,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public Scheduler getScheduler() {
+	public @NotNull Scheduler getScheduler() {
 		return scheduler;
 	}
 

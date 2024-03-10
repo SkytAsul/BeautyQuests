@@ -34,7 +34,7 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull BqNpcManager getNpcManager();
 
-	public Scheduler getScheduler();
+	public @NotNull Scheduler getScheduler();
 
 	public @NotNull IntegrationManager getIntegrationManager();
 
