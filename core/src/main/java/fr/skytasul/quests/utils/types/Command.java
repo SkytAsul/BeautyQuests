@@ -2,6 +2,8 @@ package fr.skytasul.quests.utils.types;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,17 +33,19 @@ public class Command implements HasPlaceholders {
 		this.delay = delay;
 	}
 
-	public void execute(Player o){
+	public void execute(Player player){
 		Runnable run = () -> {
-			String formattedCommand = MessageUtils.finalFormat(label, null, PlaceholdersContext.of(o, parse, null));
+			String formattedCommand = MessageUtils.finalFormat(label, null, PlaceholdersContext.of(player, parse, null));
 
-			CommandSender sender = console ? Bukkit.getConsoleSender() : o;
+			CommandSender sender = console ? Bukkit.getConsoleSender() : player;
 			Bukkit.dispatchCommand(sender, formattedCommand);
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(sender.getName() + " performed command " + formattedCommand);
 		};
-		if (delay == 0 && Bukkit.isPrimaryThread()) {
-			run.run();
-		}else Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), run, delay);
+		if (delay == 0) {
+			BeautyQuests.getInstance().getScheduler().runTask(SchedulerType.SYNC, player, playerTask -> run.run(), null);
+		} else {
+			BeautyQuests.getInstance().getScheduler().runDelayed(SchedulerType.SYNC, player, playerTask -> run.run(), null, delay);
+		}
 	}
 
 	@Override

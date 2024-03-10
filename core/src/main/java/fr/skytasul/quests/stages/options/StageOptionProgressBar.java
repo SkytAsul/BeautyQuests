@@ -2,12 +2,15 @@ package fr.skytasul.quests.stages.options;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.skytasul.quests.BeautyQuests;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -125,7 +128,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		private final int totalAmount;
 		private final PlaceholderRegistry placeholders;
 
-		private BukkitTask timer;
+		private SchedulerTaskInter timer;
 
 		public ProgressBar(Player p, T progress) {
 			this.progress = progress;
@@ -180,10 +183,11 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			if (timer != null)
 				timer.cancel();
 
-			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
+			BeautyQuests.getInstance().getScheduler().runDelayed(SchedulerType.SYNC, acc.getPlayer(), schedulerTaskInter -> {
+				timer = schedulerTaskInter;
 				bar.removePlayer(acc.getPlayer());
 				timer = null;
-			}, getProgressConfig().getBossBarTimeout() * 20L);
+			}, null, getProgressConfig().getBossBarTimeout() * 20L);
 		}
 	}
 

@@ -1,6 +1,8 @@
 package fr.skytasul.quests.integrations.worldguard;
 
 import java.util.Set;
+
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -54,7 +56,7 @@ public class WorldGuardEntryHandler extends Handler {
 	public void initialize(LocalPlayer player, Location current, ApplicableRegionSet set) {
 		super.initialize(player, current, set);
 		// no need to test that the set is not empty: there is always the __global__ region
-		Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
+		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, schedulerTaskInter -> {
 			Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(BukkitAdapter.adapt(player), set.getRegions()));
 		}, 1L);
 	}

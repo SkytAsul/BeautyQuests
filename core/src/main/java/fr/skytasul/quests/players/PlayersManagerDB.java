@@ -1,17 +1,5 @@
 package fr.skytasul.quests.players;
 
-import java.sql.*;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
@@ -23,6 +11,16 @@ import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.ThrowingConsumer;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.entity.Player;
+
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class PlayersManagerDB extends AbstractPlayersManager {
 
@@ -532,7 +530,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
 
-		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
+		private Map<String, Entry<ScheduledFuture<?>, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
@@ -607,51 +605,49 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				}else if (cachedDatas.containsKey(dataStatement)) {
 					cachedDatas.get(dataStatement).setValue(data);
 				}else {
-					BukkitRunnable runnable = new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							if (disabled) return;
-							Entry<BukkitRunnable, Object> entry = null;
-							datasLock.lock();
-							try {
-								if (!disabled) { // in case disabled while acquiring lock
-									entry = cachedDatas.remove(dataStatement);
-								}
-							}finally {
-								datasLock.unlock();
+					Runnable run = () -> {
+						if (disabled) return;
+						Entry<ScheduledFuture<?> , Object> entry = null;
+						datasLock.lock();
+						try {
+							if (!disabled) { // in case disabled while acquiring lock
+								entry = cachedDatas.remove(dataStatement);
 							}
-							if (entry != null) {
-								try {
-									if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
-										try (Connection connection = db.getConnection()) {
-											if (dbId == -1) createDataRow(connection);
-											try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
-												statement.setObject(1, entry.getValue());
-												statement.setInt(2, dbId);
-												statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
-												statement.executeUpdate();
-												if (entry.getValue() == null && !allowNull) {
-													QuestsPlugin.getPlugin().getLoggerExpanded().warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
-												}
+						}finally {
+							datasLock.unlock();
+						}
+						if (entry != null) {
+							try {
+								if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
+									try (Connection connection = db.getConnection()) {
+										if (dbId == -1) createDataRow(connection);
+										try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
+											statement.setObject(1, entry.getValue());
+											statement.setInt(2, dbId);
+											statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
+											statement.executeUpdate();
+											if (entry.getValue() == null && !allowNull) {
+												QuestsPlugin.getPlugin().getLoggerExpanded().warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
 											}
-										} catch (Exception ex) {
-											QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's quest datas.", ex);
-										}finally {
-											dbLock.unlock();
 										}
-									}else {
-										QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
+									} catch (Exception ex) {
+										QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's quest datas.", ex);
+									}finally {
+										dbLock.unlock();
 									}
-								}catch (InterruptedException ex) {
-									QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
-									Thread.currentThread().interrupt();
+								}else {
+									QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
 								}
+							}catch (InterruptedException ex) {
+								QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
+								Thread.currentThread().interrupt();
 							}
 						}
 					};
-					runnable.runTaskLaterAsynchronously(BeautyQuests.getInstance(), DATA_FLUSHING_TIME);
+					ScheduledFuture<?> runnable = Executors.newSingleThreadScheduledExecutor().
+							schedule(run, DATA_FLUSHING_TIME * 50, TimeUnit.MILLISECONDS);
 					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(runnable, data));
+
 				}
 			}finally {
 				datasLock.unlock();
@@ -663,9 +659,17 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
 					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
 							.forEach(run -> {
-								run.cancel();
-								run.run();
-							});
+								run.cancel(true);
+								boolean success = false;
+								while (!success) {
+									try {
+										run.get();
+										success = true;
+									} catch (InterruptedException | ExecutionException e) {
+										QuestsPlugin.getPlugin().getLogger().severe(e.getMessage());
+									}
+								}
+                            });
 					if (!cachedDatas.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
 					if (stop) disabled = true;
 					datasLock.unlock();
@@ -684,7 +688,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			cachedDatas.values()
 				.stream()
 				.map(Entry::getKey)
-				.forEach(BukkitRunnable::cancel);
+				.forEach(scheduledFuture -> scheduledFuture.cancel(true));
 			cachedDatas.clear();
 			datasLock.unlock();
 		}

@@ -33,6 +33,14 @@
 							<pattern>com.cryptomorin.xseries</pattern>
 							<shadedPattern>fr.skytasul.quests.api.utils</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>fr.euphyllia.energie</pattern>
+							<shadedPattern>fr.skytasul.quests.api.utils.energie</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>io.papermc.lib</pattern>
+							<shadedPattern>fr.skytasul.quests.api.utils.paperlib</shadedPattern> <!-- Replace this -->
+						</relocation>
 					</relocations>
 					<filters>
 						<filter>
@@ -167,6 +175,16 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>com.github.Euphillya</groupId>
+			<artifactId>Energie</artifactId>
+			<version>5659f25e22</version>
+		</dependency>
+		<dependency>
+			<groupId>io.papermc</groupId>
+			<artifactId>paperlib</artifactId>
+			<version>1.0.7</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>
