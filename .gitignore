@@ -8,4 +8,4 @@ target/
 .settings/
 /integrations/jars/
 .flattened-pom.xml
-v1_*/beautyquests-*.iml
+*/beautyquests-*.iml
