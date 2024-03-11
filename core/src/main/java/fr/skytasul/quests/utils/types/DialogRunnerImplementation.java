@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -132,8 +135,9 @@ public class DialogRunnerImplementation implements DialogRunner {
 				// when dialog not finished, launch task if needed
 				Message message = dialog.getMessages().get(status.lastId);
 				if (message.getWaitTime() != 0) {
-					status.task = Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-						status.task = null;
+					status.task = null;
+					QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, taskInter -> {
+						status.task = taskInter;
 						// we test if the player is within the authorized distance from the NPC
 						if (canContinue(p)) {
 							handleNext(p, DialogNextReason.AUTO_TIME);
@@ -141,7 +145,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 							Lang.DIALOG_TOO_FAR.quickSend(p, "npc_name", dialog.getNPCName(npc));
 							removePlayer(p);
 						}
-					}, message.getWaitTime());
+					}, null, message.getWaitTime());
 				}
 			}
 			return TestResult.ALLOW;
@@ -245,8 +249,8 @@ public class DialogRunnerImplementation implements DialogRunner {
 
 	class PlayerStatus {
 		int lastId = -1;
-		BukkitTask task = null;
-		BukkitTask runningMsgTask = null;
+		SchedulerTaskInter task = null;
+		SchedulerTaskInter runningMsgTask = null;
 		Message runningMsg = null;
 
 		void cancel() {

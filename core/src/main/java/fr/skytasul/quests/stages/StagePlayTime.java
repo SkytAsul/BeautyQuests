@@ -1,15 +1,7 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.BeautyQuests;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
@@ -32,13 +24,22 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	private final long playTicks;
 	private final TimeMode timeMode;
 
-	private Map<Player, BukkitTask> tasks = new HashMap<>();
+	private Map<Player, SchedulerTaskInter> tasks = new HashMap<>();
 
 	public StagePlayTime(StageController controller, long ticks, TimeMode timeMode) {
 		super(controller);
@@ -92,8 +93,10 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	private void launchTask(Player p, long remaining) {
-		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
-				remaining < 0 ? 0 : remaining));
+		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, schedulerTaskInter -> {
+			tasks.put(p, schedulerTaskInter);
+			finishStage(p);
+		}, null, remaining < 0 ? 0 : remaining);
 	}
 
 	@Override
@@ -117,7 +120,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	@Override
 	public void left(Player p) {
 		super.left(p);
-		BukkitTask task = tasks.remove(p);
+		SchedulerTaskInter task = tasks.remove(p);
 		if (task != null) {
 			cancelTask(p, task);
 		}else {
@@ -126,7 +129,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		}
 	}
 
-	private void cancelTask(Player p, BukkitTask task) {
+	private void cancelTask(Player p, SchedulerTaskInter task) {
 		task.cancel();
 		if (timeMode == TimeMode.ONLINE)
 			updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));

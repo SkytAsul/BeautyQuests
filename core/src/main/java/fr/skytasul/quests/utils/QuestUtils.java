@@ -6,6 +6,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -78,22 +81,22 @@ public final class QuestUtils {
 	}
 
 	public static void runOrSync(Runnable run) {
-		if (Bukkit.isPrimaryThread()) {
-			run.run();
-		} else
-			Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
-	}
+        if (!Energie.isFolia() && Bukkit.isPrimaryThread()) {
+            run.run();
+        }
+        QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
+    }
 
 	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
 		return (__, ___) -> runSync(run);
 	}
 
 	public static void runSync(Runnable run) {
-		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
 	}
 
 	public static void runAsync(Runnable run) {
-		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, schedulerTaskInter -> run.run());
 	}
 
 	public static void tunnelEventCancelling(@NotNull Cancellable eventFrom, @NotNull Event eventTo) {

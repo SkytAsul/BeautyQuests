@@ -1,9 +1,5 @@
 package fr.skytasul.quests.integrations.worldguard;
 
-import java.util.HashSet;
-import java.util.Set;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
@@ -17,7 +13,13 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.SessionManager;
 import com.sk89q.worldguard.session.handler.Handler;
+import fr.euphyllia.energie.model.SchedulerType;
 import fr.skytasul.quests.api.QuestsPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class WorldGuardEntryHandler extends Handler {
 
@@ -69,9 +71,10 @@ public class WorldGuardEntryHandler extends Handler {
 		}
 
 		final Set<ProtectedRegion> finalRegions = regions;
-		Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
+		Player bukkitPlayer = BukkitAdapter.adapt(player);
+		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, bukkitPlayer, schedulerTaskInter -> {
 			Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(BukkitAdapter.adapt(player), finalRegions));
-		}, 1L);
+		}, null, 1L);
 	}
 
 	@Override
@@ -99,7 +102,7 @@ public class WorldGuardEntryHandler extends Handler {
 			if (!entered.isEmpty() || !exited.isEmpty()) {
 				final Set<ProtectedRegion> enteredFinal = entered;
 				final Set<ProtectedRegion> exitedFinal = exited;
-				Bukkit.getScheduler().runTask(QuestsPlugin.getPlugin(), () -> {
+				QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, bukkitPlayer, schedulerTaskInter -> {
 					// We must wait for the end of this tick to fire the entry/exit events
 					// otherwise the player might be between worlds or still physically
 					// in the "old" regions.
@@ -107,7 +110,7 @@ public class WorldGuardEntryHandler extends Handler {
 						Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(bukkitPlayer, enteredFinal));
 					if (!exitedFinal.isEmpty())
 						Bukkit.getPluginManager().callEvent(new WorldGuardExitEvent(bukkitPlayer, exitedFinal));
-				});
+				}, null);
 			}
 		}
 		return true;

@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -136,7 +138,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		long time = System.currentTimeMillis();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
-		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, schedulerTaskInter -> {
 			for (int i = 1; i >= 0; i--) {
 				try {
 					if (!tryLoad(p, time))
@@ -182,7 +184,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 							+ "), index " + request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
 
 		cachedAccounts.put(p, request.getAccount());
-		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, p, schedulerTaskInter -> {
 			String loadMessage =
 					"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
 							+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()
@@ -204,7 +206,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 					removeAccount(request.getAccount()).whenComplete(
 							QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while removing newly created account"));
 			}
-		});
+		}, null);
 		return false;
 	}
 	

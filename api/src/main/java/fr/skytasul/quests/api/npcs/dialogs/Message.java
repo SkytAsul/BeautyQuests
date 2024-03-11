@@ -1,13 +1,7 @@
 package fr.skytasul.quests.api.npcs.dialogs;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -18,6 +12,16 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Message implements Cloneable {
 	public String text;
@@ -34,30 +38,27 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getConfig().getDialogsConfig().getDefaultTime() : wait;
 	}
 
-	public BukkitTask sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
-		BukkitTask task = null;
+	public SchedulerTaskInter sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
+		CompletableFuture<SchedulerTaskInter> task = new CompletableFuture<>();
 
 		String sent = formatMessage(p, npc, npcCustomName, id, size);
 		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
-				task = new BukkitRunnable() {
-					int time = 40;
-
-					@Override
-					public void run() {
-						if (!p.isOnline()) {
-							cancel();
-							return;
-						}
-
-						time += 40;
-						if (time > getWaitTime())
-							cancel();
-						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+				AtomicInteger time = new AtomicInteger(40);
+				QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
+					task.complete(schedulerTaskInter);
+					if (!p.isOnline()) {
+						schedulerTaskInter.cancel();
+						return;
 					}
-				}.runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), 40, 40);
+
+					time.addAndGet(40);
+					if (time.get() > getWaitTime())
+						schedulerTaskInter.cancel();
+					p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+				}, 40, 40);
 			}
 		} else
 			p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
@@ -68,7 +69,11 @@ public class Message implements Cloneable {
 				p.playSound(p.getLocation(), sentSound, 1, 1);
 		}
 
-		return task;
+		try {
+			return task.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String getSound() {
