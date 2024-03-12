@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
+import fr.skytasul.quests.api.utils.SchedulerRunnable;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
@@ -533,7 +534,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
 
-		private Map<String, Entry<ScheduledFuture<?>, Object>> cachedDatas = new HashMap<>(5);
+		private Map<String, Entry<SchedulerRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
@@ -610,7 +611,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				}else {
 					Runnable run = () -> {
 						if (disabled) return;
-						Entry<ScheduledFuture<?>, Object> entry = null;
+						Entry<SchedulerRunnable, Object> entry = null;
 						datasLock.lock();
 						try {
 							if (!disabled) { // in case disabled while acquiring lock
@@ -647,10 +648,9 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 							}
 						}
 					};
-					ScheduledFuture<?> runnable = Executors.newSingleThreadScheduledExecutor().
-							schedule(run, DATA_FLUSHING_TIME * 50, TimeUnit.MILLISECONDS);
 
-					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(runnable, data));
+					SchedulerTaskInter runnable = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.ASYNC, schedulerTaskInter -> run.run(), DATA_FLUSHING_TIME);
+					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(new SchedulerRunnable(runnable, run), data));
 				}
 			}finally {
 				datasLock.unlock();
@@ -662,17 +662,8 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
 					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
 							.forEach(run -> {
-								run.cancel(true);
-								run.cancel(true);
-								boolean success = false;
-								while (!success) {
-									try {
-										run.get();
-										success = true;
-									} catch (InterruptedException | ExecutionException e) {
-										QuestsPlugin.getPlugin().getLogger().severe(e.getMessage());
-									}
-								}
+								run.getSchedulerTaskInter().cancel();
+								run.getRunnable().run();
 							});
 					if (!cachedDatas.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
 					if (stop) disabled = true;
@@ -692,7 +683,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			cachedDatas.values()
 				.stream()
 				.map(Entry::getKey)
-				.forEach(scheduledFuture -> scheduledFuture.cancel(true));
+				.forEach(scheduledFuture -> scheduledFuture.getSchedulerTaskInter().cancel());
 			cachedDatas.clear();
 			datasLock.unlock();
 		}
@@ -800,5 +791,4 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		}
 
 	}
-
 }

@@ -123,9 +123,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	private SchedulerTaskInter startLauncheableTasks() {
 		AtomicInteger timer = new AtomicInteger();
-		CompletableFuture<SchedulerTaskInter> future = new CompletableFuture<>();
-		BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
-			future.complete(schedulerTaskInter);
+		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
 			if (!getNpc().isSpawned())
 				return;
 			if (!(getEntity() instanceof LivingEntity)) return;
@@ -207,16 +205,10 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				hologramLaunchNo.setVisible(unlauncheable);
 			}
 		}, 20L, 20L);
-		try {
-			return future.get();
-		} catch (InterruptedException | ExecutionException exception) {
-			throw new RuntimeException(exception);
-		}
 	}
 
 	private SchedulerTaskInter startHologramsTask() {
-		CompletableFuture<SchedulerTaskInter> future = new CompletableFuture<>();
-		BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
+		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
 				LivingEntity en = null; // check if NPC is spawned and living
 				if (getNpc().isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
@@ -231,11 +223,6 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
 				if (hologramPool.canAppear) hologramPool.refresh(en);
 		}, 20L, 1L);
-		try {
-			return future.get();
-		} catch (InterruptedException | ExecutionException exception) {
-			throw new RuntimeException(exception);
-		}
 	}
 
 	@Override

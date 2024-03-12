@@ -182,8 +182,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			if (timer != null)
 				timer.cancel();
 
-			QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, acc.getPlayer(), schedulerTaskInter -> {
-				timer = schedulerTaskInter;
+			timer = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, acc.getPlayer(), schedulerTaskInter -> {
 				bar.removePlayer(acc.getPlayer());
 				timer = null;
 			}, null, getProgressConfig().getBossBarTimeout() * 20L);

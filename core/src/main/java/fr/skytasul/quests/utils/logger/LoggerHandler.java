@@ -1,5 +1,9 @@
 package fr.skytasul.quests.utils.logger;
 
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.utils.SchedulerRunnable;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
 import org.bukkit.plugin.Plugin;
@@ -16,9 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -33,8 +34,7 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");
 	private Date date = new Date(System.currentTimeMillis());
 
-	private Runnable run;
-	private ScheduledFuture<?> scheduledFuture;
+	private SchedulerRunnable scheduledFuture;
 	private boolean something = false;
 	
 	private List<String> errors = new ArrayList<>();
@@ -106,7 +106,7 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 		write("---- BEAUTYQUESTS LOGGER - CLOSED " + endDate.toString() + " ----");
 		if (!isEnabled()) return;
 		if (scheduledFuture != null) {
-			scheduledFuture.cancel(true);
+			scheduledFuture.getSchedulerTaskInter().cancel();
 			scheduledFuture = null;
 		}
 		stream.close();
@@ -114,19 +114,20 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	}
 	
 	public void launchFlushTimer() {
-		if (run != null) return;
+		if (scheduledFuture.getRunnable() != null) return;
 		if (!isEnabled()) return;
-		run = () -> {
+		Runnable run = () -> {
 			if (!something) return;
 			stream.flush();
 			something = false;
 		};
-		scheduledFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(run, 2L * 50, 50L * 50, TimeUnit.MILLISECONDS);
+		SchedulerTaskInter task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> run.run(), 2L, 50L);
+		scheduledFuture = new SchedulerRunnable(task, run);
 	}
 
 	@Override
 	public void flush() {
-		run.run();
+		scheduledFuture.getRunnable().run();
 	}
 	
 	@Override

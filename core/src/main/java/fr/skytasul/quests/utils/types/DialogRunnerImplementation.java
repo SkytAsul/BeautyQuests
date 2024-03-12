@@ -135,9 +135,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 				// when dialog not finished, launch task if needed
 				Message message = dialog.getMessages().get(status.lastId);
 				if (message.getWaitTime() != 0) {
-					status.task = null;
-					QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, taskInter -> {
-						status.task = taskInter;
+					status.task = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, taskInter -> {
 						// we test if the player is within the authorized distance from the NPC
 						if (canContinue(p)) {
 							handleNext(p, DialogNextReason.AUTO_TIME);

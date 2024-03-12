@@ -67,13 +67,11 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (npc == null)
 			return;
 		List<Player> tmp = new ArrayList<>();
-		QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
-			task = schedulerTaskInter;
-
+		task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
 			Entity en = npc.getNpc().getEntity();
 			if (en == null)
 				return;
-			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, en, schedulerTaskInter1 -> {
+			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, en, __ -> {
 				if (!en.getType().isAlive())
 					return;
 				Location lc = en.getLocation();

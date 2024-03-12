@@ -93,10 +93,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	private void launchTask(Player p, long remaining) {
-		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, schedulerTaskInter -> {
-			tasks.put(p, schedulerTaskInter);
+		tasks.put(p, QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, schedulerTaskInter -> {
 			finishStage(p);
-		}, null, remaining < 0 ? 0 : remaining);
+		}, null, remaining < 0 ? 0 : remaining));
 	}
 
 	@Override

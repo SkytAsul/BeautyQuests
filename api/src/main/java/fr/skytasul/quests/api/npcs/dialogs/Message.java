@@ -39,16 +39,14 @@ public class Message implements Cloneable {
 	}
 
 	public SchedulerTaskInter sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
-		CompletableFuture<SchedulerTaskInter> task = new CompletableFuture<>();
-
+		SchedulerTaskInter task = null;
 		String sent = formatMessage(p, npc, npcCustomName, id, size);
 		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
 				AtomicInteger time = new AtomicInteger(40);
-				QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
-					task.complete(schedulerTaskInter);
+				task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
 					if (!p.isOnline()) {
 						schedulerTaskInter.cancel();
 						return;
@@ -68,12 +66,7 @@ public class Message implements Cloneable {
 			if (sentSound != null)
 				p.playSound(p.getLocation(), sentSound, 1, 1);
 		}
-
-		try {
-			return task.get();
-		} catch (InterruptedException | ExecutionException e) {
-			throw new RuntimeException(e);
-		}
+		return task;
 	}
 
 	private String getSound() {
