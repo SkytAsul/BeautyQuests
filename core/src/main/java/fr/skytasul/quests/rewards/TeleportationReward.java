@@ -2,7 +2,6 @@ package fr.skytasul.quests.rewards;
 
 import java.util.List;
 
-import io.papermc.lib.PaperLib;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -28,7 +27,13 @@ public class TeleportationReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player player) {
-		QuestUtils.runOrSync(() -> PaperLib.teleportAsync(player, teleportation));
+		QuestUtils.runOrSync(() -> {
+			try {
+				player.teleportAsync(teleportation);
+			} catch (NoSuchMethodError exception) {
+				player.teleport(teleportation);
+			}
+		});
 		return null;
 	}
 
