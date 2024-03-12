@@ -30,7 +30,7 @@ public class TeleportationReward extends AbstractReward {
 		QuestUtils.runOrSync(() -> {
 			try {
 				player.teleportAsync(teleportation);
-			} catch (NoSuchMethodError exception) {
+			} catch (NoSuchMethodError ignored) {
 				player.teleport(teleportation);
 			}
 		});
