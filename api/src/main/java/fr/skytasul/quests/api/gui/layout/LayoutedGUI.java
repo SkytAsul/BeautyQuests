@@ -42,8 +42,10 @@ public abstract class LayoutedGUI extends AbstractGui {
 		if (button == null || !button.isValid())
 			return;
 
-		button.click(new LayoutedClickEvent(event.getPlayer(), this, event.getClicked(), event.getCursor(), event.getSlot(),
-				event.getClick()));
+		LayoutedClickEvent subEvent = new LayoutedClickEvent(event.getPlayer(), this, event.getClicked(), event.getCursor(),
+				event.getSlot(), event.getClick());
+		button.click(subEvent);
+		event.setCancelled(subEvent.isCancelled());
 	}
 
 	public void refresh(int slot) {
