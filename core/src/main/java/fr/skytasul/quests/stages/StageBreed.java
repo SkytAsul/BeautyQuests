@@ -45,7 +45,7 @@ public class StageBreed extends AbstractEntityStage implements Listener {
 
 	@EventHandler
 	public void onEntityChangeBlock(EntityChangeBlockEvent e) {
-		if (!EGG_MATERIALS.contains(e.getBlock().getType()))
+		if (!EGG_MATERIALS.contains(e.getTo()))
 			return;
 		if (!(e.getEntity() instanceof Animals))
 			return;
