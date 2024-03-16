@@ -151,7 +151,7 @@ public final class QuestUtils {
 	public static void spawnFirework(Location lc, FireworkMeta meta) {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().fireworks() || meta == null)
 			return;
-		runOrSync(() -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, lc, locTask -> {
 			Consumer<Firework> fwConsumer = fw -> {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
