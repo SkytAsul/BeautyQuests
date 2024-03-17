@@ -34,7 +34,7 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");
 	private Date date = new Date(System.currentTimeMillis());
 
-	private SchedulerRunnable scheduledFuture;
+	private SchedulerRunnable schedulerRunnable;
 	private boolean something = false;
 	
 	private List<String> errors = new ArrayList<>();
@@ -105,29 +105,31 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 		write("Logger was open during " + Utils.millisToHumanString(endDate.getTime() - launchDate.getTime()));
 		write("---- BEAUTYQUESTS LOGGER - CLOSED " + endDate.toString() + " ----");
 		if (!isEnabled()) return;
-		if (scheduledFuture != null) {
-			scheduledFuture.getSchedulerTaskInter().cancel();
-			scheduledFuture = null;
+		if (schedulerRunnable != null) {
+			schedulerRunnable.getSchedulerTaskInter().cancel();
+			schedulerRunnable = null;
 		}
 		stream.close();
 		stream = null;
 	}
 	
 	public void launchFlushTimer() {
-		if (scheduledFuture.getRunnable() != null) return;
-		if (!isEnabled()) return;
+		if (schedulerRunnable != null) {
+			if (schedulerRunnable.getRunnable() != null) return;
+			if (!isEnabled()) return;
+		}
 		Runnable run = () -> {
 			if (!something) return;
 			stream.flush();
 			something = false;
 		};
-		SchedulerTaskInter task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> run.run(), 2L, 50L);
-		scheduledFuture = new SchedulerRunnable(task, run);
+		SchedulerTaskInter task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> run.run(), 2L, 50L);
+		schedulerRunnable = new SchedulerRunnable(task, run);
 	}
 
 	@Override
 	public void flush() {
-		scheduledFuture.getRunnable().run();
+		schedulerRunnable.getRunnable().run();
 	}
 	
 	@Override

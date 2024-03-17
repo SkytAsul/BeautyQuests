@@ -232,7 +232,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	}
 
 	private void launchTask() {
-		task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
+		task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> {
 			playersLock.lock();
 			try {
 				for (Iterator<Entry<Player, PlayerPlaceholderData>> iterator = players.entrySet().iterator(); iterator.hasNext();) {

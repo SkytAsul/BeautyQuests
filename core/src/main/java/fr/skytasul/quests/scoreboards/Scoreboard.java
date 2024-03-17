@@ -62,7 +62,7 @@ public class Scoreboard implements Listener {
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 
-		taskInter = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> run(), 2L, 20L);
+		taskInter = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> run(), 2L, 20L);
 	}
 
 

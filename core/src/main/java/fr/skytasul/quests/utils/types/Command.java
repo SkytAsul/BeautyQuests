@@ -41,9 +41,9 @@ public class Command implements HasPlaceholders {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(sender.getName() + " performed command " + formattedCommand);
 		};
 		if (delay == 0) {
-			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, player, playerTask -> run.run(), null);
+			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, player, __ -> run.run(), null);
 		} else {
-			QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, player, playerTask -> run.run(), null, delay);
+			QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, player, __ -> run.run(), null, delay);
 		}
 	}
 

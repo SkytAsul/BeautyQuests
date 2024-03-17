@@ -138,7 +138,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		long time = System.currentTimeMillis();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading player " + p.getName() + "...");
 		cachedAccounts.remove(p);
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, schedulerTaskInter -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, __ -> {
 			for (int i = 1; i >= 0; i--) {
 				try {
 					if (!tryLoad(p, time))
@@ -184,7 +184,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 							+ "), index " + request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
 
 		cachedAccounts.put(p, request.getAccount());
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, p, schedulerTaskInter -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, p, __ -> {
 			String loadMessage =
 					"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
 							+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()

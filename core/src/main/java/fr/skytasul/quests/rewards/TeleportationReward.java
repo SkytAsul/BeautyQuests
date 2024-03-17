@@ -31,7 +31,7 @@ public class TeleportationReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player player) {
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, player, taskPlayer -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, player, __ -> {
 			EntityUtils.teleportAsync(player, teleportation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 		}, null);
 		return null;

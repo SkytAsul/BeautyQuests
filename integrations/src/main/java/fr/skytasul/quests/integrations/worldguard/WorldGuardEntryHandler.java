@@ -72,7 +72,7 @@ public class WorldGuardEntryHandler extends Handler {
 
 		final Set<ProtectedRegion> finalRegions = regions;
 		Player bukkitPlayer = BukkitAdapter.adapt(player);
-		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, bukkitPlayer, schedulerTaskInter -> {
+		QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, bukkitPlayer, __ -> {
 			Bukkit.getPluginManager().callEvent(new WorldGuardEntryEvent(BukkitAdapter.adapt(player), finalRegions));
 		}, null, 1L);
 	}

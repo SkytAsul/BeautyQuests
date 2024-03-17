@@ -84,7 +84,7 @@ public final class QuestUtils {
         if (!Energie.isFolia() && Bukkit.isPrimaryThread()) {
             run.run();
         }
-        QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
+        QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, __ -> run.run());
     }
 
 	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
@@ -92,11 +92,11 @@ public final class QuestUtils {
 	}
 
 	public static void runSync(Runnable run) {
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, schedulerTaskInter -> run.run());
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, __ -> run.run());
 	}
 
 	public static void runAsync(Runnable run) {
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, schedulerTaskInter -> run.run());
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, __ -> run.run());
 	}
 
 	public static void tunnelEventCancelling(@NotNull Cancellable eventFrom, @NotNull Event eventTo) {
@@ -151,7 +151,7 @@ public final class QuestUtils {
 	public static void spawnFirework(Location lc, FireworkMeta meta) {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().fireworks() || meta == null)
 			return;
-		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, lc, locTask -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, lc, __ -> {
 			Consumer<Firework> fwConsumer = fw -> {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);

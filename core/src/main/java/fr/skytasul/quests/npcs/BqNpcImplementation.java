@@ -123,7 +123,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	private SchedulerTaskInter startLauncheableTasks() {
 		AtomicInteger timer = new AtomicInteger();
-		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
+		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, __ -> {
 			if (!getNpc().isSpawned())
 				return;
 			if (!(getEntity() instanceof LivingEntity)) return;
@@ -208,7 +208,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	}
 
 	private SchedulerTaskInter startHologramsTask() {
-		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
+		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, __ -> {
 				LivingEntity en = null; // check if NPC is spawned and living
 				if (getNpc().isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
