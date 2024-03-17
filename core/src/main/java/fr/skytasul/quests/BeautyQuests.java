@@ -199,6 +199,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (loggerHandler != null) loggerHandler.launchFlushTimer();
 			launchMetrics(pluginVersion);
 			try {
+				/*
+				For the moment, it is impossible to search for plugin updates, because the library is not compatible with Folia.
+				 */
 				if (!Energie.isFolia()) launchUpdateChecker(pluginVersion);
 			}catch (Exception e) {
 				logger.severe("An error occurred while checking updates.", e);
