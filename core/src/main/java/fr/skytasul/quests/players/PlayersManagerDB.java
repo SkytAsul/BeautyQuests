@@ -649,7 +649,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 						}
 					};
 
-					SchedulerTaskInter runnable = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.ASYNC, schedulerTaskInter -> run.run(), DATA_FLUSHING_TIME);
+					SchedulerTaskInter runnable = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.ASYNC, __ -> run.run(), DATA_FLUSHING_TIME);
 					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(new SchedulerRunnable(runnable, run), data));
 				}
 			}finally {

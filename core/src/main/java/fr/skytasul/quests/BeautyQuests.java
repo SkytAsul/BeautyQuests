@@ -170,7 +170,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 			// Launch loading task
 			String pluginVersion = getDescription().getVersion();
-			getScheduler().runDelayed(SchedulerType.SYNC, schedulerTaskInter -> {
+			getScheduler().runDelayed(SchedulerType.SYNC, __ -> {
 				try {
 					long lastMillis = System.currentTimeMillis();
 					loadAllDatas();
@@ -543,7 +543,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}
 
-		getScheduler().runDelayed(SchedulerType.SYNC, schedulerTaskInter -> {
+		getScheduler().runDelayed(SchedulerType.SYNC, __ -> {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				players.loadPlayer(p);
 			}
@@ -713,7 +713,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		sender.sendMessage("§7...Waiting for loading quests...");
-		getScheduler().runDelayed(SchedulerType.SYNC, syncTask -> {
+		getScheduler().runDelayed(SchedulerType.SYNC, __ -> {
 			try {
 				data = YamlConfiguration.loadConfiguration(dataFile);
 				loadAllDatas();
