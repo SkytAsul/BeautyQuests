@@ -282,8 +282,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void launchSaveCycle(){
 		if (config.saveCycle > 0 && saveTask == null) {
 			int cycle = config.saveCycle * 60 * 20;
-			scheduler.runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
-				saveTask = schedulerTaskInter;
+			saveTask = scheduler.runAtFixedRate(SchedulerType.ASYNC, __ -> {
 				try {
 					saveAllConfig(false);
 					if (config.saveCycleMessage)
