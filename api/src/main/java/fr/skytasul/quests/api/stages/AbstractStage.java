@@ -1,12 +1,5 @@
 package fr.skytasul.quests.api.stages;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -19,6 +12,13 @@ import fr.skytasul.quests.api.stages.options.StageOption;
 import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @AutoRegistered
 public abstract class AbstractStage implements HasPlaceholders {
@@ -172,12 +172,23 @@ public abstract class AbstractStage implements HasPlaceholders {
 		controller.updateObjective(p, dataKey, dataValue);
 	}
 
+	@Deprecated
 	protected final <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey) {
 		return getData(PlayersManager.getPlayerAccount(p), dataKey);
 	}
 
+	@Deprecated
 	protected final <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
-		return controller.getData(acc, dataKey);
+		return getData(acc, dataKey, null);
+	}
+
+	protected final <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey, @NotNull Class<T> dataType) {
+		return getData(PlayersManager.getPlayerAccount(p), dataKey, dataType);
+	}
+
+	protected final <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey,
+			@NotNull Class<T> dataType) {
+		return controller.getData(acc, dataKey, dataType);
 	}
 
 	/**

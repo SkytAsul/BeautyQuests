@@ -1,12 +1,5 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.*;
-import java.util.Map.Entry;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -26,6 +19,13 @@ import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import java.util.Map.Entry;
 
 @LocatableType (types = LocatedType.ENTITY)
 public abstract class AbstractEntityStage extends AbstractStage implements Locatable.MultipleLocatable, HasSingleObject {
@@ -56,7 +56,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 
 	protected @NotNull OptionalInt getPlayerAmountOptional(@NotNull PlayerAccount acc) {
-		Integer amount = getData(acc, "amount");
+		Integer amount = getData(acc, "amount", Integer.class);
 		return amount == null ? OptionalInt.empty() : OptionalInt.of(amount.intValue());
 	}
 

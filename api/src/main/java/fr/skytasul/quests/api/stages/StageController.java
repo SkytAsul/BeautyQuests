@@ -1,11 +1,11 @@
 package fr.skytasul.quests.api.stages;
 
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface StageController {
 
@@ -23,7 +23,7 @@ public interface StageController {
 
 	public @Nullable String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
 
-	public <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey);
+	public <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey, @Nullable Class<T> dataType);
 
 	public @NotNull String getFlowId();
 
