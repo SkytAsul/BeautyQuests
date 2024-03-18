@@ -1,18 +1,6 @@
 package fr.skytasul.quests.structure;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.gson.JsonSyntaxException;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -23,10 +11,24 @@ import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.*;
+import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.compatibility.BQBackwardCompat;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class StageControllerImplementation<T extends AbstractStage> implements StageController, Listener {
 
@@ -97,7 +99,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@Override
-	public <D> @Nullable D getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
+	public <D> @Nullable D getData(@NotNull PlayerAccount acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
 		PlayerQuestDatas playerDatas = acc.getQuestDatas(branch.getQuest());
 		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
 
@@ -112,7 +114,24 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 			acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
 		}
 
-		return (D) datas.get(dataKey);
+		Object data = datas.get(dataKey);
+		if (dataType == null) // case when we do not have explicit data type to match for: we can only do direct cast
+			return (D) data;
+
+		if (dataType.isInstance(data)) // easy: the data is directly compatible with the expected type
+			return dataType.cast(data);
+
+		// hard: the data is not compatible. It may be because the deserialization process previously did
+		// not know the exact type to deserialize. Hence we go back to serialized to deserialize again, but
+		// this time with the correct type.
+		String serialized = CustomizedObjectTypeAdapter.serializeNullable(data);
+		try {
+			return CustomizedObjectTypeAdapter.deserializeNullable(serialized, dataType);
+		} catch (JsonSyntaxException ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+					"Cannot convert data " + dataKey + " to " + dataType.toString() + ". Serialized form: " + serialized);
+			throw ex;
+		}
 	}
 
 	@Override
