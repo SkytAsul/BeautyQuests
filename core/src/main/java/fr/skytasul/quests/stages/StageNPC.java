@@ -2,6 +2,7 @@ package fr.skytasul.quests.stages;
 
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -66,41 +67,45 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private void launchRefreshTask() {
 		if (npc == null)
 			return;
-		List<Player> tmp = new ArrayList<>();
-		task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.SYNC, schedulerTaskInter -> {
-			Entity en = npc.getNpc().getEntity();
-			if (en == null)
-				return;
-			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, en, __ -> {
-				if (!en.getType().isAlive())
+		task = new SchedulerTaskRunnable() {
+			List<Player> tmp = new ArrayList<>();
+
+			@Override
+			public void run() {
+				Entity en = npc.getNpc().getEntity();
+				if (en == null)
 					return;
-				Location lc = en.getLocation();
-				tmp.clear();
-				for (Player p : cached) {
-					if (p.getWorld() != lc.getWorld())
-						continue;
-					if (lc.distance(p.getLocation()) > 50)
-						continue;
-					tmp.add(p);
-				}
-
-				if (QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null
-						&& QuestsAPI.getAPI().hasHologramsManager()
-						&& QuestsAPI.getAPI().getHologramsManager().supportItems()
-						&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
-					if (hologram == null)
-						createHoloLaunch();
-					hologram.setPlayersVisible(tmp);
-					hologram.teleport(QuestUtils.upLocationForEntity((LivingEntity) en, 1));
-				}
-
-				if (QuestsConfigurationImplementation.getConfiguration().showTalkParticles()) {
-					if (tmp.isEmpty())
+				QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, en, __ -> {
+					if (!en.getType().isAlive())
 						return;
-					QuestsConfigurationImplementation.getConfiguration().getParticleTalk().send(en, tmp);
-				}
-			}, null);
-		}, 20L, 6L);
+					Location lc = en.getLocation();
+					tmp.clear();
+					for (Player p : cached) {
+						if (p.getWorld() != lc.getWorld())
+							continue;
+						if (lc.distance(p.getLocation()) > 50)
+							continue;
+						tmp.add(p);
+					}
+
+					if (QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null
+							&& QuestsAPI.getAPI().hasHologramsManager()
+							&& QuestsAPI.getAPI().getHologramsManager().supportItems()
+							&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
+						if (hologram == null)
+							createHoloLaunch();
+						hologram.setPlayersVisible(tmp);
+						hologram.teleport(QuestUtils.upLocationForEntity((LivingEntity) en, 1));
+					}
+
+					if (QuestsConfigurationImplementation.getConfiguration().showTalkParticles()) {
+						if (tmp.isEmpty())
+							return;
+						QuestsConfigurationImplementation.getConfiguration().getParticleTalk().send(en, tmp);
+					}
+				}, null);
+			}
+		}.runAtFixedRate(BeautyQuests.getInstance(),  SchedulerType.SYNC, 20L, 6L);
 	}
 
 	private void createHoloLaunch() {

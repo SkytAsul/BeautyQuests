@@ -1,9 +1,8 @@
 package fr.skytasul.quests.utils.logger;
 
-import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.utils.SchedulerRunnable;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
 import org.bukkit.plugin.Plugin;
@@ -34,7 +33,7 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 	private SimpleDateFormat format = new SimpleDateFormat("[HH:mm:ss] ");
 	private Date date = new Date(System.currentTimeMillis());
 
-	private SchedulerRunnable schedulerRunnable;
+	private SchedulerTaskRunnable run;
 	private boolean something = false;
 	
 	private List<String> errors = new ArrayList<>();
@@ -105,31 +104,31 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 		write("Logger was open during " + Utils.millisToHumanString(endDate.getTime() - launchDate.getTime()));
 		write("---- BEAUTYQUESTS LOGGER - CLOSED " + endDate.toString() + " ----");
 		if (!isEnabled()) return;
-		if (schedulerRunnable != null) {
-			schedulerRunnable.getSchedulerTaskInter().cancel();
-			schedulerRunnable = null;
+		if (run != null) {
+			run.cancel();
+			run = null;
 		}
 		stream.close();
 		stream = null;
 	}
 	
 	public void launchFlushTimer() {
-		if (schedulerRunnable != null) {
-			if (schedulerRunnable.getRunnable() != null) return;
-			if (!isEnabled()) return;
-		}
-		Runnable run = () -> {
-			if (!something) return;
-			stream.flush();
-			something = false;
+		if (run != null) return;
+		if (!isEnabled()) return;
+		run = new SchedulerTaskRunnable() {
+			@Override
+			public void run() {
+				if (!something) return;
+				stream.flush();
+				something = false;
+			}
 		};
-		SchedulerTaskInter task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> run.run(), 2L, 50L);
-		schedulerRunnable = new SchedulerRunnable(task, run);
+		run.runAtFixedRate(BeautyQuests.getInstance(),  SchedulerType.ASYNC, 2L, 50L);
 	}
 
 	@Override
 	public void flush() {
-		schedulerRunnable.getRunnable().run();
+		run.run();
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package fr.skytasul.quests.scoreboards;
 
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -29,7 +30,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Scoreboard implements Listener {
+public class Scoreboard extends SchedulerTaskRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
 	private static final int maxLength = MinecraftVersion.MAJOR >= 13 ? 1024 : 30;
@@ -46,7 +47,6 @@ public class Scoreboard implements Listener {
 	private boolean hid = false;
 	private boolean hidForce = false;
 	private int changeTime = 1;
-	private SchedulerTaskInter taskInter;
 
 	Scoreboard(Player player, ScoreboardManager manager) {
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
@@ -62,10 +62,11 @@ public class Scoreboard implements Listener {
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 
-		taskInter = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> run(), 2L, 20L);
+		super.runAtFixedRate(BeautyQuests.getInstance(), SchedulerType.ASYNC, 2L, 20L);
 	}
 
 
+	@Override
 	public void run() {
 		if (!p.isOnline()) return;
 		if (hid) return;
@@ -262,11 +263,9 @@ public class Scoreboard implements Listener {
 	}
 
 	public synchronized void cancel() throws IllegalStateException {
-		if (taskInter != null) {
-			taskInter.cancel();
-			HandlerList.unregisterAll(this);
-			if (board != null) deleteBoard();
-		}
+		super.cancel();
+		HandlerList.unregisterAll(this);
+		if (board != null) deleteBoard();
 	}
 
 	public void initScoreboard(){

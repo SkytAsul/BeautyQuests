@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.npcs.dialogs;
 
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -19,9 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Message implements Cloneable {
 	public String text;
@@ -45,18 +43,22 @@ public class Message implements Cloneable {
 			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 			if (getWaitTime() > 60) {
-				AtomicInteger time = new AtomicInteger(40);
-				task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, schedulerTaskInter -> {
-					if (!p.isOnline()) {
-						schedulerTaskInter.cancel();
-						return;
-					}
+				task = new SchedulerTaskRunnable() {
+					int time = 40;
 
-					time.addAndGet(40);
-					if (time.get() > getWaitTime())
-						schedulerTaskInter.cancel();
-					p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
-				}, 40, 40);
+					@Override
+					public void run() {
+						if (!p.isOnline()) {
+							cancel();
+							return;
+						}
+
+						time += 40;
+						if (time > getWaitTime())
+							cancel();
+						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+					}
+				}.runAtFixedRate(QuestsPlugin.getPlugin(), SchedulerType.ASYNC, 40, 40);
 			}
 		} else
 			p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));

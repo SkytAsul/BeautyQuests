@@ -1,7 +1,9 @@
 package fr.skytasul.quests.npcs;
 
+import fr.euphyllia.energie.model.SchedulerRunnable;
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -122,93 +124,100 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	}
 
 	private SchedulerTaskInter startLauncheableTasks() {
-		AtomicInteger timer = new AtomicInteger();
-		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, __ -> {
-			if (!getNpc().isSpawned())
-				return;
-			if (!(getEntity() instanceof LivingEntity)) return;
-			LivingEntity en = (LivingEntity) getEntity();
+		return new SchedulerTaskRunnable() {
+			private int timer = 0;
 
-			if (timer.getAndDecrement() == 0) {
-				timer.set(QuestsConfiguration.getConfig().getQuestsConfig().requirementUpdateTime());
-				return;
-			}
+			@Override
+			public void run() {
+				if (!getNpc().isSpawned())
+					return;
+				if (!(getEntity() instanceof LivingEntity)) return;
+				LivingEntity en = (LivingEntity) getEntity();
 
-			quests.values().forEach(List::clear);
-
-			Set<Player> playersInRadius = new HashSet<>();
-			Location lc = en.getLocation();
-			for (Player p : lc.getWorld().getPlayers()) {
-				PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-				if (acc == null) continue;
-				if (lc.distanceSquared(p.getLocation()) > Math
-						.pow(QuestsConfiguration.getConfig().getQuestsConfig().startParticleDistance(), 2))
-					continue;
-				playersInRadius.add(p);
-				for (Entry<Quest, List<Player>> quest : quests.entrySet()) {
-					if (quest.getKey().canStart(p, false)) {
-						quest.getValue().add(p);
-						break;
-					}
+				if (timer-- == 0) {
+					timer = QuestsConfiguration.getConfig().getQuestsConfig().requirementUpdateTime();
+					return;
 				}
-			}
 
-			if (QuestsConfigurationImplementation.getConfiguration().showStartParticles()) {
-				quests.forEach((quest, players) -> QuestsConfigurationImplementation.getConfiguration()
-						.getParticleStart().send(en, players));
-			}
+				quests.values().forEach(List::clear);
 
-			if (hologramPool.canAppear) {
-				for (Player p : playersInRadius) {
-					boolean visible = false;
-					for (QuestPool pool : pools) {
-						if (pool.canGive(p)) {
-							visible = true;
+				Set<Player> playersInRadius = new HashSet<>();
+				Location lc = en.getLocation();
+				for (Player p : lc.getWorld().getPlayers()) {
+					PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+					if (acc == null) continue;
+					if (lc.distanceSquared(p.getLocation()) > Math
+							.pow(QuestsConfiguration.getConfig().getQuestsConfig().startParticleDistance(), 2))
+						continue;
+					playersInRadius.add(p);
+					for (Entry<Quest, List<Player>> quest : quests.entrySet()) {
+						if (quest.getKey().canStart(p, false)) {
+							quest.getValue().add(p);
 							break;
 						}
 					}
-					hologramPool.setVisible(p, visible);
 				}
-			}
-			if (hologramLaunch.canAppear || hologramLaunchNo.canAppear) {
-				List<Player> launcheable = new ArrayList<>();
-				List<Player> unlauncheable = new ArrayList<>();
-				for (Iterator<Player> iterator = playersInRadius.iterator(); iterator.hasNext();) {
-					Player player = iterator.next();
-					if (hiddenTickets.stream().anyMatch(entry -> entry.getKey() == player)) {
-						iterator.remove();
-						continue;
-					}
-					PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-					boolean launchYes = false;
-					boolean launchNo = false;
-					for (Entry<Quest, List<Player>> qu : quests.entrySet()) {
-						if (!qu.getKey().hasStarted(acc)) {
-							boolean pLauncheable = qu.getValue().contains(player);
-							if (hologramLaunch.enabled && pLauncheable) {
-								launchYes = true;
-								break; // launcheable take priority over not launcheable
-							}else if (hologramLaunchNo.enabled && !pLauncheable) {
-								launchNo = true;
+
+				if (QuestsConfigurationImplementation.getConfiguration().showStartParticles()) {
+					quests.forEach((quest, players) -> QuestsConfigurationImplementation.getConfiguration()
+							.getParticleStart().send(en, players));
+				}
+
+				if (hologramPool.canAppear) {
+					for (Player p : playersInRadius) {
+						boolean visible = false;
+						for (QuestPool pool : pools) {
+							if (pool.canGive(p)) {
+								visible = true;
+								break;
 							}
 						}
-					}
-					if (launchYes) {
-						launcheable.add(player);
-						iterator.remove();
-					}else if (launchNo) {
-						unlauncheable.add(player);
-						iterator.remove();
+						hologramPool.setVisible(p, visible);
 					}
 				}
-				hologramLaunch.setVisible(launcheable);
-				hologramLaunchNo.setVisible(unlauncheable);
+				if (hologramLaunch.canAppear || hologramLaunchNo.canAppear) {
+					List<Player> launcheable = new ArrayList<>();
+					List<Player> unlauncheable = new ArrayList<>();
+					for (Iterator<Player> iterator = playersInRadius.iterator(); iterator.hasNext();) {
+						Player player = iterator.next();
+						if (hiddenTickets.stream().anyMatch(entry -> entry.getKey() == player)) {
+							iterator.remove();
+							continue;
+						}
+						PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+						boolean launchYes = false;
+						boolean launchNo = false;
+						for (Entry<Quest, List<Player>> qu : quests.entrySet()) {
+							if (!qu.getKey().hasStarted(acc)) {
+								boolean pLauncheable = qu.getValue().contains(player);
+								if (hologramLaunch.enabled && pLauncheable) {
+									launchYes = true;
+									break; // launcheable take priority over not launcheable
+								}else if (hologramLaunchNo.enabled && !pLauncheable) {
+									launchNo = true;
+								}
+							}
+						}
+						if (launchYes) {
+							launcheable.add(player);
+							iterator.remove();
+						}else if (launchNo) {
+							unlauncheable.add(player);
+							iterator.remove();
+						}
+					}
+					hologramLaunch.setVisible(launcheable);
+					hologramLaunchNo.setVisible(unlauncheable);
+				}
+
 			}
-		}, 20L, 20L);
+		}.runAtFixedRate(BeautyQuests.getInstance(), SchedulerType.SYNC, 20L, 20L);
 	}
 
 	private SchedulerTaskInter startHologramsTask() {
-		return BeautyQuests.getInstance().getScheduler().runAtFixedRate(SchedulerType.SYNC, __ -> {
+		return new SchedulerTaskRunnable() {
+			@Override
+			public void run() {
 				LivingEntity en = null; // check if NPC is spawned and living
 				if (getNpc().isSpawned() && getEntity() instanceof LivingEntity)
 					en = (LivingEntity) getEntity();
@@ -222,7 +231,8 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				if (hologramLaunch.canAppear) hologramLaunch.refresh(en);
 				if (hologramLaunchNo.canAppear) hologramLaunchNo.refresh(en);
 				if (hologramPool.canAppear) hologramPool.refresh(en);
-		}, 20L, 1L);
+			}
+		}.runAtFixedRate(BeautyQuests.getInstance(), SchedulerType.SYNC, 20L, 1L);
 	}
 
 	@Override

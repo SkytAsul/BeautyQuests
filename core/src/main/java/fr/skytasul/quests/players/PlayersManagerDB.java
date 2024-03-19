@@ -8,9 +8,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import fr.euphyllia.energie.model.SchedulerRunnable;
 import fr.euphyllia.energie.model.SchedulerTaskInter;
 import fr.euphyllia.energie.model.SchedulerType;
-import fr.skytasul.quests.api.utils.SchedulerRunnable;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.BeautyQuests;
@@ -534,7 +535,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
 
-		private Map<String, Entry<SchedulerRunnable, Object>> cachedDatas = new HashMap<>(5);
+		private Map<String, Entry<SchedulerTaskRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
@@ -609,48 +610,51 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				}else if (cachedDatas.containsKey(dataStatement)) {
 					cachedDatas.get(dataStatement).setValue(data);
 				}else {
-					Runnable run = () -> {
-						if (disabled) return;
-						Entry<SchedulerRunnable, Object> entry = null;
-						datasLock.lock();
-						try {
-							if (!disabled) { // in case disabled while acquiring lock
-								entry = cachedDatas.remove(dataStatement);
-							}
-						}finally {
-							datasLock.unlock();
-						}
-						if (entry != null) {
+					SchedulerTaskRunnable runnable = new SchedulerTaskRunnable() {
+
+						@Override
+						public void run() {
+							if (disabled) return;
+							Entry<SchedulerTaskRunnable, Object> entry = null;
+							datasLock.lock();
 							try {
-								if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
-									try (Connection connection = db.getConnection()) {
-										if (dbId == -1) createDataRow(connection);
-										try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
-											statement.setObject(1, entry.getValue());
-											statement.setInt(2, dbId);
-											statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
-											statement.executeUpdate();
-											if (entry.getValue() == null && !allowNull) {
-												QuestsPlugin.getPlugin().getLoggerExpanded().warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
-											}
-										}
-									} catch (Exception ex) {
-										QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's quest datas.", ex);
-									}finally {
-										dbLock.unlock();
-									}
-								}else {
-									QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
+								if (!disabled) { // in case disabled while acquiring lock
+									entry = cachedDatas.remove(dataStatement);
 								}
-							}catch (InterruptedException ex) {
-								QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
-								Thread.currentThread().interrupt();
+							}finally {
+								datasLock.unlock();
+							}
+							if (entry != null) {
+								try {
+									if (dbLock.tryLock(DATA_QUERY_TIMEOUT, TimeUnit.SECONDS)) {
+										try (Connection connection = db.getConnection()) {
+											if (dbId == -1) createDataRow(connection);
+											try (PreparedStatement statement = connection.prepareStatement(dataStatement)) {
+												statement.setObject(1, entry.getValue());
+												statement.setInt(2, dbId);
+												statement.setQueryTimeout(DATA_QUERY_TIMEOUT);
+												statement.executeUpdate();
+												if (entry.getValue() == null && !allowNull) {
+													QuestsPlugin.getPlugin().getLoggerExpanded().warning("Setting an illegal NULL value in statement \"" + dataStatement + "\" for account " + acc.index + " and quest " + questID);
+												}
+											}
+										} catch (Exception ex) {
+											QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating a player's quest datas.", ex);
+										}finally {
+											dbLock.unlock();
+										}
+									}else {
+										QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot acquire database lock for quest " + questID + ", player " + acc.getNameAndID());
+									}
+								}catch (InterruptedException ex) {
+									QuestsPlugin.getPlugin().getLoggerExpanded().severe("Interrupted database locking.", ex);
+									Thread.currentThread().interrupt();
+								}
 							}
 						}
 					};
-
-					SchedulerTaskInter runnable = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.ASYNC, __ -> run.run(), DATA_FLUSHING_TIME);
-					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(new SchedulerRunnable(runnable, run), data));
+					runnable.runDelayed(BeautyQuests.getInstance(), SchedulerType.ASYNC, DATA_FLUSHING_TIME);
+					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(runnable, data));
 				}
 			}finally {
 				datasLock.unlock();
@@ -662,8 +666,8 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				if (datasLock.tryLock(DATA_QUERY_TIMEOUT * 2L, TimeUnit.SECONDS)) {
 					cachedDatas.values().stream().map(Entry::getKey).collect(Collectors.toList()) // to prevent ConcurrentModificationException
 							.forEach(run -> {
-								run.getSchedulerTaskInter().cancel();
-								run.getRunnable().run();
+								run.cancel();
+								run.run();
 							});
 					if (!cachedDatas.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Still waiting values in quest data " + questID + " for account " + acc.index + " despite flushing all.");
 					if (stop) disabled = true;
@@ -683,7 +687,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			cachedDatas.values()
 				.stream()
 				.map(Entry::getKey)
-				.forEach(scheduledFuture -> scheduledFuture.getSchedulerTaskInter().cancel());
+				.forEach(SchedulerTaskRunnable::cancel);
 			cachedDatas.clear();
 			datasLock.unlock();
 		}
