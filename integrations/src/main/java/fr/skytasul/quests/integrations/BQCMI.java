@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import fr.skytasul.quests.api.AbstractHolograms;
+import org.jetbrains.annotations.NotNull;
 
 public class BQCMI extends AbstractHolograms<CMIHologram> {
 	
@@ -37,7 +38,7 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 	}
 	
 	@Override
-	public AbstractHolograms<CMIHologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
+	public AbstractHolograms<CMIHologram>.@NotNull BQHologram createHologram(@NotNull Location lc, boolean defaultVisible) {
 		try {
 			CMIHologram hologram = holoConstructor.newInstance("BQ Hologram " + hashCode(), locationConstructor.newInstance(lc));
 			CMI.getInstance().getHologramManager().addHologram(hologram);
@@ -60,7 +61,7 @@ public class BQCMI extends AbstractHolograms<CMIHologram> {
 		}
 		
 		@Override
-		public void teleport(Location lc) {
+		public void teleport(@NotNull Location lc) {
 			hologram.setLoc(lc);
 		}
 		

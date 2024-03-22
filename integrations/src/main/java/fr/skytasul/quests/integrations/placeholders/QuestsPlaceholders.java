@@ -5,6 +5,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,7 +36,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	private final String splitFormat;
 	private final String inlineFormat;
 
-	private BukkitTask task;
+	private SchedulerTaskInter task;
 	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
 	private ReentrantLock playersLock = new ReentrantLock();
 
@@ -229,7 +232,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	}
 
 	private void launchTask() {
-		task = Bukkit.getScheduler().runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), () -> {
+		task = QuestsPlugin.getPlugin().getScheduler().runAtFixedRate(SchedulerType.ASYNC, __ -> {
 			playersLock.lock();
 			try {
 				for (Iterator<Entry<Player, PlayerPlaceholderData>> iterator = players.entrySet().iterator(); iterator.hasNext();) {
@@ -244,7 +247,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			}finally {
 				playersLock.unlock();
 			}
-		}, 0, changeTime * 20);
+		}, 0, changeTime * 20L);
 	}
 
 	@EventHandler

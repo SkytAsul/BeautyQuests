@@ -16,6 +16,7 @@ import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
 import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings.Visibility;
+import org.jetbrains.annotations.NotNull;
 
 public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 
@@ -34,7 +35,7 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 	}
 	
 	@Override
-	public HD3Hologram createHologram(Location lc, boolean visible) {
+	public @NotNull HD3Hologram createHologram(@NotNull Location lc, boolean visible) {
 		Hologram holo = api.createHologram(lc);
 		holo.getVisibilitySettings().setGlobalVisibility(booleanToVisibility(visible));
 		return new HD3Hologram(holo);
@@ -51,7 +52,7 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void setPlayersVisible(List<Player> players) {
+		public void setPlayersVisible(@NotNull List<Player> players) {
 			try {
 				List<UUID> all = players.stream().map(Player::getUniqueId).collect(Collectors.toList());
 				VisibilitySettings visibility = hologram.getVisibilitySettings();
@@ -82,12 +83,12 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void setPlayerVisibility(Player p, boolean visible) {
+		public void setPlayerVisibility(@NotNull Player p, boolean visible) {
 			hologram.getVisibilitySettings().setIndividualVisibility(p, booleanToVisibility(visible));
 		}
 		
 		@Override
-		public void appendItem(ItemStack item) {
+		public void appendItem(@NotNull ItemStack item) {
 			hologram.getLines().appendItem(item);
 		}
 		
@@ -97,7 +98,7 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void teleport(Location lc) {
+		public void teleport(@NotNull Location lc) {
 			hologram.setPosition(lc);
 		}
 		

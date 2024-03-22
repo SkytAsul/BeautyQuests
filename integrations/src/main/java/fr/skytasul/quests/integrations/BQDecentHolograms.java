@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import fr.skytasul.quests.api.AbstractHolograms;
+import org.jetbrains.annotations.NotNull;
 
 public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 
@@ -28,7 +29,7 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 	}
 	
 	@Override
-	public DecentHologram createHologram(Location lc, boolean defaultVisible) {
+	public @NotNull DecentHologram createHologram(@NotNull Location lc, boolean defaultVisible) {
 		Hologram hologram = DHAPI.createHologram("BQ_holo_" + counter++, lc, false);
 		hologram.setDefaultVisibleState(defaultVisible);
 		hologram.enable();
@@ -47,12 +48,12 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void appendItem(ItemStack item) {
+		public void appendItem(@NotNull ItemStack item) {
 			DHAPI.addHologramLine(hologram, item);
 		}
 
 		@Override
-		public void setPlayerVisibility(Player p, boolean visible) {
+		public void setPlayerVisibility(@NotNull Player p, boolean visible) {
 			if (visible) {
 				hologram.setShowPlayer(p);
 				hologram.show(p, 0);
@@ -63,7 +64,7 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void setPlayersVisible(List<Player> players) {
+		public void setPlayersVisible(@NotNull List<Player> players) {
 			List<Player> leftover = new ArrayList<>(players);
 			for (Iterator<UUID> iterator = hologram.getShowPlayers().iterator(); iterator
 					.hasNext();) {
@@ -91,7 +92,7 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void teleport(Location lc) {
+		public void teleport(@NotNull Location lc) {
 			DHAPI.moveHologram(hologram, lc);
 		}
 		

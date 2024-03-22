@@ -16,6 +16,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 
@@ -34,7 +35,7 @@ public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 	}
 	
 	@Override
-	public HD2Hologram createHologram(Location lc, boolean visible) {
+	public @NotNull HD2Hologram createHologram(@NotNull Location lc, boolean visible) {
 		Hologram holo = HologramsAPI.createHologram(QuestsPlugin.getPlugin(), lc);
 		if (protocolLib) holo.getVisibilityManager().setVisibleByDefault(visible);
 		return new HD2Hologram(holo);
@@ -47,7 +48,7 @@ public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void setPlayersVisible(List<Player> players) {
+		public void setPlayersVisible(@NotNull List<Player> players) {
 			try {
 				List<String> all = players.stream().map(Player::getName).collect(Collectors.toList());
 				VisibilityManager visibility = hologram.getVisibilityManager();
@@ -85,14 +86,14 @@ public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void setPlayerVisibility(Player p, boolean visible) {
+		public void setPlayerVisibility(@NotNull Player p, boolean visible) {
 			if (visible) {
 				hologram.getVisibilityManager().showTo(p);
 			}else hologram.getVisibilityManager().hideTo(p);
 		}
 		
 		@Override
-		public void appendItem(ItemStack item) {
+		public void appendItem(@NotNull ItemStack item) {
 			hologram.appendItemLine(item);
 		}
 		
@@ -102,7 +103,7 @@ public class BQHolographicDisplays2 extends AbstractHolograms<Hologram> {
 		}
 		
 		@Override
-		public void teleport(Location lc) {
+		public void teleport(@NotNull Location lc) {
 			hologram.teleport(lc);
 		}
 		

@@ -1,6 +1,10 @@
 package fr.skytasul.quests.rewards;
 
 import java.util.List;
+
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.EntityUtils;
+import fr.skytasul.quests.api.QuestsPlugin;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,6 +16,7 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.BQLocation;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -26,7 +31,9 @@ public class TeleportationReward extends AbstractReward {
 
 	@Override
 	public List<String> give(Player player) {
-		QuestUtils.runOrSync(() -> player.teleport(teleportation));
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, player, __ -> {
+			EntityUtils.teleportAsync(player, teleportation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+		}, null);
 		return null;
 	}
 
