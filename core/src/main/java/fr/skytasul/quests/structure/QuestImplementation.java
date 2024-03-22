@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -490,7 +492,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving quest end rewards.", ex);
 			}
 
-			QuestUtils.runOrSync(() -> {
+			QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, p.getLocation(), schedulerTaskInter -> {
 				manager.remove(acc);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
