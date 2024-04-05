@@ -1,5 +1,7 @@
 package fr.skytasul.quests.stages;
 
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -38,7 +40,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	private final long playTicks;
 	private final TimeMode timeMode;
 
-	private Map<Player, BukkitTask> tasks = new HashMap<>();
+	private Map<Player, SchedulerTaskInter> tasks = new HashMap<>();
 
 	public StagePlayTime(StageController controller, long ticks, TimeMode timeMode) {
 		super(controller);
@@ -92,8 +94,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	private void launchTask(Player p, long remaining) {
-		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
-				remaining < 0 ? 0 : remaining));
+		tasks.put(p, QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, p, __ -> {
+			finishStage(p);
+		}, null, remaining < 0 ? 0 : remaining));
 	}
 
 	@Override
@@ -117,7 +120,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	@Override
 	public void left(Player p) {
 		super.left(p);
-		BukkitTask task = tasks.remove(p);
+		SchedulerTaskInter task = tasks.remove(p);
 		if (task != null) {
 			cancelTask(p, task);
 		}else {
@@ -126,7 +129,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		}
 	}
 
-	private void cancelTask(Player p, BukkitTask task) {
+	private void cancelTask(Player p, SchedulerTaskInter task) {
 		task.cancel();
 		if (timeMode == TimeMode.ONLINE)
 			updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));

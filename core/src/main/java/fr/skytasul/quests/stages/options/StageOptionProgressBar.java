@@ -2,6 +2,9 @@ package fr.skytasul.quests.stages.options;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -124,8 +127,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		private final T progress;
 		private final long totalAmount;
 		private final PlaceholderRegistry placeholders;
-
-		private BukkitTask timer;
+		private SchedulerTaskInter timer;
 
 		public ProgressBar(Player p, T progress) {
 			this.progress = progress;
@@ -180,10 +182,10 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			if (timer != null)
 				timer.cancel();
 
-			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
+			timer = QuestsPlugin.getPlugin().getScheduler().runDelayed(SchedulerType.SYNC, acc.getPlayer(), __ -> {
 				bar.removePlayer(acc.getPlayer());
 				timer = null;
-			}, getProgressConfig().getBossBarTimeout() * 20L);
+			}, null, getProgressConfig().getBossBarTimeout() * 20L);
 		}
 	}
 

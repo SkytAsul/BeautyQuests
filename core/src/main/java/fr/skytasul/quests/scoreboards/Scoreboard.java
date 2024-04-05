@@ -1,14 +1,8 @@
 package fr.skytasul.quests.scoreboards;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -26,8 +20,17 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 
-public class Scoreboard extends BukkitRunnable implements Listener {
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Scoreboard extends SchedulerTaskRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
 	private static final int maxLength = MinecraftVersion.MAJOR >= 13 ? 1024 : 30;
@@ -59,8 +62,9 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 
-		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
+		super.runAtFixedRate(BeautyQuests.getInstance(), SchedulerType.ASYNC, 2L, 20L);
 	}
+
 
 	@Override
 	public void run() {
@@ -258,7 +262,6 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return true;
 	}
 
-	@Override
 	public synchronized void cancel() throws IllegalStateException {
 		super.cancel();
 		HandlerList.unregisterAll(this);

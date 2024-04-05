@@ -33,6 +33,10 @@
 							<pattern>com.cryptomorin.xseries</pattern>
 							<shadedPattern>fr.skytasul.quests.api.utils</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>fr.euphyllia.energie</pattern>
+							<shadedPattern>fr.skytasul.quests.api.utils.energie</shadedPattern>
+						</relocation>
 					</relocations>
 					<filters>
 						<filter>
@@ -153,6 +157,11 @@
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>9.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Euphillya</groupId>
+			<artifactId>Energie</artifactId>
+			<version>1.1.9</version>
 		</dependency>
 
 		<dependency>

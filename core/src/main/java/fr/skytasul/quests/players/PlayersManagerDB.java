@@ -3,14 +3,17 @@ package fr.skytasul.quests.players;
 import java.sql.*;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+
+import fr.euphyllia.energie.model.SchedulerRunnable;
+import fr.euphyllia.energie.model.SchedulerTaskInter;
+import fr.euphyllia.energie.model.SchedulerType;
+import fr.euphyllia.energie.utils.SchedulerTaskRunnable;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
@@ -532,7 +535,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		private static final int DATA_QUERY_TIMEOUT = 15;
 		private static final int DATA_FLUSHING_TIME = 10;
 
-		private Map<String, Entry<BukkitRunnable, Object>> cachedDatas = new HashMap<>(5);
+		private Map<String, Entry<SchedulerTaskRunnable, Object>> cachedDatas = new HashMap<>(5);
 		private Lock datasLock = new ReentrantLock();
 		private Lock dbLock = new ReentrantLock();
 		private boolean disabled = false;
@@ -607,12 +610,12 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 				}else if (cachedDatas.containsKey(dataStatement)) {
 					cachedDatas.get(dataStatement).setValue(data);
 				}else {
-					BukkitRunnable runnable = new BukkitRunnable() {
+					SchedulerTaskRunnable runnable = new SchedulerTaskRunnable() {
 
 						@Override
 						public void run() {
 							if (disabled) return;
-							Entry<BukkitRunnable, Object> entry = null;
+							Entry<SchedulerTaskRunnable, Object> entry = null;
 							datasLock.lock();
 							try {
 								if (!disabled) { // in case disabled while acquiring lock
@@ -650,7 +653,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 							}
 						}
 					};
-					runnable.runTaskLaterAsynchronously(BeautyQuests.getInstance(), DATA_FLUSHING_TIME);
+					runnable.runDelayed(BeautyQuests.getInstance(), SchedulerType.ASYNC, DATA_FLUSHING_TIME);
 					cachedDatas.put(dataStatement, new AbstractMap.SimpleEntry<>(runnable, data));
 				}
 			}finally {
@@ -684,7 +687,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			cachedDatas.values()
 				.stream()
 				.map(Entry::getKey)
-				.forEach(BukkitRunnable::cancel);
+				.forEach(SchedulerTaskRunnable::cancel);
 			cachedDatas.clear();
 			datasLock.unlock();
 		}
@@ -792,5 +795,4 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		}
 
 	}
-
 }

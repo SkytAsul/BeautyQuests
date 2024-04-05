@@ -6,6 +6,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -78,22 +81,22 @@ public final class QuestUtils {
 	}
 
 	public static void runOrSync(Runnable run) {
-		if (Bukkit.isPrimaryThread()) {
-			run.run();
-		} else
-			Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
-	}
+        if (!Energie.isFolia() && Bukkit.isPrimaryThread()) {
+            run.run();
+        }
+        QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, __ -> run.run());
+    }
 
 	public static <T> BiConsumer<T, Throwable> runSyncConsumer(Runnable run) {
 		return (__, ___) -> runSync(run);
 	}
 
 	public static void runSync(Runnable run) {
-		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), run);
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, __ -> run.run());
 	}
 
 	public static void runAsync(Runnable run) {
-		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), run);
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.ASYNC, __ -> run.run());
 	}
 
 	public static void tunnelEventCancelling(@NotNull Cancellable eventFrom, @NotNull Event eventTo) {
@@ -148,7 +151,7 @@ public final class QuestUtils {
 	public static void spawnFirework(Location lc, FireworkMeta meta) {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().fireworks() || meta == null)
 			return;
-		runOrSync(() -> {
+		QuestsPlugin.getPlugin().getScheduler().runTask(SchedulerType.SYNC, lc, __ -> {
 			Consumer<Firework> fwConsumer = fw -> {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
