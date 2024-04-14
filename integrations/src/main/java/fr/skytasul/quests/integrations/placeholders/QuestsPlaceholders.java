@@ -1,17 +1,5 @@
 package fr.skytasul.quests.integrations.placeholders;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitTask;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -23,6 +11,18 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitTask;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class QuestsPlaceholders extends PlaceholderExpansion implements Listener {
 
@@ -183,7 +183,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						return "§c" + ex.getMessage();
 					}
 				}catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error occurred while parsing palceholder " + identifier + " for " + p.getName(), ex);
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+							"An error occurred while parsing placeholder " + identifier + " for " + p.getName(), ex);
 					return "§cinvalid placeholder";
 				}
 			}finally {

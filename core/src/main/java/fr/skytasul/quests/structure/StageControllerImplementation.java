@@ -72,7 +72,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public void finishStage(@NotNull Player player) {
-		QuestUtils.runSync(() -> branch.finishStage(player, this));
+		QuestUtils.runSync(() -> branch.finishPlayerStage(player, this));
 	}
 
 	@Override
