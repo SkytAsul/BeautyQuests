@@ -1,11 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.*;
-import java.util.Map.Entry;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -29,6 +23,12 @@ import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class StageBringBack extends StageNPC{
 
@@ -70,7 +70,7 @@ public class StageBringBack extends StageNPC{
 			return;
 		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
 				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
-		msg.sendMessage(p, getNPC(), getNpcName(), 1, 1);
+		msg.sendMessage(p, getNPC(), getNpcName(), 0, 1);
 	}
 
 	public void removeItems(Player p){
