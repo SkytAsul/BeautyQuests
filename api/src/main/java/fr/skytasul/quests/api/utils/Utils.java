@@ -276,9 +276,9 @@ public class Utils{
 		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
 		if (material.isPresent() && material.get().isSupported())
 			return material.get();
-		if (type == EntityType.WITHER)
+		if (type == EntityType.WITHER) // got its egg
 			return XMaterial.WITHER_SKELETON_SKULL;
-		if (type == EntityType.IRON_GOLEM)
+		if (type == EntityType.IRON_GOLEM) // got its egg
 			return XMaterial.IRON_BLOCK;
 		if (type == EntityType.GIANT)
 			return XMaterial.ZOMBIE_SPAWN_EGG;
@@ -286,15 +286,16 @@ public class Utils{
 			return XMaterial.ARMOR_STAND;
 		if (type == EntityType.PLAYER)
 			return XMaterial.PLAYER_HEAD;
-		if (type == EntityType.ENDER_DRAGON)
+		if (type == EntityType.ENDER_DRAGON) // got its egg
 			return XMaterial.DRAGON_HEAD;
-		if (type.name().equals("MUSHROOM_COW") || type.name().equals("MOOSHROOM"))
+		if (type.name().equals("MUSHROOM_COW"))
 			return XMaterial.MOOSHROOM_SPAWN_EGG;
-		if (type.name().equals("SNOWMAN") || type.name().equals("SNOW_GOLEM"))
+		if (type.name().equals("SNOWMAN")) // got its egg
 			return XMaterial.SNOW_BLOCK;
-		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN"))
+		if (type.name().equals("PIG_ZOMBIE"))
 			return XMaterial.ZOMBIFIED_PIGLIN_SPAWN_EGG;
-		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
+		if (type.name().equals("ILLUSIONER"))
+			return XMaterial.BLAZE_POWDER;
 		return XMaterial.SPONGE;
 	}
 

@@ -1,27 +1,27 @@
 package fr.skytasul.quests.api.utils;
 
-import org.bukkit.DyeColor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
+import org.bukkit.DyeColor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum PlayerListCategory {
 
 	FINISHED(
 			1,
-			XMaterial.WRITTEN_BOOK,
+			XMaterial.BOOK,
 			Lang.finisheds.toString(),
 			DyeColor.GREEN),
 	IN_PROGRESS(
 			2,
-			XMaterial.BOOK,
+			XMaterial.WRITABLE_BOOK,
 			Lang.inProgress.toString(),
 			DyeColor.YELLOW),
 	NOT_STARTED(
 			3,
-			XMaterial.WRITABLE_BOOK,
+			XMaterial.PAPER,
 			Lang.notStarteds.toString(),
 			DyeColor.RED);
 

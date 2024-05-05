@@ -337,6 +337,7 @@ public final class ItemUtils {
 			else
 				im.removeEnchant(Enchantment.getByName("DURABILITY"));
 		}
+		is.setItemMeta(im);
 	}
 
 	/**
