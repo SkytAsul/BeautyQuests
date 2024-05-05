@@ -1,9 +1,12 @@
 package fr.skytasul.quests.api.gui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.utils.ChatColorUtils;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.enchantments.Enchantment;
@@ -11,12 +14,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.jetbrains.annotations.Nullable;
-import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.ChatColorUtils;
-import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public final class ItemUtils {
 
@@ -139,11 +140,17 @@ public final class ItemUtils {
 
 		// add flags to hide various descriptions,
 		// depending on the item type/attributes/other things
-		if (im.hasEnchants()) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		if (MinecraftVersion.MAJOR >= 11 && im.isUnbreakable()) im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		if (is.getType().getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers())) im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta || (MinecraftVersion.MAJOR >= 12 && im instanceof KnowledgeBookMeta)) im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-		if (im instanceof LeatherArmorMeta) im.addItemFlags(ItemFlag.HIDE_DYE);
+		if (im.hasEnchants())
+			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		if (MinecraftVersion.MAJOR >= 11 && im.isUnbreakable())
+			im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		if (is.getType().getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers()))
+			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta
+				|| (MinecraftVersion.MAJOR >= 12 && im instanceof KnowledgeBookMeta))
+			im.addItemFlags(Utils.valueOfEnum(ItemFlag.class, "HIDE_POTION_EFFECTS", "HIDE_ADDITIONAL_TOOLTIP"));
+		if (im instanceof LeatherArmorMeta)
+			im.addItemFlags(ItemFlag.HIDE_DYE);
 
 		is.setItemMeta(im);
 		return is;
@@ -312,6 +319,24 @@ public final class ItemUtils {
 		if (im.removeEnchant(en))
 			is.setItemMeta(im);
 		return is;
+	}
+
+	public static boolean isGlittering(ItemStack is) {
+		ItemMeta im = is.getItemMeta();
+		return (MinecraftVersion.isHigherThan(20, 6) && im.hasEnchantmentGlintOverride() && im.getEnchantmentGlintOverride())
+				|| im.hasEnchants();
+	}
+
+	public static void setGlittering(ItemStack is, boolean glitter) {
+		ItemMeta im = is.getItemMeta();
+		if (MinecraftVersion.isHigherThan(20, 6)) {
+			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
+		} else {
+			if (glitter)
+				im.addEnchant(Enchantment.getByName("DURABILITY"), 0, true);
+			else
+				im.removeEnchant(Enchantment.getByName("DURABILITY"));
+		}
 	}
 
 	/**

@@ -1,7 +1,8 @@
 package fr.skytasul.quests.utils;
 
-import java.util.List;
-import java.util.Random;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.utils.compatibility.Post1_13;
+import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -11,9 +12,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
-import fr.skytasul.quests.utils.nms.NMS;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class ParticleEffect {
 
@@ -132,7 +133,7 @@ public class ParticleEffect {
 
 	public static boolean canHaveColor(Particle particle) {
 		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
-		return particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
+		return Arrays.asList("REDSTONE", "SPELL_MOB", "SPELL_MOB_AMBIENT").contains(particle.name());
 	}
 
 	public enum ParticleShape {
@@ -160,7 +161,7 @@ public class ParticleEffect {
 					dustColored = false;
 				}
 			}else {
-				colored = particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
+				colored = canHaveColor(particle);
 				dustColored = false;
 			}
 

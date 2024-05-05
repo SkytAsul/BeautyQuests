@@ -1,19 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.bukkit.DyeColor;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -31,6 +17,18 @@ import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlayerListGUI extends PagedGUI<Quest> {
 
@@ -205,17 +203,15 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 	private void toggleCategorySelected() {
 		ItemStack is = getInventory().getItem(cat.getSlot() * 9 + 8);
-		ItemMeta im = is.getItemMeta();
-		String name = im.getDisplayName();
-		if (!im.hasEnchant(Enchantment.DURABILITY)) {
-			im.addEnchant(Enchantment.DURABILITY, 0, true);
+		String name = ItemUtils.getName(is);
+		if (!ItemUtils.isGlittering(is)) {
+			ItemUtils.setGlittering(is, true);
 			name = SELECTED_PREFIX + name.substring(UNSELECTED_PREFIX.length());
 		}else{
-			im.removeEnchant(Enchantment.DURABILITY);
+			ItemUtils.setGlittering(is, false);
 			name = UNSELECTED_PREFIX + name.substring(SELECTED_PREFIX.length());
 		}
-		im.setDisplayName(name);
-		is.setItemMeta(im);
+		ItemUtils.name(is, name);
 	}
 
 	@Override

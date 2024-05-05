@@ -24,4 +24,14 @@ public final class MinecraftVersion {
 
 	private MinecraftVersion() {}
 
+	public static boolean isHigherThan(int major, int minor) {
+		if (MAJOR > major)
+			return true;
+
+		if (MAJOR == major && MINOR >= minor)
+			return true;
+
+		return false;
+	}
+
 }

@@ -1,5 +1,19 @@
 package fr.skytasul.quests.api.utils;
 
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,19 +25,6 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
 
 /**
  * A bunch of static methods who can be useful
@@ -259,20 +260,40 @@ public class Utils{
 		return false;
 	}
 
+	public static <T extends Enum<T>> T valueOfEnum(Class<T> enumClass, @NotNull String... names) {
+		for (String name : names) {
+			try {
+				return Enum.valueOf(enumClass, name);
+			} catch (IllegalArgumentException ex) {
+			}
+		}
+		throw new IllegalArgumentException("Cannot find " + Arrays.toString(names) + " from enum " + enumClass.getName());
+	}
+
 	public static XMaterial mobItem(EntityType type) {
-		if (type == null) return XMaterial.SPONGE;
+		if (type == null)
+			return XMaterial.SPONGE;
 		Optional<XMaterial> material = XMaterial.matchXMaterial(type.name() + "_SPAWN_EGG");
 		if (material.isPresent() && material.get().isSupported())
 			return material.get();
-		if (type == EntityType.WITHER) return XMaterial.WITHER_SKELETON_SKULL;
-		if (type == EntityType.IRON_GOLEM) return XMaterial.IRON_BLOCK;
-		if (type == EntityType.SNOWMAN) return XMaterial.SNOW_BLOCK;
-		if (type == EntityType.MUSHROOM_COW) return XMaterial.MOOSHROOM_SPAWN_EGG;
-		if (type == EntityType.GIANT) return XMaterial.ZOMBIE_SPAWN_EGG;
-		if (type == EntityType.ARMOR_STAND) return XMaterial.ARMOR_STAND;
-		if (type == EntityType.PLAYER) return XMaterial.PLAYER_HEAD;
-		if (type == EntityType.ENDER_DRAGON) return XMaterial.DRAGON_HEAD;
-		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN")) return XMaterial.ZOMBIFIED_PIGLIN_SPAWN_EGG;
+		if (type == EntityType.WITHER)
+			return XMaterial.WITHER_SKELETON_SKULL;
+		if (type == EntityType.IRON_GOLEM)
+			return XMaterial.IRON_BLOCK;
+		if (type == EntityType.GIANT)
+			return XMaterial.ZOMBIE_SPAWN_EGG;
+		if (type == EntityType.ARMOR_STAND)
+			return XMaterial.ARMOR_STAND;
+		if (type == EntityType.PLAYER)
+			return XMaterial.PLAYER_HEAD;
+		if (type == EntityType.ENDER_DRAGON)
+			return XMaterial.DRAGON_HEAD;
+		if (type.name().equals("MUSHROOM_COW") || type.name().equals("MOOSHROOM"))
+			return XMaterial.MOOSHROOM_SPAWN_EGG;
+		if (type.name().equals("SNOWMAN") || type.name().equals("SNOW_GOLEM"))
+			return XMaterial.SNOW_BLOCK;
+		if (type.name().equals("PIG_ZOMBIE") || type.name().equals("ZOMBIFIED_PIGLIN"))
+			return XMaterial.ZOMBIFIED_PIGLIN_SPAWN_EGG;
 		if (type.name().equals("ILLUSIONER")) return XMaterial.BLAZE_POWDER;
 		return XMaterial.SPONGE;
 	}

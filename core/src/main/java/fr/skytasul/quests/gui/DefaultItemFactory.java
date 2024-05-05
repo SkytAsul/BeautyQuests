@@ -3,14 +3,14 @@ package fr.skytasul.quests.gui;
 import static fr.skytasul.quests.api.gui.ItemUtils.addEnchant;
 import static fr.skytasul.quests.api.gui.ItemUtils.item;
 import static fr.skytasul.quests.api.gui.ItemUtils.name;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.gui.ItemFactory;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.XEnchantment;
 import fr.skytasul.quests.api.utils.XMaterial;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class DefaultItemFactory implements ItemFactory {
 
@@ -33,7 +33,7 @@ public class DefaultItemFactory implements ItemFactory {
 
 	@Override
 	public @NotNull ItemStack getDone() {
-		return addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), Enchantment.DURABILITY, 0);
+		return addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), XEnchantment.DURABILITY.getEnchant(), 0);
 	}
 
 	@Override

@@ -1,15 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.*;
-import java.util.stream.Stream;
-import org.apache.commons.lang.Validate;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
@@ -25,6 +17,13 @@ import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 
@@ -50,7 +49,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 
 	@Override
 	public ItemStack getItemStack(WrappedDialogable object) {
-		return object.setMeta(XMaterial.WRITTEN_BOOK.parseItem());
+		return object.setMeta(ItemUtils.clearVisibleAttributes(XMaterial.WRITTEN_BOOK.parseItem()));
 	}
 
 	@Override
@@ -163,13 +162,11 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		}
 
 		public ItemStack setMeta(ItemStack item) {
-			ItemMeta meta = item.getItemMeta();
-			meta.setLore(getCurrentPage().lines);
-			meta.setDisplayName("§8" + objects.indexOf(this) + " (" + dialogable.getNPC().getNpc().getName() + "§8) - "
-					+ getCurrentPage().header);
-			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-			item.setItemMeta(meta);
-			return item;
+			return ItemUtils.nameAndLore(
+					item,
+					"§8" + objects.indexOf(this) + " (" + dialogable.getNPC().getNpc().getName() + "§8) - "
+							+ getCurrentPage().header,
+					getCurrentPage().lines);
 		}
 	}
 
