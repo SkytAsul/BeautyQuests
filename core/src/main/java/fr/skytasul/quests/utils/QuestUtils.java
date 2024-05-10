@@ -1,11 +1,12 @@
 package fr.skytasul.quests.utils;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.utils.AutoRegistered;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.utils.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -21,13 +22,12 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.utils.AutoRegistered;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.nms.NMS;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public final class QuestUtils {
 
@@ -153,10 +153,11 @@ public final class QuestUtils {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
 			};
-			if (MinecraftVersion.MAJOR >= 12) {
+			if ((MinecraftVersion.MAJOR >= 12 && MinecraftVersion.MAJOR < 17) || MinecraftVersion.MAJOR >= 20) {
 				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
-				// much better to use the built-in since 1.12 method to do operations on entity
-				// before it is sent to the players, as it will not create flickering
+				// Much better to use the built-in since 1.12 method to do operations on entity
+				// before it is sent to the players, as it will not create flickering.
+				// From 1.17.1 to 1.19.4, the method was moved from World to RegionAccessor.
 			} else {
 				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
 			}
