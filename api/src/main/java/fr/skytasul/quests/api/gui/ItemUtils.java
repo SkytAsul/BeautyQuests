@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +42,7 @@ public final class ItemUtils {
 		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
-		im.addItemFlags(ItemFlag.values());
+		addSpecificFlags(im, is.getType());
 		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
@@ -61,7 +62,7 @@ public final class ItemUtils {
 		}
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
-		im.addItemFlags(ItemFlag.values());
+		addSpecificFlags(im, is.getType());
 		is.setItemMeta(applyMeta(im, name, lore));
 		return is;
 	}
@@ -138,13 +139,20 @@ public final class ItemUtils {
 		im.setDisplayName(null);
 		im.setLore(null);
 
+		addSpecificFlags(im, is.getType());
+
+		is.setItemMeta(im);
+		return is;
+	}
+
+	public static ItemMeta addSpecificFlags(ItemMeta im, Material material) {
 		// add flags to hide various descriptions,
 		// depending on the item type/attributes/other things
 		if (im.hasEnchants())
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		if (MinecraftVersion.MAJOR >= 11 && im.isUnbreakable())
 			im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		if (is.getType().getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers()))
+		if (material.getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers()))
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta
 				|| (MinecraftVersion.MAJOR >= 12 && im instanceof KnowledgeBookMeta))
@@ -152,8 +160,7 @@ public final class ItemUtils {
 		if (im instanceof LeatherArmorMeta)
 			im.addItemFlags(ItemFlag.HIDE_DYE);
 
-		is.setItemMeta(im);
-		return is;
+		return im;
 	}
 
 	/**

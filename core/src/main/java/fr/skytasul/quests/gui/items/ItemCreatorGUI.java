@@ -1,16 +1,5 @@
 package fr.skytasul.quests.gui.items;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
@@ -20,6 +9,16 @@ import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemCreatorGUI extends AbstractGui {
 
@@ -147,7 +146,7 @@ public class ItemCreatorGUI extends AbstractGui {
 		if (name != null)
 			im.setDisplayName(name);
 		if (flags)
-			im.addItemFlags(ItemFlag.values());
+			ItemUtils.addSpecificFlags(im, is.getType());
 		is.setItemMeta(im);
 		is.setAmount(amount);
 
