@@ -1,7 +1,5 @@
 package fr.skytasul.quests.integrations;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -30,6 +28,8 @@ import fr.skytasul.quests.integrations.vault.economy.MoneyRequirement;
 import fr.skytasul.quests.integrations.vault.economy.MoneyReward;
 import fr.skytasul.quests.integrations.vault.permission.PermissionReward;
 import fr.skytasul.quests.integrations.worldguard.BQWorldGuard;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 public class IntegrationsLoader {
 
@@ -111,7 +111,8 @@ public class IntegrationsLoader {
 		manager.addDependency(new BQDependency("TokenEnchant",
 				() -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), QuestsPlugin.getPlugin())));
 		manager.addDependency(new BQDependency("UltimateTimber",
-				() -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), QuestsPlugin.getPlugin())));
+				() -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), QuestsPlugin.getPlugin()), null,
+				this::isUltimateTimberValid));
 		manager.addDependency(new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload));
 		manager.addDependency(new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload));
 	}
@@ -182,6 +183,18 @@ public class IntegrationsLoader {
 						SkillAPILevelRequirement::new));
 		QuestsAPI.getAPI().getRewards().register(new RewardCreator("skillAPI-exp", SkillAPIXpReward.class,
 				ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RWSkillApiXp.toString()), SkillAPIXpReward::new));
+	}
+
+	private boolean isUltimateTimberValid(Plugin plugin) {
+		try {
+			Class.forName("com.craftaro.ultimatetimber.UltimateTimber");
+		} catch (ClassNotFoundException ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of UltimateTimber ("
+					+ plugin.getDescription().getVersion()
+					+ ") is not compatible with BeautyQuests. Please use 3.0.0 or higher.");
+			return false;
+		}
+		return true;
 	}
 
 	private boolean isBossVersionValid(Plugin plugin) {
