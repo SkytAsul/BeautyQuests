@@ -1,7 +1,6 @@
 name: BeautyQuests
 author: SkytAsul
-version: "${human.version}_BUILD${build.number}"
-#version: "${human.version}"
+version: "${plugin.version}"
 description: Quests system with a simple graphical interface.
 website: https://www.spigotmc.org/resources/beautyquests.39255/
 api-version: 1.13
