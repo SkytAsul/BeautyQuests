@@ -1,14 +1,5 @@
 package fr.skytasul.quests.structure;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -29,6 +20,15 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class QuestBranchImplementation implements QuestBranch {
 
@@ -173,13 +173,14 @@ public class QuestBranchImplementation implements QuestBranch {
 	public void start(@NotNull PlayerAccount acc) {
 		acc.getQuestDatas(getQuest()).setBranch(getId());
 		if (!regularStages.isEmpty()){
-			setStage(acc, 0);
+			setPlayerStage(acc, regularStages.get(0));
 		}else {
-			setEndingStages(acc, true);
+			setPlayerEndingStages(acc);
 		}
 	}
 
-	public void finishStage(@NotNull Player p, @NotNull StageControllerImplementation<?> stage) {
+	@Override
+	public void finishPlayerStage(@NotNull Player p, @NotNull StageController stage) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for player " + p.getName() + " (coming from " + stage.toString() + ") via " + DebugUtils.stackTraces(1, 3));
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		@NotNull
@@ -200,7 +201,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			}
 		}
 		datas.setStage(-1);
-		endStage(acc, stage, () -> {
+		endStage(acc, (StageControllerImplementation<?>) stage, () -> {
 			if (!manager.getQuest().hasStarted(acc)) return;
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
 				int newId = getRegularStageId(stage) + 1;
@@ -210,9 +211,9 @@ public class QuestBranchImplementation implements QuestBranch {
 						getQuest().finish(p);
 						return;
 					}
-					setEndingStages(acc, true);
+					setPlayerEndingStages(acc);
 				}else {
-					setStage(acc, newId);
+					setPlayerStage(acc, regularStages.get(newId));
 				}
 			}else { // ending stage - redirect to other branch
 				remove(acc, false);
@@ -275,37 +276,39 @@ public class QuestBranchImplementation implements QuestBranch {
 		}
 	}
 
-	public void setStage(@NotNull PlayerAccount acc, int id) {
-		StageControllerImplementation<?> stage = regularStages.get(id);
+	@Override
+	public void setPlayerStage(@NotNull PlayerAccount acc, @NotNull StageController stage) {
 		Player p = acc.getPlayer();
-		if (stage == null){
-			if (p != null)
-				DefaultErrors.sendGeneric(p, " noStage");
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error into the StageManager of quest " + getQuest().getName() + " : the stage " + id + " doesn't exists.");
-			remove(acc, true);
-		}else {
-			PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
-			if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null
-					&& questDatas.getStage() != -1)
-				Lang.QUEST_UPDATED.send(p, getQuest());
-			questDatas.setStage(id);
-			if (p != null) playNextStage(p);
-			stage.start(acc);
-			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
-		}
+		PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
+		if (questDatas.getBranch() != getId())
+			throw new IllegalStateException("The player is not in the right branch");
+
+		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null
+				&& questDatas.getStage() != -1)
+			Lang.QUEST_UPDATED.send(p, getQuest());
+		questDatas.setStage(getRegularStageId(stage));
+		if (p != null)
+			playNextStage(p);
+		((StageControllerImplementation<?>) stage).start(acc);
+		Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
 	}
 
-	public void setEndingStages(@NotNull PlayerAccount acc, boolean launchStage) {
+	@Override
+	public void setPlayerEndingStages(@NotNull PlayerAccount acc) {
 		Player p = acc.getPlayer();
-		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null && launchStage)
-			Lang.QUEST_UPDATED.send(p, getQuest());
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		if (datas.getBranch() != getId())
+			throw new IllegalStateException("The player is not in the right branch");
+
+		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null)
+			Lang.QUEST_UPDATED.send(p, getQuest());
 		datas.setInEndingStages();
 		for (EndingStageImplementation endStage : endStages) {
 			endStage.getStage().start(acc);
 			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), endStage.getStage()));
 		}
-		if (p != null && launchStage) playNextStage(p);
+		if (p != null)
+			playNextStage(p);
 	}
 
 	private void playNextStage(@NotNull Player p) {

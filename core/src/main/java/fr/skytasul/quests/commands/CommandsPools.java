@@ -1,6 +1,5 @@
 package fr.skytasul.quests.commands;
 
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
@@ -15,6 +14,7 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
+import org.bukkit.entity.Player;
 
 public class CommandsPools implements OrphanCommand {
 
@@ -49,8 +49,8 @@ public class CommandsPools implements OrphanCommand {
 				return;
 			}
 
-			pool.give(player).thenAccept(
-					result -> Lang.POOL_START_SUCCESS.send(player, pool, acc, PlaceholderRegistry.of("result", result)));
+			pool.give(player).thenAccept(result -> Lang.POOL_START_SUCCESS.send(actor.getSender(), pool, acc,
+							PlaceholderRegistry.of("result", result)));
 		}
 	}
 

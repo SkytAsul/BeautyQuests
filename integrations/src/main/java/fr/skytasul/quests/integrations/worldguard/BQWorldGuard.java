@@ -90,24 +90,17 @@ public class BQWorldGuard {
 		return ((ProtectedRegion) region).getId();
 	}
 
-	public World getWorld(String id) {
-		for (World w : Bukkit.getWorlds()){
-			try{
-				if (getRegionManager(w).hasRegion(id)) return w;
-			}catch (Exception ex){
-				continue;
-			}
-		}
-		return null;
-	}
-
 	public boolean isInRegion(ProtectedRegion region, Location to, boolean mustBeHighest) {
 		ApplicableRegionSet regions = getRegionManager(to.getWorld())
 				.getApplicableRegions(BlockVector3.at(to.getBlockX(), to.getBlockY(), to.getBlockZ()));
+		ProtectedRegion global = getRegionManager(to.getWorld()).getRegion("__global__");
+		boolean isGlobal = region.equals(global);
 		if (mustBeHighest) {
-			return regions.getRegions().iterator().next().equals(region);
-		} else
-			return regions.getRegions().contains(region);
+			ProtectedRegion highest = regions.getRegions().isEmpty() ? global : regions.getRegions().iterator().next();
+			return highest.equals(region) || (isGlobal && global.getPriority() >= highest.getPriority());
+		} else {
+			return isGlobal || regions.getRegions().contains(region);
+		}
 	}
 
 	public boolean regionExists(String name, World w) {

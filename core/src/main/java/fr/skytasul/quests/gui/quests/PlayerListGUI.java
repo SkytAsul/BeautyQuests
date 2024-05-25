@@ -1,19 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.bukkit.DyeColor;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -31,6 +17,18 @@ import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlayerListGUI extends PagedGUI<Quest> {
 
@@ -74,13 +72,11 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	private void setCategory(PlayerListCategory category){
 		if (cat == category) return;
 		if (cat != null)
-			toggleCategorySelected();
+			setCategorySelected(false);
 		cat = category;
+		setCategorySelected(true);
 
 		setSeparatorColor(cat.getColor());
-		DyeColor color = cat == PlayerListCategory.FINISHED ? DyeColor.GREEN: (cat == PlayerListCategory.IN_PROGRESS ? DyeColor.YELLOW : DyeColor.RED);
-		for (int i = 0; i < 5; i++)
-			getInventory().setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 
 		List<Quest> quests;
 		switch (cat) {
@@ -203,19 +199,17 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		}
 	}
 
-	private void toggleCategorySelected() {
+	private void setCategorySelected(boolean selected) {
 		ItemStack is = getInventory().getItem(cat.getSlot() * 9 + 8);
-		ItemMeta im = is.getItemMeta();
-		String name = im.getDisplayName();
-		if (!im.hasEnchant(Enchantment.DURABILITY)) {
-			im.addEnchant(Enchantment.DURABILITY, 0, true);
-			name = SELECTED_PREFIX + name.substring(UNSELECTED_PREFIX.length());
-		}else{
-			im.removeEnchant(Enchantment.DURABILITY);
-			name = UNSELECTED_PREFIX + name.substring(SELECTED_PREFIX.length());
+		String name;
+		if (selected) {
+			ItemUtils.setGlittering(is, true);
+			name = SELECTED_PREFIX + cat.getName();
+		} else {
+			ItemUtils.setGlittering(is, false);
+			name = UNSELECTED_PREFIX + cat.getName();
 		}
-		im.setDisplayName(name);
-		is.setItemMeta(im);
+		ItemUtils.name(is, name);
 	}
 
 	@Override

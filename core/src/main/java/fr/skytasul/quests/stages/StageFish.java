@@ -36,7 +36,7 @@ public class StageFish extends AbstractItemStage implements Listener {
 		if (e.getState() == State.CAUGHT_FISH && e.getCaught() instanceof Item){
 			Player p = e.getPlayer();
 			Item item = (Item) e.getCaught();
-			if (item.isDead() || !hasStarted(p))
+			if (item.isDead())
 				return;
 			ItemStack fish = item.getItemStack();
 			event(p, fish, fish.getAmount());

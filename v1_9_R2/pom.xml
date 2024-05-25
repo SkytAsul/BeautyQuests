@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>1.0.2</version>
+		<version>${revision}</version>
 	</parent>
 	
 	<properties><maven.deploy.skip>true</maven.deploy.skip></properties>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-core</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

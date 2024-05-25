@@ -2,6 +2,7 @@ package fr.skytasul.quests.gui.misc;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -32,7 +33,7 @@ public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 		this.end = end;
 
 		buttons.put(1,
-				doneButton = LayoutedButton.createLoreValue(XMaterial.COMMAND_BLOCK, Lang.commandValue.toString(), () -> cmd,
+				LayoutedButton.createLoreValue(XMaterial.COMMAND_BLOCK, Lang.commandValue.toString(), () -> cmd,
 				this::commandClick));
 		buttons.put(3, LayoutedButton.create(() -> ItemUtils.itemSwitch(Lang.commandConsole.toString(), console),
 				this::consoleClick));
@@ -40,8 +41,9 @@ public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 				this::parseClick));
 		buttons.put(5, LayoutedButton.createLoreValue(XMaterial.CLOCK, Lang.commandDelay.toString(), () -> delay,
 				this::delayClick));
-		buttons.put(8,
-				LayoutedButton.create(() -> cmd == null ? QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNotDone() : QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
+		ItemStack notDone = QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNotDone();
+		ItemStack done = QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone();
+		buttons.put(8, doneButton = LayoutedButton.create(() -> cmd == null ? notDone : done, this::doneClick));
 	}
 
 	public CommandGUI setFromExistingCommand(@Nullable Command cmd) {

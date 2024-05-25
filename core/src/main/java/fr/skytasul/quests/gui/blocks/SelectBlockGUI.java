@@ -1,16 +1,5 @@
 package fr.skytasul.quests.gui.blocks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.function.BiConsumer;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.blocks.BQBlock;
@@ -27,6 +16,16 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.nms.NMS;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
@@ -66,7 +65,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 											Lang.materialNotItemLore.quickFormat("block_type", type.name()))));
 				}
 				if (tag == null)
-					ItemUtils.addEnchant(inventory.getItem(slot), Enchantment.DURABILITY, 1);
+					ItemUtils.setGlittering(inventory.getItem(slot), true);
 			}
 
 		});
@@ -75,7 +74,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
 						QuestOption.formatNullableValue(blockData, blockData == null));
 				if (blockData != null)
-					ItemUtils.addEnchant(item, Enchantment.DAMAGE_ALL, 1);
+					ItemUtils.setGlittering(item, true);
 				return item;
 			}, this::dataClick));
 
@@ -84,7 +83,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 						QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
 						QuestOption.formatNullableValue(tag, tag == null));
 				if (tag != null)
-					ItemUtils.addEnchant(item, Enchantment.DAMAGE_ALL, 1);
+					ItemUtils.setGlittering(item, true);
 				return item;
 			}, this::tagClick));
 		}

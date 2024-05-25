@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>fr.skytasul</groupId>
 		<artifactId>beautyquests-parent</artifactId>
-		<version>1.0.2</version>
+		<version>${revision}</version>
 	</parent>
 	
 	<properties>
@@ -22,6 +22,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.2.1</version>
 				<configuration>
+        			<createDependencyReducedPom>false</createDependencyReducedPom>
 					<relocations>
 						<relocation>
 							<pattern>revxrsal.commands</pattern>
@@ -39,7 +40,7 @@
 							<includes>
 								<include>com/cryptomorin/xseries/XMaterial*</include>
 								<include>com/cryptomorin/xseries/XBlock*</include>
-								<include>com/cryptomorin/xseries/XPotion*</include>
+								<include>com/cryptomorin/xseries/XEnchantment*</include>
 							</includes>
 						</filter>
 					</filters>
@@ -115,6 +116,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<repository> <!-- For Adventure snapshots, in paper 1.20.6 -->
+			<id>sonatype-oss-snapshots1</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -134,7 +139,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.20.1-R0.1-SNAPSHOT</version>
+			<version>${minecraft.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -151,7 +156,7 @@
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>9.8.0</version>
+			<version>9.10.0</version>
 		</dependency>
 
 		<dependency>

@@ -1,7 +1,8 @@
 package fr.skytasul.quests.utils;
 
-import java.util.List;
-import java.util.Random;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.utils.compatibility.Post1_13;
+import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -9,22 +10,24 @@ import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
-import fr.skytasul.quests.utils.nms.NMS;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class ParticleEffect {
 
 	private static Random random = new Random();
 
-	private final ParticleType type;
-	private final ParticleShape shape;
-	private final Color color;
+	private final @NotNull ParticleType type;
+	private final @NotNull ParticleShape shape;
+	private final @Nullable Color color;
 
 	private final double[] colors;
 	private final Object dustColor;
 
-	public ParticleEffect(Particle bukkitType, ParticleShape shape, Color color) {
+	public ParticleEffect(@NotNull Particle bukkitType, @NotNull ParticleShape shape, @Nullable Color color) {
 		Validate.notNull(bukkitType);
 		this.type = new ParticleType(bukkitType);
 		this.shape = shape;
@@ -46,15 +49,15 @@ public class ParticleEffect {
 		}
 	}
 
-	public Particle getParticle() {
+	public @NotNull Particle getParticle() {
 		return type.particle;
 	}
 
-	public ParticleShape getShape() {
+	public @NotNull ParticleShape getShape() {
 		return shape;
 	}
 
-	public Color getColor() {
+	public @Nullable Color getColor() {
 		return color;
 	}
 
@@ -110,7 +113,8 @@ public class ParticleEffect {
 		}
 
 		for (Player p : players) {
-			p.spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
+			if (p.getWorld() == lc.getWorld())
+				p.spawnParticle(type.particle, lc, amount, offX, offY, offZ, extra, data);
 		}
 	}
 
@@ -129,7 +133,7 @@ public class ParticleEffect {
 
 	public static boolean canHaveColor(Particle particle) {
 		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
-		return particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
+		return Arrays.asList("REDSTONE", "SPELL_MOB", "SPELL_MOB_AMBIENT").contains(particle.name());
 	}
 
 	public enum ParticleShape {
@@ -157,7 +161,7 @@ public class ParticleEffect {
 					dustColored = false;
 				}
 			}else {
-				colored = particle == Particle.REDSTONE || particle == Particle.SPELL_MOB || particle == Particle.SPELL_MOB_AMBIENT;
+				colored = canHaveColor(particle);
 				dustColored = false;
 			}
 

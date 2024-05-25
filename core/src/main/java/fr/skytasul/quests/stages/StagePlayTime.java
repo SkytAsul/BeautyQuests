@@ -1,14 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -32,6 +23,15 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class StagePlayTime extends AbstractStage implements HasProgress {
 
@@ -66,12 +66,12 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	private long getRemaining(PlayerAccount acc) {
 		switch (timeMode) {
 			case ONLINE:
-				long remaining = Utils.parseLong(getData(acc, "remainingTime"));
-				long lastJoin = Utils.parseLong(getData(acc, "lastJoin"));
+				long remaining = getData(acc, "remainingTime", Long.class);
+				long lastJoin = getData(acc, "lastJoin", Long.class);
 				long playedTicks = (System.currentTimeMillis() - lastJoin) / 50;
 				return remaining - playedTicks;
 			case OFFLINE:
-				World world = Bukkit.getWorld(UUID.fromString(getData(acc, "worldUuid")));
+				World world = Bukkit.getWorld(getData(acc, "worldUuid", UUID.class));
 				if (world == null) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot get remaining time of " + acc.getNameAndID()
 							+ " for " + controller + " because the world has changed.",
@@ -80,11 +80,11 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 					return -1;
 				}
 
-				long startTime = Utils.parseLong(getData(acc, "worldStartTime"));
+				long startTime = getData(acc, "worldStartTime", Long.class);
 				long elapsedTicks = world.getGameTime() - startTime;
 				return playTicks - elapsedTicks;
 			case REALTIME:
-				startTime = Utils.parseLong(getData(acc, "startTime"));
+				startTime = getData(acc, "startTime", Long.class);
 				elapsedTicks = (System.currentTimeMillis() - startTime) / 50;
 				return playTicks - elapsedTicks;
 		}
@@ -97,13 +97,13 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	@Override
-	public int getPlayerAmount(@NotNull PlayerAccount account) {
-		return (int) (getRemaining(account) * 50L);
+	public long getPlayerAmount(@NotNull PlayerAccount account) {
+		return getRemaining(account) * 50L;
 	}
 
 	@Override
-	public int getTotalAmount() {
-		return (int) (playTicks * 50L);
+	public long getTotalAmount() {
+		return playTicks * 50L;
 	}
 
 	@Override

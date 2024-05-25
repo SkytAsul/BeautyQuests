@@ -20,7 +20,7 @@ msg:
     checkpoint: '§7Zoektocht controlepunt bereikt!'
     failed: '§cJe hebt de quest {quest_name} gefaald...'
   pools:
-    noTime: '§cJe moet {time_left} wachten voordat je een andere quest kunt doen.'
+    noTime: '§cJe moet {time_left} wachten voordat je een andere quest kunt starten.'
     allCompleted: U hebt de Quest voltooid
     noAvailable: '§7Er is geen quest meer beschikbaar...'
     maxQuests: '§cJe kunt niet meer dan {pool_max_quests} quest(s) tegelijk hebben...'
@@ -246,6 +246,32 @@ msg:
         setTime: '§6setTime <id> <time>: §eStel de tijd in, in game ticks, voordat het volgende bericht automatisch wordt afgespeeld. (1 seconde = 20 game ticks.)'
         npcName: '§6npcName [NPC-naam aanpassen]: §eStel (of reset naar standaard) aangepaste naam van de NPC in, in de conversatie.'
         skippable: '§6skippable [true|false] §eStel in of men de conversatie mag skippen of niet'
+      timeSet: '§aTijd is bewerkt voor bericht {msg}: nu {time} ticks.'
+      timeRemoved: '§aTijd is verwijderd voor bericht {msg}.'
+      npcName:
+        set: '§aAangepaste NPC naam ingesteld op §7{new_name}§a (was §7{old_name}§a)'
+        unset: '§aAangepaste NPC naam ingesteld naar standaard (was §7{old_name}§a)'
+      skippable:
+        set: '§aDe dialoog overslaan status is nu ingesteld op §7{new_state}§a (was §7{old_state}§a)'
+        unset: '§aDe dialoog overslaan status is ingesteld naar standaard §7{new_state}§a (was §7{old_state}§a)'
+    mythicmobs:
+      list: '§aEen lijst van alle Mythic Mobs:'
+      isntMythicMob: '§cDeze Mythic Mob bestaat niet.'
+      disabled: '§cMythicMob is uitgeschakeld.'
+    advancedSpawnersMob: 'Schrijf de naam van de aangepaste spawner mob om te doden:'
+    textList:
+      syntax: '§cCorrecte syntax: {command}'
+      added: '§aTekst "§7{msg}§a" toegevoegd.'
+      removed: '§aTekst "§7{msg}§a" toegevoegd.'
+      help:
+        header: '§6§lBeautyQuests — Help lijst editor'
+        add: '§6voeg toe <message>: §eVoeg een tekst toe.'
+        remove: '§6verwijder <id>: §eVerwijder een tekst.'
+        list: '§6lijst: §eBekijk alle toegevoegde teksten.'
+        close: '§6sluit: §eValideer de toegevoegde teksten.'
+    availableElements: 'Beschikbare elementen: §e{available_elements}'
+    noSuchElement: '§cEr is geen dergelijk element. Toegestane elementen zijn: §e{available_elements}'
+    invalidPattern: '§cOngeldig regex patroon §4{input}§c.'
 inv:
   details:
     setPermReward: '§eBewerk rechten'

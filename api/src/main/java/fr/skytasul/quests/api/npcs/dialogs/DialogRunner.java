@@ -4,8 +4,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.npcs.BqNpc;
 
 public interface DialogRunner {
+
+	@Nullable
+	BqNpc getNpc();
+
+	@Nullable
+	Dialog getDialog();
 
 	void addTest(Predicate<Player> test);
 

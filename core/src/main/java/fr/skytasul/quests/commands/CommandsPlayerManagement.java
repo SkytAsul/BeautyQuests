@@ -1,15 +1,5 @@
 package fr.skytasul.quests.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -47,12 +37,22 @@ import fr.skytasul.quests.structure.BranchesManagerImplementation;
 import fr.skytasul.quests.structure.EndingStageImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class CommandsPlayerManagement implements OrphanCommand {
-	
+
 	private BukkitCommandPermission startOtherPermission = new BukkitCommandPermission(new Permission("beautyquests.command.start.other"));
 	private BukkitCommandPermission cancelOtherPermission = new BukkitCommandPermission(new Permission("beautyquests.command.cancel.other"));
-	
+
 	@Subcommand ("finishAll")
 	@CommandPermission ("beautyquests.command.finish")
 	public void finishAll(BukkitCommandActor actor, EntitySelector<Player> players) {
@@ -73,7 +73,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			Lang.LEAVE_ALL_RESULT.send(actor.getSender(), PlaceholderRegistry.of("success", success, "errors", errors));
 		}
 	}
-	
+
 	@Subcommand ("finish")
 	@CommandPermission ("beautyquests.command.finish")
 	public void finish(BukkitCommandActor actor, EntitySelector<Player> players, Quest quest, @Switch boolean force) {
@@ -90,7 +90,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}
 		}
 	}
-	
+
 	@Subcommand ("setStage")
 	@CommandPermission ("beautyquests.command.setStage")
 	public void setStage(
@@ -102,7 +102,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
-		
+
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
 		if (branchID == null && (datas == null || !datas.hasStarted())) { // start quest
 			quest.start(player);
@@ -110,19 +110,19 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			return;
 		}
 		if (datas == null) datas = acc.getQuestDatas(quest); // creates quest datas
-		
+
 		QuestBranchImplementation currentBranch = manager.getBranch(datas.getBranch());
-		
+
 		if (branchID == null) { // next
 			if (!datas.isInEndingStages()) {
-				currentBranch.finishStage(player, currentBranch.getRegularStage(datas.getStage()));
+				currentBranch.finishPlayerStage(player, currentBranch.getRegularStage(datas.getStage()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(actor.getSender());
 			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(actor.getSender());
 		}else {
 			QuestBranchImplementation branch = manager.getBranch(branchID);
 			if (branch == null)
 				throw new CommandErrorException(Lang.COMMAND_SETSTAGE_BRANCH_DOESNTEXIST.quickFormat("branch_id", branchID));
-			
+
 			if (stageID != null) {
 				if (currentBranch == null)
 					throw new CommandErrorException(
@@ -144,18 +144,18 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				branch.start(acc);
 			}else { // set stage in branch
 				datas.setBranch(branchID);
-				branch.setStage(acc, stageID);
+				branch.setPlayerStage(acc, branch.getRegularStage(stageID));
 			}
 			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questUpdated(acc, quest));
 		}
 	}
-	
+
 	@Subcommand ("startDialog")
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
-		
+
 		DialogRunner runner = null;
 		if (datas == null || !quest.hasStarted(acc)) {
 			if (quest.hasOption(OptionStartDialog.class)) {
@@ -173,7 +173,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				}
 			}
 		}
-		
+
 		if (runner == null) {
 			Lang.COMMAND_STARTDIALOG_NO.send(actor.getSender());
 		}else {
@@ -185,7 +185,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}
 		}
 	}
-	
+
 	@Subcommand ("resetPlayer")
 	@CommandPermission ("beautyquests.command.resetPlayer")
 	public void resetPlayer(BukkitCommandActor actor, EntitySelector<Player> players) {
@@ -233,7 +233,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 		}
 	}
-	
+
 	@Subcommand ("resetPlayerQuest")
 	@CommandPermission ("beautyquests.command.resetPlayer")
 	public void resetPlayerQuest(BukkitCommandActor actor, Player player, @Optional Quest quest) {
@@ -245,7 +245,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}, PlayersManager.getPlayerAccount(player), true, false, true).open(actor.requirePlayer());
 		}
 	}
-	
+
 	private void reset(CommandSender sender, Player target, Quest qu) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
 		qu.resetPlayer(acc).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
@@ -255,7 +255,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			Lang.DATA_QUEST_REMOVED_INFO.send(sender, acc, qu);
 		}, "An error occurred while removing player quest data", sender));
 	}
-	
+
 	@Subcommand ("resetQuest")
 	@CommandPermission ("beautyquests.command.resetQuest")
 	public void resetQuest(BukkitCommandActor actor, Quest quest) {
@@ -291,13 +291,13 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError());
 
 	}
-	
+
 	@Subcommand ("seePlayer")
 	@CommandPermission ("beautyquests.command.seePlayer")
 	public void seePlayer(Player actor, Player player) {
 		new PlayerListGUI(BeautyQuests.getInstance().getPlayersManager().getAccount(player), false).open(actor);
 	}
-	
+
 	@Subcommand ("start")
 	@CommandPermission ("beautyquests.command.start")
 	public void start(BukkitCommandActor actor, ExecutableCommand command, EntitySelector<Player> players,
@@ -307,7 +307,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			if (players.isEmpty() || players.size() > 1 || (players.get(0) != actor.getAsPlayer()))
 				throw new NoPermissionException(command, startOtherPermission);
 		}
-		
+
 		for (Player player : players) {
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
@@ -328,7 +328,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		quest.start(player);
 		Lang.START_QUEST.send(sender, quest, acc);
 	}
-	
+
 	@Subcommand ("cancel")
 	@CommandPermission ("beautyquests.command.cancel")
 	public void cancel(BukkitCommandActor actor, ExecutableCommand command, EntitySelector<Player> players,
@@ -337,10 +337,10 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			if (players.isEmpty() || players.size() > 1 || (players.get(0) != actor.getAsPlayer()))
 				throw new NoPermissionException(command, cancelOtherPermission);
 		}
-		
+
 		for (Player player : players) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-			
+
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
 					cancel(actor.getSender(), acc, obj);
@@ -350,7 +350,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}
 		}
 	}
-	
+
 	private void cancel(CommandSender sender, PlayerAccount acc, Quest quest) {
 		if (!quest.isCancellable()) {
 			Lang.CANCEL_QUEST_UNAVAILABLE.send(sender, quest);
@@ -368,5 +368,5 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}
 		}
 	}
-	
+
 }

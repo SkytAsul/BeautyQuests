@@ -18,6 +18,7 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -59,9 +60,12 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e){
-		if (BQWorldGuard.getInstance().doHandleEntry()) return; // on WG 7.0 or higher
-		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY() && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
+	public void onPlayerMove(PlayerMoveEvent e) {
+		if (BQWorldGuard.getInstance().doHandleEntry())
+			return; // on WG 7.0 or higher
+		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
+				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
+			return;
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
 			if (world.equals(e.getTo().getWorld())
 					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
@@ -99,6 +103,15 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@Override
+	public void started(@NotNull PlayerAccount acc) {
+		super.started(acc);
+		if (acc.isCurrent()) {
+			if (BQWorldGuard.getInstance().isInRegion(region, acc.getPlayer().getLocation(), false))
+				finishStage(acc.getPlayer());
+		}
+	}
+
+	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
 		placeholders.registerIndexed("region_id", region.getId());
@@ -112,14 +125,15 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 
 	@Override
 	public Located getLocated() {
-		if (region instanceof GlobalProtectedRegion) return null;
+		if (region instanceof GlobalProtectedRegion)
+			return null;
 
 		if (System.currentTimeMillis() - lastCenter > REFRESH_CENTER) {
 			Location centerLoc = BukkitAdapter.adapt(world,
-						region.getMaximumPoint()
-						.subtract(region.getMinimumPoint())
-						.divide(2)
-						.add(region.getMinimumPoint())) // midpoint
+					region.getMaximumPoint()
+							.subtract(region.getMinimumPoint())
+							.divide(2)
+							.add(region.getMinimumPoint())) // midpoint
 					.add(0.5, 0.5, 0.5);
 
 			center = Locatable.Located.create(centerLoc);
@@ -128,11 +142,11 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		return center;
 	}
 
-	public ProtectedRegion getRegion(){
+	public ProtectedRegion getRegion() {
 		return region;
 	}
 
-	public World getWorld(){
+	public World getWorld() {
 		return world;
 	}
 
@@ -144,7 +158,8 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	public static StageArea deserialize(ConfigurationSection section, StageController controller) {
-		return new StageArea(controller, section.getString("region"), section.getString("world"), section.getBoolean("exit", false));
+		return new StageArea(controller, section.getString("region"), section.getString("world"),
+				section.getBoolean("exit", false));
 	}
 
 	public static class Creator extends StageCreation<StageArea> {
@@ -188,7 +203,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 			}, obj -> {
 				if (BQWorldGuard.getInstance().regionExists(obj, p.getWorld())) {
 					setRegion(obj, p.getWorld().getName());
-				}else {
+				} else {
 					Lang.REGION_DOESNT_EXIST.send(p);
 					if (first)
 						context.remove();
@@ -206,7 +221,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		@Override
 		public void edit(StageArea stage) {
 			super.edit(stage);
-			setRegion(stage.getRegion().getId(), BQWorldGuard.getInstance().getWorld(stage.getRegion().getId()).getName());
+			setRegion(stage.getRegion().getId(), stage.world.getName());
 			setExit(stage.exit);
 		}
 

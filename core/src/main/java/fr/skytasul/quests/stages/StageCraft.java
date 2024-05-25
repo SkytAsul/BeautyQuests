@@ -1,16 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
@@ -31,6 +20,17 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 
 /**
  * @author SkytAsul, ezeiger92, TheBusyBiscuit
@@ -55,7 +55,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
 		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasStarted(p) && canUpdate(p, true)) {
-			int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
+			long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
 			if (amount <= 0) {
 				finishStage(p);
 			}else {
@@ -114,7 +114,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
+				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
 				if (amount <= 0) {
 					finishStage(p);
 				}else {
@@ -131,9 +131,9 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	}
 
 	@Override
-	public int getPlayerAmount(PlayerAccount acc) {
-		Integer amount = getData(acc, "amount");
-		return amount == null ? 0 : amount.intValue();
+	public long getPlayerAmount(PlayerAccount acc) {
+		Long amount = getData(acc, "amount", Long.class);
+		return amount == null ? 0 : amount.longValue();
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public long getObjectAmount() {
 		return result.getAmount();
 	}
 

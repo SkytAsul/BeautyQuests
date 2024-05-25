@@ -122,7 +122,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		private final PlayerAccount acc;
 		private final BQBossBar bar;
 		private final T progress;
-		private final int totalAmount;
+		private final long totalAmount;
 		private final PlaceholderRegistry placeholders;
 
 		private BukkitTask timer;
@@ -160,13 +160,13 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		public void update() {
 			timer();
 
-			int playerRemaining = progress.getPlayerAmount(acc);
+			long playerRemaining = progress.getPlayerAmount(acc);
 			if (playerRemaining >= 0 && playerRemaining <= totalAmount) {
 				bar.setProgress((totalAmount - playerRemaining) * 1D / totalAmount);
 			} else
 				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Amount of objects superior to max objects in " + progress.toString() + " for player "
-								+ acc.getNameAndID() + ": " + playerRemaining + " > " + totalAmount);
+						.warning("Amount of objects invalid in " + progress.getController().toString()
+								+ " for player " + acc.getNameAndID() + ": " + playerRemaining + " / " + totalAmount);
 
 			bar.setTitle(MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
 					PlaceholdersContext.of(acc.getPlayer(), true, null)));

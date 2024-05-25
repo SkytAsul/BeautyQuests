@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -24,8 +25,8 @@ import fr.skytasul.quests.utils.DebugUtils;
 
 public class DialogRunnerImplementation implements DialogRunner {
 
-	private final Dialog dialog;
-	private final BqNpc npc;
+	private final @Nullable Dialog dialog;
+	private final @Nullable BqNpc npc;
 
 	private List<Predicate<Player>> tests = new ArrayList<>();
 	private List<Predicate<Player>> testsCancelling = new ArrayList<>();
@@ -34,9 +35,17 @@ public class DialogRunnerImplementation implements DialogRunner {
 	private Map<Player, PlayerStatus> players = new HashMap<>();
 	private Boolean navigationInitiallyPaused = null;
 
-	public DialogRunnerImplementation(Dialog dialog, BqNpc npc) {
+	public DialogRunnerImplementation(@Nullable Dialog dialog, @Nullable BqNpc npc) {
 		this.dialog = dialog;
 		this.npc = npc;
+	}
+
+	public @Nullable BqNpc getNpc() {
+		return npc;
+	}
+
+	public @Nullable Dialog getDialog() {
+		return dialog;
 	}
 
 	@Override

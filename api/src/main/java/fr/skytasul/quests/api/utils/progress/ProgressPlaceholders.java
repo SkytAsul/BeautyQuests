@@ -22,17 +22,17 @@ public final class ProgressPlaceholders {
 
 	private static final PlaceholderRegistry PROGRESS_REGISTRY = new PlaceholderRegistry()
 			.registerIndexedContextual("remaining", ProgressPlaceholderContext.class,
-					context -> Integer.toString(context.getProgress().getPlayerAmount(context.getPlayerAccount())))
+					context -> Long.toString(context.getProgress().getPlayerAmount(context.getPlayerAccount())))
 			.registerIndexedContextual("done", ProgressPlaceholderContext.class,
-					context -> Integer.toString(context.getProgress().getTotalAmount()
+					context -> Long.toString(context.getProgress().getTotalAmount()
 							- context.getProgress().getPlayerAmount(context.getPlayerAccount())))
 			.registerIndexedContextual("total", ProgressPlaceholderContext.class,
-					context -> Integer.toString(context.getProgress().getTotalAmount()))
+					context -> Long.toString(context.getProgress().getTotalAmount()))
 			.registerIndexedContextual("percentage", ProgressPlaceholderContext.class,
 					context -> {
-						int perc = (int) (100D - context.getProgress().getPlayerAmount(context.getPlayerAccount()) * 100D
+						long perc = (long) (100D - context.getProgress().getPlayerAmount(context.getPlayerAccount()) * 100D
 								/ context.getProgress().getTotalAmount());
-						return Integer.toString(perc);
+						return Long.toString(perc);
 					});
 	private static final PlaceholderRegistry DESCRIPTION_REGISTRY = PROGRESS_REGISTRY.with(new PlaceholderRegistry()
 			.registerIndexedContextual("name", ProgressObjectPlaceholderContext.class,
@@ -93,7 +93,7 @@ public final class ProgressPlaceholders {
 	}
 
 	private static <T> @NotNull HasSingleObject buildFrom(@NotNull HasMultipleObjects<T> objects, CountableObject<T> object,
-			int amount) {
+			long amount) {
 		return new HasSingleObject() {
 			@Override
 			public @NotNull ItemsDescriptionConfiguration getItemsDescriptionConfiguration() {
@@ -101,7 +101,7 @@ public final class ProgressPlaceholders {
 			}
 
 			@Override
-			public int getPlayerAmount(@NotNull PlayerAccount account) {
+			public long getPlayerAmount(@NotNull PlayerAccount account) {
 				return amount;
 			}
 
@@ -111,7 +111,7 @@ public final class ProgressPlaceholders {
 			}
 
 			@Override
-			public int getObjectAmount() {
+			public long getObjectAmount() {
 				return object.getAmount();
 			}
 		};

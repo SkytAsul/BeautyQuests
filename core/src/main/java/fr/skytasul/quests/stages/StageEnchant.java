@@ -31,9 +31,6 @@ public class StageEnchant extends AbstractItemStage implements Listener {
 
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEnchant(EnchantItemEvent e) {
-		if (!hasStarted(e.getEnchanter()))
-			return;
-
 		ItemStack finalItem = e.getItem().clone();
 		ItemMeta meta = finalItem.getItemMeta();
 		e.getEnchantsToAdd().forEach((enchant, level) -> meta.addEnchant(enchant, level, false));

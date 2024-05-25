@@ -1,11 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.*;
-import java.util.Map.Entry;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -29,6 +23,12 @@ import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class StageBringBack extends StageNPC{
 
@@ -65,9 +65,12 @@ public class StageBringBack extends StageNPC{
 	}
 
 	public void sendNeedMessage(Player p) {
-		new Message(MessageUtils.format(getMessage(), getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext.of(true,
-				PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC).sendMessage(p, getNPC(),
-						getNpcName(), 1, 1);
+		String text = getMessage();
+		if ("none".equals(text))
+			return;
+		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
+				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
+		msg.sendMessage(p, getNPC(), getNpcName(), 0, 1);
 	}
 
 	public void removeItems(Player p){
@@ -104,7 +107,7 @@ public class StageBringBack extends StageNPC{
 								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 									@Override
-									public int getPlayerAmount(@NotNull PlayerAccount account) {
+									public long getPlayerAmount(@NotNull PlayerAccount account) {
 										return item.getAmount();
 									}
 
@@ -114,7 +117,7 @@ public class StageBringBack extends StageNPC{
 									}
 
 									@Override
-									public int getObjectAmount() {
+									public long getObjectAmount() {
 										return item.getAmount();
 									}
 								}, context)).toArray(String[]::new);

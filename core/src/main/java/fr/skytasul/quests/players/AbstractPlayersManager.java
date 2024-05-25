@@ -1,17 +1,5 @@
 package fr.skytasul.quests.players;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,6 +16,18 @@ import fr.skytasul.quests.api.utils.MissingDependencyException;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.utils.DebugUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPlayersManager implements PlayersManager {
 
@@ -36,11 +36,11 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	private boolean loaded = false;
 
 	public abstract void load(@NotNull AccountFetchRequest request);
-	
+
 	public abstract void unloadAccount(@NotNull PlayerAccountImplementation acc);
 
 	protected abstract @NotNull CompletableFuture<Void> removeAccount(@NotNull PlayerAccountImplementation acc);
-	
+
 	public abstract @NotNull CompletableFuture<Integer> removeQuestDatas(@NotNull Quest quest);
 
 	public abstract @NotNull PlayerQuestDatasImplementation createPlayerQuestDatas(@NotNull PlayerAccountImplementation acc,
@@ -52,7 +52,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	public @NotNull CompletableFuture<Void> playerQuestDataRemoved(@NotNull PlayerQuestDatasImplementation datas) {
 		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	public @NotNull CompletableFuture<Void> playerPoolDataRemoved(@NotNull PlayerPoolDatasImplementation datas) {
 		return CompletableFuture.completedFuture(null);
 	}
@@ -61,14 +61,14 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		if (loaded) throw new IllegalStateException("Already loaded");
 		loaded = true;
 	}
-	
+
 	public boolean isLoaded() {
 		return loaded;
 	}
 
 	@Override
 	public abstract void save();
-	
+
 	@Override
 	public void addAccountData(@NotNull SavableData<?> data) {
 		if (loaded)
@@ -82,7 +82,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		accountDatas.add(data);
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered account data " + data.getId());
 	}
-	
+
 	@Override
 	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas() {
 		return accountDatas;
@@ -129,7 +129,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		}
 		return null;
 	}
-	
+
 	public synchronized void loadPlayer(@NotNull Player p) {
 		cachedPlayerNames.put(p.getUniqueId(), p.getName());
 
@@ -181,17 +181,26 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 					"New account registered for " + p.getName() + " (" + request.getAccount().abstractAcc.getIdentifier()
 							+ "), index " + request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
 
+		if (!request.getAccount().getOfflinePlayer().equals(p)) {
+			QuestsPlugin.getPlugin().getLogger()
+					.severe("UUID mismatch between player " + p.getName() + " (" + p.getUniqueId() + ") and loaded account "
+							+ request.getAccount().debugName());
+			return false;
+		}
+
 		cachedAccounts.put(p, request.getAccount());
+
+		String loadMessage =
+				"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
+						+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()
+						+ " quests, " + request.getAccount().getPoolDatas().size() + " pools)";
+
+		if (request.getLoadedFrom() != null)
+			loadMessage += " | Loaded from " + request.getLoadedFrom();
+
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadMessage);
+
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
-			String loadMessage =
-					"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
-							+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()
-							+ " quests, " + request.getAccount().getPoolDatas().size() + " pools)";
-
-			if (request.getLoadedFrom() != null)
-				loadMessage += " | Loaded from " + request.getLoadedFrom();
-
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadMessage);
 
 			if (p.isOnline()) {
 				Bukkit.getPluginManager()
@@ -207,7 +216,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		});
 		return false;
 	}
-	
+
 	public synchronized void unloadPlayer(@NotNull Player p) {
 		PlayerAccountImplementation acc = cachedAccounts.get(p);
 		if (acc == null) return;
@@ -216,7 +225,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		unloadAccount(acc);
 		cachedAccounts.remove(p);
 	}
-	
+
 	@Override
 	public @UnknownNullability PlayerAccountImplementation getAccount(@NotNull Player p) {
 		if (BeautyQuests.getInstance().getNpcManager().isNPC(p))
@@ -225,7 +234,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
 		}
-		
+
 		return cachedAccounts.get(p);
 	}
 
@@ -330,7 +339,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 		/**
 		 * This method must be called when the request results in a successfully loaded account.
-		 * 
+		 *
 		 * @param account account that has been loaded
 		 * @param from source of the saved account
 		 */
@@ -346,7 +355,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		 * <p>
 		 * It <strong>cannot</strong> be called when the {@link AccountFetchRequest#mustCreateMissing()}
 		 * method returns false.
-		 * 
+		 *
 		 * @param account account that has been created
 		 */
 		public void created(PlayerAccountImplementation account) {

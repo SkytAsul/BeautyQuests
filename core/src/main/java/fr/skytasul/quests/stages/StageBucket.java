@@ -1,14 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Map;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -30,6 +21,15 @@ import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 import fr.skytasul.quests.gui.misc.BucketTypeGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 
 public class StageBucket extends AbstractStage implements HasSingleObject, Listener {
 
@@ -56,7 +56,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	}
 
 	@Override
-	public int getObjectAmount() {
+	public long getObjectAmount() {
 		return amount;
 	}
 
@@ -70,7 +70,7 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
-				int amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
+				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
 				if (amount <= 1) {
 					finishStage(p);
 				}else {
@@ -81,8 +81,8 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	}
 
 	@Override
-	public int getPlayerAmount(PlayerAccount acc) {
-		return getData(acc, "amount");
+	public long getPlayerAmount(PlayerAccount acc) {
+		return getData(acc, "amount", Long.class);
 	}
 
 	@Override

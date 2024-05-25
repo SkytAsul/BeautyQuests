@@ -204,7 +204,7 @@ questDescription:
 # Particles shown on a NPC when the player can start the quest
 start:
   enabled: true
-  particleEffect: redstone
+  particleEffect: dust
   particleColor:
     RED: 255
     BLUE: 0
@@ -213,7 +213,7 @@ start:
 # Particles shown on the NPC to which the player has to talk
 talk:
   enabled: true
-  particleEffect: villager_happy
+  particleEffect: happy_villager
   particleColor:
     RED: 255
     BLUE: 0
@@ -222,7 +222,7 @@ talk:
 # Particles shown when the player finish a stage of a quest
 next:
   enabled: true
-  particleEffect: smoke_normal
+  particleEffect: smoke
   particleColor:
     RED: 255
     BLUE: 0

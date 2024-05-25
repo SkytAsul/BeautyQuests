@@ -231,7 +231,7 @@ msg:
       cleared: '§a已删除{amount}条消息.'
       help:
         header: '§e§lBeautyQuest  - §6对话编辑器帮助'
-        npc: '§npc <message>: §b添加一条由NPC说出的消息。'
+        npc: '§6npc <message>: §b添加一条由NPC说出的消息。'
         player: '§6player <message>: §b添加一条由玩家说出的消息。'
         nothing: '§6noSender <消息>: §e添加一条没有发送者的消息.'
         remove: '§6emove <id>: §e删除一条消息.'
@@ -323,8 +323,8 @@ inv:
     interact: '§a点击方块'
     interactLocation: '§a与目标地点的方块交互'
     fish: '§a钓鱼'
-    melt: '§熔炼物品'
-    enchant: '§附魔物品'
+    melt: '§6熔炼物品'
+    enchant: '§d附魔物品'
     craft: '§a合成物品'
     bucket: '§a装满桶'
     location: 前往指定位置
@@ -379,6 +379,12 @@ inv:
         targetMobs: '§c要造成伤害的怪物对象'
       eatDrink:
         items: '§e编辑要食用或饮用的物品'
+      playTime:
+        changeTimeMode: '更改计时策略'
+        modes:
+          online: '玩家需要连接到服务器'
+          offline: '玩家可以离线，但是服务器需要处于运行状态才能继续计时'
+          realtime: '就算服务器和玩家都离线也继续计时'
   stages:
     name: '§8创建任务阶段'
     nextPage: '§e下一页'

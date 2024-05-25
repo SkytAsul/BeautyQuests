@@ -1,31 +1,32 @@
 package fr.skytasul.quests.players;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.utils.ParticleEffect;
+import org.bukkit.Particle;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.bukkit.Particle;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.ParticleEffect;
 
 public class AdminMode {
 
 	private static final Set<CommandSender> senders = new HashSet<>();
-	
+
 	private static ParticleEffect enterParticle;
 	private static ParticleEffect leaveParticle;
-	
+
 	static {
 		if (MinecraftVersion.MAJOR >= 9) {
 			enterParticle = new ParticleEffect(Particle.FLAME, null, null);
-			leaveParticle = new ParticleEffect(Particle.SMOKE_NORMAL, null, null);
+			leaveParticle = new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"), null, null);
 		}
 	}
-	
+
 	public static void toggle(CommandSender sender){
 		if (senders.add(sender)) {
 			Lang.ADMIN_MODE_ENTERED.send(sender);
@@ -38,20 +39,20 @@ public class AdminMode {
 				leaveParticle.sendParticle(((Player) sender).getEyeLocation(), getAdminPlayers(), 1, 1, 1, 15);
 		}
 	}
-	
+
 	public static void broadcast(String message){
 		BeautyQuests.getInstance().getLoggerExpanded().getHandler().write("[ADMIN]: " + message);
 		for (CommandSender p : senders){
 			p.sendMessage("§e" + message);
 		}
 	}
-	
+
 	public static Set<CommandSender> getAdminSenders() {
 		return senders;
 	}
-	
+
 	public static List<Player> getAdminPlayers(){
 		return senders.stream().filter(Player.class::isInstance).map(Player.class::cast).collect(Collectors.toList());
 	}
-	
+
 }

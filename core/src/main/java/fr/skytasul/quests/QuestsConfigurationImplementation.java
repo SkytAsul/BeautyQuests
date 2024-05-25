@@ -1,13 +1,5 @@
 package fr.skytasul.quests;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -20,6 +12,14 @@ import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
@@ -111,9 +111,13 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
 		if (MinecraftVersion.MAJOR >= 9) {
-			particleStart = loadParticles("start", new ParticleEffect(Particle.REDSTONE, ParticleShape.POINT, Color.YELLOW));
-			particleTalk = loadParticles("talk", new ParticleEffect(Particle.VILLAGER_HAPPY, ParticleShape.BAR, null));
-			particleNext = loadParticles("next", new ParticleEffect(Particle.SMOKE_NORMAL, ParticleShape.SPOT, null));
+			particleStart = loadParticles("start", new ParticleEffect(Utils.valueOfEnum(Particle.class, "REDSTONE", "DUST"),
+					ParticleShape.POINT, Color.YELLOW));
+			particleTalk = loadParticles("talk", new ParticleEffect(
+					Utils.valueOfEnum(Particle.class, "VILLAGER_HAPPY", "HAPPY_VILLAGER"), ParticleShape.BAR, null));
+			particleNext =
+					loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
+							ParticleShape.SPOT, null));
 		}
 
 		holoLaunchItem = loadHologram("launchItem");

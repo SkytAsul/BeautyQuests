@@ -21,10 +21,10 @@ public interface HasItemsDescriptionConfiguration {
 		@NotNull
 		String getObjectName();
 
-		int getObjectAmount();
+		long getObjectAmount();
 
 		@Override
-		default int getTotalAmount() {
+		default long getTotalAmount() {
 			return getObjectAmount();
 		}
 
@@ -45,18 +45,18 @@ public interface HasItemsDescriptionConfiguration {
 		@NotNull
 		Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account);
 
-		default int getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
+		default long getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
 			return getPlayerAmounts(account).get(object);
 		}
 
 		@Override
-		default int getPlayerAmount(@NotNull PlayerAccount account) {
+		default long getPlayerAmount(@NotNull PlayerAccount account) {
 			return getPlayerAmounts(account).values().stream().mapToInt(Integer::intValue).sum();
 		}
 
 		@Override
-		default int getTotalAmount() {
-			return getObjects().stream().mapToInt(CountableObject::getAmount).sum();
+		default long getTotalAmount() {
+			return getObjects().stream().mapToLong(CountableObject::getAmount).sum();
 		}
 
 	}
