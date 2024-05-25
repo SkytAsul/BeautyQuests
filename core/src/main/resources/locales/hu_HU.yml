@@ -51,7 +51,7 @@ msg:
   writeQuestTimer: '§aAdd meg, mennyi idő után kezdhető újra a küldetés (percekben): (Használd a "null" paramétert ha az alapértelmezett időt szertnéd használni.)'
   writeConfirmMessage: '§aAdd meg a kezdésnél megjelenő megerősítő üzenetet: (Használd a "null" paramétert ha az alapértelmezett üzenetet szertnéd használni.)'
   writeQuestDescription: '§aAdd meg a leírást, amelyet a játékos a Küldetés Menüben látni fog.'
-  writeQuestMaterial: '§aÍrd ide a küldetés tárgy anyagát.'
+  writeQuestMaterial: '§aAdd meg a küldetés ikon tárgyát.'
   requirements:
     quest: '§cBe kell fejezned a §e{quest_name}§c küldetést!'
     level: '§cA szintednek {long_level}-nak/nek kell lennie!'
@@ -144,7 +144,7 @@ msg:
       header: '§6§lBeautyQuests - Súgó'
       create: '§6/{label} create: §eKüldetés létrehozása.'
       edit: '§6/{label} edit: §eKüldetés módosítása.'
-      remove: '§6/{label} remove <id>:§Kitörli a megadott ID-jű Küldetést, vagy kattints az NPC-re, ha nem adtál meg ID-t.'
+      remove: '§6/{label} remove <id>:§eKitörli a megadott ID-jű Küldetést, vagy kattints az NPC-re, ha nem adtál meg ID-t.'
       finishAll: '§6/{label} finishAll <player>: §eA játékos összes küldetésének teljesítése.'
       setStage: '§6/{label} setStage <player> <id> [new branch] [new stage]: §eA jelenlegi állomás átugrása.'
       startDialog: '§6/{label} startDialog <player> <quest id>: §eElindítja a függőben lévő dialógust egy NPC állomásnál, vagy a küldetés kezdő dialógusát.'
@@ -191,7 +191,7 @@ msg:
       choosePermissionRequired: '§aÍrd be a küldetés elkezdéséhez szükséges jogot:'
       choosePermissionMessage: '§aMegadhatsz egy üzenetet, amennyiben a játékos nem rendelkezik a szükséges joggal. (Ennek kihagyásához használsz a "null" paramétert.)'
       choosePlaceholderRequired:
-        identifier: '$aÍrd be a szükséges placeholder-t a százalékjel (%) karakterek nélkül:'
+        identifier: '§aÍrd be a szükséges placeholder-t a százalékjel (%) karakterek nélkül:'
         value: '§aÍrd be a §e%§e{placeholder}§e%§a placeholder szükséges értékét:'
       chooseSkillRequired: '§aÍrd be a szükséges képesség nevét:'
       chooseMoneyRequired: '§aÍrd be a szükséges pénz mennyiségét:'
@@ -339,9 +339,9 @@ inv:
     hideClues: Részecskék és hologramok elrejtése
     editMobsKill: '§eMegölendő mobok módosítása'
     mobsKillFromAFar: Lövedékkel kell megölni
-    editBlocksMine: '$eKiszedendő blokkok módosítása'
+    editBlocksMine: '§eKiszedendő blokkok módosítása'
     preventBlockPlace: Saját blokkok kiszedésének megakadályozása
-    editBlocksPlace: '$eLerakandó blokkok módosítása'
+    editBlocksPlace: '§eLerakandó blokkok módosítása'
     editMessageType: '§eKiírandó szöveg módosítása'
     cancelMessage: Küldés megakadályozása
     ignoreCase: Kis-nagy betűk figyelmen kívűl hagyása
@@ -379,6 +379,12 @@ inv:
         targetMobs: '§cSebzendő mobok'
       eatDrink:
         items: '§eElfogyasztandó tárgyak módosítása'
+      playTime:
+        changeTimeMode: 'Visszaszámlálási logika megváltoztatása'
+        modes:
+          online: 'A játékosnak online kell lennie'
+          offline: 'A játékos lehet offline, viszont a szervernek futni kell a számláláshoz'
+          realtime: 'Az idő akkor is telik ha a játékos és a szerver is offline'
   stages:
     name: Állomás létrehozása
     nextPage: '§eKövetkező oldal'
@@ -457,7 +463,7 @@ inv:
     rewards: '{amount} jutalom'
     actions: '{amount} művelet'
     rewardsLore: Műveletek, amelyek akkor mennek végbe, ha a küldetést teljesítik.
-    customMaterial: '§eKüldetés tárgy anyagának megváltoztatása'
+    customMaterial: '§eKüldetés ikon tárgy megváltoztatása'
     customMaterialLore: A tárgy, ami a küldetést jelöli a Küldetés Menüben.
     failOnDeath: Kudarc halál esetén
     failOnDeathLore: A küldetés megszakadjon, ha a játékos meghal?
@@ -592,7 +598,7 @@ inv:
   blockAction:
     name: Válassz blokk műveletet
     location: '§eVálassz egy precíz lokációt'
-    material: '§eVálassz blokk anyagot'
+    material: '§eVálassz blokkot'
   buckets:
     name: Vödör típus
   permission:
@@ -612,7 +618,7 @@ inv:
   factionsList.name: Frakció lista
   poolsManage:
     name: Küldetés Gyűjtemény
-    itemName: '$aGyűjtemény {pool}'
+    itemName: '§aGyűjtemény {pool}'
     poolNPC: '§8NPC: §7{pool_npc_id}'
     poolMaxQuests: '§8Küldetések maximális száma: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Indításkor adott küldetések száma: §7{pool_quests_per_launch}'
@@ -788,7 +794,7 @@ misc:
     placeholder: '§bPlaceholder érték szükséges'
     quest: '§aKüldetés szükséges'
     mcMMOSkillLevel: '§dKépesség szint szükséges'
-    money: '§dPénz összes szükséges'
+    money: '§dPénz összeg szükséges'
     equipment: '§eFelszerelés szükséges'
   reward:
     skillApiXp: SkillAPI XP jutalom
@@ -830,4 +836,3 @@ misc:
   'yes': 'Igen'
   'no': 'Nem'
   and: és
-  

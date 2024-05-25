@@ -240,6 +240,9 @@ msg:
         playerInsert: '§8§l[퀘스트 시스템]§e playerinsert <id> <message>: 플레이어가 말하는 메시지를 추가합니다.'
         nothingInsert: '§8§l[퀘스트 시스템]§e notinginsert <id> <message>: 발언자 없이 말하는 메시지를 추가합니다.'
         edit: '§8§l[퀘스트 시스템]§e edit <id> <message>: 해당되는 id의 메시지를 수정합니다'
+        addSound: '§6addSound <id> <sound>: §e사운드와 메세지를 추가해주세요.'
+        clear: '§6clear: §e모든 메세지를 삭제하였습니다.'
+        close: '§6close: §e모든 메세지를 확인합니다.'
     mythicmobs:
       list: '§a모든 미스틱 몹 목록:'
       isntMythicMob: '§c이 미스틱 몹은 존재하지 않습니다.'

@@ -3,7 +3,7 @@ msg:
   quest:
     finished:
       base: '§aGlückwunsch! Du hast die Quest §e{quest_name}§a abgeschlossen!'
-      obtain: '§aDu erhälst {rewards}!'
+      obtain: '§aDu erhältst {rewards}!'
     started: '§aDu hast die Quest §r§e{quest_name}§o§6 gestartet!'
     created: '§aGlückwunsch! Du hast die Quest §e{quest}§a mit {quest_branches} Zweig(en) erstellt!'
     edited: '§aGlückwunsch! Du hast die Quest §e{quest}§a bearbeitet, die jetzt {quest_branches} Zweig(e) enthält!'
@@ -20,7 +20,7 @@ msg:
     checkpoint: '§7Quest-Checkpoint erreicht!'
     failed: '§cDu hast die Quest {quest_name} fehlgeschlagen...'
   pools:
-    noTime: '§cDu musst warten, bevor du eine andere Quest absolvieren kannst.'
+    noTime: '§cDu musst {time_left} warten, bevor du eine andere Quest absolvieren kannst.'
     allCompleted: '§7Du hast alle Quests abgeschlossen!'
     noAvailable: '§7Es ist keine Quest mehr verfügbar...'
     maxQuests: '§cDu kannst nicht mehr als {pool_max_quests} Quest(s) gleichzeitig haben...'
@@ -35,8 +35,10 @@ msg:
   writeXPGain: '§aSchreibe die Menge an Erfahrungspunkten, die der Spieler erhalten wird: (Letzter Wert: {xp_amount})'
   writeMobAmount: '§aSchreibe die zu tötende Mob‐Menge:'
   writeMobName: '§aSchreibe den benutzerdefinierten Namen des zu tötenden Mobs:'
+  writeChatMessage: '§aSchreibe die benötigte Nachricht: (Füge „\{SLASH}” zum Anfang hinzu, wenn du einen Befehl möchtest.)'
   writeMessage: '§aSchreibe die Nachricht die an den Spieler gesendet wird'
   writeStartMessage: '§aSchreibe die Nachricht, die zu Beginn der Quest gesendet wird, "null", wenn du die Standardnachricht wünschst, oder "none", wenn du dir keine Nachricht wünschst:'
+  writeEndMsg: '§aSchreibe die Nachricht, die am Ende der Quest gesendet wird, "null", wenn du die Standardnachricht möchtest oder "none" wenn du keine möchtest. Du kannst "\{rewards}" verwenden, was durch die zu erhaltende Belohnungen ersetzt wird.'
   writeEndSound: '§aSchreibe den Tonnamen, der am Ende der Quest dem Spieler abgespielt wird, "null" wenn Sie die Standardeinstellung oder "keine" wollen, wenn Sie keine wollen:'
   writeDescriptionText: '§aSchreibe einen Text, der das Ziel des Schrittes beschreibt:'
   writeStageText: '§aSchreibe den am Anfang des Schrittes zum Spieler gesendete Text:'
@@ -715,6 +717,7 @@ misc:
     playTime: Spielzeit
     breedAnimals: Züchte Tiere
     tameAnimals: Zähme Tiere
+    die: Sterben
   comparison:
     equals: gleich wie {number}
     different: anders als {number}
@@ -737,6 +740,8 @@ misc:
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
     money: '§dGeld benötigt'
+  reward:
+    skillApiXp: SkillAPI XP Belohnung
   bucket:
     water: Wassereimer
     lava: Lavaeimer
@@ -748,7 +753,17 @@ misc:
     shift-right: Shift-Rechtsklick
     shift-left: Shift-Linksklick
     middle: Mittelklick
+  amounts:
+    items: '{items_amount} Item(s)'
+    comparisons: '{comparisons_amount} Vergleich(e)'
+    dialogLines: '{lines_amount} Zeile(n)'
+    permissions: '{permissions_amount} Berechtigung(en)'
+    mobs: '{mobs_amount} Mob(s)'
+    xp: '{xp_amount} Erfahrungspunkt(e)'
   ticks: '{ticks} Ticks'
+  location: |-
+    Position: {x} {y} {z}
+    Welt: {world}
   questItemLore: '§e§oQuest‐Item'
   hologramText: '§8§lQuest‐NPC'
   poolHologramText: '§eNeue Quest verfügbar!'
