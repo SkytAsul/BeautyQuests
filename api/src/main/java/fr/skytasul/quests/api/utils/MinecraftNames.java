@@ -12,7 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class MinecraftNames {
@@ -23,6 +24,8 @@ public class MinecraftNames {
 
 	private static Map<EntityType, String> cachedEntities = new HashMap<>();
 	private static Map<XMaterial, String> cachedMaterials = new HashMap<>();
+
+	private static final boolean POTIONS_ENABLED = MinecraftVersion.isHigherThan(20, 5);
 
 	public static boolean intialize(@NotNull Path path) {
 		try {
@@ -44,16 +47,19 @@ public class MinecraftNames {
 				}else if (key.startsWith("item.minecraft.")) {
 					String item = key.substring(15);
 					if (item.startsWith("potion.effect.")) {
-						PotionMapping.matchFromTranslationKey(item.substring(14))
-								.forEachRemaining(potion -> potion.setNormalName(value));
-					}else if (item.startsWith("splash_potion.effect.")) {
-						PotionMapping.matchFromTranslationKey(item.substring(21))
+						if (POTIONS_ENABLED)
+							PotionMapping.matchFromTranslationKey(item.substring(14))
+									.forEachRemaining(potion -> potion.setNormalName(value));
+					} else if (item.startsWith("splash_potion.effect.")) {
+						if (POTIONS_ENABLED)
+							PotionMapping.matchFromTranslationKey(item.substring(21))
 								.forEachRemaining(potion -> potion.setSplashName(value));
-					}else if (item.startsWith("lingering_potion.effect.")) {
-						PotionMapping.matchFromTranslationKey(item.substring(24))
+					} else if (item.startsWith("lingering_potion.effect.")) {
+						if (POTIONS_ENABLED)
+							PotionMapping.matchFromTranslationKey(item.substring(24))
 								.forEachRemaining(potion -> potion.setLingeringName(value));
 					} else
-						cachedMaterials.put(XMaterial.matchXMaterial(item).orElse(null), value);
+						XMaterial.matchXMaterial(item).ifPresent(material -> cachedMaterials.put(material, value));
 				}
 			}
 		}catch (Exception e) {
@@ -77,7 +83,7 @@ public class MinecraftNames {
 
 	public static @NotNull String getMaterialName(ItemStack item) {
 		XMaterial type = XMaterial.matchXMaterial(item);
-		if (MinecraftVersion.isHigherThan(20, 2)
+		if (POTIONS_ENABLED
 				&& (type == XMaterial.POTION || type == XMaterial.LINGERING_POTION || type == XMaterial.SPLASH_POTION)) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			if (meta.getBasePotionType() != null)
