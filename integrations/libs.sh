@@ -19,7 +19,6 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/Jobs.jar -DgroupId=com.gamingmesh -DartifactId=jobs -Dversion=5.1.0.1 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" install:install-file -Dfile=$jarsPath/McCombatLevel.jar -DgroupId=com.gmail.mrphpfan -DartifactId=mccombatlevel -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" install:install-file -Dfile=$jarsPath/mcMMO.jar -DgroupId=com.gmail.nossr50 -DartifactId=mcmmo -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true
-"$mavenPath" install:install-file -Dfile=$jarsPath/SkillAPI.jar -DgroupId=com.suxy -DartifactId=skillapi -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" install:install-file -Dfile=$jarsPath/Boss.jar -DgroupId=org.mineacademy -DartifactId=boss -Dversion=4.2.1 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMI.jar -DgroupId=com.zrips -DartifactId=cmi -Dversion=9.0.2.1 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMILib.jar -DgroupId=com.zrips -DartifactId=cmilib -Dversion=1.2.3.3 -Dpackaging=jar -DgeneratePom=true

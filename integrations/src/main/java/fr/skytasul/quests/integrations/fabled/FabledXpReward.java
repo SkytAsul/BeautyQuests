@@ -1,10 +1,5 @@
-package fr.skytasul.quests.integrations.skillapi;
+package fr.skytasul.quests.integrations.fabled;
 
-import java.util.Arrays;
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -12,27 +7,34 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import studio.magemonkey.fabled.Fabled;
+import studio.magemonkey.fabled.api.enums.ExpSource;
+import java.util.Arrays;
+import java.util.List;
 
-public class SkillAPIXpReward extends AbstractReward {
+public class FabledXpReward extends AbstractReward {
 
 	public int exp = 0;
 
-	public SkillAPIXpReward() {}
+	public FabledXpReward() {}
 
-	public SkillAPIXpReward(String customDescription, int exp) {
+	public FabledXpReward(String customDescription, int exp) {
 		super(customDescription);
 		this.exp = exp;
 	}
 
 	@Override
 	public List<String> give(Player p) {
-		SkillAPI.giveExp(p, exp);
+		Fabled.getData(p).giveExp(exp, ExpSource.QUEST);
 		return Arrays.asList(getXpAmountString());
 	}
 
 	@Override
 	public AbstractReward clone() {
-		return new SkillAPIXpReward(getCustomDescription(), exp);
+		return new FabledXpReward(getCustomDescription(), exp);
 	}
 
 	@Override
