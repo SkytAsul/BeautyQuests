@@ -45,7 +45,7 @@
 		<revision>1.0.4-SNAPSHOT</revision>
 		<!-- <plugin.version>1.0.3</plugin.version> --> <!-- For release -->
 		<plugin.version>1.0.4_BUILD${build.number}</plugin.version> <!-- For dev builds -->
-		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
+		<minecraft.version>1.21-R0.1-SNAPSHOT</minecraft.version>
 	</properties>
 
 	<repositories>
@@ -87,6 +87,7 @@
 		<module>v1_20_R2</module>
 		<module>v1_20_R3</module>
 		<module>v1_20_R4</module>
+		<module>v1_21_R1</module>
 		<module>dist</module>
 	</modules>
 
