@@ -33,7 +33,7 @@ public class DefaultItemFactory implements ItemFactory {
 
 	@Override
 	public @NotNull ItemStack getDone() {
-		return addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), XEnchantment.DURABILITY.getEnchant(), 0);
+		return addEnchant(item(XMaterial.DIAMOND, Lang.done.toString()), XEnchantment.UNBREAKING.getEnchant(), 0);
 	}
 
 	@Override
