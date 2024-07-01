@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.gui;
 
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -340,9 +341,9 @@ public final class ItemUtils {
 			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
 		} else {
 			if (glitter)
-				im.addEnchant(Enchantment.getByName("DURABILITY"), 0, true);
+				im.addEnchant(XEnchantment.UNBREAKING.getEnchant(), 0, true);
 			else
-				im.removeEnchant(Enchantment.getByName("DURABILITY"));
+				im.removeEnchant(XEnchantment.UNBREAKING.getEnchant());
 		}
 		is.setItemMeta(im);
 	}
