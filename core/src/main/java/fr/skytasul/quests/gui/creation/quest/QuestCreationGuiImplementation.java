@@ -1,15 +1,5 @@
 package fr.skytasul.quests.gui.creation.quest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -44,6 +34,16 @@ import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class QuestCreationGuiImplementation extends LayoutedGUI implements QuestCreationGui {
 
@@ -51,9 +51,9 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 	private final UpdatableOptionSet options;
 
 	private final int doneButtonSlot;
-	
-	private Boolean keepPlayerDatas = null;
-	
+
+	private boolean keepPlayerDatas = true;
+
 	public QuestCreationGuiImplementation(QuestCreationSession session) {
 		super(null, new HashMap<>(), StandardCloseBehavior.CONFIRM);
 		// null name because it is computed in #instanciate
@@ -98,7 +98,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 		buttons.put(QuestOptionCreator.calculateSlot(3),
 				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(), event -> session.openStagesGUI(event.getPlayer())));
-	
+
 		doneButtonSlot = QuestOptionCreator.calculateSlot(5);
 		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {
 			boolean finishable = isFinishable();
@@ -117,6 +117,17 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				finish(event.getPlayer());
 		}));
 		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
+
+		if (session.isEdition()) {
+			keepPlayerDatas = true;
+			int resetSlot = QuestOptionCreator.calculateSlot(6);
+			buttons.put(resetSlot, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
+					Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
+					event -> {
+						keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
+						refresh(doneButtonSlot);
+					}));
+		}
 	}
 
 	@Override
@@ -129,13 +140,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		return Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.getLastSlot() + 1) / 9D) * 9, invName);
-	}
-
-	@Override
-	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {
-		super.refresh(player, inventory);
-		if (session.areStagesEdited() && keepPlayerDatas == null)
-			setStagesEdited();
 	}
 
 	private boolean isFinishable() {
@@ -153,7 +157,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 	}
 
 	private void finish(Player p) {
-		boolean keepPlayerDatas = Boolean.TRUE.equals(this.keepPlayerDatas);
 		QuestImplementation qu;
 		if (session.isEdition()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(
@@ -175,7 +178,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				id = BeautyQuests.getInstance().getQuestsManager().getFreeQuestID();
 			qu = new QuestImplementation(id);
 		}
-		
+
 		for (QuestOption<?> option : options) {
 			if (option.hasCustomValue()) qu.addOption(option);
 		}
@@ -215,17 +218,17 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				DefaultErrors.sendGeneric(p, "initial quest save");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
-			
+
 			if (keepPlayerDatas)
 				keepDatas(qu);
-			
+
 			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> {
 				if (session.isEdition())
 					handler.questEdit(qu, session.getQuestEdited(), keepPlayerDatas);
 				else handler.questCreate(qu);
 			});
 		}
-		
+
 		close(p);
 	}
 
@@ -244,7 +247,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			}
 		}
 	}
-	
+
 	private boolean loadBranch(Player p, QuestBranchImplementation branch, StagesGUI stagesGui) {
 		boolean failure = false;
 		for (StageCreationContextImplementation context : stagesGui.getStageCreations()) {
@@ -277,17 +280,4 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		return controller;
 	}
 
-	private void setStagesEdited() {
-		keepPlayerDatas = false;
-		refresh(doneButtonSlot);
-		int resetSlot = QuestOptionCreator.calculateSlot(6);
-		buttons.put(resetSlot, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
-				Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
-				event -> {
-					keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
-					refresh(doneButtonSlot);
-				}));
-		refresh(resetSlot);
-	}
-	
 }
