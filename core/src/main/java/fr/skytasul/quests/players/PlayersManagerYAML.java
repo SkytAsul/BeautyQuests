@@ -1,17 +1,5 @@
 package fr.skytasul.quests.players;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.*;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.BeautyQuests;
@@ -23,6 +11,17 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
 
 public class PlayersManagerYAML extends AbstractPlayersManager {
 
@@ -138,6 +137,31 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		});
 	}
 
+	@Override
+	public CompletableFuture<Integer> removePoolDatas(QuestPool pool) {
+		return CompletableFuture.supplyAsync(() -> {
+			loadAllAccounts();
+			int amount = 0;
+
+			for (PlayerAccountImplementation account : loadedAccounts.values()) {
+				try {
+					if (account.removePoolDatas(pool).get() != null) {
+						// we can use the .get() method as the CompletableFuture created by the YAML players manager is
+						// already completed
+						amount++;
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new CompletionException(e);
+				} catch (ExecutionException e) {
+					throw new CompletionException(e);
+				}
+			}
+
+			return amount;
+		});
+	}
+
 	public boolean hasAccounts(Player p) {
 		return identifiersIndex.containsValue(getIdentifier(p));
 	}
@@ -166,68 +190,6 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			}
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().info("Total loaded accounts: " + loadedAccounts.size());
-	}
-
-	public void debugDuplicate() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.kickPlayer("§cCleanup operation.");
-		}
-		cachedAccounts.clear();
-
-		loadAllAccounts();
-		int amount = 0;
-
-		Map<String, List<PlayerAccountImplementation>> playerAccounts = new HashMap<>();
-		for (PlayerAccountImplementation acc : loadedAccounts.values()) {
-			List<PlayerAccountImplementation> list = playerAccounts.get(acc.abstractAcc.getIdentifier());
-			if (list == null) {
-				list = new ArrayList<>();
-				playerAccounts.put(acc.abstractAcc.getIdentifier(), list);
-			}
-			list.add(acc);
-		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().info(playerAccounts.size() + " unique identifiers.");
-
-		List<String> removed = new ArrayList<>();
-		for (Entry<String, List<PlayerAccountImplementation>> en : playerAccounts.entrySet()) {
-			if (removed.contains(en.getKey())) System.out.println("CRITICAL - Already removed " + en.getKey());
-
-			List<PlayerAccountImplementation> list = en.getValue();
-
-			int maxID = 0;
-			int maxSize = 0;
-			for (int i = 0; i < list.size(); i++) {
-				PlayerAccountImplementation acc = list.get(i);
-				if (acc.questDatas.size() > maxSize) {
-					maxID = i;
-					maxSize = acc.questDatas.size();
-				}
-			}
-			for (int i = 0; i < list.size(); i++) {
-				if (i != maxID) {
-					PlayerAccountImplementation acc = list.get(i);
-					int index = Utils.getKeyByValue(loadedAccounts, acc);
-					loadedAccounts.remove(index);
-					identifiersIndex.remove(index);
-					removePlayerFile(index);
-					amount++;
-				}
-			}
-			removed.add(en.getKey());
-		}
-
-		QuestsPlugin.getPlugin().getLoggerExpanded().info(amount + " duplicated accounts removeds. Total loaded accounts/identifiers: " + loadedAccounts.size() + "/" + identifiersIndex.size());
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Now scanning for remaining duplicated accounts...");
-		boolean dup = false;
-		for (String id : identifiersIndex.values()) {
-			int size = Utils.getKeysByValue(identifiersIndex, id).size();
-			if (size != 1) {
-				dup = true;
-				System.out.println(size + " accounts with identifier " + id);
-			}
-		}
-		if (dup) QuestsPlugin.getPlugin().getLoggerExpanded().warning("There is still duplicated accounts.");
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Operation complete.");
 	}
 
 	private synchronized void addAccount(PlayerAccountImplementation acc) {

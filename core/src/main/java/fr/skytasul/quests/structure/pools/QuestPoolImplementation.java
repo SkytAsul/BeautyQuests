@@ -1,17 +1,5 @@
 package fr.skytasul.quests.structure.pools;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -30,6 +18,18 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class QuestPoolImplementation implements Comparable<QuestPoolImplementation>, QuestPool {
 
@@ -173,8 +173,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	@Override
-	public CompletableFuture<PlayerPoolDatas> resetPlayer(PlayerAccount acc) {
-		return acc.removePoolDatas(this);
+	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc) {
+		return acc.removePoolDatas(this).thenApply(__ -> true);
 	}
 
 	@Override

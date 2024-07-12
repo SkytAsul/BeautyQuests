@@ -1,16 +1,5 @@
 package fr.skytasul.quests.players;
 
-import java.sql.*;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
@@ -23,6 +12,17 @@ import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.ThrowingConsumer;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class PlayersManagerDB extends AbstractPlayersManager {
 
@@ -47,6 +47,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	private String getQuestsData;
 
 	private String removeExistingQuestDatas;
+	private String removeExistingPoolDatas;
 
 	private String updateFinished;
 	private String updateTimer;
@@ -249,6 +250,25 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		});
 	}
 
+	@Override
+	public CompletableFuture<Integer> removePoolDatas(QuestPool pool) {
+		return CompletableFuture.supplyAsync(() -> {
+			try (Connection connection = db.getConnection();
+					PreparedStatement statement = connection.prepareStatement(removeExistingPoolDatas)) {
+				for (PlayerAccountImplementation acc : cachedAccounts.values()) {
+					acc.removePoolDatasSilently(pool.getId());
+				}
+				statement.setInt(1, pool.getId());
+				int amount = statement.executeUpdate();
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.debug("Removed " + amount + " in-database pool datas for pool " + pool.getId());
+				return amount;
+			} catch (SQLException ex) {
+				throw new DataException("Failed to remove quest datas from database.", ex);
+			}
+		});
+	}
+
 	public CompletableFuture<Boolean> hasAccounts(Player p) {
 		return CompletableFuture.supplyAsync(() -> {
 			try (Connection connection = db.getConnection();
@@ -279,6 +299,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE account_id = ?";
 
 			removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE quest_id = ?";
+			removeExistingPoolDatas = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE pool_id = ?";
 
 			updateFinished = prepareDatasStatement("finished");
 			updateTimer = prepareDatasStatement("timer");

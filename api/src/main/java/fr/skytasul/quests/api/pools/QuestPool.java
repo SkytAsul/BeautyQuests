@@ -1,16 +1,15 @@
 package fr.skytasul.quests.api.pools;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerPoolDatas;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.RequirementList;
-import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface QuestPool extends HasPlaceholders {
 
@@ -46,7 +45,7 @@ public interface QuestPool extends HasPlaceholders {
 	ItemStack getItemStack(@NotNull String action);
 
 	@NotNull
-	CompletableFuture<PlayerPoolDatas> resetPlayer(@NotNull PlayerAccount acc);
+	CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc);
 
 	void resetPlayerTimer(@NotNull PlayerAccount acc);
 

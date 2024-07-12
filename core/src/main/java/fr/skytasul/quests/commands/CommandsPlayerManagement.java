@@ -292,6 +292,42 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 	}
 
+	@Subcommand("resetPool")
+	@CommandPermission("beautyquests.command.resetQuest")
+	public void resetPool(BukkitCommandActor actor, QuestPool pool) {
+		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			futures.add(pool.resetPlayer(PlayersManager.getPlayerAccount(p))
+					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
+							"An error occurred while resetting pool " + pool.getId() + " to player " + p.getName(),
+							actor.getSender())));
+		}
+
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((__, ___) -> {
+			// we do not care about failure or success of this "global" future
+
+			int resetAmount =
+					(int) futures.stream().filter(future -> {
+						try {
+							return !future.isCompletedExceptionally() && future.get();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						} catch (ExecutionException ignored) {
+							// we already check if the future is completed exceptionnally before using get()
+						}
+						return false;
+					}).count();
+
+			BeautyQuests.getInstance().getPlayersManager().removePoolDatas(pool)
+					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(removedAmount -> {
+						Lang.POOL_COMPLETELY_RESET.quickSend(actor.getSender(), "player_amount",
+								removedAmount + resetAmount);
+					}, "An error occurred while removing pool datas", actor.getSender()));
+		}).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError());
+
+	}
+
 	@Subcommand ("seePlayer")
 	@CommandPermission ("beautyquests.command.seePlayer")
 	public void seePlayer(Player actor, Player player) {
