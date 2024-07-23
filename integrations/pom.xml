@@ -205,12 +205,12 @@
 			<version>2.8.5</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.lokka30</groupId>
-			<artifactId>LevelledMobs</artifactId>
-			<version>3.2.6</version>
+<!--		<dependency>
+			<groupId>io.github.arcaneplugins</groupId>
+			<artifactId>levelledmobs-plugin</artifactId>
+			<version>4.0.3.1</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> --> <!-- Commented until they fix their maven issue -->
 		<dependency>
 			<groupId>com.bgsoftware</groupId>
 			<artifactId>WildStackerAPI</artifactId>
