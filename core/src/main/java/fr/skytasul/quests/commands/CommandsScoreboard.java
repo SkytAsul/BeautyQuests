@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.commands.revxrsal.annotation.Optional;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Range;
 import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
+import fr.skytasul.quests.api.commands.revxrsal.bukkit.EntitySelector;
 import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
 import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
 import fr.skytasul.quests.api.commands.revxrsal.exception.InvalidSubcommandException;
@@ -14,7 +15,6 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import org.bukkit.entity.Player;
-import revxrsal.commands.bukkit.EntitySelector;
 
 public class CommandsScoreboard implements OrphanCommand {
 
