@@ -27,6 +27,7 @@ softdepend:
 - UltimateTimber
 - ServersNPC
 - Citizens
+- FancyNpcs
 - ZNPCsPlus
 - ProSkillAPI
 - BlueMap

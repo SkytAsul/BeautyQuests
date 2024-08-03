@@ -33,6 +33,10 @@
 			<url>https://bitbucket.org/kangarko/libraries/raw/master</url>
 		</repository>
 		<repository>
+			<id>fancyplugins-repo</id>
+			<url>https://repo.fancyplugins.de/releases</url>
+		</repository>
+		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -108,6 +112,12 @@
 			<groupId>org.mcmonkey</groupId>
 			<artifactId>sentinel</artifactId>
 			<version>2.7.3-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.oliver</groupId>
+			<artifactId>FancyNpcs</artifactId>
+			<version>2.2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
