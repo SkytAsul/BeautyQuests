@@ -22,7 +22,7 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
 
     @Override
     public int getTimeToWaitForNPCs() {
-        return 45;
+        return 105;
     }
 
     @Override
