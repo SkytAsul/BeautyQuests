@@ -67,7 +67,7 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
 
     @EventHandler
     public void onInteract(NpcInteractEvent e) {
-        npcClicked(null, e.getNpc().getData().getId(), e.getPlayer(),
+        npcClicked(null, e.getNpc().getData().getName(), e.getPlayer(),
             NpcClickType.of(e.getInteractionType() == NpcInteractEvent.InteractionType.LEFT_CLICK, e.getPlayer().isSneaking()));
     }
 
