@@ -1,10 +1,12 @@
 package fr.skytasul.quests.npcs;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import fr.skytasul.quests.DefaultQuestFeatures;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.npcs.*;
+import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
+import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -13,13 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import fr.skytasul.quests.DefaultQuestFeatures;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.npcs.*;
-import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
-import fr.skytasul.quests.utils.QuestUtils;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class BqNpcManagerImplementation implements BqNpcManager {
 
@@ -85,6 +85,8 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 
 	@Override
 	public boolean isNPC(@NotNull Entity entity) {
+		if (!entity.getMetadata("NPC").isEmpty())
+			return true;
 		return internalFactories.values().stream().anyMatch(factory -> factory.isNPC(entity));
 	}
 

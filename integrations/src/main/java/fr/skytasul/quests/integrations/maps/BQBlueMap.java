@@ -1,7 +1,5 @@
 package fr.skytasul.quests.integrations.maps;
 
-import java.util.function.Consumer;
-import org.bukkit.Location;
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.BlueMapWorld;
@@ -12,14 +10,15 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.integrations.IntegrationsConfiguration;
+import org.bukkit.Location;
+import java.util.function.Consumer;
 
 public class BQBlueMap extends AbstractMapIntegration {
-	
+
 	private static final String MARKERSET_ID = "beautyquests.markerset";
 
 	private Consumer<BlueMapAPI> enableConsumer;
-	private MarkerSet set;
-	
+
 	@Override
 	public boolean isEnabled() {
 		return IntegrationsConfiguration.getConfiguration().dynmapMarkerIcon() != null
@@ -30,13 +29,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 	protected void initializeMarkers(Runnable initializeQuests) {
 		BlueMapAPI.onEnable(enableConsumer = api -> {
 			try {
-				set = MarkerSet.builder()
-						.label(IntegrationsConfiguration.getConfiguration().dynmapSetName())
-						.defaultHidden(false)
-						.toggleable(true)
-						.build();
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Enabled BlueMap integration.");
-				
 				initializeQuests.run();
 			}catch (Exception e) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading BlueMap integration.", e);
@@ -44,7 +37,7 @@ public class BQBlueMap extends AbstractMapIntegration {
 			}
 		});
 	}
-	
+
 	@Override
 	public void unload() {
 		BlueMapAPI.unregisterListener(enableConsumer);
@@ -52,34 +45,43 @@ public class BQBlueMap extends AbstractMapIntegration {
 			api.getMaps().forEach(map -> map.getMarkerSets().remove(MARKERSET_ID));
 		});
 	}
-	
+
 	@Override
 	protected void addMarker(Quest quest, Location lc) {
 		BlueMapAPI.getInstance().ifPresent(api -> {
 			api.getWorld(lc.getWorld()).map(BlueMapWorld::getMaps).ifPresent(maps -> {
-				int i = 0;
 				for (BlueMapMap map : maps) {
-					POIMarker marker = POIMarker.toBuilder()
+					MarkerSet set = map.getMarkerSets().computeIfAbsent(MARKERSET_ID, __ -> MarkerSet.builder()
+							.label(IntegrationsConfiguration.getConfiguration().dynmapSetName())
+							.defaultHidden(false)
+							.toggleable(true)
+							.build());
+
+					POIMarker marker = POIMarker.builder()
 							.label(quest.getName())
 							.icon(IntegrationsConfiguration.getConfiguration().dynmapMarkerIcon(), 0, 0)
-							.position(lc.getBlockX(), lc.getBlockY(), lc.getBlockZ())
+							.position(lc.getX(), lc.getY(), lc.getZ())
 							.build();
-					set.getMarkers().put("qu_" + quest.getId() + "_" + i++, marker);
-					map.getMarkerSets().putIfAbsent(MARKERSET_ID, set);
+					set.getMarkers().put("qu_" + quest.getId(), marker);
 				}
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Added " + i + " BlueMap markers for quest " + quest.getId());
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.debug("Added " + maps.size() + " BlueMap markers for quest " + quest.getId());
 			});
 		});
 	}
-	
+
 	@Override
 	public void removeMarker(Quest quest) {
 		BlueMapAPI.getInstance().ifPresent(api -> {
 			Location lc = quest.getStarterNpc().getLocation();
 			api.getWorld(lc.getWorld()).map(BlueMapWorld::getMaps).ifPresent(maps -> {
-				for (int i = 0; i < maps.size(); i++) {
-					set.getMarkers().remove("qu_" + quest.getId() + "_" + i);
+				for (BlueMapMap map : maps) {
+					MarkerSet set = map.getMarkerSets().get(MARKERSET_ID);
+					if (set != null)
+						set.getMarkers().remove("qu_" + quest.getId());
 				}
+				QuestsPlugin.getPlugin().getLoggerExpanded()
+						.debug("Deleted " + maps.size() + " BlueMap markers for quest " + quest.getId());
 			});
 		});
 	}
