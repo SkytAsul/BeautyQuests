@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -56,16 +57,26 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 			@Override
 			public void place(@NotNull Inventory inventory, int slot) {
-				inventory.setItem(slot, ItemUtils.item(type, Lang.materialName.quickFormat("block_type", type.name())));
-				if (inventory.getItem(slot) == null || inventory.getItem(slot).getType() == Material.AIR) {
-					// means that the material cannot be treated as an inventory item (ie: fire)
-					inventory.setItem(slot,
-							ItemUtils.item(XMaterial.STONE, Lang.materialName.quickFormat("block_type", type.name()),
-									QuestOption.formatDescription(
-											Lang.materialNotItemLore.quickFormat("block_type", type.name()))));
-				}
+				XMaterial mat = type;
+				if (MinecraftVersion.MAJOR >= 13 && !Post1_13.isItem(type.parseMaterial()))
+					mat = XMaterial.STONE;
+				placeInternal(inventory, slot, mat);
+
 				if (tag == null)
 					ItemUtils.setGlittering(inventory.getItem(slot), true);
+			}
+
+			private void placeInternal(@NotNull Inventory inventory, int slot, @NotNull XMaterial material) {
+				ItemStack item = ItemUtils.item(material, Lang.materialName.quickFormat("block_type", type.name()));
+				if (material != type)
+					ItemUtils.lore(item,
+							QuestOption.formatDescription(Lang.materialNotItemLore.quickFormat("block_type", type.name())));
+
+				inventory.setItem(slot, item);
+
+				item = inventory.getItem(slot);
+				if (item == null || item.getType() == Material.AIR)
+					placeInternal(inventory, slot, XMaterial.STONE);
 			}
 
 		});
