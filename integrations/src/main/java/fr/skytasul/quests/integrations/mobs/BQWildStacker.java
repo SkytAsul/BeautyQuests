@@ -1,12 +1,11 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import com.bgsoftware.wildstacker.api.WildStackerAPI;
 import fr.skytasul.quests.api.QuestsAPI;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-public class BQWildStacker implements Listener {
+public class BQWildStacker {
 
 	private BQWildStacker() {}
 

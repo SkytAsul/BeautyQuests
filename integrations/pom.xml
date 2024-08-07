@@ -235,6 +235,12 @@
 			<version>1.5.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>uk.antiperson.stackmob</groupId>
+			<artifactId>StackMob</artifactId>
+			<version>5.8.2</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Local JARs -->
 		<dependency>

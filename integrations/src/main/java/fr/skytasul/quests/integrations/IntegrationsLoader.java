@@ -75,6 +75,8 @@ public class IntegrationsLoader {
 
 		manager.addDependency(new BQDependency("WildStacker", BQWildStacker::initialize));
 
+		manager.addDependency(new BQDependency("StackMob", BQStackMob::initialize));
+
 
 		// REWARDS / REQUIREMENTS
 		manager.addDependency(new BQDependency("Fabled", this::registerFabled, null, this::isFabledValid)

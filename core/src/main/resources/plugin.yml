@@ -36,6 +36,7 @@ softdepend:
 - LevelledMobs
 - WildStacker
 - ItemsAdder
+- StackMob
 
 #commands:
 #  beautyquests:
