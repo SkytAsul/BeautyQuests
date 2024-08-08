@@ -38,7 +38,7 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
     @Override
     public BqInternalNpc fetchNPC(String internalId) {
         Npc npc = FancyNpcsPlugin.get().getNpcManager().getNpc(internalId);
-        return npc == null ? null : new BQFancyNpcs(npc);
+        return npc == null ? null : new BQFancyNpc(npc);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
         Npc npc = FancyNpcsPlugin.get().getNpcAdapter().apply(npcData);
         FancyNpcsPlugin.get().getNpcManager().registerNpc(npc);
 
-        return new BQFancyNpcs(npc);
+        return new BQFancyNpc(npc);
     }
 
     @EventHandler
@@ -71,11 +71,11 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
             NpcClickType.of(e.getInteractionType() == NpcInteractEvent.InteractionType.LEFT_CLICK, e.getPlayer().isSneaking()));
     }
 
-    public static class BQFancyNpcs implements BqInternalNpc {
+    public static class BQFancyNpc implements BqInternalNpc {
 
         private final Npc npc;
 
-        private BQFancyNpcs(Npc npc) {
+        private BQFancyNpc(Npc npc) {
             this.npc = npc;
         }
 
