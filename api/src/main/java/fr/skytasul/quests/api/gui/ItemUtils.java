@@ -41,6 +41,8 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
+		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		addSpecificFlags(im, is.getType());
@@ -61,6 +63,8 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
+		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		addSpecificFlags(im, is.getType());
