@@ -225,6 +225,7 @@ public class IntegrationsLoader {
 		try {
 			Class.forName("io.lumine.mythic.api.MythicPlugin");
 			QuestsAPI.getAPI().registerMobFactory(new MythicMobs5());
+			QuestsAPI.getAPI().addNpcFactory("mythicmobs", new BQMythicMobs5Npcs());
 		} catch (ClassNotFoundException ex) {
 			QuestsAPI.getAPI().registerMobFactory(new MythicMobs());
 		}
