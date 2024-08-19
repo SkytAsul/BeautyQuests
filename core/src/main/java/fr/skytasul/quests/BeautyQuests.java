@@ -1,35 +1,5 @@
 package fr.skytasul.quests;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.DrilldownPie;
-import org.bstats.charts.SimplePie;
-import org.bstats.charts.SingleLineChart;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
@@ -60,6 +30,36 @@ import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.DrilldownPie;
+import org.bstats.charts.SimplePie;
+import org.bstats.charts.SingleLineChart;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
@@ -366,6 +366,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				.setDonationLink("https://paypal.me/SkytAsul")
 				.setSupportLink("https://discord.gg/H8fXrkD")
 				.setNotifyOpsOnJoin(false)
+				.setColoredConsoleOutput(true)
 				.checkNow();
 	}
 
