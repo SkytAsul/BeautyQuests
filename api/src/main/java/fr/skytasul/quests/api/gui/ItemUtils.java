@@ -344,9 +344,10 @@ public final class ItemUtils {
 		if (MinecraftVersion.isHigherThan(20, 6)) {
 			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
 		} else {
-			if (glitter)
+			if (glitter) {
 				im.addEnchant(XEnchantment.UNBREAKING.getEnchant(), 0, true);
-			else
+				im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			} else
 				im.removeEnchant(XEnchantment.UNBREAKING.getEnchant());
 		}
 		is.setItemMeta(im);
