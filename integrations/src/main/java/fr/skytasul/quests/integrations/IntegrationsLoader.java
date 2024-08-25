@@ -55,6 +55,10 @@ public class IntegrationsLoader {
 
 		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
 
+		manager.addDependency(new BQDependency("FancyNpcs", () -> {
+			QuestsAPI.getAPI().addNpcFactory("fancynpcs", new BQFancyNPCs());
+		}));
+
 		manager.addDependency(new BQDependency("Citizens", () -> {
 			QuestsAPI.getAPI().addNpcFactory("citizens", new BQCitizens());
 			QuestsAPI.getAPI().registerMobFactory(new CitizensFactory());
