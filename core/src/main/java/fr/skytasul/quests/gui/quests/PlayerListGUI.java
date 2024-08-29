@@ -56,7 +56,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 		for (PlayerListCategory enabledCat : QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs()) {
 			setBarItem(enabledCat.getSlot(),
-					ItemUtils.item(enabledCat.getMaterial(), UNSELECTED_PREFIX + enabledCat.getName()));
+					ItemUtils.name(enabledCat.getIcon(), UNSELECTED_PREFIX + enabledCat.getName()));
 		}
 
 		if (PlayerListCategory.IN_PROGRESS.isEnabled()) {

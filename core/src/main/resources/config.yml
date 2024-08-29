@@ -109,8 +109,26 @@ questsSelection:
 # - Quests Menu -
 # Options related to the "/quests" menu
 questsMenu:
-  # Enabled tabs in the quests menu. Valid parameters: NOT_STARTED, IN_PROGRESS, FINISHED
-  enabledTabs: [NOT_STARTED, IN_PROGRESS, FINISHED]
+  # Configuration of the tabs in the menu
+  tabs:
+    # This tab shows the quests the player has previously completed.
+    finished:
+      # Whether the tab will appear in the menu
+      enabled: true
+      # The icon in the bar at the right
+      icon: BOOK
+      # The color of the vertical separator (if enabled)
+      color: GREEN
+    # This tab shows the quests currently being done by the player.
+    in progress:
+      enabled: true
+      icon: WRITABLE_BOOK
+      color: YELLOW
+    # This tab shows the quests the player can start.
+    not started:
+      enabled: true
+      icon: PAPER
+      color: RED
   # Will the "/quests" menu open automatically on the "not started" tab instead of the "quests in progress" one if it is empty
   openNotStartedTabWhenEmpty: true
   # Allows player to cancel quests they have started with the GUI
