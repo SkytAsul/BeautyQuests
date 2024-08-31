@@ -1,18 +1,5 @@
 package fr.skytasul.quests.npcs;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -35,6 +22,19 @@ import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
@@ -80,7 +80,6 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		this.wrappedNpc = wrappedNpc;
 
 		holograms = hologramText.enabled || hologramLaunch.enabled || hologramLaunchNo.enabled || hologramPool.enabled;
-		launcheableTask = startLauncheableTasks();
 	}
 
 	public @NotNull WrappedInternalNpc getWrappedNpc() {
@@ -117,8 +116,8 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		return placeholders;
 	}
 
-	private BukkitTask startLauncheableTasks() {
-		return new BukkitRunnable() {
+	private void startLauncheableTasks() {
+		launcheableTask = new BukkitRunnable() {
 			private int timer = 0;
 
 			@Override
@@ -208,8 +207,15 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		}.runTaskTimer(BeautyQuests.getInstance(), 20L, 20L);
 	}
 
-	private BukkitTask startHologramsTask() {
-		return new BukkitRunnable() {
+	private void stopLauncheableTask() {
+		if (launcheableTask != null) {
+			launcheableTask.cancel();
+			launcheableTask = null;
+		}
+	}
+
+	private void startHologramsTask() {
+		hologramsTask = new BukkitRunnable() {
 			@Override
 			public void run() {
 				LivingEntity en = null; // check if NPC is spawned and living
@@ -343,18 +349,20 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	private void updatedObjects() {
 		if (isEmpty()) {
+			stopLauncheableTask();
 			removeHolograms(true);
-		}else if (holograms && hologramsTask == null) {
-			hologramsTask = startHologramsTask();
+		} else {
+			if (launcheableTask == null)
+				startLauncheableTasks();
+
+			if (holograms && hologramsTask == null)
+				startHologramsTask();
 		}
 	}
 
 	public void unload() {
 		removeHolograms(true);
-		if (launcheableTask != null) {
-			launcheableTask.cancel();
-			launcheableTask = null;
-		}
+		stopLauncheableTask();
 	}
 
 	public void delete(String cause) {
