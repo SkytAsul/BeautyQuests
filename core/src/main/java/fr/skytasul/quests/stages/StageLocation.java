@@ -1,13 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.regex.Pattern;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -28,6 +20,14 @@ import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.types.BQLocation;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.NotNull;
+import java.util.regex.Pattern;
 
 @LocatableType (types = LocatedType.OTHER)
 public class StageLocation extends AbstractStage implements Locatable.PreciseLocatable, Listener {
@@ -123,7 +123,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 			line.setItem(SLOT_LOCATION, ItemUtils.item(XMaterial.STICK, Lang.stageLocationLocation.toString()), event -> {
 				Lang.LOCATION_GO.send(event.getPlayer());
 				new WaitClick(event.getPlayer(), event::reopen, NpcCreateGUI.validMove, () -> {
-					setLocation(new BQLocation(event.getPlayer().getLocation()));
+					setLocation(BQLocation.of(event.getPlayer().getLocation()));
 					event.reopen();
 				}).start();
 			});
@@ -157,7 +157,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 		}
 
 		private BQLocation getBQLocation() {
-			BQLocation loc = new BQLocation(location);
+			BQLocation loc = BQLocation.of(location);
 			if (pattern != null) loc.setWorldPattern(pattern);
 			return loc;
 		}

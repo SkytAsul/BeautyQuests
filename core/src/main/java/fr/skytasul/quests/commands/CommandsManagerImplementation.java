@@ -1,11 +1,5 @@
 package fr.skytasul.quests.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -26,6 +20,12 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.scoreboards.Scoreboard;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandsManagerImplementation implements CommandsManager {
 

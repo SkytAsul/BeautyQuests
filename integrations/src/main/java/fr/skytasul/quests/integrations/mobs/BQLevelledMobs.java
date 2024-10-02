@@ -1,28 +1,34 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import java.util.function.Consumer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.XMaterial;
-import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
 
 public class BQLevelledMobs implements LeveledMobFactory<EntityType> {
+
+	private final NamespacedKey levelKey;
+
+	private final ItemStack item = ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, "§eLevelledMobs");
+
+	public BQLevelledMobs() {
+		this.levelKey = new NamespacedKey(Bukkit.getPluginManager().getPlugin("LevelledMobs"), "level");
+	}
 
 	@Override
 	public String getID() {
 		return "levelledMobs";
 	}
-
-	private ItemStack item = ItemUtils.item(XMaterial.CHICKEN_SPAWN_EGG, "§eLevelledMobs");
 
 	@Override
 	public ItemStack getFactoryItem() {
@@ -37,7 +43,10 @@ public class BQLevelledMobs implements LeveledMobFactory<EntityType> {
 
 	@Override
 	public double getMobLevel(EntityType type, Entity entity) {
-		return JavaPlugin.getPlugin(LevelledMobs.class).levelInterface.getLevelOfMob((LivingEntity) entity);
+		Integer level = entity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER);
+		return level == null ? 0 : level.intValue();
+		// return JavaPlugin.getPlugin(LevelledMobs.class).getLevelInterface().getLevelOfMob((LivingEntity)
+		// entity);
 	}
 
 	@Override

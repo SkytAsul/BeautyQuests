@@ -654,11 +654,28 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				result |= migrateEntry(config.getParent(), "menuOpenNotStartedTabWhenEmpty", config, "openNotStartedTabWhenEmpty");
 				result |= migrateEntry(config.getParent(), "allowPlayerCancelQuest", config, "allowPlayerCancelQuest");
 			}
+			if (config.contains("enabledTabs")) {
+				Set<PlayerListCategory> tabs = config.getStringList("enabledTabs").stream()
+						.map(PlayerListCategory::fromString).collect(Collectors.toSet());
+				for (PlayerListCategory cat : PlayerListCategory.values()) {
+					config.set("tabs." + cat.name().toLowerCase().replace('_', ' ') + ".enabled", tabs.contains(cat));
+				}
+				result = true;
+			}
 			return result;
 		}
 
 		private void init() {
-			tabs = config.getStringList("enabledTabs").stream().map(PlayerListCategory::fromString).collect(Collectors.toSet());
+			tabs = EnumSet.noneOf(PlayerListCategory.class);
+			for (PlayerListCategory cat : PlayerListCategory.values()) {
+				ConfigurationSection catConfig =
+						config.getConfigurationSection("tabs." + cat.name().toLowerCase().replace('_', ' '));
+				cat.setIcon(loadItem(catConfig, "icon", XMaterial.BARRIER.parseItem()));
+				cat.setColor(DyeColor.valueOf(catConfig.getString("color").toUpperCase()));
+				if (catConfig.getBoolean("enabled"))
+					tabs.add(cat);
+			}
+
 			if (tabs.isEmpty()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Quests Menu must have at least one enabled tab.");
 				tabs = EnumSet.allOf(PlayerListCategory.class);

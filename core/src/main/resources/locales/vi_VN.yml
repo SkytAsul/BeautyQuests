@@ -750,7 +750,7 @@ scoreboard:
     fish: '§eCâu §6{items}'
     interact: '§eNhấn vào khối tại §6{x}'
     interactMaterial: '§eNhấn vào khối §6{block}'
-    items: '§eMang cho §6{dialog_npc_name}§e:'
+    items: '§eMang cho §6{dialog_npc_name}§e: {items}'
     location: '§eĐi đên §6{target_x}§e, §6{target_y}§e, §6{target_z}§e in §6{target_world}'
     melt: '§eNung §6{items}'
     mine: '§eĐào {blocks}'

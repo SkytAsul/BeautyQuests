@@ -14,7 +14,8 @@
 	<repositories>
 		<repository>
 			<id>placeholderapi</id>
-			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>
+				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 		<repository>
 			<id>dynmap</id>
@@ -31,6 +32,10 @@
 		<repository>
 			<id>mineacademy-repo</id>
 			<url>https://bitbucket.org/kangarko/libraries/raw/master</url>
+		</repository>
+		<repository>
+			<id>fancyplugins-repo</id>
+			<url>https://repo.fancyplugins.de/releases</url>
 		</repository>
 		<repository>
 			<id>jitpack.io</id>
@@ -73,11 +78,15 @@
 			<id>pyr-snapshots</id>
 			<url>https://repo.pyr.lol/snapshots</url>
 		</repository>
+		<repository>
+			<id>sonatype</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>fr.skytasul</groupId>				
+			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-api</artifactId>
 			<version>${revision}</version>
 			<scope>provided</scope>
@@ -108,6 +117,12 @@
 			<groupId>org.mcmonkey</groupId>
 			<artifactId>sentinel</artifactId>
 			<version>2.7.3-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.oliver</groupId>
+			<artifactId>FancyNpcs</artifactId>
+			<version>2.2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -177,9 +192,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.promcteam</groupId>
-			<artifactId>proskillapi</artifactId>
-			<version>1.1.7.0.3</version>
+			<groupId>studio.magemonkey</groupId>
+			<artifactId>fabled</artifactId>
+			<version>1.0.0-R0.33-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -200,12 +215,12 @@
 			<version>2.8.5</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.lokka30</groupId>
-			<artifactId>LevelledMobs</artifactId>
-			<version>3.2.6</version>
+<!--		<dependency>
+			<groupId>io.github.arcaneplugins</groupId>
+			<artifactId>levelledmobs-plugin</artifactId>
+			<version>4.0.3.1</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> --> <!-- Commented until they fix their maven issue -->
 		<dependency>
 			<groupId>com.bgsoftware</groupId>
 			<artifactId>WildStackerAPI</artifactId>
@@ -228,6 +243,12 @@
 			<groupId>io.lumine</groupId>
 			<artifactId>MythicLib-dist</artifactId>
 			<version>1.5.2-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.antiperson.stackmob</groupId>
+			<artifactId>StackMob</artifactId>
+			<version>5.8.2</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -277,12 +298,6 @@
 		<dependency>
 			<groupId>com.gmail.nossr50</groupId>
 			<artifactId>mcmmo</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.suxy</groupId>
-			<artifactId>skillapi</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>

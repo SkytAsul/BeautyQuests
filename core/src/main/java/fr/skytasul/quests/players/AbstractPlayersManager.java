@@ -43,6 +43,8 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 	public abstract @NotNull CompletableFuture<Integer> removeQuestDatas(@NotNull Quest quest);
 
+	public abstract @NotNull CompletableFuture<Integer> removePoolDatas(@NotNull QuestPool pool);
+
 	public abstract @NotNull PlayerQuestDatasImplementation createPlayerQuestDatas(@NotNull PlayerAccountImplementation acc,
 			@NotNull Quest quest);
 

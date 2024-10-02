@@ -1,9 +1,9 @@
 package fr.skytasul.quests.utils.types;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,20 +12,16 @@ import org.bukkit.block.Block;
 import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.stages.types.Locatable;
-import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
-import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class BQLocation extends Location implements Locatable.Located, HasPlaceholders {
 
 	private @Nullable Pattern worldPattern;
 
 	private @Nullable PlaceholderRegistry placeholders;
-
-	public BQLocation(@NotNull Location bukkit) {
-		this(bukkit.getWorld(), bukkit.getX(), bukkit.getY(), bukkit.getZ(), bukkit.getYaw(), bukkit.getPitch());
-	}
 
 	public BQLocation(World world, double x, double y, double z) {
 		this(world, x, y, z, 0, 0);
@@ -192,5 +188,16 @@ public class BQLocation extends Location implements Locatable.Located, HasPlaceh
 		if (worldPattern != null) return new BQLocation(worldPattern, x, y, z, yaw, pitch);
 		return new BQLocation(world, x, y, z, yaw, pitch);
     }
+
+	public static BQLocation of(Location location) {
+		if (location instanceof BQLocation) {
+			BQLocation bqLoc = (BQLocation) location;
+			return new BQLocation(bqLoc.getWorldName(), bqLoc.getX(), bqLoc.getY(), bqLoc.getZ(), bqLoc.getYaw(),
+					bqLoc.getPitch());
+		} else {
+			return new BQLocation(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(),
+					location.getPitch());
+		}
+	}
 
 }

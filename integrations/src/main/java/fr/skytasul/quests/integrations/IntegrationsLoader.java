@@ -10,6 +10,9 @@ import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.IntegrationManager.BQDependency;
 import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.integrations.fabled.FabledClassRequirement;
+import fr.skytasul.quests.integrations.fabled.FabledLevelRequirement;
+import fr.skytasul.quests.integrations.fabled.FabledXpReward;
 import fr.skytasul.quests.integrations.factions.FactionRequirement;
 import fr.skytasul.quests.integrations.jobs.JobLevelRequirement;
 import fr.skytasul.quests.integrations.maps.BQBlueMap;
@@ -21,9 +24,6 @@ import fr.skytasul.quests.integrations.npcs.*;
 import fr.skytasul.quests.integrations.placeholders.PapiMessageProcessor;
 import fr.skytasul.quests.integrations.placeholders.PlaceholderRequirement;
 import fr.skytasul.quests.integrations.placeholders.QuestsPlaceholders;
-import fr.skytasul.quests.integrations.skillapi.ClassRequirement;
-import fr.skytasul.quests.integrations.skillapi.SkillAPILevelRequirement;
-import fr.skytasul.quests.integrations.skillapi.SkillAPIXpReward;
 import fr.skytasul.quests.integrations.vault.economy.MoneyRequirement;
 import fr.skytasul.quests.integrations.vault.economy.MoneyReward;
 import fr.skytasul.quests.integrations.vault.permission.PermissionReward;
@@ -55,6 +55,10 @@ public class IntegrationsLoader {
 
 		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
 
+		manager.addDependency(new BQDependency("FancyNpcs", () -> {
+			QuestsAPI.getAPI().addNpcFactory("fancynpcs", new BQFancyNPCs());
+		}));
+
 		manager.addDependency(new BQDependency("Citizens", () -> {
 			QuestsAPI.getAPI().addNpcFactory("citizens", new BQCitizens());
 			QuestsAPI.getAPI().registerMobFactory(new CitizensFactory());
@@ -75,9 +79,13 @@ public class IntegrationsLoader {
 
 		manager.addDependency(new BQDependency("WildStacker", BQWildStacker::initialize));
 
+		manager.addDependency(new BQDependency("StackMob", BQStackMob::initialize));
+
 
 		// REWARDS / REQUIREMENTS
-		manager.addDependency(new BQDependency("SkillAPI", this::registerSkillApi).addPluginName("ProSkillAPI"));
+		manager.addDependency(new BQDependency("Fabled", this::registerFabled, null, this::isFabledValid)
+				.addPluginName("ProSkillAPI").addPluginName("SkillAPI") // for warning message
+				);
 		manager.addDependency(new BQDependency("Jobs", this::registerJobs));
 		manager.addDependency(new BQDependency("Factions", this::registerFactions));
 		manager.addDependency(new BQDependency("mcMMO", this::registerMcMmo));
@@ -174,15 +182,24 @@ public class IntegrationsLoader {
 						JobLevelRequirement::new));
 	}
 
-	private void registerSkillApi() {
-		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("classRequired", ClassRequirement.class,
-				ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), ClassRequirement::new));
+	private void registerFabled() {
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("classRequired", FabledClassRequirement.class,
+				ItemUtils.item(XMaterial.GHAST_TEAR, Lang.RClass.toString()), FabledClassRequirement::new));
 		QuestsAPI.getAPI().getRequirements()
-				.register(new RequirementCreator("skillAPILevelRequired", SkillAPILevelRequirement.class,
+				.register(new RequirementCreator("skillAPILevelRequired", FabledLevelRequirement.class,
 						ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RSkillAPILevel.toString()),
-						SkillAPILevelRequirement::new));
-		QuestsAPI.getAPI().getRewards().register(new RewardCreator("skillAPI-exp", SkillAPIXpReward.class,
-				ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RWSkillApiXp.toString()), SkillAPIXpReward::new));
+						FabledLevelRequirement::new));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("skillAPI-exp", FabledXpReward.class,
+				ItemUtils.item(XMaterial.EXPERIENCE_BOTTLE, Lang.RWSkillApiXp.toString()), FabledXpReward::new));
+	}
+
+	private boolean isFabledValid(Plugin plugin) {
+		if (plugin.getName().equals("SkillAPI") || plugin.getName().equals("ProSkillAPI")) {
+			QuestsPlugin.getPlugin().getLogger().warning(
+					"SkillAPI and ProSKillAPI are no longer supported. You must upgrade to their newer version: Fabled (https://www.spigotmc.org/resources/91913)");
+			return false;
+		}
+		return true;
 	}
 
 	private boolean isUltimateTimberValid(Plugin plugin) {
@@ -212,6 +229,7 @@ public class IntegrationsLoader {
 		try {
 			Class.forName("io.lumine.mythic.api.MythicPlugin");
 			QuestsAPI.getAPI().registerMobFactory(new MythicMobs5());
+			QuestsAPI.getAPI().addNpcFactory("mythicmobs", new BQMythicMobs5Npcs());
 		} catch (ClassNotFoundException ex) {
 			QuestsAPI.getAPI().registerMobFactory(new MythicMobs());
 		}

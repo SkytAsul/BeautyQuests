@@ -1,16 +1,5 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Objects;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.WaitBlockClick;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -27,6 +16,17 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.types.BQLocation;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 @LocatableType (types = { LocatedType.BLOCK, LocatedType.OTHER })
 public class StageInteractLocation extends AbstractStage implements Locatable.PreciseLocatable, Listener {
@@ -109,7 +109,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 	public static class Creator extends StageCreation<StageInteractLocation> {
 
 		private boolean leftClick = false;
-		private Location location;
+		private BQLocation location;
 
 		public Creator(@NotNull StageCreationContext<StageInteractLocation> context) {
 			super(context);
@@ -137,8 +137,8 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 		}
 
 		public void setLocation(@NotNull Location location) {
-			this.location = Objects.requireNonNull(location);
-			getLine().refreshItemLoreOptionValue(7, Lang.Location.format(getBQLocation()));
+			this.location = BQLocation.of(Objects.requireNonNull(location));
+			getLine().refreshItemLoreOptionValue(7, Lang.Location.format(this.location));
 		}
 
 		@Override
@@ -151,10 +151,6 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 			}, ItemUtils.item(XMaterial.STICK, Lang.blockLocation.toString())).start();
 		}
 
-		private @NotNull BQLocation getBQLocation() {
-			return new BQLocation(location);
-		}
-
 		@Override
 		public void edit(StageInteractLocation stage) {
 			super.edit(stage);
@@ -164,7 +160,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 
 		@Override
 		public StageInteractLocation finishStage(StageController controller) {
-			return new StageInteractLocation(controller, leftClick, getBQLocation());
+			return new StageInteractLocation(controller, leftClick, location);
 		}
 
 	}

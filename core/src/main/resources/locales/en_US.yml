@@ -146,6 +146,7 @@ msg:
     resetPlayerPool:
       timer: §aYou have reset the {pool} pool timer of {player}.
       full: §aYou have reset the {pool} pool datas of {player}.
+    resetPool: Removed datas of the pool for {player_amount} players.
     startPlayerPool:
       error: 'Failed to start the pool {pool} for {player}.'
       success: 'Started pool {pool} to {player}. Result: {result}'

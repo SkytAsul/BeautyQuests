@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.gui;
 
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -40,6 +41,8 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
+		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		addSpecificFlags(im, is.getType());
@@ -60,6 +63,8 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
+		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		addSpecificFlags(im, is.getType());
@@ -339,10 +344,11 @@ public final class ItemUtils {
 		if (MinecraftVersion.isHigherThan(20, 6)) {
 			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
 		} else {
-			if (glitter)
-				im.addEnchant(Enchantment.getByName("DURABILITY"), 0, true);
-			else
-				im.removeEnchant(Enchantment.getByName("DURABILITY"));
+			if (glitter) {
+				im.addEnchant(XEnchantment.UNBREAKING.getEnchant(), 0, true);
+				im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			} else
+				im.removeEnchant(XEnchantment.UNBREAKING.getEnchant());
 		}
 		is.setItemMeta(im);
 	}

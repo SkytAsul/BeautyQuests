@@ -11,7 +11,7 @@ softdepend:
 - MythicMobs
 - Vault
 - PlaceholderAPI
-- SkillAPI
+- Fabled
 - HolographicDisplays
 - Jobs
 - Factions
@@ -27,8 +27,8 @@ softdepend:
 - UltimateTimber
 - ServersNPC
 - Citizens
+- FancyNpcs
 - ZNPCsPlus
-- ProSkillAPI
 - BlueMap
 - Sentinel
 - AdvancedSpawners
@@ -37,6 +37,7 @@ softdepend:
 - LevelledMobs
 - WildStacker
 - ItemsAdder
+- StackMob
 
 #commands:
 #  beautyquests:

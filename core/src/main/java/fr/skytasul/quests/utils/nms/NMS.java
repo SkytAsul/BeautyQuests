@@ -77,11 +77,16 @@ public abstract class NMS{
 		String versionNms;
 
 		if (!BeautyQuests.getInstance().isRunningPaper() || !MinecraftVersion.isHigherThan(20, 5)) {
-			versionNms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1);
+			versionNms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		} else {
-			versionNms = "1_20_R4";
-			// TODO: find better way
+			try {
+				Class<?> paperMapping = Class.forName("io.papermc.paper.util.MappingEnvironment");
+				versionNms = (String) paperMapping.getDeclaredField("LEGACY_CB_VERSION").get(null);
+			} catch (ReflectiveOperationException ex) {
+				throw new RuntimeException("Impossible to get server internals version", ex);
+			}
 		}
+		versionNms = versionNms.substring(1);
 
 		try {
 			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + versionNms).newInstance();

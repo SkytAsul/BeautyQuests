@@ -1,22 +1,23 @@
 package fr.skytasul.quests.mobs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 
@@ -35,7 +36,7 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 	public void itemClick(Player p, Consumer<EntityType> run) {
 		QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(run, x -> x != null).open(p);
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(EntityType first, Entity entity) {
 		return entity.getType() == first;
@@ -60,13 +61,13 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 	public EntityType getEntityType(EntityType data) {
 		return data;
 	}
-	
+
 	@Override
 	public List<String> getDescriptiveLore(EntityType data) {
 		return Arrays.asList(Lang.EntityType.quickFormat("entity_type", MinecraftNames.getEntityName(data)));
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityKilled(EntityDeathEvent e) {
 		LivingEntity en = e.getEntity();
 		if (en.getKiller() == null) return;
@@ -74,5 +75,5 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 			return;
 		callEvent(e, en.getType(), en, en.getKiller());
 	}
-	
+
 }

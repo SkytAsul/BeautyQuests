@@ -1,9 +1,9 @@
 package fr.skytasul.quests.api.localization;
 
-import java.util.Objects;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
+import java.util.Objects;
 
 /**
  * Stores all string paths and methods to format and send them to players.
@@ -134,6 +134,7 @@ public enum Lang implements Locale {
 	POOL_RESET_FULL("msg.command.resetPlayerPool.full"), // 0: pool ID, 1: player
 	POOL_START_ERROR("msg.command.startPlayerPool.error", ErrorPrefix), // 0: pool ID, 1: player
 	POOL_START_SUCCESS("msg.command.startPlayerPool.success", SuccessPrefix), // 0: pool ID, 1: player, 2: result
+	POOL_COMPLETELY_RESET("msg.command.resetPool", SuccessPrefix), // 0: amount of players
 
 	COMMAND_SCOREBOARD_LINESET("msg.command.scoreboard.lineSet"), // 0: line id
 	COMMAND_SCOREBOARD_LINERESET("msg.command.scoreboard.lineReset"), // 0: line id

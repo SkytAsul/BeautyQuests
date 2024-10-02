@@ -1,9 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.List;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -12,6 +8,10 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.BQLocation;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import java.util.List;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -39,7 +39,7 @@ public class TeleportationReward extends AbstractReward {
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder
-				.addDescriptionAsValue(Lang.Location.format(teleportation == null ? null : new BQLocation(teleportation)));
+				.addDescriptionAsValue(Lang.Location.format(teleportation == null ? null : BQLocation.of(teleportation)));
 	}
 
 	@Override

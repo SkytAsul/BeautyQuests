@@ -153,11 +153,12 @@ public final class QuestUtils {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
 			};
-			if ((MinecraftVersion.MAJOR >= 12 && MinecraftVersion.MAJOR < 17) || MinecraftVersion.MAJOR >= 20) {
+			if (MinecraftVersion.isHigherThan(20, 6)) {
 				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
-				// Much better to use the built-in since 1.12 method to do operations on entity
+				// Much better to use the built-in method to do operations on entity
 				// before it is sent to the players, as it will not create flickering.
-				// From 1.17.1 to 1.19.4, the method was moved from World to RegionAccessor.
+				// There was some weird shit done between 1.17 and 1.20 with this method
+				// so we will keep it like that
 			} else {
 				fwConsumer.accept(lc.getWorld().spawn(lc, Firework.class));
 			}

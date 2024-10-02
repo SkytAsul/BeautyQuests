@@ -3,7 +3,9 @@ package fr.skytasul.quests.api.utils;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.localization.Locale;
 import org.bukkit.DyeColor;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,46 +13,46 @@ public enum PlayerListCategory {
 
 	FINISHED(
 			1,
-			XMaterial.BOOK,
-			Lang.finisheds.toString(),
-			DyeColor.GREEN),
+			Lang.finisheds),
 	IN_PROGRESS(
 			2,
-			XMaterial.WRITABLE_BOOK,
-			Lang.inProgress.toString(),
-			DyeColor.YELLOW),
+			Lang.inProgress),
 	NOT_STARTED(
 			3,
-			XMaterial.PAPER,
-			Lang.notStarteds.toString(),
-			DyeColor.RED);
+			Lang.notStarteds);
 
 	private final int slot;
-	private final @NotNull XMaterial material;
-	private final @NotNull String name;
-	private final @Nullable DyeColor color;
+	private final @NotNull Locale name;
+	private @NotNull ItemStack icon = XMaterial.BARRIER.parseItem();
+	private @Nullable DyeColor color = DyeColor.RED;
 
-	private PlayerListCategory(int slot, @NotNull XMaterial material, @NotNull String name, @Nullable DyeColor color) {
+	private PlayerListCategory(int slot, @NotNull Locale name) {
 		this.slot = slot;
-		this.material = material;
 		this.name = name;
-		this.color = color;
 	}
 
 	public int getSlot() {
 		return slot;
 	}
 
-	public @NotNull XMaterial getMaterial() {
-		return material;
+	public @NotNull String getName() {
+		return name.getValue();
 	}
 
-	public @NotNull String getName() {
-		return name;
+	public @NotNull ItemStack getIcon() {
+		return icon;
+	}
+
+	public void setIcon(@NotNull ItemStack icon) {
+		this.icon = icon;
 	}
 
 	public @Nullable DyeColor getColor() {
 		return color;
+	}
+
+	public void setColor(@NotNull DyeColor color) {
+		this.color = color;
 	}
 
 	public boolean isEnabled() {
