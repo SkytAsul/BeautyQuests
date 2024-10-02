@@ -42,9 +42,9 @@
 		<maven.compiler.release>8</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<build.number>unknown</build.number>
-		<revision>1.0.4-SNAPSHOT</revision>
-		<!-- <plugin.version>1.0.3</plugin.version> --> <!-- For release -->
-		<plugin.version>1.0.4_BUILD${build.number}</plugin.version> <!-- For dev builds -->
+		<revision>1.0.4</revision>
+		<plugin.version>${revision}</plugin.version> <!-- For release -->
+		<!-- <plugin.version>${revision}_BUILD${build.number}</plugin.version> --> <!-- For dev builds -->
 		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 	</properties>
