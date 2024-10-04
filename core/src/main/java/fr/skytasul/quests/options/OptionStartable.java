@@ -1,12 +1,12 @@
 package fr.skytasul.quests.options;
 
-import java.util.Arrays;
-import java.util.List;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import java.util.Arrays;
+import java.util.List;
 
 public class OptionStartable extends QuestOptionBoolean implements QuestDescriptionProvider {
 	

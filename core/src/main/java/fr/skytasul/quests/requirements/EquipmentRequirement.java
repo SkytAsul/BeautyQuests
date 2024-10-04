@@ -1,12 +1,6 @@
 package fr.skytasul.quests.requirements;
 
-import java.util.Map;
-import java.util.function.Consumer;
-import org.bukkit.DyeColor;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.ImmutableMap;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
@@ -16,8 +10,14 @@ import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
+import org.bukkit.DyeColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class EquipmentRequirement extends AbstractRequirement {
 	

@@ -1,17 +1,5 @@
 package fr.skytasul.quests.scoreboards;
 
-import java.io.File;
-import java.util.*;
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -21,6 +9,18 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.quests.Quest;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import java.io.File;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
 

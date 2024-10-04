@@ -1,15 +1,15 @@
 package fr.skytasul.quests.gui.misc;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.ChooseGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.stages.StageBucket.BucketType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class BucketTypeGUI extends ChooseGUI<BucketType>{
 

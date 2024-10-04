@@ -1,17 +1,6 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
@@ -20,11 +9,22 @@ import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 

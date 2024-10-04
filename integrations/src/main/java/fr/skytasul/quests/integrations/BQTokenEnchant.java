@@ -1,11 +1,11 @@
 package fr.skytasul.quests.integrations;
 
+import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
+import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
-import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 
 public class BQTokenEnchant implements Listener {
 	

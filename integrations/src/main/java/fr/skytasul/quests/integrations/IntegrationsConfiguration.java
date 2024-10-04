@@ -1,7 +1,7 @@
 package fr.skytasul.quests.integrations;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class IntegrationsConfiguration {
 

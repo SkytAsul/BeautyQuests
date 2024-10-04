@@ -1,18 +1,18 @@
 package fr.skytasul.quests.gui.blocks;
 
 import static fr.skytasul.quests.api.gui.ItemUtils.item;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import org.bukkit.DyeColor;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
+import org.bukkit.DyeColor;
+import org.bukkit.inventory.ItemStack;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 

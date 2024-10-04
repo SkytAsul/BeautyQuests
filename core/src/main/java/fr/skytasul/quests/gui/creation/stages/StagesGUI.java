@@ -1,15 +1,6 @@
 package fr.skytasul.quests.gui.creation.stages;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -24,10 +15,19 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.creation.*;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StagesGUI extends AbstractGui {
 

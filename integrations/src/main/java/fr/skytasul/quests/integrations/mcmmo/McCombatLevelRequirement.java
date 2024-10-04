@@ -1,11 +1,11 @@
 package fr.skytasul.quests.integrations.mcmmo;
 
-import org.bukkit.entity.Player;
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
+import org.bukkit.entity.Player;
 
 public class McCombatLevelRequirement extends TargetNumberRequirement {
 

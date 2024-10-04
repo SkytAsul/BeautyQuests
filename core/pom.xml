@@ -28,31 +28,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.6.0</version>
 				<configuration>
         			<createDependencyReducedPom>false</createDependencyReducedPom>
 					<relocations>
 						<relocation>
-							<pattern>org.bstats</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>fr.mrmicky.fastboard</pattern>
-							<shadedPattern>fr.skytasul.quests.scoreboards</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.tchristofferson.configupdater</pattern>
-							<shadedPattern>
-								fr.skytasul.quests.utils.configupdater</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>com.jeff_media.updatechecker</pattern>
 							<shadedPattern>
 								fr.skytasul.quests.utils.updatechecker</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.zaxxer.hikari</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.hikari</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
@@ -84,11 +67,7 @@
 			<id>jeff-media-public</id>
 			<url>https://repo.jeff-media.com/public/</url>
 		</repository>
-		<repository>
-			<id>codemc-repo</id>
-			<url>https://repo.codemc.io/repository/maven-public/</url>
-		</repository>
-		<repository>
+		<repository> <!-- For PlayerBlockTracker -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -142,30 +121,43 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- To resolve dependencies at runtime and avoid weird issues 
+		with package relocation when developing. -->
+		<!-- <dependency>
+		    <groupId>net.byteflux</groupId>
+		    <artifactId>libby-bukkit</artifactId>
+		    <version>1.3.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.byteflux</groupId>
+		    <artifactId>libby-paper</artifactId>
+		    <version>1.3.1</version>
+		</dependency> -->
+
 		<!-- Included libraries -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>4.0.3</version> <!-- For Java 8 compatibility -->
-			<scope>compile</scope>
+			<version>6.0.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
 			<version>3.0.2</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>fr.mrmicky</groupId>
 			<artifactId>fastboard</artifactId>
-			<version>2.1.2</version>
-			<scope>compile</scope>
+			<version>2.1.3</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.tchristofferson</groupId>
 			<artifactId>ConfigUpdater</artifactId>
 			<version>2.0-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jeff_media</groupId>

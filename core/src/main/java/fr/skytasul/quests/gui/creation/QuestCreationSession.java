@@ -1,10 +1,10 @@
 package fr.skytasul.quests.gui.creation;
 
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.gui.creation.quest.QuestCreationGuiImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.structure.QuestImplementation;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class QuestCreationSession {
 

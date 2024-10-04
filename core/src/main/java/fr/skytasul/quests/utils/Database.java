@@ -1,5 +1,10 @@
 package fr.skytasul.quests.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import org.bukkit.configuration.ConfigurationSection;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
@@ -7,11 +12,6 @@ import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import org.bukkit.configuration.ConfigurationSection;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
 
 public class Database implements Closeable {
 

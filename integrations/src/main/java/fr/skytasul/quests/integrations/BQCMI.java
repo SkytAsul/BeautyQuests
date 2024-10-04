@@ -1,10 +1,10 @@
 package fr.skytasul.quests.integrations;
 
-import java.lang.reflect.Constructor;
-import org.bukkit.Location;
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import fr.skytasul.quests.api.AbstractHolograms;
+import org.bukkit.Location;
+import java.lang.reflect.Constructor;
 
 public class BQCMI extends AbstractHolograms<CMIHologram> {
 	

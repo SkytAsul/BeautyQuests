@@ -1,14 +1,14 @@
 package fr.skytasul.quests.integrations.npcs;
 
-import java.util.function.BiPredicate;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.mcmonkey.sentinel.SentinelIntegration;
-import org.mcmonkey.sentinel.SentinelPlugin;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.mcmonkey.sentinel.SentinelIntegration;
+import org.mcmonkey.sentinel.SentinelPlugin;
+import java.util.function.BiPredicate;
 
 public class BQSentinel {
 	

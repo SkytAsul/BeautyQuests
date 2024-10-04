@@ -1,11 +1,6 @@
 package fr.skytasul.quests.integrations.worldguard;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.cryptomorin.xseries.XMaterial;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -19,7 +14,12 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.utils.MissingDependencyException;
-import fr.skytasul.quests.api.utils.XMaterial;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class BQWorldGuard {
 

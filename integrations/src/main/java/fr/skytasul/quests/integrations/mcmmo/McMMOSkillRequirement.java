@@ -1,8 +1,5 @@
 package fr.skytasul.quests.integrations.mcmmo;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import com.gmail.nossr50.api.ExperienceAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -12,6 +9,9 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class McMMOSkillRequirement extends TargetNumberRequirement {
 

@@ -1,15 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -23,6 +13,16 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class RandomReward extends AbstractReward {
 

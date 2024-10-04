@@ -1,12 +1,6 @@
 package fr.skytasul.quests.gui.misc;
 
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -17,8 +11,14 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
 
 public class TitleGUI extends AbstractGui {
 

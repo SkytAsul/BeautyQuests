@@ -1,9 +1,5 @@
 package fr.skytasul.quests.integrations.worldguard;
 
-import java.util.HashSet;
-import java.util.Set;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
@@ -18,6 +14,10 @@ import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.SessionManager;
 import com.sk89q.worldguard.session.handler.Handler;
 import fr.skytasul.quests.api.QuestsPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WorldGuardEntryHandler extends Handler {
 

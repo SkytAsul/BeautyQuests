@@ -1,13 +1,5 @@
 package fr.skytasul.quests.gui.items;
 
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
@@ -17,6 +9,14 @@ import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
 
 public class ItemGUI extends AbstractGui {
 

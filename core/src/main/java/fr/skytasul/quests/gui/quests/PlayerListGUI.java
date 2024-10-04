@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.quests;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -13,7 +14,6 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.utils.QuestUtils;

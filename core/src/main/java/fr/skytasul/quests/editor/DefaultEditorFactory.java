@@ -1,14 +1,14 @@
 package fr.skytasul.quests.editor;
 
-import java.util.function.Consumer;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.editor.parsers.MaterialParser;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
 
 public class DefaultEditorFactory implements EditorFactory {
 

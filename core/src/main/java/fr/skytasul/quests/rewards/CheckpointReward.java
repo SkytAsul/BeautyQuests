@@ -1,9 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -15,6 +11,10 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 public class CheckpointReward extends AbstractReward {
 	

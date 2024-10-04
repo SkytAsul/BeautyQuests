@@ -1,11 +1,6 @@
 package fr.skytasul.quests.blocks;
 
-import java.util.*;
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.skytasul.quests.api.blocks.BQBlock;
@@ -17,8 +12,13 @@ import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
+import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.*;
 
 public class BQBlocksManagerImplementation implements BQBlocksManager {
 

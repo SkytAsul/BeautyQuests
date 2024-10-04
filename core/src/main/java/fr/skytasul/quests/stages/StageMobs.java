@@ -1,15 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -26,11 +17,20 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
 import fr.skytasul.quests.mobs.Mob;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @LocatableType (types = LocatedType.ENTITY)
 public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable, Listener {

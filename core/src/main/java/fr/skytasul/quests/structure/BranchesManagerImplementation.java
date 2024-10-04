@@ -1,13 +1,5 @@
 package fr.skytasul.quests.structure;
 
-import java.util.*;
-import java.util.Map.Entry;
-import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerAccount;
@@ -15,6 +7,14 @@ import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class BranchesManagerImplementation implements QuestBranchesManager {
 

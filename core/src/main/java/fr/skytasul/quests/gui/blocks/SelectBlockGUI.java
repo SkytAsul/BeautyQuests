@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.blocks;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.blocks.BQBlock;
@@ -13,7 +14,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;

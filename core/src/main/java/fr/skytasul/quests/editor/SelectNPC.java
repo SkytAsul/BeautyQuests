@@ -1,10 +1,5 @@
 package fr.skytasul.quests.editor;
 
-import java.util.function.Consumer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.InventoryClear;
 import fr.skytasul.quests.api.localization.Lang;
@@ -13,6 +8,11 @@ import fr.skytasul.quests.api.utils.messaging.MessageType.DefaultMessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import java.util.function.Consumer;
 
 public class SelectNPC extends InventoryClear implements Listener {
 

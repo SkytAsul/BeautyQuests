@@ -1,16 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -19,8 +9,18 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.misc.DamageCausesGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StageDeath extends AbstractStage implements Listener {
 

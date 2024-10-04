@@ -1,8 +1,15 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.editors.InventoryClear;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.mobs.MobFactory;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCDeathEvent;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.trait.MobType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -11,16 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.editors.InventoryClear;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.api.utils.XMaterial;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCDeathEvent;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.trait.trait.MobType;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CitizensFactory implements MobFactory<NPC>, Listener {
 

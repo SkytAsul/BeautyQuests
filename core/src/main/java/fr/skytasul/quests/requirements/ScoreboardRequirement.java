@@ -1,10 +1,5 @@
 package fr.skytasul.quests.requirements;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Objective;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.ScoreboardObjectiveParser;
@@ -14,6 +9,11 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Objective;
+import org.jetbrains.annotations.NotNull;
 
 public class ScoreboardRequirement extends TargetNumberRequirement {
 

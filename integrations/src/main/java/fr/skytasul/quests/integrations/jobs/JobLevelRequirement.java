@@ -1,8 +1,5 @@
 package fr.skytasul.quests.integrations.jobs;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsPlayer;
@@ -14,6 +11,9 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.TargetNumberRequirement;
 import fr.skytasul.quests.api.utils.ComparisonMethod;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class JobLevelRequirement extends TargetNumberRequirement {
 

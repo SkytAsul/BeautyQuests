@@ -1,13 +1,13 @@
 package fr.skytasul.quests.gui.creation.stages;
 
-import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
 
 public class StageCreationContextImplementation<T extends AbstractStage> implements StageCreationContext<T> {
 

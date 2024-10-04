@@ -1,6 +1,6 @@
 package fr.skytasul.quests.options;
 
-import java.util.stream.Collectors;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionRewards;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.rewards.RewardList;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.stream.Collectors;
 
 public class OptionCancelRewards extends QuestOptionRewards {
 

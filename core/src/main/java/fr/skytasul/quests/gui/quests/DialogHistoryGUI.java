@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.quests;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -13,7 +14,6 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.utils.QuestUtils;

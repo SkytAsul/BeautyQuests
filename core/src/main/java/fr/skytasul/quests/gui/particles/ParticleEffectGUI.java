@@ -1,15 +1,6 @@
 package fr.skytasul.quests.gui.particles;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.ColorParser;
@@ -21,10 +12,19 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 

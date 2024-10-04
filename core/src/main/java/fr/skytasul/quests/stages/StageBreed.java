@@ -1,8 +1,11 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,12 +18,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
-import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StageBreed extends AbstractEntityStage implements Listener {
 

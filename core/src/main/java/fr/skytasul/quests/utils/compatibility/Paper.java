@@ -1,10 +1,10 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.Iterator;
-import java.util.function.Predicate;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
+import java.util.Iterator;
+import java.util.function.Predicate;
 
 public final class Paper {
 	

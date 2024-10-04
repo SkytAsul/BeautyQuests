@@ -18,44 +18,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
-				<configuration>
-        			<createDependencyReducedPom>false</createDependencyReducedPom>
-					<relocations>
-						<relocation>
-							<pattern>revxrsal.commands</pattern>
-							<shadedPattern>
-								fr.skytasul.quests.api.commands.revxrsal</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.cryptomorin.xseries</pattern>
-							<shadedPattern>fr.skytasul.quests.api.utils</shadedPattern>
-						</relocation>
-					</relocations>
-					<filters>
-						<filter>
-							<artifact>com.github.cryptomorin:XSeries</artifact>
-							<includes>
-								<include>com/cryptomorin/xseries/XMaterial*</include>
-								<include>com/cryptomorin/xseries/XBlock*</include>
-								<include>com/cryptomorin/xseries/XEnchantment*</include>
-							</includes>
-						</filter>
-					</filters>
-					<shadeSourcesContent>true</shadeSourcesContent>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
@@ -142,21 +104,25 @@
 			<version>${minecraft.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
+	
+		<!-- These dependencies are available at runtime but are not shaded -->
 		<dependency>
-			<groupId>com.github.Revxrsal.Lamp</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>3.1.1</version>
+			<groupId>io.github.revxrsal</groupId>
+			<artifactId>lamp.common</artifactId>
+			<version>4.0.0-beta.17</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.Revxrsal.Lamp</groupId>
-			<artifactId>common</artifactId>
-			<version>3.1.1</version>
+			<groupId>io.github.revxrsal</groupId>
+			<artifactId>lamp.bukkit</artifactId>
+			<version>4.0.0-beta.17</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>11.2.0</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

@@ -1,13 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -16,7 +9,14 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 public class StageMelt extends AbstractItemStage implements Listener {
 

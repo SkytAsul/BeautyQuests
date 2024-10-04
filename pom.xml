@@ -37,14 +37,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.release>8</maven.compiler.release>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<build.number>unknown</build.number>
-		<revision>1.0.4</revision>
-		<plugin.version>${revision}</plugin.version> <!-- For release -->
-		<!-- <plugin.version>${revision}_BUILD${build.number}</plugin.version> --> <!-- For dev builds -->
+		<version.raw>2.0.0</version.raw>
+		<revision>2.0.0-SNAPSHOT</revision>
+		<!-- <version.plugin>${version.raw}</version.plugin> --> <!-- For release -->
+		<version.plugin>${version.raw}_BUILD${build.number}</version.plugin> <!-- For dev builds -->
 		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 	</properties>
@@ -71,13 +72,6 @@
 		<module>api</module>
 		<module>core</module>
 		<module>integrations</module>
-		<module>v1_9_R1</module>
-		<module>v1_9_R2</module>
-		<module>v1_12_R1</module>
-		<module>v1_15_R1</module>
-		<module>v1_16_R1</module>
-		<module>v1_16_R2</module>
-		<module>v1_16_R3</module>
 		<module>v1_17_R1</module>
 		<module>v1_18_R1</module>
 		<module>v1_18_R2</module>

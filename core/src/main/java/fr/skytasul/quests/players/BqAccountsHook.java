@@ -1,16 +1,16 @@
 package fr.skytasul.quests.players;
 
-import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import fr.skytasul.accounts.Account;
 import fr.skytasul.accounts.AccountService;
 import fr.skytasul.accounts.events.AccountLeaveEvent;
 import fr.skytasul.accounts.events.AccountUseEvent;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.HookedAccount;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import java.util.UUID;
 
 public class BqAccountsHook implements Listener {
 

@@ -1,16 +1,16 @@
 package fr.skytasul.quests.gui.mobs;
 
-import java.util.function.Consumer;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.mobs.Mob;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import java.util.function.Consumer;
 
 public class MobSelectionGUI extends PagedGUI<MobFactory<?>> {
 	

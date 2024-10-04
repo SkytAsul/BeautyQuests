@@ -1,14 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -18,6 +9,15 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RemoveItemsReward extends AbstractReward {
 

@@ -1,13 +1,5 @@
 package fr.skytasul.quests.gui.mobs;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import org.bukkit.DyeColor;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -19,6 +11,14 @@ import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.mobs.Mob;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.DyeColor;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 

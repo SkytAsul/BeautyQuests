@@ -1,5 +1,19 @@
 package fr.skytasul.quests.structure;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.QuestsManager;
+import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
+import fr.skytasul.quests.options.OptionStartable;
+import fr.skytasul.quests.options.OptionStarterNPC;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -12,20 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.quests.QuestsManager;
-import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.options.OptionStartable;
-import fr.skytasul.quests.options.OptionStarterNPC;
 
 public class QuestsManagerImplementation implements QuestsManager {
 	

@@ -1,14 +1,5 @@
 package fr.skytasul.quests.stages.options;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -25,6 +16,15 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StageOptionProgressBar<T extends AbstractStage & HasProgress> extends StageOption<T> {
 

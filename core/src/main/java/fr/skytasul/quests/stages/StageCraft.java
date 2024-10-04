@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
@@ -15,7 +16,6 @@ import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;

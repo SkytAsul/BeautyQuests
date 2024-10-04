@@ -1,17 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
@@ -30,7 +19,18 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @LocatableType (types = LocatedType.BLOCK)
 public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable, Listener {

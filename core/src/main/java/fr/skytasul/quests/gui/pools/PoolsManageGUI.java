@@ -1,12 +1,6 @@
 package fr.skytasul.quests.gui.pools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -14,7 +8,13 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.pools.QuestPool;
-import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	

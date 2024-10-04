@@ -1,12 +1,12 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.Set;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.blocks.BQBlock;
+import fr.skytasul.quests.api.blocks.BQBlockOptions;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import fr.skytasul.quests.api.blocks.BQBlock;
-import fr.skytasul.quests.api.blocks.BQBlockOptions;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.Set;
 
 public class Post1_13 {
 

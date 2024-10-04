@@ -1,12 +1,12 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.List;
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import org.bukkit.entity.Player;
+import java.util.List;
 
 public class QuestStopReward extends AbstractReward {
 	

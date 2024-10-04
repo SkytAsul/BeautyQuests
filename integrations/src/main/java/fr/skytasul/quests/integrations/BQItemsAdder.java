@@ -1,10 +1,10 @@
 package fr.skytasul.quests.integrations;
 
-import org.bukkit.inventory.ItemStack;
 import dev.lone.itemsadder.api.CustomStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
+import org.bukkit.inventory.ItemStack;
 
 public final class BQItemsAdder {
 

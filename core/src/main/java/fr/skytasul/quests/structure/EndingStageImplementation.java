@@ -1,9 +1,9 @@
 package fr.skytasul.quests.structure;
 
-import java.util.Objects;
+import fr.skytasul.quests.api.quests.branches.EndingStage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.quests.branches.EndingStage;
+import java.util.Objects;
 
 public class EndingStageImplementation implements EndingStage {
 

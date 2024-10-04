@@ -1,10 +1,5 @@
 package fr.skytasul.quests.players;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Stream;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
@@ -14,6 +9,11 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI;
 import fr.skytasul.quests.options.OptionStartDialog;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 

@@ -1,5 +1,14 @@
 package fr.skytasul.quests.integrations;
 
+import fr.skytasul.quests.api.AbstractHolograms;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings.Visibility;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -7,15 +16,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.AbstractHolograms;
-import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
-import me.filoghost.holographicdisplays.api.hologram.Hologram;
-import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
-import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings.Visibility;
 
 public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 

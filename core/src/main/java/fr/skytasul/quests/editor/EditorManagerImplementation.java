@@ -1,16 +1,5 @@
 package fr.skytasul.quests.editor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -21,6 +10,17 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditorManagerImplementation implements EditorManager, Listener {
 

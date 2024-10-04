@@ -1,17 +1,5 @@
 package fr.skytasul.quests.gui;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.*;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -21,6 +9,18 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class GuiManagerImplementation implements GuiManager, Listener {
 

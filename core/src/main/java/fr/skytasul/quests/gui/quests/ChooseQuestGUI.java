@@ -1,15 +1,5 @@
 package fr.skytasul.quests.gui.quests;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.function.Consumer;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -18,6 +8,16 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ChooseQuestGUI extends PagedGUI<Quest> {
 

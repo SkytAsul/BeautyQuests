@@ -1,5 +1,6 @@
 package fr.skytasul.quests;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -7,7 +8,10 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
-import fr.skytasul.quests.api.utils.*;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;

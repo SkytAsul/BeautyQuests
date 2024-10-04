@@ -1,16 +1,6 @@
 package fr.skytasul.quests.stages;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Spliterator;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -25,9 +15,19 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.jetbrains.annotations.NotNull;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Spliterator;
 
 @LocatableType(types = LocatedType.BLOCK)
 public class StageInteractBlock extends AbstractStage implements Locatable.MultipleLocatable, Listener {

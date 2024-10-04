@@ -1,13 +1,13 @@
 package fr.skytasul.quests.players;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class PlayerPoolDatasImplementation implements PlayerPoolDatas {
 	

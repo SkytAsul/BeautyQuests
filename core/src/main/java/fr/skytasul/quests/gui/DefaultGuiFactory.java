@@ -1,14 +1,5 @@
 package fr.skytasul.quests.gui;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.Gui;
@@ -29,6 +20,15 @@ import fr.skytasul.quests.gui.quests.ChoosePlayerQuestGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DefaultGuiFactory implements GuiFactory {
 

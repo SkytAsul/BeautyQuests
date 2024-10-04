@@ -1,16 +1,5 @@
 package fr.skytasul.quests.utils.types;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -22,6 +11,17 @@ import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.utils.DebugUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DialogRunnerImplementation implements DialogRunner {
 

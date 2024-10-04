@@ -1,11 +1,11 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import java.util.Optional;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.stages.StageType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.stages.StageType;
+import java.util.Optional;
 
 public class BQBackwardCompat {
 

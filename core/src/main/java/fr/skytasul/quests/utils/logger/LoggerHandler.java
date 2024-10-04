@@ -1,5 +1,10 @@
 package fr.skytasul.quests.utils.logger;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,11 +21,6 @@ import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.logger.ILoggerHandler;
 
 public class LoggerHandler extends Handler implements ILoggerHandler {
 

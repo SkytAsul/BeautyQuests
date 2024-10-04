@@ -110,6 +110,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public void onLoad(){
 		instance = this;
 
+		checkPaper();
+		initLibraries();
+
 		loggerHandler = null;
 		try{
 			if (!getDataFolder().exists()) getDataFolder().mkdir();
@@ -139,7 +142,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		try {
 			logger.info("------------ BeautyQuests ------------");
 
-			checkPaper();
+			if (isPaper)
+				logger.debug("Paper detected.");
+			else
+				logger.warning("You are not running the Paper software.\n"
+						+ "It is highly recommended to use it for extended features and more stability.");
 
 			saveDefaultConfig();
 			NMS.isValid(); // to force initialization
@@ -250,21 +257,44 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	/* ---------- Various init ---------- */
 
+	private void checkPaper() {
+		try {
+			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
+		} catch (ClassNotFoundException ex) {
+			isPaper = false;
+		}
+	}
+
+	private void initLibraries() {
+		/*var libManager = isPaper ? new PaperLibraryManager(this) : new BukkitLibraryManager(this);
+
+		libManager.addMavenCentral();
+		libManager.addMavenLocal();
+
+		libManager.loadLibrary(Library.builder()
+				.groupId("com{}github{}Revxrsal{}Lamp")
+				.artifactId("bukkit")
+				.version("3.1.1")
+				.relocate("revxrsal{}commands", "fr{}skytasul{}quests{}api{}commands{}revxrsal")
+				.build());
+		libManager.loadLibrary(Library.builder()
+				.groupId("com{}github{}Revxrsal{}Lamp")
+				.artifactId("bukkit")
+				.version("3.1.1")
+				.relocate("revxrsal{}commands", "fr{}skytasul{}quests{}api{}commands{}revxrsal")
+				.build());
+		libManager.loadLibrary(Library.builder()
+				.groupId("com{}github{}cryptomorin")
+				.artifactId("XSeries")
+				.version("11.2.0")
+				.relocate("com{}cryptomorin{}xseries", "fr{}skytasul{}quests{}api{}utils")
+				.build());*/
+	}
+
 	private void initApi() throws ReflectiveOperationException {
 		Method setMethod = QuestsAPIProvider.class.getDeclaredMethod("setAPI", QuestsAPI.class);
 		setMethod.setAccessible(true); // NOSONAR
 		setMethod.invoke(null, QuestsAPIImplementation.INSTANCE);
-	}
-
-	private void checkPaper() {
-		try {
-			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
-			logger.debug("Paper detected.");
-		}catch (ClassNotFoundException ex) {
-			isPaper = false;
-			logger.warning("You are not running the Paper software.\n"
-					+ "It is highly recommended to use it for extended features and more stability.");
-		}
 	}
 
 	private void registerCommands(){

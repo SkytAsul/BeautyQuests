@@ -1,5 +1,6 @@
 package fr.skytasul.quests.structure.pools;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -12,7 +13,6 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;

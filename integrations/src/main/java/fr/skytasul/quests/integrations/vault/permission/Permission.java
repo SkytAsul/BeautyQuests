@@ -1,14 +1,14 @@
 package fr.skytasul.quests.integrations.vault.permission;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.integrations.vault.Vault;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Permission implements Cloneable, HasPlaceholders {
 

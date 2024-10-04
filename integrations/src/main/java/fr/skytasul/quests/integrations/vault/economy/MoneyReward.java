@@ -1,10 +1,5 @@
 package fr.skytasul.quests.integrations.vault.economy;
 
-import java.util.Arrays;
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -13,6 +8,11 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.integrations.vault.Vault;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 public class MoneyReward extends AbstractReward {
 

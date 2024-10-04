@@ -1,7 +1,25 @@
 package fr.skytasul.quests;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
+import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
+import fr.skytasul.quests.api.events.internal.BQCraftEvent;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.npcs.BQNPCClickEvent;
+import fr.skytasul.quests.options.OptionAutoQuest;
+import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.utils.compatibility.Paper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,26 +37,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
-import fr.skytasul.quests.api.events.internal.BQCraftEvent;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.pools.QuestPool;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
-import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.npcs.BQNPCClickEvent;
-import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
-import fr.skytasul.quests.structure.QuestImplementation;
-import fr.skytasul.quests.utils.compatibility.Paper;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class QuestsListener implements Listener{
 

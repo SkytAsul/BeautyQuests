@@ -1,17 +1,5 @@
 package fr.skytasul.quests.integrations.npcs;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
@@ -24,6 +12,18 @@ import io.github.znetworkw.znpcservers.npc.NPCSkin;
 import io.github.znetworkw.znpcservers.npc.NPCType;
 import io.github.znetworkw.znpcservers.npc.interaction.NPCInteractEvent;
 import lol.pyr.znpcsplus.ZNPCsPlus;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class BQZNPCsPlusOld implements BqInternalNpcFactoryCreatable, Listener {
 

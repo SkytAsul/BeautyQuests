@@ -1,27 +1,9 @@
 package fr.skytasul.quests.commands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Path;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.OutsideEditor;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.*;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
-import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
-import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
@@ -40,6 +22,24 @@ import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.nms.NMS;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import revxrsal.commands.annotation.*;
+import revxrsal.commands.bukkit.BukkitCommandActor;
+import revxrsal.commands.bukkit.annotation.CommandPermission;
+import revxrsal.commands.exception.CommandErrorException;
+import revxrsal.commands.orphan.OrphanCommand;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 
 public class CommandsAdmin implements OrphanCommand {
 

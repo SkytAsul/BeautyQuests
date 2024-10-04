@@ -1,13 +1,13 @@
 package fr.skytasul.quests.options;
 
-import java.util.ArrayList;
-import java.util.List;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.structure.QuestImplementation;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OptionRepeatable extends QuestOptionBoolean implements QuestDescriptionProvider {
 	

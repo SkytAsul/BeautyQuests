@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.items;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
@@ -8,7 +9,6 @@ import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

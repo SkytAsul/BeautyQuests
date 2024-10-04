@@ -1,12 +1,6 @@
 package fr.skytasul.quests.gui.npc;
 
-import java.util.function.Consumer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.WaitClick;
@@ -20,8 +14,14 @@ import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCrea
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
 
 public class NpcCreateGUI extends AbstractGui {
 

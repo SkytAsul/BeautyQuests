@@ -1,11 +1,5 @@
 package fr.skytasul.quests;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import org.apache.commons.lang.Validate;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.*;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
@@ -24,6 +18,12 @@ import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.apache.commons.lang.Validate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class QuestsAPIImplementation implements QuestsAPI {
 

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.integrations;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -9,7 +10,6 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.IntegrationManager.BQDependency;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.integrations.fabled.FabledClassRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledLevelRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledXpReward;

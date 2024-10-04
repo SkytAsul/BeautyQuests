@@ -1,12 +1,7 @@
 package fr.skytasul.quests;
 
 import static fr.skytasul.quests.api.gui.ItemUtils.item;
-import java.util.Arrays;
-import java.util.Objects;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparison;
@@ -24,7 +19,6 @@ import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.stages.options.StageOptionCreator;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -40,6 +34,12 @@ import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.compatibility.BQBossBarImplementation;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
+import java.util.Objects;
 
 public final class DefaultQuestFeatures {
 

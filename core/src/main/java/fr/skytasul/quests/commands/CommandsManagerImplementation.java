@@ -5,24 +5,26 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.commands.OutsideEditor;
-import fr.skytasul.quests.api.commands.revxrsal.autocomplete.SuggestionProvider;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandHandler;
-import fr.skytasul.quests.api.commands.revxrsal.command.CommandActor;
-import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
-import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
-import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
-import fr.skytasul.quests.api.commands.revxrsal.orphan.Orphans;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.commands.parameters.QuestParameter;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import revxrsal.commands.Lamp;
+import revxrsal.commands.autocomplete.SuggestionProvider;
+import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.command.CommandActor;
+import revxrsal.commands.command.ExecutableCommand;
+import revxrsal.commands.exception.CommandErrorException;
+import revxrsal.commands.orphan.OrphanCommand;
+import revxrsal.commands.orphan.Orphans;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,26 +33,17 @@ public class CommandsManagerImplementation implements CommandsManager {
 
 	private static String[] COMMAND_ALIASES = { "quests", "quest", "bq", "beautyquests", "bquests" };
 
-	private BukkitCommandHandler handler;
+	private Lamp<BukkitCommandActor> handler;
 	private boolean locked = false;
 
 	public CommandsManagerImplementation() {
-		handler = BukkitCommandHandler.create(BeautyQuests.getInstance());
-		handler.setMessagePrefix(BeautyQuests.getInstance().getPrefix());
-		handler.failOnTooManyArguments();
+		var builder = BukkitLamp.builder(BeautyQuests.getInstance());
+		// handler.setMessagePrefix(BeautyQuests.getInstance().getPrefix());
+		// handler.failOnTooManyArguments();
 
-		handler.registerValueResolver(Quest.class, context -> {
-			int id = context.popInt();
-			Quest quest = QuestsAPI.getAPI().getQuestsManager().getQuest(id);
-			if (quest == null)
-				throw new CommandErrorException(Lang.QUEST_INVALID.quickFormat("quest_id", id));
-			return quest;
+		builder.parameterTypes(parameters -> {
+			parameters.addParameterType(Quest.class, new QuestParameter());
 		});
-		handler.getAutoCompleter().registerParameterSuggestions(Quest.class,
-				SuggestionProvider.of(() -> QuestsAPI.getAPI().getQuestsManager().getQuests()
-						.stream()
-						.map(quest -> Integer.toString(quest.getId()))
-						.collect(Collectors.toList())));
 
 		handler.registerValueResolver(QuestPool.class, context -> {
 			int id = context.popInt();
@@ -108,6 +101,8 @@ public class CommandsManagerImplementation implements CommandsManager {
 		handler.registerCondition((actor, command, arguments) -> {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(actor.getName() + " executed command: " + command.getPath().toRealString() + " " + String.join(" ", arguments));
 		});
+
+		handler = builder.build();
 	}
 
 	@Override

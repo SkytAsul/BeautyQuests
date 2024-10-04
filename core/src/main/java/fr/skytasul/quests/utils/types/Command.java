@@ -1,12 +1,5 @@
 package fr.skytasul.quests.utils.types;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
@@ -14,6 +7,13 @@ import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Command implements HasPlaceholders {
 
