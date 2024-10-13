@@ -28,7 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import revxrsal.commands.annotation.*;
-import revxrsal.commands.bukkit.BukkitCommandActor;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.exception.CommandErrorException;
 import revxrsal.commands.orphan.OrphanCommand;
@@ -92,15 +92,15 @@ public class CommandsAdmin implements OrphanCommand {
 			doRemove(actor, quest);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(actor.requirePlayer());
-			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(actor.getAsPlayer(), () -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(actor.asPlayer(), () -> {
 			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(clickedQuest -> {
 						doRemove(actor, clickedQuest);
-					}, null, npc.getQuests()).open(actor.getAsPlayer());
+					}, null, npc.getQuests()).open(actor.asPlayer());
 				}else {
-					Lang.NPC_NOT_QUEST.send(actor.getAsPlayer());
+					Lang.NPC_NOT_QUEST.send(actor.asPlayer());
 				}
 			}).start();
 		}
@@ -110,11 +110,11 @@ public class CommandsAdmin implements OrphanCommand {
 		if (sender.isPlayer()) {
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
 				quest.delete(false, false);
-				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
-			}, null, Lang.INDICATION_REMOVE.format(quest)).open(sender.getAsPlayer());
+				Lang.SUCCESFULLY_REMOVED.send(sender.sender(), quest);
+			}, null, Lang.INDICATION_REMOVE.format(quest)).open(sender.asPlayer());
 		}else {
 			quest.delete(false, false);
-			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
+			Lang.SUCCESFULLY_REMOVED.send(sender.sender(), quest);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("reload")
 	@CommandPermission ("beautyquests.command.manage")
 	public void reload(BukkitCommandActor actor) {
-		BeautyQuests.getInstance().performReload(actor.getSender());
+		BeautyQuests.getInstance().performReload(actor.sender());
 	}
 
 	@Subcommand ("save")
@@ -131,7 +131,7 @@ public class CommandsAdmin implements OrphanCommand {
 		try {
 			BeautyQuests.getInstance().saveAllConfig(false);
 			actor.reply("§aDatas saved!");
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Datas saved ~ manual save from " + actor.getName());
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Datas saved ~ manual save from " + actor.name());
 		}catch (Throwable e) {
 			e.printStackTrace();
 			actor.error("Error while saving the data file.");
@@ -144,23 +144,23 @@ public class CommandsAdmin implements OrphanCommand {
 		if (!force) save(actor);
 
 		boolean success = true;
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Creating backup due to " + actor.getName() + "'s manual command.");
+		QuestsPlugin.getPlugin().getLoggerExpanded().info("Creating backup due to " + actor.name() + "'s manual command.");
 		Path backup = BeautyQuests.getInstance().backupDir();
 		if (!BeautyQuests.getInstance().createFolderBackup(backup)) {
-			Lang.BACKUP_QUESTS_FAILED.send(actor.getSender());
+			Lang.BACKUP_QUESTS_FAILED.send(actor.sender());
 			success = false;
 		}
 		if (!BeautyQuests.getInstance().createDataBackup(backup)) {
-			Lang.BACKUP_PLAYERS_FAILED.send(actor.getSender());
+			Lang.BACKUP_PLAYERS_FAILED.send(actor.sender());
 			success = false;
 		}
-		if (success) Lang.BACKUP_CREATED.send(actor.getSender());
+		if (success) Lang.BACKUP_CREATED.send(actor.sender());
 	}
 
 	@Subcommand ("adminMode")
 	@CommandPermission ("beautyquests.command.adminMode")
 	public void adminMode(BukkitCommandActor actor) {
-		AdminMode.toggle(actor.getSender());
+		AdminMode.toggle(actor.sender());
 	}
 
 	@Subcommand ("exitEditor")
@@ -210,7 +210,7 @@ public class CommandsAdmin implements OrphanCommand {
 				destination.createNewFile();
 				try (FileOutputStream output = new FileOutputStream(destination)) {
 					output.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
-					Lang.COMMAND_TRANSLATION_DOWNLOADED.quickSend(actor.getSender(), "lang", lang);
+					Lang.COMMAND_TRANSLATION_DOWNLOADED.quickSend(actor.sender(), "lang", lang);
 				}
 			}catch (FileNotFoundException ex) {
 				throw new CommandErrorException(

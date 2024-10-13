@@ -8,31 +8,30 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import org.bukkit.entity.Player;
-import revxrsal.commands.annotation.Default;
+import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
-import revxrsal.commands.bukkit.BukkitCommandActor;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.exception.CommandErrorException;
-import revxrsal.commands.exception.InvalidSubcommandException;
+import revxrsal.commands.exception.UnknownCommandException;
 import revxrsal.commands.orphan.OrphanCommand;
 import java.util.Objects;
 import java.util.Optional;
 
 public class CommandsPlayer implements OrphanCommand {
 
-	@Default
+	@CommandPlaceholder
 	@CommandPermission ("beautyquests.command.listPlayer")
-	public void menu(BukkitCommandActor actor, ExecutableCommand command,
-			@revxrsal.commands.annotation.Optional String subcommand) {
+	public void menu(BukkitCommandActor actor, @revxrsal.commands.annotation.Optional String subcommand) {
 		if (subcommand != null)
-			throw new InvalidSubcommandException(command.getPath(), subcommand);
+			throw new UnknownCommandException(subcommand);
 		PlayerAccount acc = PlayersManager.getPlayerAccount(actor.requirePlayer());
 		if (acc == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Player " + actor.getName() + " has got no account. This is a CRITICAL issue.");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.severe("Player " + actor.name() + " has got no account. This is a CRITICAL issue.");
 			throw new CommandErrorException("no player datas");
 		} else
-			QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(acc).open(actor.getAsPlayer());
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(acc).open(actor.asPlayer());
 	}
 
 	@Subcommand ("checkpoint")

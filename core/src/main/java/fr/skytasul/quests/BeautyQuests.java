@@ -300,7 +300,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void registerCommands(){
 		command = new CommandsManagerImplementation();
 		command.initializeCommands();
-		command.lockCommands(); // we are obligated to register Brigadier during plugin initialization...
 	}
 
 	private void launchSaveCycle(){

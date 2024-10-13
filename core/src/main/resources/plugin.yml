@@ -43,10 +43,8 @@ libraries:
 - io.github.revxrsal:lamp.bukkit:4.0.0-beta.17
 - io.github.revxrsal:lamp.common:4.0.0-beta.17
 - com.github.cryptomorin:XSeries:11.2.0
-- com.zaxxer:HikaryCP:6.0.0
-- org.bstats:bstats-bukkit:3.0.2
+- com.zaxxer:HikariCP:6.0.0
 - fr.mrmicky:fastboard:2.1.3
-- com.tchristofferson:ConfigUpdater:2.0-SNAPSHOT
 
 #commands:
 #  beautyquests:
