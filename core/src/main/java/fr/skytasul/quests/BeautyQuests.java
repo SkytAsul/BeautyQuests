@@ -827,6 +827,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return ensureLoaded(players);
 	}
 
+	@Override
 	public boolean isRunningPaper() {
 		return isPaper;
 	}
