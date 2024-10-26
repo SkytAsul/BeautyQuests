@@ -109,19 +109,19 @@
 		<dependency>
 			<groupId>io.github.revxrsal</groupId>
 			<artifactId>lamp.common</artifactId>
-			<version>4.0.0-beta.17</version>
+			<version>${lamp.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.revxrsal</groupId>
 			<artifactId>lamp.bukkit</artifactId>
-			<version>4.0.0-beta.17</version>
+			<version>${lamp.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>11.2.0</version>
+			<version>${xseries.version}</version>
 			<scope>compile</scope>
 		</dependency>
 

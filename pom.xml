@@ -41,13 +41,20 @@
 		<maven.compiler.target>17</maven.compiler.target>
 		<maven.compiler.release>17</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+		
 		<build.number>unknown</build.number>
 		<version.raw>2.0.0</version.raw>
 		<revision>2.0.0-SNAPSHOT</revision>
 		<!-- <version.plugin>${version.raw}</version.plugin> --> <!-- For release -->
 		<version.plugin>${version.raw}_BUILD${build.number}</version.plugin> <!-- For dev builds -->
+		
 		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
+		
+		<lamp.version>4.0.0-beta.19</lamp.version>
+		<xseries.version>11.2.0</xseries.version>
+		<hikaricp.version>6.0.0</hikaricp.version>
+		<fastboard.version>2.1.3</fastboard.version>
 	</properties>
 
 	<repositories>

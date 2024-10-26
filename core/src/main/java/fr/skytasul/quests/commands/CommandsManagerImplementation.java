@@ -89,9 +89,6 @@ public class CommandsManagerImplementation implements CommandsManager {
 		}else {
 			path = Orphans.path(Arrays.stream(COMMAND_ALIASES).map(x -> x + " " + subpath).toArray(String[]::new));
 		}
-		for (var cmd : commands) {
-			lamp.register(path.handler(cmd));
-		}
 		lamp.register(Arrays.stream(commands).map(path::handler).toArray());
 		// if (locked) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Registered commands after final locking.");
 	}
