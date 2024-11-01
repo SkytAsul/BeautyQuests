@@ -1,13 +1,5 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -18,6 +10,14 @@ import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public abstract class AbstractCountableStage<T> extends AbstractStage implements HasMultipleObjects<T> {
 
@@ -91,10 +91,19 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 
 	@Override
 	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
-		return getPlayerRemainings(account, false)
-				.entrySet().stream()
-				.map(entry -> new AbstractMap.SimpleEntry<>(getObject(entry.getKey()).orElse(null), entry.getValue()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<@NotNull UUID, @NotNull Integer> remainings = getPlayerRemainings(account, false);
+		Map<CountableObject<T>, Integer> amounts = new HashMap<>(remainings.size());
+
+		remainings.forEach((uuid, remaining) -> {
+			Optional<CountableObject<T>> object = getObject(uuid);
+			if (object.isPresent()) {
+				amounts.put(object.get(), remaining);
+			} else {
+				QuestsPlugin.getPlugin().getLogger().info("Cannot find object with UUID " + uuid + " in " + controller);
+			}
+		});
+
+		return amounts;
 	}
 
 	@Override
