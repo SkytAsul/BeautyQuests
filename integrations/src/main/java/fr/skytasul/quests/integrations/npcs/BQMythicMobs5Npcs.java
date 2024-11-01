@@ -66,7 +66,7 @@ public class BQMythicMobs5Npcs implements BqInternalNpcFactory, Listener {
 
 		@Override
 		public @NotNull String getName() {
-			return mob.getDisplayName().get();
+			return mob.getDisplayName() == null ? mob.getInternalName() : mob.getDisplayName().get();
 		}
 
 		private @NotNull Optional<ActiveMob> getOneActiveMob() {
