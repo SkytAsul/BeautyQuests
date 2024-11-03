@@ -3,6 +3,7 @@ package fr.skytasul.quests.integrations.npcs;
 import de.oliver.fancynpcs.api.FancyNpcsPlugin;
 import de.oliver.fancynpcs.api.Npc;
 import de.oliver.fancynpcs.api.NpcData;
+import de.oliver.fancynpcs.api.actions.ActionTrigger;
 import de.oliver.fancynpcs.api.events.NpcInteractEvent;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
@@ -14,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -68,7 +68,7 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
     @EventHandler
     public void onInteract(NpcInteractEvent e) {
         npcClicked(null, e.getNpc().getData().getName(), e.getPlayer(),
-            NpcClickType.of(e.getInteractionType() == NpcInteractEvent.InteractionType.LEFT_CLICK, e.getPlayer().isSneaking()));
+				NpcClickType.of(e.getInteractionType() == ActionTrigger.LEFT_CLICK, e.getPlayer().isSneaking()));
     }
 
     public static class BQFancyNpc implements BqInternalNpc {
