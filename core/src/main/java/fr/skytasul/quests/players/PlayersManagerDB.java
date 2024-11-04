@@ -13,7 +13,6 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.ThrowingConsumer;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.sql.*;
 import java.util.*;
@@ -37,7 +36,7 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	private String resetAccountDatas;
 
 	/* Accounts statements */
-	private String getAccountsIDs;
+	private String getAccountId;
 	private String insertAccount;
 	private String deleteAccount;
 
@@ -132,12 +131,16 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 	@Override
 	public void load(AccountFetchRequest request) {
 		try (Connection connection = db.getConnection()) {
-			String uuid = request.getOfflinePlayer().getUniqueId().toString();
-			try (PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
-				statement.setString(1, uuid);
+
+			AbstractAccount abs = newAbstractAccount(request.getOfflinePlayer())
+					.orElseThrow(() -> new IllegalArgumentException(
+							"Cannot find account for player " + request.getOfflinePlayer().getName()));
+
+			try (PreparedStatement statement = connection.prepareStatement(getAccountId)) {
+				statement.setString(1, abs.getIdentifier());
 				ResultSet result = statement.executeQuery();
-				while (result.next()) {
-					AbstractAccount abs = createAccountFromIdentifier(result.getString("identifier"));
+				if (result.next()) {
+					// means BQ has data for the account with the identifier
 					if (abs.isCurrent()) {
 						PlayerAccountImplementation account = new PlayerAccountDB(abs, result.getInt("id"));
 						result.close();
@@ -161,15 +164,14 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 			if (request.mustCreateMissing()) {
 				try (PreparedStatement statement =
 						connection.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS)) {
-					AbstractAccount absacc = super.createAbstractAccount(request.getOnlinePlayer());
-					statement.setString(1, absacc.getIdentifier());
-					statement.setString(2, uuid);
+					statement.setString(1, abs.getIdentifier());
+					statement.setString(2, request.getOnlinePlayer().getUniqueId().toString());
 					statement.executeUpdate();
 					ResultSet result = statement.getGeneratedKeys();
 					if (!result.next())
 						throw new SQLException("The plugin has not been able to create a player account.");
 					int index = result.getInt(1); // some drivers don't return a ResultSet with correct column names
-					request.created(new PlayerAccountDB(absacc, index));
+					request.created(new PlayerAccountDB(abs, index));
 				}
 			} else {
 				request.notLoaded();
@@ -269,28 +271,13 @@ public class PlayersManagerDB extends AbstractPlayersManager {
 		});
 	}
 
-	public CompletableFuture<Boolean> hasAccounts(Player p) {
-		return CompletableFuture.supplyAsync(() -> {
-			try (Connection connection = db.getConnection();
-					PreparedStatement statement = connection.prepareStatement(getAccountsIDs)) {
-				statement.setString(1, p.getUniqueId().toString());
-				ResultSet result = statement.executeQuery();
-				boolean has = result.next();
-				result.close();
-				return has;
-			} catch (SQLException ex) {
-				throw new DataException("An error occurred while fetching account from database.", ex);
-			}
-		});
-	}
-
 	@Override
 	public void load() {
 		super.load();
 		try {
 			createTables();
 
-			getAccountsIDs = "SELECT id, identifier FROM " + ACCOUNTS_TABLE + " WHERE player_uuid = ?";
+			getAccountId = "SELECT id FROM " + ACCOUNTS_TABLE + " WHERE identifier = ?";
 			insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (identifier, player_uuid) VALUES (?, ?)";
 			deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE id = ?";
 

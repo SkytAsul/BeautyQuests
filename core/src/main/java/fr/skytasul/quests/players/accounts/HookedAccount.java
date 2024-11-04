@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class HookedAccount extends AbstractAccount {
 
 	private Account hook;
-	
+
 	public HookedAccount(Account acc){
 		Validate.notNull(acc, "Account is null");
 		this.hook = acc;
@@ -21,26 +21,26 @@ public class HookedAccount extends AbstractAccount {
 
 	@Override
 	public Player getPlayer(){
-		return hook.getPlayer();
+		return hook.getPlayer().orElse(null);
 	}
-	
+
 	@Override
 	public boolean isCurrent(){
 		return hook.isCurrent();
 	}
-	
+
 	@Override
 	public String getIdentifier() {
-		String identifier = hook.getIdentifier();
+		String identifier = hook.getIdentifier().toString();
 		if (identifier == null) return null;
 		return "Hooked|" + identifier;
 	}
-	
+
 	@Override
 	protected boolean equalsAccount(AbstractAccount acc) {
 		return ((HookedAccount) acc).hook.equals(this.hook);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return hook.hashCode();

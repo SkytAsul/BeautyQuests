@@ -6,22 +6,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractAccount {
-	
+
 	protected AbstractAccount(){}
-	
+
 	public abstract @NotNull OfflinePlayer getOfflinePlayer();
-	
-	public abstract @Nullable Player getPlayer();
-	
+
+	public abstract @Nullable Player getPlayer(); // TODO replace with Optional
+
 	public abstract boolean isCurrent();
-	
+
 	public abstract @NotNull String getIdentifier();
-	
+
 	protected abstract boolean equalsAccount(@NotNull AbstractAccount acc);
-	
+
 	@Override
 	public abstract int hashCode();
-	
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == this)
@@ -32,5 +32,5 @@ public abstract class AbstractAccount {
 			return false;
 		return equalsAccount((AbstractAccount) object);
 	}
-	
+
 }

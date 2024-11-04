@@ -15,7 +15,6 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,7 +42,9 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 
 	@Override
 	public void load(AccountFetchRequest request) {
-		String identifier = super.getIdentifier(request.getOfflinePlayer());
+		String identifier = super.getIdentifier(request.getOfflinePlayer()).orElseThrow(() -> new IllegalArgumentException(
+				"Cannot find account for player " + request.getOfflinePlayer().getName()));
+
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
 			PlayerAccountImplementation acc;
@@ -84,7 +85,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 				}
 			}
 		} else if (request.mustCreateMissing()) {
-			AbstractAccount absacc = super.createAbstractAccount(request.getOnlinePlayer());
+			AbstractAccount absacc = super.newAbstractAccount(request.getOnlinePlayer());
 			PlayerAccountImplementation acc = new PlayerAccountImplementation(absacc, lastAccountID + 1);
 			if (request.shouldCache())
 				addAccount(acc);
@@ -162,18 +163,14 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		});
 	}
 
-	public boolean hasAccounts(Player p) {
-		return identifiersIndex.containsValue(getIdentifier(p));
-	}
-
 	private synchronized PlayerAccountImplementation createPlayerAccount(String identifier, int index) {
 		Validate.notNull(identifier, "Identifier cannot be null (index: " + index + ")");
-		AbstractAccount abs = super.createAccountFromIdentifier(identifier);
-		if (abs == null) {
+		var absOpt = super.newAbstractAccount(identifier);
+		if (absOpt.isEmpty()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
 			return new PlayerAccountImplementation(new GhostAccount(identifier), index);
 		}
-		return new PlayerAccountImplementation(abs, index);
+		return new PlayerAccountImplementation(absOpt.get(), index);
 	}
 
 	void loadAllAccounts() {

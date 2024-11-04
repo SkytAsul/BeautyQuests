@@ -1,47 +1,49 @@
 package fr.skytasul.quests.players;
 
-import fr.skytasul.accounts.Account;
-import fr.skytasul.accounts.AccountService;
+import fr.skytasul.accounts.AccountsProvider;
+import fr.skytasul.accounts.events.AccountJoinEvent;
 import fr.skytasul.accounts.events.AccountLeaveEvent;
-import fr.skytasul.accounts.events.AccountUseEvent;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.players.accounts.HookedAccount;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
+import java.util.Optional;
 
 public class BqAccountsHook implements Listener {
 
-	public static final AccountService service = Bukkit.getServicesManager().getRegistration(AccountService.class).getProvider();
-	
-	public static HookedAccount getPlayerAccount(Player p){
-		return new HookedAccount(service.getAccountForPlayer(p));
+	private static @NotNull AccountsProvider getAccountsProvider() {
+		return Objects.requireNonNull(Bukkit.getServicesManager().load(AccountsProvider.class));
 	}
 
-	public static HookedAccount getAccountFromIdentifier(String identifier){
-		return new HookedAccount(service.getAccountFromIdentifier(identifier));
+	public static HookedAccount getPlayerAccount(Player p){
+		return new HookedAccount(getAccountsProvider().getCurrentAccount(p));
 	}
-	
-	public static HookedAccount createAccountFromUUID(UUID id){
-		Account acc = service.createAccountFromUUID(id);
-		if (acc == null) return null;
-		return new HookedAccount(acc);
+
+	public static Optional<HookedAccount> getAccountFromIdentifier(String identifier) {
+		return getAccountsProvider().getFromIdentifier(NamespacedKey.fromString(identifier)).map(HookedAccount::new);
 	}
-	
+
 	public static String getPlayerCurrentIdentifier(Player p) {
-		return service.getAccountForPlayer(p).getIdentifier();
+		return getAccountsProvider().getCurrentAccount(p).getIdentifier().toString();
 	}
 
 	@EventHandler
-	public void onAccountUse(AccountUseEvent e) {
+	public void onAccountUse(AccountJoinEvent e) {
+		if (!e.isFromDefaultProvider())
+			return;
 		BeautyQuests.getInstance().getPlayersManager().loadPlayer(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onAccountLeave(AccountLeaveEvent e) {
+		if (!e.isFromDefaultProvider())
+			return;
 		BeautyQuests.getInstance().getPlayersManager().unloadPlayer(e.getPlayer());
 	}
-	
+
 }

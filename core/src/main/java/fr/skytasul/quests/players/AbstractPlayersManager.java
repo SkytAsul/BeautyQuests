@@ -12,7 +12,6 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MissingDependencyException;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -90,46 +89,48 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		return accountDatas;
 	}
 
-	protected @NotNull AbstractAccount createAbstractAccount(@NotNull Player p) {
-		return QuestsConfigurationImplementation.getConfiguration().hookAccounts() ? BqAccountsHook.getPlayerAccount(p)
-				: new UUIDAccount(p.getUniqueId());
-	}
-
-	protected @NotNull String getIdentifier(@NotNull OfflinePlayer p) {
+	protected @NotNull Optional<String> getIdentifier(@NotNull OfflinePlayer p) {
 		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			if (!p.isOnline())
-				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
-			return "Hooked|" + BqAccountsHook.getPlayerCurrentIdentifier(p.getPlayer());
+			if (!p.isOnline()) {
+				QuestsPlugin.getPlugin().getLogger()
+						.warning("Cannot fetch player identifier of an offline player with AccountsHook");
+				return Optional.empty();
+			}
+			return Optional.of("Hooked|" + BqAccountsHook.getPlayerCurrentIdentifier(p.getPlayer()));
+		} else {
+			return Optional.of(p.getUniqueId().toString());
 		}
-		return p.getUniqueId().toString();
 	}
 
-	protected @Nullable AbstractAccount createAccountFromIdentifier(@NotNull String identifier) {
-		if (identifier.startsWith("Hooked|")){
-			if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts())
-				throw new MissingDependencyException(
-						"AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
-			String nidentifier = identifier.substring(7);
-			try{
-				return BqAccountsHook.getAccountFromIdentifier(nidentifier);
-			}catch (Exception ex){
-				ex.printStackTrace();
+	protected @NotNull Optional<? extends AbstractAccount> newAbstractAccount(@NotNull OfflinePlayer player) {
+		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
+			if (!player.isOnline()) {
+				QuestsPlugin.getPlugin().getLogger()
+						.warning("Trying to fetch the account of an offline player with AccountsHook");
+				return Optional.empty();
 			}
-		}else {
-			try{
-				UUID uuid = UUID.fromString(identifier);
-				if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-					try{
-						return BqAccountsHook.createAccountFromUUID(uuid);
-					}catch (UnsupportedOperationException ex){
-						QuestsPlugin.getPlugin().getLoggerExpanded().warning("Can't migrate an UUID account to a hooked one.");
-					}
-				}else return new UUIDAccount(uuid);
-			}catch (IllegalArgumentException ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Account identifier " + identifier + " is not valid.");
-			}
+			return Optional.of(BqAccountsHook.getPlayerAccount(player.getPlayer()));
+		} else {
+			return Optional.of(new UUIDAccount(player.getUniqueId()));
 		}
-		return null;
+	}
+
+	protected @NotNull AbstractAccount newAbstractAccount(@NotNull Player player) {
+		// same as above, but removes the Optional because we are sure to have an account
+		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
+			return BqAccountsHook.getPlayerAccount(player);
+		} else {
+			return new UUIDAccount(player.getUniqueId());
+		}
+	}
+
+	protected @NotNull Optional<? extends AbstractAccount> newAbstractAccount(@NotNull String identifier) {
+		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
+			String internalIdentifier = identifier.substring("Hooked|".length());
+			return BqAccountsHook.getAccountFromIdentifier(internalIdentifier);
+		} else {
+			return Optional.of(new UUIDAccount(UUID.fromString(identifier)));
+		}
 	}
 
 	public synchronized void loadPlayer(@NotNull Player p) {
@@ -248,8 +249,8 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		if (cachedPlayerNames.containsKey(uuid))
 			return cachedPlayerNames.get(uuid);
 
-		String name;
-		if (Bukkit.getOnlineMode()) {
+		String name = Bukkit.getOfflinePlayer(uuid).getName();
+		if (name == null && Bukkit.getOnlineMode()) {
 			try {
 				if (System.currentTimeMillis() - lastOnlineFailure < 30_000) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Trying to fetch a name from an UUID but it failed within 30 seconds.");
@@ -274,8 +275,6 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 				lastOnlineFailure = System.currentTimeMillis();
 				return null;
 			}
-		} else {
-			name = Bukkit.getOfflinePlayer(uuid).getName();
 		}
 
 		cachedPlayerNames.put(uuid, name);
