@@ -284,7 +284,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 					}).count();
 
 			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(quest)
-					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(removedAmount -> {
+					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError((Integer removedAmount) -> {
 						Lang.QUEST_PLAYERS_REMOVED.quickSend(actor.sender(), "player_amount",
 								removedAmount + resetAmount);
 					}, "An error occurred while removing quest datas", actor.sender()));

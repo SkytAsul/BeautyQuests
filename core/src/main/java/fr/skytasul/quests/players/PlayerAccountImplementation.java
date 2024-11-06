@@ -27,7 +27,7 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	protected final Map<Integer, PlayerQuestDatasImplementation> questDatas = new HashMap<>();
 	protected final Map<Integer, PlayerPoolDatasImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
-	protected final int index;
+	public final int index;
 
 	private @Nullable PlaceholderRegistry placeholders;
 
@@ -65,10 +65,14 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	public @NotNull PlayerQuestDatasImplementation getQuestDatas(@NotNull Quest quest) {
 		PlayerQuestDatasImplementation datas = questDatas.get(quest.getId());
 		if (datas == null) {
-			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerQuestDatas(this, quest);
+			datas = createQuestDatas(quest);
 			questDatas.put(quest.getId(), datas);
 		}
 		return datas;
+	}
+
+	protected PlayerQuestDatasImplementation createQuestDatas(@NotNull Quest quest) {
+		return new PlayerQuestDatasImplementation(this, quest.getId());
 	}
 
 	@Override
@@ -82,7 +86,11 @@ public class PlayerAccountImplementation implements PlayerAccount {
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
-		return BeautyQuests.getInstance().getPlayersManager().playerQuestDataRemoved(removed).thenApply(__ -> removed);
+		return questDatasRemoved(removed).thenApply(__ -> removed);
+	}
+
+	protected CompletableFuture<Void> questDatasRemoved(PlayerQuestDatasImplementation datas) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	protected @Nullable PlayerQuestDatasImplementation removeQuestDatasSilently(int id) {
@@ -90,8 +98,8 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatas> getQuestsDatas() {
-		return (Collection) questDatas.values();
+	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatasImplementation> getQuestsDatas() {
+		return questDatas.values();
 	}
 
 	@Override
@@ -103,10 +111,14 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	public @NotNull PlayerPoolDatasImplementation getPoolDatas(@NotNull QuestPool pool) {
 		PlayerPoolDatasImplementation datas = poolDatas.get(pool.getId());
 		if (datas == null) {
-			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerPoolDatas(this, pool);
+			datas = createPoolDatas(pool);
 			poolDatas.put(pool.getId(), datas);
 		}
 		return datas;
+	}
+
+	protected PlayerPoolDatasImplementation createPoolDatas(@NotNull QuestPool pool) {
+		return new PlayerPoolDatasImplementation(this, pool.getId());
 	}
 
 	@Override
@@ -120,7 +132,11 @@ public class PlayerAccountImplementation implements PlayerAccount {
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
-		return BeautyQuests.getInstance().getPlayersManager().playerPoolDataRemoved(removed).thenApply(__ -> removed);
+		return poolDatasRemoved(removed).thenApply(__ -> removed);
+	}
+
+	protected CompletableFuture<Void> poolDatasRemoved(PlayerPoolDatasImplementation datas) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	protected @Nullable PlayerPoolDatasImplementation removePoolDatasSilently(int id) {
@@ -128,8 +144,8 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<@NotNull PlayerPoolDatas> getPoolDatas() {
-		return (Collection) poolDatas.values();
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends PlayerPoolDatas> getPoolDatas() {
+		return poolDatas.values();
 	}
 
 	@Override
@@ -163,6 +179,10 @@ public class PlayerAccountImplementation implements PlayerAccount {
 		return placeholders;
 	}
 
+	public void unload() {
+		// left for override
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == this)
@@ -182,6 +202,10 @@ public class PlayerAccountImplementation implements PlayerAccount {
 		hash = hash * 31 + abstractAcc.hashCode();
 
 		return hash;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	@Override

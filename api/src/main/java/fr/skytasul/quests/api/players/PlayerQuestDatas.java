@@ -1,11 +1,11 @@
 package fr.skytasul.quests.api.players;
 
-import java.util.Map;
-import java.util.stream.Stream;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public interface PlayerQuestDatas {
 
@@ -13,6 +13,9 @@ public interface PlayerQuestDatas {
 
 	@Nullable
 	Quest getQuest();
+
+	@NotNull
+	PlayerAccount getAccount();
 
 	boolean isFinished();
 

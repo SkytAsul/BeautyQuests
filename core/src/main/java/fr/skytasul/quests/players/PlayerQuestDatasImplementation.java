@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI;
 import fr.skytasul.quests.options.OptionStartDialog;
+import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,11 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	@Override
 	public int getQuestID() {
 		return questID;
+	}
+
+	@Override
+	public @NotNull PlayerAccountImplementation getAccount() {
+		return acc;
 	}
 
 	@Override

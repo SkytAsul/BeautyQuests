@@ -73,7 +73,7 @@ public class CommandsPools implements OrphanCommand {
 					}).count();
 
 			BeautyQuests.getInstance().getPlayersManager().removePoolDatas(pool)
-					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(removedAmount -> {
+					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError((Integer removedAmount) -> {
 						Lang.POOL_COMPLETELY_RESET.quickSend(actor.sender(), "player_amount",
 								removedAmount + resetAmount);
 					}, "An error occurred while removing pool datas", actor.sender()));

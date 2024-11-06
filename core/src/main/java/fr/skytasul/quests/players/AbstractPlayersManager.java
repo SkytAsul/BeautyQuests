@@ -28,37 +28,21 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractPlayersManager implements PlayersManager {
+public abstract class AbstractPlayersManager<A extends PlayerAccountImplementation> implements PlayersManager {
 
-	protected final @NotNull Map<Player, PlayerAccountImplementation> cachedAccounts = new HashMap<>();
+	protected final @NotNull Map<Player, A> cachedAccounts = new HashMap<>();
 	protected final @NotNull Set<@NotNull SavableData<?>> accountDatas = new HashSet<>();
 	private boolean loaded = false;
 
-	public abstract void load(@NotNull AccountFetchRequest request);
+	public abstract void load(@NotNull AccountFetchRequest<A> request);
 
-	public abstract void unloadAccount(@NotNull PlayerAccountImplementation acc);
-
-	protected abstract @NotNull CompletableFuture<Void> removeAccount(@NotNull PlayerAccountImplementation acc);
+	protected abstract @NotNull CompletableFuture<Void> removeAccount(@NotNull A acc);
 
 	public abstract @NotNull CompletableFuture<Integer> removeQuestDatas(@NotNull Quest quest);
 
 	public abstract @NotNull CompletableFuture<Integer> removePoolDatas(@NotNull QuestPool pool);
 
-	public abstract @NotNull PlayerQuestDatasImplementation createPlayerQuestDatas(@NotNull PlayerAccountImplementation acc,
-			@NotNull Quest quest);
-
-	public abstract @NotNull PlayerPoolDatasImplementation createPlayerPoolDatas(@NotNull PlayerAccountImplementation acc,
-			@NotNull QuestPool pool);
-
-	public @NotNull CompletableFuture<Void> playerQuestDataRemoved(@NotNull PlayerQuestDatasImplementation datas) {
-		return CompletableFuture.completedFuture(null);
-	}
-
-	public @NotNull CompletableFuture<Void> playerPoolDataRemoved(@NotNull PlayerPoolDatasImplementation datas) {
-		return CompletableFuture.completedFuture(null);
-	}
-
-	public void load() {
+	public void load() throws DataException {
 		if (loaded) throw new IllegalStateException("Already loaded");
 		loaded = true;
 	}
@@ -161,7 +145,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 			return false;
 		}
 
-		AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
+		AccountFetchRequest<A> request = new AccountFetchRequest<>(p, time, true, true);
 		load(request);
 
 		if (!request.isFinished() || request.getAccount() == null) {
@@ -221,11 +205,11 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	}
 
 	public synchronized void unloadPlayer(@NotNull Player p) {
-		PlayerAccountImplementation acc = cachedAccounts.get(p);
+		A acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc));
-		unloadAccount(acc);
+		acc.unload();
 		cachedAccounts.remove(p);
 	}
 
@@ -281,7 +265,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		return name;
 	}
 
-	public static class AccountFetchRequest {
+	public static class AccountFetchRequest<A extends PlayerAccountImplementation> {
 		private final OfflinePlayer player;
 		private final long joinTimestamp;
 		private final boolean allowCreation;
@@ -289,7 +273,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 		private boolean finished = false;
 		private boolean created;
-		private PlayerAccountImplementation account;
+		private A account;
 		private String loadedFrom;
 
 		public AccountFetchRequest(OfflinePlayer player, long joinTimestamp, boolean allowCreation, boolean shouldCache) {
@@ -344,7 +328,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		 * @param account account that has been loaded
 		 * @param from source of the saved account
 		 */
-		public void loaded(PlayerAccountImplementation account, String from) {
+		public void loaded(A account, String from) {
 			ensureAvailable();
 			this.account = account;
 			this.loadedFrom = from;
@@ -359,7 +343,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		 *
 		 * @param account account that has been created
 		 */
-		public void created(PlayerAccountImplementation account) {
+		public void created(A account) {
 			if (!mustCreateMissing())
 				throw new IllegalStateException(
 						"This method cannot be called as this request does not allow account creation");
@@ -389,7 +373,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 			return finished;
 		}
 
-		public PlayerAccountImplementation getAccount() {
+		public A getAccount() {
 			return account;
 		}
 

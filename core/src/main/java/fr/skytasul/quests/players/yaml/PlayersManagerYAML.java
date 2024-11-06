@@ -1,20 +1,21 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.yaml;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.players.AbstractPlayersManager;
+import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,14 +23,15 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 
-public class PlayersManagerYAML extends AbstractPlayersManager {
+public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml> {
 
 	private static final int ACCOUNTS_THRESHOLD = 1000;
 
-	private final Cache<Integer, PlayerAccountImplementation> unloadedAccounts = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
-	private final Map<Integer, PlayerAccountImplementation> pendingSaveAccounts = new ConcurrentHashMap<>();
+	private final Cache<Integer, PlayerAccountYaml> unloadedAccounts =
+			CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+	private final Map<Integer, PlayerAccountYaml> pendingSaveAccounts = new ConcurrentHashMap<>();
 
-	protected final Map<Integer, PlayerAccountImplementation> loadedAccounts = new HashMap<>();
+	protected final Map<Integer, PlayerAccountYaml> loadedAccounts = new HashMap<>();
 	private final Map<Integer, String> identifiersIndex = new ConcurrentHashMap<>();
 
 	private final File directory = new File(BeautyQuests.getInstance().getDataFolder(), "players");
@@ -41,13 +43,13 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	}
 
 	@Override
-	public void load(AccountFetchRequest request) {
+	public void load(AccountFetchRequest<PlayerAccountYaml> request) {
 		String identifier = super.getIdentifier(request.getOfflinePlayer()).orElseThrow(() -> new IllegalArgumentException(
 				"Cannot find account for player " + request.getOfflinePlayer().getName()));
 
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
-			PlayerAccountImplementation acc;
+			PlayerAccountYaml acc;
 
 			// 1. get the account if it's already loaded
 			acc = loadedAccounts.get(id);
@@ -86,7 +88,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			}
 		} else if (request.mustCreateMissing()) {
 			AbstractAccount absacc = super.newAbstractAccount(request.getOnlinePlayer());
-			PlayerAccountImplementation acc = new PlayerAccountImplementation(absacc, lastAccountID + 1);
+			var acc = new PlayerAccountYaml(this, absacc, lastAccountID + 1);
 			if (request.shouldCache())
 				addAccount(acc);
 
@@ -97,20 +99,10 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	}
 
 	@Override
-	protected CompletableFuture<Void> removeAccount(PlayerAccountImplementation acc) {
+	protected CompletableFuture<Void> removeAccount(PlayerAccountYaml acc) {
 		loadedAccounts.remove(acc.index);
 		identifiersIndex.remove(acc.index);
 		return CompletableFuture.runAsync(() -> removePlayerFile(acc.index));
-	}
-
-	@Override
-	public PlayerQuestDatasImplementation createPlayerQuestDatas(PlayerAccountImplementation acc, Quest quest) {
-		return new PlayerQuestDatasImplementation(acc, quest.getId());
-	}
-
-	@Override
-	public PlayerPoolDatasImplementation createPlayerPoolDatas(PlayerAccountImplementation acc, QuestPool pool) {
-		return new PlayerPoolDatasImplementation(acc, pool.getId());
 	}
 
 	@Override
@@ -163,22 +155,25 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		});
 	}
 
-	private synchronized PlayerAccountImplementation createPlayerAccount(String identifier, int index) {
+	private synchronized PlayerAccountYaml createPlayerAccount(String identifier, int index) {
 		Validate.notNull(identifier, "Identifier cannot be null (index: " + index + ")");
 		var absOpt = super.newAbstractAccount(identifier);
 		if (absOpt.isEmpty()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("Player account with identifier " + identifier + " is not enabled, but will be kept in the data file.");
-			return new PlayerAccountImplementation(new GhostAccount(identifier), index);
+			return new PlayerAccountYaml(this, new GhostAccount(identifier), index);
 		}
-		return new PlayerAccountImplementation(absOpt.get(), index);
+		return new PlayerAccountYaml(this, absOpt.get(), index);
 	}
 
-	void loadAllAccounts() {
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experience some lags.");
+	public @NotNull Collection<PlayerAccountYaml> loadAllAccounts() {
+		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD)
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"CAUTION - BeautyQuests will now load every single player data into the server's memory. We HIGHLY recommend the server to be restarted at the end of the operation. Be prepared to experience some lags.");
+
 		for (Entry<Integer, String> entry : identifiersIndex.entrySet()) {
 			if (loadedAccounts.containsKey(entry.getKey())) continue;
 			try {
-				PlayerAccountImplementation acc = loadFromFile(entry.getKey(), false);
+				PlayerAccountYaml acc = loadFromFile(entry.getKey(), false);
 				if (acc == null)
 					acc = createPlayerAccount(entry.getValue(), entry.getKey());
 				addAccount(acc);
@@ -187,47 +182,35 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 			}
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().info("Total loaded accounts: " + loadedAccounts.size());
+
+		return loadedAccounts.values();
 	}
 
-	private synchronized void addAccount(PlayerAccountImplementation acc) {
+	private synchronized void addAccount(PlayerAccountYaml acc) {
 		Validate.notNull(acc);
 		loadedAccounts.put(acc.index, acc);
 		identifiersIndex.put(acc.index, acc.abstractAcc.getIdentifier());
 		if (acc.index >= lastAccountID) lastAccountID = acc.index;
 	}
 
-	private PlayerAccountImplementation loadFromFile(int index, boolean msg) {
+	private PlayerAccountYaml loadFromFile(int index, boolean msg) {
 		File file = new File(directory, index + ".yml");
 		if (!file.exists()) return null;
+
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading account #" + index + ". Last file edition: " + new Date(file.lastModified()).toString());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
-		return loadFromConfig(index, playerConfig);
-	}
-
-	private PlayerAccountImplementation loadFromConfig(int index, ConfigurationSection datas) {
-		String identifier = datas.getString("identifier");
+		String identifier = playerConfig.getString("identifier");
 		if (identifier == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No identifier found in file for index " + index + ".");
 			identifier = identifiersIndex.get(index);
 		}
-		PlayerAccountImplementation acc = createPlayerAccount(identifier, index);
-		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
-			PlayerQuestDatasImplementation questDatas = PlayerQuestDatasImplementation.deserialize(acc, (Map<String, Object>) questConfig);
-			acc.questDatas.put(questDatas.questID, questDatas);
-		}
-		for (Map<?, ?> poolConfig : datas.getMapList("pools")) {
-			PlayerPoolDatasImplementation questDatas = PlayerPoolDatasImplementation.deserialize(acc, (Map<String, Object>) poolConfig);
-			acc.poolDatas.put(questDatas.getPoolID(), questDatas);
-		}
-		for (SavableData<?> data : accountDatas) {
-			if (datas.contains(data.getId())) {
-				acc.additionalDatas.put(data, datas.getObject(data.getId(), data.getDataType()));
-			}
-		}
+
+		PlayerAccountYaml acc = createPlayerAccount(identifier, index);
+		acc.load(playerConfig);
 		return acc;
 	}
 
-	public void savePlayerFile(PlayerAccountImplementation acc) throws IOException {
+	public void savePlayerFile(PlayerAccountYaml acc) throws IOException {
 		File file = new File(directory, acc.index + ".yml");
 		file.createNewFile();
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
@@ -285,9 +268,9 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		// as the save can take a few seconds and MAY be done asynchronously,
 		// it is possible that the "loadedAccounts" map is being edited concurrently.
 		// therefore, we create a new list to avoid this issue.
-		Set<PlayerAccountImplementation> accountsToSave = new HashSet<>(loadedAccounts.values());
+		var accountsToSave = new HashSet<>(loadedAccounts.values());
 		accountsToSave.addAll(pendingSaveAccounts.values());
-		for (PlayerAccountImplementation acc : accountsToSave) {
+		for (var acc : accountsToSave) {
 			try {
 				savePlayerFile(acc);
 			}catch (Exception e) {
@@ -296,8 +279,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		}
 	}
 
-	@Override
-	public void unloadAccount(PlayerAccountImplementation acc) {
+	public void unloadAccount(PlayerAccountYaml acc) {
 		loadedAccounts.remove(acc.index);
 		unloadedAccounts.put(acc.index, acc);
 		pendingSaveAccounts.put(acc.index, acc);

@@ -9,6 +9,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
@@ -22,11 +23,13 @@ public class Database implements Closeable {
 
 	private final DataSource source;
 
-	public Database(ConfigurationSection config) {
+	public Database(ConfigurationSection config) throws IOException {
 		this.config = config;
 		this.databaseName = config.getString("database");
 
-		HikariConfig hikariConfig = new HikariConfig("/hikari.properties");
+		var properties = new Properties();
+		properties.load(getClass().getResourceAsStream("/hikari.properties"));
+		HikariConfig hikariConfig = new HikariConfig(properties);
 
 		String connectionString = config.getString("connectionString", "");
 		if (connectionString == null || connectionString.isEmpty())
