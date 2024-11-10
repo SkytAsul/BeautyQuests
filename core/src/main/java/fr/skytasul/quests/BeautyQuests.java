@@ -31,6 +31,7 @@ import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
@@ -90,7 +91,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable ScoreboardManager scoreboards;
 	private @Nullable QuestsManagerImplementation quests;
 	private @Nullable QuestPoolsManagerImplementation pools;
-	private @Nullable AbstractPlayersManager players;
+	private @Nullable AbstractPlayersManager<?> players;
 
 	/* ---------- Operations -------- */
 
@@ -105,6 +106,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable LoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
+	private @Nullable BukkitAudiences audiences;
 
 	/* ---------------------------------------------- */
 
@@ -149,6 +151,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			else
 				logger.warning("You are not running the Paper software.\n"
 						+ "It is highly recommended to use it for extended features and more stability.");
+
+			audiences = BukkitAudiences.create(this);
 
 			saveDefaultConfig();
 			NMS.isValid(); // to force initialization
@@ -857,8 +861,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public @NotNull AbstractPlayersManager getPlayersManager() {
+	public @NotNull AbstractPlayersManager<?> getPlayersManager() {
 		return ensureLoaded(players);
+	}
+
+	@Override
+	public @NotNull BukkitAudiences getAudiences() {
+		return ensureLoaded(audiences);
 	}
 
 	public boolean isRunningPaper() {

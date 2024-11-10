@@ -55,6 +55,8 @@
 		<xseries.version>11.2.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.3</fastboard.version>
+		<adventure.version>4.17.0</adventure.version>
+		<adventure.bukkit.version>4.3.4</adventure.bukkit.version>
 	</properties>
 
 	<repositories>
