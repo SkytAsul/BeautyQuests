@@ -71,10 +71,6 @@
 
 	<repositories>
 		<repository>
-			<id>papermc</id>
-			<url>https://repo.papermc.io/repository/maven-public/</url>
-		</repository>
-		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -99,12 +95,12 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
 			<version>${minecraft.version}</version>
 			<scope>provided</scope>
 		</dependency>
-	
+
 		<!-- These dependencies are available at runtime but are not shaded -->
 		<dependency>
 			<groupId>io.github.revxrsal</groupId>

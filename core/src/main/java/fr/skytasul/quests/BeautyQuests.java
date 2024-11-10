@@ -27,6 +27,7 @@ import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
+import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
@@ -55,6 +56,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +67,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
-	private boolean isPaper;
+	private @Nullable Paper paperCompat;
 
 	/* --------- Storage --------- */
 
@@ -142,7 +144,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		try {
 			logger.info("------------ BeautyQuests ------------");
 
-			if (isPaper)
+			if (isRunningPaper())
 				logger.debug("Paper detected.");
 			else
 				logger.warning("You are not running the Paper software.\n"
@@ -259,9 +261,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private void checkPaper() {
 		try {
-			isPaper = Class.forName("com.destroystokyo.paper.ParticleBuilder") != null;
-		} catch (ClassNotFoundException ex) {
-			isPaper = false;
+			if (Class.forName("com.destroystokyo.paper.ParticleBuilder") != null) {
+				paperCompat = (Paper) Class.forName("fr.skytasul.quests.utils.compatibility.PaperImplementation")
+						.getDeclaredConstructor().newInstance();
+			}
+		} catch (Exception ex) {
+			paperCompat = null;
 		}
 	}
 
@@ -857,7 +862,11 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	public boolean isRunningPaper() {
-		return isPaper;
+		return paperCompat != null;
+	}
+
+	public Optional<Paper> getPaperCompatibility() {
+		return Optional.ofNullable(paperCompat);
 	}
 
 

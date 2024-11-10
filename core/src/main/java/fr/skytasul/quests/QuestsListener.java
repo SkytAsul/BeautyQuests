@@ -19,7 +19,6 @@ import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
-import fr.skytasul.quests.utils.compatibility.Paper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -193,7 +192,7 @@ public class QuestsListener implements Listener{
 
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent e) {
-		if (BeautyQuests.getInstance().isRunningPaper()) Paper.handleDeathItems(e, Utils::isQuestItem);
+		BeautyQuests.getInstance().getPaperCompatibility().ifPresent(paper -> paper.keepDeathItems(e, Utils::isQuestItem));
 	}
 
 	@EventHandler

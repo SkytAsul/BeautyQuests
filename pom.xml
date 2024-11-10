@@ -78,6 +78,7 @@
 	<modules>
 		<module>api</module>
 		<module>core</module>
+		<module>paper</module>
 		<module>integrations</module>
 		<module>v1_17_R1</module>
 		<module>v1_18_R1</module>
