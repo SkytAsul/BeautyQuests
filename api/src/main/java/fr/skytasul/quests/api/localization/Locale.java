@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -55,21 +56,36 @@ public interface Locale {
 				.replace("{" + key1 + "}", replacement);
 	}
 
-	default void send(@NotNull CommandSender sender) {
-		send(sender, (HasPlaceholders) null);
+	default void send(@NotNull Audience audience) {
+		send(audience, (HasPlaceholders) null);
 	}
 
-	default void send(@NotNull CommandSender sender, @Nullable HasPlaceholders placeholdersHolder) {
-		MessageUtils.sendMessage(sender, getValue(), getType(),
-				placeholdersHolder == null ? null : placeholdersHolder.getPlaceholdersRegistry());
+	default void send(@NotNull CommandSender sender) {
+		send(QuestsPlugin.getPlugin().getAudiences().sender(sender));
+	}
+
+	default void send(@NotNull Audience audience, @NotNull HasPlaceholders @NotNull... placeholdersHolders) {
+		HasPlaceholders fullHolder = null;
+		if (placeholdersHolders != null) {
+			if (placeholdersHolders.length == 1)
+				fullHolder = placeholdersHolders[0];
+			else
+				fullHolder = PlaceholderRegistry.combine(placeholdersHolders);
+		}
+		MessageUtils.sendMessage(audience, getValue(), getType(),
+				fullHolder == null ? null : fullHolder.getPlaceholdersRegistry());
 	}
 
 	default void send(@NotNull CommandSender sender, @NotNull HasPlaceholders @NotNull... placeholdersHolders) {
-		send(sender, PlaceholderRegistry.combine(placeholdersHolders));
+		send(QuestsPlugin.getPlugin().getAudiences().sender(sender), placeholdersHolders);
+	}
+
+	default void quickSend(@NotNull Audience audience, @NotNull String key1, @Nullable Object value1) {
+		send(audience, PlaceholderRegistry.of(key1, value1));
 	}
 
 	default void quickSend(@NotNull CommandSender sender, @NotNull String key1, @Nullable Object value1) {
-		send(sender, PlaceholderRegistry.of(key1, value1));
+		quickSend(QuestsPlugin.getPlugin().getAudiences().sender(sender), key1, value1);
 	}
 
 	public static void loadStrings(@NotNull Locale @NotNull [] locales, @NotNull YamlConfiguration defaultConfig,

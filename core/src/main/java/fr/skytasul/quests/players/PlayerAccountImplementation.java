@@ -1,6 +1,7 @@
 package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
@@ -10,6 +11,10 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.pointer.Pointers;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -19,7 +24,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerAccountImplementation implements PlayerAccount {
+public class PlayerAccountImplementation implements PlayerAccount, ForwardingAudience {
 
 	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
@@ -31,9 +36,25 @@ public class PlayerAccountImplementation implements PlayerAccount {
 
 	private @Nullable PlaceholderRegistry placeholders;
 
+	private final @NotNull Pointers audiencePointers;
+
 	protected PlayerAccountImplementation(@NotNull AbstractAccount account, int index) {
 		this.abstractAcc = account;
 		this.index = index;
+
+		this.audiencePointers = Pointers.builder()
+				.withDynamic(Identity.NAME, this::getName)
+				.build();
+	}
+
+	@Override
+	public @NotNull Pointers pointers() {
+		return audiencePointers;
+	}
+
+	@Override
+	public @NotNull Iterable<? extends Audience> audiences() {
+		return isCurrent() ? List.of(QuestsPlugin.getPlugin().getAudiences().player(getPlayer())) : List.of();
 	}
 
 	@Override

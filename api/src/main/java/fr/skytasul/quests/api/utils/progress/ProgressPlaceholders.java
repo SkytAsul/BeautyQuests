@@ -1,9 +1,6 @@
 package fr.skytasul.quests.api.utils.progress;
 
-import java.util.Map;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
@@ -17,6 +14,11 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlacehol
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasMultipleObjects;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
+import net.kyori.adventure.audience.Audience;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Map;
 
 public final class ProgressPlaceholders {
 
@@ -147,6 +149,11 @@ public final class ProgressPlaceholders {
 			this.player = player;
 			this.replacePluginPlaceholders = replacePluginPlaceholders;
 			this.progress = progress;
+		}
+
+		@Override
+		public @Nullable Audience getAudience() {
+			return QuestsPlugin.getPlugin().getAudiences().player(player);
 		}
 
 		@Override

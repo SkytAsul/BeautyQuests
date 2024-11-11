@@ -1,16 +1,20 @@
 package fr.skytasul.quests.api.utils.messaging;
 
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.ChatColorUtils;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.ChatColorUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class MessageUtils {
+public final class MessageUtils {
 
 	private MessageUtils() {}
 
@@ -18,26 +22,50 @@ public class MessageUtils {
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_-]+)\\}");
 	private static final Pattern NEWLINE_PATTERN = Pattern.compile("(?:\\n|\\\\n|\\{nl\\})");
 
+	public static void sendMessage(@NotNull Audience audience, @Nullable String message, @NotNull MessageType type) {
+		sendMessage(audience, message, type, null);
+	}
+
 	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type) {
-		sendMessage(sender, message, type, null);
+		sendMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), message, type);
+	}
+
+	public static void sendMessage(@NotNull Audience audience, @Nullable String message, @NotNull MessageType type,
+			@Nullable PlaceholderRegistry placeholders) {
+		sendRawMessage(audience, message, placeholders, PlaceholdersContext.of(audience, true, type));
 	}
 
 	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
 			@Nullable PlaceholderRegistry placeholders) {
-		sendRawMessage(sender, message, placeholders, PlaceholdersContext.of(sender, true, type));
+		sendMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), message, type, placeholders);
 	}
 
-	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,
+	public static void sendRawMessage(@NotNull Audience audience, @Nullable String text,
 			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
 		if (text == null || text.isEmpty())
 			return;
 
 		text = finalFormat(text, placeholders, context);
-		sender.sendMessage(NEWLINE_PATTERN.split(text));
+
+		Component fullCompo = null;
+		for (var line : NEWLINE_PATTERN.split(text)) {
+			var parsed = LegacyComponentSerializer.legacySection().deserialize(line);
+			if (fullCompo == null) {
+				fullCompo = parsed;
+			} else {
+				fullCompo = fullCompo.appendNewline().append(fullCompo);
+			}
+		}
+		audience.sendMessage(fullCompo);
+	}
+
+	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,
+			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
+		sendRawMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), text, placeholders, context);
 	}
 
 	public static String finalFormat(@NotNull String text, @Nullable PlaceholderRegistry placeholders,
-			@NotNull PlaceholdersContext context) {
+			@NotNull PlaceholdersContext context) { // TODO convert to Component
 		for (MessageProcessor processor : QuestsAPI.getAPI().getMessageProcessors()) {
 			placeholders = processor.processPlaceholders(placeholders, context);
 			text = processor.processString(text, context);
