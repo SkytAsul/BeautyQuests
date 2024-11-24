@@ -170,8 +170,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	public void start(@NotNull PlayerAccount acc) {
-		if (acc.isCurrent())
-			MessageUtils.sendMessage(acc.getPlayer(), stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
+		MessageUtils.sendMessage(acc, stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);

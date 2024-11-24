@@ -88,8 +88,8 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	@Override
 	public void started(PlayerAccount acc) {
 		super.started(acc);
-		if (acc.isCurrent() && sendStartMessage()) {
-			MessageUtils.sendRawMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
+		if (sendStartMessage()) {
+			MessageUtils.sendRawMessage(acc, Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
 					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE, MessageType.DefaultMessageType.PREFIXED));
 		}
 	}

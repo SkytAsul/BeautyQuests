@@ -326,8 +326,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()) {
-				if (sendMessage && acc.isCurrent())
-					Lang.QUEST_WAIT.quickSend(acc.getPlayer(), "time_left", getTimeLeft(acc));
+				if (sendMessage)
+					Lang.QUEST_WAIT.quickSend(acc, "time_left", getTimeLeft(acc));
 				return false;
 			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
 		}
