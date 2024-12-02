@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class BQLocation extends Location implements Locatable.Located, HasPlaceholders {
@@ -58,7 +59,7 @@ public class BQLocation extends Location implements Locatable.Located, HasPlaceh
 
 	@Override
 	public Location getLocation() {
-		return new Location(getWorld(), getX(), getY(), getZ());
+		return new Location(getMatchingWorld().orElse(null), getX(), getY(), getZ());
 	}
 
 	@Override
@@ -76,14 +77,20 @@ public class BQLocation extends Location implements Locatable.Located, HasPlaceh
 		return getWorld() == null ? worldPattern.pattern() : getWorld().getName();
 	}
 
+	public @NotNull Optional<World> getMatchingWorld() {
+		if (super.getWorld() != null)
+			return Optional.of(super.getWorld());
+		if (worldPattern == null)
+			return Optional.empty();
+		return Bukkit.getWorlds()
+				.stream()
+				.filter(world -> worldPattern.matcher(world.getName()).matches())
+				.findFirst();
+	}
+
 	@Nullable
 	public Block getMatchingBlock() {
-		if (super.getWorld() != null) return super.getBlock();
-		if (worldPattern == null) return null;
-		return Bukkit.getWorlds()
-					.stream()
-					.filter(world -> worldPattern.matcher(world.getName()).matches())
-					.findFirst()
+		return getMatchingWorld()
 					.map(world -> world.getBlockAt(getBlockX(), getBlockY(), getBlockZ()))
 					.orElse(null);
 	}
