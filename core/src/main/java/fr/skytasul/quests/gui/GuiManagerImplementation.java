@@ -1,17 +1,5 @@
 package fr.skytasul.quests.gui;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.*;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -21,6 +9,19 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class GuiManagerImplementation implements GuiManager, Listener {
 
@@ -192,8 +193,29 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 
 	@EventHandler
 	public void onDrag(InventoryDragEvent event) {
-		if (players.containsKey(event.getWhoClicked()))
-			event.setCancelled(true);
+		if (players.containsKey(event.getWhoClicked())) {
+			// event.setCancelled(true);
+			// Mohist does not take cancelling into account.
+			// Therefore, we need to let go any drag event occuring only for the player inventory
+			// and programmatically remove the dragged items if the top inventory changed.
+
+			boolean hasTopChanged = event.getNewItems().keySet().stream()
+					.anyMatch(slot -> event.getView().convertSlot(slot) == slot);
+			if (!hasTopChanged)
+				return;
+
+			ItemStack cursorSnapshot = event.getOldCursor();
+
+			QuestUtils.runSync(() -> {
+				for (int slot : event.getNewItems().keySet()) {
+					event.getView().setItem(slot, null);
+					// This can potentially remove an item that previously existed in an inventory and which got its
+					// amount increased with the drag. One could fix that by restoring the amount of the item to what it
+					// was before the drag event, but we cannot retrieve this value...
+				}
+				event.getWhoClicked().setItemOnCursor(cursorSnapshot);
+			});
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

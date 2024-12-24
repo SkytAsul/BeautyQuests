@@ -42,7 +42,7 @@
 		<maven.compiler.release>8</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<build.number>unknown</build.number>
-		<revision.raw>1.0.5</revision.raw>
+		<revision.raw>1.0.5-mohist</revision.raw>
 		<revision>${revision.raw}-SNAPSHOT</revision>
 		<!-- <plugin.version>${revision}</plugin.version> --> <!-- For release -->
 		<plugin.version>${revision.raw}_BUILD${build.number}</plugin.version> <!-- For dev builds -->
