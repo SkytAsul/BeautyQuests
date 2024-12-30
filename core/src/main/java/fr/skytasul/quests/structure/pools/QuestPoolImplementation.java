@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
@@ -173,17 +173,17 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	@Override
-	public CompletableFuture<Boolean> resetPlayer(PlayerAccount acc) {
+	public CompletableFuture<Boolean> resetPlayer(Quester acc) {
 		return acc.removePoolDatas(this).thenApply(__ -> true);
 	}
 
 	@Override
-	public void resetPlayerTimer(PlayerAccount acc) {
+	public void resetPlayerTimer(Quester acc) {
 		if (!acc.hasPoolDatas(this)) return;
 		acc.getPoolDatas(this).setLastGive(0);
 	}
 
-	public void questCompleted(PlayerAccount acc, Quest quest) {
+	public void questCompleted(Quester acc, Quest quest) {
 		if (!avoidDuplicates) return;
 		PlayerPoolDatasImplementation poolDatas = (PlayerPoolDatasImplementation) acc.getPoolDatas(this);
 		poolDatas.getCompletedQuests().add(quest.getId());
@@ -192,7 +192,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	@Override
 	public boolean canGive(Player p) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
@@ -212,7 +212,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	@Override
 	public CompletableFuture<String> give(Player p) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayersManager.getPlayerAccount(p);
 		PlayerPoolDatas datas = acc.getPoolDatas(this);
 
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
@@ -246,7 +246,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		});
 	}
 
-	private CompletableFuture<PoolGiveResult> giveOne(Player p, PlayerAccount acc, PlayerPoolDatas datas,
+	private CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, PlayerPoolDatas datas,
 			boolean hadOne) {
 		if (!requirements.allMatch(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));

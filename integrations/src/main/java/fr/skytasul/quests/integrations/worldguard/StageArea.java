@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -103,7 +103,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@Override
-	public void started(@NotNull PlayerAccount acc) {
+	public void started(@NotNull Quester acc) {
 		super.started(acc);
 		if (acc.isCurrent()) {
 			if (BQWorldGuard.getInstance().isInRegion(region, acc.getPlayer().getLocation(), false))

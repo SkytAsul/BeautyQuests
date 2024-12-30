@@ -65,7 +65,8 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
-			if (lc.distanceSquared(e.getTo()) <= radiusSquared) finishStage(p);
+			if (lc.distanceSquared(e.getTo()) <= radiusSquared)
+				controller.getApplicableQuesters(p).forEach(this::finishStage);
 		}
 	}
 

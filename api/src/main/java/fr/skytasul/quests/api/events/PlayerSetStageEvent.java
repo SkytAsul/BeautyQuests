@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.stages.StageController;
@@ -14,7 +14,7 @@ public class PlayerSetStageEvent extends PlayerQuestEvent {
 
 	private final @NotNull StageController stage;
 	
-	public PlayerSetStageEvent(@NotNull PlayerAccount account, @NotNull Quest quest, @NotNull StageController stage) {
+	public PlayerSetStageEvent(@NotNull Quester account, @NotNull Quest quest, @NotNull StageController stage) {
 		super(account, quest);
 		this.stage = stage;
 	}

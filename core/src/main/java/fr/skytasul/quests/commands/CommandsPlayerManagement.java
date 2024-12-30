@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -57,7 +57,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.finish")
 	public void finishAll(BukkitCommandActor actor, EntitySelector<Player> players) {
 		for (Player player : players) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayersManager.getPlayerAccount(player);
 			int success = 0;
 			int errors = 0;
 			for (Quest q : QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc)) {
@@ -100,7 +100,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			@Range (min = 0, max = 14) @Optional Integer branchID,
 			@Range (min = 0, max = 14) @Optional Integer stageID) {
 		// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayersManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
@@ -153,7 +153,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@Subcommand ("startDialog")
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayersManager.getPlayerAccount(player);
 		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
 
 		DialogRunner runner = null;
@@ -190,7 +190,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.resetPlayer")
 	public void resetPlayer(BukkitCommandActor actor, EntitySelector<Player> players) {
 		for (Player player : players) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayersManager.getPlayerAccount(player);
 
 			List<CompletableFuture<?>> futures = new ArrayList<>(acc.getQuestsDatas().size() + acc.getPoolDatas().size());
 
@@ -247,7 +247,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void reset(CommandSender sender, Player target, Quest qu) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(target);
+		Quester acc = PlayersManager.getPlayerAccount(target);
 		qu.resetPlayer(acc).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
 			if (acc.isCurrent())
 				Lang.DATA_QUEST_REMOVED.send(target, qu.getPlaceholdersRegistry(),
@@ -320,7 +320,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void start(CommandSender sender, Player player, Quest quest, boolean overrideRequirements) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayersManager.getPlayerAccount(player);
 		if (!overrideRequirements && !quest.canStart(player, true)) {
 			Lang.START_QUEST_NO_REQUIREMENT.send(sender, quest, acc);
 			return;
@@ -339,7 +339,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}
 
 		for (Player player : players) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayersManager.getPlayerAccount(player);
 
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
@@ -351,7 +351,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}
 	}
 
-	private void cancel(CommandSender sender, PlayerAccount acc, Quest quest) {
+	private void cancel(CommandSender sender, Quester acc, Quest quest) {
 		if (!quest.isCancellable()) {
 			Lang.CANCEL_QUEST_UNAVAILABLE.send(sender, quest);
 			return;

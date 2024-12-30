@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api.pools;
 
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
@@ -45,9 +45,9 @@ public interface QuestPool extends HasPlaceholders {
 	ItemStack getItemStack(@NotNull String action);
 
 	@NotNull
-	CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc);
+	CompletableFuture<Boolean> resetPlayer(@NotNull Quester acc);
 
-	void resetPlayerTimer(@NotNull PlayerAccount acc);
+	void resetPlayerTimer(@NotNull Quester acc);
 
 	boolean canGive(@NotNull Player p);
 

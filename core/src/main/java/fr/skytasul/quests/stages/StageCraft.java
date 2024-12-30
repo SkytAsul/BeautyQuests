@@ -7,8 +7,7 @@ import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -55,11 +54,13 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
 		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasStarted(p) && canUpdate(p, true)) {
-			long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - event.getItemAmount();
-			if (amount <= 0) {
-				finishStage(p);
-			}else {
-				updateObjective(p, "amount", amount);
+			for (Quester quester : controller.getApplicableQuesters(p)) {
+				long amount = getRemainingAmount(quester) - event.getItemAmount();
+				if (amount <= 0) {
+					finishStage(quester);
+				} else {
+					updateObjective(quester, "amount", amount);
+				}
 			}
 		}
 	}
@@ -114,24 +115,26 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 				// No use continuing if we haven't actually crafted a thing
 				if (recipeAmount == 0) return;
 
-				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p)) - recipeAmount;
-				if (amount <= 0) {
-					finishStage(p);
-				}else {
-					updateObjective(p, "amount", amount);
+				for (Quester quester : controller.getApplicableQuesters(p)) {
+					long amount = getRemainingAmount(quester) - recipeAmount;
+					if (amount <= 0) {
+						finishStage(quester);
+					} else {
+						updateObjective(quester, "amount", amount);
+					}
 				}
 			}
 		}
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", result.getAmount());
 	}
 
 	@Override
-	public long getPlayerAmount(PlayerAccount acc) {
+	public long getRemainingAmount(Quester acc) {
 		Long amount = getData(acc, "amount", Long.class);
 		return amount == null ? 0 : amount.longValue();
 	}

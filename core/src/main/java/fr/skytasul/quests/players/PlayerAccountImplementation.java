@@ -3,9 +3,9 @@ package fr.skytasul.quests.players;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerAccountImplementation implements PlayerAccount, ForwardingAudience {
+public class PlayerAccountImplementation implements Quester, ForwardingAudience {
 
 	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
@@ -54,22 +54,27 @@ public class PlayerAccountImplementation implements PlayerAccount, ForwardingAud
 
 	@Override
 	public @NotNull Iterable<? extends Audience> audiences() {
-		return isCurrent() ? List.of(QuestsPlugin.getPlugin().getAudiences().player(getPlayer())) : List.of();
+		return abstractAcc.isCurrent() ? List.of(QuestsPlugin.getPlugin().getAudiences().player(abstractAcc.getPlayer()))
+				: List.of();
 	}
 
-	@Override
-	public boolean isCurrent() {
-		return abstractAcc.isCurrent();
-	}
-
-	@Override
 	public @NotNull OfflinePlayer getOfflinePlayer() {
 		return abstractAcc.getOfflinePlayer();
 	}
 
-	@Override
 	public @Nullable Player getPlayer() {
 		return abstractAcc.getPlayer();
+	}
+
+	// TODO improve memory usage of lists
+	@Override
+	public @NotNull Collection<Player> getOnlinePlayers() {
+		return abstractAcc.isCurrent() ? List.of(abstractAcc.getPlayer()) : List.of();
+	}
+
+	@Override
+	public @NotNull Collection<OfflinePlayer> getOfflinePlayers() {
+		return List.of(abstractAcc.getOfflinePlayer());
 	}
 
 	@Override
@@ -231,19 +236,17 @@ public class PlayerAccountImplementation implements PlayerAccount, ForwardingAud
 
 	@Override
 	public @NotNull String getName() {
-		Player p = getPlayer();
-		return p == null ? debugName() : p.getName();
+		return abstractAcc.isCurrent() ? abstractAcc.getPlayer().getName() : debugName();
 	}
 
 	@Override
 	public @NotNull String getNameAndID() {
-		Player p = getPlayer();
-		return p == null ? debugName() : p.getName() + " (# " + index + ")";
+		return abstractAcc.isCurrent() ? abstractAcc.getPlayer().getName() + " (#%d)".formatted(index) : debugName();
 	}
 
 	@Override
 	public @NotNull String debugName() {
-		return abstractAcc.getIdentifier() + " (#" + index + ")";
+		return abstractAcc.getIdentifier() + " (#%d)".formatted(index);
 	}
 
 	public void serialize(@NotNull ConfigurationSection config) {

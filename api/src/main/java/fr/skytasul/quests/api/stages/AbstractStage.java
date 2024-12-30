@@ -1,8 +1,8 @@
 package fr.skytasul.quests.api.stages;
 
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.requirements.RequirementList;
@@ -124,19 +124,19 @@ public abstract class AbstractStage implements HasPlaceholders {
 	}
 
 	/**
-	 * Called internally when a player finish stage's objectives
+	 * To be called when a quester completes its stage.
 	 *
-	 * @param player Player who finish the stage
+	 * @param quester Quester which completed the stage
 	 */
-	protected final void finishStage(@NotNull Player player) {
-		controller.finishStage(player);
+	protected final void finishStage(@NotNull Quester quester) {
+		controller.finishStage(quester);
 	}
 
 	/**
 	 * Called internally to test if a player has the stage started
 	 *
 	 * @param player Player to test
-	 * @see QuestBranch#hasStageLaunched(PlayerAccount, AbstractStage)
+	 * @see QuestBranch#hasStageLaunched(Quester, AbstractStage)
 	 */
 	protected final boolean hasStarted(@NotNull Player player) {
 		return controller.hasStarted(PlayersManager.getPlayerAccount(player));
@@ -146,13 +146,13 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * Called when the stage starts (player can be offline)
 	 * @param acc PlayerAccount for which the stage starts
 	 */
-	public void started(@NotNull PlayerAccount acc) {}
+	public void started(@NotNull Quester acc) {}
 
 	/**
 	 * Called when the stage ends (player can be offline)
 	 * @param acc PlayerAccount for which the stage ends
 	 */
-	public void ended(@NotNull PlayerAccount acc) {}
+	public void ended(@NotNull Quester acc) {}
 
 	/**
 	 * Called when an account with this stage launched joins
@@ -164,12 +164,12 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 */
 	public void left(@NotNull Player player) {}
 
-	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
+	public void initPlayerDatas(@NotNull Quester acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
 
 	public abstract @NotNull String getDefaultDescription(@NotNull StageDescriptionPlaceholdersContext context);
 
-	protected final void updateObjective(@NotNull Player p, @NotNull String dataKey, @Nullable Object dataValue) {
-		controller.updateObjective(p, dataKey, dataValue);
+	protected final void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue) {
+		controller.updateObjective(quester, dataKey, dataValue);
 	}
 
 	@Deprecated
@@ -178,7 +178,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	}
 
 	@Deprecated
-	protected final <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey) {
+	protected final <T> @Nullable T getData(@NotNull Quester acc, @NotNull String dataKey) {
 		return getData(acc, dataKey, null);
 	}
 
@@ -186,7 +186,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 		return getData(PlayersManager.getPlayerAccount(p), dataKey, dataType);
 	}
 
-	protected final <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey,
+	protected final <T> @Nullable T getData(@NotNull Quester acc, @NotNull String dataKey,
 			@NotNull Class<T> dataType) {
 		return controller.getData(acc, dataKey, dataType);
 	}

@@ -8,8 +8,8 @@ import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
@@ -20,10 +20,9 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.QuesterPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
-import fr.skytasul.quests.stages.StagePlayTime.TimeMode;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -59,12 +58,12 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		placeholders.registerIndexedContextual("time_remaining_human", PlayerPlaceholdersContext.class,
-				context -> Utils.millisToHumanString(getPlayerAmount(context.getPlayerAccount())));
+		placeholders.registerIndexedContextual("time_remaining_human", QuesterPlaceholdersContext.class,
+				context -> Utils.millisToHumanString(getRemainingAmount(context.getQuester())));
 		ProgressPlaceholders.registerProgress(placeholders, "time", this);
 	}
 
-	private long getRemaining(PlayerAccount acc) {
+	private long getRemaining(Quester acc) {
 		switch (timeMode) {
 			case ONLINE:
 				long remaining = getData(acc, "remainingTime", Long.class);
@@ -93,13 +92,15 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	private void launchTask(Player p, long remaining) {
-		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
+		tasks.put(p,
+				Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(),
+						() -> controller.getApplicableQuesters(p).forEach(this::finishStage),
 				remaining < 0 ? 0 : remaining));
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account) {
-		return getRemaining(account) * 50L;
+	public long getRemainingAmount(@NotNull Quester quester) {
+		return getRemaining(quester) * 50L;
 	}
 
 	@Override
@@ -110,9 +111,10 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	@Override
 	public void joined(Player p) {
 		super.joined(p);
+		var quester = PlayersManager.getPlayerAccount(p);
 		if (timeMode == TimeMode.ONLINE)
-			updateObjective(p, "lastJoin", System.currentTimeMillis());
-		launchTask(p, getRemaining(PlayersManager.getPlayerAccount(p)));
+			updateObjective(quester, "lastJoin", System.currentTimeMillis());
+		launchTask(p, getRemaining(quester));
 	}
 
 	@Override
@@ -129,28 +131,28 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	private void cancelTask(Player p, BukkitTask task) {
 		task.cancel();
-		if (timeMode == TimeMode.ONLINE)
-			updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));
+		if (timeMode == TimeMode.ONLINE) {
+			var quester = PlayersManager.getPlayerAccount(p);
+			updateObjective(quester, "remainingTime", getRemaining(quester));
+		}
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
-		super.started(acc);
+	public void started(Quester quester) {
+		super.started(quester);
 
-		if (acc.isCurrent())
-			launchTask(acc.getPlayer(), playTicks);
+		quester.getOnlinePlayers().forEach(p -> launchTask(p, playTicks));
 	}
 
 	@Override
-	public void ended(PlayerAccount acc) {
-		super.ended(acc);
+	public void ended(Quester quester) {
+		super.ended(quester);
 
-		if (acc.isCurrent())
-			tasks.remove(acc.getPlayer()).cancel();
+		quester.getOnlinePlayers().forEach(p -> tasks.remove(p).cancel());
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		switch (timeMode) {
 			case ONLINE:

@@ -10,7 +10,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
@@ -27,7 +27,7 @@ import java.util.List;
 public class ChoosePlayerQuestGUI extends PagedGUI<Quest> {
 
 	private final @NotNull Player targetPlayer;
-	private final @NotNull PlayerAccount acc;
+	private final @NotNull Quester acc;
 
 	public ChoosePlayerQuestGUI(@NotNull Collection<Quest> quests, @NotNull Player player) {
 		super(Lang.INVENTORY_CHOOSE.toString(), DyeColor.MAGENTA, quests);

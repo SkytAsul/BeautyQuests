@@ -191,7 +191,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 
 			if (p.isOnline()) {
 				Bukkit.getPluginManager()
-						.callEvent(new PlayerAccountJoinEvent(request.getAccount(), request.isAccountCreated()));
+						.callEvent(new PlayerAccountJoinEvent(request.getAccount(), p, request.isAccountCreated()));
 			} else {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 						"Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
@@ -208,7 +208,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 		A acc = cachedAccounts.get(p);
 		if (acc == null) return;
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
-		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc));
+		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc, p));
 		acc.unload();
 		cachedAccounts.remove(p);
 	}

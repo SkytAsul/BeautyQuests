@@ -59,15 +59,15 @@ public class OptionRequirements extends QuestOptionObject<AbstractRequirement, R
 
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (!context.getPlayerAccount().isCurrent()) return null;
 		if (!context.getDescriptionOptions().showRequirements()) return null;
 		if (context.getCategory() != PlayerListCategory.NOT_STARTED) return null;
 
 		List<String> requirements = getValue().stream()
 				.map(x -> {
-					String description = x.getDescription(context.getPlayerAccount().getPlayer());
+					String description = x.getDescription(context.getPlayer());
 					if (description != null)
-						description = MessageUtils.format(x.isValid() && x.test(context.getPlayerAccount().getPlayer())
+						description =
+								MessageUtils.format(x.isValid() && context.getPlayer() != null && x.test(context.getPlayer())
 								? context.getDescriptionOptions().getRequirementsValid()
 								: context.getDescriptionOptions().getRequirementsInvalid(),
 								PlaceholderRegistry.of("requirement_description", description));

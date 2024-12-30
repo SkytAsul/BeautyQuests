@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.pools.QuestPool;
 public interface PlayerPoolDatas {
 
 	@NotNull
-	PlayerAccount getAccount();
+	Quester getAccount();
 
 	int getPoolID();
 

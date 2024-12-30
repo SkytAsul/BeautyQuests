@@ -12,9 +12,9 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
@@ -212,51 +212,53 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return manager;
 	}
 
-	public @NotNull String getTimeLeft(@NotNull PlayerAccount acc) {
-		return Utils.millisToHumanString(acc.getQuestDatas(this).getTimer() - System.currentTimeMillis());
+	public @NotNull String getTimeLeft(@NotNull Quester quester) {
+		return Utils.millisToHumanString(quester.getQuestDatas(this).getTimer() - System.currentTimeMillis());
 	}
 
 	@Override
-	public boolean hasStarted(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(this)) return false;
-		if (acc.getQuestDatas(this).hasStarted()) return true;
-		if (acc.isCurrent() && hasAsyncStart() && inAsyncStart.contains(acc.getPlayer()))
+	public boolean hasStarted(@NotNull Quester quester) {
+		if (!quester.hasQuestDatas(this))
+			return false;
+		if (quester.getQuestDatas(this).hasStarted())
+			return true;
+		if (quester.isCurrent() && hasAsyncStart() && inAsyncStart.contains(quester.getPlayer()))
 			return true;
 		return false;
 	}
 
 	@Override
-	public boolean hasFinished(@NotNull PlayerAccount acc) {
-		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
+	public boolean hasFinished(@NotNull Quester quester) {
+		return quester.hasQuestDatas(this) && quester.getQuestDatas(this).isFinished();
 	}
 
 	@Override
-	public boolean cancelPlayer(@NotNull PlayerAccount acc) {
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(this);
+	public boolean cancelPlayer(@NotNull Quester quester) {
+		PlayerQuestDatas datas = quester.getQuestDatasIfPresent(this);
 		if (datas == null || !datas.hasStarted())
 			return false;
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Cancelling quest " + id + " for player " + acc.getNameAndID());
-		cancelInternal(acc);
+		QuestsPlugin.getPlugin().getLoggerExpanded()
+				.debug("Cancelling quest " + id + " for player " + quester.getNameAndID());
+		cancelInternal(quester);
 		return true;
 	}
 
-	private void cancelInternal(@NotNull PlayerAccount acc) {
-		manager.remove(acc);
-		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questReset(acc, this));
-		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(acc, this));
+	private void cancelInternal(@NotNull Quester quester) {
+		manager.remove(quester);
+		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questReset(quester, this));
+		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(quester, this));
 
-		if (acc.isCurrent()) {
-			try {
-				getOptionValueOrDef(OptionCancelRewards.class).giveRewards(acc.getPlayer());
-			} catch (InterruptingBranchException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to interrupt branching in a cancel reward (useless). " + toString());
-			}
+		try {
+			getOptionValueOrDef(OptionCancelRewards.class).giveRewards(quester);
+		} catch (InterruptingBranchException ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Trying to interrupt branching in a cancel reward (useless). " + toString());
 		}
 	}
 
 	@Override
-	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc) {
+	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull Quester acc) {
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
@@ -277,7 +279,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean canStart(@NotNull Player p, boolean sendMessage) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
@@ -288,7 +290,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return true;
 	}
 
-	public boolean testRequirements(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
+	public boolean testRequirements(@NotNull Player p, @NotNull Quester acc, boolean sendMessage) {
 		if (!p.hasPermission("beautyquests.start")) return false;
 		if (!testQuestLimit(p, acc, sendMessage)) return false;
 		sendMessage = sendMessage && (!hasOption(OptionStarterNPC.class)
@@ -297,7 +299,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return getOptionValueOrDef(OptionRequirements.class).allMatch(p, sendMessage);
 	}
 
-	public boolean testQuestLimit(@NotNull Player p, @NotNull PlayerAccount acc, boolean sendMessage) {
+	public boolean testQuestLimit(@NotNull Player p, @NotNull Quester acc, boolean sendMessage) {
 		if (Boolean.TRUE.equals(getOptionValueOrDef(OptionBypassLimit.class)))
 			return true;
 		int playerMaxLaunchedQuest;
@@ -322,7 +324,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return true;
 	}
 
-	public boolean testTimer(@NotNull PlayerAccount acc, boolean sendMessage) {
+	public boolean testTimer(@NotNull Quester acc, boolean sendMessage) {
 		if (isRepeatable() && acc.hasQuestDatas(this)) {
 			long time = acc.getQuestDatas(this).getTimer();
 			if (time > System.currentTimeMillis()) {
@@ -353,25 +355,23 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	@Override
-	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		if (!acc.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
-		if (acc.isCurrent() && hasAsyncStart() && inAsyncStart.contains(acc.getPlayer()))
+	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source) {
+		if (!quester.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
+		if (quester.isCurrent() && hasAsyncStart() && inAsyncStart.contains(quester.getPlayer()))
 			return "§7x";
-		PlayerQuestDatas datas = acc.getQuestDatas(this);
+		PlayerQuestDatas datas = quester.getQuestDatas(this);
 		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
 		QuestBranchImplementation branch = manager.getBranch(datas.getBranch());
 		if (branch == null) throw new IllegalStateException("Account is in branch " + datas.getBranch() + " in quest " + id + ", which does not actually exist");
-		return branch.getDescriptionLine(acc, source);
+		return branch.getDescriptionLine(quester, source);
 	}
 
 	@Override
 	public @NotNull List<String> provideDescription(QuestDescriptionContext context) {
-		if (!context.getPlayerAccount().isCurrent())
-			return Collections.emptyList();
 		if (context.getCategory() != PlayerListCategory.IN_PROGRESS)
 			return Collections.emptyList();
 
-		return Arrays.asList(getDescriptionLine(context.getPlayerAccount(), context.getSource()));
+		return Arrays.asList(getDescriptionLine(context.getQuester(), context.getSource()));
 	}
 
 	@Override
@@ -425,7 +425,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void start(@NotNull Player p, boolean silently) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
 			if (!silently) Lang.ALREADY_STARTED.send(p);
 			return;
@@ -467,14 +467,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	@Override
-	public void finish(@NotNull Player p) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		AdminMode.broadcast(p.getName() + " is completing the quest " + id);
-		PlayerQuestDatas questDatas = acc.getQuestDatas(this);
+	public void finish(@NotNull Quester quester) {
+		AdminMode.broadcast(quester.getName() + " is completing the quest " + id);
+		PlayerQuestDatas questDatas = quester.getQuestDatas(this);
 
 		Runnable run = () -> {
 			try {
-				List<String> msg = getOptionValueOrDef(OptionEndRewards.class).giveRewards(p);
+				List<String> msg = getOptionValueOrDef(OptionEndRewards.class).giveRewards(quester);
 				String obtained = MessageUtils.itemsToFormattedString(msg.toArray(new String[0]));
 				if (hasOption(OptionEndMessage.class)) {
 					String endMsg = getOption(OptionEndMessage.class).getValue();
@@ -486,27 +485,28 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 							+ (msg.isEmpty() ? "" : " " + Lang.FINISHED_OBTAIN.quickFormat("rewards", obtained)),
 							MessageType.DefaultMessageType.PREFIXED);
 			}catch (Exception ex) {
-				DefaultErrors.sendGeneric(p, "reward message");
+				DefaultErrors.sendGeneric(quester, "reward message");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving quest end rewards.", ex);
 			}
 
 			QuestUtils.runOrSync(() -> {
-				manager.remove(acc);
+				manager.remove(quester);
 				questDatas.setBranch(-1);
 				questDatas.incrementFinished();
 				questDatas.setStartingTime(0);
 				if (hasOption(OptionQuestPool.class))
-					((QuestPoolImplementation) getOptionValueOrDef(OptionQuestPool.class)).questCompleted(acc, this);
+					((QuestPoolImplementation) getOptionValueOrDef(OptionQuestPool.class)).questCompleted(quester, this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));
 					questDatas.setTimer(cal.getTimeInMillis());
 				}
-				QuestUtils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class));
-				QuestUtils.playPluginSound(p, getOptionValueOrDef(OptionEndSound.class), 1);
+				quester.getOnlinePlayers()
+						.forEach(p -> QuestUtils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class)));
+				QuestUtils.playPluginSound(quester, getOptionValueOrDef(OptionEndSound.class), 1);
 
-				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questFinish(acc, this));
-				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(p, this));
+				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questFinish(quester, this));
+				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(quester, this));
 			});
 		};
 
@@ -515,7 +515,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			new Thread(() -> {
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 				run.run();
-			}, "BQ async end " + p.getName()).start();
+			}, "BQ async end " + quester.getName()).start();
 		}else run.run();
 	}
 

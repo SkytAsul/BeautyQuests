@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -190,30 +190,30 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@Override
-	public void questFinish(PlayerAccount acc, Quest quest) {
+	public void questFinish(Quester acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		questEvent(acc, x -> x.questRemove(quest));
 	}
 
 	@Override
-	public void questReset(PlayerAccount acc, Quest quest) {
+	public void questReset(Quester acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		questEvent(acc, x -> x.questRemove(quest));
 	}
 
 	@Override
-	public void questUpdated(PlayerAccount acc, Quest quest) {
+	public void questUpdated(Quester acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		questEvent(acc, x -> x.setShownQuest(quest, true));
 	}
 
 	@Override
-	public void questStart(PlayerAccount acc, Quest quest) {
+	public void questStart(Quester acc, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		questEvent(acc, x -> x.questAdd(quest));
 	}
 
-	private void questEvent(PlayerAccount acc, Consumer<Scoreboard> consumer) {
+	private void questEvent(Quester acc, Consumer<Scoreboard> consumer) {
 		if (acc.isCurrent()) {
 			Scoreboard scoreboard = scoreboards.get(acc.getPlayer());
 			if (scoreboard != null) consumer.accept(scoreboard);

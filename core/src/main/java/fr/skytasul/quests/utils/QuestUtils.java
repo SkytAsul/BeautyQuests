@@ -7,6 +7,9 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound.Source;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -117,21 +120,16 @@ public final class QuestUtils {
 		}
 	}
 
-	public static void playPluginSound(Player p, String sound, float volume) {
-		playPluginSound(p, sound, volume, 1);
+	public static void playPluginSound(Audience audience, String sound, float volume) {
+		playPluginSound(audience, sound, volume, 1);
 	}
 
-	public static void playPluginSound(Player p, String sound, float volume, float pitch) {
+	public static void playPluginSound(Audience audience, String sound, float volume, float pitch) {
 		if (!QuestsConfigurationImplementation.getConfiguration().getQuestsConfig().sounds())
 			return;
 		if ("none".equals(sound))
 			return;
-		try {
-			p.playSound(p.getLocation(), Sound.valueOf(sound), volume, pitch);
-		} catch (Exception ex) {
-			if (MinecraftVersion.MAJOR > 8)
-				p.playSound(p.getLocation(), sound, volume, pitch);
-		}
+		audience.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(sound), Source.MASTER, volume, pitch));
 	}
 
 	public static void playPluginSound(Location lc, String sound, float volume) {

@@ -14,19 +14,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OptionEndRewards extends QuestOptionRewards implements QuestDescriptionProvider {
-	
+
 	private static final Pattern SPLIT_PATTERN = Pattern.compile("\\{JOIN\\}");
-	
+
 	@Override
 	public XMaterial getItemMaterial() {
 		return XMaterial.CHEST;
 	}
-	
+
 	@Override
 	public String getItemName() {
 		return Lang.ending.toString();
 	}
-	
+
 	@Override
 	public String getItemDescription() {
 		return Lang.rewardsLore.toString();
@@ -34,12 +34,11 @@ public class OptionEndRewards extends QuestOptionRewards implements QuestDescrip
 
 	@Override
 	public List<String> provideDescription(QuestDescriptionContext context) {
-		if (!context.getPlayerAccount().isCurrent()) return null;
 		if (!context.getDescriptionOptions().showRewards()) return null;
 		if (context.getCategory() == PlayerListCategory.FINISHED) return null;
-		
+
 		List<String> rewards = getValue().stream()
-				.map(x -> x.getDescription(context.getPlayerAccount().getPlayer()))
+				.map(x -> x.getDescription(context.getPlayer()))
 				.filter(Objects::nonNull)
 				.flatMap(SPLIT_PATTERN::splitAsStream)
 				.filter(x -> !x.isEmpty())
@@ -47,7 +46,7 @@ public class OptionEndRewards extends QuestOptionRewards implements QuestDescrip
 						PlaceholderRegistry.of("reward_description", x)))
 				.collect(Collectors.toList());
 		if (rewards.isEmpty()) return null;
-		
+
 		rewards.add(0, Lang.RWDTitle.toString());
 		return rewards;
 	}
@@ -61,5 +60,5 @@ public class OptionEndRewards extends QuestOptionRewards implements QuestDescrip
 	public double getDescriptionPriority() {
 		return 10;
 	}
-	
+
 }

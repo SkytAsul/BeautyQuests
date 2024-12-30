@@ -77,7 +77,7 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			e.setCancelled(true);
-			finishStage(p);
+			controller.getApplicableQuesters(p).forEach(this::finishStage);
 		}
 	}
 

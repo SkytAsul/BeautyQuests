@@ -4,7 +4,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
@@ -108,7 +108,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount"))
 			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
@@ -261,9 +261,9 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	class PlayerPlaceholderData {
 		private List<Quest> left = Collections.emptyList();
-		private PlayerAccount acc;
+		private Quester acc;
 
-		public PlayerPlaceholderData(PlayerAccount acc) {
+		public PlayerPlaceholderData(Quester acc) {
 			this.acc = acc;
 		}
 	}

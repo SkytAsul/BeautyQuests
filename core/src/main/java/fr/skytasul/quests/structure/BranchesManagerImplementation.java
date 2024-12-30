@@ -2,14 +2,12 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -58,37 +56,34 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	@Override
-	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull PlayerAccount acc) {
+	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull Quester acc) {
 		if (!acc.hasQuestDatas(quest)) return null;
 		return branches.get(acc.getQuestDatas(quest).getBranch());
 	}
 
 	@Override
-	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
+	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch) {
 		if (!acc.hasQuestDatas(quest)) return false;
 		return acc.getQuestDatas(quest).getBranch() == branch.getId();
 	}
 
 	/**
-	 * Called internally when the quest is updated for the player
+	 * Called internally when the quest is updated for the quester
 	 *
-	 * @param player Player
+	 * @param quester quester that got its quest updated
 	 */
-	public final void questUpdated(@NotNull Player player) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		if (quest.hasStarted(acc)) {
-			QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(acc, quest));
-		}
+	public final void questUpdated(@NotNull Quester quester) {
+		QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(quester, quest));
 	}
 
-	public void startPlayer(@NotNull PlayerAccount acc) {
+	public void startPlayer(@NotNull Quester acc) {
 		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
 		datas.resetQuestFlow();
 		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);
 	}
 
-	public void remove(@NotNull PlayerAccount acc) {
+	public void remove(@NotNull Quester acc) {
 		if (!acc.hasQuestDatas(quest)) return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);

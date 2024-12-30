@@ -1,8 +1,8 @@
 package fr.skytasul.quests.api.utils.messaging;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -64,14 +64,32 @@ public interface PlaceholdersContext {
 		};
 	}
 
-	public interface PlayerPlaceholdersContext extends PlaceholdersContext {
-
-		@Nullable
-		Player getActor();
+	public interface QuesterPlaceholdersContext extends PlaceholdersContext {
 
 		@NotNull
-		default PlayerAccount getPlayerAccount() {
+		Quester getQuester();
+
+		@Override
+		default @NotNull Audience getAudience() {
+			return getQuester();
+		}
+
+	}
+
+	public interface PlayerPlaceholdersContext extends QuesterPlaceholdersContext {
+
+		@NotNull
+		Player getActor();
+
+		@Override
+		@NotNull
+		default Quester getQuester() {
 			return PlayersManager.getPlayerAccount(getActor());
+		}
+
+		@Override
+		default @NotNull Audience getAudience() {
+			return QuestsPlugin.getPlugin().getAudiences().player(getActor());
 		}
 
 	}

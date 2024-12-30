@@ -6,8 +6,7 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
@@ -40,29 +39,31 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 
 	protected void event(@NotNull Player p, @NotNull EntityType type) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (hasStarted(p) && canUpdate(p)) {
 			if (entity == null || type.equals(entity)) {
-				OptionalInt playerAmount = getPlayerAmountOptional(acc);
-				if (!playerAmount.isPresent()) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning(p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
-				} else if (playerAmount.getAsInt() <= 1) {
-					finishStage(p);
-				}else {
-					updateObjective(p, "amount", playerAmount.getAsInt() - 1);
+				for (Quester quester : controller.getApplicableQuesters(p)) {
+					OptionalInt playerAmount = getRemainingAmountOptional(quester);
+					if (!playerAmount.isPresent()) {
+						QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+								p.getName() + " does not have object datas for stage " + toString() + ". This is a bug!");
+					} else if (playerAmount.getAsInt() <= 1) {
+						finishStage(quester);
+					} else {
+						updateObjective(quester, "amount", playerAmount.getAsInt() - 1);
+					}
 				}
 			}
 		}
 	}
 
-	protected @NotNull OptionalInt getPlayerAmountOptional(@NotNull PlayerAccount acc) {
+	protected @NotNull OptionalInt getRemainingAmountOptional(@NotNull Quester acc) {
 		Integer amount = getData(acc, "amount", Integer.class);
 		return amount == null ? OptionalInt.empty() : OptionalInt.of(amount.intValue());
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account) {
-		return getPlayerAmountOptional(account).orElse(0);
+	public long getRemainingAmount(@NotNull Quester quester) {
+		return getRemainingAmountOptional(quester).orElse(0);
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 
 	@Override
-	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
+	public void initPlayerDatas(@NotNull Quester acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", amount);
 	}

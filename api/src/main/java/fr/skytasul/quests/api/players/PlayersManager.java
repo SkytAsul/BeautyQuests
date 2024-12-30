@@ -15,9 +15,9 @@ public interface PlayersManager {
 
 	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas();
 
-	public @UnknownNullability PlayerAccount getAccount(@NotNull Player p);
+	public @UnknownNullability Quester getAccount(@NotNull Player p);
 
-	public static @UnknownNullability PlayerAccount getPlayerAccount(@NotNull Player p) {
+	public static @UnknownNullability Quester getPlayerAccount(@NotNull Player p) {
 		return QuestsPlugin.getPlugin().getPlayersManager().getAccount(p);
 	}
 

@@ -2,7 +2,7 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
@@ -139,12 +139,12 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 	
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(PlayerAccount acc) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(Quester acc) {
 		return getQuestsStarted(acc, false, false);
 	}
 	
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(@NotNull PlayerAccount acc, boolean hide,
+	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(@NotNull Quester acc, boolean hide,
 			boolean withoutScoreboard) {
 		return acc.getQuestsDatas()
 				.stream()
@@ -158,7 +158,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 	
 	@Override
-	public void updateQuestsStarted(@NotNull PlayerAccount acc, boolean withoutScoreboard, @NotNull List<Quest> list) {
+	public void updateQuestsStarted(@NotNull Quester acc, boolean withoutScoreboard, @NotNull List<Quest> list) {
 		for (Iterator<Quest> iterator = list.iterator(); iterator.hasNext();) {
 			QuestImplementation existing = (QuestImplementation) iterator.next();
 			if (!existing.hasStarted(acc) || (withoutScoreboard && !existing.isScoreboardEnabled())) iterator.remove();
@@ -171,7 +171,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 	
 	@Override
-	public int getStartedSize(@NotNull PlayerAccount acc) {
+	public int getStartedSize(@NotNull Quester acc) {
 		return (int) quests
 				.stream()
 				.filter(quest -> !quest.canBypassLimit() && quest.hasStarted(acc))
@@ -179,7 +179,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 	
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsFinished(@NotNull PlayerAccount acc, boolean hide) {
+	public @NotNull @Unmodifiable List<Quest> getQuestsFinished(@NotNull Quester acc, boolean hide) {
 		return quests
 				.stream()
 				.filter(quest -> !(hide && quest.isHidden(QuestVisibilityLocation.TAB_FINISHED)) && quest.hasFinished(acc))
@@ -187,7 +187,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 	
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsNotStarted(@NotNull PlayerAccount acc, boolean hide,
+	public @NotNull @Unmodifiable List<Quest> getQuestsNotStarted(@NotNull Quester acc, boolean hide,
 			boolean clickableAndRedoable) {
 		return quests
 				.stream()

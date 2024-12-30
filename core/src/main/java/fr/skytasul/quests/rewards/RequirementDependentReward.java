@@ -19,6 +19,7 @@ import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -73,8 +74,9 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 
 	@Override
-	public String getDefaultDescription(Player p) {
-		return requirements.allMatch(p, false)
+	public String getDefaultDescription(@Nullable Player p) {
+		return p == null ? null
+				: requirements.allMatch(p, false)
 				? rewards
 				.stream()
 				.map(xreq -> xreq.getDescription(p))

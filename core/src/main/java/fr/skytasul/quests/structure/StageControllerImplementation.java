@@ -7,9 +7,8 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -71,35 +70,34 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@Override
-	public void finishStage(@NotNull Player player) {
-		QuestUtils.runSync(() -> branch.finishPlayerStage(player, this));
+	public void finishStage(@NotNull Quester quester) {
+		QuestUtils.runSync(() -> branch.finishPlayerStage(quester, this));
 	}
 
 	@Override
-	public boolean hasStarted(@NotNull PlayerAccount acc) {
+	public boolean hasStarted(@NotNull Quester acc) {
 		return branch.hasStageLaunched(acc, this);
 	}
 
 	@Override
-	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
+	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue) {
+		Map<String, Object> datas = quester.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
 		if (datas == null) {
-			QuestsPlugin.getPlugin().getLogger()
-					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.severe("Account {} did not have data for {}. Creating some.", quester.getNameAndID(), toString());
 			datas = new HashMap<>();
-			stage.initPlayerDatas(acc, datas);
+			stage.initPlayerDatas(quester, datas);
 		}
 
 		datas.put(dataKey, dataValue);
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		quester.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
 
-		propagateStageHandlers(handler -> handler.stageUpdated(player, this));
-		branch.getManager().questUpdated(player);
+		propagateStageHandlers(handler -> handler.stageUpdated(quester, this));
+		branch.getManager().questUpdated(quester);
 	}
 
 	@Override
-	public <D> @Nullable D getData(@NotNull PlayerAccount acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
+	public <D> @Nullable D getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
 		PlayerQuestDatas playerDatas = acc.getQuestDatas(branch.getQuest());
 		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
 
@@ -135,7 +133,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@Override
-	public @Nullable String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
+	public @Nullable String getDescriptionLine(@NotNull Quester acc, @NotNull DescriptionSource source) {
 		try {
 			String description = stage.getCustomText();
 			if (description != null) {
@@ -169,7 +167,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		stage.getOptions().forEach(newConsumer);
 	}
 
-	public void start(@NotNull PlayerAccount acc) {
+	public void start(@NotNull Quester acc) {
 		MessageUtils.sendMessage(acc, stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
@@ -178,7 +176,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		stage.started(acc);
 	}
 
-	public void end(@NotNull PlayerAccount acc) {
+	public void end(@NotNull Quester acc) {
 		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), null);
 		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 		stage.ended(acc);
@@ -213,13 +211,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		if (e.isFirstJoin())
 			return;
 
-		if (hasStarted(e.getPlayerAccount()))
+		if (hasStarted(e.getQuester()))
 			joins(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onLeave(PlayerAccountLeaveEvent e) {
-		if (hasStarted(e.getPlayerAccount()))
+		if (hasStarted(e.getQuester()))
 			leaves(e.getPlayer());
 	}
 

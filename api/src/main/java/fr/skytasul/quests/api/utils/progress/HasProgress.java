@@ -1,11 +1,11 @@
 package fr.skytasul.quests.api.utils.progress;
 
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 
 public interface HasProgress {
 
-	long getPlayerAmount(@NotNull PlayerAccount account);
+	long getRemainingAmount(@NotNull Quester quester);
 
 	long getTotalAmount();
 

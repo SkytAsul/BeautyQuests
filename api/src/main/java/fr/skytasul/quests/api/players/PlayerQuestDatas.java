@@ -15,7 +15,7 @@ public interface PlayerQuestDatas {
 	Quest getQuest();
 
 	@NotNull
-	PlayerAccount getAccount();
+	Quester getAccount();
 
 	boolean isFinished();
 

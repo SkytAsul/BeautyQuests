@@ -88,7 +88,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		if (!hasStarted(p))
 			return;
 
-		Map<UUID, Integer> playerBlocks = getPlayerRemainings(PlayersManager.getPlayerAccount(p), true);
+		Map<UUID, Integer> playerBlocks = getRawRemainingAmounts(PlayersManager.getPlayerAccount(p), true);
 		if (playerBlocks == null) return;
 		for (UUID id : playerBlocks.keySet()) {
 			Optional<CountableObject<BQBlock>> object = getObject(id);

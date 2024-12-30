@@ -3,7 +3,7 @@ package fr.skytasul.quests.commands;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -33,7 +33,7 @@ public class CommandsPools implements OrphanCommand {
 	@Subcommand("resetPlayer")
 	@CommandPermission("beautyquests.command.resetPlayer")
 	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPool pool, @Switch boolean timer) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayersManager.getPlayerAccount(player);
 		if (timer) {
 			pool.resetPlayerTimer(acc);
 			Lang.POOL_RESET_TIMER.send(actor.sender(), pool, acc);
@@ -85,7 +85,7 @@ public class CommandsPools implements OrphanCommand {
 	@CommandPermission("beautyquests.command.pools.start")
 	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPool pool) {
 		for (Player player : players) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayersManager.getPlayerAccount(player);
 			if (!pool.canGive(player)) {
 				Lang.POOL_START_ERROR.send(player, pool, acc);
 				return;

@@ -1,16 +1,18 @@
 package fr.skytasul.quests.api.rewards;
 
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.serializable.SerializableObject;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.serializable.SerializableObject;
 
+// TODO: remove extends of ArrayList and cache a list
 public class RewardList extends ArrayList<@NotNull AbstractReward> {
 
 	private static final long serialVersionUID = 1238520030299575535L;
@@ -19,6 +21,14 @@ public class RewardList extends ArrayList<@NotNull AbstractReward> {
 
 	public RewardList(@NotNull Collection<@NotNull AbstractReward> rewards) {
 		super(rewards);
+	}
+
+	// TODO: integrate async management here (remember to come back in same synchronous context as
+	// before call to execute followup)
+	// manage messages as well
+
+	public void giveRewards(@NotNull Quester quester) throws InterruptingBranchException {
+
 	}
 
 	public List<String> giveRewards(@NotNull Player p) throws InterruptingBranchException {

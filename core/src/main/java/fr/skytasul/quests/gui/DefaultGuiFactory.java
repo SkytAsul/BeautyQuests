@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiFactory;
 import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 public class DefaultGuiFactory implements GuiFactory {
 
 	@Override
-	public @NotNull Gui createPlayerQuestsMenu(@NotNull PlayerAccount account) {
+	public @NotNull Gui createPlayerQuestsMenu(@NotNull Quester account) {
 		return new PlayerListGUI((PlayerAccountImplementation) account);
 	}
 

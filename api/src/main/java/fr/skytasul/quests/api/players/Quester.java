@@ -13,25 +13,17 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-public interface PlayerAccount extends HasPlaceholders, Audience {
+public interface Quester extends HasPlaceholders, Audience {
 
 	/**
-	 * @return if this account is currently used by the player (if true, {@link #getPlayer()} cannot
-	 *         return a null player)
+	 * @return the OfflinePlayer instances associated with this quester.
 	 */
-	public boolean isCurrent();
+	public @NotNull Collection<OfflinePlayer> getOfflinePlayers();
 
 	/**
-	 * @return the OfflinePlayer instance attached to this account (no matter if the player is online or
-	 *         not, or if the account is the currently used)
+	 * @return the Player instances associated with this quester, only for online players.
 	 */
-	public @NotNull OfflinePlayer getOfflinePlayer();
-
-	/**
-	 * @return the Player instance who own this account. If the account is not which in use by the
-	 *         player ({@link #isCurrent()}), this will return null.
-	 */
-	public @Nullable Player getPlayer();
+	public @NotNull Collection<Player> getOnlinePlayers();
 
 	public boolean hasQuestDatas(@NotNull Quest quest);
 

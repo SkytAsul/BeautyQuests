@@ -10,8 +10,8 @@ import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
@@ -107,7 +107,7 @@ public class StageBringBack extends StageNPC{
 								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 									@Override
-									public long getPlayerAmount(@NotNull PlayerAccount account) {
+									public long getRemainingAmount(@NotNull Quester quester) {
 										return item.getAmount();
 									}
 
@@ -129,10 +129,10 @@ public class StageBringBack extends StageNPC{
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
+	public void started(Quester acc) {
 		super.started(acc);
-		if (acc.isCurrent() && sendStartMessage())
-			sendNeedMessage(acc.getPlayer());
+		if (sendStartMessage())
+			acc.getOnlinePlayers().forEach(this::sendNeedMessage);
 	}
 
 	@Override

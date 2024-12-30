@@ -4,7 +4,7 @@ import fr.skytasul.quests.api.BossBarManager.BQBossBar;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
@@ -60,13 +60,13 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	}
 
 	@Override
-	public void stageStart(PlayerAccount acc, StageController stage) {
+	public void stageStart(Quester acc, StageController stage) {
 		if (acc.isCurrent())
 			createBar(acc.getPlayer(), (T) stage.getStage());
 	}
 
 	@Override
-	public void stageEnd(PlayerAccount acc, StageController stage) {
+	public void stageEnd(Quester acc, StageController stage) {
 		if (acc.isCurrent())
 			removeBar(acc.getPlayer());
 	}
@@ -119,7 +119,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	}
 
 	class ProgressBar {
-		private final PlayerAccount acc;
+		private final Quester acc;
 		private final BQBossBar bar;
 		private final T progress;
 		private final long totalAmount;
@@ -160,7 +160,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		public void update() {
 			timer();
 
-			long playerRemaining = progress.getPlayerAmount(acc);
+			long playerRemaining = progress.getRemainingAmount(acc);
 			if (playerRemaining >= 0 && playerRemaining <= totalAmount) {
 				bar.setProgress((totalAmount - playerRemaining) * 1D / totalAmount);
 			} else
