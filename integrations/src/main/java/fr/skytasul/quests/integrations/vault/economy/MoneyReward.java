@@ -6,13 +6,13 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.integrations.vault.Vault;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
-import java.util.List;
 
 public class MoneyReward extends AbstractReward {
 
@@ -26,10 +26,10 @@ public class MoneyReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
+	public void give(RewardGiveContext context) {
 		if (money > 0){
-			Vault.depositPlayer(p, money);
-		}else Vault.withdrawPlayer(p, Math.abs(money));
+			Vault.depositPlayer(context, money);
+		}else Vault.withdrawPlayer(context, Math.abs(money));
 		return Arrays.asList(Vault.format(money));
 	}
 

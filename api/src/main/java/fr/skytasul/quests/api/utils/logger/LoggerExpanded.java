@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.utils.logger;
 
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
-import org.bukkit.command.CommandSender;
+import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
@@ -70,6 +70,13 @@ public class LoggerExpanded {
 		logger.log(Level.SEVERE, msg, args);
 	}
 
+	public void severe(@Nullable String msg, Throwable cause, Object... args) {
+		var log = new LogRecord(Level.SEVERE, msg);
+		log.setParameters(args);
+		log.setThrown(cause);
+		logger.log(log);
+	}
+
 	public void debug(@Nullable String msg) {
 		logger.log(DEBUG_LEVEL, msg);
 	}
@@ -86,7 +93,7 @@ public class LoggerExpanded {
 	}
 
 	public <T> BiConsumer<T, Throwable> logError(@Nullable Consumer<T> consumer, @Nullable String friendlyErrorMessage,
-			@Nullable CommandSender sender) {
+			@Nullable Audience sender) {
 		return (object, ex) -> {
 			if (ex == null) {
 				if (consumer != null)
@@ -105,7 +112,7 @@ public class LoggerExpanded {
 		};
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable CommandSender sender) {
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable Audience sender) {
 		return logError(null, friendlyErrorMessage, sender);
 	}
 

@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.misc.CommandGUI;
 import fr.skytasul.quests.utils.types.Command;
@@ -25,26 +26,27 @@ public class CommandReward extends AbstractReward {
 	public List<Command> commands = new ArrayList<>();
 
 	public CommandReward() {}
-	
+
 	public CommandReward(String customDescription, List<Command> list) {
 		super(customDescription);
 		if (list != null) this.commands.addAll(list);
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		if (commands.isEmpty()) return null;
-		for (Command cmd : commands){
-			cmd.execute(p);
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			for (Command cmd : commands) {
+				cmd.execute(player);
+				// TODO add an option on command to make them ran only once per quester instead of one per player
+			}
 		}
-		return null;
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new CommandReward(getCustomDescription(), commands);
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -58,12 +60,12 @@ public class CommandReward extends AbstractReward {
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new ListGUI<Command>(Lang.INVENTORY_COMMANDS_LIST.toString(), DyeColor.ORANGE, commands) {
-			
+
 			@Override
 			public void createObject(Function<Command, ItemStack> callback) {
 				new CommandGUI(callback::apply, this::reopen).open(player);
 			}
-			
+
 			@Override
 			public void clickObject(Command object, ItemStack item, ClickType clickType) {
 				new CommandGUI(command -> {
@@ -80,16 +82,16 @@ public class CommandReward extends AbstractReward {
 										.format(cmd.getPlaceholdersRegistry().shifted("command_console")))
 								.toLoreArray());
 			}
-			
+
 			@Override
 			public void finish(List<Command> objects) {
 				commands = objects;
 				event.reopenGUI();
 			}
-			
+
 		}.open(event.getPlayer());
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);

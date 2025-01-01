@@ -16,12 +16,12 @@ import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -56,9 +56,9 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) throws InterruptingBranchException {
-		if (requirements.allMatch(p, false))
-			return rewards.giveRewards(p);
+	public void give(RewardGiveContext context) throws InterruptingBranchException {
+		if (requirements.allMatch(context, false))
+			return rewards.giveRewards(context);
 		return null;
 	}
 

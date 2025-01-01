@@ -95,10 +95,6 @@ public abstract class AbstractStage implements HasPlaceholders {
 		return startMessage == null && QuestsConfiguration.getConfig().getQuestsConfig().playerStageStartMessage();
 	}
 
-	public boolean hasAsyncEnd() {
-		return rewards.hasAsync();
-	}
-
 	@Override
 	public final @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {

@@ -3,11 +3,10 @@ package fr.skytasul.quests.rewards;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.gui.misc.TitleGUI;
 import fr.skytasul.quests.utils.types.Title;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import java.util.List;
 
 public class TitleReward extends AbstractReward {
 	
@@ -40,8 +39,8 @@ public class TitleReward extends AbstractReward {
 	}
 	
 	@Override
-	public List<String> give(Player p) {
-		if (title != null) title.send(p);
+	public void give(RewardGiveContext context) {
+		if (title != null) title.send(context);
 		return null;
 	}
 	

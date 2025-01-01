@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import studio.magemonkey.fabled.Fabled;
 import studio.magemonkey.fabled.api.enums.ExpSource;
 import java.util.Arrays;
-import java.util.List;
 
 public class FabledXpReward extends AbstractReward {
 
@@ -27,8 +27,8 @@ public class FabledXpReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		Fabled.getData(p).giveExp(exp, ExpSource.QUEST);
+	public void give(RewardGiveContext context) {
+		Fabled.getData(context).giveExp(exp, ExpSource.QUEST);
 		return Arrays.asList(getXpAmountString());
 	}
 

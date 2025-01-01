@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -69,7 +70,7 @@ public class RandomReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) throws InterruptingBranchException {
+	public void give(RewardGiveContext context) throws InterruptingBranchException {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int amount = min == max ? min : random.nextInt(min, max + 1);
 
@@ -80,12 +81,12 @@ public class RandomReward extends AbstractReward {
 			if (left.isEmpty()) break;
 			AbstractReward reward = left.remove(random.nextInt(left.size()));
 			try {
-				List<String> messages = reward.give(p);
+				List<String> messages = reward.give(context);
 				if (messages != null) msg.addAll(messages);
 			} catch (InterruptingBranchException ex) {
 				throw ex;
 			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + context.getName(), ex);
 			}
 		}
 
