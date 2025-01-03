@@ -17,7 +17,6 @@ import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.compatibility.BQBackwardCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -182,16 +181,6 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		stage.ended(acc);
 	}
 
-	public void joins(@NotNull Player player) {
-		propagateStageHandlers(handler -> handler.stageJoin(player, this));
-		stage.joined(player);
-	}
-
-	public void leaves(@NotNull Player player) {
-		propagateStageHandlers(handler -> handler.stageLeave(player, this));
-		stage.left(player);
-	}
-
 	public void load() {
 		QuestUtils.autoRegister(stage);
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
@@ -211,14 +200,18 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		if (e.isFirstJoin())
 			return;
 
-		if (hasStarted(e.getQuester()))
-			joins(e.getPlayer());
+		if (hasStarted(e.getQuester())) {
+			propagateStageHandlers(handler -> handler.stageJoin(e.getPlayer(), e.getQuester(), this));
+			stage.joined(e.getPlayer(), e.getQuester());
+		}
 	}
 
 	@EventHandler
 	public void onLeave(PlayerAccountLeaveEvent e) {
-		if (hasStarted(e.getQuester()))
-			leaves(e.getPlayer());
+		if (hasStarted(e.getQuester())) {
+			propagateStageHandlers(handler -> handler.stageLeave(e.getPlayer(), e.getQuester(), this));
+			stage.left(e.getPlayer(), e.getQuester());
+		}
 	}
 
 	@Override

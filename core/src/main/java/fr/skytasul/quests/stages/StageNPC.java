@@ -220,8 +220,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	@Override
-	public void joined(Player p) {
-		super.joined(p);
+	public void joined(Player p, Quester quester) {
+		super.joined(p, null);
 		cachePlayer(p);
 	}
 
@@ -243,8 +243,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	@Override
-	public void left(Player p) {
-		super.left(p);
+	public void left(Player p, Quester quester) {
+		super.left(p, null);
 		uncachePlayer(p);
 		if (dialogRunner != null)
 			dialogRunner.removePlayer(p);

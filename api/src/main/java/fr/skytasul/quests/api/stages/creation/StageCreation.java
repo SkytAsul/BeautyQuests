@@ -145,7 +145,7 @@ public abstract class StageCreation<T extends AbstractStage> {
 	 * @param stage Existing stage
 	 */
 	public void edit(@NotNull T stage) {
-		setRewards(stage.getRewards().getRewards());
+		setRewards(stage.getRewards());
 		setRequirements(stage.getValidationRequirements());
 		setStartMessage(stage.getStartMessage());
 		setCustomDescription(stage.getCustomText());

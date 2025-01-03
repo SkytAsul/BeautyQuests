@@ -10,9 +10,9 @@ public interface StageHandler {
 
 	default void stageEnd(@NotNull Quester quester, @NotNull StageController stage) {}
 
-	default void stageJoin(@NotNull Player p, @NotNull StageController stage) {}
+	default void stageJoin(@NotNull Player p, @NotNull Quester quester, @NotNull StageController stage) {}
 
-	default void stageLeave(@NotNull Player p, @NotNull StageController stage) {}
+	default void stageLeave(@NotNull Player p, @NotNull Quester quester, @NotNull StageController stage) {}
 
 	default void stageLoad(@NotNull StageController stage) {}
 

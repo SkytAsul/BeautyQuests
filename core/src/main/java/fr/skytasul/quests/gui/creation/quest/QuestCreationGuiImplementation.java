@@ -233,6 +233,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 	}
 
 	private void keepDatas(QuestImplementation qu) {
+		// TODO rework this for questers
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			PlayerAccountImplementation account = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 			if (account != null && account.hasQuestDatas(qu)) {
@@ -241,9 +242,9 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				if (datas.getBranch() == -1) continue;
 				QuestBranchImplementation branch = qu.getBranchesManager().getBranch(datas.getBranch());
 				if (datas.isInEndingStages()) {
-					branch.getEndingStages().forEach(stage -> stage.getStage().getStage().joined(p));
+					branch.getEndingStages().forEach(stage -> stage.getStage().getStage().joined(p, account));
 				} else
-					branch.getRegularStage(datas.getStage()).getStage().joined(p);
+					branch.getRegularStage(datas.getStage()).getStage().joined(p, account);
 			}
 		}
 	}

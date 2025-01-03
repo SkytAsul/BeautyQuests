@@ -1,10 +1,5 @@
 package fr.skytasul.quests.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
@@ -21,6 +16,11 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class contains most of the useful accessors to fetch data from BeautyQuests and methods to
@@ -163,32 +163,6 @@ public interface QuestsAPI {
 	 * @param newHologramsManager holograms manager to register
 	 */
 	void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager);
-
-	/**
-	 * Checks if there is a boss bar manager registered.
-	 *
-	 * @return <code>true</code> if {@link #getBossBarManager()} will not return <code>null</code>,
-	 *         <code>false</code> otherwise
-	 */
-	default boolean hasBossBarManager() {
-		return getBossBarManager() != null;
-	}
-
-	/**
-	 * Gets the currently registered boss bars manager.
-	 *
-	 * @return the current boss bars manager
-	 */
-	@Nullable
-	BossBarManager getBossBarManager();
-
-	/**
-	 * Sets the plugin's boss bars manager to the one passed as argument.<br>
-	 * If there is already a boss bars manager registered, this one will replace it.
-	 *
-	 * @param newBossBarManager boss bars manager to register
-	 */
-	void setBossBarManager(@NotNull BossBarManager newBossBarManager);
 
 	/**
 	 * Gets the blocks manager, which provides methods to register custom block types and deserialize

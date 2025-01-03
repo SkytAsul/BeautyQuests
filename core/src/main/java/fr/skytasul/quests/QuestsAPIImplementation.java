@@ -1,6 +1,9 @@
 package fr.skytasul.quests;
 
-import fr.skytasul.quests.api.*;
+import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
@@ -37,7 +40,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 
 	private AbstractHolograms<?> hologramsManager = null;
-	private BossBarManager bossBarManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
@@ -136,22 +138,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		hologramsManager = newHologramsManager;
 		QuestsPlugin.getPlugin().getLoggerExpanded()
 				.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
-	}
-
-	@Override
-	public @Nullable BossBarManager getBossBarManager() {
-		return bossBarManager;
-	}
-
-	@Override
-	public void setBossBarManager(@NotNull BossBarManager newBossBarManager) {
-		Validate.notNull(newBossBarManager);
-		if (bossBarManager != null)
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(newBossBarManager.getClass().getSimpleName()
-					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
-		bossBarManager = newBossBarManager;
-		QuestsPlugin.getPlugin().getLoggerExpanded()
-				.debug("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
 	}
 
 	@Override

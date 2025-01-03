@@ -1,7 +1,5 @@
 package fr.skytasul.quests.editor;
 
-import fr.skytasul.quests.api.BossBarManager.BQBossBar;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
@@ -10,6 +8,9 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,17 +25,13 @@ import java.util.Map;
 public class EditorManagerImplementation implements EditorManager, Listener {
 
 	private final @NotNull Map<Player, Editor> players = new HashMap<>();
-	private final @Nullable BQBossBar bar;
+	private final @NotNull BossBar bar;
 
 	private @NotNull EditorFactory factory;
 
 	public EditorManagerImplementation() {
-		if (QuestsAPI.getAPI().hasBossBarManager()) {
-			bar = QuestsAPI.getAPI().getBossBarManager().buildBossBar("§6Quests Editor", "YELLOW", "SOLID");
-			bar.setProgress(0);
-		} else {
-			bar = null;
-		}
+		bar = BossBar.bossBar(Component.text("Quests Editor", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW,
+				BossBar.Overlay.PROGRESS);
 
 		setFactory(new DefaultEditorFactory());
 	}
@@ -59,8 +55,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			Lang.ENTER_EDITOR_TITLE.send(player);
 			Lang.ENTER_EDITOR_SUB.send(player);
 		}
-		if (bar != null)
-			bar.addPlayer(player);
+		bar.addViewer(QuestsPlugin.getPlugin().getAudiences().player(player));
 
 		QuestUtils.autoRegister(editor);
 
@@ -82,8 +77,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			return;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " has left the editor.");
-		if (bar != null)
-			bar.removePlayer(player);
+		bar.removeViewer(QuestsPlugin.getPlugin().getAudiences().player(player));
 		editor.end();
 
 		QuestUtils.autoUnregister(editor);

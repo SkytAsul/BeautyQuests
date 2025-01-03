@@ -108,17 +108,16 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	@Override
-	public void joined(Player p) {
-		super.joined(p);
-		var quester = PlayersManager.getPlayerAccount(p);
+	public void joined(Player p, Quester quester) {
+		super.joined(p, null);
 		if (timeMode == TimeMode.ONLINE)
 			updateObjective(quester, "lastJoin", System.currentTimeMillis());
 		launchTask(p, getRemaining(quester));
 	}
 
 	@Override
-	public void left(Player p) {
-		super.left(p);
+	public void left(Player p, Quester quester) {
+		super.left(p, null);
 		BukkitTask task = tasks.remove(p);
 		if (task != null) {
 			cancelTask(p, task);
