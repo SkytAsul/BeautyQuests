@@ -73,10 +73,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 			case OFFLINE:
 				World world = Bukkit.getWorld(getData(acc, "worldUuid", UUID.class));
 				if (world == null) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot get remaining time of " + acc.getNameAndID()
-							+ " for " + controller + " because the world has changed.",
-							acc.getNameAndID() + hashCode() + "time",
-							15);
+					QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning(
+							"Cannot get remaining time of {} for {} because the world has changed.",
+							acc.getNameAndID() + hashCode() + "time", 15, acc.getNameAndID(), controller);
 					return -1;
 				}
 

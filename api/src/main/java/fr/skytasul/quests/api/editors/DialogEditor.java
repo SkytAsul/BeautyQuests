@@ -1,8 +1,5 @@
 package fr.skytasul.quests.api.editors;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
@@ -11,9 +8,12 @@ import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import org.bukkit.entity.Player;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class DialogEditor extends Editor{
-	
+
 	private Runnable end;
 	public Dialog d;
 
@@ -41,7 +41,7 @@ public class DialogEditor extends Editor{
 			hasMsg = true;
 		}
 		switch (cmd) {
-		
+
 		case NOSENDER:
 		case NPC:
 		case PLAYER:
@@ -64,9 +64,9 @@ public class DialogEditor extends Editor{
 				if (removed != null){
 					Lang.DIALOG_MSG_REMOVED.send(player, PlaceholderRegistry.of("msg", removed.text));
 				} else
-					DefaultErrors.sendOutOfBounds(player, index, 0, d.getMessages().size());
+					DefaultErrors.sendOutOfBounds(getPlayerAudience(), index, 0, d.getMessages().size());
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(player, args[1]);
+				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
 			}
 			break;
 
@@ -78,7 +78,7 @@ public class DialogEditor extends Editor{
 						PlaceholdersContext.DEFAULT_CONTEXT);
 			}
 			break;
-			
+
 		case NOSENDERINSERT:
 		case NPCINSERT:
 		case PLAYERINSERT:
@@ -92,10 +92,10 @@ public class DialogEditor extends Editor{
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Lang.valueOf("DIALOG_MSG_ADDED_" + cmd.name()).send(player, PlaceholderRegistry.of("msg", msg));
 			}catch (NumberFormatException ex){
-				DefaultErrors.sendInvalidNumber(player, args[1]);
+				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
 			}
 			break;
-			
+
 		case EDIT:
 			if (args.length < 3){
 				Lang.DIALOG_MESSAGE_SYNTAX.send(player, PlaceholderRegistry.of("command", cmd + " <id>"));
@@ -107,12 +107,12 @@ public class DialogEditor extends Editor{
 				message.text = msg;
 				Lang.DIALOG_MSG_EDITED.send(player, PlaceholderRegistry.of("msg", msg));
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(player, args[1]);
+				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
-			
+
 		case ADDSOUND:
 			if (args.length < 3){
 				Lang.TEXTLIST_SYNTAX.send(player, PlaceholderRegistry.of("command", "addSound <id> <sound>"));
@@ -122,12 +122,12 @@ public class DialogEditor extends Editor{
 				Message imsg = d.getMessages().get(Integer.parseInt(args[1]));
 				Lang.DIALOG_SOUND_ADDED.send(player, PlaceholderRegistry.of("sound", imsg.sound = args[2], "msg", args[1]));
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(player, args[1]);
+				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
-			
+
 		case SETTIME:
 			if (args.length < 3) {
 				Lang.TEXTLIST_SYNTAX.send(player, PlaceholderRegistry.of("command", "setTime <id> <time in ticks>"));
@@ -144,12 +144,12 @@ public class DialogEditor extends Editor{
 					Lang.DIALOG_TIME_SET.send(player, PlaceholderRegistry.of("msg", args[1], "time", imsg.wait = time));
 				}
 			}catch (IllegalArgumentException ex) {
-				DefaultErrors.sendInvalidNumber(player, args[1]);
+				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
-		
+
 		case NPCNAME:
 			if (args.length < 2) {
 				Lang.DIALOG_NPCNAME_UNSET.send(player, PlaceholderRegistry.of("old_name", d.getNpcName()));
@@ -160,7 +160,7 @@ public class DialogEditor extends Editor{
 				Lang.DIALOG_NPCNAME_SET.send(player, PlaceholderRegistry.of("old_name", oldName, "new_name", msg));
 			}
 			break;
-		
+
 		case SKIPPABLE:
 			String prev = d.getSkippableStatus();
 			if (args.length < 2) {
@@ -197,5 +197,5 @@ public class DialogEditor extends Editor{
 	private enum Command{
 		NPC, PLAYER, NOSENDER, REMOVE, LIST, HELP, CLOSE, NPCINSERT, PLAYERINSERT, NOSENDERINSERT, EDIT, ADDSOUND, SETTIME, NPCNAME, SKIPPABLE, CLEAR;
 	}
-	
+
 }

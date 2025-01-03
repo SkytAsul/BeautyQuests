@@ -76,7 +76,7 @@ public class CheckpointReward extends AbstractReward {
 
 	@Override
 	public AbstractReward clone() {
-		return new CheckpointReward(getCustomDescription(), new RewardList(actions.getRewards()));
+		return new CheckpointReward(getCustomDescription(), new RewardList(actions));
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class CheckpointReward extends AbstractReward {
 		QuestsAPI.getAPI().getRewards().createGUI(Lang.INVENTORY_CHECKPOINT_ACTIONS.toString(), QuestObjectLocation.CHECKPOINT, rewards -> {
 			actions = new RewardList(rewards);
 			event.reopenGUI();
-		}, actions.getRewards(), null).open(event.getPlayer());
+		}, actions, null).open(event.getPlayer());
 	}
 
 	@Override

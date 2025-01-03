@@ -12,10 +12,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
@@ -51,20 +49,20 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	public void detach() {
 		super.detach();
-		requirements.forEach(AbstractRequirement::detach);
-		rewards.forEach(AbstractReward::detach);
+		requirements.detachQuest();
+		rewards.detachQuest();
 	}
 
 	@Override
-	public void give(RewardGiveContext context) throws InterruptingBranchException {
-		if (requirements.allMatch(context, false))
-			return rewards.giveRewards(context);
-		return null;
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers())
+			if (requirements.allMatch(player, false))
+				rewards.giveSubrewards(player, context);
 	}
 
 	@Override
 	public boolean isAsync() {
-		return rewards.stream().anyMatch(AbstractReward::isAsync);
+		return rewards.hasAsync();
 	}
 
 	@Override
@@ -75,14 +73,13 @@ public class RequirementDependentReward extends AbstractReward {
 
 	@Override
 	public String getDefaultDescription(@Nullable Player p) {
-		return p == null ? null
-				: requirements.allMatch(p, false)
-				? rewards
+		if (p == null || !requirements.allMatch(p, false))
+			return null;
+		return rewards
 				.stream()
 				.map(xreq -> xreq.getDescription(p))
 				.filter(Objects::nonNull)
-				.collect(Collectors.joining("{JOIN}"))
-				: null;
+				.collect(Collectors.joining("{JOIN}"));
 	}
 
 	@Override

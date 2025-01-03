@@ -68,7 +68,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			editor.begin();
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while beginning editor", ex);
-			DefaultErrors.sendGeneric(player, "impossible to begin editor");
+			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(player), "impossible to begin editor");
 			editor.cancel();
 		}
 

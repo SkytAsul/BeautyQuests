@@ -56,9 +56,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 			boolean warnNull) {
 		Map<?, Integer> remaining = getData(quester, "remaining");
 		if (warnNull && remaining == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"Cannot retrieve remaining amounts for " + quester.getNameAndID() + " on " + controller.toString(),
-					"datas" + quester.getNameAndID() + controller.toString(), 10);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot retrieve remaining amounts for {} on {}",
+					"datas" + quester.getNameAndID() + controller.toString(), 10, quester.getNameAndID(), controller);
 		}
 
 		if (remaining == null || remaining.isEmpty())

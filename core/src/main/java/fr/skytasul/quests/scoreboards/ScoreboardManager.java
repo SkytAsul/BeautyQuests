@@ -213,9 +213,9 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		questEvent(acc, x -> x.questAdd(quest));
 	}
 
-	private void questEvent(Quester acc, Consumer<Scoreboard> consumer) {
-		if (acc.isCurrent()) {
-			Scoreboard scoreboard = scoreboards.get(acc.getPlayer());
+	private void questEvent(Quester quester, Consumer<Scoreboard> consumer) {
+		for (Player player : quester.getOnlinePlayers()) {
+			Scoreboard scoreboard = scoreboards.get(player);
 			if (scoreboard != null) consumer.accept(scoreboard);
 		}
 	}

@@ -11,6 +11,7 @@ import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.BQLocation;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -24,9 +25,11 @@ public class TeleportationReward extends AbstractReward {
 	}
 
 	@Override
-	public void give(RewardGiveContext player) {
-		QuestUtils.runOrSync(() -> player.teleport(teleportation));
-		return null;
+	public void give(RewardGiveContext context) {
+		QuestUtils.runOrSync(() -> {
+			for (Player player : context.getQuester().getOnlinePlayers())
+				player.teleport(teleportation);
+		});
 	}
 
 	@Override

@@ -13,22 +13,20 @@ import fr.skytasul.quests.gui.items.ItemsGUI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RemoveItemsReward extends AbstractReward {
 
 	private List<ItemStack> items;
 	private ItemComparisonMap comparisons;
-	
+
 	public RemoveItemsReward(){
 		this(null, new ArrayList<>(), new ItemComparisonMap());
 	}
-	
+
 	public RemoveItemsReward(String customDescription, List<ItemStack> items, ItemComparisonMap comparisons) {
 		super(customDescription);
 		this.items = items;
@@ -37,20 +35,16 @@ public class RemoveItemsReward extends AbstractReward {
 
 	@Override
 	public void give(RewardGiveContext context) {
-		int amount = 0;
-		Inventory inventory = context.getInventory();
-		for (ItemStack item : items) {
-			comparisons.removeItems(inventory, item);
-			amount += item.getAmount();
-		}
-		return amount == 0 ? null : Arrays.asList(Integer.toString(amount));
+		for (Player player : context.getQuester().getOnlinePlayers())
+			for (ItemStack item : items)
+				comparisons.removeItems(player.getInventory(), item);
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new RemoveItemsReward(getCustomDescription(), items, comparisons);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
 		return getItemsSizeString();
@@ -66,7 +60,7 @@ public class RemoveItemsReward extends AbstractReward {
 	private String getItemsSizeString() {
 		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
 	}
-	
+
 	private @NotNull String getComparisonsSizeString() {
 		return Lang.AmountComparisons.quickFormat("amount", comparisons.getEffective().size());
 	}
@@ -91,7 +85,7 @@ public class RemoveItemsReward extends AbstractReward {
 			new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
 		}
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);

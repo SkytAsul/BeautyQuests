@@ -1,46 +1,46 @@
 package fr.skytasul.quests.api.editors;
 
-import java.util.function.Consumer;
-import org.apache.commons.lang.Validate;
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.apache.commons.lang.Validate;
+import org.bukkit.entity.Player;
+import java.util.function.Consumer;
 
 public class TextEditor<T> extends Editor {
-	
+
 	protected Consumer<T> run;
 	protected Runnable nul;
 	protected AbstractParser<T> parser;
 	protected boolean useStripped = false;
 	protected boolean nullIntoConsumer = false;
-	
+
 	public TextEditor(Player p, Runnable cancel, Consumer<T> end) {
 		this(p, cancel, end, null, null);
 	}
-	
+
 	public TextEditor(Player p, Runnable cancel, Consumer<T> end, Runnable nul) {
 		this(p, cancel, end, nul, null);
 	}
-	
+
 	public TextEditor(Player p, Runnable cancel, Consumer<T> end, AbstractParser<T> parser) {
 		this(p, cancel, end, null, parser);
 	}
-	
+
 	public TextEditor(Player p, Runnable cancel, Consumer<T> end, Runnable nul, AbstractParser<T> parser) {
 		super(p, cancel);
 		this.run = end;
 		this.parser = parser;
 		this.nul = nul;
 	}
-	
+
 	public TextEditor<T> passNullIntoEndConsumer() {
 		Validate.isTrue(nul == null);
 		nullIntoConsumer = true;
 		return this;
 	}
-	
+
 	public TextEditor<T> useStrippedMessage() {
 		useStripped = true;
 		return this;
@@ -62,7 +62,7 @@ public class TextEditor<T> extends Editor {
 			cancel();
 			return true;
 		}
-		
+
 		T returnment = null;
 		boolean invalid = false;
 		if (parser != null){
@@ -74,7 +74,7 @@ public class TextEditor<T> extends Editor {
 					returnment = tmp;
 				}
 			}catch (Throwable ex){
-				DefaultErrors.sendGeneric(player, strippedMessage + " parsingText");
+				DefaultErrors.sendGeneric(getPlayerAudience(), strippedMessage + " parsingText");
 				invalid = true;
 				ex.printStackTrace();
 			}
@@ -87,11 +87,11 @@ public class TextEditor<T> extends Editor {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void begin() {
 		super.begin();
 		if (parser != null) parser.sendIndication(player);
 	}
-	
+
 }

@@ -2,20 +2,21 @@ package fr.skytasul.quests.api.rewards;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-public class RewardList {
+@Unmodifiable
+public class RewardList extends AbstractList<AbstractReward> {
 
 	private final @NotNull List<@NotNull AbstractReward> rewards;
 	private final boolean hasAsync;
@@ -66,6 +67,22 @@ public class RewardList {
 		return future;
 	}
 
+	public void giveSubrewards(@NotNull Player player, RewardGiveContext context) {
+		if (!context.getQuester().getOnlinePlayers().contains(player))
+			throw new IllegalArgumentException("Player is not apart of the context's quester");
+
+		Quester playerQuester = PlayersManager.getPlayerAccount(player);
+		try {
+			this.giveRewards(playerQuester).get().mergeInContext(context);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException ex) {
+			DefaultErrors.sendGeneric(playerQuester, "giving rewards");
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to give rewards to {}", ex,
+					playerQuester.getNameAndID());
+		}
+	}
+
 	public boolean isInAsyncReward(@NotNull Quester quester) {
 		return asyncQuesters != null && asyncQuesters.contains(quester);
 	}
@@ -82,16 +99,14 @@ public class RewardList {
 		return hasAsync;
 	}
 
-	public boolean isEmpty() {
-		return rewards.isEmpty();
+	@Override
+	public AbstractReward get(int index) {
+		return rewards.get(index);
 	}
 
+	@Override
 	public int size() {
 		return rewards.size();
-	}
-
-	public @Unmodifiable @NotNull List<AbstractReward> getRewards() {
-		return rewards;
 	}
 
 	public String getSizeString() {
@@ -113,6 +128,13 @@ public class RewardList {
 	public record RewardsGiveResult(boolean branchInterruption, Map<Player, List<String>> earnings) {
 		public @NotNull List<String> getPlayerEarnings(@NotNull Player player) {
 			return earnings.getOrDefault(player, List.of());
+		}
+
+		protected void mergeInContext(@NotNull RewardGiveContext context) {
+			earnings.forEach(
+					(player, playerEarnings) -> playerEarnings.forEach(earning -> context.addEarning(player, earning)));
+			if (branchInterruption)
+				context.interruptBranch();
 		}
 	}
 

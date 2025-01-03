@@ -184,7 +184,8 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 			event.setCancelled(guiEvent.isCancelled());
 		} catch (Exception ex) {
 			event.setCancelled(true);
-			DefaultErrors.sendGeneric(player, ex.getMessage() + " in " + gui.getClass().getSimpleName());
+			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(player),
+					ex.getMessage() + " in " + gui.getClass().getSimpleName());
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred when " + player.getName()
 					+ " clicked in inventory " + gui.getClass().getName() + " at slot " + event.getSlot(), ex);
 		}
