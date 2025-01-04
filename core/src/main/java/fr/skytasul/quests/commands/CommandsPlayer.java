@@ -2,9 +2,9 @@ package fr.skytasul.quests.commands;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import org.bukkit.entity.Player;
@@ -49,7 +49,7 @@ public class CommandsPlayer implements OrphanCommand {
 					.reduce((left, right) -> right);
 
 			if (optionalCheckpoint.isPresent())
-				optionalCheckpoint.get().applies(player);
+				optionalCheckpoint.get().apply(player);
 			else
 				Lang.COMMAND_CHECKPOINT_NO.send(player, quest.getPlaceholdersRegistry());
 

@@ -66,6 +66,10 @@ public class PlayerAccountImplementation implements Quester, ForwardingAudience 
 		return abstractAcc.getPlayer();
 	}
 
+	public boolean isOnline() {
+		return abstractAcc.isCurrent();
+	}
+
 	// TODO improve memory usage of lists
 	@Override
 	public @NotNull Collection<Player> getOnlinePlayers() {

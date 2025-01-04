@@ -135,7 +135,8 @@ public class StagesGUI extends AbstractGui {
 				}
 			}else if (slot == 52) {
 				if (isEmpty() && previousBranch == null) {
-					QuestUtils.playPluginSound(event.getPlayer(), "ENTITY_VILLAGER_NO", 0.6f);
+					QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(event.getPlayer()),
+							"ENTITY_VILLAGER_NO", 0.6f);
 				}else {
 					session.openCreationGUI(event.getPlayer());
 				}

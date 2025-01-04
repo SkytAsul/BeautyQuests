@@ -15,6 +15,7 @@ public class QuestDescriptionContext {
 
 	private final QuestDescription descriptionOptions;
 	private final Quest quest;
+	private final @Nullable Player player;
 	private final Quester quester;
 	private final PlayerListCategory category;
 	private final DescriptionSource source;
@@ -23,9 +24,11 @@ public class QuestDescriptionContext {
 
 	// TODO integrate Player here because it might be useful for some description providers
 	public QuestDescriptionContext(@NotNull QuestDescription descriptionOptions, @NotNull Quest quest,
-			@NotNull Quester quester, @NotNull PlayerListCategory category, @NotNull DescriptionSource source) {
+			@Nullable Player player, @NotNull Quester quester, @NotNull PlayerListCategory category,
+			@NotNull DescriptionSource source) {
 		this.descriptionOptions = descriptionOptions;
 		this.quest = quest;
+		this.player = player;
 		this.quester = quester;
 		this.category = category;
 		this.source = source;

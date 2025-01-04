@@ -10,8 +10,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
-import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.players.PlayerAccountImplementation;
@@ -46,7 +46,7 @@ public class ChoosePlayerQuestGUI extends PagedGUI<Quest> {
 	@Override
 	public @NotNull ItemStack getItemStack(@NotNull Quest quest) {
 		List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(), quest,
-				acc, PlayerListCategory.NOT_STARTED, DescriptionSource.MENU).formatDescription();
+				targetPlayer, acc, PlayerListCategory.NOT_STARTED, DescriptionSource.MENU).formatDescription();
 		return ItemUtils.nameAndLore(quest.getQuestItem(), Lang.formatNormal.format(quest), lore);
 	}
 

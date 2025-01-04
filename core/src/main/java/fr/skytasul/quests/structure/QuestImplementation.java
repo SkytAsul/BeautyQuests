@@ -257,9 +257,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			future = quester.removeQuestDatas(this);
 		}
 
-		if (quester.isCurrent() && hasOption(OptionStartDialog.class)
-				&& getOption(OptionStartDialog.class).getDialogRunner().removePlayer(quester.getPlayer()))
-			hadDatas = true;
+		if (hasOption(OptionStartDialog.class)) {
+			var dialogRunner = getOption(OptionStartDialog.class).getDialogRunner();
+			for (Player p : quester.getOnlinePlayers())
+				if (dialogRunner.removePlayer(p))
+					hadDatas = true;
+		}
 
 		return future == null ? CompletableFuture.completedFuture(hadDatas) : future.thenApply(__ -> true);
 	}

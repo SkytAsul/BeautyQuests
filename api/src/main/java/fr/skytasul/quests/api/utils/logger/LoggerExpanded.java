@@ -37,6 +37,10 @@ public class LoggerExpanded {
 		logger.info(msg);
 	}
 
+	public void info(@Nullable String msg, Object... args) {
+		logger.log(Level.INFO, msg, args);
+	}
+
 	public void warning(@Nullable String msg) {
 		logger.log(Level.WARNING, msg);
 	}

@@ -120,6 +120,7 @@ public final class QuestUtils {
 		}
 	}
 
+	// TODO use XSound
 	public static void playPluginSound(Audience audience, String sound, float volume) {
 		playPluginSound(audience, sound, volume, 1);
 	}

@@ -110,7 +110,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			switch (cat) {
 				case FINISHED:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc, cat, DescriptionSource.MENU).formatDescription();
+							qu, acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
 					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
 							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
 						if (!lore.isEmpty())
@@ -121,7 +121,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 				case IN_PROGRESS:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc, cat, DescriptionSource.MENU).formatDescription();
+							qu, acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
 
 					boolean hasDialogs = QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
 							&& acc.getQuestDatas(qu).hasFlowDialogs();
@@ -140,7 +140,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 				case NOT_STARTED:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(), qu,
-							acc, cat, DescriptionSource.MENU).formatDescription();
+							acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
 					break;
 
 				default:
@@ -174,7 +174,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		if (cat == PlayerListCategory.NOT_STARTED) {
 			if (!qu.getOptionValueOrDef(OptionStartable.class))
 				return;
-			if (!acc.isCurrent())
+			if (!acc.isOnline())
 				return;
 			Player target = acc.getPlayer();
 			if (qu.canStart(target, true)) {
@@ -185,7 +185,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			if (clickType.isRightClick()) {
 				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
 						&& acc.getQuestDatas(qu).hasFlowDialogs()) {
-					QuestUtils.playPluginSound(player, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+					QuestUtils.playPluginSound(acc, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
 					new DialogHistoryGUI(acc, qu, this::reopen).open(player);
 				}
 			} else if (clickType.isLeftClick()) {
