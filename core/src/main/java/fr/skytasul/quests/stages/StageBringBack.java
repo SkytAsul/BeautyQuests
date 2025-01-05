@@ -11,7 +11,7 @@ import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;

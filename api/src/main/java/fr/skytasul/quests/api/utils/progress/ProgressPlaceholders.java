@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.utils.progress;
 
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.messaging.MessageType;

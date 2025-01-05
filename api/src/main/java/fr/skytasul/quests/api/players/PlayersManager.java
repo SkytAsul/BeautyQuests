@@ -1,11 +1,11 @@
 package fr.skytasul.quests.api.players;
 
-import java.util.Collection;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.SavableData;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.data.SavableData;
+import java.util.Collection;
 
 public interface PlayersManager {
 
@@ -15,9 +15,9 @@ public interface PlayersManager {
 
 	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas();
 
-	public @UnknownNullability Quester getAccount(@NotNull Player p);
+	public @UnknownNullability PlayerQuester getAccount(@NotNull Player p);
 
-	public static @UnknownNullability Quester getPlayerAccount(@NotNull Player p) {
+	public static @UnknownNullability PlayerQuester getPlayerAccount(@NotNull Player p) {
 		return QuestsPlugin.getPlugin().getPlayersManager().getAccount(p);
 	}
 

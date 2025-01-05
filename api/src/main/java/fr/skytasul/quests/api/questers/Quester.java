@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.players;
+package fr.skytasul.quests.api.questers;
 
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
@@ -27,25 +27,25 @@ public interface Quester extends HasPlaceholders, Audience {
 
 	public boolean hasQuestDatas(@NotNull Quest quest);
 
-	public @Nullable PlayerQuestDatas getQuestDatasIfPresent(@NotNull Quest quest);
+	public @Nullable QuesterQuestData getQuestDatasIfPresent(@NotNull Quest quest);
 
-	public @NotNull PlayerQuestDatas getQuestDatas(@NotNull Quest quest);
+	public @NotNull QuesterQuestData getQuestDatas(@NotNull Quest quest);
 
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(@NotNull Quest quest);
+	public @NotNull CompletableFuture<QuesterQuestData> removeQuestDatas(@NotNull Quest quest);
 
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id);
+	public @NotNull CompletableFuture<QuesterQuestData> removeQuestDatas(int id);
 
-	public @UnmodifiableView @NotNull Collection<@NotNull ? extends PlayerQuestDatas> getQuestsDatas();
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterQuestData> getQuestsDatas();
 
 	public boolean hasPoolDatas(@NotNull QuestPool pool);
 
-	public @NotNull PlayerPoolDatas getPoolDatas(@NotNull QuestPool pool);
+	public @NotNull QuesterPoolData getPoolDatas(@NotNull QuestPool pool);
 
-	public @NotNull CompletableFuture<PlayerPoolDatas> removePoolDatas(@NotNull QuestPool pool);
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(@NotNull QuestPool pool);
 
-	public @NotNull CompletableFuture<PlayerPoolDatas> removePoolDatas(int id);
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(int id);
 
-	public @UnmodifiableView @NotNull Collection<@NotNull ? extends PlayerPoolDatas> getPoolDatas();
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterPoolData> getPoolDatas();
 
 	public <T> @Nullable T getData(@NotNull SavableData<T> data);
 

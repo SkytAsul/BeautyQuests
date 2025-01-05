@@ -1,7 +1,7 @@
 package fr.skytasul.quests.players.database;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +12,12 @@ public class PlayerPoolDatasDB extends PlayerPoolDatasImplementation {
 
 	private final PlayersManagerDB playersManager;
 
-	public PlayerPoolDatasDB(PlayersManagerDB playersManagerDB, PlayerAccountImplementation acc, int poolID) {
+	public PlayerPoolDatasDB(PlayersManagerDB playersManagerDB, PlayerQuesterImplementation acc, int poolID) {
 		super(acc, poolID);
 		playersManager = playersManagerDB;
 	}
 
-	public PlayerPoolDatasDB(PlayersManagerDB playersManagerDB, PlayerAccountImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
+	public PlayerPoolDatasDB(PlayersManagerDB playersManagerDB, PlayerQuesterImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
 		super(acc, poolID, lastGive, completedQuests);
 		playersManager = playersManagerDB;
 	}

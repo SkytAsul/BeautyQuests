@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.players;
+package fr.skytasul.quests.api.questers;
 
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public interface PlayerQuestDatas {
+public interface QuesterQuestData {
 
 	int getQuestID();
 
@@ -15,7 +15,7 @@ public interface PlayerQuestDatas {
 	Quest getQuest();
 
 	@NotNull
-	Quester getAccount();
+	Quester getQuester();
 
 	boolean isFinished();
 

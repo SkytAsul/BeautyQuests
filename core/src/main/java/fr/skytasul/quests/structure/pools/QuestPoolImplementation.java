@@ -6,10 +6,10 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.Quester;
-import fr.skytasul.quests.api.players.PlayerPoolDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
@@ -193,7 +193,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	@Override
 	public boolean canGive(Player p) {
 		Quester acc = PlayersManager.getPlayerAccount(p);
-		PlayerPoolDatas datas = acc.getPoolDatas(this);
+		QuesterPoolData datas = acc.getPoolDatas(this);
 
 		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
 
@@ -213,7 +213,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	@Override
 	public CompletableFuture<String> give(Player p) {
 		Quester acc = PlayersManager.getPlayerAccount(p);
-		PlayerPoolDatas datas = acc.getPoolDatas(this);
+		QuesterPoolData datas = acc.getPoolDatas(this);
 
 		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0)
@@ -246,7 +246,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		});
 	}
 
-	private CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, PlayerPoolDatas datas,
+	private CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, QuesterPoolData datas,
 			boolean hadOne) {
 		if (!requirements.allMatch(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));
@@ -293,11 +293,11 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		}
 	}
 
-	private List<Quest> replenishQuests(PlayerPoolDatas datas) {
+	private List<Quest> replenishQuests(QuesterPoolData datas) {
 		if (!redoAllowed) return Collections.emptyList();
 		List<Quest> notDoneQuests = quests.stream()
 				.filter(Quest::isRepeatable)
-				.filter(quest -> !quest.hasStarted(datas.getAccount()))
+				.filter(quest -> !quest.hasStarted(datas.getQuester()))
 				.collect(Collectors.toList());
 		if (!notDoneQuests.isEmpty()) {
 			datas.setCompletedQuests(quests
@@ -306,7 +306,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 					.map(Quest::getId)
 					.collect(Collectors.toSet()));
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of " + datas.getAccount().getNameAndID() + " for pool " + id);
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of " + datas.getQuester().getNameAndID() + " for pool " + id);
 		return notDoneQuests;
 	}
 

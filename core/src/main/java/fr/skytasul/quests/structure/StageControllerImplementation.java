@@ -7,8 +7,8 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -97,7 +97,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public <D> @Nullable D getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
-		PlayerQuestDatas playerDatas = acc.getQuestDatas(branch.getQuest());
+		QuesterQuestData playerDatas = acc.getQuestDatas(branch.getQuest());
 		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
 
 		if (datas == null) {

@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.options.description;
 
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class QuestDescriptionContext {
 	private final PlayerListCategory category;
 	private final DescriptionSource source;
 
-	private PlayerQuestDatas cachedDatas;
+	private QuesterQuestData cachedDatas;
 
 	// TODO integrate Player here because it might be useful for some description providers
 	public QuestDescriptionContext(@NotNull QuestDescription descriptionOptions, @NotNull Quest quest,
@@ -58,7 +58,7 @@ public class QuestDescriptionContext {
 		return source;
 	}
 
-	public @Nullable PlayerQuestDatas getQuestDatas() {
+	public @Nullable QuesterQuestData getQuestDatas() {
 		if (cachedDatas == null)
 			cachedDatas = quester.getQuestDatasIfPresent(quest);
 		return cachedDatas;

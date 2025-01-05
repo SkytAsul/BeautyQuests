@@ -2,7 +2,7 @@ package fr.skytasul.quests.stages.options;
 
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;

@@ -2,10 +2,10 @@ package fr.skytasul.quests.api.quests;
 
 import java.io.File;
 import java.util.List;
+import fr.skytasul.quests.api.questers.Quester;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import fr.skytasul.quests.api.players.Quester;
 
 public interface QuestsManager {
 

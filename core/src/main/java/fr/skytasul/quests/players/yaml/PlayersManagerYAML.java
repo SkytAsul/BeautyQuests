@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.AbstractPlayersManager;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -111,7 +111,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml
 			loadAllAccounts();
 			int amount = 0;
 
-			for (PlayerAccountImplementation account : loadedAccounts.values()) {
+			for (PlayerQuesterImplementation account : loadedAccounts.values()) {
 				try {
 					if (account.removeQuestDatas(quest).get() != null) {
 						// we can use the .get() method as the CompletableFuture created by the YAML players manager is
@@ -136,7 +136,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml
 			loadAllAccounts();
 			int amount = 0;
 
-			for (PlayerAccountImplementation account : loadedAccounts.values()) {
+			for (PlayerQuesterImplementation account : loadedAccounts.values()) {
 				try {
 					if (account.removePoolDatas(pool).get() != null) {
 						// we can use the .get() method as the CompletableFuture created by the YAML players manager is

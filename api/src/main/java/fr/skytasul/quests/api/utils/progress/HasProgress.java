@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.utils.progress;
 
+import fr.skytasul.quests.api.questers.Quester;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.Quester;
 
 public interface HasProgress {
 

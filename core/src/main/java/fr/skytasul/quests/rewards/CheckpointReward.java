@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardGiveContext;

@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api;
 
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageHandler;
 

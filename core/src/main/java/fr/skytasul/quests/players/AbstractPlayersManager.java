@@ -28,10 +28,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractPlayersManager<A extends PlayerAccountImplementation> implements PlayersManager {
+public abstract class AbstractPlayersManager<A extends PlayerQuesterImplementation> implements PlayersManager {
 
-	protected final @NotNull Map<Player, A> cachedAccounts = new HashMap<>();
-	protected final @NotNull Set<@NotNull SavableData<?>> accountDatas = new HashSet<>();
+	protected final @NotNull Map<Player, A> cachedQuesters = new HashMap<>();
+	protected final @NotNull Set<@NotNull SavableData<?>> questerDatas = new HashSet<>();
 	private boolean loaded = false;
 
 	public abstract void load(@NotNull AccountFetchRequest<A> request);
@@ -58,19 +58,19 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 	public void addAccountData(@NotNull SavableData<?> data) {
 		if (loaded)
 			throw new IllegalStateException("Cannot add account data after players manager has been loaded");
-		if (PlayerAccountImplementation.FORBIDDEN_DATA_ID.contains(data.getId()))
+		if (PlayerQuesterImplementation.FORBIDDEN_DATA_ID.contains(data.getId()))
 			throw new IllegalArgumentException("Forbidden account data id " + data.getId());
-		if (accountDatas.stream().anyMatch(x -> x.getId().equals(data.getId())))
+		if (questerDatas.stream().anyMatch(x -> x.getId().equals(data.getId())))
 			throw new IllegalArgumentException("Another account data already exists with the id " + data.getId());
 		if (data.getDataType().isPrimitive())
 			throw new IllegalArgumentException("Primitive account data types are not supported");
-		accountDatas.add(data);
+		questerDatas.add(data);
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered account data " + data.getId());
 	}
 
 	@Override
 	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas() {
-		return accountDatas;
+		return questerDatas;
 	}
 
 	protected @NotNull Optional<String> getIdentifier(@NotNull OfflinePlayer p) {
@@ -122,7 +122,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 
 		long time = System.currentTimeMillis();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading player " + p.getName() + "...");
-		cachedAccounts.remove(p);
+		cachedQuesters.remove(p);
 		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
 			for (int i = 1; i >= 0; i--) {
 				try {
@@ -175,7 +175,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 			return false;
 		}
 
-		cachedAccounts.put(p, request.getAccount());
+		cachedQuesters.put(p, request.getAccount());
 
 		String loadMessage =
 				"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
@@ -205,16 +205,16 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 	}
 
 	public synchronized void unloadPlayer(@NotNull Player p) {
-		A acc = cachedAccounts.get(p);
+		A acc = cachedQuesters.get(p);
 		if (acc == null) return;
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc, p));
 		acc.unload();
-		cachedAccounts.remove(p);
+		cachedQuesters.remove(p);
 	}
 
 	@Override
-	public @UnknownNullability PlayerAccountImplementation getAccount(@NotNull Player p) {
+	public @UnknownNullability PlayerQuesterImplementation getAccount(@NotNull Player p) {
 		if (BeautyQuests.getInstance().getNpcManager().isNPC(p))
 			return null;
 		if (!p.isOnline()) {
@@ -222,7 +222,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
 		}
 
-		return cachedAccounts.get(p);
+		return cachedQuesters.get(p);
 	}
 
 	private static Map<UUID, String> cachedPlayerNames = new HashMap<>();
@@ -265,7 +265,7 @@ public abstract class AbstractPlayersManager<A extends PlayerAccountImplementati
 		return name;
 	}
 
-	public static class AccountFetchRequest<A extends PlayerAccountImplementation> {
+	public static class AccountFetchRequest<A extends PlayerQuesterImplementation> {
 		private final OfflinePlayer player;
 		private final long joinTimestamp;
 		private final boolean allowCreation;

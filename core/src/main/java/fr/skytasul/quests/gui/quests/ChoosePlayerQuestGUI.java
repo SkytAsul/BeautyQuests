@@ -11,10 +11,10 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -38,7 +38,7 @@ public class ChoosePlayerQuestGUI extends PagedGUI<Quest> {
 		Collections.sort(super.objects);
 
 		setValidate(__ -> {
-			new PlayerListGUI((PlayerAccountImplementation) acc).open(player);
+			new PlayerListGUI((PlayerQuesterImplementation) acc).open(player);
 		}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
 				QuestOption.formatDescription(Lang.questMenuLore.toString())));
 	}

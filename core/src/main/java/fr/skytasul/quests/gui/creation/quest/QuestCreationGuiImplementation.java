@@ -26,7 +26,7 @@ import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
@@ -234,7 +234,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 	private void keepDatas(QuestImplementation qu) {
 		// TODO rework this for questers
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			PlayerAccountImplementation account = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
+			PlayerQuesterImplementation account = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 			if (account != null && account.hasQuestDatas(qu)) {
 				PlayerQuestDatasImplementation datas = account.getQuestDatas(qu);
 				datas.questEdited();

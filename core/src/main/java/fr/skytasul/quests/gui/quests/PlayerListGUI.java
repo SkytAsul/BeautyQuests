@@ -15,7 +15,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.options.OptionStartable;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -35,16 +35,16 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";
 
-	private PlayerAccountImplementation acc;
+	private PlayerQuesterImplementation acc;
 	private boolean hide;
 
 	private @Nullable PlayerListCategory cat = null;
 
-	public PlayerListGUI(PlayerAccountImplementation acc) {
+	public PlayerListGUI(PlayerQuesterImplementation acc) {
 		this(acc, true);
 	}
 
-	public PlayerListGUI(PlayerAccountImplementation acc, boolean hide) {
+	public PlayerListGUI(PlayerQuesterImplementation acc, boolean hide) {
 		super(Lang.INVENTORY_PLAYER_LIST.format(acc), DyeColor.GRAY, Collections.emptyList());
 		this.acc = acc;
 		this.hide = hide;
@@ -90,7 +90,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 			case NOT_STARTED:
 				quests = QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, hide, true).stream()
-						.filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.canStart(acc.getPlayer(), false))
+						.filter(quest -> !quest.isHiddenWhenRequirementsNotMet()
+								|| quest.canStart(acc.getPlayer().orElse(null), false))
 						.collect(Collectors.toList());
 				break;
 
@@ -110,7 +111,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			switch (cat) {
 				case FINISHED:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
+							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
 					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
 							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
 						if (!lore.isEmpty())
@@ -121,7 +122,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 				case IN_PROGRESS:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
+							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
 
 					boolean hasDialogs = QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
 							&& acc.getQuestDatas(qu).hasFlowDialogs();
@@ -140,7 +141,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 				case NOT_STARTED:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(), qu,
-							acc.getPlayer(), acc, cat, DescriptionSource.MENU).formatDescription();
+							acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
 					break;
 
 				default:
@@ -176,10 +177,9 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				return;
 			if (!acc.isOnline())
 				return;
-			Player target = acc.getPlayer();
-			if (qu.canStart(target, true)) {
+			if (acc.isOnline() && qu.canStart(acc.getPlayer().get(), true)) {
 				close();
-				qu.attemptStart(target);
+				qu.attemptStart(acc.getPlayer().get());
 			}
 		} else {
 			if (clickType.isRightClick()) {

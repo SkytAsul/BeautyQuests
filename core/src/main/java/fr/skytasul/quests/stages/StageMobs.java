@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;

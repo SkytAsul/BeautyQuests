@@ -17,7 +17,7 @@ import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -54,7 +54,7 @@ public class QuestsListener implements Listener{
 				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
 			return;
 
-		PlayerAccountImplementation acc = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
+		PlayerQuesterImplementation acc = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
 		if (acc == null) return;
 
 		Set<Quest> quests = npc.getQuests();

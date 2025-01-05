@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.utils.messaging;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

@@ -2,7 +2,7 @@ package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.StageController;
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
+public class PlayerQuestDatasImplementation implements QuesterQuestData {
 
-	protected final PlayerAccountImplementation acc;
+	protected final PlayerQuesterImplementation acc;
 	protected final int questID;
 
 	private int finished;
@@ -30,7 +30,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 
 	private Boolean hasDialogsCached = null;
 
-	public PlayerQuestDatasImplementation(PlayerAccountImplementation acc, int questID) {
+	public PlayerQuestDatasImplementation(PlayerQuesterImplementation acc, int questID) {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = 0;
@@ -40,7 +40,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 		this.additionalDatas = new HashMap<>();
 	}
 
-	public PlayerQuestDatasImplementation(PlayerAccountImplementation acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> additionalDatas, String questFlow) {
+	public PlayerQuestDatasImplementation(PlayerQuesterImplementation acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> additionalDatas, String questFlow) {
 		this.acc = acc;
 		this.questID = questID;
 		this.finished = finished;
@@ -63,7 +63,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 	}
 
 	@Override
-	public @NotNull PlayerAccountImplementation getAccount() {
+	public @NotNull PlayerQuesterImplementation getQuester() {
 		return acc;
 	}
 
@@ -232,7 +232,7 @@ public class PlayerQuestDatasImplementation implements PlayerQuestDatas {
 		return map;
 	}
 
-	public static PlayerQuestDatasImplementation deserialize(PlayerAccountImplementation acc, Map<String, Object> map) {
+	public static PlayerQuestDatasImplementation deserialize(PlayerQuesterImplementation acc, Map<String, Object> map) {
 		PlayerQuestDatasImplementation datas = new PlayerQuestDatasImplementation(acc, (int) map.get("questID"));
 		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO migration 0.19
 		if (map.containsKey("timesFinished")) datas.finished = (int) map.get("timesFinished");

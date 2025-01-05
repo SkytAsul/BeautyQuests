@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;

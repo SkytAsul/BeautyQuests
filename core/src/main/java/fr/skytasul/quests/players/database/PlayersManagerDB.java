@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.players.AbstractPlayersManager;
 import fr.skytasul.quests.players.DataException;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.yaml.PlayersManagerYAML;
 import fr.skytasul.quests.utils.Database;
@@ -204,7 +204,7 @@ public class PlayersManagerDB extends AbstractPlayersManager<PlayerAccountDB> {
 
 			int amount = 0, failed = 0;
 			var yamlAccounts = yaml.loadAllAccounts();
-			for (PlayerAccountImplementation acc : yamlAccounts) {
+			for (PlayerQuesterImplementation acc : yamlAccounts) {
 				try {
 					insertAccount.setInt(1, acc.index);
 					insertAccount.setString(2, acc.abstractAcc.getIdentifier());

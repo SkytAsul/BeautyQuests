@@ -1,8 +1,8 @@
 package fr.skytasul.quests.integrations.npcs;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.Gui;
 import fr.skytasul.quests.api.gui.GuiFactory;
 import fr.skytasul.quests.api.gui.templates.ConfirmGUI;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.gui.blocks.BlocksGUI;
@@ -19,7 +19,7 @@ import fr.skytasul.quests.gui.npc.NpcSelectGUI;
 import fr.skytasul.quests.gui.quests.ChoosePlayerQuestGUI;
 import fr.skytasul.quests.gui.quests.ChooseQuestGUI;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +34,7 @@ public class DefaultGuiFactory implements GuiFactory {
 
 	@Override
 	public @NotNull Gui createPlayerQuestsMenu(@NotNull Quester account) {
-		return new PlayerListGUI((PlayerAccountImplementation) account);
+		return new PlayerListGUI((PlayerQuesterImplementation) account);
 	}
 
 	@Override

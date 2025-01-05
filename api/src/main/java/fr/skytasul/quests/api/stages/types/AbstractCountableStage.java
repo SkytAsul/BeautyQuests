@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.stages.types;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CountableObject;

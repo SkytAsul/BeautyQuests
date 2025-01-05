@@ -7,8 +7,8 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.requirements.Actionnable;
@@ -117,7 +117,7 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source) {
-		PlayerQuestDatas datas;
+		QuesterQuestData datas;
 		if (!quester.hasQuestDatas(getQuest()) || (datas = quester.getQuestDatas(getQuest())).getBranch() != getId())
 			throw new IllegalArgumentException("Account does not have this branch launched");
 		if (isInAsyncReward(quester))
@@ -148,7 +148,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (!quester.hasQuestDatas(getQuest()))
 			return false;
 
-		PlayerQuestDatas datas = quester.getQuestDatas(getQuest());
+		QuesterQuestData datas = quester.getQuestDatas(getQuest());
 		if (datas.getBranch() != getId())
 			return false;
 
@@ -160,7 +160,7 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	public void remove(@NotNull Quester acc, boolean end) {
 		if (!acc.hasQuestDatas(getQuest())) return;
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		QuesterQuestData datas = acc.getQuestDatas(getQuest());
 		if (end) {
 			if (datas.isInEndingStages()) {
 				endStages.forEach(x -> x.getStage().end(acc));
@@ -184,7 +184,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	public void finishPlayerStage(@NotNull Quester quester, @NotNull StageController stage) {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for {} (coming from {})", quester.debugName(),
 				stage.toString());
-		PlayerQuestDatas datas = quester.getQuestDatas(getQuest());
+		QuesterQuestData datas = quester.getQuestDatas(getQuest());
 		if (datas.getBranch() != getId() || (datas.isInEndingStages() && !isEndingStage(stage))
 				|| (!datas.isInEndingStages() && datas.getStage() != getRegularStageId(stage))) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
@@ -256,7 +256,7 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	@Override
 	public void setPlayerStage(@NotNull Quester quester, @NotNull StageController stage) {
-		PlayerQuestDatas questDatas = quester.getQuestDatas(getQuest());
+		QuesterQuestData questDatas = quester.getQuestDatas(getQuest());
 		if (questDatas.getBranch() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 
@@ -270,7 +270,7 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	@Override
 	public void setPlayerEndingStages(@NotNull Quester quester) {
-		PlayerQuestDatas datas = quester.getQuestDatas(getQuest());
+		QuesterQuestData datas = quester.getQuestDatas(getQuest());
 		if (datas.getBranch() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 

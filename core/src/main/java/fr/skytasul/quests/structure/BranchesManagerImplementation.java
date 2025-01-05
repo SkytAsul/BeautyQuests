@@ -2,8 +2,8 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import org.apache.commons.lang.Validate;
@@ -77,7 +77,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	public void startPlayer(@NotNull Quester acc) {
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		QuesterQuestData datas = acc.getQuestDatas(getQuest());
 		datas.resetQuestFlow();
 		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);

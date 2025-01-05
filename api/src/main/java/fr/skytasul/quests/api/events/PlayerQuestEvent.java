@@ -3,8 +3,8 @@ package fr.skytasul.quests.api.events;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountEvent;
-import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 
 public abstract class PlayerQuestEvent extends PlayerAccountEvent {

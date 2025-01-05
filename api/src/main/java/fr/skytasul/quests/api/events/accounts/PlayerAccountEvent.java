@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api.events.accounts;
 
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 

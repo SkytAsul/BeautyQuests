@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 

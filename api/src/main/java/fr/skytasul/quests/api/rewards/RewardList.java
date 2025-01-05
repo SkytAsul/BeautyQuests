@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.rewards;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
@@ -21,7 +21,7 @@ public class RewardList extends AbstractList<AbstractReward> {
 	private final @NotNull List<@NotNull AbstractReward> rewards;
 	private final boolean hasAsync;
 
-	private final List<@NotNull Quester> asyncQuesters;
+	private final List<fr.skytasul.quests.api.questers.Quester> asyncQuesters;
 
 	public RewardList() {
 		this.rewards = List.of();

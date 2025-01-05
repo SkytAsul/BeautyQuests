@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 

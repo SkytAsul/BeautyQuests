@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.quests.branches;
 
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import org.jetbrains.annotations.NotNull;

@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.players.DataException;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
 import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class PlayerAccountDB extends PlayerAccountImplementation {
+public class PlayerAccountDB extends PlayerQuesterImplementation {
 
 	private final PlayersManagerDB playersManager;
 
@@ -91,7 +91,7 @@ public class PlayerAccountDB extends PlayerAccountImplementation {
 					PreparedStatement statement =
 							connection.prepareStatement(playersManager.getDatabaseHandler().removeQuestData)) {
 				((PlayerQuestDatasDB) datas).stop();
-				statement.setInt(1, datas.getAccount().index);
+				statement.setInt(1, datas.getQuester().index);
 				statement.setInt(2, datas.getQuestID());
 				statement.executeUpdate();
 			} catch (SQLException ex) {

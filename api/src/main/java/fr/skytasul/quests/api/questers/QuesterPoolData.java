@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.players;
+package fr.skytasul.quests.api.questers;
 
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.api.pools.QuestPool;
 
-public interface PlayerPoolDatas {
+public interface QuesterPoolData {
 
 	@NotNull
-	Quester getAccount();
+	Quester getQuester();
 
 	int getPoolID();
 

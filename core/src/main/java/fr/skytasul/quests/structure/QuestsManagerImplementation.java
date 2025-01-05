@@ -2,8 +2,8 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.Quester;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
@@ -148,8 +148,8 @@ public class QuestsManagerImplementation implements QuestsManager {
 			boolean withoutScoreboard) {
 		return acc.getQuestsDatas()
 				.stream()
-				.filter(PlayerQuestDatas::hasStarted)
-				.map(PlayerQuestDatas::getQuest)
+				.filter(QuesterQuestData::hasStarted)
+				.map(QuesterQuestData::getQuest)
 				.filter(Objects::nonNull)
 				.filter(Quest::isValid)
 				.filter(quest -> !hide || !quest.isHidden(QuestVisibilityLocation.TAB_IN_PROGRESS))

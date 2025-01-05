@@ -12,9 +12,9 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
@@ -223,7 +223,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean cancelPlayer(@NotNull Quester quester) {
-		PlayerQuestDatas datas = quester.getQuestDatasIfPresent(this);
+		QuesterQuestData datas = quester.getQuestDatasIfPresent(this);
 		if (datas == null || !datas.hasStarted())
 			return false;
 
@@ -349,7 +349,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!quester.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
 		if (getOptionValueOrDef(OptionStartRewards.class).isInAsyncReward(quester))
 			return "§7x";
-		PlayerQuestDatas datas = quester.getQuestDatas(this);
+		QuesterQuestData datas = quester.getQuestDatas(this);
 		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
 		QuestBranchImplementation branch = manager.getBranch(datas.getBranch());
 		if (branch == null) throw new IllegalStateException("Account is in branch " + datas.getBranch() + " in quest " + id + ", which does not actually exist");
@@ -463,7 +463,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	@Override
 	public void finish(@NotNull Quester quester) {
 		AdminMode.broadcast(quester.getName() + " is completing the quest " + id);
-		PlayerQuestDatas questDatas = quester.getQuestDatas(this);
+		QuesterQuestData questDatas = quester.getQuestDatas(this);
 
 		questDatas.setInQuestEnd();
 		getOptionValueOrDef(OptionEndRewards.class).giveRewards(quester).whenComplete((result, ex) -> {

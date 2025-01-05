@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.players.DataException;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
+import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.sql.Connection;
@@ -34,12 +34,12 @@ public class PlayerQuestDatasDB extends PlayerQuestDatasImplementation {
 	private boolean disabled = false;
 	private int dbId = -1;
 
-	public PlayerQuestDatasDB(PlayersManagerDB playersManagerDB, PlayerAccountImplementation acc, int questID) {
+	public PlayerQuestDatasDB(PlayersManagerDB playersManagerDB, PlayerQuesterImplementation acc, int questID) {
 		super(acc, questID);
 		playersManager = playersManagerDB;
 	}
 
-	public PlayerQuestDatasDB(PlayersManagerDB playersManagerDB, PlayerAccountImplementation acc, int questID, ResultSet result) throws SQLException {
+	public PlayerQuestDatasDB(PlayersManagerDB playersManagerDB, PlayerQuesterImplementation acc, int questID, ResultSet result) throws SQLException {
 		super(
 				acc,
 				questID,

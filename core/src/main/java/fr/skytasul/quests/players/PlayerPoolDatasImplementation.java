@@ -1,7 +1,7 @@
 package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.players.PlayerPoolDatas;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import java.util.HashMap;
@@ -9,19 +9,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class PlayerPoolDatasImplementation implements PlayerPoolDatas {
+public class PlayerPoolDatasImplementation implements QuesterPoolData {
 	
-	protected final PlayerAccountImplementation acc;
+	protected final PlayerQuesterImplementation acc;
 	protected final int poolID;
 	
 	private long lastGive;
 	private Set<Integer> completedQuests;
 	
-	public PlayerPoolDatasImplementation(PlayerAccountImplementation acc, int poolID) {
+	public PlayerPoolDatasImplementation(PlayerQuesterImplementation acc, int poolID) {
 		this(acc, poolID, 0, new HashSet<>());
 	}
 	
-	public PlayerPoolDatasImplementation(PlayerAccountImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
+	public PlayerPoolDatasImplementation(PlayerQuesterImplementation acc, int poolID, long lastGive, Set<Integer> completedQuests) {
 		this.acc = acc;
 		this.poolID = poolID;
 		this.lastGive = lastGive;
@@ -29,7 +29,7 @@ public class PlayerPoolDatasImplementation implements PlayerPoolDatas {
 	}
 	
 	@Override
-	public PlayerAccountImplementation getAccount() {
+	public PlayerQuesterImplementation getQuester() {
 		return acc;
 	}
 	
@@ -76,7 +76,7 @@ public class PlayerPoolDatasImplementation implements PlayerPoolDatas {
 		return map;
 	}
 	
-	public static PlayerPoolDatasImplementation deserialize(PlayerAccountImplementation acc, Map<String, Object> map) {
+	public static PlayerPoolDatasImplementation deserialize(PlayerQuesterImplementation acc, Map<String, Object> map) {
 		PlayerPoolDatasImplementation datas = new PlayerPoolDatasImplementation(acc, (int) map.get("poolID"));
 		datas.lastGive = Utils.parseLong(map.get("lastGive"));
 		datas.completedQuests = (Set<Integer>) map.get("completedQuests");

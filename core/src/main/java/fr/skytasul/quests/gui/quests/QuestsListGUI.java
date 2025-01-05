@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;

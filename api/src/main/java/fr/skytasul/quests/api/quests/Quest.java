@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;

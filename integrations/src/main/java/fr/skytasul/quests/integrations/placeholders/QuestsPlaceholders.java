@@ -4,9 +4,9 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.Quester;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
@@ -111,20 +111,20 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		Quester acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
+			return "" + acc.getQuestsDatas().stream().filter(QuesterQuestData::hasStarted).count();
 		if (identifier.equals("player_finished_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
+			return "" + acc.getQuestsDatas().stream().filter(QuesterQuestData::isFinished).count();
 		if (identifier.equals("player_finished_total_amount"))
-			return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
+			return "" + acc.getQuestsDatas().stream().mapToInt(QuesterQuestData::getTimesFinished).sum();
 		if (identifier.equals("started_id_list"))
-			return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted)
+			return acc.getQuestsDatas().stream().filter(QuesterQuestData::hasStarted)
 					.map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 
 		if (identifier.equals("started")) {
 			return acc.getQuestsDatas()
 					.stream()
-					.filter(PlayerQuestDatas::hasStarted)
-					.map(PlayerQuestDatas::getQuest)
+					.filter(QuesterQuestData::hasStarted)
+					.map(QuesterQuestData::getQuest)
 					.filter(Objects::nonNull)
 					.filter(Quest::isScoreboardEnabled)
 					.map(quest -> {
@@ -207,7 +207,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					return Lang.Not_Started.toString();
 				}else {
 					if (!acc.hasQuestDatas(qu)) return "-1";
-					PlayerQuestDatas datas = acc.getQuestDatas(qu);
+					QuesterQuestData datas = acc.getQuestDatas(qu);
 					if (datas.hasStarted()) return Integer.toString(datas.getStage());
 					return "-1";
 				}

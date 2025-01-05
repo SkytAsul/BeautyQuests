@@ -7,11 +7,11 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
-import fr.skytasul.quests.api.players.Quester;
-import fr.skytasul.quests.api.players.PlayerPoolDatas;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -103,7 +103,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		Quester acc = PlayersManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
+		QuesterQuestData datas = acc.getQuestDatasIfPresent(quest);
 		if (branchID == null && (datas == null || !datas.hasStarted())) { // start quest
 			quest.start(player);
 			Lang.START_QUEST.send(actor.sender(), quest, acc);
@@ -154,7 +154,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
 		Quester acc = PlayersManager.getPlayerAccount(player);
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
+		QuesterQuestData datas = acc.getQuestDatasIfPresent(quest);
 
 		DialogRunner runner = null;
 		if (datas == null || !quest.hasStarted(acc)) {
@@ -196,7 +196,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 			int quests = 0, pools = 0;
 			for (@NotNull
-			PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
+			QuesterQuestData questDatas : new ArrayList<>(acc.getQuestsDatas())) {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
 						quest == null ? acc.removeQuestDatas(questDatas.getQuestID()) : quest.resetPlayer(acc);
@@ -206,7 +206,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				quests++;
 			}
 			for (@NotNull
-			PlayerPoolDatas poolDatas : new ArrayList<>(acc.getPoolDatas())) {
+			QuesterPoolData poolDatas : new ArrayList<>(acc.getPoolDatas())) {
 				@Nullable
 				QuestPool pool = poolDatas.getPool();
 				CompletableFuture<?> future =

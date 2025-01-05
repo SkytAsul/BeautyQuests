@@ -2,8 +2,8 @@ package fr.skytasul.quests.options;
 
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
-import fr.skytasul.quests.api.players.Quester;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;

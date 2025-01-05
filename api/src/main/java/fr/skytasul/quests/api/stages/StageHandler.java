@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api.stages;
 
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

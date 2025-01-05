@@ -9,8 +9,8 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -78,7 +78,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		return StandardCloseBehavior.NOTHING;
 	}
 
-	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
+	public static Stream<Dialogable> getDialogableStream(QuesterQuestData datas, Quest quest) {
 		return datas.getQuestFlowStages()
 				.map(StageController::getStage)
 				.filter(Dialogable.class::isInstance)
