@@ -16,7 +16,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
+import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -185,7 +185,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	public void questCompleted(Quester acc, Quest quest) {
 		if (!avoidDuplicates) return;
-		PlayerPoolDatasImplementation poolDatas = (PlayerPoolDatasImplementation) acc.getPoolDatas(this);
+		QuesterPoolDataImplementation poolDatas = (QuesterPoolDataImplementation) acc.getPoolDatas(this);
 		poolDatas.getCompletedQuests().add(quest.getId());
 		poolDatas.updatedCompletedQuests();
 	}

@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.players.DataException;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
-import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
+import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +21,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public class PlayerQuestDatasDB extends PlayerQuestDatasImplementation {
+public class PlayerQuestDatasDB extends QuesterQuestDataImplementation {
 
 	private final PlayersManagerDB playersManager;
 

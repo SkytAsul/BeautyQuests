@@ -54,7 +54,7 @@ public class QuestsListener implements Listener{
 				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
 			return;
 
-		PlayerQuesterImplementation acc = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
+		PlayerQuesterImplementation acc = BeautyQuests.getInstance().getPlayersManager().getQuester(p);
 		if (acc == null) return;
 
 		Set<Quest> quests = npc.getQuests();

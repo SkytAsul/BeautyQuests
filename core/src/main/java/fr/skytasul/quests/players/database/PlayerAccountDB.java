@@ -7,9 +7,9 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.players.DataException;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
-import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
-import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
+import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
+import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -80,12 +80,12 @@ public class PlayerAccountDB extends PlayerQuesterImplementation {
 	}
 
 	@Override
-	protected PlayerQuestDatasImplementation createQuestDatas(@NotNull Quest quest) {
+	protected QuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest) {
 		return new PlayerQuestDatasDB(playersManager, this, quest.getId());
 	}
 
 	@Override
-	protected CompletableFuture<Void> questDatasRemoved(PlayerQuestDatasImplementation datas) {
+	protected CompletableFuture<Void> questDatasRemoved(QuesterQuestDataImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = playersManager.getDbConnection();
 					PreparedStatement statement =
@@ -101,17 +101,17 @@ public class PlayerAccountDB extends PlayerQuesterImplementation {
 	}
 
 	@Override
-	protected @Nullable PlayerQuestDatasImplementation removeQuestDatasSilently(int id) {
+	protected @Nullable QuesterQuestDataImplementation removeQuestDatasSilently(int id) {
 		return super.removeQuestDatasSilently(id); // for visibility purpose
 	}
 
 	@Override
-	protected PlayerPoolDatasImplementation createPoolDatas(@NotNull QuestPool pool) {
+	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
 		return new PlayerPoolDatasDB(playersManager, this, pool.getId());
 	}
 
 	@Override
-	protected CompletableFuture<Void> poolDatasRemoved(PlayerPoolDatasImplementation datas) {
+	protected CompletableFuture<Void> poolDatasRemoved(QuesterPoolDataImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = playersManager.getDbConnection();
 					PreparedStatement statement =
@@ -126,7 +126,7 @@ public class PlayerAccountDB extends PlayerQuesterImplementation {
 	}
 
 	@Override
-	protected @Nullable PlayerPoolDatasImplementation removePoolDatasSilently(int id) {
+	protected @Nullable QuesterPoolDataImplementation removePoolDatasSilently(int id) {
 		return super.removePoolDatasSilently(id); // for visibility purpose
 	}
 

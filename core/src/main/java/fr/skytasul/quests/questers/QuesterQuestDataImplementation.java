@@ -1,7 +1,8 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
@@ -10,15 +11,17 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI;
 import fr.skytasul.quests.options.OptionStartDialog;
 import org.jetbrains.annotations.NotNull;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class PlayerQuestDatasImplementation implements QuesterQuestData {
+public class QuesterQuestDataImplementation implements QuesterQuestData {
 
-	protected final PlayerQuesterImplementation acc;
+	private static final Pattern FLOW_PATTERN = Pattern.compile(";");
+
+	protected final Quester quester;
 	protected final int questID;
 
 	private int finished;
@@ -30,8 +33,8 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 
 	private Boolean hasDialogsCached = null;
 
-	public PlayerQuestDatasImplementation(PlayerQuesterImplementation acc, int questID) {
-		this.acc = acc;
+	public QuesterQuestDataImplementation(Quester quester, int questID) {
+		this.quester = quester;
 		this.questID = questID;
 		this.finished = 0;
 		this.timer = 0;
@@ -40,8 +43,9 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 		this.additionalDatas = new HashMap<>();
 	}
 
-	public PlayerQuestDatasImplementation(PlayerQuesterImplementation acc, int questID, long timer, int finished, int branch, int stage, Map<String, Object> additionalDatas, String questFlow) {
-		this.acc = acc;
+	public QuesterQuestDataImplementation(Quester quester, int questID, long timer, int finished, int branch, int stage,
+			Map<String, Object> additionalDatas, String questFlow) {
+		this.quester = quester;
 		this.questID = questID;
 		this.finished = finished;
 		this.timer = timer;
@@ -49,7 +53,9 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 		this.stage = stage;
 		this.additionalDatas = additionalDatas == null ? new HashMap<>() : additionalDatas;
 		if (questFlow != null) this.questFlow.add(questFlow);
-		if (branch != -1 && stage == -1) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Incorrect quest " + questID + " datas for " + acc.debugName());
+		if (branch != -1 && stage == -1)
+			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Incorrect data of quest {} for {}", questID,
+					quester.getDetailedName());
 	}
 
 	@Override
@@ -63,8 +69,8 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 	}
 
 	@Override
-	public @NotNull PlayerQuesterImplementation getQuester() {
-		return acc;
+	public @NotNull Quester getQuester() {
+		return quester;
 	}
 
 	@Override
@@ -178,7 +184,7 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 
 	@Override
 	public Stream<StageController> getQuestFlowStages() {
-		return Arrays.stream(getQuestFlow().split(";"))
+		return FLOW_PATTERN.splitAsStream(getQuestFlow())
 				.filter(x -> !x.isEmpty())
 				.map(arg -> {
 					String[] args = arg.split(":");
@@ -232,8 +238,8 @@ public class PlayerQuestDatasImplementation implements QuesterQuestData {
 		return map;
 	}
 
-	public static PlayerQuestDatasImplementation deserialize(PlayerQuesterImplementation acc, Map<String, Object> map) {
-		PlayerQuestDatasImplementation datas = new PlayerQuestDatasImplementation(acc, (int) map.get("questID"));
+	public static QuesterQuestDataImplementation deserialize(Quester quester, Map<String, Object> map) {
+		QuesterQuestDataImplementation datas = new QuesterQuestDataImplementation(quester, (int) map.get("questID"));
 		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO migration 0.19
 		if (map.containsKey("timesFinished")) datas.finished = (int) map.get("timesFinished");
 		if (map.containsKey("timer")) datas.timer = Utils.parseLong(map.get("timer"));

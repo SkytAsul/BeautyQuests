@@ -2,13 +2,13 @@ package fr.skytasul.quests.players.database;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
-import fr.skytasul.quests.players.PlayerPoolDatasImplementation;
+import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Set;
 
-public class PlayerPoolDatasDB extends PlayerPoolDatasImplementation {
+public class PlayerPoolDatasDB extends QuesterPoolDataImplementation {
 
 	private final PlayersManagerDB playersManager;
 

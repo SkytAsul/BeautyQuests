@@ -7,6 +7,9 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
+import fr.skytasul.quests.questers.AbstractQuesterImplementation;
+import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
+import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -22,27 +25,16 @@ public class PlayerQuesterImplementation extends AbstractQuesterImplementation i
 	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
 	public final AbstractAccount abstractAcc;
-	protected final Map<Integer, PlayerQuestDatasImplementation> questDatas = new HashMap<>();
-	protected final Map<Integer, PlayerPoolDatasImplementation> poolDatas = new HashMap<>();
+	protected final Map<Integer, QuesterQuestDataImplementation> questDatas = new HashMap<>();
+	protected final Map<Integer, QuesterPoolDataImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 	public final int index;
 
 	private @Nullable PlaceholderRegistry placeholders;
 
-	private final @NotNull Pointers audiencePointers;
-
 	protected PlayerQuesterImplementation(@NotNull AbstractAccount account, int index) {
 		this.abstractAcc = account;
 		this.index = index;
-
-		this.audiencePointers = Pointers.builder()
-				.withDynamic(Identity.NAME, this::getName)
-				.build();
-	}
-
-	@Override
-	public @NotNull Pointers pointers() {
-		return audiencePointers;
 	}
 
 	@Override
@@ -78,21 +70,19 @@ public class PlayerQuesterImplementation extends AbstractQuesterImplementation i
 	}
 
 	@Override
-	protected PlayerQuestDatasImplementation createQuestDatas(@NotNull Quest quest) {
-		return new PlayerQuestDatasImplementation(this, quest.getId());
+	protected QuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest) {
+		return new QuesterQuestDataImplementation(this, quest.getId());
 	}
 
 	@Override
-	protected PlayerPoolDatasImplementation createPoolDatas(@NotNull QuestPool pool) {
-		return new PlayerPoolDatasImplementation(this, pool.getId());
+	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
+		return new QuesterPoolDataImplementation(this, pool.getId());
 	}
 
 	@Override
-	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
-		super.createdPlaceholdersRegistry(placeholders);
-		placeholders
-				.register("account_id", index)
-				.register("account_identifier", abstractAcc::getIdentifier);
+	protected void createdPointers(@NotNull Pointers.Builder builder) {
+		super.createdPointers(builder);
+		builder.withStatic(Identity.UUID, abstractAcc.getOfflinePlayer().getUniqueId());
 	}
 
 	@Override

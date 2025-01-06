@@ -295,7 +295,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@Subcommand ("seePlayer")
 	@CommandPermission ("beautyquests.command.seePlayer")
 	public void seePlayer(Player actor, Player player) {
-		new PlayerListGUI(BeautyQuests.getInstance().getPlayersManager().getAccount(player), false).open(actor);
+		new PlayerListGUI(BeautyQuests.getInstance().getPlayersManager().getQuester(player), false).open(actor);
 	}
 
 	@Subcommand ("start")

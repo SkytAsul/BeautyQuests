@@ -51,7 +51,6 @@ public abstract class AbstractPlayersManager<A extends PlayerQuesterImplementati
 		return loaded;
 	}
 
-	@Override
 	public abstract void save();
 
 	@Override
@@ -214,7 +213,7 @@ public abstract class AbstractPlayersManager<A extends PlayerQuesterImplementati
 	}
 
 	@Override
-	public @UnknownNullability PlayerQuesterImplementation getAccount(@NotNull Player p) {
+	public @UnknownNullability PlayerQuesterImplementation getQuester(@NotNull Player p) {
 		if (BeautyQuests.getInstance().getNpcManager().isNPC(p))
 			return null;
 		if (!p.isOnline()) {

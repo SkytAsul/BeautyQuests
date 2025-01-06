@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.data.SavableData;
@@ -8,6 +8,9 @@ import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -18,11 +21,12 @@ public abstract class AbstractQuesterImplementation implements Quester {
 
 	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
-	protected final Map<Integer, PlayerQuestDatasImplementation> questDatas = new HashMap<>();
-	protected final Map<Integer, PlayerPoolDatasImplementation> poolDatas = new HashMap<>();
+	protected final Map<Integer, QuesterQuestDataImplementation> questDatas = new HashMap<>();
+	protected final Map<Integer, QuesterPoolDataImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 
 	private @Nullable PlaceholderRegistry placeholders;
+	private @Nullable Pointers audiencePointers;
 
 	@Override
 	public boolean hasQuestDatas(@NotNull Quest quest) {
@@ -30,13 +34,13 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	}
 
 	@Override
-	public @Nullable PlayerQuestDatasImplementation getQuestDatasIfPresent(@NotNull Quest quest) {
+	public @Nullable QuesterQuestDataImplementation getQuestDatasIfPresent(@NotNull Quest quest) {
 		return questDatas.get(quest.getId());
 	}
 
 	@Override
-	public @NotNull PlayerQuestDatasImplementation getQuestDatas(@NotNull Quest quest) {
-		PlayerQuestDatasImplementation datas = questDatas.get(quest.getId());
+	public @NotNull QuesterQuestDataImplementation getQuestDatas(@NotNull Quest quest) {
+		QuesterQuestDataImplementation datas = questDatas.get(quest.getId());
 		if (datas == null) {
 			datas = createQuestDatas(quest);
 			questDatas.put(quest.getId(), datas);
@@ -44,7 +48,7 @@ public abstract class AbstractQuesterImplementation implements Quester {
 		return datas;
 	}
 
-	protected abstract PlayerQuestDatasImplementation createQuestDatas(@NotNull Quest quest);
+	protected abstract QuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest);
 
 	@Override
 	public @NotNull CompletableFuture<QuesterQuestData> removeQuestDatas(@NotNull Quest quest) {
@@ -53,23 +57,23 @@ public abstract class AbstractQuesterImplementation implements Quester {
 
 	@Override
 	public @NotNull CompletableFuture<QuesterQuestData> removeQuestDatas(int id) {
-		PlayerQuestDatasImplementation removed = questDatas.remove(id);
+		QuesterQuestDataImplementation removed = questDatas.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
 		return questDatasRemoved(removed).thenApply(__ -> removed);
 	}
 
-	protected CompletableFuture<Void> questDatasRemoved(PlayerQuestDatasImplementation datas) {
+	protected CompletableFuture<Void> questDatasRemoved(QuesterQuestDataImplementation datas) {
 		return CompletableFuture.completedFuture(null);
 	}
 
-	protected @Nullable PlayerQuestDatasImplementation removeQuestDatasSilently(int id) {
+	protected @Nullable QuesterQuestDataImplementation removeQuestDatasSilently(int id) {
 		return questDatas.remove(id);
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatasImplementation> getQuestsDatas() {
+	public @UnmodifiableView @NotNull Collection<fr.skytasul.quests.questers.QuesterQuestDataImplementation> getQuestsDatas() {
 		return questDatas.values();
 	}
 
@@ -79,8 +83,8 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	}
 
 	@Override
-	public @NotNull PlayerPoolDatasImplementation getPoolDatas(@NotNull QuestPool pool) {
-		PlayerPoolDatasImplementation datas = poolDatas.get(pool.getId());
+	public @NotNull QuesterPoolDataImplementation getPoolDatas(@NotNull QuestPool pool) {
+		QuesterPoolDataImplementation datas = poolDatas.get(pool.getId());
 		if (datas == null) {
 			datas = createPoolDatas(pool);
 			poolDatas.put(pool.getId(), datas);
@@ -88,7 +92,7 @@ public abstract class AbstractQuesterImplementation implements Quester {
 		return datas;
 	}
 
-	protected abstract PlayerPoolDatasImplementation createPoolDatas(@NotNull QuestPool pool);
+	protected abstract QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool);
 
 	@Override
 	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(@NotNull QuestPool pool) {
@@ -97,18 +101,18 @@ public abstract class AbstractQuesterImplementation implements Quester {
 
 	@Override
 	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(int id) {
-		PlayerPoolDatasImplementation removed = poolDatas.remove(id);
+		QuesterPoolDataImplementation removed = poolDatas.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
 		return poolDatasRemoved(removed).thenApply(__ -> removed);
 	}
 
-	protected CompletableFuture<Void> poolDatasRemoved(PlayerPoolDatasImplementation datas) {
+	protected CompletableFuture<Void> poolDatasRemoved(QuesterPoolDataImplementation datas) {
 		return CompletableFuture.completedFuture(null);
 	}
 
-	protected @Nullable PlayerPoolDatasImplementation removePoolDatasSilently(int id) {
+	protected @Nullable QuesterPoolDataImplementation removePoolDatasSilently(int id) {
 		return poolDatas.remove(id);
 	}
 
@@ -131,7 +135,6 @@ public abstract class AbstractQuesterImplementation implements Quester {
 		additionalDatas.put(data, value);
 	}
 
-	@Override
 	public void resetDatas() {
 		additionalDatas.clear();
 	}
@@ -147,8 +150,31 @@ public abstract class AbstractQuesterImplementation implements Quester {
 
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		placeholders
-				.registerIndexed("player", this::getNameAndID)
-				.register("player_name", this::getName);
+				.registerIndexed("quester_name", this::getFriendlyName)
+				.register("quester_identifier", this::getIdentifier)
+				.register("quester_detailed_name", this::getDetailedName);
+
+		// TODO eventually remove: for backward compatibility (2.0)
+		placeholders
+				.register("player_name", this::getFriendlyName)
+				.register("player", this::getDetailedName);
+	}
+
+	protected void createdPointers(@NotNull Pointers.Builder builder) {
+		builder
+				.withDynamic(Identity.NAME, this::getDetailedName)
+				.withDynamic(Identity.DISPLAY_NAME, () -> Component.text(getFriendlyName()))
+				.build();
+	}
+
+	@Override
+	public @NotNull Pointers pointers() {
+		if (audiencePointers == null) {
+			var builder = Pointers.builder();
+			createdPointers(builder);
+			this.audiencePointers = builder.build();
+		}
+		return audiencePointers;
 	}
 
 	public void unload() {
