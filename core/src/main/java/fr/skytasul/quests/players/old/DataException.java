@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.old;
 
 public class DataException extends RuntimeException {
 

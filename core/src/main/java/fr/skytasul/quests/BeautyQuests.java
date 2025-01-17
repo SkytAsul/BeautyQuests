@@ -18,9 +18,12 @@ import fr.skytasul.quests.editor.EditorManagerImplementation;
 import fr.skytasul.quests.gui.GuiManagerImplementation;
 import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.AbstractPlayersManager;
-import fr.skytasul.quests.players.database.PlayersManagerDB;
-import fr.skytasul.quests.players.yaml.PlayersManagerYAML;
+import fr.skytasul.quests.players.PlayerManagerImplementation;
+import fr.skytasul.quests.players.accounts.PlayerManagerAccountsHookImplementation;
+import fr.skytasul.quests.players.old.PlayersManagerYAML;
+import fr.skytasul.quests.questers.QuesterManagerImplementation;
+import fr.skytasul.quests.questers.data.QuesterDataManager;
+import fr.skytasul.quests.questers.data.yaml.YamlDataManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.QuestsManagerImplementation;
@@ -41,7 +44,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -91,7 +93,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable ScoreboardManager scoreboards;
 	private @Nullable QuestsManagerImplementation quests;
 	private @Nullable QuestPoolsManagerImplementation pools;
-	private @Nullable AbstractPlayersManager<?> players;
+	private @Nullable QuesterManagerImplementation questerManager;
+	private @Nullable PlayerManagerImplementation players;
 
 	/* ---------- Operations -------- */
 
@@ -160,8 +163,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
-			loadConfigParameters(true);
 			checkLastVersion();
+			loadConfigParameters(true);
 
 			registerCommands();
 
@@ -435,7 +438,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 
-			players = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			QuesterDataManager questerDataManager = db == null ? new YamlDataManager() : new DbDataManager();
+			questerManager = new QuesterManagerImplementation(questerDataManager);
+			if (config.hookAccounts()) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
+				players = new PlayerManagerAccountsHookImplementation(questerManager);
+			} else
+				players = new PlayerManagerImplementation(questerManager);
 
 			/*				static initialization				*/
 			if (init) {
@@ -519,6 +528,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
 				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
+
+				// TODO manage incompatible upgrade (e.g. pre-1.0)
+
 				backupDir = backupDir();
 				createFolderBackup(backupDir);
 				createDataBackup(backupDir);
@@ -579,9 +591,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				players.loadPlayer(p);
-			}
+			players.loadOnlinePlayers();
 			loaded = true;
 		}, 1L);
 	}
@@ -861,8 +871,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public @NotNull AbstractPlayersManager<?> getPlayersManager() {
+	public @NotNull PlayerManagerImplementation getPlayersManager() {
 		return ensureLoaded(players);
+	}
+
+	public @NotNull QuesterManagerImplementation getQuesterManager() {
+		return ensureLoaded(questerManager);
 	}
 
 	@Override

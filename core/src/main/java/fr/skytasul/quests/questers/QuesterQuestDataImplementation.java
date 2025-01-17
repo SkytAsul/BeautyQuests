@@ -1,15 +1,15 @@
 package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI;
 import fr.skytasul.quests.options.OptionStartDialog;
+import fr.skytasul.quests.questers.data.QuesterQuestDataHandler;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,41 +21,24 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 
 	private static final Pattern FLOW_PATTERN = Pattern.compile(";");
 
-	protected final Quester quester;
+	protected final @NotNull Quester quester;
+	protected final @NotNull QuesterQuestDataHandler dataHandler;
 	protected final int questID;
 
-	private int finished;
-	private long timer;
-	private int branch;
-	private int stage;
-	protected Map<String, Object> additionalDatas;
+	private int finished = 0;
+	private long timer = 0;
+	private int branch = -1;
+	private int stage = -1;
+	protected Map<String, Object> additionalDatas = new HashMap<>();
 	protected StringJoiner questFlow = new StringJoiner(";");
 
 	private Boolean hasDialogsCached = null;
 
-	public QuesterQuestDataImplementation(Quester quester, int questID) {
+	public QuesterQuestDataImplementation(@NotNull Quester quester, @NotNull QuesterQuestDataHandler dataHandler,
+			int questID) {
 		this.quester = quester;
+		this.dataHandler = dataHandler;
 		this.questID = questID;
-		this.finished = 0;
-		this.timer = 0;
-		this.branch = -1;
-		this.stage = -1;
-		this.additionalDatas = new HashMap<>();
-	}
-
-	public QuesterQuestDataImplementation(Quester quester, int questID, long timer, int finished, int branch, int stage,
-			Map<String, Object> additionalDatas, String questFlow) {
-		this.quester = quester;
-		this.questID = questID;
-		this.finished = finished;
-		this.timer = timer;
-		this.branch = branch;
-		this.stage = stage;
-		this.additionalDatas = additionalDatas == null ? new HashMap<>() : additionalDatas;
-		if (questFlow != null) this.questFlow.add(questFlow);
-		if (branch != -1 && stage == -1)
-			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Incorrect data of quest {} for {}", questID,
-					quester.getDetailedName());
 	}
 
 	@Override
@@ -78,9 +61,14 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 		return finished > 0;
 	}
 
+	public void setTimesFinished(int times) {
+		finished = times;
+		dataHandler.setTimesFinished(times);
+	}
+
 	@Override
 	public void incrementFinished() {
-		finished++;
+		setTimesFinished(finished + 1);
 	}
 
 	@Override
@@ -96,6 +84,7 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 	@Override
 	public void setTimer(long timer) {
 		this.timer = timer;
+		dataHandler.setTimer(timer);
 	}
 
 	@Override
@@ -106,6 +95,7 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 	@Override
 	public void setBranch(int branch) {
 		this.branch = branch;
+		dataHandler.setBranch(branch);
 	}
 
 	@Override
@@ -116,6 +106,7 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 	@Override
 	public void setStage(int stage) {
 		this.stage = stage;
+		dataHandler.setStage(stage);
 	}
 
 	@Override
@@ -143,8 +134,8 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 		setStage(-2);
 	}
 
-	public Map<String, Object> getRawAdditionalDatas() {
-		return additionalDatas;
+	public void loadRawData(@NotNull ConfigurationSection data) {
+		additionalDatas = data.getValues(false);
 	}
 
 	@Override
@@ -154,6 +145,7 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 
 	@Override
 	public <T> T setAdditionalData(String key, T value) {
+		dataHandler.setAdditionalData(key, value);
 		return (T) (value == null ? additionalDatas.remove(key) : additionalDatas.put(key, value));
 	}
 
@@ -203,13 +195,20 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 	@Override
 	public void addQuestFlow(StageController finished) {
 		questFlow.add(finished.getBranch().getId() + ":" + finished.getFlowId());
+		dataHandler.setQuestFlow(questFlow.toString());
 		hasDialogsCached = null;
 	}
 
 	@Override
 	public void resetQuestFlow() {
 		questFlow = new StringJoiner(";");
+		dataHandler.setQuestFlow(questFlow.toString());
 		hasDialogsCached = null;
+	}
+
+	public void setQuestFlow(@NotNull String flow) {
+		questFlow = new StringJoiner(";");
+		questFlow.add(flow);
 	}
 
 	public boolean hasFlowDialogs() {
@@ -222,39 +221,6 @@ public class QuesterQuestDataImplementation implements QuesterQuestData {
 
 	public void questEdited() {
 		hasDialogsCached = null;
-	}
-
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<>();
-
-		map.put("questID", questID);
-		if (finished != 0) map.put("timesFinished", finished);
-		if (timer != 0) map.put("timer", timer);
-		if (branch != -1) map.put("currentBranch", branch);
-		if (stage != -1) map.put("currentStage", stage);
-		if (!additionalDatas.isEmpty()) map.put("datas", additionalDatas);
-		if (questFlow.length() > 0) map.put("questFlow", questFlow.toString());
-
-		return map;
-	}
-
-	public static QuesterQuestDataImplementation deserialize(Quester quester, Map<String, Object> map) {
-		QuesterQuestDataImplementation datas = new QuesterQuestDataImplementation(quester, (int) map.get("questID"));
-		if (map.containsKey("finished")) datas.finished = ((boolean) map.get("finished")) ? 1 : 0; // TODO migration 0.19
-		if (map.containsKey("timesFinished")) datas.finished = (int) map.get("timesFinished");
-		if (map.containsKey("timer")) datas.timer = Utils.parseLong(map.get("timer"));
-		if (map.containsKey("currentBranch")) datas.branch = (int) map.get("currentBranch");
-		if (map.containsKey("currentStage")) datas.stage = (int) map.get("currentStage");
-		if (map.containsKey("datas")) datas.additionalDatas = (Map<String, Object>) map.get("datas");
-		if (map.containsKey("questFlow")) datas.questFlow.add((String) map.get("questFlow"));
-
-		for (int i = 0; i < 5; i++) { // TODO migration 0.20
-			if (map.containsKey("stage" + i + "datas")) {
-				datas.additionalDatas.put("stage" + i, map.get("stage" + i + "datas"));
-			}
-		}
-
-		return datas;
 	}
 
 }

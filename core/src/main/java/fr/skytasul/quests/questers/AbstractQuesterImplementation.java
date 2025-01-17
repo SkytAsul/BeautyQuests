@@ -1,36 +1,59 @@
 package fr.skytasul.quests.questers;
 
-import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterPoolData;
+import fr.skytasul.quests.api.questers.QuesterProvider;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.questers.data.DataSavingException;
+import fr.skytasul.quests.questers.data.QuesterDataHandler;
+import fr.skytasul.quests.questers.data.QuesterQuestDataHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractQuesterImplementation implements Quester {
-
-	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
 	protected final Map<Integer, QuesterQuestDataImplementation> questDatas = new HashMap<>();
 	protected final Map<Integer, QuesterPoolDataImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 
+	private final @NotNull QuesterProvider provider;
+	private final @NotNull QuesterDataHandler dataHandler;
+
 	private @Nullable PlaceholderRegistry placeholders;
 	private @Nullable Pointers audiencePointers;
+
+	protected AbstractQuesterImplementation(@NotNull QuesterProvider provider, @NotNull QuesterDataHandler dataHandler) {
+		this.provider = provider;
+		this.dataHandler = dataHandler;
+	}
+
+	@Override
+	public @NotNull QuesterProvider getProvider() {
+		return provider;
+	}
 
 	@Override
 	public boolean hasQuestDatas(@NotNull Quest quest) {
 		return questDatas.containsKey(quest.getId());
+	}
+
+	public void loadQuestData(int questId, @NotNull QuesterQuestDataHandler handler) {
+		var quester = new QuesterQuestDataImplementation(this, handler, questId);
+		questDatas.put(questId, quester);
+		handler.load(quester);
 	}
 
 	@Override
@@ -42,13 +65,11 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	public @NotNull QuesterQuestDataImplementation getQuestDatas(@NotNull Quest quest) {
 		QuesterQuestDataImplementation datas = questDatas.get(quest.getId());
 		if (datas == null) {
-			datas = createQuestDatas(quest);
+			datas = new QuesterQuestDataImplementation(this, dataHandler.createQuestHandler(quest.getId()), quest.getId());
 			questDatas.put(quest.getId(), datas);
 		}
 		return datas;
 	}
-
-	protected abstract QuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest);
 
 	@Override
 	public @NotNull CompletableFuture<QuesterQuestData> removeQuestDatas(@NotNull Quest quest) {
@@ -61,19 +82,16 @@ public abstract class AbstractQuesterImplementation implements Quester {
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
-		return questDatasRemoved(removed).thenApply(__ -> removed);
+		return removed.dataHandler.remove().thenApply(__ -> removed);
 	}
 
-	protected CompletableFuture<Void> questDatasRemoved(QuesterQuestDataImplementation datas) {
-		return CompletableFuture.completedFuture(null);
-	}
-
-	protected @Nullable QuesterQuestDataImplementation removeQuestDatasSilently(int id) {
+	// TODO investigate relevance
+	private @Nullable QuesterQuestDataImplementation removeQuestDatasSilently(int id) {
 		return questDatas.remove(id);
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<fr.skytasul.quests.questers.QuesterQuestDataImplementation> getQuestsDatas() {
+	public @UnmodifiableView @NotNull Collection<QuesterQuestDataImplementation> getQuestsDatas() {
 		return questDatas.values();
 	}
 
@@ -123,20 +141,22 @@ public abstract class AbstractQuesterImplementation implements Quester {
 
 	@Override
 	public <T> @Nullable T getData(@NotNull SavableData<T> data) {
-		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
+		if (!QuestsAPI.getAPI().getQuesterManager().getSavableData().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		return (T) additionalDatas.getOrDefault(data, data.getDefaultValue());
 	}
 
 	@Override
 	public <T> void setData(@NotNull SavableData<T> data, @Nullable T value) {
-		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
+		if (!QuestsAPI.getAPI().getQuesterManager().getSavableData().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		additionalDatas.put(data, value);
+		dataHandler.setData(data, value);
 	}
 
-	public void resetDatas() {
+	public void resetData() {
 		additionalDatas.clear();
+		dataHandler.resetData();
 	}
 
 	@Override
@@ -177,8 +197,12 @@ public abstract class AbstractQuesterImplementation implements Quester {
 		return audiencePointers;
 	}
 
+	public void save() throws DataSavingException {
+		dataHandler.save();
+	}
+
 	public void unload() {
-		// left for override
+		dataHandler.unload();
 	}
 
 }

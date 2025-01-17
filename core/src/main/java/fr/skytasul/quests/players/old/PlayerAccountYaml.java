@@ -1,6 +1,5 @@
-package fr.skytasul.quests.players.yaml;
+package fr.skytasul.quests.players.old;
 
-import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
@@ -8,7 +7,6 @@ import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
-import java.util.Map;
 
 public class PlayerAccountYaml extends PlayerQuesterImplementation {
 
@@ -20,19 +18,7 @@ public class PlayerAccountYaml extends PlayerQuesterImplementation {
 	}
 
 	public void load(ConfigurationSection datas) {
-		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
-			var questData = QuesterQuestDataImplementation.deserialize(this, (Map<String, Object>) questConfig);
-			this.questDatas.put(questData.getQuestID(), questData);
-		}
-		for (Map<?, ?> poolConfig : datas.getMapList("pools")) {
-			var poolData = QuesterPoolDataImplementation.deserialize(this, (Map<String, Object>) poolConfig);
-			poolDatas.put(poolData.getPoolID(), poolData);
-		}
-		for (SavableData<?> data : playersManager.getAccountDatas()) {
-			if (datas.contains(data.getId())) {
-				additionalDatas.put(data, datas.getObject(data.getId(), data.getDataType()));
-			}
-		}
+
 	}
 
 	@Override

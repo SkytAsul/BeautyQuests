@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players.yaml;
+package fr.skytasul.quests.players.old;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -13,7 +13,6 @@ import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.GhostAccount;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
@@ -24,8 +23,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.*;
 
 public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml> {
-
-	private static final int ACCOUNTS_THRESHOLD = 1000;
 
 	private final Cache<Integer, PlayerAccountYaml> unloadedAccounts =
 			CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
@@ -228,35 +225,6 @@ public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml
 				e.printStackTrace();
 			}
 		}else QuestsPlugin.getPlugin().getLoggerExpanded().debug("Can't remove " + file.getName() + ": file does not exist");
-	}
-
-	@Override
-	public void load() {
-		super.load();
-		if (!directory.exists()) directory.mkdirs();
-
-		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-		if (config.isConfigurationSection("players")) {
-			for (String key : config.getConfigurationSection("players").getKeys(false)) {
-				try {
-					String path = "players." + key;
-					int index = Integer.parseInt(key);
-					identifiersIndex.put(index, config.getString(path));
-					if (index >= lastAccountID) lastAccountID = index;
-				}catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occured while loading player account. Data: " + config.get(key), ex);
-				}
-			}
-		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadedAccounts.size() + " accounts loaded and " + identifiersIndex.size() + " identifiers.");
-
-		if (identifiersIndex.size() >= ACCOUNTS_THRESHOLD) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"⚠ WARNING - " + identifiersIndex.size() + " players are registered on this server."
-					+ " It is recommended to switch to a SQL database setup in order to keep proper performances and scalability."
-					+ " In order to do that, setup your database credentials in config.yml (without enabling it) and run the command"
-					+ " /quests migrateDatas. Then follow steps on screen.");
-		}
 	}
 
 	@Override

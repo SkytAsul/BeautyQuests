@@ -12,6 +12,7 @@ import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -35,6 +36,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private final StageTypeRegistry stages = new StageTypeRegistry();
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
 	private final List<MobStacker> mobStackers = new ArrayList<>();
+
+	private QuesterManager questerManager;
 
 	private QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements;
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
@@ -199,6 +202,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public @NotNull QuestPoolsManager getPoolsManager() {
 		return BeautyQuests.getInstance().getPoolsManager();
+	}
+
+	@Override
+	public @NotNull QuesterManager getQuesterManager() {
+		return BeautyQuests.getInstance().getQuesterManager();
 	}
 
 	@Override

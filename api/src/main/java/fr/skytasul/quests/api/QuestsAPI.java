@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.npcs.BqNpcManager;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -52,6 +53,14 @@ public interface QuestsAPI {
 	 */
 	@NotNull
 	QuestPoolsManager getPoolsManager();
+
+	/**
+	 * Gets the quester manager, which provides methods to manage questers and savable data.
+	 *
+	 * @return the quester manager
+	 */
+	@NotNull
+	QuesterManager getQuesterManager();
 
 	/**
 	 * Registers a new mob factory.

@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+// TODO rename to quester names
 public abstract class PlayerAccountEvent extends Event {
 
 	protected final @NotNull Quester account;

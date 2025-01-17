@@ -21,6 +21,12 @@ public interface QuesterManager {
 
 	@NotNull
 	@UnmodifiableView
-	Collection<Quester> getPlayerQuesters(@NotNull Player player);
+	Collection<? extends Quester> getPlayerQuesters(@NotNull Player player);
+
+	@NotNull
+	@UnmodifiableView
+	Collection<? extends Quester> getLoadedQuesters();
+
+	void saveAll();
 
 }

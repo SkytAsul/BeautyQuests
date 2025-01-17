@@ -46,7 +46,7 @@ public class RewardList extends AbstractList<AbstractReward> {
 						reward.give(context);
 					} catch (Exception ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded()
-								.severe("An exception occurred while giving a reward to {}", ex, quester.getNameAndID());
+								.severe("An exception occurred while giving a reward to {}", ex, quester.getDetailedName());
 					}
 				}
 				future.complete(new RewardsGiveResult(context.isBranchInterrupted(), context.getEarnings()));
@@ -79,7 +79,7 @@ public class RewardList extends AbstractList<AbstractReward> {
 		} catch (ExecutionException ex) {
 			DefaultErrors.sendGeneric(playerQuester, "giving rewards");
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to give rewards to {}", ex,
-					playerQuester.getNameAndID());
+					playerQuester.getDetailedName());
 		}
 	}
 

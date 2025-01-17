@@ -1,4 +1,4 @@
-package fr.skytasul.quests.players;
+package fr.skytasul.quests.players.old;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayersManager;
@@ -25,13 +24,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPlayersManager<A extends PlayerQuesterImplementation> implements PlayersManager {
 
 	protected final @NotNull Map<Player, A> cachedQuesters = new HashMap<>();
-	protected final @NotNull Set<@NotNull SavableData<?>> questerDatas = new HashSet<>();
 	private boolean loaded = false;
 
 	public abstract void load(@NotNull AccountFetchRequest<A> request);
@@ -52,25 +53,6 @@ public abstract class AbstractPlayersManager<A extends PlayerQuesterImplementati
 	}
 
 	public abstract void save();
-
-	@Override
-	public void addAccountData(@NotNull SavableData<?> data) {
-		if (loaded)
-			throw new IllegalStateException("Cannot add account data after players manager has been loaded");
-		if (PlayerQuesterImplementation.FORBIDDEN_DATA_ID.contains(data.getId()))
-			throw new IllegalArgumentException("Forbidden account data id " + data.getId());
-		if (questerDatas.stream().anyMatch(x -> x.getId().equals(data.getId())))
-			throw new IllegalArgumentException("Another account data already exists with the id " + data.getId());
-		if (data.getDataType().isPrimitive())
-			throw new IllegalArgumentException("Primitive account data types are not supported");
-		questerDatas.add(data);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered account data " + data.getId());
-	}
-
-	@Override
-	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas() {
-		return questerDatas;
-	}
 
 	protected @NotNull Optional<String> getIdentifier(@NotNull OfflinePlayer p) {
 		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {

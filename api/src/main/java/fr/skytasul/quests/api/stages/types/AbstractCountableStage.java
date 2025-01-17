@@ -57,12 +57,13 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		Map<?, Integer> remaining = getData(quester, "remaining");
 		if (warnNull && remaining == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot retrieve remaining amounts for {} on {}",
-					"datas" + quester.getNameAndID() + controller.toString(), 10, quester.getNameAndID(), controller);
+					"data" + quester.getIdentifier() + controller.toString(), 10, quester.getDetailedName(), controller);
 		}
 
 		if (remaining == null || remaining.isEmpty())
 			return Collections.emptyMap();
 
+		// TODO remove migration code (introduced in 1.0)
 		Object object = remaining.keySet().iterator().next();
 		if (object instanceof Integer) {
 			// datas before migration
@@ -71,9 +72,9 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 			remaining.forEach((key, amount) -> {
 				UUID uuid = uuidFromLegacyIndex((Integer) key);
 				if (!getObject(uuid).isPresent()) {
-					QuestsPlugin.getPlugin().getLoggerExpanded()
-							.warning("Cannot migrate " + quester.getNameAndID() + " data for stage " + toString()
-							+ " as there is no migrated data for object " + key);
+					QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+							"Cannot migrate {} data for stage {} as there is no migrated data for object {}",
+									quester.getDetailedName(), toString(), key);
 				}
 				newRemaining.put(uuid, amount);
 				dataMap.put(uuid.toString(), amount);
