@@ -1,6 +1,8 @@
 package fr.skytasul.quests.gui.quests;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -9,8 +11,8 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -25,9 +27,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
+
+	private static Cache<List<StageController>, List<Dialogable>> dialogableCache =
+			CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
 	private final Runnable end;
 
@@ -35,14 +40,14 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
 		this.end = end;
 
-		Validate.isTrue(quester.hasQuestDatas(quest), "Quester must have started the quest");
+		Validate.isTrue(quester.getDataHolder().hasQuestDatas(quest), "Quester must have started the quest");
 
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));
 
-		getDialogableStream(quester.getQuestDatas(quest), quest)
-			.map(WrappedDialogable::new)
-			.forEach(objects::add);
+		for (var dialogable : getDialogable(quester.getDataHolder().getQuestData(quest))) {
+			objects.add(new WrappedDialogable(dialogable));
+		}
 	}
 
 	@Override
@@ -78,12 +83,19 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		return StandardCloseBehavior.NOTHING;
 	}
 
-	public static Stream<Dialogable> getDialogableStream(QuesterQuestData datas, Quest quest) {
-		return datas.getQuestFlowStages()
-				.map(StageController::getStage)
-				.filter(Dialogable.class::isInstance)
-				.map(Dialogable.class::cast)
-				.filter(Dialogable::hasDialog);
+	public static List<Dialogable> getDialogable(QuesterQuestData datas) {
+		var dialogable = dialogableCache.getIfPresent(datas.getQuestFlowStages());
+		if (dialogable == null) {
+			dialogable = datas.getQuestFlowStages().stream()
+					.map(StageController::getStage)
+					.filter(Dialogable.class::isInstance)
+					.map(Dialogable.class::cast)
+					.filter(Dialogable::hasDialog)
+					.toList();
+			dialogableCache.put(new ArrayList<>(datas.getQuestFlowStages()), dialogable);
+			// we put in cache a COPY of the quest flow list otherwise even after
+		}
+		return dialogable;
 	}
 
 	class WrappedDialogable {

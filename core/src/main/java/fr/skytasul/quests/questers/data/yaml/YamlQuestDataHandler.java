@@ -1,6 +1,6 @@
 package fr.skytasul.quests.questers.data.yaml;
 
-import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.questers.data.QuesterQuestDataHandler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,7 +17,7 @@ public class YamlQuestDataHandler implements QuesterQuestDataHandler {
 	}
 
 	@Override
-	public void load(@NotNull QuesterQuestDataImplementation questData) {
+	public void load(@NotNull AbstractQuesterQuestDataImplementation questData) {
 		questData.setTimesFinished(config.getInt("timesFinished"));
 		questData.setTimer(config.getLong("timer"));
 		questData.setBranch(config.getInt("currentBranch"));

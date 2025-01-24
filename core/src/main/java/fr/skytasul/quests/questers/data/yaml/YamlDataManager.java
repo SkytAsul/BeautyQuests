@@ -2,7 +2,7 @@ package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.questers.data.DataSavingException;
+import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -62,14 +62,14 @@ public class YamlDataManager implements QuesterDataManager {
 			if (fullIdentifiersIndex.containsKey(fullIdentifier)) {
 				// quester exists
 				int id = fullIdentifiersIndex.get(fullIdentifier);
-				var dataHandler = new YamlDataHandler(dataPath.resolve(id + ".yml"));
+				var dataHandler = new YamlQuesterData(dataPath.resolve(id + ".yml"));
 
 				return new QuesterFetchResult(QuesterFetchResult.Type.SUCCESS_LOADED, dataHandler);
 			} else if (request.createIfMissing()) {
 				// quester does not exist, we create it
 				int id = getNextIndex();
 				fullIdentifiersIndex.put(fullIdentifier, id);
-				var dataHandler = new YamlDataHandler(dataPath.resolve(id + ".yml"));
+				var dataHandler = new YamlQuesterData(dataPath.resolve(id + ".yml"));
 
 				return new QuesterFetchResult(QuesterFetchResult.Type.SUCCESS_CREATED, dataHandler);
 			} else

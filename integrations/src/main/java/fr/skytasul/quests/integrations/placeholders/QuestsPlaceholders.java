@@ -203,11 +203,11 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						return qu.getDescriptionLine(acc, DescriptionSource.PLACEHOLDER);
 					}
 					if (qu.hasFinished(acc))
-						return Lang.Finished.quickFormat("times_finished", acc.getQuestDatas(qu).getTimesFinished());
+						return Lang.Finished.quickFormat("times_finished", acc.getQuestData(qu).getTimesFinished());
 					return Lang.Not_Started.toString();
 				}else {
 					if (!acc.hasQuestDatas(qu)) return "-1";
-					QuesterQuestData datas = acc.getQuestDatas(qu);
+					QuesterQuestData datas = acc.getQuestData(qu);
 					if (datas.hasStarted()) return Integer.toString(datas.getStage());
 					return "-1";
 				}
@@ -221,7 +221,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				Quest qu = QuestsAPI.getAPI().getQuestsManager().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
 				if (!acc.hasQuestDatas(qu)) return "0";
-				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());
+				return Integer.toString(acc.getQuestData(qu).getTimesFinished());
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
 			}

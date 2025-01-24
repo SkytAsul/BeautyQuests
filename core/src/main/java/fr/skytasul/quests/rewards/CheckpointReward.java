@@ -66,7 +66,7 @@ public class CheckpointReward extends AbstractReward {
 			if (ex != null) {
 				DefaultErrors.sendGeneric(quester, "giving checkpoint reward");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving checkpoint to {}.", ex,
-						quester.getName());
+						quester.getFriendlyName());
 			}
 
 			if (result.branchInterruption())

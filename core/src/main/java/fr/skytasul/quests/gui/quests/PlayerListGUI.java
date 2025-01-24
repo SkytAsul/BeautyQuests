@@ -14,6 +14,7 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -112,8 +113,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				case FINISHED:
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
 							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
-					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu)) {
 						if (!lore.isEmpty())
 							lore.add(null);
 						lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -124,8 +124,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
 							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
 
-					boolean hasDialogs = QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-							&& acc.getQuestDatas(qu).hasFlowDialogs();
+					boolean hasDialogs =
+							QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu);
 					boolean cancellable =
 							QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 									&& qu.isCancellable();
@@ -153,8 +153,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					lore);
 		} catch (Exception ex) {
 			item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getId());
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest " + qu.getId()
-					+ " for account " + acc.abstractAcc.getIdentifier(), ex);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest {} for {}", ex,
+					qu.getId(), acc.getDetailedName());
 		}
 		return item;
 	}
@@ -183,8 +183,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			}
 		} else {
 			if (clickType.isRightClick()) {
-				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-						&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu)) {
 					QuestUtils.playPluginSound(acc, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
 					new DialogHistoryGUI(acc, qu, this::reopen).open(player);
 				}
@@ -197,6 +196,20 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				}
 			}
 		}
+	}
+
+	private boolean hadDialog(Quest quest) {
+		var data = acc.getDataHolder().getQuestDataIfPresent(quest);
+		if (data.isEmpty())
+			return false;
+
+		if (!data.get().hasStarted() && !data.get().hasFinishedOnce())
+			return false;
+
+		if (quest.hasOption(OptionStartDialog.class))
+			return true;
+
+		return !DialogHistoryGUI.getDialogable(data.get()).isEmpty();
 	}
 
 	private void setCategorySelected(boolean selected) {

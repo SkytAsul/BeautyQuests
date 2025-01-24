@@ -9,7 +9,7 @@ import fr.skytasul.quests.players.DataException;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
-import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -80,12 +80,12 @@ public class PlayerAccountDB extends PlayerQuesterImplementation {
 	}
 
 	@Override
-	protected QuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest) {
+	protected AbstractQuesterQuestDataImplementation createQuestDatas(@NotNull Quest quest) {
 		return new PlayerQuestDatasDB(playersManager, this, quest.getId());
 	}
 
 	@Override
-	protected CompletableFuture<Void> questDatasRemoved(QuesterQuestDataImplementation datas) {
+	protected CompletableFuture<Void> questDatasRemoved(AbstractQuesterQuestDataImplementation datas) {
 		return CompletableFuture.runAsync(() -> {
 			try (Connection connection = playersManager.getDbConnection();
 					PreparedStatement statement =
@@ -101,7 +101,7 @@ public class PlayerAccountDB extends PlayerQuesterImplementation {
 	}
 
 	@Override
-	protected @Nullable QuesterQuestDataImplementation removeQuestDatasSilently(int id) {
+	protected @Nullable AbstractQuesterQuestDataImplementation removeQuestDatasSilently(int id) {
 		return super.removeQuestDatasSilently(id); // for visibility purpose
 	}
 

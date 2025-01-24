@@ -110,7 +110,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager<PlayerAccountYaml
 
 			for (PlayerQuesterImplementation account : loadedAccounts.values()) {
 				try {
-					if (account.removeQuestDatas(quest).get() != null) {
+					if (account.removeQuestData(quest).get() != null) {
 						// we can use the .get() method as the CompletableFuture created by the YAML players manager is
 						// already completed
 						amount++;

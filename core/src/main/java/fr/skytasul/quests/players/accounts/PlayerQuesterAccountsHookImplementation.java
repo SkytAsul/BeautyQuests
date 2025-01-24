@@ -4,9 +4,9 @@ import fr.skytasul.accounts.Account;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.players.AbstractPlayerQuesterImplementation;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataHandler;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -24,7 +24,7 @@ public class PlayerQuesterAccountsHookImplementation extends AbstractPlayerQuest
 	public final @NotNull Account acc;
 
 	protected PlayerQuesterAccountsHookImplementation(
-			@NotNull PlayersManager playersManager, @NotNull QuesterDataHandler dataHandler,
+			@NotNull PlayersManager playersManager, @NotNull QuesterData dataHandler,
 			@NotNull Account account) {
 		super(playersManager, dataHandler);
 		this.acc = account;

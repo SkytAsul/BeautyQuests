@@ -7,9 +7,9 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
-import fr.skytasul.quests.questers.data.DataSavingException;
-import fr.skytasul.quests.questers.data.QuesterDataHandler;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult;
 import fr.skytasul.quests.utils.DebugUtils;
@@ -18,12 +18,17 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 
-public class PlayerManagerImplementation implements PlayersManager {
+public class PlayerManagerImplementation implements PlayersManager, Listener {
 
 	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players");
 
@@ -74,12 +79,15 @@ public class PlayerManagerImplementation implements PlayersManager {
 	}
 
 	protected AbstractPlayerQuesterImplementation createQuester(@NotNull String identifier,
-			@NotNull QuesterDataHandler dataHandler) {
+			@NotNull QuesterData dataHandler) {
 		return new PlayerQuesterImplementation(this, dataHandler, UUID.fromString(identifier));
 	}
 
 	protected void load(@NotNull Player player) {
 		String identifier = getIdentifier(player).orElseThrow();
+
+		BeautyQuests.getInstance().getLoggerExpanded().debug("Loading quester for {} (identifier: {})", player.getName(),
+				identifier);
 
 		questerManager.getDataManager().loadQuester(new QuesterFetchRequest(KEY, identifier, true))
 				.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(result -> {
@@ -133,6 +141,17 @@ public class PlayerManagerImplementation implements PlayersManager {
 		for (var player : Bukkit.getOnlinePlayers()) {
 			load(player);
 		}
+		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onJoin(PlayerJoinEvent e) {
+		load(e.getPlayer());
+	}
+
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		unload(e.getPlayer());
 	}
 
 }

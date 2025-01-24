@@ -892,6 +892,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return Optional.ofNullable(paperCompat);
 	}
 
+	public boolean isCompletelyLoaded() {
+		return loaded;
+	}
+
 
 	public static @NotNull BeautyQuests getInstance() {
 		return instance;

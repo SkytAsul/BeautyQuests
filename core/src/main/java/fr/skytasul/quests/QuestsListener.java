@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
@@ -17,7 +18,6 @@ import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,8 +32,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ComplexRecipe;
 import org.bukkit.inventory.ItemStack;
 import java.util.*;
@@ -54,11 +52,12 @@ public class QuestsListener implements Listener{
 				|| QuestsPlugin.getPlugin().getEditorManager().isInEditor(p))
 			return;
 
-		PlayerQuesterImplementation acc = BeautyQuests.getInstance().getPlayersManager().getQuester(p);
-		if (acc == null) return;
+		PlayerQuester quester = BeautyQuests.getInstance().getPlayersManager().getQuester(p);
+		if (quester == null)
+			return;
 
 		Set<Quest> quests = npc.getQuests();
-		quests = quests.stream().filter(qu -> !qu.hasStarted(acc) && (qu.isRepeatable() || !qu.hasFinished(acc)))
+		quests = quests.stream().filter(qu -> !qu.hasStarted(quester) && (qu.isRepeatable() || !qu.hasFinished(quester)))
 				.collect(Collectors.toSet());
 		if (quests.isEmpty() && npc.getPools().isEmpty()) return;
 
@@ -68,9 +67,9 @@ public class QuestsListener implements Listener{
 		for (Quest qu : quests) {
 			QuestImplementation quest = (QuestImplementation) qu;
 			try {
-				if (!quest.testRequirements(p, acc, false)) {
+				if (!quest.testRequirements(p, quester, false)) {
 					requirements.add(quest);
-				} else if (!quest.testTimer(acc, false)) {
+				} else if (!quest.testTimer(quester, false)) {
 					timer.add(quest);
 				} else
 					launcheable.add(quest);
@@ -114,35 +113,14 @@ public class QuestsListener implements Listener{
 					.debug("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
 		}else {
 			if (!timer.isEmpty()) {
-				timer.get(0).testTimer(acc, true);
+				timer.get(0).testTimer(quester, true);
 			}else if (!requirements.isEmpty()) {
-				requirements.get(0).testRequirements(p, acc, true);
+				requirements.get(0).testRequirements(p, quester, true);
 			}else {
 				npc.getPools().iterator().next().give(p)
 						.thenAccept(result -> MessageUtils.sendMessage(p, result, MessageType.DefaultMessageType.PREFIXED));
 			}
 			e.setCancelled(false);
-		}
-	}
-
-	@EventHandler (priority = EventPriority.LOWEST)
-	public void onJoin(PlayerJoinEvent e){
-		Player player = e.getPlayer();
-
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
-		// for timing purpose
-
-		if (BeautyQuests.getInstance().loaded && !QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
-		}
-	}
-
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e) {
-		Player player = e.getPlayer();
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " left the server"); // for timing purpose
-		if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
 		}
 	}
 

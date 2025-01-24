@@ -7,8 +7,8 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -80,16 +80,17 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue) {
-		Map<String, Object> datas = quester.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
+		QuesterQuestData questData = quester.getDataHolder().getQuestData(branch.getQuest());
+		Map<String, Object> datas = questData.getStageDatas(getStorageId());
 		if (datas == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.severe("Account {} did not have data for {}. Creating some.", quester.getNameAndID(), toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Account {} did not have data for {}. Creating some.",
+					quester.getDetailedName(), toString());
 			datas = new HashMap<>();
 			stage.initPlayerDatas(quester, datas);
 		}
 
 		datas.put(dataKey, dataValue);
-		quester.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		questData.setStageDatas(getStorageId(), datas);
 
 		propagateStageHandlers(handler -> handler.stageUpdated(quester, this));
 		branch.getManager().questUpdated(quester);
@@ -97,18 +98,18 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public <D> @Nullable D getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
-		QuesterQuestData playerDatas = acc.getQuestDatas(branch.getQuest());
+		QuesterQuestData playerDatas = acc.getDataHolder().getQuestData(branch.getQuest());
 		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
 
 		if (datas == null) {
 			if (!hasStarted(acc))
 				throw new IllegalStateException("Trying to fetch data of not launched stage");
 
-			QuestsPlugin.getPlugin().getLogger()
-					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Q uester {} did not have data for {}. Creating some.",
+					acc.getDetailedName(), this);
 			datas = new HashMap<>();
 			stage.initPlayerDatas(acc, datas);
-			acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+			acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), datas);
 		}
 
 		Object data = datas.get(dataKey);
@@ -148,8 +149,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 			return MessageUtils.finalFormat(description, stage.getPlaceholdersRegistry(), context);
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-					"An error occurred while getting the description line for player " + acc.getName() + " in " + toString(),
-					ex);
+					"An error occurred while getting the description line for {} in {}", ex, acc.getDetailedName(), this);
 			return "§a" + type.getName();
 		}
 	}
@@ -170,13 +170,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		MessageUtils.sendMessage(acc, stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), datas);
 		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 		stage.started(acc);
 	}
 
 	public void end(@NotNull Quester acc) {
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), null);
+		acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), null);
 		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 		stage.ended(acc);
 	}

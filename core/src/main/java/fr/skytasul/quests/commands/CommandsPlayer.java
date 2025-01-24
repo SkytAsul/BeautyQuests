@@ -39,7 +39,7 @@ public class CommandsPlayer implements OrphanCommand {
 	public void checkpoint(Player player, Quest quest) {
 		Quester account = PlayersManager.getPlayerAccount(player);
 		if (account.hasQuestDatas(quest)) {
-			QuesterQuestData datas = account.getQuestDatas(quest);
+			QuesterQuestData datas = account.getQuestData(quest);
 
 			Optional<CheckpointReward> optionalCheckpoint = datas.getQuestFlowStages()
 					.map(controller -> controller.getStage().getRewards().stream()

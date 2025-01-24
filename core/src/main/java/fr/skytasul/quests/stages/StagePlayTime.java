@@ -75,7 +75,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 				if (world == null) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning(
 							"Cannot get remaining time of {} for {} because the world has changed.",
-							acc.getNameAndID() + hashCode() + "time", 15, acc.getNameAndID(), controller);
+							acc.getIdentifier() + hashCode() + "time", 15, acc.getFriendlyName(), controller);
 					return -1;
 				}
 

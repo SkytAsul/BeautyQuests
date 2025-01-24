@@ -4,7 +4,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
-import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ public class PlayerAccountYaml extends PlayerQuesterImplementation {
 	public void serialize(@NotNull ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
 		config.set("quests", questDatas.isEmpty() ? null
-				: Utils.serializeList(questDatas.values(), QuesterQuestDataImplementation::serialize));
+				: Utils.serializeList(questDatas.values(), AbstractQuesterQuestDataImplementation::serialize));
 		config.set("pools", poolDatas.isEmpty() ? null
 				: Utils.serializeList(poolDatas.values(), QuesterPoolDataImplementation::serialize));
 		additionalDatas.entrySet().forEach(entry -> {

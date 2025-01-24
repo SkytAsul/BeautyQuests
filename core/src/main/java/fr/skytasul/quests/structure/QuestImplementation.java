@@ -13,8 +13,8 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
@@ -202,14 +202,17 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	public @NotNull String getTimeLeft(@NotNull Quester quester) {
-		return Utils.millisToHumanString(quester.getQuestDatas(this).getTimer() - System.currentTimeMillis());
+		var timer = quester.getDataHolder().getQuestData(this).getTimer();
+		if (timer.isEmpty())
+			return "x";
+		return Utils.millisToHumanString(timer.getAsLong() - System.currentTimeMillis());
 	}
 
 	@Override
 	public boolean hasStarted(@NotNull Quester quester) {
-		if (!quester.hasQuestDatas(this))
+		if (!quester.getDataHolder().hasQuestDatas(this))
 			return false;
-		if (quester.getQuestDatas(this).hasStarted())
+		if (quester.getDataHolder().getQuestData(this).hasStarted())
 			return true;
 		if (getOptionValueOrDef(OptionStartRewards.class).isInAsyncReward(quester))
 			return true;
@@ -218,17 +221,15 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean hasFinished(@NotNull Quester quester) {
-		return quester.hasQuestDatas(this) && quester.getQuestDatas(this).isFinished();
+		return quester.getDataHolder().getQuestDataIfPresent(this).map(x -> x.hasFinishedOnce()).orElse(false);
 	}
 
 	@Override
 	public boolean cancelPlayer(@NotNull Quester quester) {
-		QuesterQuestData datas = quester.getQuestDatasIfPresent(this);
-		if (datas == null || !datas.hasStarted())
+		if (!quester.getDataHolder().getQuestDataIfPresent(this).map(x -> x.hasStarted()).orElse(false))
 			return false;
 
-		QuestsPlugin.getPlugin().getLoggerExpanded()
-				.debug("Cancelling quest " + id + " for player " + quester.getNameAndID());
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Cancelling quest {} for {}", id, quester.getDetailedName());
 		cancelInternal(quester);
 		return true;
 	}
@@ -240,7 +241,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 		getOptionValueOrDef(OptionCancelRewards.class).giveRewards(quester)
 				.whenComplete((__, ex) -> QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Failed to execute cancel rewards for quester {} in quest {}", ex, quester.getNameAndID(), getId()));
+						"Failed to execute cancel rewards for quester {} in quest {}", ex, quester.getDetailedName(),
+						getId()));
 	}
 
 	@Override
@@ -248,13 +250,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
-		if (quester.hasQuestDatas(this)) {
+		if (quester.getDataHolder().hasQuestDatas(this)) {
 			hadDatas = true;
 
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Resetting quest {} for player {}", id,
-					quester.getNameAndID());
+					quester.getDetailedName());
 			cancelInternal(quester);
-			future = quester.removeQuestDatas(this);
+			future = quester.getDataHolder().removeQuestData(this);
 		}
 
 		if (hasOption(OptionStartDialog.class)) {
@@ -315,13 +317,14 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	public boolean testTimer(@NotNull Quester acc, boolean sendMessage) {
-		if (isRepeatable() && acc.hasQuestDatas(this)) {
-			long time = acc.getQuestDatas(this).getTimer();
-			if (time > System.currentTimeMillis()) {
+		if (isRepeatable() && acc.getDataHolder().hasQuestDatas(this)) {
+			var data = acc.getDataHolder().getQuestData(this);
+			if (data.getTimer().orElse(0) > System.currentTimeMillis()) {
 				if (sendMessage)
 					Lang.QUEST_WAIT.quickSend(acc, "time_left", getTimeLeft(acc));
 				return false;
-			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
+			} else if (data.getTimer().isPresent())
+				data.setTimer(OptionalLong.empty());
 		}
 		return true;
 	}
@@ -346,12 +349,14 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source) {
-		if (!quester.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
+		if (!quester.getDataHolder().hasQuestDatas(this))
+			throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
 		if (getOptionValueOrDef(OptionStartRewards.class).isInAsyncReward(quester))
 			return "§7x";
-		QuesterQuestData datas = quester.getQuestDatas(this);
-		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
-		QuestBranchImplementation branch = manager.getBranch(datas.getBranch());
+		QuesterQuestData datas = quester.getDataHolder().getQuestData(this);
+		if (datas.getState() == QuesterQuestData.State.IN_END)
+			return Lang.SCOREBOARD_ASYNC_END.toString();
+		QuestBranchImplementation branch = manager.getBranch(datas.getBranch().orElseThrow());
 		if (branch == null) throw new IllegalStateException("Account is in branch " + datas.getBranch() + " in quest " + id + ", which does not actually exist");
 		return branch.getDescriptionLine(quester, source);
 	}
@@ -425,7 +430,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
-		quester.getQuestDatas(this).setTimer(0);
+		quester.getDataHolder().getQuestData(this).setTimer(OptionalLong.empty());
 
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
@@ -438,7 +443,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				DefaultErrors.sendGeneric(quester, "giving reward");
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("An error occurred while giving quest {} start rewards to {}.", ex, getId(),
-								quester.getName());
+								quester.getDetailedName());
 			}
 
 			if (result.branchInterruption())
@@ -462,15 +467,16 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void finish(@NotNull Quester quester) {
-		AdminMode.broadcast(quester.getName() + " is completing the quest " + id);
-		QuesterQuestData questDatas = quester.getQuestDatas(this);
+		AdminMode.broadcast(quester.getFriendlyName() + " is completing the quest " + id);
+		QuesterQuestData questDatas = quester.getDataHolder().getQuestData(this);
 
-		questDatas.setInQuestEnd();
+		questDatas.setState(QuesterQuestData.State.IN_END);
 		getOptionValueOrDef(OptionEndRewards.class).giveRewards(quester).whenComplete((result, ex) -> {
 			if (ex != null) {
 				DefaultErrors.sendGeneric(quester, "giving reward");
 				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("An error occurred while giving quest {} end rewards to {}.", ex, getId(), quester.getName());
+						.severe("An error occurred while giving quest {} end rewards to {}.", ex, getId(),
+								quester.getDetailedName());
 			}
 
 			if (result.branchInterruption())
@@ -499,15 +505,16 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			// Fireworks have to be spawned synchronously
 			QuestUtils.runOrSync(() -> {
 				manager.remove(quester);
-				questDatas.setBranch(-1);
+				questDatas.setState(QuesterQuestData.State.NOT_STARTED);
+				questDatas.setBranch(OptionalInt.empty());
 				questDatas.incrementFinished();
-				questDatas.setStartingTime(0);
+				questDatas.setStartingTime(OptionalLong.empty());
 				if (hasOption(OptionQuestPool.class))
 					((QuestPoolImplementation) getOptionValueOrDef(OptionQuestPool.class)).questCompleted(quester, this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));
-					questDatas.setTimer(cal.getTimeInMillis());
+					questDatas.setTimer(OptionalLong.of(cal.getTimeInMillis()));
 				}
 				quester.getOnlinePlayers()
 						.forEach(p -> QuestUtils.spawnFirework(p.getLocation(), getOptionValueOrDef(OptionFirework.class)));
@@ -527,7 +534,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
 
 		if (!keepDatas) {
-			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(this).whenComplete(
+			BeautyQuests.getInstance().getPlayersManager().removeQuestData(this).whenComplete(
 					QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while removing player datas after quest removal"));
 			if (file.exists()) file.delete();
 		}

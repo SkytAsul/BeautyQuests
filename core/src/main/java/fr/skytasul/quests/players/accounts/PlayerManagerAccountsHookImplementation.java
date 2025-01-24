@@ -4,21 +4,22 @@ import fr.skytasul.accounts.AccountsProvider;
 import fr.skytasul.accounts.events.AccountJoinEvent;
 import fr.skytasul.accounts.events.AccountLeaveEvent;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.players.AbstractPlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataHandler;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.Optional;
 
-public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplementation implements Listener {
+public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplementation {
 
 	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players-accounts-hook");
 
@@ -43,13 +44,25 @@ public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplem
 
 	@Override
 	protected AbstractPlayerQuesterImplementation createQuester(@NotNull String identifier,
-			@NotNull QuesterDataHandler dataHandler) {
+			@NotNull QuesterData dataHandler) {
 		return new PlayerQuesterAccountsHookImplementation(this, dataHandler,
 				getAccountsProvider().getFromIdentifier(NamespacedKey.fromString(identifier)).orElseThrow());
 	}
 
 	private @NotNull AccountsProvider getAccountsProvider() {
 		return Objects.requireNonNull(Bukkit.getServicesManager().load(AccountsProvider.class));
+	}
+
+	@Override
+	public void onJoin(PlayerJoinEvent e) {
+		// super.onJoin(e);
+		// explicitely disabled
+	}
+
+	@Override
+	public void onQuit(PlayerQuitEvent e) {
+		// super.onQuit(e);
+		// explicitely disabled
 	}
 
 	@EventHandler

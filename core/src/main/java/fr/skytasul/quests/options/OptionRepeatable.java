@@ -33,7 +33,8 @@ public class OptionRepeatable extends QuestOptionBoolean implements QuestDescrip
 			lore.add(Lang.timeWait.quickFormat("time_left", quest.getTimeLeft(context.getQuester())));
 		}
 		lore.add(null);
-		lore.add(Lang.timesFinished.quickFormat("times_finished", context.getQuestDatas().getTimesFinished()));
+		lore.add(Lang.timesFinished.quickFormat("times_finished",
+				context.getQuestDatas().map(x -> x.getTimesFinished()).orElse(0)));
 		return lore;
 	}
 

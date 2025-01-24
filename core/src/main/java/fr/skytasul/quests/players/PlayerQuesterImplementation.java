@@ -3,8 +3,8 @@ package fr.skytasul.quests.players;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataHandler;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -26,7 +26,7 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 	private Player player;
 
 	protected PlayerQuesterImplementation(
-			@NotNull PlayersManager playersManager, @NotNull QuesterDataHandler dataHandler,
+			@NotNull PlayersManager playersManager, @NotNull QuesterData dataHandler,
 			@NotNull UUID uuid) {
 		super(playersManager, dataHandler);
 		this.uuid = uuid;

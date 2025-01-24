@@ -4,8 +4,12 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.concurrent.CompletableFuture;
 
 public interface QuesterQuestData {
 
@@ -17,54 +21,70 @@ public interface QuesterQuestData {
 	@NotNull
 	Quester getQuester();
 
-	boolean isFinished();
-
 	void incrementFinished();
 
 	int getTimesFinished();
 
-	long getTimer();
+	default boolean hasFinishedOnce() {
+		return getTimesFinished() > 0;
+	}
 
-	void setTimer(long timer);
+	OptionalLong getTimer();
 
-	int getBranch();
+	void setTimer(OptionalLong timer);
 
-	void setBranch(int branch);
+	OptionalInt getBranch();
 
-	int getStage();
+	void setBranch(OptionalInt branch);
 
-	void setStage(int stage);
+	OptionalInt getStage();
 
-	boolean hasStarted();
+	void setStage(OptionalInt stage);
 
-	boolean isInQuestEnd();
+	@NotNull
+	State getState();
 
-	void setInQuestEnd();
+	void setState(@NotNull State state);
 
-	boolean isInEndingStages();
+	default boolean hasStarted() {
+		return getState() != State.NOT_STARTED;
+	}
 
-	void setInEndingStages();
+	@Deprecated
+	default boolean isInQuestEnd() {
+		return getState() == State.IN_END;
+	}
 
-	<T> @Nullable T getAdditionalData(@NotNull String key);
+	@Deprecated
+	default boolean isInEndingStages() {
+		return getState() == State.IN_ENDING_STAGES;
+	}
 
-	<T> @Nullable T setAdditionalData(@NotNull String key, @Nullable T value);
+	OptionalLong getStartingTime();
+
+	void setStartingTime(OptionalLong time);
 
 	@Nullable
 	Map<@NotNull String, @Nullable Object> getStageDatas(int stage);
 
 	void setStageDatas(int stage, @Nullable Map<@NotNull String, @Nullable Object> datas);
 
-	long getStartingTime();
+	<T> @Nullable T getAdditionalData(@NotNull String key);
 
-	void setStartingTime(long time);
-
-	@NotNull
-	String getQuestFlow();
+	<T> @Nullable T setAdditionalData(@NotNull String key, @Nullable T value);
 
 	void addQuestFlow(@NotNull StageController finished);
 
 	void resetQuestFlow();
 
-	Stream<StageController> getQuestFlowStages();
+	@NotNull
+	@UnmodifiableView
+	List<StageController> getQuestFlowStages();
+
+	CompletableFuture<Void> remove();
+
+	enum State {
+		NOT_STARTED, STARTED, IN_ENDING_STAGES, IN_END;
+	}
 
 }

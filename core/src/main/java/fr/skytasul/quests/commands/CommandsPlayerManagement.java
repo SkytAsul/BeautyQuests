@@ -103,13 +103,13 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		Quester acc = PlayersManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
-		QuesterQuestData datas = acc.getQuestDatasIfPresent(quest);
+		QuesterQuestData datas = acc.getQuestDataIfPresent(quest);
 		if (branchID == null && (datas == null || !datas.hasStarted())) { // start quest
 			quest.start(player);
 			Lang.START_QUEST.send(actor.sender(), quest, acc);
 			return;
 		}
-		if (datas == null) datas = acc.getQuestDatas(quest); // creates quest datas
+		if (datas == null) datas = acc.getQuestData(quest); // creates quest datas
 
 		QuestBranchImplementation currentBranch = manager.getBranch(datas.getBranch());
 
@@ -154,7 +154,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
 		Quester acc = PlayersManager.getPlayerAccount(player);
-		QuesterQuestData datas = acc.getQuestDatasIfPresent(quest);
+		QuesterQuestData datas = acc.getQuestDataIfPresent(quest);
 
 		DialogRunner runner = null;
 		if (datas == null || !quest.hasStarted(acc)) {
@@ -199,7 +199,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			QuesterQuestData questDatas : new ArrayList<>(acc.getQuestsDatas())) {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
-						quest == null ? acc.removeQuestDatas(questDatas.getQuestID()) : quest.resetPlayer(acc);
+						quest == null ? acc.removeQuestData(questDatas.getQuestID()) : quest.resetPlayer(acc);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while resetting quest "
 						+ questDatas.getQuestID() + " to player " + player.getName(), actor.sender()));
 				futures.add(future);
@@ -283,7 +283,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 						return false;
 					}).count();
 
-			BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(quest)
+			BeautyQuests.getInstance().getPlayersManager().removeQuestData(quest)
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError((Integer removedAmount) -> {
 						Lang.QUEST_PLAYERS_REMOVED.quickSend(actor.sender(), "player_amount",
 								removedAmount + resetAmount);

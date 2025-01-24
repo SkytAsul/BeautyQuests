@@ -27,7 +27,7 @@ import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.players.PlayerQuesterImplementation;
-import fr.skytasul.quests.questers.QuesterQuestDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
@@ -194,7 +194,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Players quests datas will be kept for quest #" + qu.getId()
 							+ " - this may cause datas issues.");
 				} else
-					BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(session.getQuestEdited())
+					BeautyQuests.getInstance().getPlayersManager().removeQuestData(session.getQuestEdited())
 							.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded()
 									.logError("An error occurred while removing player datas after quest edition",
 											session.getPlayerAudience()));
@@ -236,7 +236,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			PlayerQuesterImplementation account = BeautyQuests.getInstance().getPlayersManager().getQuester(p);
 			if (account != null && account.hasQuestDatas(qu)) {
-				QuesterQuestDataImplementation datas = account.getQuestDatas(qu);
+				AbstractQuesterQuestDataImplementation datas = account.getQuestData(qu);
 				datas.questEdited();
 				if (datas.getBranch() == -1) continue;
 				QuestBranchImplementation branch = qu.getBranchesManager().getBranch(datas.getBranch());

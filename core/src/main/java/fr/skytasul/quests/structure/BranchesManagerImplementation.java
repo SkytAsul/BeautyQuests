@@ -2,8 +2,8 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import org.apache.commons.lang.Validate;
@@ -57,14 +57,19 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 
 	@Override
 	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull Quester acc) {
-		if (!acc.hasQuestDatas(quest)) return null;
-		return branches.get(acc.getQuestDatas(quest).getBranch());
+		return acc.getDataHolder().getQuestDataIfPresent(quest).map(x -> {
+			if (x.getBranch().isPresent())
+				return branches.get(x.getBranch().getAsInt());
+			else
+				return null;
+		}).orElse(null);
 	}
 
 	@Override
 	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch) {
-		if (!acc.hasQuestDatas(quest)) return false;
-		return acc.getQuestDatas(quest).getBranch() == branch.getId();
+		return acc.getDataHolder().getQuestDataIfPresent(quest)
+				.filter(x -> x.getBranch().orElse(-1) == branch.getId())
+				.isPresent();
 	}
 
 	/**
@@ -77,14 +82,15 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	public void startPlayer(@NotNull Quester acc) {
-		QuesterQuestData datas = acc.getQuestDatas(getQuest());
+		QuesterQuestData datas = acc.getDataHolder().getQuestData(getQuest());
 		datas.resetQuestFlow();
-		datas.setStartingTime(System.currentTimeMillis());
+		datas.setStartingTime(OptionalLong.of(System.currentTimeMillis()));
 		branches.get(0).start(acc);
 	}
 
 	public void remove(@NotNull Quester acc) {
-		if (!acc.hasQuestDatas(quest)) return;
+		if (!acc.getDataHolder().hasQuestDatas(quest))
+			return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
 	}

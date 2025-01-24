@@ -2,11 +2,13 @@ package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.questers.AbstractQuesterImplementation;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.DataSavingException;
+import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
-import fr.skytasul.quests.questers.data.DataSavingException;
-import fr.skytasul.quests.questers.data.QuesterDataHandler;
 import fr.skytasul.quests.questers.data.QuesterQuestDataHandler;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -16,18 +18,17 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class YamlDataHandler implements QuesterDataHandler {
+public class YamlQuesterData extends AbstractQuesterDataImplementation implements QuesterData {
 
 	private final @NotNull Path path;
 
 	private YamlConfiguration yaml = new YamlConfiguration();
 
-	public YamlDataHandler(@NotNull Path path) {
+	public YamlQuesterData(@NotNull Path path) {
 		this.path = path;
 	}
 
-	@Override
-	public void load(@NotNull AbstractQuesterImplementation quester) {
+	public void load() {
 		yaml = YamlConfiguration.loadConfiguration(path.toFile());
 
 		if (yaml.isList("quests")) {
@@ -52,26 +53,19 @@ public class YamlDataHandler implements QuesterDataHandler {
 
 		for (SavableData<?> data : QuestsAPI.getAPI().getQuesterManager().getSavableData()) {
 			if (yaml.contains(data.getId()))
-				setData(quester, data); // generics error if not in a separate method
+				super.additionalData.put(data, yaml.getObject(data.getId(), data.getDataType()));
 		}
 	}
 
-	private <T> void setData(@NotNull Quester quester, @NotNull SavableData<T> data) {
-		quester.setData(data, yaml.getObject(data.getId(), data.getDataType()));
-	}
-
 	@Override
-	public <T> @NotNull CompletableFuture<Void> setData(@NotNull SavableData<T> data, @Nullable T value) {
+	public <T> @NotNull CompletableFuture<Void> setDataInternal(@NotNull SavableData<T> data, @Nullable T value) {
 		yaml.set(data.getId(), value);
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public @NotNull CompletableFuture<Void> resetData() {
-		for (var savableData : QuestsAPI.getAPI().getQuesterManager().getSavableData()) {
-			yaml.set(savableData.getId(), null);
-		}
-		return CompletableFuture.completedFuture(null);
+	protected QuesterQuestData createQuestData(@NotNull Quest quest) {
+		return null;
 	}
 
 	@Override
@@ -93,5 +87,10 @@ public class YamlDataHandler implements QuesterDataHandler {
 
 	@Override
 	public void unload() {}
+
+	@Override
+	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
+		return null;
+	}
 
 }

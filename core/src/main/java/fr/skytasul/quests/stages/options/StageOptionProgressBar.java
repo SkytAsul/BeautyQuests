@@ -156,9 +156,9 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 				float progress = (totalAmount - playerRemaining) * 1F / totalAmount;
 				bar.progress(progress);
 			} else
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Amount of objects invalid in " + progress.getController().toString()
-								+ " for player " + quester.getNameAndID() + ": " + playerRemaining + " / " + totalAmount);
+				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+						"Amount of objects invalid in {} for player {}: {}/{}",
+						progress.getController(), quester.getFriendlyName(), playerRemaining, totalAmount);
 
 			String formattedName = MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
 					PlaceholdersContext.of(quester, true, null));
