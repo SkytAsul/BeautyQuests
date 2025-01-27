@@ -59,13 +59,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>codemc-releases</id>
+			<id>codemc</id>
 			<url>https://repo.codemc.org/repository/skytasul/</url>
 		</repository>
-		<snapshotRepository>
-			<id>codemc-snapshots</id>
-			<url>https://repo.codemc.io/repository/skytasul/</url>
-		</snapshotRepository>
 	</distributionManagement>
 
 	<modules>
