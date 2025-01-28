@@ -59,7 +59,7 @@
 
 	<distributionManagement>
 		<repository>
-			<id>codemc</id>
+			<id>skytasul</id>
 			<url>https://repo.codemc.org/repository/skytasul/</url>
 		</repository>
 	</distributionManagement>
