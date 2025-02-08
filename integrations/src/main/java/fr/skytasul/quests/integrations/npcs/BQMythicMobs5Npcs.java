@@ -42,8 +42,10 @@ public class BQMythicMobs5Npcs implements BqInternalNpcFactory, Listener {
 
 	@EventHandler
 	public void onMythicInteract(MythicMobInteractEvent event) {
-		npcClicked(new MythicInteractEventProxy(event), event.getActiveMobType().getInternalName(), event.getPlayer(),
-				NpcClickType.RIGHT);
+		String internalName = event.getActiveMobType().getInternalName();
+		if (!MythicBukkit.inst().getMobManager().getMythicMob(internalName).isPresent())
+			throw new IllegalStateException("Mob " + internalName + " does not actually exist");
+		npcClicked(new MythicInteractEventProxy(event), internalName, event.getPlayer(), NpcClickType.RIGHT);
 	}
 
 	@EventHandler
