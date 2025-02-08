@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -14,7 +15,6 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
@@ -57,6 +57,9 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent event) {
+		if (event.isCancelled())
+			return;
+
 		Player player;
 		if (event.getDamager() instanceof Projectile) {
 			ProjectileSource projectileShooter = ((Projectile) event.getDamager()).getShooter();
