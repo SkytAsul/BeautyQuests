@@ -251,6 +251,12 @@
 			<version>5.8.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.SkytAsul</groupId>
+			<artifactId>tooltips</artifactId>
+			<version>28e9fb00db</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Local JARs -->
 		<dependency>
