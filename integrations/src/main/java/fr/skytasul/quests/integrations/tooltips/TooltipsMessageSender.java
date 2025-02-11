@@ -70,7 +70,7 @@ public class TooltipsMessageSender implements MessageSender {
 
 			Message message = dialog.getDialog().getMessages().get(dialog.getPlayerMessage(player));
 
-			String npcName = dialog.getDialog().getNPCName(dialog.getNpc());
+			String npcName = convertToMiniMessage(dialog.getDialog().getNPCName(dialog.getNpc()));
 			context.put("beautyquests.npc", npcName);
 
 			switch (message.sender) {
@@ -87,10 +87,13 @@ public class TooltipsMessageSender implements MessageSender {
 			String text = message.text;
 			text = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(player, true, null));
 			text = ChatColorUtils.wordWrap(text, 75).stream()
-					.map(LegacyComponentSerializer.legacySection()::deserialize)
-					.map(MiniMessage.miniMessage()::serialize)
+					.map(this::convertToMiniMessage)
 					.collect(Collectors.joining("\n"));
 			context.put("beautyquests.text", text);
+		}
+
+		private @NotNull String convertToMiniMessage(@NotNull String legacyMessage) {
+			return MiniMessage.miniMessage().serialize(LegacyComponentSerializer.legacySection().deserialize(legacyMessage));
 		}
 
 	}
