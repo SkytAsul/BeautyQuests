@@ -1,19 +1,14 @@
 package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public abstract class AbstractQuesterQuestDataImplementation implements QuesterQuestData {
 
-	private static final Pattern FLOW_PATTERN = Pattern.compile(";");
-
-	protected final @NotNull Quester quester;
 	protected final int questID;
 
 	protected int finished = 0;
@@ -24,12 +19,13 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	protected OptionalLong startingTime = OptionalLong.empty();
 
 	protected Map<Integer, Map<String, Object>> stageData = new HashMap<>();
-	protected List<StageController> questFlow = new ArrayList<>();
 
 	protected Map<String, Object> additionalDatas = new HashMap<>();
 
-	public AbstractQuesterQuestDataImplementation(@NotNull Quester quester, int questID) {
-		this.quester = quester;
+	protected final List<StageController> questFlow = new ArrayList<>();
+	private final List<StageController> questFlowView = Collections.unmodifiableList(questFlow);
+
+	public AbstractQuesterQuestDataImplementation(int questID) {
 		this.questID = questID;
 	}
 
@@ -41,11 +37,6 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	@Override
 	public int getQuestID() {
 		return questID;
-	}
-
-	@Override
-	public @NotNull Quester getQuester() {
-		return quester;
 	}
 
 	public void setTimesFinished(int times) {
@@ -134,7 +125,7 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 
 	@Override
 	public List<StageController> getQuestFlowStages() {
-		return questFlow;
+		return questFlowView;
 	}
 
 	@Override

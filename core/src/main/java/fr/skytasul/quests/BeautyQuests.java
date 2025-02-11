@@ -554,7 +554,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (db == null && backupDir != null)
 				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
 
-			players.load();
+			questerManager.lockData();
+			players.loadOnlinePlayers();
 		}catch (Exception ex) {
 			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
@@ -615,7 +616,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			data.set("version", getDescription().getVersion());
 
 			try {
-				players.save();
+				questerManager.saveAll();
 			}catch (Exception ex) {
 				logger.severe("Error when saving player datas.", ex);
 			}

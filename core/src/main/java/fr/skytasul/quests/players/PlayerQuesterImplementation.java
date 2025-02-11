@@ -2,9 +2,7 @@ package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.QuesterData;
-import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -69,11 +67,6 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 	@Override
 	public @NotNull Iterable<? extends Audience> audiences() {
 		return getPlayer().map(QuestsPlugin.getPlugin().getAudiences()::player).map(List::of).orElse(List.of());
-	}
-
-	@Override
-	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
-		return new QuesterPoolDataImplementation(this, pool.getId());
 	}
 
 	@Override

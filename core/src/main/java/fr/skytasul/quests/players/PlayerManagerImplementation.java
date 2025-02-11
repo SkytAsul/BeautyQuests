@@ -100,9 +100,6 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 
 					var quester = createQuester(identifier, result.dataHandler());
 
-					if (!isCreation)
-						result.dataHandler().load(quester);
-
 					cachedQuesters.put(player, quester);
 
 					QuestUtils.runOrSync(() -> {

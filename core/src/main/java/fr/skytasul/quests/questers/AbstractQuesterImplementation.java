@@ -30,6 +30,11 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	}
 
 	@Override
+	public @NotNull QuesterData getDataHolder() {
+		return dataHolder;
+	}
+
+	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
 			placeholders = new PlaceholderRegistry();

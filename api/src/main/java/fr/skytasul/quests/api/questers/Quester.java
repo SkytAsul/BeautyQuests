@@ -20,7 +20,7 @@ public interface Quester extends HasPlaceholders, Audience {
 	public @NotNull QuesterData getDataHolder();
 
 	/**
-	 * @return an identifier that uniquely describe this quester for the providerx.
+	 * @return an identifier that uniquely describe this quester for the provider.
 	 */
 	public @NotNull String getIdentifier();
 

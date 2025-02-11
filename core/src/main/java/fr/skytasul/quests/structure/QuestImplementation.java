@@ -534,7 +534,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
 
 		if (!keepDatas) {
-			BeautyQuests.getInstance().getPlayersManager().removeQuestData(this).whenComplete(
+			BeautyQuests.getInstance().getQuesterManager().resetQuestData(id).whenComplete(
 					QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while removing player datas after quest removal"));
 			if (file.exists()) file.delete();
 		}

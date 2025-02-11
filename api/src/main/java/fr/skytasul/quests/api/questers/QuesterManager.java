@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface QuesterManager {
 
@@ -26,6 +27,8 @@ public interface QuesterManager {
 	@NotNull
 	@UnmodifiableView
 	Collection<? extends Quester> getLoadedQuesters();
+
+	CompletableFuture<Integer> resetQuestData(int questId);
 
 	void saveAll();
 

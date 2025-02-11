@@ -18,9 +18,6 @@ public interface QuesterQuestData {
 	@Nullable
 	Quest getQuest();
 
-	@NotNull
-	Quester getQuester();
-
 	void incrementFinished();
 
 	int getTimesFinished();

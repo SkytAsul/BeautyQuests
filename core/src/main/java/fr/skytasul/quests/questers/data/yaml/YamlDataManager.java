@@ -11,10 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class YamlDataManager implements QuesterDataManager {
 
@@ -32,18 +30,24 @@ public class YamlDataManager implements QuesterDataManager {
 		if (config.isConfigurationSection("players")) {
 			// TODO remove : migration 2.0
 			for (String key : config.getConfigurationSection("players").getKeys(false)) {
-				String path = "players." + key;
 				int index = Integer.parseInt(key);
-				fullIdentifiersIndex.put(config.getString(path), index);
+				String identifier = config.getString("players." + key);
+				config.set("identifiers." + identifier, index);
 			}
+			config.set("players", null);
 		}
+
+		if (config.isConfigurationSection("identifiers"))
+			for (String key : config.getConfigurationSection("identifiers").getKeys(false))
+				fullIdentifiersIndex.put(key, config.getInt("identifiers." + key));
+
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", fullIdentifiersIndex.size());
 
 		if (fullIdentifiersIndex.size() >= ACCOUNTS_THRESHOLD)
 			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
 					"""
 							⚠ WARNING - {} players are registered on this server.
-							It is recommended to switch to a SQL database setup in order to keep proper performances and scalability.
+							It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
 							In order to do that, setup your database credentials in config.yml (without enabling it) and run the command
 							/quests migrateDatas. Then follow steps on screen.
 							""",
@@ -81,8 +85,7 @@ public class YamlDataManager implements QuesterDataManager {
 
 	@Override
 	public void save() throws DataSavingException {
-		BeautyQuests.getInstance().getDataFile().set("players",
-				fullIdentifiersIndex.entrySet().stream().collect(Collectors.toMap(Entry::getValue, Entry::getKey)));
+		BeautyQuests.getInstance().getDataFile().createSection("identifiers", fullIdentifiersIndex);
 	}
 
 	@Override

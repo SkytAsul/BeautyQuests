@@ -9,9 +9,9 @@ import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
-import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -265,7 +265,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			futures.add(quest.resetPlayer(PlayersManager.getPlayerAccount(p))
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 							"An error occurred while resetting quest " + quest.getId() + " to player " + p.getName(),
-							actor.sender())));
+							actor.audience().get())));
 		}
 
 		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((__, ___) -> {
@@ -283,11 +283,11 @@ public class CommandsPlayerManagement implements OrphanCommand {
 						return false;
 					}).count();
 
-			BeautyQuests.getInstance().getPlayersManager().removeQuestData(quest)
+			BeautyQuests.getInstance().getQuesterManager().resetQuestData(quest.getId())
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError((Integer removedAmount) -> {
 						Lang.QUEST_PLAYERS_REMOVED.quickSend(actor.sender(), "player_amount",
 								removedAmount + resetAmount);
-					}, "An error occurred while removing quest datas", actor.sender()));
+					}, "An error occurred while removing quest datas", actor.audience().get()));
 		}).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError());
 
 	}

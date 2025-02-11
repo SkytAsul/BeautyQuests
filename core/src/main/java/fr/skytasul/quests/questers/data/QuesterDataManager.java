@@ -12,6 +12,15 @@ public interface QuesterDataManager {
 	@NotNull
 	CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request);
 
+	/**
+	 * Resets the data associated with this quest for all questers, online AND offline. This method is
+	 * called AFTER having reset the quest for ONLINE questers.
+	 *
+	 * @param questId id of the quest to reset
+	 * @return a future that completes when everything has been correctly reset
+	 */
+	CompletableFuture<Void> resetQuestData(int questId);
+
 	void save() throws DataSavingException;
 
 	void unload();
