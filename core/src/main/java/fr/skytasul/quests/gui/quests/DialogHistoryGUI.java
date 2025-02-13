@@ -45,7 +45,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));
 
-		for (var dialogable : getDialogable(quester.getDataHolder().getQuestData(quest))) {
+		for (var dialogable : getDialogable(quester.getDataHolder().getQuestData(quest), false)) {
 			objects.add(new WrappedDialogable(dialogable));
 		}
 	}
@@ -83,9 +83,9 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		return StandardCloseBehavior.NOTHING;
 	}
 
-	public static List<Dialogable> getDialogable(QuesterQuestData datas) {
+	public static List<Dialogable> getDialogable(QuesterQuestData datas, boolean useCache) {
 		var dialogable = dialogableCache.getIfPresent(datas.getQuestFlowStages());
-		if (dialogable == null) {
+		if (!useCache || dialogable == null) {
 			dialogable = datas.getQuestFlowStages().stream()
 					.map(StageController::getStage)
 					.filter(Dialogable.class::isInstance)

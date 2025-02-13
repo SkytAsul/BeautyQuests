@@ -5,6 +5,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.QuestCreateEvent;
+import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -16,6 +17,9 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -26,8 +30,6 @@ import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.players.PlayerQuesterImplementation;
-import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
@@ -194,7 +196,8 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Players quests datas will be kept for quest #" + qu.getId()
 							+ " - this may cause datas issues.");
 				} else
-					BeautyQuests.getInstance().getPlayersManager().removeQuestData(session.getQuestEdited())
+					BeautyQuests.getInstance().getQuesterManager().getDataManager()
+							.resetQuestData(session.getQuestEdited().getId())
 							.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded()
 									.logError("An error occurred while removing player datas after quest edition",
 											session.getPlayerAudience()));
@@ -233,18 +236,20 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 	private void keepDatas(QuestImplementation qu) {
 		// TODO rework this for questers
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			PlayerQuesterImplementation account = BeautyQuests.getInstance().getPlayersManager().getQuester(p);
-			if (account != null && account.hasQuestDatas(qu)) {
-				AbstractQuesterQuestDataImplementation datas = account.getQuestData(qu);
-				datas.questEdited();
-				if (datas.getBranch() == -1) continue;
-				QuestBranchImplementation branch = qu.getBranchesManager().getBranch(datas.getBranch());
-				if (datas.isInEndingStages()) {
-					branch.getEndingStages().forEach(stage -> stage.getStage().getStage().joined(p, account));
-				} else
-					branch.getRegularStage(datas.getStage()).getStage().joined(p, account);
-			}
+		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
+			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
+				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
+				for (Player player : quester.getOnlinePlayers()) {
+					var joinEvent = new PlayerAccountJoinEvent(quester, player, false);
+					if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
+						for (EndingStage endingStage : branch.getEndingStages()) {
+							((StageControllerImplementation<?>) endingStage.getStage()).onJoin(joinEvent);
+						}
+					} else if (data.getState() == QuesterQuestData.State.IN_REGULAR_STAGE) {
+						branch.getRegularStage(data.getStage().getAsInt()).onJoin(joinEvent);
+					}
+				}
+			});
 		}
 	}
 

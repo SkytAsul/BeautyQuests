@@ -4,12 +4,14 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
+import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +23,13 @@ public class YamlDataManager implements QuesterDataManager {
 	// We map each identifier to an integer because we don't know if the identifier is a valid filename
 	private final Map<String, Integer> fullIdentifiersIndex = new ConcurrentHashMap<>();
 
-	private final Path dataPath = QuestsPlugin.getPlugin().getDataFolder().toPath().resolve("players");
+	/**
+	 * Allows to keep track of which yaml file is already loaded, so that we do not end up with 2 quest
+	 * data accessing the same file and eventually losing data.
+	 */
+	private final Map<Integer, YamlQuesterData> cachedData = new HashMap<>();
+
+	protected final Path dataPath = QuestsPlugin.getPlugin().getDataFolder().toPath().resolve("players");
 
 	public void load() throws IOException {
 		Files.createDirectories(dataPath);
@@ -63,24 +71,59 @@ public class YamlDataManager implements QuesterDataManager {
 		var future = CompletableFuture.supplyAsync(() -> {
 			String fullIdentifier = request.providerKey().asString() + "|" + request.identifier();
 
+			int id;
+			QuesterFetchResult.Type successType;
 			if (fullIdentifiersIndex.containsKey(fullIdentifier)) {
 				// quester exists
-				int id = fullIdentifiersIndex.get(fullIdentifier);
-				var dataHandler = new YamlQuesterData(dataPath.resolve(id + ".yml"));
-
-				return new QuesterFetchResult(QuesterFetchResult.Type.SUCCESS_LOADED, dataHandler);
+				id = fullIdentifiersIndex.get(fullIdentifier);
+				successType = Type.SUCCESS_LOADED;
 			} else if (request.createIfMissing()) {
 				// quester does not exist, we create it
-				int id = getNextIndex();
+				id = getNextIndex();
 				fullIdentifiersIndex.put(fullIdentifier, id);
-				var dataHandler = new YamlQuesterData(dataPath.resolve(id + ".yml"));
-
-				return new QuesterFetchResult(QuesterFetchResult.Type.SUCCESS_CREATED, dataHandler);
+				successType = Type.SUCCESS_CREATED;
 			} else
 				return new QuesterFetchResult(QuesterFetchResult.Type.FAILED_NOT_FOUND, null);
+
+			YamlQuesterData dataHandler;
+			if (cachedData.containsKey(id)) {
+				dataHandler = cachedData.get(id);
+			} else {
+				dataHandler = new YamlQuesterData(id, this);
+				if (request.shouldCache())
+					cachedData.put(id, dataHandler);
+			}
+
+			return new QuesterFetchResult(successType, dataHandler);
 		});
 
 		return future;
+	}
+
+	@Override
+	public CompletableFuture<Integer> resetQuestData(int questId) {
+		return CompletableFuture.supplyAsync(() -> {
+			int amount = 0;
+			for (String identifier : fullIdentifiersIndex.keySet()) {
+				int dataId = fullIdentifiersIndex.get(identifier);
+				try {
+					if (cachedData.containsKey(dataId)) {
+						if (cachedData.get(dataId).removeQuestDataSilently(questId) != null)
+							amount++;
+					} else {
+						var data = new YamlQuesterData(questId, this);
+						if (data.removeQuestDataSilently(questId) != null) {
+							amount++;
+							data.save();
+						}
+					}
+				} catch (DataSavingException ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to reset quest {} data for {}", ex, questId,
+							identifier);
+				}
+			}
+			return amount;
+		});
 	}
 
 	@Override
@@ -89,6 +132,13 @@ public class YamlDataManager implements QuesterDataManager {
 	}
 
 	@Override
-	public void unload() {}
+	public void unload() {
+		// nothing to do: the files are never kept open
+		cachedData.clear();
+	}
+
+	protected void uncache(YamlQuesterData data) {
+		cachedData.remove(data.getId());
+	}
 
 }

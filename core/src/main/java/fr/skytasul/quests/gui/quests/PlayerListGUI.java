@@ -12,11 +12,11 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.options.OptionStartable;
-import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -36,16 +36,16 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";
 
-	private PlayerQuesterImplementation acc;
+	private PlayerQuester acc;
 	private boolean hide;
 
 	private @Nullable PlayerListCategory cat = null;
 
-	public PlayerListGUI(PlayerQuesterImplementation acc) {
+	public PlayerListGUI(PlayerQuester acc) {
 		this(acc, true);
 	}
 
-	public PlayerListGUI(PlayerQuesterImplementation acc, boolean hide) {
+	public PlayerListGUI(PlayerQuester acc, boolean hide) {
 		super(Lang.INVENTORY_PLAYER_LIST.format(acc), DyeColor.GRAY, Collections.emptyList());
 		this.acc = acc;
 		this.hide = hide;
@@ -209,7 +209,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		if (quest.hasOption(OptionStartDialog.class))
 			return true;
 
-		return !DialogHistoryGUI.getDialogable(data.get()).isEmpty();
+		return !DialogHistoryGUI.getDialogable(data.get(), true).isEmpty();
 	}
 
 	private void setCategorySelected(boolean selected) {

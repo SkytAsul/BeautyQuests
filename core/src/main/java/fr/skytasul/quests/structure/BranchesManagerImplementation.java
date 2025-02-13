@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import fr.skytasul.quests.api.stages.StageController;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,12 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BranchesManagerImplementation implements QuestBranchesManager {
+
+	private static final Pattern FLOW_PATTERN = Pattern.compile("(\\d+):(E)?(\\d+)");
 
 	private @NotNull Map<Integer, QuestBranchImplementation> branches = new TreeMap<>(Integer::compare);
 
@@ -70,6 +75,23 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		return acc.getDataHolder().getQuestDataIfPresent(quest)
 				.filter(x -> x.getBranch().orElse(-1) == branch.getId())
 				.isPresent();
+	}
+
+	@Override
+	public @Nullable StageController getStageFromFlow(@NotNull String flowId)
+			throws IllegalArgumentException {
+		Matcher matcher = FLOW_PATTERN.matcher(flowId);
+
+		int branchId = Integer.parseInt(matcher.group(1));
+		var branch = getBranch(branchId);
+
+		int stageId = Integer.parseInt(matcher.group(3));
+		if (matcher.group(2) != null) {
+			// means it matched the E meaning it's an ending stage
+			return branch.getEndingStage(stageId);
+		} else {
+			return branch.getRegularStage(stageId);
+		}
 	}
 
 	/**

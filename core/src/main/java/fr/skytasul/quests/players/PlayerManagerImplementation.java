@@ -89,7 +89,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 		BeautyQuests.getInstance().getLoggerExpanded().debug("Loading quester for {} (identifier: {})", player.getName(),
 				identifier);
 
-		questerManager.getDataManager().loadQuester(new QuesterFetchRequest(KEY, identifier, true))
+		questerManager.getDataManager().loadQuester(new QuesterFetchRequest(KEY, identifier, true, true))
 				.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(result -> {
 					if (!result.type().isSuccess()) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to load {}'s quester instance",

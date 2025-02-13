@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -25,12 +26,25 @@ import java.util.stream.Collectors;
 
 public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
+	private final int id;
+	private final @NotNull YamlDataManager dataManager;
 	private final @NotNull Path path;
 
-	private YamlConfiguration yaml = new YamlConfiguration();
+	private YamlConfiguration yaml;
 
-	public YamlQuesterData(@NotNull Path path) {
-		this.path = path;
+	public YamlQuesterData(int id, @NotNull YamlDataManager dataManager) {
+		this.id = id;
+		this.dataManager = dataManager;
+		this.path = dataManager.dataPath.resolve(id + ".yml");
+
+		if (Files.exists(path))
+			load();
+		else
+			yaml = new YamlConfiguration();
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public void load() {
@@ -77,6 +91,13 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		return null;
 	}
 
+	protected QuesterQuestData removeQuestDataSilently(int questId) {
+		QuesterQuestData data = super.questData.remove(questId);
+		if (data != null)
+			data.remove();
+		return data;
+	}
+
 	@Override
 	public void save() throws DataSavingException {
 		try {
@@ -87,7 +108,9 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	public void unload() {}
+	public void unload() {
+		dataManager.uncache(this);
+	}
 
 	class QuestData extends AbstractQuesterQuestDataImplementation {
 
@@ -146,9 +169,9 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 						if (super.stage.isPresent() && super.stage.getAsInt() == -2)
 							newState = State.IN_ENDING_STAGES;
 						else if (super.stage.isPresent() && super.stage.getAsInt() >= 0)
-							newState = State.STARTED;
+							newState = State.IN_REGULAR_STAGE;
 
-				if (newState != State.STARTED) {
+				if (newState != State.IN_REGULAR_STAGE) {
 					setStage(OptionalInt.empty()); // must be AFTER loading of current stage and branch!
 					setBranch(OptionalInt.empty());
 				}

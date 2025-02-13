@@ -81,7 +81,7 @@ public interface QuesterQuestData {
 	CompletableFuture<Void> remove();
 
 	enum State {
-		NOT_STARTED, STARTED, IN_ENDING_STAGES, IN_END;
+		NOT_STARTED, IN_REGULAR_STAGE, IN_ENDING_STAGES, IN_END;
 	}
 
 }

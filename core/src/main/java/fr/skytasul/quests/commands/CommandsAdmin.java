@@ -17,7 +17,7 @@ import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.database.PlayersManagerDB;
-import fr.skytasul.quests.players.yaml.PlayersManagerYAML;
+import fr.skytasul.quests.players.old.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -226,7 +226,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("migrateDatas")
 	@CommandPermission ("beautyquests.command.manage")
 	public void migrateDatas(BukkitCommandActor actor) {
-		if (!(QuestsPlugin.getPlugin().getPlayersManager() instanceof PlayersManagerYAML))
+		if (BeautyQuests.getInstance().getQuesterManager().getDataManager() instanceof SqlDataManager)
 			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
 
 		QuestUtils.runAsync(() -> {

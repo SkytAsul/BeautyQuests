@@ -17,15 +17,28 @@ public interface QuesterDataManager {
 	 * called AFTER having reset the quest for ONLINE questers.
 	 *
 	 * @param questId id of the quest to reset
-	 * @return a future that completes when everything has been correctly reset
+	 * @return a future that completes with the amount of data reset
 	 */
-	CompletableFuture<Void> resetQuestData(int questId);
+	CompletableFuture<Integer> resetQuestData(int questId);
 
 	void save() throws DataSavingException;
 
 	void unload();
 
-	record QuesterFetchRequest(@NotNull Key providerKey, @NotNull String identifier, boolean createIfMissing) {
+	/**
+	 * A request to get the data associated with a quester.
+	 *
+	 * @param providerKey key uniquely identifying the provider that "contains" the quester
+	 * @param identifier unique identifier of the quester that should be fetched
+	 * @param createIfMissing boolean indicating whether a quester should be created if it did not
+	 *        already exist
+	 * @param shouldCache boolean indicating whether the quester data should be cached or not. If
+	 *        <code>true</code>, {@link QuesterData#unload()} <b>will</b> be called whenever the data is
+	 *        no longer used. If <code>false</code>, data <b>can</b> be cached but
+	 *        {@link QuesterData#unload()} <b>will not</b> be called when the data is no longer used.
+	 */
+	record QuesterFetchRequest(@NotNull Key providerKey, @NotNull String identifier, boolean createIfMissing,
+			boolean shouldCache) {
 	}
 
 	record QuesterFetchResult(@NotNull Type type, @Nullable QuesterData dataHandler) {

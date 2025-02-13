@@ -3,8 +3,8 @@ package fr.skytasul.quests.commands;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import org.bukkit.entity.Player;
@@ -38,10 +38,11 @@ public class CommandsPlayer implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.checkpoint")
 	public void checkpoint(Player player, Quest quest) {
 		Quester account = PlayersManager.getPlayerAccount(player);
-		if (account.hasQuestDatas(quest)) {
-			QuesterQuestData datas = account.getQuestData(quest);
+		if (account.getDataHolder().hasQuestDatas(quest)) {
+			QuesterQuestData datas = account.getDataHolder().getQuestData(quest);
 
 			Optional<CheckpointReward> optionalCheckpoint = datas.getQuestFlowStages()
+					.stream()
 					.map(controller -> controller.getStage().getRewards().stream()
 							.filter(CheckpointReward.class::isInstance).findAny()
 							.map(CheckpointReward.class::cast).orElse(null))

@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.stages.*;
@@ -17,15 +18,13 @@ import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.compatibility.BQBackwardCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class StageControllerImplementation<T extends AbstractStage> implements StageController, Listener {
@@ -76,6 +75,12 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public boolean hasStarted(@NotNull Quester acc) {
 		return branch.hasStageLaunched(acc, this);
+	}
+
+	@Override
+	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player) {
+		return List.of(PlayersManager.getPlayerAccount(player));
+		// TODO add more possibilities!
 	}
 
 	@Override
@@ -216,9 +221,11 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public @NotNull String getFlowId() {
+		String flow = getBranch().getId() + ":";
 		if (branch.isEndingStage(this))
-			return "E" + branch.getEndingStageId(this);
-		return Integer.toString(branch.getRegularStageId(this));
+			flow += "E" + branch.getEndingStageId(this);
+		flow += branch.getRegularStageId(this);
+		return flow;
 	}
 
 	public int getStorageId() {
