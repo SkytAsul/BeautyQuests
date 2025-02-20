@@ -3,6 +3,7 @@ package fr.skytasul.quests.npcs;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.skytasul.quests.DefaultQuestFeatures;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.*;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
@@ -156,7 +157,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 			return;
 
 		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, internalId).get(), p, click);
-		if (event == null)
+		if (event == null || QuestsConfiguration.getConfig().getQuestsConfig().dontCancelNpcClick())
 			QuestUtils.runOrSync(() -> Bukkit.getPluginManager().callEvent(newEvent));
 		else
 			QuestUtils.tunnelEventCancelling(event, newEvent);
