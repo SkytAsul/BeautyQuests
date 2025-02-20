@@ -1,11 +1,12 @@
 package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.questers.QuesterProvider;
-import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
@@ -48,8 +49,9 @@ public class QuesterManagerImplementation implements QuesterManager {
 				dataManager.getClass().getSimpleName());
 	}
 
-	public void lockData() {
-		this.lockData = true;
+	public void load() throws DataLoadingException {
+		lockData = true;
+		dataManager.load();
 	}
 
 	@Override

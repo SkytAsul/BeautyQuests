@@ -2,13 +2,13 @@ package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterData;
-import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult;

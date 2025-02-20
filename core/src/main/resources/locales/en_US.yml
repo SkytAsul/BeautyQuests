@@ -139,8 +139,7 @@ msg:
     cancelQuestUnavailable: §cThe quest {quest} can't be cancelled.
     backupCreated: §6You have successfully created backups of all quests and player
       informations.
-    backupPlayersFailed: §cCreating a backup for all the player informations has failed.
-    backupQuestsFailed: §cCreating a backup for all the quests has failed.
+    backupFailed: Backup creation failed.
     adminModeEntered: §aYou have entered the Admin Mode.
     adminModeLeft: §aYou have left the Admin Mode.
     resetPlayerPool:

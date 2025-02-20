@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.utils;
+package fr.skytasul.quests.api.data;
 
 public class DataSavingException extends Exception {
 

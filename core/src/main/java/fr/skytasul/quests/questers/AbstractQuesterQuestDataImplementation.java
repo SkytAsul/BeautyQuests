@@ -20,7 +20,7 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 
 	protected Map<Integer, Map<String, Object>> stageData = new HashMap<>();
 
-	protected Map<String, Object> additionalDatas = new HashMap<>();
+	protected Map<String, Object> additionalData = new HashMap<>();
 
 	protected final List<StageController> questFlow = new ArrayList<>();
 	private final List<StageController> questFlowView = Collections.unmodifiableList(questFlow);
@@ -115,12 +115,12 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 
 	@Override
 	public <T> T getAdditionalData(String key) {
-		return (T) additionalDatas.get(key);
+		return (T) additionalData.get(key);
 	}
 
 	@Override
 	public <T> T setAdditionalData(String key, T value) {
-		return (T) (value == null ? additionalDatas.remove(key) : additionalDatas.put(key, value));
+		return (T) (value == null ? additionalData.remove(key) : additionalData.put(key, value));
 	}
 
 	@Override
@@ -136,6 +136,25 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	@Override
 	public void resetQuestFlow() {
 		questFlow.clear();
+	}
+
+	protected void migrateState() {
+		// TODO delete, migration 2.0
+		State newState = State.NOT_STARTED;
+		if (this.branch.isPresent())
+			if (this.branch.getAsInt() == -2)
+				newState = State.IN_END;
+			else if (this.branch.getAsInt() >= 0)
+				if (this.stage.isPresent() && this.stage.getAsInt() == -2)
+					newState = State.IN_ENDING_STAGES;
+				else if (this.stage.isPresent() && this.stage.getAsInt() >= 0)
+					newState = State.IN_REGULAR_STAGE;
+	
+		if (newState != State.IN_REGULAR_STAGE) {
+			setStage(OptionalInt.empty()); // must be AFTER loading of current stage and branch!
+			setBranch(OptionalInt.empty());
+		}
+		setState(newState);
 	}
 
 }

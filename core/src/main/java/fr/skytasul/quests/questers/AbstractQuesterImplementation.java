@@ -1,9 +1,9 @@
 package fr.skytasul.quests.questers;
 
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.QuesterProvider;
-import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;

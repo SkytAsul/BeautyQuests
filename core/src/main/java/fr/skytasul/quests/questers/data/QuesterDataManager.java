@@ -1,7 +1,8 @@
 package fr.skytasul.quests.questers.data;
 
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterData;
-import fr.skytasul.quests.api.utils.DataSavingException;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,22 @@ public interface QuesterDataManager {
 	 * @return a future that completes with the amount of data reset
 	 */
 	CompletableFuture<Integer> resetQuestData(int questId);
+
+	/**
+	 * Resets the data associated with this pool for all questers, online AND offline. This method is
+	 * called AFTER having reset the quest for ONLINE questers.
+	 *
+	 * @param poolId id of the pool to reset
+	 * @return a future that completes with the amount of data reset
+	 */
+	CompletableFuture<Integer> resetPoolData(int poolId);
+
+	/**
+	 * Called when everything is setup and data are ready to be loaded.
+	 *
+	 * @throws DataLoadingException when something goes wrong
+	 */
+	void load() throws DataLoadingException;
 
 	void save() throws DataSavingException;
 

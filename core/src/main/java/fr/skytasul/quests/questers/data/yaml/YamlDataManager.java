@@ -2,7 +2,8 @@ package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.utils.DataSavingException;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,35 +32,40 @@ public class YamlDataManager implements QuesterDataManager {
 
 	protected final Path dataPath = QuestsPlugin.getPlugin().getDataFolder().toPath().resolve("players");
 
-	public void load() throws IOException {
-		Files.createDirectories(dataPath);
+	@Override
+	public void load() throws DataLoadingException {
+		try {
+			Files.createDirectories(dataPath);
 
-		FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-		if (config.isConfigurationSection("players")) {
-			// TODO remove : migration 2.0
-			for (String key : config.getConfigurationSection("players").getKeys(false)) {
-				int index = Integer.parseInt(key);
-				String identifier = config.getString("players." + key);
-				config.set("identifiers." + identifier, index);
+			FileConfiguration config = BeautyQuests.getInstance().getDataFile();
+			if (config.isConfigurationSection("players")) {
+				// TODO remove : migration 2.0
+				for (String key : config.getConfigurationSection("players").getKeys(false)) {
+					int index = Integer.parseInt(key);
+					String identifier = config.getString("players." + key);
+					config.set("identifiers." + identifier, index);
+				}
+				config.set("players", null);
 			}
-			config.set("players", null);
+
+			if (config.isConfigurationSection("identifiers"))
+				for (String key : config.getConfigurationSection("identifiers").getKeys(false))
+					fullIdentifiersIndex.put(key, config.getInt("identifiers." + key));
+
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", fullIdentifiersIndex.size());
+
+			if (fullIdentifiersIndex.size() >= ACCOUNTS_THRESHOLD)
+				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+						"""
+								⚠ WARNING - {} players are registered on this server.
+								It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
+								In order to do that, setup your database credentials in config.yml (without enabling it) and run the command
+								/quests migrateDatas. Then follow steps on screen.
+								""",
+						fullIdentifiersIndex.size());
+		} catch (IOException ex) {
+			throw new DataLoadingException(ex);
 		}
-
-		if (config.isConfigurationSection("identifiers"))
-			for (String key : config.getConfigurationSection("identifiers").getKeys(false))
-				fullIdentifiersIndex.put(key, config.getInt("identifiers." + key));
-
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", fullIdentifiersIndex.size());
-
-		if (fullIdentifiersIndex.size() >= ACCOUNTS_THRESHOLD)
-			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
-					"""
-							⚠ WARNING - {} players are registered on this server.
-							It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
-							In order to do that, setup your database credentials in config.yml (without enabling it) and run the command
-							/quests migrateDatas. Then follow steps on screen.
-							""",
-					fullIdentifiersIndex.size());
 	}
 
 	private int getNextIndex() {
@@ -68,7 +74,7 @@ public class YamlDataManager implements QuesterDataManager {
 
 	@Override
 	public @NotNull CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request) {
-		var future = CompletableFuture.supplyAsync(() -> {
+		return CompletableFuture.supplyAsync(() -> {
 			String fullIdentifier = request.providerKey().asString() + "|" + request.identifier();
 
 			int id;
@@ -96,8 +102,6 @@ public class YamlDataManager implements QuesterDataManager {
 
 			return new QuesterFetchResult(successType, dataHandler);
 		});
-
-		return future;
 	}
 
 	@Override
@@ -124,6 +128,12 @@ public class YamlDataManager implements QuesterDataManager {
 			}
 			return amount;
 		});
+	}
+
+	@Override
+	public CompletableFuture<Integer> resetPoolData(int poolId) {
+		// TODO
+		return null;
 	}
 
 	@Override

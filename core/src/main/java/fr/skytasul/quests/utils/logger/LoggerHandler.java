@@ -48,7 +48,11 @@ public class LoggerHandler extends Handler implements ILoggerHandler {
 
 		Path path = plugin.getDataFolder().toPath().resolve("latest.log");
 		if (Files.exists(path))
-			Files.move(path, plugin.getDataFolder().toPath().resolve("latest.log_old"), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(path, plugin.getDataFolder().toPath().resolve("latest_old.log"), StandardCopyOption.REPLACE_EXISTING);
+
+		// TODO remove: migration 2.0
+		Files.deleteIfExists(plugin.getDataFolder().toPath().resolve("latest.log_old"));
+
 		stream = new PrintWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW));
 		write("---- BEAUTYQUESTS LOGGER - OPENED " + launchDate.toString() + " ----");
 	}

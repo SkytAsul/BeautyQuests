@@ -1,12 +1,12 @@
 package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.utils.DataSavingException;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
@@ -112,7 +112,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		dataManager.uncache(this);
 	}
 
-	class QuestData extends AbstractQuesterQuestDataImplementation {
+	public class QuestData extends AbstractQuesterQuestDataImplementation {
 
 		private final ConfigurationSection questConfig;
 
@@ -159,24 +159,8 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 			if (questConfig.contains("state"))
 				super.state = State.valueOf(questConfig.getString("state"));
-			else {
-				// TODO delete, migration 2.0
-				State newState = State.NOT_STARTED;
-				if (super.branch.isPresent())
-					if (super.branch.getAsInt() == -2)
-						newState = State.IN_END;
-					else if (super.branch.getAsInt() >= 0)
-						if (super.stage.isPresent() && super.stage.getAsInt() == -2)
-							newState = State.IN_ENDING_STAGES;
-						else if (super.stage.isPresent() && super.stage.getAsInt() >= 0)
-							newState = State.IN_REGULAR_STAGE;
-
-				if (newState != State.IN_REGULAR_STAGE) {
-					setStage(OptionalInt.empty()); // must be AFTER loading of current stage and branch!
-					setBranch(OptionalInt.empty());
-				}
-				setState(newState);
-			}
+			else
+				super.migrateState();
 
 			if (questConfig.contains("questFlow") && getQuest() != null) {
 				for (String flowPart : questConfig.getString("questFlow").split(";")) {
@@ -185,7 +169,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 			}
 
 			if (questConfig.contains("additionalData"))
-				super.additionalDatas = questConfig.getConfigurationSection("additionalData").getValues(false);
+				super.additionalData = questConfig.getConfigurationSection("additionalData").getValues(false);
 
 			if (questConfig.contains("stageData"))
 				for (String dataKey : questConfig.getConfigurationSection("stageData").getKeys(false))

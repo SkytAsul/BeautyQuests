@@ -20,9 +20,9 @@ import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
 import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.players.accounts.PlayerManagerAccountsHookImplementation;
-import fr.skytasul.quests.players.old.PlayersManagerYAML;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
+import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.questers.data.yaml.YamlDataManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.QuestImplementation;
@@ -51,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,7 +65,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
@@ -85,7 +85,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private File dataFile;
 	private File saveFolder;
 
-	private Path backupDir = null;
+	private boolean doneBackup = false;
 
 	/* --------- Datas --------- */
 
@@ -438,7 +438,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 
-			QuesterDataManager questerDataManager = db == null ? new YamlDataManager() : new DbDataManager();
+			QuesterDataManager questerDataManager = db == null ? new YamlDataManager() : new SqlDataManager(db);
 			questerManager = new QuesterManagerImplementation(questerDataManager);
 			if (config.hookAccounts()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
@@ -531,9 +531,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 				// TODO manage incompatible upgrade (e.g. pre-1.0)
 
-				backupDir = backupDir();
-				createFolderBackup(backupDir);
-				createDataBackup(backupDir);
+				try {
+					performBackup();
+					doneBackup = true;
+				} catch (IOException ex) {
+					logger.warning("Failed to create a backup", ex);
+				}
 			}
 		}else lastVersion = getDescription().getVersion();
 	}
@@ -551,14 +554,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		try{
-			if (db == null && backupDir != null)
-				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
-
-			questerManager.lockData();
+			questerManager.load();
 			players.loadOnlinePlayers();
 		}catch (Exception ex) {
-			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
+
+			if (!doneBackup) {
+				try {
+					performBackup();
+					doneBackup = true;
+				} catch (IOException exBackup) {
+					logger.warning("Failed to create a backup.", exBackup);
+				}
+			}
 		}
 
 		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
@@ -645,74 +653,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	/* ---------- Backups ---------- */
 
-	public boolean createFolderBackup(Path backup) {
-		if (!config.backups)
-			return false;
-		logger.info("Creating quests backup...");
-		Path backupDir = backup.resolve("quests");
-		Path saveFolderPath = saveFolder.toPath();
-		try (Stream<Path> stream = Files.walk(saveFolderPath)) {
-			Files.createDirectories(backupDir);
-			stream.forEach(path -> {
-				if (path.equals(saveFolderPath)) return;
-				try {
-					Files.copy(path, backupDir.resolve(saveFolderPath.relativize(path)));
-				}catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
-			logger.info("Quests backup created in " + backupDir.getFileName().toString());
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
-	public boolean createDataBackup(Path backup) {
-		if (!config.backups)
-			return false;
-		logger.info("Creating data backup...");
-		try{
-			Path target = backup.resolve("data.yml");
-			if (Files.exists(target)) {
-				logger.warning("File " + target.toString() + " already exist. This should not happen.");
-			}else {
-				Files.createDirectories(backup);
-				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
-			}
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
-	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
-		if (!config.backups)
-			return false;
-
-		logger.info("Creating player datas backup...");
-		Path backupDir = backup.resolve("players");
-		Path playersFolderPath = yamlManager.getDirectory().toPath();
-		try (Stream<Path> stream = Files.walk(playersFolderPath)) {
-			Files.createDirectories(backupDir);
-			stream.forEach(path -> {
-				if (path.equals(playersFolderPath)) return;
-				try {
-					Files.copy(path, backupDir.resolve(playersFolderPath.relativize(path)));
-				}catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
-			logger.info("Player datas backup created in " + backupDir.getFileName().toString());
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
 	public boolean createQuestBackup(Path file, String msg) {
 		if (!config.backups)
 			return false;
@@ -733,8 +673,29 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
 
-	public Path backupDir() {
-		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
+	public void performBackup() throws IOException {
+		Path dataDir = getDataFolder().toPath();
+		Path backupDir = dataDir.resolve("backup-" + format.format(new Date()));
+		Files.createDirectory(backupDir);
+
+		var files = Files.list(dataDir)
+				.filter(path -> !path.getFileName().toString().startsWith("backup-"))
+				.filter(path -> !path.getFileName().toString().equals("locales"))
+				.filter(path -> !path.getFileName().toString().endsWith(".log"))
+				.toList();
+
+		for (Path file : files) {
+			Files.walk(file).forEach(source -> {
+				Path destination = backupDir.resolve(dataDir.relativize(source));
+				try {
+					Files.copy(source, destination);
+				} catch (IOException ex) {
+					throw new UncheckedIOException(ex);
+				}
+			});
+		}
+
+		logger.info("Performed backup at {}.", backupDir);
 	}
 
 	public void performReload(CommandSender sender){

@@ -116,7 +116,7 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 	}
 
 	@Override
-	public <T> CompletableFuture<T> setData(@NotNull SavableData<T> data, @Nullable T value) {
+	public final <T> CompletableFuture<T> setData(@NotNull SavableData<T> data, @Nullable T value) {
 		if (!QuestsAPI.getAPI().getQuesterManager().getSavableData().contains(data))
 			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		T old = (T) additionalData.put(data, value);
