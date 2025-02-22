@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @LocatableType (types = LocatedType.OTHER)
 public class StageArea extends AbstractStage implements Locatable.PreciseLocatable, Listener {
@@ -63,13 +64,16 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	public void onPlayerMove(PlayerMoveEvent e) {
 		if (BQWorldGuard.getInstance().doHandleEntry())
 			return; // on WG 7.0 or higher
+
 		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
 				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
 			return;
+
 		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
 			if (world.equals(e.getTo().getWorld())
 					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
-				finishStage(e.getPlayer());
+				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
+					testFinition(quester, e.getPlayer());
 			}
 		}
 	}
@@ -79,12 +83,14 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		if (exit)
 			return;
 		if (region == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("No region for " + toString(), this, 60);
 			return;
 		}
+
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsEntered().contains(region)) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
-				finishStage(e.getPlayer());
+				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
+					testFinition(quester, e.getPlayer());
 		}
 	}
 
@@ -93,22 +99,32 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		if (!exit)
 			return;
 		if (region == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("No region for " + toString(), this, 60);
 			return;
 		}
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsExited().contains(region)) {
 			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
-				finishStage(e.getPlayer());
+				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
+					testFinition(quester, e.getPlayer());
 		}
 	}
 
 	@Override
-	public void started(@NotNull Quester acc) {
-		super.started(acc);
-		if (acc.isCurrent()) {
-			if (BQWorldGuard.getInstance().isInRegion(region, acc.getPlayer().getLocation(), false))
-				finishStage(acc.getPlayer());
+	public void started(@NotNull Quester quester) {
+		super.started(quester);
+		testFinition(quester, null);
+	}
+
+	private void testFinition(@NotNull Quester quester, @Nullable Player realPlayer) {
+		for (var questerPlayer : quester.getOnlinePlayers()) {
+			if (realPlayer != null && questerPlayer.equals(realPlayer))
+				continue;
+
+			if (BQWorldGuard.getInstance().isInRegion(region, questerPlayer.getLocation(), false) == exit)
+				return;
 		}
+		// if we arrive here, it means no player is outside the region: the stage is complete!
+		finishStage(quester);
 	}
 
 	@Override

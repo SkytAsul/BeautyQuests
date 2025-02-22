@@ -284,6 +284,8 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		}
 
 		protected void setDataInStatement(StatementSetter setter, String column) {
+			// TODO rework: data can be set out of order, and thus consistency is dead
+			// (e.g. data is modified back to back and the old data is set last)
 			dataManager.getDataExecutor().execute(() -> {
 				try (var connection = dataManager.getDbConnection();
 						var statement =

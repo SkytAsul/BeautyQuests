@@ -8,12 +8,13 @@ import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionReward extends AbstractReward {
-	
+
 	public List<Permission> permissions;
 
 	public PermissionReward(){
@@ -27,10 +28,11 @@ public class PermissionReward extends AbstractReward {
 
 	@Override
 	public void give(RewardGiveContext context) {
-		for (Permission perm : permissions) {
-			perm.give(context);
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			for (Permission perm : permissions) {
+				perm.give(player);
+			}
 		}
-		return null;
 	}
 
 	@Override
@@ -43,13 +45,13 @@ public class PermissionReward extends AbstractReward {
 		super.createdPlaceholdersRegistry(placeholders);
 		placeholders.registerIndexed("permissions_amount", permissions.size());
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescriptionAsValue(Lang.AmountPermissions.format(this));
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		new PermissionListGUI(permissions, permissions -> {
@@ -57,7 +59,7 @@ public class PermissionReward extends AbstractReward {
 			event.reopenGUI();
 		}).open(event.getPlayer());
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
@@ -69,5 +71,5 @@ public class PermissionReward extends AbstractReward {
 		super.load(section);
 		permissions.addAll(Utils.deserializeList(section.getMapList("perms"), Permission::deserialize));
 	}
-	
+
 }

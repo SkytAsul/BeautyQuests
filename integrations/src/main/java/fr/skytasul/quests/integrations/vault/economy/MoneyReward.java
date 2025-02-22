@@ -12,14 +12,13 @@ import fr.skytasul.quests.integrations.vault.Vault;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import java.util.Arrays;
 
 public class MoneyReward extends AbstractReward {
 
 	public double money = 0;
-	
+
 	public MoneyReward() {}
-	
+
 	public MoneyReward(String customDescription, double money) {
 		super(customDescription);
 		this.money = money;
@@ -27,17 +26,20 @@ public class MoneyReward extends AbstractReward {
 
 	@Override
 	public void give(RewardGiveContext context) {
-		if (money > 0){
-			Vault.depositPlayer(context, money);
-		}else Vault.withdrawPlayer(context, Math.abs(money));
-		return Arrays.asList(Vault.format(money));
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			if (money > 0) {
+				Vault.depositPlayer(player, money);
+			} else
+				Vault.withdrawPlayer(player, Math.abs(money));
+			context.addEarning(player, this);
+		}
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new MoneyReward(getCustomDescription(), money);
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -49,7 +51,7 @@ public class MoneyReward extends AbstractReward {
 	public String getDefaultDescription(Player p) {
 		return Vault.format(money);
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -64,17 +66,17 @@ public class MoneyReward extends AbstractReward {
 			event.reopenGUI();
 		}, new NumberParser<>(Double.class, false, true)).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("money", money);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		money = section.getDouble("money");
 	}
-	
+
 }

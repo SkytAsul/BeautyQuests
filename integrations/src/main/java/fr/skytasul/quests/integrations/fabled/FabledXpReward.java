@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import studio.magemonkey.fabled.Fabled;
 import studio.magemonkey.fabled.api.enums.ExpSource;
-import java.util.Arrays;
 
 public class FabledXpReward extends AbstractReward {
 
@@ -28,8 +27,10 @@ public class FabledXpReward extends AbstractReward {
 
 	@Override
 	public void give(RewardGiveContext context) {
-		Fabled.getData(context).giveExp(exp, ExpSource.QUEST);
-		return Arrays.asList(getXpAmountString());
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			Fabled.getData(player).giveExp(exp, ExpSource.QUEST);
+			context.addEarning(player, this);
+		}
 	}
 
 	@Override

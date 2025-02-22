@@ -140,15 +140,17 @@ public abstract class AbstractStage implements HasPlaceholders {
 
 	/**
 	 * Called when the stage starts (player can be offline)
-	 * @param acc PlayerAccount for which the stage starts
+	 *
+	 * @param quester quester for which the stage starts
 	 */
-	public void started(@NotNull Quester acc) {}
+	public void started(@NotNull Quester quester) {}
 
 	/**
 	 * Called when the stage ends (player can be offline)
-	 * @param acc PlayerAccount for which the stage ends
+	 *
+	 * @param quester quester for which the stage ends
 	 */
-	public void ended(@NotNull Quester acc) {}
+	public void ended(@NotNull Quester quester) {}
 
 	/**
 	 * Called when a player with this stage launched joins
