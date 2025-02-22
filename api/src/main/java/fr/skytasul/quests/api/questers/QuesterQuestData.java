@@ -78,6 +78,7 @@ public interface QuesterQuestData {
 	@UnmodifiableView
 	List<StageController> getQuestFlowStages();
 
+	@NotNull
 	CompletableFuture<Void> remove();
 
 	enum State {

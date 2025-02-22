@@ -8,15 +8,14 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
-import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -174,48 +173,54 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	@Override
 	public CompletableFuture<Boolean> resetPlayer(Quester acc) {
-		return acc.removePoolDatas(this).thenApply(__ -> true);
+		return acc.getDataHolder().removePoolData(this).thenApply(__ -> true);
 	}
 
 	@Override
 	public void resetPlayerTimer(Quester acc) {
-		if (!acc.hasPoolDatas(this)) return;
-		acc.getPoolDatas(this).setLastGive(0);
+		acc.getDataHolder().getPoolDataIfPresent(this).ifPresent(data -> data.setLastGive(0));
 	}
 
 	public void questCompleted(Quester acc, Quest quest) {
-		if (!avoidDuplicates) return;
-		QuesterPoolDataImplementation poolDatas = (QuesterPoolDataImplementation) acc.getPoolDatas(this);
-		poolDatas.getCompletedQuests().add(quest.getId());
-		poolDatas.updatedCompletedQuests();
+		if (!avoidDuplicates)
+			return;
+		var poolDatas = acc.getDataHolder().getPoolData(this);
+
+		var completedQuests = poolDatas.getCompletedQuests();
+		completedQuests.add(quest.getId());
+		poolDatas.setCompletedQuests(completedQuests);
 	}
 
 	@Override
 	public boolean canGive(Player p) {
-		Quester acc = PlayersManager.getPlayerAccount(p);
-		QuesterPoolData datas = acc.getPoolDatas(this);
+		Quester quester = PlayersManager.getPlayerAccount(p);
+		QuesterPoolData data = quester.getDataHolder().getPoolData(this);
 
-		if (datas.getLastGive() + timeDiff > System.currentTimeMillis()) return false;
+		if (data.getLastGive() + timeDiff > System.currentTimeMillis())
+			return false;
 
 		if (!requirements.allMatch(p, false))
 			return false;
 
 		List<Quest> notDoneQuests = avoidDuplicates ? quests.stream()
-				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
+				.filter(quest -> !data.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
 		if (notDoneQuests.isEmpty()) { // all quests completed
 			if (!redoAllowed) return false;
 			return quests.stream().anyMatch(quest -> quest.isRepeatable() && quest.canStart(p, false));
-		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return false;
+		} else if (quester.getDataHolder().getAllQuestsData().stream()
+				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
+				.count() >= maxQuests)
+			return false;
 
 		return notDoneQuests.stream().anyMatch(quest -> quest.canStart(p, false));
 	}
 
 	@Override
 	public CompletableFuture<String> give(Player p) {
-		Quester acc = PlayersManager.getPlayerAccount(p);
-		QuesterPoolData datas = acc.getPoolDatas(this);
+		Quester quester = PlayersManager.getPlayerAccount(p);
+		QuesterPoolData data = quester.getDataHolder().getPoolData(this);
 
-		long time = (datas.getLastGive() + timeDiff) - System.currentTimeMillis();
+		long time = (data.getLastGive() + timeDiff) - System.currentTimeMillis();
 		if (time > 0)
 			return CompletableFuture
 					.completedFuture(Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
@@ -224,10 +229,10 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 			List<Quest> started = new ArrayList<>(questsPerLaunch);
 			try {
 				for (int i = 0; i < questsPerLaunch; i++) {
-					PoolGiveResult result = giveOne(p, acc, datas, !started.isEmpty()).get();
+					PoolGiveResult result = giveOne(p, quester, data, !started.isEmpty()).get();
 					if (result.quest != null) {
 						started.add(result.quest);
-						datas.setLastGive(System.currentTimeMillis());
+						data.setLastGive(System.currentTimeMillis());
 					} else if (!result.forceContinue) {
 						if (started.isEmpty())
 							return result.reason;
@@ -258,7 +263,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 			notCompleted = replenishQuests(datas);
 			if (notCompleted.isEmpty())
 				return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_ALL_COMPLETED.toString()));
-		} else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
+		} else if (acc.getDataHolder().getAllQuestsData().stream()
+				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
 				.count() >= maxQuests) {
 			// player has too much quests in this pool to be able to start one more
 			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(this)));
@@ -306,7 +312,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 					.map(Quest::getId)
 					.collect(Collectors.toSet()));
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of " + datas.getQuester().getNameAndID() + " for pool " + id);
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of {} for pool {}",
+				datas.getQuester().getDetailedName(), id);
 		return notDoneQuests;
 	}
 

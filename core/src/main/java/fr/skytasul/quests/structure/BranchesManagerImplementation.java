@@ -111,7 +111,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	public void remove(@NotNull Quester acc) {
-		if (!acc.getDataHolder().hasQuestDatas(quest))
+		if (!acc.getDataHolder().hasQuestData(quest))
 			return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);

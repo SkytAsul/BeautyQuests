@@ -5,10 +5,12 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class QuesterPoolDataImplementation implements QuesterPoolData {
 
@@ -62,10 +64,12 @@ public class QuesterPoolDataImplementation implements QuesterPoolData {
 	@Override
 	public void setCompletedQuests(Set<Integer> completedQuests) {
 		this.completedQuests = completedQuests;
-		updatedCompletedQuests();
 	}
 
-	public void updatedCompletedQuests() {}
+	@Override
+	public @NotNull CompletableFuture<Void> remove() {
+		return null;
+	}
 
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();

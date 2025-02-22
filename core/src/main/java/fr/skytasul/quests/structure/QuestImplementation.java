@@ -210,7 +210,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean hasStarted(@NotNull Quester quester) {
-		if (!quester.getDataHolder().hasQuestDatas(this))
+		if (!quester.getDataHolder().hasQuestData(this))
 			return false;
 		if (quester.getDataHolder().getQuestData(this).hasStarted())
 			return true;
@@ -250,7 +250,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
-		if (quester.getDataHolder().hasQuestDatas(this)) {
+		if (quester.getDataHolder().hasQuestData(this)) {
 			hadDatas = true;
 
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Resetting quest {} for player {}", id,
@@ -317,7 +317,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	public boolean testTimer(@NotNull Quester acc, boolean sendMessage) {
-		if (isRepeatable() && acc.getDataHolder().hasQuestDatas(this)) {
+		if (isRepeatable() && acc.getDataHolder().hasQuestData(this)) {
 			var data = acc.getDataHolder().getQuestData(this);
 			if (data.getTimer().orElse(0) > System.currentTimeMillis()) {
 				if (sendMessage)
@@ -349,7 +349,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source) {
-		if (!quester.getDataHolder().hasQuestDatas(this))
+		if (!quester.getDataHolder().hasQuestData(this))
 			throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
 		if (getOptionValueOrDef(OptionStartRewards.class).isInAsyncReward(quester))
 			return "§7x";

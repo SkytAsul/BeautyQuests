@@ -23,7 +23,7 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 	protected final Map<SavableData<?>, Object> additionalData = new HashMap<>();
 
 	@Override
-	public boolean hasQuestDatas(@NotNull Quest quest) {
+	public boolean hasQuestData(@NotNull Quest quest) {
 		return questData.containsKey(quest.getId());
 	}
 
@@ -58,53 +58,49 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 		return removed.remove().thenApply(__ -> removed);
 	}
 
-
 	@Override
-	public @UnmodifiableView @NotNull Collection<QuesterQuestData> getQuestsDatas() {
+	public @UnmodifiableView @NotNull Collection<QuesterQuestData> getAllQuestsData() {
 		return questData.values();
 	}
 
 	@Override
-	public boolean hasPoolDatas(@NotNull QuestPool pool) {
+	public boolean hasPoolData(@NotNull QuestPool pool) {
 		return poolData.containsKey(pool.getId());
 	}
 
 	@Override
-	public @NotNull QuesterPoolDataImplementation getPoolDatas(@NotNull QuestPool pool) {
+	public @NotNull QuesterPoolDataImplementation getPoolData(@NotNull QuestPool pool) {
 		QuesterPoolDataImplementation datas = poolData.get(pool.getId());
 		if (datas == null) {
-			datas = createPoolDatas(pool);
+			datas = createPoolData(pool);
 			poolData.put(pool.getId(), datas);
 		}
 		return datas;
 	}
 
-	protected abstract QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool);
+	@Override
+	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPool pool) {
+		return Optional.ofNullable(poolData.get(pool.getId()));
+	}
+
+	protected abstract QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool);
 
 	@Override
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(@NotNull QuestPool pool) {
-		return removePoolDatas(pool.getId());
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPool pool) {
+		return removePoolData(pool.getId());
 	}
 
 	@Override
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(int id) {
-		QuesterPoolDataImplementation removed = poolData.remove(id);
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(int id) {
+		QuesterPoolData removed = poolData.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
-		return poolDatasRemoved(removed).thenApply(__ -> removed);
-	}
-
-	protected CompletableFuture<Void> poolDatasRemoved(QuesterPoolDataImplementation datas) {
-		return CompletableFuture.completedFuture(null);
-	}
-
-	protected @Nullable QuesterPoolDataImplementation removePoolDatasSilently(int id) {
-		return poolData.remove(id);
+		return removed.remove().thenApply(__ -> removed);
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterPoolData> getPoolDatas() {
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterPoolData> getAllPoolsData() {
 		return poolData.values();
 	}
 

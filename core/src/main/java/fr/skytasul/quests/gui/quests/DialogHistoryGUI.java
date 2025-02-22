@@ -40,7 +40,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
 		this.end = end;
 
-		Validate.isTrue(quester.getDataHolder().hasQuestDatas(quest), "Quester must have started the quest");
+		Validate.isTrue(quester.getDataHolder().hasQuestData(quest), "Quester must have started the quest");
 
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));

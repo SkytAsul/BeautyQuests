@@ -1,10 +1,11 @@
 package fr.skytasul.quests.api.questers;
 
-import java.util.Set;
+import fr.skytasul.quests.api.pools.QuestPool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import fr.skytasul.quests.api.pools.QuestPool;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public interface QuesterPoolData {
 
@@ -25,5 +26,8 @@ public interface QuesterPoolData {
 	Set<@NotNull Integer> getCompletedQuests();
 
 	void setCompletedQuests(@NotNull Set<Integer> completedQuests);
+
+	@NotNull
+	CompletableFuture<Void> remove();
 
 }

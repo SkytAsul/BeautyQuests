@@ -146,7 +146,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	@Override
 	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(@NotNull Quester acc, boolean hide,
 			boolean withoutScoreboard) {
-		return acc.getDataHolder().getQuestsDatas()
+		return acc.getDataHolder().getAllQuestsData()
 				.stream()
 				.filter(QuesterQuestData::hasStarted)
 				.map(QuesterQuestData::getQuest)

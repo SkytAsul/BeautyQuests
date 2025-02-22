@@ -86,7 +86,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
+	protected QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool) {
 		// TODO
 		return null;
 	}

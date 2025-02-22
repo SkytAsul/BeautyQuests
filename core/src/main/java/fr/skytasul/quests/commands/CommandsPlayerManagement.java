@@ -192,7 +192,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			var futures = new ArrayList<CompletableFuture<?>>();
 
 			int quests = 0, pools = 0;
-			for (var questDatas : new ArrayList<>(acc.getDataHolder().getQuestsDatas())) {
+			for (var questDatas : new ArrayList<>(acc.getDataHolder().getAllQuestsData())) {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
 						quest == null ? acc.getDataHolder().removeQuestData(questDatas.getQuestID())
@@ -202,11 +202,11 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				futures.add(future);
 				quests++;
 			}
-			for (var poolDatas : new ArrayList<>(acc.getDataHolder().getPoolDatas())) {
+			for (var poolDatas : new ArrayList<>(acc.getDataHolder().getAllPoolsData())) {
 				@Nullable
 				QuestPool pool = poolDatas.getPool();
 				CompletableFuture<?> future =
-						pool == null ? acc.getDataHolder().removePoolDatas(poolDatas.getPoolID()) : pool.resetPlayer(acc);
+						pool == null ? acc.getDataHolder().removePoolData(poolDatas.getPoolID()) : pool.resetPlayer(acc);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 						"An error occurred while resetting pool " + poolDatas.getPoolID() + " to player " + player.getName(),
 						actor.audience().get()));

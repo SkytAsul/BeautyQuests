@@ -38,7 +38,7 @@ public class CommandsPlayer implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.checkpoint")
 	public void checkpoint(Player player, Quest quest) {
 		Quester account = PlayersManager.getPlayerAccount(player);
-		if (account.getDataHolder().hasQuestDatas(quest)) {
+		if (account.getDataHolder().hasQuestData(quest)) {
 			QuesterQuestData datas = account.getDataHolder().getQuestData(quest);
 
 			Optional<CheckpointReward> optionalCheckpoint = datas.getQuestFlowStages()

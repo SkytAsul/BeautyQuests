@@ -90,7 +90,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected QuesterPoolDataImplementation createPoolDatas(@NotNull QuestPool pool) {
+	protected QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool) {
 		return null;
 	}
 

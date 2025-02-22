@@ -23,12 +23,12 @@ public interface QuesterData {
 	 * @param quest quest to check if the quester has data for
 	 * @return <code>true</code> if the quester has data for a quest
 	 */
-	public boolean hasQuestDatas(@NotNull Quest quest);
+	public boolean hasQuestData(@NotNull Quest quest);
 
 	/**
 	 * @param quest quest to get the quester data from
 	 * @return an optional containing the data for the quest if there is according to
-	 *         {@link #hasQuestDatas(Quest)}, an empty optional otherwise
+	 *         {@link #hasQuestData(Quest)}, an empty optional otherwise
 	 */
 	public @NotNull Optional<QuesterQuestData> getQuestDataIfPresent(@NotNull Quest quest);
 
@@ -57,17 +57,19 @@ public interface QuesterData {
 	/**
 	 * @return all data about quests that this quester has
 	 */
-	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterQuestData> getQuestsDatas();
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterQuestData> getAllQuestsData();
 
-	public boolean hasPoolDatas(@NotNull QuestPool pool);
+	public boolean hasPoolData(@NotNull QuestPool pool);
 
-	public @NotNull QuesterPoolData getPoolDatas(@NotNull QuestPool pool);
+	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPool pool);
 
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(@NotNull QuestPool pool);
+	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPool pool);
 
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolDatas(int id);
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPool pool);
 
-	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterPoolData> getPoolDatas();
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(int id);
+
+	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterPoolData> getAllPoolsData();
 
 	/**
 	 * @param <T> type of the savable data
