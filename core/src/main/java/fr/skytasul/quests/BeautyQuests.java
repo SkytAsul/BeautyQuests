@@ -41,7 +41,6 @@ import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -425,11 +424,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 
-			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
-			if (dbConfig.getBoolean("enabled")) {
+			if (config.getDatabaseConfig().isEnabled()) {
 				db = null;
 				try {
-					db = new Database(dbConfig);
+					db = new Database(config.getDatabaseConfig());
 					db.testConnection();
 					logger.info("Connection to database etablished.");
 				}catch (Exception ex) {

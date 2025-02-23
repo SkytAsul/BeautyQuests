@@ -227,7 +227,7 @@ public class CommandsAdmin implements OrphanCommand {
 			Database db = null;
 			try {
 				// no try-with-resource because the database is used in another thread
-				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+				db = new Database(BeautyQuests.getInstance().getConfiguration().getDatabaseConfig());
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
 				final Database fdb = db;

@@ -60,9 +60,9 @@ public class SqlHandler {
 	public SqlHandler(@NotNull Database db) {
 		this.db = db;
 
-		ACCOUNTS_TABLE = db.getConfig().getString("tables.playerAccounts");
-		QUESTS_DATAS_TABLE = db.getConfig().getString("tables.playerQuests");
-		POOLS_DATAS_TABLE = db.getConfig().getString("tables.playerPools");
+		ACCOUNTS_TABLE = db.getConfig().getTables().getString("questers");
+		QUESTS_DATAS_TABLE = db.getConfig().getTables().getString("questers quests");
+		POOLS_DATAS_TABLE = db.getConfig().getTables().getString("questers pools");
 	}
 
 	public Database getDatabase() {
@@ -163,7 +163,7 @@ public class SqlHandler {
 	private void upgradeTable(Connection connection, String tableName,
 			ThrowingConsumer<List<String>, SQLException> columnsConsumer) throws SQLException {
 		List<String> columns = new ArrayList<>(14);
-		try (ResultSet set = connection.getMetaData().getColumns(db.getDatabase(), null, tableName, null)) {
+		try (ResultSet set = connection.getMetaData().getColumns(db.getConfig().getDatabaseName(), null, tableName, null)) {
 			while (set.next()) {
 				columns.add(set.getString("COLUMN_NAME").toLowerCase());
 			}

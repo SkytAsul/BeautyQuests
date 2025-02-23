@@ -55,6 +55,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	private final FileConfiguration config;
 	private QuestsConfig quests;
+	private DatabaseConfig database;
 	private GuiConfig gui;
 	private DialogsConfig dialogs;
 	private QuestsSelectionConfig selection;
@@ -66,6 +67,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		this.config = config;
 
 		quests = new QuestsConfig();
+		database = new DatabaseConfig(config.getConfigurationSection("database"));
 		gui = new GuiConfig(config.getConfigurationSection("gui"));
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		selection = new QuestsSelectionConfig(config.getConfigurationSection("questsSelection"));
@@ -216,6 +218,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	@Override
 	public @NotNull Quests getQuestsConfig() {
 		return quests;
+	}
+
+	public @NotNull DatabaseConfig getDatabaseConfig() {
+		return database;
 	}
 
 	@Override
@@ -454,6 +460,79 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			return stageEndRewardsMessage;
 		}
 
+	}
+
+	public class DatabaseConfig {
+		private ConfigurationSection config;
+		private boolean enabled;
+		private String host;
+		private int port;
+		private String database;
+		private String username;
+		private String password;
+		private boolean ssl;
+		private String connectionString;
+		private ConfigurationSection tables;
+
+		private DatabaseConfig(@NotNull ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private boolean update() {
+			boolean result = false;
+			result |= migrateEntry(config, "playerAccounts", config, "questers");
+			result |= migrateEntry(config, "playerQuests", config, "questers quests");
+			result |= migrateEntry(config, "playerPools", config, "questers pools");
+			return result;
+		}
+
+		private void init() {
+			enabled = config.getBoolean("enabled");
+			host = config.getString("host");
+			port = config.getInt("port");
+			database = config.getString("database");
+			username = config.getString("username");
+			password = config.getString("password");
+			ssl = config.getBoolean("ssl");
+			connectionString = config.getString("connectionString");
+			tables = config.getConfigurationSection("tables");
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public String getHost() {
+			return host;
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public String getDatabaseName() {
+			return database;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public boolean isSslEnabled() {
+			return ssl;
+		}
+
+		public String getConnectionString() {
+			return connectionString;
+		}
+
+		public ConfigurationSection getTables() {
+			return tables;
+		}
 	}
 
 	public class DialogsConfig implements QuestsConfiguration.Dialogs {

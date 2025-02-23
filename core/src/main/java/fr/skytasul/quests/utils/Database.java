@@ -3,8 +3,9 @@ package fr.skytasul.quests.utils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfigurationImplementation.DatabaseConfig;
 import fr.skytasul.quests.api.QuestsPlugin;
-import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,24 +17,22 @@ import javax.sql.DataSource;
 
 public class Database implements Closeable {
 
-	private final ConfigurationSection config;
-	private final String databaseName;
+	private final DatabaseConfig config;
 
 	private final DbType type;
 
 	private final DataSource source;
 
-	public Database(ConfigurationSection config) throws IOException {
+	public Database(@NotNull DatabaseConfig config) throws IOException {
 		this.config = config;
-		this.databaseName = config.getString("database");
 
 		var properties = new Properties();
 		properties.load(getClass().getResourceAsStream("/hikari.properties"));
 		HikariConfig hikariConfig = new HikariConfig(properties);
 
-		String connectionString = config.getString("connectionString", "");
+		String connectionString = config.getConnectionString();
 		if (connectionString == null || connectionString.isEmpty())
-			connectionString = "jdbc:mysql://" + config.getString("host") + ":" + config.getInt("port") + "/" + databaseName;
+			connectionString = "jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabaseName();
 
 		Matcher matcher = Pattern.compile("^jdbc:(\\w+):\\/\\/").matcher(connectionString);
 		if (matcher.find()) {
@@ -55,12 +54,12 @@ public class Database implements Closeable {
 		}
 
 		hikariConfig.setJdbcUrl(connectionString);
-		hikariConfig.setUsername(config.getString("username"));
-		hikariConfig.setPassword(config.getString("password"));
+		hikariConfig.setUsername(config.getUsername());
+		hikariConfig.setPassword(config.getPassword());
 		hikariConfig.setPoolName("BeautyQuests-SQL-pool");
 		hikariConfig.setConnectionTimeout(20_000);
 
-		boolean ssl = config.getBoolean("ssl");
+		boolean ssl = config.isSslEnabled();
 		hikariConfig.addDataSourceProperty("verifyServerCertificate", ssl);
 		hikariConfig.addDataSourceProperty("useSSL", ssl);
 
@@ -75,11 +74,7 @@ public class Database implements Closeable {
 		}
 	}
 
-	public String getDatabase() {
-		return databaseName;
-	}
-
-	public ConfigurationSection getConfig() {
+	public @NotNull DatabaseConfig getConfig() {
 		return config;
 	}
 
