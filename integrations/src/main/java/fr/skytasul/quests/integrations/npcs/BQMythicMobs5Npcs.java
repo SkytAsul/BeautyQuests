@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.api.mobs.entities.MythicEntityType;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobInteractEvent;
@@ -37,13 +38,25 @@ public class BQMythicMobs5Npcs implements BqInternalNpcFactory, Listener {
 
 	@Override
 	public @Nullable BqInternalNpc fetchNPC(String id) {
-		return MythicBukkit.inst().getMobManager().getMythicMob(id).map(BQMythicMobs5Npc::new).orElse(null);
+		return getMythicMobForInternalName(id).map(BQMythicMobs5Npc::new).orElse(null);
+	}
+
+	private Optional<MythicMob> getMythicMobForInternalName(@NotNull String internalName) {
+		Optional<MythicMob> mobOpt = MythicBukkit.inst().getMobManager().getMythicMob(internalName);
+		if (mobOpt.isPresent())
+			return mobOpt;
+
+		MythicEntityType met = MythicEntityType.get(internalName);
+		if (met != null)
+			return MythicBukkit.inst().getMobManager().getMythicMob(met.toString());
+
+		return Optional.empty();
 	}
 
 	@EventHandler
 	public void onMythicInteract(MythicMobInteractEvent event) {
 		String internalName = event.getActiveMobType().getInternalName();
-		if (!MythicBukkit.inst().getMobManager().getMythicMob(internalName).isPresent())
+		if (!getMythicMobForInternalName(internalName).isPresent())
 			throw new IllegalStateException("Mob " + internalName + " does not actually exist");
 		npcClicked(new MythicInteractEventProxy(event), internalName, event.getPlayer(), NpcClickType.RIGHT);
 	}
