@@ -32,7 +32,7 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
-import fr.skytasul.quests.utils.logger.LoggerHandler;
+import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
@@ -105,7 +105,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @NotNull IntegrationManager integrations = new IntegrationManager();
 	private @Nullable CommandsManagerImplementation command;
 	private @Nullable LoggerExpanded logger;
-	private @Nullable LoggerHandler loggerHandler;
+	private @Nullable BqLoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
 	private @Nullable BukkitAudiences audiences;
@@ -118,17 +118,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		checkPaper();
 		initLibraries();
-
-		loggerHandler = null;
-		try{
-			if (!getDataFolder().exists()) getDataFolder().mkdir();
-			loggerHandler = new LoggerHandler(this);
-			getLogger().addHandler(loggerHandler);
-		}catch (Throwable ex){
-			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
-		}
-
-		logger = new LoggerExpanded(getLogger(), loggerHandler);
+		initLogger();
 
 		try {
 			initApi();
@@ -208,7 +198,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
-			if (loggerHandler != null) loggerHandler.launchFlushTimer();
 			launchMetrics(pluginVersion);
 			try {
 				launchUpdateChecker(pluginVersion);
@@ -300,6 +289,20 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				.version("11.2.0")
 				.relocate("com{}cryptomorin{}xseries", "fr{}skytasul{}quests{}api{}utils")
 				.build());*/
+	}
+
+	private void initLogger() {
+		loggerHandler = null;
+		try {
+			getDataFolder().mkdir();
+			loggerHandler = new BqLoggerHandler(this);
+			getLogger().addHandler(loggerHandler);
+			getLogger().setLevel(LoggerExpanded.DEBUG_LEVEL);
+		} catch (Throwable ex) {
+			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
+		}
+
+		logger = new LoggerExpanded(getLogger());
 	}
 
 	private void initApi() throws ReflectiveOperationException {
@@ -693,7 +696,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			});
 		}
 
-		logger.info("Performed backup at {}.", backupDir);
+		logger.info("Performed backup at {0}.", backupDir);
 	}
 
 	public void performReload(CommandSender sender){

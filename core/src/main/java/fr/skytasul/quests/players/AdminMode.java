@@ -41,7 +41,7 @@ public class AdminMode {
 	}
 
 	public static void broadcast(String message){
-		BeautyQuests.getInstance().getLoggerExpanded().getHandler().write("[ADMIN]: " + message);
+		BeautyQuests.getInstance().getLoggerExpanded().debug("[ADMIN]: " + message);
 		for (CommandSender p : senders){
 			p.sendMessage("§e" + message);
 		}

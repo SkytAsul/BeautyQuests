@@ -20,17 +20,11 @@ public class LoggerExpanded {
 	};
 
 	private final @NotNull Logger logger;
-	private final @NotNull ILoggerHandler handler;
 
 	private final Map<Object, Long> times = new HashMap<>();
 
-	public LoggerExpanded(@NotNull Logger logger, @Nullable ILoggerHandler handler) {
+	public LoggerExpanded(@NotNull Logger logger) {
 		this.logger = logger;
-		this.handler = handler == null ? ILoggerHandler.EMPTY_LOGGER : handler;
-	}
-
-	public @NotNull ILoggerHandler getHandler() {
-		return handler;
 	}
 
 	public void info(@Nullable String msg) {
