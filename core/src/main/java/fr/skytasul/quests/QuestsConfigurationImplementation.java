@@ -78,6 +78,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean update() {
 		boolean result = false;
+		result |= database.update();
 		result |= gui.update();
 		result |= dialogs.update();
 		result |= selection.update();
@@ -94,6 +95,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
 		quests.init();
+		database.init();
 		gui.init();
 		dialogs.init();
 		selection.init();

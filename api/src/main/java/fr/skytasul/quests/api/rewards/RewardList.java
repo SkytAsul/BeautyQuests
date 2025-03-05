@@ -30,7 +30,7 @@ public class RewardList extends AbstractList<AbstractReward> {
 	}
 
 	public RewardList(@NotNull Collection<@NotNull AbstractReward> rewards) {
-		this.rewards = new ArrayList<>(rewards);
+		this.rewards = List.of(rewards.toArray(AbstractReward[]::new));
 		this.hasAsync = rewards.stream().anyMatch(AbstractReward::isAsync);
 		this.asyncQuesters = new ArrayList<>();
 	}

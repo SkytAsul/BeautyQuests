@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
+import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class YamlDataManager implements QuesterDataManager {
 	private static final int ACCOUNTS_THRESHOLD = 1000;
 
 	// We map each identifier to an integer because we don't know if the identifier is a valid filename
-	private final Map<String, Integer> fullIdentifiersIndex = new ConcurrentHashMap<>();
+	private final Map<FullIdentifier, Integer> integerIndex = new ConcurrentHashMap<>();
 
 	/**
 	 * Allows to keep track of which yaml file is already loaded, so that we do not end up with 2 quest
@@ -41,20 +42,25 @@ public class YamlDataManager implements QuesterDataManager {
 			if (config.isConfigurationSection("players")) {
 				// TODO remove : migration 2.0
 				for (String key : config.getConfigurationSection("players").getKeys(false)) {
-					int index = Integer.parseInt(key);
 					String identifier = config.getString("players." + key);
-					config.set("identifiers." + identifier, index);
+					var section = config.createSection("identifiers." + key);
+					section.set("provider", QuestsPlugin.getPlugin().getPlayersManager().key().asString());
+					section.set("identifier", identifier);
 				}
 				config.set("players", null);
 			}
 
-			if (config.isConfigurationSection("identifiers"))
-				for (String key : config.getConfigurationSection("identifiers").getKeys(false))
-					fullIdentifiersIndex.put(key, config.getInt("identifiers." + key));
+			if (config.isConfigurationSection("identifiers")) {
+				for (String idString : config.getConfigurationSection("identifiers").getKeys(false)) {
+					int id = Integer.parseInt(idString);
+					var section = config.getConfigurationSection("identifiers." + idString);
+					integerIndex.put(new FullIdentifier(Key.key(section.getString("provider")), section.getString("identifier")), id);
+				}
+			}
 
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", fullIdentifiersIndex.size());
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", integerIndex.size());
 
-			if (fullIdentifiersIndex.size() >= ACCOUNTS_THRESHOLD)
+			if (integerIndex.size() >= ACCOUNTS_THRESHOLD)
 				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
 						"""
 								⚠ WARNING - {} players are registered on this server.
@@ -62,31 +68,31 @@ public class YamlDataManager implements QuesterDataManager {
 								In order to do that, setup your database credentials in config.yml (without enabling it) and run the command
 								/quests migrateDatas. Then follow steps on screen.
 								""",
-						fullIdentifiersIndex.size());
+						integerIndex.size());
 		} catch (IOException ex) {
 			throw new DataLoadingException(ex);
 		}
 	}
 
 	private int getNextIndex() {
-		return Collections.max(fullIdentifiersIndex.values()) + 1;
+		return Collections.max(integerIndex.values()) + 1;
 	}
 
 	@Override
 	public @NotNull CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request) {
 		return CompletableFuture.supplyAsync(() -> {
-			String fullIdentifier = request.providerKey().asString() + "|" + request.identifier();
+			var fullIdentifier = new FullIdentifier(request.providerKey(), request.identifier());
 
 			int id;
 			QuesterFetchResult.Type successType;
-			if (fullIdentifiersIndex.containsKey(fullIdentifier)) {
+			if (integerIndex.containsKey(fullIdentifier)) {
 				// quester exists
-				id = fullIdentifiersIndex.get(fullIdentifier);
+				id = integerIndex.get(fullIdentifier);
 				successType = Type.SUCCESS_LOADED;
 			} else if (request.createIfMissing()) {
 				// quester does not exist, we create it
 				id = getNextIndex();
-				fullIdentifiersIndex.put(fullIdentifier, id);
+				integerIndex.put(fullIdentifier, id);
 				successType = Type.SUCCESS_CREATED;
 			} else
 				return new QuesterFetchResult(QuesterFetchResult.Type.FAILED_NOT_FOUND, null);
@@ -108,8 +114,8 @@ public class YamlDataManager implements QuesterDataManager {
 	public CompletableFuture<Integer> resetQuestData(int questId) {
 		return CompletableFuture.supplyAsync(() -> {
 			int amount = 0;
-			for (String identifier : fullIdentifiersIndex.keySet()) {
-				int dataId = fullIdentifiersIndex.get(identifier);
+			for (FullIdentifier identifier : integerIndex.keySet()) {
+				int dataId = integerIndex.get(identifier);
 				try {
 					if (cachedData.containsKey(dataId)) {
 						if (cachedData.get(dataId).removeQuestDataSilently(questId) != null)
@@ -138,7 +144,12 @@ public class YamlDataManager implements QuesterDataManager {
 
 	@Override
 	public void save() throws DataSavingException {
-		BeautyQuests.getInstance().getDataFile().createSection("identifiers", fullIdentifiersIndex);
+		var section = BeautyQuests.getInstance().getDataFile().createSection("identifiers");
+		integerIndex.forEach((fullIdentifier, id) -> {
+			var dataSection = section.createSection(id.toString());
+			dataSection.set("provider", fullIdentifier.provider().asString());
+			dataSection.set("identifier", fullIdentifier.identifier());
+		});
 	}
 
 	@Override
@@ -149,6 +160,13 @@ public class YamlDataManager implements QuesterDataManager {
 
 	protected void uncache(YamlQuesterData data) {
 		cachedData.remove(data.getId());
+	}
+
+	record FullIdentifier(@NotNull Key provider, @NotNull String identifier) {
+		@Override
+		public final String toString() {
+			return provider.asString() + '|' + identifier;
+		}
 	}
 
 }

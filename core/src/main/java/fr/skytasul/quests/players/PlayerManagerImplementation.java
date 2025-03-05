@@ -30,7 +30,7 @@ import java.util.*;
 
 public class PlayerManagerImplementation implements PlayersManager, Listener {
 
-	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players");
+	private static final @NotNull Key KEY = Key.key("beautyquests", "players");
 
 	private final @NotNull Map<@NotNull Player, @NotNull AbstractPlayerQuesterImplementation> cachedQuesters =
 			new HashMap<>();
