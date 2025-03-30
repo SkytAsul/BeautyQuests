@@ -47,6 +47,7 @@ jobs:
         with:
           prerelease: ${{ github.ref_name != 'main' }}
           draft: true
+          name: "${{ github.ref_name }} - build ${{ github.run_number }}"
           tag_name: "build/${{ github.run_number }}"
           files: |
             target/*.jar
