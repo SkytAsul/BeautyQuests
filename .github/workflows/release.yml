@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Send dev build notification on Discord
         uses: sarisia/actions-status-discord@v1
-        if: github.event.release.prerelease
+        if: ${{ github.event.release.prerelease }}
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
           nodetail: true
@@ -24,11 +24,11 @@ jobs:
             ## Changelog
             ${{ github.event.release.body }}
 
-            Click [here](${{ github.event.release.html_url }}) to download the dev build!
+            Click [here](${{ github.event.release.assets[0].browser_download_url }}) to download the dev build!
 
       - name: Send release notification on Discord
         uses: sarisia/actions-status-discord@v1
-        if: !github.event.release.prerelease
+        if: ${{ !github.event.release.prerelease }}
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
           nodetail: true
@@ -43,7 +43,7 @@ jobs:
 
   publish:
     name: Publish version on platforms
-    if: !github.event.release.prerelease
+    if: ${{ !github.event.release.prerelease }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact

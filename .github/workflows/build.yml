@@ -50,6 +50,6 @@ jobs:
           name: "${{ github.ref_name }} - build ${{ github.run_number }}"
           tag_name: "build/${{ github.run_number }}"
           target_commitish: ${{ github.sha }}
-          generate_release_notes: true
+          generate_release_notes: ${{ github.ref_name == 'main' }}
           files: |
             target/*.jar
