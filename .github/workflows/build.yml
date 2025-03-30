@@ -45,11 +45,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.event_name == 'push'
         with:
-          prerelease: ${{ github.ref_name != 'main' }}
+          prerelease: ${{ github.ref_name != github.event.repository.default_branch }}
           draft: true
           name: "${{ github.ref_name }} - build ${{ github.run_number }}"
           tag_name: "build/${{ github.run_number }}"
           target_commitish: ${{ github.sha }}
-          generate_release_notes: ${{ github.ref_name == 'main' }}
+          generate_release_notes: ${{ github.ref_name == github.event.repository.default_branch }}
           files: |
             target/*.jar
