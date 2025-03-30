@@ -15,16 +15,18 @@ jobs:
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
           nodetail: true
-          title: "New *BeautyQuests* dev build available!"
+          title: "BeautyQuests - ${{ github.event.release.name }}"
           url: ${{ github.event.release.html_url }}
           color: '0x3498db'
           description: |
-            # ${{ github.event.release.name }}
+            New *BeautyQuests* dev build available!
 
             ## Changelog
             ${{ github.event.release.body }}
 
-            Click [here](${{ github.event.release.assets[0].browser_download_url }}) to download the dev build!
+            ## Download
+            Download the dev build here:
+            - [${{ github.event.release.assets[0].name }}](${{ github.event.release.assets[0].browser_download_url }})
 
       - name: Send release notification on Discord
         uses: sarisia/actions-status-discord@v1
@@ -32,11 +34,11 @@ jobs:
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
           nodetail: true
-          title: "New *BeautyQuests* version available!"
+          title: "BeautyQuests - ${{ github.event.release.name }}"
           url: ${{ github.event.release.html_url }}
           color: '0x28b463'
           description: |
-            # ${{ github.event.release.name }}
+            New *BeautyQuests* version available!
 
             Click [here](${{ github.event.release.html_url }}) to see
             the changelog and download the new version!
