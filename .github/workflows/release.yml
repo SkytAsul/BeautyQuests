@@ -1,0 +1,84 @@
+name: Release update
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    name: Send notifications
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send dev build notification on Discord
+        uses: sarisia/actions-status-discord@v1
+        if: ${{ github.event.release.prerelease }}
+        with:
+          webhook: ${{ secrets.WEBHOOK_URL }}
+          nodetail: true
+          title: "BeautyQuests - ${{ github.event.release.name }}"
+          url: ${{ github.event.release.html_url }}
+          color: '0x3498db'
+          description: |
+            New *BeautyQuests* dev build available!
+
+            ## Changelog
+            ${{ github.event.release.body }}
+
+            ## Download
+            Download the dev build here:
+            - [${{ github.event.release.assets[0].name }}](${{ github.event.release.assets[0].browser_download_url }})
+
+      - name: Send release notification on Discord
+        uses: sarisia/actions-status-discord@v1
+        if: ${{ !github.event.release.prerelease }}
+        with:
+          webhook: ${{ secrets.WEBHOOK_URL }}
+          nodetail: true
+          title: "BeautyQuests - ${{ github.event.release.name }}"
+          url: ${{ github.event.release.html_url }}
+          color: '0x28b463'
+          description: |
+            New *BeautyQuests* version available!
+
+            Click [here](${{ github.event.release.html_url }}) to see
+            the changelog and download the new version!
+
+  publish:
+    name: Publish version on platforms
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        run: |
+          curl ${{ github.event.release.assets[0].browser_download_url }} --output ${{ github.event.release.assets[0].name }}
+
+      - name: Upload to Modrinth
+        uses: cloudnode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: ZbvwkXKZ
+          featured: true
+          name: ${{ github.event.release.name }}
+          version: ${{ github.event.release.tag_name }}
+          changelog: ${{ github.event.release.body }}
+          requested-status: "draft"
+          loaders: |-
+            paper
+            spigot
+          files: ${{ github.event.release.assets[0].name }}
+
+      - name: Upload to Hangar
+        uses: benwoo1110/hangar-upload-action@v1
+        with:
+          api_token: ${{ secrets.HANGAR_TOKEN }}
+          slug: 'BeautyQuests'
+          version: ${{ github.event.release.tag_name }}
+          channel: release
+          files: |
+            [
+              {
+                "path": "${{ github.event.release.assets[0].url }}",
+                "url": true,
+                "platforms": ["PAPER"]
+              }
+            ]

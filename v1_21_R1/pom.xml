@@ -13,7 +13,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<spigot.version>1.21-R0.1-SNAPSHOT</spigot.version>
+		<spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
 		<java.version>21</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
