@@ -1,0 +1,33 @@
+name: Build
+
+on:
+    push:
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Setup JDKs
+            uses: actions/setup-java@v4
+            with:
+              distribution: temurin
+              java-version: |
+                21
+              # maybe necessary to add more since we want to compile for lower?
+              cache: maven
+          
+          - name: Download private dependencies
+            run: "curl -s https://skytasul.fr/protected/bq-jars.tar.gz --header 'Token: ${{ secrets.PrivateDownloadToken }}' --output - | tar xzfv -"
+
+          - name: Build and package with Maven
+            run: mvn -B clean package --file pom.xml -Dbuild.number=${{ github.run_number }}
+        
+          - name: Upload artifact
+            uses: actions/upload-artifact@v4
+            with:
+              path: |
+                target/*.jar
