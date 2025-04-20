@@ -40,8 +40,7 @@ jobs:
           description: |
             New *BeautyQuests* version available!
 
-            Click [here](${{ github.event.release.html_url }}) to see
-            the changelog and download the new version!
+            Click [here](${{ github.event.release.html_url }}) to see the changelog and download the new version!
 
   publish:
     name: Publish version on platforms
@@ -54,6 +53,7 @@ jobs:
 
       - name: Upload to Modrinth
         uses: cloudnode-pro/modrinth-publish@v2
+        continue-on-error: true
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
           project: ZbvwkXKZ
@@ -61,6 +61,8 @@ jobs:
           name: ${{ github.event.release.name }}
           version: ${{ github.event.release.tag_name }}
           changelog: ${{ github.event.release.body }}
+          game-versions: |- # It is necessary to put game versions but we will change them manually
+            1.21.x
           requested-status: "draft"
           loaders: |-
             paper
@@ -69,6 +71,7 @@ jobs:
 
       - name: Upload to Hangar
         uses: benwoo1110/hangar-upload-action@v1
+        continue-on-error: true
         with:
           api_token: ${{ secrets.HANGAR_TOKEN }}
           slug: 'BeautyQuests'
