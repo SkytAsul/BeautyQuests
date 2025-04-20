@@ -1,16 +1,12 @@
 package fr.skytasul.quests.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
+import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
@@ -21,6 +17,11 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class contains most of the useful accessors to fetch data from BeautyQuests and methods to
@@ -248,6 +249,23 @@ public interface QuestsAPI {
 	 * @param processor processor
 	 */
 	void registerMessageProcessor(@NotNull String key, int priority, @NotNull MessageProcessor processor);
+
+	/**
+	 * Gets the currently registered message sender. It is responsible for displaying dialog messages to
+	 * players.
+	 *
+	 * @return the message sender
+	 */
+	@NotNull
+	MessageSender getMessageSender();
+
+	/**
+	 * Sets the new message sender.
+	 *
+	 * @param sender the new message sender
+	 * @see #getMessageSender()
+	 */
+	void setMessageSender(@NotNull MessageSender sender);
 
 	/**
 	 * Utility method to get an instance of the API object.

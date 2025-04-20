@@ -346,13 +346,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		logger.debug("Starting Spigot updater");
 		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
+			Matcher matcher = Pattern.compile("\\+build\\.(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
-				checker = new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+				checker = new UpdateChecker(this, UpdateCheckSource.GITHUB_RELEASE_TAG, "SkytAsul/BeautyQuests")
 						.setUserAgent("")
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
-						.setUsedVersion(build)
+						.setUsedVersion("build/" + build)
 						.setNameFreeVersion("(dev builds)");
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
@@ -363,7 +363,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 					.setDownloadLink(39255);
 		}
 		checker
-				.setDonationLink("https://paypal.me/SkytAsul")
+				.setDonationLink("https://ko-fi.com/skytasul")
 				.setSupportLink("https://discord.gg/H8fXrkD")
 				.setNotifyOpsOnJoin(false)
 				.setColoredConsoleOutput(true)
@@ -827,6 +827,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return ensureLoaded(players);
 	}
 
+	@Override
 	public boolean isRunningPaper() {
 		return isPaper;
 	}

@@ -1,14 +1,14 @@
 package fr.skytasul.quests.api;
 
-import java.util.Collection;
-import java.util.Set;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
 import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
+import java.util.Set;
 
 public interface QuestsConfiguration {
 
@@ -60,6 +60,8 @@ public interface QuestsConfiguration {
 		boolean fireworks();
 
 		Collection<NpcClickType> getNpcClicks();
+
+		boolean dontCancelNpcClick();
 
 		ItemStack getDefaultQuestItem();
 

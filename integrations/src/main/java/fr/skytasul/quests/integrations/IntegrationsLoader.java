@@ -24,6 +24,7 @@ import fr.skytasul.quests.integrations.npcs.*;
 import fr.skytasul.quests.integrations.placeholders.PapiMessageProcessor;
 import fr.skytasul.quests.integrations.placeholders.PlaceholderRequirement;
 import fr.skytasul.quests.integrations.placeholders.QuestsPlaceholders;
+import fr.skytasul.quests.integrations.tooltips.TooltipsMessageSender;
 import fr.skytasul.quests.integrations.vault.economy.MoneyRequirement;
 import fr.skytasul.quests.integrations.vault.economy.MoneyReward;
 import fr.skytasul.quests.integrations.vault.permission.PermissionReward;
@@ -123,6 +124,7 @@ public class IntegrationsLoader {
 				this::isUltimateTimberValid));
 		manager.addDependency(new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload));
 		manager.addDependency(new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload));
+		manager.addDependency(new BQDependency("Tooltips", this::registerTooltips));
 	}
 
 	private void registerPapi() {
@@ -254,6 +256,10 @@ public class IntegrationsLoader {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("Your version of ZNPCsPlus will soon not be supported by BeautyQuests.");
 		}
+	}
+
+	private void registerTooltips() {
+		QuestsAPI.getAPI().setMessageSender(new TooltipsMessageSender());
 	}
 
 	public IntegrationsConfiguration getConfig() {

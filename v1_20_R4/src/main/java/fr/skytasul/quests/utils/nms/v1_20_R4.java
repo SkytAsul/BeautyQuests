@@ -2,6 +2,7 @@ package fr.skytasul.quests.utils.nms;
 
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
 import net.minecraft.resources.ResourceKey;
@@ -16,9 +17,18 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class v1_20_R4 extends NMS{
+
+	private Field customTagField;
+
+	public v1_20_R4() throws NoSuchFieldException, SecurityException {
+		customTagField = craftReflect.fromName("inventory.CraftMetaItem").getDeclaredField("customTag");
+		customTagField.setAccessible(true);
+	}
 
 	@Override
 	public void openBookInHand(Player p) {
@@ -44,6 +54,15 @@ public class v1_20_R4 extends NMS{
 	public List<String> getAvailableBlockTags() {
 		return MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.BLOCK).listTags()
 				.map(x -> x.key().location().toString()).toList();
+	}
+
+	@Override
+	public boolean equalsWithoutNBT(ItemMeta meta1, ItemMeta meta2) throws ReflectiveOperationException {
+		unhandledTags.set(meta1, DataComponentPatch.builder());
+		unhandledTags.set(meta2, DataComponentPatch.builder());
+		customTagField.set(meta1, null);
+		customTagField.set(meta2, null);
+		return (boolean) equalsCommon.invoke(meta1, meta2);
 	}
 
 }

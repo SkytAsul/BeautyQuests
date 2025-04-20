@@ -1,17 +1,7 @@
 package fr.skytasul.quests.utils.types;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.DialogSendEvent;
@@ -22,6 +12,17 @@ import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.utils.DebugUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DialogRunnerImplementation implements DialogRunner {
 
@@ -40,10 +41,12 @@ public class DialogRunnerImplementation implements DialogRunner {
 		this.npc = npc;
 	}
 
+	@Override
 	public @Nullable BqNpc getNpc() {
 		return npc;
 	}
 
+	@Override
 	public @Nullable Dialog getDialog() {
 		return dialog;
 	}
@@ -167,9 +170,8 @@ public class DialogRunnerImplementation implements DialogRunner {
 		int id = ++status.lastId;
 		boolean endOfDialog = id == dialog.getMessages().size();
 
-		if (status.runningMsg != null)
-			status.runningMsg.finished(p, endOfDialog, reason != DialogNextReason.AUTO_TIME);
-		if (status.runningMsgTask != null) status.runningMsgTask.cancel();
+		if (status.runningMsg != null && !endOfDialog && reason != DialogNextReason.AUTO_TIME) // means it's forced
+			status.runningMsg.stopSound(p);
 
 		if (endOfDialog) return true;
 
@@ -182,8 +184,11 @@ public class DialogRunnerImplementation implements DialogRunner {
 		status.runningMsg = msg;
 		DialogSendMessageEvent event = new DialogSendMessageEvent(p, this, msg);
 		Bukkit.getPluginManager().callEvent(event);
-		if (!event.isCancelled())
-			status.runningMsgTask = msg.sendMessage(p, npc, dialog.getNPCName(npc), id, dialog.getMessages().size());
+		if (!event.isCancelled()) {
+			msg.playSound(p, npc.getEntity());
+			QuestsAPI.getAPI().getMessageSender().displayMessage(p, this, msg);
+		}
+		// warning: if the event is cancelled, we do NOT call MessageSender#stopDisplayingMessages
 
 		return false;
 	}
@@ -217,6 +222,7 @@ public class DialogRunnerImplementation implements DialogRunner {
 		PlayerStatus status = players.remove(player);
 		if (status == null) return false;
 		status.cancel();
+		QuestsAPI.getAPI().getMessageSender().stopDisplayingMessages(player, this);
 
 		handlePlayerChanges();
 
@@ -246,7 +252,6 @@ public class DialogRunnerImplementation implements DialogRunner {
 	class PlayerStatus {
 		int lastId = -1;
 		BukkitTask task = null;
-		BukkitTask runningMsgTask = null;
 		Message runningMsg = null;
 
 		void cancel() {

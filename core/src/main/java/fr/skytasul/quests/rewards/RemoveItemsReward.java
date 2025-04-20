@@ -1,14 +1,5 @@
 package fr.skytasul.quests.rewards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -18,16 +9,25 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RemoveItemsReward extends AbstractReward {
 
 	private List<ItemStack> items;
 	private ItemComparisonMap comparisons;
-	
+
 	public RemoveItemsReward(){
 		this(null, new ArrayList<>(), new ItemComparisonMap());
 	}
-	
+
 	public RemoveItemsReward(String customDescription, List<ItemStack> items, ItemComparisonMap comparisons) {
 		super(customDescription);
 		this.items = items;
@@ -49,7 +49,7 @@ public class RemoveItemsReward extends AbstractReward {
 	public AbstractReward clone() {
 		return new RemoveItemsReward(getCustomDescription(), items, comparisons);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
 		return getItemsSizeString();
@@ -63,11 +63,11 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 
 	private String getItemsSizeString() {
-		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
+		return Lang.AmountItems.quickFormat("items_amount", items.stream().mapToInt(ItemStack::getAmount).sum());
 	}
-	
+
 	private @NotNull String getComparisonsSizeString() {
-		return Lang.AmountComparisons.quickFormat("amount", comparisons.getEffective().size());
+		return Lang.AmountComparisons.quickFormat("comparisons_amount", comparisons.getEffective().size());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class RemoveItemsReward extends AbstractReward {
 			new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
 		}
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);

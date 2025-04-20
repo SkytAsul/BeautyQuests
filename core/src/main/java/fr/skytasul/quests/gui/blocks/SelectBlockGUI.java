@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
@@ -156,8 +157,14 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags",
-				String.join(", ", NMS.getNMS().getAvailableBlockTags()));
+		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(tag -> {
+			NamespacedKey key = NamespacedKey.fromString(tag);
+			if (key.getNamespace().equals(NamespacedKey.MINECRAFT))
+				return key.getKey();
+			return key.toString();
+		}).sorted().collect(Collectors.joining(", "));
+		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags", tagList);
+
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			NamespacedKey key = NamespacedKey.fromString((String) obj);
 			if (key == null || Bukkit.getTag("blocks", key, Material.class) == null) {

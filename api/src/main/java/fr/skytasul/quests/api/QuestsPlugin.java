@@ -1,7 +1,5 @@
 package fr.skytasul.quests.api;
 
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;
@@ -9,6 +7,8 @@ import fr.skytasul.quests.api.npcs.BqNpcManager;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 public interface QuestsPlugin extends Plugin {
 
@@ -38,7 +38,9 @@ public interface QuestsPlugin extends Plugin {
 	public void notifyLoadingFailure();
 
 	public void notifySavingFailure();
-	
+
+	public boolean isRunningPaper();
+
 	/**
 	 * Utility method to get the plugin object.
 	 *

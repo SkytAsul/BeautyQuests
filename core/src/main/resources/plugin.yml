@@ -38,6 +38,8 @@ softdepend:
 - WildStacker
 - ItemsAdder
 - StackMob
+- Tooltips
+ 
 
 #commands:
 #  beautyquests:

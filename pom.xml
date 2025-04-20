@@ -41,13 +41,33 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.release>8</maven.compiler.release>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+		
 		<build.number>unknown</build.number>
-		<revision>1.0.4</revision>
-		<plugin.version>${revision}</plugin.version> <!-- For release -->
-		<!-- <plugin.version>${revision}_BUILD${build.number}</plugin.version> --> <!-- For dev builds -->
+		<revision.raw>1.0.5</revision.raw>		
+		
 		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 	</properties>
+	
+	<profiles>
+		<profile>
+			<id>devbuild</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<plugin.version>${revision.raw}+build.${build.number}</plugin.version>
+				<revision>${revision.raw}-SNAPSHOT</revision>
+			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<properties>
+				<plugin.version>${revision.raw}</plugin.version>
+				<revision>${revision.raw}</revision>
+			</properties>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
@@ -58,13 +78,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>codemc-releases</id>
-			<url>https://repo.codemc.org/repository/maven-releases/</url>
+			<id>skytasul</id>
+			<url>https://repo.codemc.org/repository/skytasul/</url>
 		</repository>
-		<snapshotRepository>
-			<id>codemc-snapshots</id>
-			<url>https://repo.codemc.io/repository/maven-snapshots/</url>
-		</snapshotRepository>
 	</distributionManagement>
 
 	<modules>
@@ -89,6 +105,8 @@
 		<module>v1_20_R3</module>
 		<module>v1_20_R4</module>
 		<module>v1_21_R1</module>
+		<module>v1_21_R3</module>
+		<module>v1_21_R4</module>
 		<module>dist</module>
 	</modules>
 

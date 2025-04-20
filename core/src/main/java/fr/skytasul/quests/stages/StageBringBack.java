@@ -5,6 +5,9 @@ import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.dialogs.Dialog;
+import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
+import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -23,6 +26,7 @@ import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
 import fr.skytasul.quests.gui.items.ItemsGUI;
+import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -68,9 +72,12 @@ public class StageBringBack extends StageNPC{
 		String text = getMessage();
 		if ("none".equals(text))
 			return;
+
 		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
 				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
-		msg.sendMessage(p, getNPC(), getNpcName(), 0, 1);
+		Dialog fakeDialog = new Dialog(Arrays.asList(msg));
+		DialogRunner fakeDialogRunner = new DialogRunnerImplementation(fakeDialog, getNPC());
+		fakeDialogRunner.handleNext(p, DialogNextReason.PLUGIN);
 	}
 
 	public void removeItems(Player p){
