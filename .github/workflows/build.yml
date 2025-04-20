@@ -35,7 +35,7 @@ jobs:
         run: |
           profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")
           echo "Building with profile $profile"
-		  mvn -B clean package --file pom.xml -Dbuild.number=${{ github.run_number }} -P $profile
+          mvn -B clean package --file pom.xml -Dbuild.number=${{ github.run_number }} -P $profile
     
       # We do not actually need the artifact since we create a release with it
       # - name: Upload artifact
