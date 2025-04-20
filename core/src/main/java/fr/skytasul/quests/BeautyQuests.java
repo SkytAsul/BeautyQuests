@@ -346,7 +346,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		logger.debug("Starting Spigot updater");
 		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
+			Matcher matcher = Pattern.compile("\\+build\\.(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
 				checker = new UpdateChecker(this, UpdateCheckSource.GITHUB_RELEASE_TAG, "SkytAsul/BeautyQuests")
