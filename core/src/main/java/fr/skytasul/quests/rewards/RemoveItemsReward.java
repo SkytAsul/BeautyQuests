@@ -13,9 +13,11 @@ import fr.skytasul.quests.gui.items.ItemsGUI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RemoveItemsReward extends AbstractReward {
@@ -58,11 +60,11 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 
 	private String getItemsSizeString() {
-		return Lang.AmountItems.quickFormat("amount", items.stream().mapToInt(ItemStack::getAmount).sum());
+		return Lang.AmountItems.quickFormat("items_amount", items.stream().mapToInt(ItemStack::getAmount).sum());
 	}
 
 	private @NotNull String getComparisonsSizeString() {
-		return Lang.AmountComparisons.quickFormat("amount", comparisons.getEffective().size());
+		return Lang.AmountComparisons.quickFormat("comparisons_amount", comparisons.getEffective().size());
 	}
 
 	@Override

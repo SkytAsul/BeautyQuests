@@ -91,10 +91,19 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 
 	@Override
 	public @NotNull Map<CountableObject<T>, Integer> getRemainingAmounts(@NotNull Quester quester) {
-		return getRawRemainingAmounts(quester, false)
-				.entrySet().stream()
-				.map(entry -> new AbstractMap.SimpleEntry<>(getObject(entry.getKey()).orElse(null), entry.getValue()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<@NotNull UUID, @NotNull Integer> remainings = getRawRemainingAmounts(quester, false);
+		Map<CountableObject<T>, Integer> amounts = new HashMap<>(remainings.size());
+
+		remainings.forEach((uuid, remaining) -> {
+			Optional<CountableObject<T>> object = getObject(uuid);
+			if (object.isPresent()) {
+				amounts.put(object.get(), remaining);
+			} else {
+				QuestsPlugin.getPlugin().getLogger().info("Cannot find object with UUID " + uuid + " in " + controller);
+			}
+		});
+
+		return amounts;
 	}
 
 	@Override

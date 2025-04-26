@@ -56,6 +56,9 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent event) {
+		if (event.isCancelled())
+			return;
+
 		Player player;
 		if (event.getDamager() instanceof Projectile) {
 			ProjectileSource projectileShooter = ((Projectile) event.getDamager()).getShooter();

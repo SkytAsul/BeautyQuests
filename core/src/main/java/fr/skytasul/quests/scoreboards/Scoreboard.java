@@ -360,7 +360,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 								lazyContext = new QuestDescriptionContext(
 										QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
 										shown, p, acc, PlayerListCategory.IN_PROGRESS, DescriptionSource.SCOREBOARD);
-							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
+							List<String> descriptionStrings = optionalDescription.get().provideDescription(lazyContext);
+							replacement = descriptionStrings == null ? "" : String.join("\n", descriptionStrings);
 						} else {
 							if (manager.hideUnknownQuestPlaceholders()) {
 								// early return as there is no point continuing processing placeholders

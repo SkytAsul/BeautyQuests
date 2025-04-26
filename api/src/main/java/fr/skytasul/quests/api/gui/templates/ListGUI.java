@@ -1,20 +1,20 @@
 package fr.skytasul.quests.api.gui.templates;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
-import org.apache.commons.lang.Validate;
-import org.bukkit.DyeColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
+import org.apache.commons.lang.Validate;
+import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * An inventory which has up to 54 slots to store items. Each item is linked in a list to an instance of type T.
@@ -23,9 +23,9 @@ import fr.skytasul.quests.api.localization.Lang;
  * @param <T> type of objects stocked in the list
  */
 public abstract class ListGUI<T> extends PagedGUI<T> {
-	
+
 	private ItemStack create = ItemUtils.item(XMaterial.SLIME_BALL, Lang.addObject.toString());
-	
+
 	protected ListGUI(@NotNull String name, @NotNull DyeColor color, @NotNull Collection<T> objects) {
 		super(name, color, objects);
 		if (objects.contains(null))
@@ -37,12 +37,12 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 			finish(list);
 		};
 	}
-	
+
 	@Override
 	public final ItemStack getItemStack(T object) {
 		return object == null ? create : getObjectItemStack(object);
 	}
-	
+
 	@Override
 	public final void click(T existing, ItemStack item, ClickType clickType) {
 		if (existing != null && clickType == getRemoveClick(existing)) {
@@ -53,7 +53,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 			}else clickObject(existing, item, clickType);
 		}
 	}
-	
+
 	protected ClickType getRemoveClick(@NotNull T object) {
 		return ClickType.SHIFT_LEFT;
 	}
@@ -69,7 +69,7 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		remove(index);
 		return true;
 	}
-	
+
 	public void remove(int slot) {
 		T removed = objects.remove(slot);
 		if (removed == null) return;
@@ -78,9 +78,9 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		setItems();
 		removed(removed);
 	}
-	
+
 	protected void removed(T object) {}
-	
+
 	public void updateObject(T object, T newObject) {
 		int index = objects.indexOf(object);
 		if (index == -1) return;
@@ -89,14 +89,15 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		if (slot != -1)
 			getInventory().setItem(slot, getItemStack(newObject));
 	}
-	
+
 	@Override
 	public CloseBehavior onClose(Player player) {
 		return StandardCloseBehavior.REOPEN;
 	}
-	
+
 	/**
 	 * Call this when an object is ready to be inserted in the list
+	 *
 	 * @param object Object to put
 	 * @return ItemStack created with {@link #getItemStack(Object)}
 	 */
@@ -107,18 +108,20 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 		page = maxPage - 1;
 		setItems();
 		reopen(player);
-		return getInventory().getItem(getObjectSlot(object));
+
+		int slot = getObjectSlot(object);
+		return slot != -1 ? getInventory().getItem(slot) : getObjectItemStack(object);
 	}
-	
+
 	/**
 	 * Called when the player hit the finish button
 	 */
 	public abstract void finish(List<T> objects);
-	
+
 	public abstract ItemStack getObjectItemStack(T object);
-	
+
 	public abstract void createObject(Function<T, ItemStack> callback);
-	
+
 	public void clickObject(T object, ItemStack item, ClickType clickType) {}
-	
+
 }

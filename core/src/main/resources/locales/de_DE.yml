@@ -661,6 +661,7 @@ scoreboard:
   stage:
     region: '§eFinde Region §6{region_id}'
     npc: '§eSprich mit dem NPC §6{dialog_npc_name}'
+    items: 'Bringe §6{dialog_npc_name}§e: {items}'
     mobs: '§eTöte §6{mobs}'
     mine: '§eBaue {blocks} ab'
     placeBlocks: '§ePlatziere {blocks}'

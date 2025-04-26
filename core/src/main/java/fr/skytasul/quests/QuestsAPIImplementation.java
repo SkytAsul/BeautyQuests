@@ -1,14 +1,12 @@
 package fr.skytasul.quests;
 
-import fr.skytasul.quests.api.AbstractHolograms;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsHandler;
-import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.*;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
+import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
@@ -21,6 +19,8 @@ import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
+import fr.skytasul.quests.npcs.dialogs.ActionBarMessageSender;
+import fr.skytasul.quests.npcs.dialogs.ChatMessageSender;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +44,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	private AbstractHolograms<?> hologramsManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
+	private MessageSender messageSender;
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
 
@@ -54,6 +55,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	void setup() {
 		requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
 		rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
+
+		setMessageSender(QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()
+				? new ActionBarMessageSender()
+				: new ChatMessageSender());
 	}
 
 	@Override
@@ -192,6 +197,18 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		}
 
 		processors.add(new MessageProcessorInfo(key, priotity, processor));
+	}
+
+	@Override
+	public @NotNull MessageSender getMessageSender() {
+		return messageSender;
+	}
+
+	@Override
+	public void setMessageSender(@NotNull MessageSender sender) {
+		this.messageSender = sender;
+		QuestsPlugin.getPlugin().getLoggerExpanded()
+				.debug("Message sender has been registered: " + sender.getClass().getName());
 	}
 
 	@Override

@@ -344,6 +344,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean stageStart = true;
 		private boolean questConfirmGUI = false;
 		private Collection<NpcClickType> npcClicks = Arrays.asList(NpcClickType.RIGHT, NpcClickType.SHIFT_RIGHT);
+		private boolean dontCancelNpcClick = false;
 		private boolean requirementReasonOnMultipleQuests = true;
 		private boolean stageEndRewardsMessage = true;
 
@@ -378,6 +379,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
+			dontCancelNpcClick = config.getBoolean("dont cancel npc click");
 			requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 			stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		}
@@ -435,6 +437,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public Collection<NpcClickType> getNpcClicks() {
 			return npcClicks;
+		}
+
+		@Override
+		public boolean dontCancelNpcClick() {
+			return dontCancelNpcClick;
 		}
 
 		@Override

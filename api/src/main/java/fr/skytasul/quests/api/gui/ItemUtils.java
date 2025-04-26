@@ -311,8 +311,14 @@ public final class ItemUtils {
 	 */
 	public static String getName(ItemStack is, boolean format) {
 		if (is == null) return null;
-		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return (format) ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
-		return is.getItemMeta().getDisplayName();
+		if (is.hasItemMeta()) {
+			ItemMeta meta = is.getItemMeta();
+			if (meta.hasDisplayName())
+				return meta.getDisplayName();
+			if (MinecraftVersion.isHigherThan(20, 5) && meta.hasItemName())
+				return meta.getItemName();
+		}
+		return format ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
 	}
 
 	public static boolean hasEnchant(ItemStack is, Enchantment en){

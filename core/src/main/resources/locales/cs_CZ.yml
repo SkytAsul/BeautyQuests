@@ -205,6 +205,7 @@ msg:
           max: '§aNapište maximální odměnu která bude udělena hráči (včetně).'
       chooseObjectiveRequired: '§aNapiš název objektu.'
       chooseObjectiveTargetScore: '§aNapište cílové skóre pro daný cíl.'
+      chooseRegionRequired: '§aNapiš název požadovaného regionu (musíš být ve stejném světě).'
     itemCreator:
       itemName: '§aNapiš název předmětu:'
       unknownItemType: '§cNeznámý typ předmětu.'
@@ -227,7 +228,7 @@ advancement:
 inv:
   validate: '§bValidovat'
   cancel: '§c§lStorno'
-  addObject: Přidat objekt
+  addObject: '§aPřidat objekt'
   confirm:
     name: Jste si jistý?
     'yes': '§aPotvrdit'

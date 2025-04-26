@@ -38,6 +38,8 @@ softdepend:
 - WildStacker
 - ItemsAdder
 - StackMob
+- Tooltips
+ 
 
 libraries:
 - io.github.revxrsal:lamp.bukkit:${lamp.version}

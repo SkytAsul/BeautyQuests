@@ -42,6 +42,8 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull BukkitAudiences getAudiences();
 
+	public boolean isRunningPaper();
+
 	/**
 	 * Utility method to get the plugin object.
 	 *

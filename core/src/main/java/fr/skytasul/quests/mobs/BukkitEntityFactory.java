@@ -71,8 +71,6 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 	public void onEntityKilled(EntityDeathEvent e) {
 		LivingEntity en = e.getEntity();
 		if (en.getKiller() == null) return;
-		if (QuestsPlugin.getPlugin().getNpcManager().isNPC(en))
-			return;
 		callEvent(e, en.getType(), en, en.getKiller());
 	}
 

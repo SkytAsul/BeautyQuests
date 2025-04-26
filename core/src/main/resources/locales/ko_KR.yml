@@ -243,6 +243,7 @@ msg:
         addSound: '§6addSound <id> <sound>: §e사운드와 메세지를 추가해주세요.'
         clear: '§6clear: §e모든 메세지를 삭제하였습니다.'
         close: '§6close: §e모든 메세지를 확인합니다.'
+        setTime: ''
     mythicmobs:
       list: '§a모든 미스틱 몹 목록:'
       isntMythicMob: '§c이 미스틱 몹은 존재하지 않습니다.'

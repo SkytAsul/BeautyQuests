@@ -6,6 +6,7 @@ import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
+import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
@@ -231,6 +232,23 @@ public interface QuestsAPI {
 	 * @param processor processor
 	 */
 	void registerMessageProcessor(@NotNull String key, int priority, @NotNull MessageProcessor processor);
+
+	/**
+	 * Gets the currently registered message sender. It is responsible for displaying dialog messages to
+	 * players.
+	 *
+	 * @return the message sender
+	 */
+	@NotNull
+	MessageSender getMessageSender();
+
+	/**
+	 * Sets the new message sender.
+	 *
+	 * @param sender the new message sender
+	 * @see #getMessageSender()
+	 */
+	void setMessageSender(@NotNull MessageSender sender);
 
 	/**
 	 * Utility method to get an instance of the API object.
