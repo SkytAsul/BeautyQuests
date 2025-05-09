@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 
@@ -43,15 +43,15 @@ public interface HasItemsDescriptionConfiguration {
 		String getObjectName(CountableObject<T> object);
 
 		@NotNull
-		Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account);
+		Map<CountableObject<T>, Integer> getRemainingAmounts(@NotNull Quester quester);
 
-		default long getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
-			return getPlayerAmounts(account).get(object);
+		default long getRemainingAmount(@NotNull Quester quester, CountableObject<T> object) {
+			return getRemainingAmounts(quester).get(object);
 		}
 
 		@Override
-		default long getPlayerAmount(@NotNull PlayerAccount account) {
-			return getPlayerAmounts(account).values().stream().mapToInt(Integer::intValue).sum();
+		default long getRemainingAmount(@NotNull Quester quester) {
+			return getRemainingAmounts(quester).values().stream().mapToInt(Integer::intValue).sum();
 		}
 
 		@Override

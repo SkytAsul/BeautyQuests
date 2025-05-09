@@ -9,8 +9,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
@@ -32,7 +32,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
 	private static final int maxLength = MinecraftVersion.MAJOR >= 13 ? 1024 : 30;
 
-	private PlayerAccount acc;
+	private Quester acc;
 	private Player p;
 	private FastBoard board;
 	private ScoreboardManager manager;
@@ -359,8 +359,9 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 							if (lazyContext == null)
 								lazyContext = new QuestDescriptionContext(
 										QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-										shown, acc, PlayerListCategory.IN_PROGRESS, DescriptionSource.SCOREBOARD);
-							replacement = String.join("\n", optionalDescription.get().provideDescription(lazyContext));
+										shown, p, acc, PlayerListCategory.IN_PROGRESS, DescriptionSource.SCOREBOARD);
+							List<String> descriptionStrings = optionalDescription.get().provideDescription(lazyContext);
+							replacement = descriptionStrings == null ? "" : String.join("\n", descriptionStrings);
 						} else {
 							if (manager.hideUnknownQuestPlaceholders()) {
 								// early return as there is no point continuing processing placeholders

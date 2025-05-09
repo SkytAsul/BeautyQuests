@@ -3,6 +3,7 @@ package fr.skytasul.quests.npcs;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.skytasul.quests.DefaultQuestFeatures;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.*;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -120,17 +122,22 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (factory == null)
 			throw new IllegalArgumentException("Cannot find factory for NPC " + id + ". Is your NPC plugin installed?");
 
-		return getByFactoryAndId(factory, internalId);
+		return getByFactoryAndId(factory, internalId).orElse(null);
 	}
 
-	public @Nullable BqNpcImplementation getByFactoryAndId(@NotNull BqInternalNpcFactory factory, String internalId) {
-		return npcs.computeIfAbsent(getNpcId(factory, internalId), strId -> {
-			BqInternalNpc npc = factory.fetchNPC(internalId);
-			if (npc == null)
-				return null;
+	public @NotNull Optional<BqNpcImplementation> getByFactoryAndId(@NotNull BqInternalNpcFactory factory,
+			String internalId) {
+		String npcId = getNpcId(factory, internalId);
+		if (npcs.containsKey(npcId))
+			return Optional.of(npcs.get(npcId));
 
-			return new BqNpcImplementation(new WrappedInternalNpc(factory, npc));
-		});
+		BqInternalNpc npc = factory.fetchNPC(internalId);
+		if (npc == null)
+			return Optional.empty();
+
+		BqNpcImplementation npcImplem = new BqNpcImplementation(new WrappedInternalNpc(factory, npc));
+		npcs.put(npcId, npcImplem);
+		return Optional.of(npcImplem);
 	}
 
 	@Override
@@ -149,8 +156,8 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (event != null && event.isCancelled())
 			return;
 
-		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, internalId), p, click);
-		if (event == null)
+		BQNPCClickEvent newEvent = new BQNPCClickEvent(getByFactoryAndId(npcFactory, internalId).get(), p, click);
+		if (event == null || QuestsConfiguration.getConfig().getQuestsConfig().dontCancelNpcClick())
 			QuestUtils.runOrSync(() -> Bukkit.getPluginManager().callEvent(newEvent));
 		else
 			QuestUtils.tunnelEventCancelling(event, newEvent);

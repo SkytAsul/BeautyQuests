@@ -1,20 +1,20 @@
 package fr.skytasul.quests.api.quests;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
@@ -53,17 +53,17 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	public boolean canBypassLimit();
 
-	public boolean hasStarted(@NotNull PlayerAccount acc);
+	public boolean hasStarted(@NotNull Quester acc);
 
-	public boolean hasFinished(@NotNull PlayerAccount acc);
+	public boolean hasFinished(@NotNull Quester acc);
 
-	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
+	public @NotNull String getDescriptionLine(@NotNull Quester acc, @NotNull DescriptionSource source);
 
 	public boolean canStart(@NotNull Player player, boolean sendMessage);
 
-	public boolean cancelPlayer(@NotNull PlayerAccount acc);
+	public boolean cancelPlayer(@NotNull Quester acc);
 
-	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull PlayerAccount acc);
+	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull Quester acc);
 
 	public @NotNull CompletableFuture<Boolean> attemptStart(@NotNull Player player);
 
@@ -75,7 +75,7 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	public void start(@NotNull Player player, boolean silently);
 
-	public void finish(@NotNull Player player);
+	public void finish(@NotNull Quester quester);
 
 	@Override
 	default int compareTo(Quest o) {

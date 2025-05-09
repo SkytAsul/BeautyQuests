@@ -3,9 +3,9 @@ package fr.skytasul.quests.commands;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
 import org.bukkit.Bukkit;
@@ -33,7 +33,7 @@ public class CommandsPools implements OrphanCommand {
 	@Subcommand("resetPlayer")
 	@CommandPermission("beautyquests.command.resetPlayer")
 	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPool pool, @Switch boolean timer) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayersManager.getPlayerAccount(player);
 		if (timer) {
 			pool.resetPlayerTimer(acc);
 			Lang.POOL_RESET_TIMER.send(actor.sender(), pool, acc);
@@ -41,7 +41,7 @@ public class CommandsPools implements OrphanCommand {
 			pool.resetPlayer(acc).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
 				Lang.POOL_RESET_FULL.send(actor.sender(), pool, acc);
 			}, "An error occurred while resetting pool " + pool.getId() + " to player " + player.getName(),
-					actor.sender()));
+					actor.audience().get()));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class CommandsPools implements OrphanCommand {
 			futures.add(pool.resetPlayer(PlayersManager.getPlayerAccount(p))
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 							"An error occurred while resetting pool " + pool.getId() + " to player " + p.getName(),
-							actor.sender())));
+							actor.audience().get())));
 		}
 
 		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((__, ___) -> {
@@ -72,11 +72,11 @@ public class CommandsPools implements OrphanCommand {
 						return false;
 					}).count();
 
-			BeautyQuests.getInstance().getPlayersManager().removePoolDatas(pool)
+			BeautyQuests.getInstance().getQuesterManager().getDataManager().resetPoolData(pool.getId())
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError((Integer removedAmount) -> {
 						Lang.POOL_COMPLETELY_RESET.quickSend(actor.sender(), "player_amount",
 								removedAmount + resetAmount);
-					}, "An error occurred while removing pool datas", actor.sender()));
+					}, "An error occurred while removing pool datas", actor.audience().get()));
 		}).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError());
 
 	}
@@ -85,7 +85,7 @@ public class CommandsPools implements OrphanCommand {
 	@CommandPermission("beautyquests.command.pools.start")
 	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPool pool) {
 		for (Player player : players) {
-			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayersManager.getPlayerAccount(player);
 			if (!pool.canGive(player)) {
 				Lang.POOL_START_ERROR.send(player, pool, acc);
 				return;

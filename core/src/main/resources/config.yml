@@ -23,9 +23,9 @@ database:
   # (FOR ADVANCED USERS ONLY) Keep empty for default value based on host/port/database
   connectionString: ""
   tables:
-    playerAccounts: "player_accounts"
-    playerQuests: "player_quests"
-    playerPools: "player_pools"
+    questers: "questers"
+    questers quests: "questers_quests"
+    questers pools: "questers_pools"
 
 # - Quests behaviors -
 # Number of minutes before the quest can be redone
@@ -54,6 +54,8 @@ fireworks: true
 # Which clicks are acceptable for a player to do on the NPC in order to start a quest, follow a dialog...
 # (can be: RIGHT, LEFT, SHIFT_RIGHT, SHIFT_LEFT)
 npcClick: [RIGHT, SHIFT_RIGHT]
+# (FOR ADVANCED USERS ONLY) Stops the plugin from cancelling the npc click events, thus allowing NPC animations
+dont cancel npc click: false
 # Default item shown for a quest in the menus
 item: BOOK
 # Maxmium distance where starting particles are shown

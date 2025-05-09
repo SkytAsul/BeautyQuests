@@ -5,37 +5,34 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import java.util.Collections;
-import java.util.List;
 
 public class MessageReward extends AbstractReward {
 
 	public String text;
-	
+
 	public MessageReward() {}
-	
+
 	public MessageReward(String customDescription, String text) {
 		super(customDescription);
 		this.text = text;
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		MessageUtils.sendMessage(p, text, MessageType.DefaultMessageType.OFF);
-		return Collections.emptyList();
+	public void give(RewardGiveContext context) {
+		MessageUtils.sendMessage(context.getQuester(), text, MessageType.DefaultMessageType.OFF);
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new MessageReward(getCustomDescription(), text);
 	}
-	
+
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
@@ -47,7 +44,7 @@ public class MessageReward extends AbstractReward {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescriptionAsValue(text);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.WRITE_MESSAGE.send(event.getPlayer());
@@ -56,17 +53,17 @@ public class MessageReward extends AbstractReward {
 			event.reopenGUI();
 		}).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("text", text);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		text = section.getString("text");
 	}
-	
+
 }

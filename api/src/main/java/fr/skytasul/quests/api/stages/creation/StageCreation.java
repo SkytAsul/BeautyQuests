@@ -1,11 +1,5 @@
 package fr.skytasul.quests.api.stages.creation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -21,6 +15,12 @@ import fr.skytasul.quests.api.serializable.SerializableCreator;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.options.StageOption;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class StageCreation<T extends AbstractStage> {
 

@@ -6,11 +6,10 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import java.util.List;
 
 public class WaitReward extends AbstractReward {
 	
@@ -54,13 +53,12 @@ public class WaitReward extends AbstractReward {
 	}
 	
 	@Override
-	public List<String> give(Player p) {
+	public void give(RewardGiveContext context) {
 		try {
 			Thread.sleep(delay * 50L);
 		}catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 	
 	@Override

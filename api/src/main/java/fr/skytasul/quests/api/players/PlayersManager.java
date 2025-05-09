@@ -1,24 +1,31 @@
 package fr.skytasul.quests.api.players;
 
-import java.util.Collection;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.questers.QuesterProvider;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.data.SavableData;
+import org.jetbrains.annotations.UnmodifiableView;
+import java.util.Collection;
+import java.util.List;
 
-public interface PlayersManager {
+public interface PlayersManager extends QuesterProvider {
 
-	public abstract void save();
+	@Override
+	@NotNull
+	@UnmodifiableView
+	Collection<? extends PlayerQuester> getLoadedQuesters();
 
-	public void addAccountData(@NotNull SavableData<?> data);
+	@Override
+	default @NotNull @UnmodifiableView Collection<? extends PlayerQuester> getPlayerQuesters(@NotNull Player player) {
+		var quester = getQuester(player);
+		return quester == null ? List.of() : List.of(quester);
+	}
 
-	public @NotNull Collection<@NotNull SavableData<?>> getAccountDatas();
+	public @UnknownNullability PlayerQuester getQuester(@NotNull Player p);
 
-	public @UnknownNullability PlayerAccount getAccount(@NotNull Player p);
-
-	public static @UnknownNullability PlayerAccount getPlayerAccount(@NotNull Player p) {
-		return QuestsPlugin.getPlugin().getPlayersManager().getAccount(p);
+	public static @UnknownNullability PlayerQuester getPlayerAccount(@NotNull Player p) {
+		return QuestsPlugin.getPlugin().getPlayersManager().getQuester(p);
 	}
 
 }

@@ -7,8 +7,7 @@ import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -70,23 +69,25 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		Player p = e.getPlayer();
 		if (hasStarted(p) && canUpdate(p)) {
 			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
-				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
-				if (amount <= 1) {
-					finishStage(p);
-				}else {
-					updateObjective(p, "amount", --amount);
+				for (Quester quester : controller.getApplicableQuesters(p)) {
+					long amount = getRemainingAmount(quester);
+					if (amount <= 1) {
+						finishStage(quester);
+					} else {
+						updateObjective(quester, "amount", --amount);
+					}
 				}
 			}
 		}
 	}
 
 	@Override
-	public long getPlayerAmount(PlayerAccount acc) {
+	public long getRemainingAmount(Quester acc) {
 		return getData(acc, "amount", Long.class);
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		datas.put("amount", amount);
 	}
 

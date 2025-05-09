@@ -1,11 +1,8 @@
 package fr.skytasul.quests.stages.options;
 
-import fr.skytasul.quests.api.BossBarManager.BQBossBar;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
@@ -16,9 +13,12 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBar.Color;
+import net.kyori.adventure.bossbar.BossBar.Overlay;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class StageOptionProgressBar<T extends AbstractStage & HasProgress> extends StageOption<T> {
 
-	private final @NotNull Map<Player, ProgressBar> bars = new HashMap<>();
+	private final @NotNull Map<Quester, ProgressBar> bars = new HashMap<>();
 
 	public StageOptionProgressBar(@NotNull Class<T> stageClass) {
 		super(stageClass);
@@ -60,30 +60,30 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	}
 
 	@Override
-	public void stageStart(PlayerAccount acc, StageController stage) {
-		if (acc.isCurrent())
-			createBar(acc.getPlayer(), (T) stage.getStage());
+	public void stageStart(Quester quester, StageController stage) {
+		if (areBarsEnabled())
+			bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage()));
 	}
 
 	@Override
-	public void stageEnd(PlayerAccount acc, StageController stage) {
-		if (acc.isCurrent())
-			removeBar(acc.getPlayer());
+	public void stageEnd(Quester quester, StageController stage) {
+		removeBar(quester);
 	}
 
 	@Override
-	public void stageJoin(Player p, StageController stage) {
-		createBar(p, (T) stage.getStage());
+	public void stageJoin(Player p, @NotNull Quester quester, StageController stage) {
+		if (areBarsEnabled())
+			bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage())).update();
 	}
 
 	@Override
-	public void stageLeave(Player p, StageController stage) {
-		removeBar(p);
+	public void stageLeave(Player p, @NotNull Quester quester, StageController stage) {
+		removeBar(quester);
 	}
 
 	@Override
-	public void stageUpdated(@NotNull Player player, @NotNull StageController stage) {
-		ProgressBar bar = bars.get(player);
+	public void stageUpdated(@NotNull Quester quester, @NotNull StageController stage) {
+		ProgressBar bar = bars.get(quester);
 		if (bar != null)
 			bar.update();
 	}
@@ -99,60 +99,51 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	}
 
 	public boolean areBarsEnabled() {
-		return getProgressConfig().areBossBarsEnabled() && QuestsAPI.getAPI().hasBossBarManager();
+		return getProgressConfig().areBossBarsEnabled();
 	}
 
-	protected void createBar(@NotNull Player p, T progress) {
-		if (areBarsEnabled()) {
-			if (bars.containsKey(p)) { // NOSONAR Map#computeIfAbsent cannot be used here as we should log the issue
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Trying to create an already existing bossbar for player " + p.getName());
-				return;
-			}
-			bars.put(p, new ProgressBar(p, progress));
-		}
-	}
-
-	protected void removeBar(@NotNull Player p) {
-		if (bars.containsKey(p))
-			bars.remove(p).remove();
+	protected void removeBar(@NotNull Quester quester) {
+		if (bars.containsKey(quester))
+			bars.remove(quester).remove();
 	}
 
 	class ProgressBar {
-		private final PlayerAccount acc;
-		private final BQBossBar bar;
+		private final Quester quester;
 		private final T progress;
 		private final long totalAmount;
 		private final PlaceholderRegistry placeholders;
 
+		private final BossBar bar;
+
 		private BukkitTask timer;
 
-		public ProgressBar(Player p, T progress) {
+		public ProgressBar(Quester quester, T progress) {
+			this.quester = quester;
 			this.progress = progress;
-			this.acc = PlayersManager.getPlayerAccount(p);
 			this.totalAmount = progress.getTotalAmount();
 			this.placeholders = PlaceholderRegistry.combine(progress); // to make a copy
 			ProgressPlaceholders.registerProgress(placeholders, "progress", progress);
 
-			BarStyle style = null;
+			Overlay style = null;
 			if (totalAmount % 20 == 0) {
-				style = BarStyle.SEGMENTED_20;
+				style = Overlay.NOTCHED_20;
 			} else if (totalAmount % 10 == 0) {
-				style = BarStyle.SEGMENTED_10;
+				style = Overlay.NOTCHED_10;
 			} else if (totalAmount % 12 == 0) {
-				style = BarStyle.SEGMENTED_12;
+				style = Overlay.NOTCHED_12;
 			} else if (totalAmount % 6 == 0) {
-				style = BarStyle.SEGMENTED_6;
+				style = Overlay.NOTCHED_6;
 			} else
-				style = BarStyle.SOLID;
+				style = Overlay.PROGRESS;
 
-			bar = QuestsAPI.getAPI().getBossBarManager().buildBossBar("tmp", BarColor.YELLOW, style);
+			bar = BossBar.bossBar(Component.empty(), 0, Color.YELLOW, style);
+
 			update();
-			bar.addPlayer(p);
+			bar.addViewer(quester);
 		}
 
 		public void remove() {
-			bar.removeAll();
+			bar.removeViewer(quester);
 			if (timer != null)
 				timer.cancel();
 		}
@@ -160,17 +151,19 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 		public void update() {
 			timer();
 
-			long playerRemaining = progress.getPlayerAmount(acc);
+			long playerRemaining = progress.getRemainingAmount(quester);
 			if (playerRemaining >= 0 && playerRemaining <= totalAmount) {
-				bar.setProgress((totalAmount - playerRemaining) * 1D / totalAmount);
+				float progress = (totalAmount - playerRemaining) * 1F / totalAmount;
+				bar.progress(progress);
 			} else
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Amount of objects invalid in " + progress.getController().toString()
-								+ " for player " + acc.getNameAndID() + ": " + playerRemaining + " / " + totalAmount);
+				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+						"Amount of objects invalid in {} for player {}: {}/{}",
+						progress.getController(), quester.getFriendlyName(), playerRemaining, totalAmount);
 
-			bar.setTitle(MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
-					PlaceholdersContext.of(acc.getPlayer(), true, null)));
-			bar.addPlayer(acc.getPlayer());
+			String formattedName = MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
+					PlaceholdersContext.of(quester, true, null));
+			bar.name(LegacyComponentSerializer.legacySection().deserialize(formattedName));
+			bar.addViewer(quester);
 		}
 
 		private void timer() {
@@ -181,7 +174,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 				timer.cancel();
 
 			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
-				bar.removePlayer(acc.getPlayer());
+				bar.removeViewer(quester);
 				timer = null;
 			}, getProgressConfig().getBossBarTimeout() * 20L);
 		}

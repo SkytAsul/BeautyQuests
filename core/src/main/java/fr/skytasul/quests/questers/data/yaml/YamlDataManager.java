@@ -1,0 +1,172 @@
+package fr.skytasul.quests.questers.data.yaml;
+
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.questers.data.QuesterDataManager;
+import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
+import net.kyori.adventure.key.Key;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class YamlDataManager implements QuesterDataManager {
+
+	private static final int ACCOUNTS_THRESHOLD = 1000;
+
+	// We map each identifier to an integer because we don't know if the identifier is a valid filename
+	private final Map<FullIdentifier, Integer> integerIndex = new ConcurrentHashMap<>();
+
+	/**
+	 * Allows to keep track of which yaml file is already loaded, so that we do not end up with 2 quest
+	 * data accessing the same file and eventually losing data.
+	 */
+	private final Map<Integer, YamlQuesterData> cachedData = new HashMap<>();
+
+	protected final Path dataPath = QuestsPlugin.getPlugin().getDataFolder().toPath().resolve("players");
+
+	@Override
+	public void load() throws DataLoadingException {
+		try {
+			Files.createDirectories(dataPath);
+
+			FileConfiguration config = BeautyQuests.getInstance().getDataFile();
+			if (config.isConfigurationSection("players")) {
+				// TODO remove : migration 2.0
+				for (String key : config.getConfigurationSection("players").getKeys(false)) {
+					String identifier = config.getString("players." + key);
+					var section = config.createSection("identifiers." + key);
+					section.set("provider", QuestsPlugin.getPlugin().getPlayersManager().key().asString());
+					section.set("identifier", identifier);
+				}
+				config.set("players", null);
+			}
+
+			if (config.isConfigurationSection("identifiers")) {
+				for (String idString : config.getConfigurationSection("identifiers").getKeys(false)) {
+					int id = Integer.parseInt(idString);
+					var section = config.getConfigurationSection("identifiers." + idString);
+					integerIndex.put(new FullIdentifier(Key.key(section.getString("provider")), section.getString("identifier")), id);
+				}
+			}
+
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", integerIndex.size());
+
+			if (integerIndex.size() >= ACCOUNTS_THRESHOLD)
+				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+						"""
+								⚠ WARNING - {} players are registered on this server.
+								It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
+								In order to do that, setup your database credentials in config.yml (without enabling it) and run the command
+								/quests migrateDatas. Then follow steps on screen.
+								""",
+						integerIndex.size());
+		} catch (IOException ex) {
+			throw new DataLoadingException(ex);
+		}
+	}
+
+	private int getNextIndex() {
+		return Collections.max(integerIndex.values()) + 1;
+	}
+
+	@Override
+	public @NotNull CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request) {
+		return CompletableFuture.supplyAsync(() -> {
+			var fullIdentifier = new FullIdentifier(request.providerKey(), request.identifier());
+
+			int id;
+			QuesterFetchResult.Type successType;
+			if (integerIndex.containsKey(fullIdentifier)) {
+				// quester exists
+				id = integerIndex.get(fullIdentifier);
+				successType = Type.SUCCESS_LOADED;
+			} else if (request.createIfMissing()) {
+				// quester does not exist, we create it
+				id = getNextIndex();
+				integerIndex.put(fullIdentifier, id);
+				successType = Type.SUCCESS_CREATED;
+			} else
+				return new QuesterFetchResult(QuesterFetchResult.Type.FAILED_NOT_FOUND, null);
+
+			YamlQuesterData dataHandler;
+			if (cachedData.containsKey(id)) {
+				dataHandler = cachedData.get(id);
+			} else {
+				dataHandler = new YamlQuesterData(id, this);
+				if (request.shouldCache())
+					cachedData.put(id, dataHandler);
+			}
+
+			return new QuesterFetchResult(successType, dataHandler);
+		});
+	}
+
+	@Override
+	public CompletableFuture<Integer> resetQuestData(int questId) {
+		return CompletableFuture.supplyAsync(() -> {
+			int amount = 0;
+			for (FullIdentifier identifier : integerIndex.keySet()) {
+				int dataId = integerIndex.get(identifier);
+				try {
+					if (cachedData.containsKey(dataId)) {
+						if (cachedData.get(dataId).removeQuestDataSilently(questId) != null)
+							amount++;
+					} else {
+						var data = new YamlQuesterData(questId, this);
+						if (data.removeQuestDataSilently(questId) != null) {
+							amount++;
+							data.save();
+						}
+					}
+				} catch (DataSavingException ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to reset quest {} data for {}", ex, questId,
+							identifier);
+				}
+			}
+			return amount;
+		});
+	}
+
+	@Override
+	public CompletableFuture<Integer> resetPoolData(int poolId) {
+		// TODO
+		return null;
+	}
+
+	@Override
+	public void save() throws DataSavingException {
+		var section = BeautyQuests.getInstance().getDataFile().createSection("identifiers");
+		integerIndex.forEach((fullIdentifier, id) -> {
+			var dataSection = section.createSection(id.toString());
+			dataSection.set("provider", fullIdentifier.provider().asString());
+			dataSection.set("identifier", fullIdentifier.identifier());
+		});
+	}
+
+	@Override
+	public void unload() {
+		// nothing to do: the files are never kept open
+		cachedData.clear();
+	}
+
+	protected void uncache(YamlQuesterData data) {
+		cachedData.remove(data.getId());
+	}
+
+	record FullIdentifier(@NotNull Key provider, @NotNull String identifier) {
+		@Override
+		public final String toString() {
+			return provider.asString() + '|' + identifier;
+		}
+	}
+
+}

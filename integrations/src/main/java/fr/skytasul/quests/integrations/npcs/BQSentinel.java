@@ -1,8 +1,8 @@
 package fr.skytasul.quests.integrations.npcs;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,9 +46,9 @@ public class BQSentinel {
 			return false;
 		}
 		
-		private boolean test(LivingEntity ent, String value, BiPredicate<Quest, PlayerAccount> test) {
+		private boolean test(LivingEntity ent, String value, BiPredicate<Quest, Quester> test) {
 			if (ent instanceof Player) {
-				PlayerAccount acc = PlayersManager.getPlayerAccount((Player) ent);
+				Quester acc = PlayersManager.getPlayerAccount((Player) ent);
 				if (acc != null) {
 					try {
 						int questID = Integer.parseInt(value);

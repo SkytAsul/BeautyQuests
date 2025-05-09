@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.events;
 
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 
 /**
@@ -10,7 +10,7 @@ import fr.skytasul.quests.api.quests.Quest;
  */
 public class PlayerQuestResetEvent extends PlayerQuestEvent {
 
-	public PlayerQuestResetEvent(@NotNull PlayerAccount account, @NotNull Quest quest) {
+	public PlayerQuestResetEvent(@NotNull Quester account, @NotNull Quest quest) {
 		super(account, quest);
 	}
 

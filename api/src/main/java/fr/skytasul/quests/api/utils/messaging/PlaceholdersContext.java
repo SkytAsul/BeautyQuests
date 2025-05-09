@@ -1,35 +1,35 @@
 package fr.skytasul.quests.api.utils.messaging;
 
-import org.bukkit.command.CommandSender;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
 
 public interface PlaceholdersContext {
 
-	static final @NotNull PlaceholdersContext DEFAULT_CONTEXT = of(null, true, null);
+	static final @NotNull PlaceholdersContext DEFAULT_CONTEXT = of((Audience) null, true, null);
 
 	@Nullable
-	CommandSender getActor();
+	Audience getAudience();
 
 	boolean replacePluginPlaceholders();
 
 	@Nullable MessageType getMessageType();
 
-	static PlaceholdersContext of(@Nullable CommandSender actor, boolean replacePluginPlaceholders,
+	static PlaceholdersContext of(@Nullable Audience audience, boolean replacePluginPlaceholders,
 			@Nullable MessageType messageType) {
 		return new PlaceholdersContext() {
+			@Override
+			public @NotNull Audience getAudience() {
+				return audience;
+			}
 
 			@Override
 			public boolean replacePluginPlaceholders() {
 				return replacePluginPlaceholders;
-			}
-
-			@Override
-			public @Nullable CommandSender getActor() {
-				return actor;
 			}
 
 			@Override
@@ -42,6 +42,10 @@ public interface PlaceholdersContext {
 	static PlayerPlaceholdersContext of(@Nullable Player actor, boolean replacePluginPlaceholders,
 			@Nullable MessageType messageType) {
 		return new PlayerPlaceholdersContext() {
+			@Override
+			public @Nullable Audience getAudience() {
+				return actor == null ? null : QuestsPlugin.getPlugin().getAudiences().player(actor);
+			}
 
 			@Override
 			public boolean replacePluginPlaceholders() {
@@ -60,15 +64,32 @@ public interface PlaceholdersContext {
 		};
 	}
 
-	public interface PlayerPlaceholdersContext extends PlaceholdersContext {
-
-		@Override
-		@Nullable
-		Player getActor();
+	public interface QuesterPlaceholdersContext extends PlaceholdersContext {
 
 		@NotNull
-		default PlayerAccount getPlayerAccount() {
+		Quester getQuester();
+
+		@Override
+		default @NotNull Audience getAudience() {
+			return getQuester();
+		}
+
+	}
+
+	public interface PlayerPlaceholdersContext extends QuesterPlaceholdersContext {
+
+		@NotNull
+		Player getActor();
+
+		@Override
+		@NotNull
+		default Quester getQuester() {
 			return PlayersManager.getPlayerAccount(getActor());
+		}
+
+		@Override
+		default @NotNull Audience getAudience() {
+			return QuestsPlugin.getPlugin().getAudiences().player(getActor());
 		}
 
 	}

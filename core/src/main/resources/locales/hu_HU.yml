@@ -70,7 +70,7 @@ msg:
     zero: '§cMás számot kell írnod mint 0!'
     invalid: '§c{input} nem egy érvényes szám.'
     notInBounds: '§cA számodnak {min} és {max} érték között kell lennie!'
-  errorOccurred: '§cEgy hiba lépett fel, keress megy egy Admint! §4§lHiba kód: {error}'
+  errorOccurred: '§cEgy hiba lépett fel, keress meg egy Admint! §4§lHiba kód: {error}'
   indexOutOfBounds: '§cA(z) {index} szám a határokon kívűlre esik. {min} és {max} között kell lennie.'
   invalidBlockData: '§cA {block_data} blockdata érvénytelen vagy inkompatibilis a(z) {block_material} blokknál.'
   invalidBlockTag: '§cNem elérhető block tag: {block_tag}.'

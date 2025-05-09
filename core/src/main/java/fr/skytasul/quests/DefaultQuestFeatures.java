@@ -32,7 +32,7 @@ import fr.skytasul.quests.rewards.*;
 import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.compatibility.BQBossBarImplementation;
+import net.kyori.adventure.identity.Identity;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -284,14 +284,14 @@ public final class DefaultQuestFeatures {
 
 	public static void registerMisc() {
 		QuestsAPI.getAPI().registerMobFactory(new BukkitEntityFactory());
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().setBossBarManager(new BQBossBarImplementation());
 	}
 
 	public static void registerMessageProcessors() {
 		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
-				.registerContextual("player", PlaceholdersContext.class, context -> context.getActor().getName())
-				.registerContextual("PLAYER", PlaceholdersContext.class, context -> context.getActor().getName())
+				.registerContextual("player", PlaceholdersContext.class,
+						context -> context.getAudience().get(Identity.NAME).orElse(null))
+				.registerContextual("PLAYER", PlaceholdersContext.class,
+						context -> context.getAudience().get(Identity.NAME).orElse(null))
 				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
 				.register("nl", "\n");
 

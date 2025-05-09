@@ -1,19 +1,16 @@
 package fr.skytasul.quests.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
+import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -21,6 +18,11 @@ import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class contains most of the useful accessors to fetch data from BeautyQuests and methods to
@@ -52,6 +54,14 @@ public interface QuestsAPI {
 	 */
 	@NotNull
 	QuestPoolsManager getPoolsManager();
+
+	/**
+	 * Gets the quester manager, which provides methods to manage questers and savable data.
+	 *
+	 * @return the quester manager
+	 */
+	@NotNull
+	QuesterManager getQuesterManager();
 
 	/**
 	 * Registers a new mob factory.
@@ -165,32 +175,6 @@ public interface QuestsAPI {
 	void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager);
 
 	/**
-	 * Checks if there is a boss bar manager registered.
-	 *
-	 * @return <code>true</code> if {@link #getBossBarManager()} will not return <code>null</code>,
-	 *         <code>false</code> otherwise
-	 */
-	default boolean hasBossBarManager() {
-		return getBossBarManager() != null;
-	}
-
-	/**
-	 * Gets the currently registered boss bars manager.
-	 *
-	 * @return the current boss bars manager
-	 */
-	@Nullable
-	BossBarManager getBossBarManager();
-
-	/**
-	 * Sets the plugin's boss bars manager to the one passed as argument.<br>
-	 * If there is already a boss bars manager registered, this one will replace it.
-	 *
-	 * @param newBossBarManager boss bars manager to register
-	 */
-	void setBossBarManager(@NotNull BossBarManager newBossBarManager);
-
-	/**
 	 * Gets the blocks manager, which provides methods to register custom block types and deserialize
 	 * blocks.
 	 *
@@ -248,6 +232,23 @@ public interface QuestsAPI {
 	 * @param processor processor
 	 */
 	void registerMessageProcessor(@NotNull String key, int priority, @NotNull MessageProcessor processor);
+
+	/**
+	 * Gets the currently registered message sender. It is responsible for displaying dialog messages to
+	 * players.
+	 *
+	 * @return the message sender
+	 */
+	@NotNull
+	MessageSender getMessageSender();
+
+	/**
+	 * Sets the new message sender.
+	 *
+	 * @param sender the new message sender
+	 * @see #getMessageSender()
+	 */
+	void setMessageSender(@NotNull MessageSender sender);
 
 	/**
 	 * Utility method to get an instance of the API object.

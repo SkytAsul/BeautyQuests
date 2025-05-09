@@ -2,8 +2,8 @@ package fr.skytasul.quests.options;
 
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionBoolean;
-import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -22,7 +22,7 @@ public class OptionFailOnDeath extends QuestOptionBoolean implements Listener {
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(e.getEntity());
+		Quester acc = PlayersManager.getPlayerAccount(e.getEntity());
 		if (acc == null) return;
 		if (getAttachedQuest().hasStarted(acc)) {
 			getAttachedQuest().cancelPlayer(acc);

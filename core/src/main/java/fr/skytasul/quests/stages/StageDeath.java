@@ -42,7 +42,8 @@ public class StageDeath extends AbstractStage implements Listener {
 			if (!causes.contains(lastDamage.getCause())) return;
 		}
 
-		if (canUpdate(p, true)) finishStage(p);
+		if (canUpdate(p, true))
+			controller.getApplicableQuesters(p).forEach(this::finishStage);
 	}
 
 	@Override

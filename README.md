@@ -37,7 +37,7 @@ In *pom.xml*, add this to the `repositories` section:
 ```xml
 <repository>
   <id>codemc</id>
-  <url>https://repo.codemc.org/repository/maven-public</url>
+  <url>https://repo.codemc.org/repository/skytasul</url>
 </repository>
 ```
 And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `1.0-SNAPSHOT`)

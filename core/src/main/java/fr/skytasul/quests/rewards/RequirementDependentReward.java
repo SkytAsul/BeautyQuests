@@ -12,15 +12,14 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -50,20 +49,20 @@ public class RequirementDependentReward extends AbstractReward {
 	@Override
 	public void detach() {
 		super.detach();
-		requirements.forEach(AbstractRequirement::detach);
-		rewards.forEach(AbstractReward::detach);
+		requirements.detachQuest();
+		rewards.detachQuest();
 	}
 
 	@Override
-	public List<String> give(Player p) throws InterruptingBranchException {
-		if (requirements.allMatch(p, false))
-			return rewards.giveRewards(p);
-		return null;
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers())
+			if (requirements.allMatch(player, false))
+				rewards.giveSubrewards(player, context);
 	}
 
 	@Override
 	public boolean isAsync() {
-		return rewards.stream().anyMatch(AbstractReward::isAsync);
+		return rewards.hasAsync();
 	}
 
 	@Override
@@ -73,14 +72,14 @@ public class RequirementDependentReward extends AbstractReward {
 	}
 
 	@Override
-	public String getDefaultDescription(Player p) {
-		return requirements.allMatch(p, false)
-				? rewards
+	public String getDefaultDescription(@Nullable Player p) {
+		if (p == null || !requirements.allMatch(p, false))
+			return null;
+		return rewards
 				.stream()
 				.map(xreq -> xreq.getDescription(p))
 				.filter(Objects::nonNull)
-				.collect(Collectors.joining("{JOIN}"))
-				: null;
+				.collect(Collectors.joining("{JOIN}"));
 	}
 
 	@Override

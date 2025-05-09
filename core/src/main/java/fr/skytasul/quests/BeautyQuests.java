@@ -18,9 +18,12 @@ import fr.skytasul.quests.editor.EditorManagerImplementation;
 import fr.skytasul.quests.gui.GuiManagerImplementation;
 import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
 import fr.skytasul.quests.options.OptionAutoQuest;
-import fr.skytasul.quests.players.AbstractPlayersManager;
-import fr.skytasul.quests.players.database.PlayersManagerDB;
-import fr.skytasul.quests.players.yaml.PlayersManagerYAML;
+import fr.skytasul.quests.players.PlayerManagerImplementation;
+import fr.skytasul.quests.players.accounts.PlayerManagerAccountsHookImplementation;
+import fr.skytasul.quests.questers.QuesterManagerImplementation;
+import fr.skytasul.quests.questers.data.QuesterDataManager;
+import fr.skytasul.quests.questers.data.sql.SqlDataManager;
+import fr.skytasul.quests.questers.data.yaml.YamlDataManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.QuestsManagerImplementation;
@@ -29,18 +32,17 @@ import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
-import fr.skytasul.quests.utils.logger.LoggerHandler;
+import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,6 +50,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,7 +64,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
@@ -82,7 +84,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private File dataFile;
 	private File saveFolder;
 
-	private Path backupDir = null;
+	private boolean doneBackup = false;
 
 	/* --------- Datas --------- */
 
@@ -90,7 +92,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable ScoreboardManager scoreboards;
 	private @Nullable QuestsManagerImplementation quests;
 	private @Nullable QuestPoolsManagerImplementation pools;
-	private @Nullable AbstractPlayersManager players;
+	private @Nullable QuesterManagerImplementation questerManager;
+	private @Nullable PlayerManagerImplementation players;
 
 	/* ---------- Operations -------- */
 
@@ -102,9 +105,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @NotNull IntegrationManager integrations = new IntegrationManager();
 	private @Nullable CommandsManagerImplementation command;
 	private @Nullable LoggerExpanded logger;
-	private @Nullable LoggerHandler loggerHandler;
+	private @Nullable BqLoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
+	private @Nullable BukkitAudiences audiences;
 
 	/* ---------------------------------------------- */
 
@@ -114,17 +118,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		checkPaper();
 		initLibraries();
-
-		loggerHandler = null;
-		try{
-			if (!getDataFolder().exists()) getDataFolder().mkdir();
-			loggerHandler = new LoggerHandler(this);
-			getLogger().addHandler(loggerHandler);
-		}catch (Throwable ex){
-			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
-		}
-
-		logger = new LoggerExpanded(getLogger(), loggerHandler);
+		initLogger();
 
 		try {
 			initApi();
@@ -150,14 +144,16 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.warning("You are not running the Paper software.\n"
 						+ "It is highly recommended to use it for extended features and more stability.");
 
+			audiences = BukkitAudiences.create(this);
+
 			saveDefaultConfig();
 			NMS.isValid(); // to force initialization
 
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
-			loadConfigParameters(true);
 			checkLastVersion();
+			loadConfigParameters(true);
 
 			registerCommands();
 
@@ -202,7 +198,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
-			if (loggerHandler != null) loggerHandler.launchFlushTimer();
 			launchMetrics(pluginVersion);
 			try {
 				launchUpdateChecker(pluginVersion);
@@ -296,6 +291,20 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				.build());*/
 	}
 
+	private void initLogger() {
+		loggerHandler = null;
+		try {
+			getDataFolder().mkdir();
+			loggerHandler = new BqLoggerHandler(this);
+			getLogger().addHandler(loggerHandler);
+			getLogger().setLevel(LoggerExpanded.DEBUG_LEVEL);
+		} catch (Throwable ex) {
+			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
+		}
+
+		logger = new LoggerExpanded(getLogger());
+	}
+
 	private void initApi() throws ReflectiveOperationException {
 		Method setMethod = QuestsAPIProvider.class.getDeclaredMethod("setAPI", QuestsAPI.class);
 		setMethod.setAccessible(true); // NOSONAR
@@ -380,13 +389,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		logger.debug("Starting Spigot updater");
 		UpdateChecker checker;
 		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("_BUILD(\\d+)").matcher(pluginVersion);
+			Matcher matcher = Pattern.compile("\\+build\\.(\\d+)").matcher(pluginVersion);
 			if (matcher.find()) {
 				String build = matcher.group(1);
-				checker = new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://ci.codemc.io/job/SkytAsul/job/BeautyQuests/lastSuccessfulBuild/buildNumber")
+				checker = new UpdateChecker(this, UpdateCheckSource.GITHUB_RELEASE_TAG, "SkytAsul/BeautyQuests")
 						.setUserAgent("")
 						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
-						.setUsedVersion(build)
+						.setUsedVersion("build/" + build)
 						.setNameFreeVersion("(dev builds)");
 			}else {
 				logger.warning("Unknown plugin version, cannot check for updates.");
@@ -397,7 +406,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 					.setDownloadLink(39255);
 		}
 		checker
-				.setDonationLink("https://paypal.me/SkytAsul")
+				.setDonationLink("https://ko-fi.com/skytasul")
 				.setSupportLink("https://discord.gg/H8fXrkD")
 				.setNotifyOpsOnJoin(false)
 				.setColoredConsoleOutput(true)
@@ -418,11 +427,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 
-			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
-			if (dbConfig.getBoolean("enabled")) {
+			if (config.getDatabaseConfig().isEnabled()) {
 				db = null;
 				try {
-					db = new Database(dbConfig);
+					db = new Database(config.getDatabaseConfig());
 					db.testConnection();
 					logger.info("Connection to database etablished.");
 				}catch (Exception ex) {
@@ -431,7 +439,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 
-			players = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			QuesterDataManager questerDataManager = db == null ? new YamlDataManager() : new SqlDataManager(db);
+			questerManager = new QuesterManagerImplementation(questerDataManager);
+			if (config.hookAccounts()) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
+				players = new PlayerManagerAccountsHookImplementation(questerManager);
+			} else
+				players = new PlayerManagerImplementation(questerManager);
 
 			/*				static initialization				*/
 			if (init) {
@@ -515,9 +529,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
 				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
-				backupDir = backupDir();
-				createFolderBackup(backupDir);
-				createDataBackup(backupDir);
+
+				// TODO manage incompatible upgrade (e.g. pre-1.0)
+
+				try {
+					performBackup();
+					doneBackup = true;
+				} catch (IOException ex) {
+					logger.warning("Failed to create a backup", ex);
+				}
 			}
 		}else lastVersion = getDescription().getVersion();
 	}
@@ -535,13 +555,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		try{
-			if (db == null && backupDir != null)
-				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
-
-			players.load();
+			questerManager.load();
+			players.loadOnlinePlayers();
 		}catch (Exception ex) {
-			if (backupDir == null) createDataBackup(backupDir());
 			logger.severe("Error while loading player datas.", ex);
+
+			if (!doneBackup) {
+				try {
+					performBackup();
+					doneBackup = true;
+				} catch (IOException exBackup) {
+					logger.warning("Failed to create a backup.", exBackup);
+				}
+			}
 		}
 
 		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
@@ -575,9 +601,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				players.loadPlayer(p);
-			}
+			players.loadOnlinePlayers();
 			loaded = true;
 		}, 1L);
 	}
@@ -601,7 +625,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			data.set("version", getDescription().getVersion());
 
 			try {
-				players.save();
+				questerManager.saveAll();
 			}catch (Exception ex) {
 				logger.severe("Error when saving player datas.", ex);
 			}
@@ -630,74 +654,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	/* ---------- Backups ---------- */
 
-	public boolean createFolderBackup(Path backup) {
-		if (!config.backups)
-			return false;
-		logger.info("Creating quests backup...");
-		Path backupDir = backup.resolve("quests");
-		Path saveFolderPath = saveFolder.toPath();
-		try (Stream<Path> stream = Files.walk(saveFolderPath)) {
-			Files.createDirectories(backupDir);
-			stream.forEach(path -> {
-				if (path.equals(saveFolderPath)) return;
-				try {
-					Files.copy(path, backupDir.resolve(saveFolderPath.relativize(path)));
-				}catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
-			logger.info("Quests backup created in " + backupDir.getFileName().toString());
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
-	public boolean createDataBackup(Path backup) {
-		if (!config.backups)
-			return false;
-		logger.info("Creating data backup...");
-		try{
-			Path target = backup.resolve("data.yml");
-			if (Files.exists(target)) {
-				logger.warning("File " + target.toString() + " already exist. This should not happen.");
-			}else {
-				Files.createDirectories(backup);
-				logger.info("Datas backup created in " + Files.copy(dataFile.toPath(), target).getParent().getFileName());
-			}
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
-	public boolean createPlayerDatasBackup(Path backup, PlayersManagerYAML yamlManager) {
-		if (!config.backups)
-			return false;
-
-		logger.info("Creating player datas backup...");
-		Path backupDir = backup.resolve("players");
-		Path playersFolderPath = yamlManager.getDirectory().toPath();
-		try (Stream<Path> stream = Files.walk(playersFolderPath)) {
-			Files.createDirectories(backupDir);
-			stream.forEach(path -> {
-				if (path.equals(playersFolderPath)) return;
-				try {
-					Files.copy(path, backupDir.resolve(playersFolderPath.relativize(path)));
-				}catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
-			logger.info("Player datas backup created in " + backupDir.getFileName().toString());
-			return true;
-		}catch (Exception e) {
-			logger.severe("An error occured while creating the backup.", e);
-			return false;
-		}
-	}
-
 	public boolean createQuestBackup(Path file, String msg) {
 		if (!config.backups)
 			return false;
@@ -718,8 +674,29 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'-'hh'-'mm'-'ss");
 
-	public Path backupDir() {
-		return getDataFolder().toPath().resolve("backup-" + format.format(new Date()));
+	public void performBackup() throws IOException {
+		Path dataDir = getDataFolder().toPath();
+		Path backupDir = dataDir.resolve("backup-" + format.format(new Date()));
+		Files.createDirectory(backupDir);
+
+		var files = Files.list(dataDir)
+				.filter(path -> !path.getFileName().toString().startsWith("backup-"))
+				.filter(path -> !path.getFileName().toString().equals("locales"))
+				.filter(path -> !path.getFileName().toString().endsWith(".log"))
+				.toList();
+
+		for (Path file : files) {
+			Files.walk(file).forEach(source -> {
+				Path destination = backupDir.resolve(dataDir.relativize(source));
+				try {
+					Files.copy(source, destination);
+				} catch (IOException ex) {
+					throw new UncheckedIOException(ex);
+				}
+			});
+		}
+
+		logger.info("Performed backup at {0}.", backupDir);
 	}
 
 	public void performReload(CommandSender sender){
@@ -857,16 +834,30 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	@Override
-	public @NotNull AbstractPlayersManager getPlayersManager() {
+	public @NotNull PlayerManagerImplementation getPlayersManager() {
 		return ensureLoaded(players);
 	}
 
+	public @NotNull QuesterManagerImplementation getQuesterManager() {
+		return ensureLoaded(questerManager);
+	}
+
+	@Override
+	public @NotNull BukkitAudiences getAudiences() {
+		return ensureLoaded(audiences);
+	}
+
+	@Override
 	public boolean isRunningPaper() {
 		return paperCompat != null;
 	}
 
 	public Optional<Paper> getPaperCompatibility() {
 		return Optional.ofNullable(paperCompat);
+	}
+
+	public boolean isCompletelyLoaded() {
+		return loaded;
 	}
 
 

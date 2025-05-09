@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 	
 	public Consumer<Quest> run;
 
-	public QuestsListGUI(Consumer<Quest> run, PlayerAccount acc, boolean started, boolean notStarted, boolean finished){
+	public QuestsListGUI(Consumer<Quest> run, Quester acc, boolean started, boolean notStarted, boolean finished){
 		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, Quest::getName);
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc));

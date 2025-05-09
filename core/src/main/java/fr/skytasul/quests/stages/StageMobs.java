@@ -1,11 +1,12 @@
 package fr.skytasul.quests.stages;
 
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
@@ -20,6 +21,7 @@ import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
+import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.mobs.Mob;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatable.MultipleLocatable, Listener {
 
 	private boolean shoot = false;
+	private boolean preventNpcsForVanilla = true;
 
 	public StageMobs(StageController controller, List<CountableObject<Mob<?>>> mobs) {
 		super(controller, mobs);
@@ -67,6 +70,14 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		if (!object.applies(otherMob.pluginMob))
 			return false;
 
+		if (preventNpcsForVanilla && object.getFactory() instanceof BukkitEntityFactory) {
+			// kinda hacky, TODO find a way to make this more flexible (list of NPC provider exclusion, other
+			// mob factories, etc..)
+			// when removing the preventNpcsForVanilla option, notify AerWyn81 on Discord
+			if (QuestsPlugin.getPlugin().getNpcManager().isNPC(otherMob.bukkitEntity))
+				return false;
+		}
+
 		if (object.getMinLevel() != null) {
 			if (object.getLevel(otherMob.bukkitEntity) < object.getMinLevel())
 				return false;
@@ -86,10 +97,10 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
+	public void started(Quester acc) {
 		super.started(acc);
-		if (acc.isCurrent() && sendStartMessage()) {
-			MessageUtils.sendRawMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
+		if (sendStartMessage()) {
+			MessageUtils.sendRawMessage(acc, Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
 					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE, MessageType.DefaultMessageType.PREFIXED));
 		}
 	}
@@ -118,6 +129,8 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	protected void serialize(ConfigurationSection section) {
 		super.serialize(section);
 		if (shoot) section.set("shoot", true);
+		if (!preventNpcsForVanilla)
+			section.set("preventNpcsForVanilla", false);
 	}
 
 	@Override
@@ -148,6 +161,9 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		stage.deserialize(section);
 
 		if (section.contains("shoot")) stage.shoot = section.getBoolean("shoot");
+		if (section.contains("preventNpcsForVanilla"))
+			stage.preventNpcsForVanilla = section.getBoolean("preventNpcsForVanilla");
+
 		return stage;
 	}
 
@@ -155,6 +171,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 
 		private List<MutableCountableObject<Mob<?>>> mobs;
 		private boolean shoot = false;
+		private boolean preventNpcsForVanilla = true;
 
 		public Creator(@NotNull StageCreationContext<StageMobs> context) {
 			super(context);
@@ -200,6 +217,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 			StageMobs stage = new StageMobs(controller,
 					mobs.stream().map(MutableCountableObject::toImmutable).collect(Collectors.toList()));
 			stage.setShoot(shoot);
+			stage.preventNpcsForVanilla = preventNpcsForVanilla;
 			return stage;
 		}
 
@@ -208,6 +226,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 			super.edit(stage);
 			setMobs(stage.getMutableObjects());
 			setShoot(stage.shoot);
+			preventNpcsForVanilla = stage.preventNpcsForVanilla;
 		}
 	}
 

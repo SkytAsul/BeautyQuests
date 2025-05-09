@@ -1,11 +1,12 @@
 package fr.skytasul.quests.api.stages;
 
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
 
 public interface StageController {
 
@@ -15,15 +16,24 @@ public interface StageController {
 
 	public @NotNull StageType<?> getStageType();
 
-	public void finishStage(@NotNull Player player);
+	/**
+	 * Constructs a collection of questers that should get advancement applied when the player does
+	 * something for the stage.
+	 *
+	 * @param player Player that did an action regarding the stage
+	 * @return a collection of questers that should be updated
+	 */
+	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player);
 
-	public boolean hasStarted(@NotNull PlayerAccount acc);
+	public void finishStage(@NotNull Quester quester);
 
-	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue);
+	public boolean hasStarted(@NotNull Quester acc);
 
-	public @Nullable String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source);
+	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue);
 
-	public <T> @Nullable T getData(@NotNull PlayerAccount acc, @NotNull String dataKey, @Nullable Class<T> dataType);
+	public @Nullable String getDescriptionLine(@NotNull Quester acc, @NotNull DescriptionSource source);
+
+	public <T> @Nullable T getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<T> dataType);
 
 	public @NotNull String getFlowId();
 

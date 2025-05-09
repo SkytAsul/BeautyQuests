@@ -1,23 +1,19 @@
 package fr.skytasul.quests.api.npcs.dialogs;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class Message implements Cloneable {
 	public String text;
@@ -34,44 +30,25 @@ public class Message implements Cloneable {
 		return wait == -1 ? QuestsConfiguration.getConfig().getDialogsConfig().getDefaultTime() : wait;
 	}
 
-	public BukkitTask sendMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
-		BukkitTask task = null;
-
-		String sent = formatMessage(p, npc, npcCustomName, id, size);
-		if (QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()) {
-			BaseComponent[] components = TextComponent.fromLegacyText(sent.replace("{nl}", " "));
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
-			if (getWaitTime() > 60) {
-				task = new BukkitRunnable() {
-					int time = 40;
-
-					@Override
-					public void run() {
-						if (!p.isOnline()) {
-							cancel();
-							return;
-						}
-
-						time += 40;
-						if (time > getWaitTime())
-							cancel();
-						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
-					}
-				}.runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), 40, 40);
-			}
-		} else
-			p.sendMessage(StringUtils.splitByWholeSeparator(sent, "{nl}"));
-
-		if (!"none".equals(sound)) {
-			String sentSound = getSound();
-			if (sentSound != null)
-				p.playSound(p.getLocation(), sentSound, 1, 1);
-		}
-
-		return task;
+	/**
+	 * Play the sound associated with the message to a player.
+	 *
+	 * @param player Player to play the sound to
+	 * @param speaker Entity that "spoke"
+	 */
+	public void playSound(@NotNull Player player, @Nullable Entity speaker) {
+		getSound().ifPresent(sound -> {
+			Location location = speaker == null ? player.getLocation() : speaker.getLocation();
+			// TODO attach the sound to the location. Investigate in which version of the game this was added.
+			player.playSound(location, sound, 1, 1);
+		});
 	}
 
-	private String getSound() {
+	public void stopSound(@NotNull Player player) {
+		getSound().ifPresent(player::stopSound);
+	}
+
+	private @NotNull Optional<String> getSound() {
 		String sentSound = sound;
 		if (sentSound == null) {
 			if (sender == Sender.PLAYER) {
@@ -80,10 +57,13 @@ public class Message implements Cloneable {
 				sentSound = QuestsConfiguration.getConfig().getDialogsConfig().getDefaultNPCSound();
 			}
 		}
-		return sentSound;
+		if ("none".equals(sentSound))
+			return Optional.empty();
+		return Optional.ofNullable(sentSound);
 	}
 
-	public String formatMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id, int size) {
+	public @NotNull String formatMessage(@NotNull Player p, @Nullable BqNpc npc, @Nullable String npcCustomName, int id,
+			int size) {
 		PlaceholderRegistry registry = new PlaceholderRegistry()
 				.registerIndexed("player_name", p.getName())
 				.registerIndexed("npc_name_message", npcCustomName)
@@ -112,14 +92,6 @@ public class Message implements Cloneable {
 				break;
 		}
 		return sent;
-	}
-
-	public void finished(Player p, boolean endOfDialog, boolean forced) {
-		if (endOfDialog || !forced)
-			return;
-		String sentSound = getSound();
-		if (sentSound != null)
-			p.stopSound(sentSound);
 	}
 
 	@Override

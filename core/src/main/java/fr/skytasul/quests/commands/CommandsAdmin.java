@@ -16,8 +16,7 @@ import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.players.AdminMode;
-import fr.skytasul.quests.players.database.PlayersManagerDB;
-import fr.skytasul.quests.players.yaml.PlayersManagerYAML;
+import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Path;
 
 public class CommandsAdmin implements OrphanCommand {
 
@@ -143,18 +141,13 @@ public class CommandsAdmin implements OrphanCommand {
 	public void backup(BukkitCommandActor actor, @Switch boolean force) {
 		if (!force) save(actor);
 
-		boolean success = true;
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Creating backup due to " + actor.name() + "'s manual command.");
-		Path backup = BeautyQuests.getInstance().backupDir();
-		if (!BeautyQuests.getInstance().createFolderBackup(backup)) {
-			Lang.BACKUP_QUESTS_FAILED.send(actor.sender());
-			success = false;
+		try {
+			BeautyQuests.getInstance().performBackup();
+			Lang.BACKUP_CREATED.send(actor.sender());
+		} catch (IOException ex) {
+			Lang.BACKUP_FAILED.send(actor.sender());
+			BeautyQuests.getInstance().getLoggerExpanded().warning("Failed to create backup", ex);
 		}
-		if (!BeautyQuests.getInstance().createDataBackup(backup)) {
-			Lang.BACKUP_PLAYERS_FAILED.send(actor.sender());
-			success = false;
-		}
-		if (success) Lang.BACKUP_CREATED.send(actor.sender());
 	}
 
 	@Subcommand ("adminMode")
@@ -226,7 +219,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("migrateDatas")
 	@CommandPermission ("beautyquests.command.manage")
 	public void migrateDatas(BukkitCommandActor actor) {
-		if (!(QuestsPlugin.getPlugin().getPlayersManager() instanceof PlayersManagerYAML))
+		if (BeautyQuests.getInstance().getQuesterManager().getDataManager() instanceof SqlDataManager)
 			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
 
 		QuestUtils.runAsync(() -> {
@@ -234,19 +227,20 @@ public class CommandsAdmin implements OrphanCommand {
 			Database db = null;
 			try {
 				// no try-with-resource because the database is used in another thread
-				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+				db = new Database(BeautyQuests.getInstance().getConfiguration().getDatabaseConfig());
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
 				final Database fdb = db;
 				QuestUtils.runSync(() -> {
 					actor.reply("§aStarting migration...");
 					try {
-						actor.reply(PlayersManagerDB.migrate(fdb,
-								(PlayersManagerYAML) QuestsPlugin.getPlugin().getPlayersManager()));
+						actor.reply("Migration is currently being re-developed.");
+						// TODO migrate
 					}catch (Exception ex) {
 						actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
 					}
+					fdb.close();
 				});
 			} catch (Exception ex) {
 				actor.error("§cConnection to database has failed. Aborting. " + ex.getMessage());

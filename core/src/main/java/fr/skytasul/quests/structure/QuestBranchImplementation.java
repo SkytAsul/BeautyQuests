@@ -1,24 +1,21 @@
 package fr.skytasul.quests.structure;
 
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.requirements.Actionnable;
-import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.AdminMode;
-import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -34,8 +31,6 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	private final List<EndingStageImplementation> endStages = new ArrayList<>(5);
 	private final List<StageControllerImplementation> regularStages = new ArrayList<>(15);
-
-	private final List<PlayerAccount> asyncReward = new ArrayList<>(5);
 
 	private final @NotNull BranchesManagerImplementation manager;
 
@@ -115,63 +110,75 @@ public class QuestBranchImplementation implements QuestBranch {
 		return endStages.stream().anyMatch(end -> end.getStage().equals(stage));
 	}
 
+	private boolean isInAsyncReward(@NotNull Quester quester) {
+		return regularStages.stream().anyMatch(x -> x.getStage().getRewards().isInAsyncReward(quester))
+				|| endStages.stream().anyMatch(x -> x.getStage().getStage().getRewards().isInAsyncReward(quester));
+	}
+
 	@Override
-	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		PlayerQuestDatas datas;
-		if (!acc.hasQuestDatas(getQuest()) || (datas = acc.getQuestDatas(getQuest())).getBranch() != getId())
-			throw new IllegalArgumentException("Account does not have this branch launched");
-		if (asyncReward.contains(acc)) return Lang.SCOREBOARD_ASYNC_END.toString();
-		if (datas.isInEndingStages()) {
+	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source) {
+		QuesterQuestData data = quester.getDataHolder().getQuestDataIfPresent(getQuest())
+				.filter(x -> x.getBranch().orElse(-1) == getId())
+				.orElseThrow(() -> new IllegalArgumentException("Account does not have this branch launched"));
+		if (isInAsyncReward(quester))
+			return Lang.SCOREBOARD_ASYNC_END.toString();
+		if (isInStageEnd(data)) {
 			return endStages.stream()
-					.map(stage -> stage.getStage().getDescriptionLine(acc, source))
+					.map(stage -> stage.getStage().getDescriptionLine(quester, source))
 					.filter(Objects::nonNull)
 					.collect(Collectors.joining("{nl}" + Lang.SCOREBOARD_BETWEEN_BRANCHES + " {nl}"));
 		}
-		if (datas.getStage() < 0)
+		if (data.getStage().isEmpty())
 			return "§cerror: no stage set for branch " + getId();
-		if (datas.getStage() >= regularStages.size()) return "§cerror: datas do not match";
+		if (data.getStage().getAsInt() >= regularStages.size())
+			return "§cerror: datas do not match";
 
-		String descriptionLine = regularStages.get(datas.getStage()).getDescriptionLine(acc, source);
+		String descriptionLine = regularStages.get(data.getStage().getAsInt()).getDescriptionLine(quester, source);
 		return MessageUtils.format(QuestsConfiguration.getConfig().getStageDescriptionConfig().getStageDescriptionFormat(),
-				PlaceholderRegistry.of("stage_index", datas.getStage() + 1, "stage_amount", regularStages.size(),
+				PlaceholderRegistry.of("stage_index", data.getStage().getAsInt() + 1, "stage_amount", regularStages.size(),
 						"stage_description", descriptionLine == null ? "" : descriptionLine));
 	}
 
 	@Override
-	public boolean hasStageLaunched(@Nullable PlayerAccount acc, @NotNull StageController stage) {
-		if (acc == null)
+	public boolean hasStageLaunched(@Nullable Quester quester, @NotNull StageController stage) {
+		if (quester == null)
 			return false;
 
-		if (asyncReward.contains(acc))
-			return false;
-		if (!acc.hasQuestDatas(getQuest()))
+		if (isInAsyncReward(quester))
 			return false;
 
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
-		if (datas.getBranch() != getId())
+		var dataOpt = quester.getDataHolder().getQuestDataIfPresent(getQuest());
+		if (dataOpt.isEmpty())
 			return false;
 
-		if (datas.isInEndingStages())
+		QuesterQuestData data = dataOpt.get();
+		if (data.getBranch().isEmpty() || data.getBranch().getAsInt() != getId())
+			return false;
+
+		if (isInStageEnd(data))
 			return isEndingStage(stage);
 
-		return getRegularStageId(stage) == datas.getStage();
+		return getRegularStageId(stage) == data.getStage().orElse(-1);
 	}
 
-	public void remove(@NotNull PlayerAccount acc, boolean end) {
-		if (!acc.hasQuestDatas(getQuest())) return;
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+	public void remove(@NotNull Quester acc, boolean end) {
+		var dataOpt = acc.getDataHolder().getQuestDataIfPresent(getQuest());
+		if (dataOpt.isEmpty())
+			return;
+
+		QuesterQuestData data = dataOpt.get();
 		if (end) {
-			if (datas.isInEndingStages()) {
+			if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
 				endStages.forEach(x -> x.getStage().end(acc));
-			} else if (datas.getStage() >= 0 && datas.getStage() < regularStages.size())
-				getRegularStage(datas.getStage()).end(acc);
+			} else if (data.getStage().isPresent() && data.getStage().getAsInt() < regularStages.size())
+				getRegularStage(data.getStage().getAsInt()).end(acc);
 		}
-		datas.setBranch(-1);
-		datas.setStage(-1);
+		data.setBranch(OptionalInt.empty());
+		data.setStage(OptionalInt.empty());
 	}
 
-	public void start(@NotNull PlayerAccount acc) {
-		acc.getQuestDatas(getQuest()).setBranch(getId());
+	public void start(@NotNull Quester acc) {
+		acc.getDataHolder().getQuestData(getQuest()).setBranch(OptionalInt.of(getId()));
 		if (!regularStages.isEmpty()){
 			setPlayerStage(acc, regularStages.get(0));
 		}else {
@@ -180,135 +187,108 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	@Override
-	public void finishPlayerStage(@NotNull Player p, @NotNull StageController stage) {
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for player " + p.getName() + " (coming from " + stage.toString() + ") via " + DebugUtils.stackTraces(1, 3));
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		@NotNull
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
-		if (datas.getBranch() != getId() || (datas.isInEndingStages() && !isEndingStage(stage))
-				|| (!datas.isInEndingStages() && datas.getStage() != getRegularStageId(stage))) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to finish stage " + stage.toString() + " for player " + p.getName() + ", but the player didn't have started it.");
+	public void finishPlayerStage(@NotNull Quester quester, @NotNull StageController stage) {
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for {} (coming from {})", quester.getDetailedName(),
+				stage);
+		QuesterQuestData datas = quester.getDataHolder().getQuestData(getQuest());
+		if (datas.getBranch().orElse(-1) != getId()
+				|| (isInStageEnd(datas) && !isEndingStage(stage))
+				|| (!isInStageEnd(datas) && datas.getStage().orElse(-1) != getRegularStageId(stage))) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+					"Trying to finish stage {} for {} but was not in progress.", stage, quester.getDetailedName());
 			return;
 		}
 
-		AdminMode.broadcast("Player " + p.getName() + " has finished the stage " + stage.getFlowId() + " of quest "
-				+ getQuest().getId());
+		AdminMode.broadcast("Quester " + quester.getFriendlyName() + " has finished the stage "
+				+ stage.getFlowId() + " of quest " + getQuest().getId());
 		datas.addQuestFlow(stage);
 		if (isEndingStage(stage)) { // ending stage
 			for (EndingStageImplementation end : endStages) {
 				if (end.getStage() != stage)
-					end.getStage().end(acc);
+					end.getStage().end(quester);
 			}
 		}
-		datas.setStage(-1);
-		endStage(acc, (StageControllerImplementation<?>) stage, () -> {
-			if (!manager.getQuest().hasStarted(acc)) return;
+		datas.setStage(OptionalInt.empty());
+		endStage(quester, (StageControllerImplementation<?>) stage, () -> {
+			if (!manager.getQuest().hasStarted(quester))
+				return;
 			if (regularStages.contains(stage)){ // not ending stage - continue the branch or finish the quest
 				int newId = getRegularStageId(stage) + 1;
 				if (newId == regularStages.size()){
 					if (endStages.isEmpty()){
-						remove(acc, false);
-						getQuest().finish(p);
+						remove(quester, false);
+						getQuest().finish(quester);
 						return;
 					}
-					setPlayerEndingStages(acc);
+					setPlayerEndingStages(quester);
 				}else {
-					setPlayerStage(acc, regularStages.get(newId));
+					setPlayerStage(quester, regularStages.get(newId));
 				}
 			}else { // ending stage - redirect to other branch
-				remove(acc, false);
+				remove(quester, false);
 				QuestBranchImplementation branch = getLinkedBranch(stage);
 				if (branch == null){
-					getQuest().finish(p);
+					getQuest().finish(quester);
 					return;
 				}
-				branch.start(acc);
+				branch.start(quester);
 			}
-			manager.questUpdated(p);
+			manager.questUpdated(quester);
 		});
 	}
 
-	private void endStage(@NotNull PlayerAccount acc, @NotNull StageControllerImplementation<?> stage,
+	private void endStage(@NotNull Quester quester, @NotNull StageControllerImplementation<?> stage,
 			@NotNull Runnable runAfter) {
-		if (acc.isCurrent()){
-			Player p = acc.getPlayer();
-			stage.end(acc);
-			stage.getStage().getValidationRequirements().stream().filter(Actionnable.class::isInstance)
-					.map(Actionnable.class::cast).forEach(x -> x.trigger(p));
-			if (stage.getStage().hasAsyncEnd()) {
-				new Thread(() -> {
-					QuestsPlugin.getPlugin().getLoggerExpanded().debug("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
-					asyncReward.add(acc);
-					try {
-						List<String> given = stage.getStage().getRewards().giveRewards(p);
-						if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
-							Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
-									MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
-					} catch (InterruptingBranchException ex) {
-						QuestsPlugin.getPlugin().getLoggerExpanded().debug(
-								"Interrupted branching in async stage end for " + p.getName() + " via " + ex.toString());
+		stage.end(quester);
+		stage.getStage().getValidationRequirements().stream().filter(Actionnable.class::isInstance)
+				.map(Actionnable.class::cast).forEach(x -> quester.getOnlinePlayers().forEach(x::trigger));
+
+		stage.getStage().getRewards().giveRewards(quester)
+				.whenComplete(BeautyQuests.getInstance().getLoggerExpanded().logError(rewardsResult -> {
+					if (rewardsResult.branchInterruption()) {
+						QuestsPlugin.getPlugin().getLoggerExpanded().debug("Interrupted branching in async stage end for {}",
+								quester.getDetailedName());
 						return;
-					}catch (Exception e) {
-						DefaultErrors.sendGeneric(p, "giving async rewards");
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while giving stage async end rewards.", e);
-					} finally {
-						// by using the try-catch, we ensure that "asyncReward#remove" is called
-						// otherwise, the player would be completely stuck
-						asyncReward.remove(acc);
 					}
-					QuestUtils.runSync(runAfter);
-				}, "BQ async stage end " + p.getName()).start();
-			}else{
-				try {
-					List<String> given = stage.getStage().getRewards().giveRewards(p);
-					if (!given.isEmpty() && QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
-						Lang.FINISHED_OBTAIN.quickSend(p, "rewards",
-								MessageUtils.itemsToFormattedString(given.toArray(new String[0])));
+
+					if (QuestsConfiguration.getConfig().getQuestsConfig().stageEndRewardsMessage())
+						rewardsResult.earnings()
+								.forEach((player, earnings) -> Lang.FINISHED_OBTAIN.quickSend(player, "rewards",
+										MessageUtils.itemsToFormattedString(earnings.toArray(new String[0]))));
+
 					runAfter.run();
-				} catch (InterruptingBranchException ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().debug(
-							"Interrupted branching in async stage end for " + p.getName() + " via " + ex.toString());
-				}
-			}
-		}else {
-			stage.end(acc);
-			runAfter.run();
-		}
+				}, "failed to give rewards", quester));
 	}
 
 	@Override
-	public void setPlayerStage(@NotNull PlayerAccount acc, @NotNull StageController stage) {
-		Player p = acc.getPlayer();
-		PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
-		if (questDatas.getBranch() != getId())
+	public void setPlayerStage(@NotNull Quester quester, @NotNull StageController stage) {
+		QuesterQuestData questDatas = quester.getDataHolder().getQuestData(getQuest());
+		if (questDatas.getBranch().getAsInt() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 
-		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null
-				&& questDatas.getStage() != -1)
-			Lang.QUEST_UPDATED.send(p, getQuest());
-		questDatas.setStage(getRegularStageId(stage));
-		if (p != null)
-			playNextStage(p);
-		((StageControllerImplementation<?>) stage).start(acc);
-		Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), stage));
+		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage()
+				&& questDatas.getStage().isPresent()) // means the player was previously in a stage
+			Lang.QUEST_UPDATED.send(quester, getQuest());
+		questDatas.setStage(OptionalInt.of(getRegularStageId(stage)));
+		quester.getOnlinePlayers().forEach(this::playNextStage);
+		((StageControllerImplementation<?>) stage).start(quester);
+		Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(quester, getQuest(), stage));
 	}
 
 	@Override
-	public void setPlayerEndingStages(@NotNull PlayerAccount acc) {
-		Player p = acc.getPlayer();
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
-		if (datas.getBranch() != getId())
+	public void setPlayerEndingStages(@NotNull Quester quester) {
+		QuesterQuestData datas = quester.getDataHolder().getQuestData(getQuest());
+		if (datas.getBranch().getAsInt() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 
-		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage() && p != null)
-			Lang.QUEST_UPDATED.send(p, getQuest());
-		datas.setInEndingStages();
+		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage())
+			Lang.QUEST_UPDATED.send(quester, getQuest());
+		datas.setState(QuesterQuestData.State.IN_ENDING_STAGES);
 		for (EndingStageImplementation endStage : endStages) {
-			endStage.getStage().start(acc);
-			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(acc, getQuest(), endStage.getStage()));
+			endStage.getStage().start(quester);
+			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(quester, getQuest(), endStage.getStage()));
 		}
-		if (p != null)
-			playNextStage(p);
+		quester.getOnlinePlayers().forEach(this::playNextStage);
 	}
 
 	private void playNextStage(@NotNull Player p) {
@@ -316,6 +296,10 @@ public class QuestBranchImplementation implements QuestBranch {
 				0.5F);
 		if (QuestsConfigurationImplementation.getConfiguration().showNextParticles())
 			QuestsConfigurationImplementation.getConfiguration().getParticleNext().send(p, Arrays.asList(p));
+	}
+
+	private boolean isInStageEnd(@NotNull QuesterQuestData data) {
+		return data.getState() == QuesterQuestData.State.IN_ENDING_STAGES;
 	}
 
 	public void remove(){

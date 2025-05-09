@@ -10,7 +10,7 @@ import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
-import fr.skytasul.quests.api.rewards.InterruptingBranchException;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +19,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -57,7 +56,7 @@ public class RandomReward extends AbstractReward {
 	@Override
 	public void detach() {
 		super.detach();
-		rewards.forEach(AbstractReward::detach);
+		rewards.detachQuest();
 	}
 
 	@Override
@@ -69,32 +68,30 @@ public class RandomReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) throws InterruptingBranchException {
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			give(context, player);
+		}
+	}
+
+	private void give(@NotNull RewardGiveContext context, @NotNull Player player) {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int amount = min == max ? min : random.nextInt(min, max + 1);
 
-		List<AbstractReward> left = new ArrayList<>(rewards);
-		List<String> msg = new ArrayList<>();
-
+		var leftRewards = new ArrayList<AbstractReward>(rewards);
+		var randomRewards = new ArrayList<AbstractReward>(amount);
 		for (int i = 0; i < amount; i++) {
-			if (left.isEmpty()) break;
-			AbstractReward reward = left.remove(random.nextInt(left.size()));
-			try {
-				List<String> messages = reward.give(p);
-				if (messages != null) msg.addAll(messages);
-			} catch (InterruptingBranchException ex) {
-				throw ex;
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when giving random reward " + reward.getName() + " to " + p.getName(), ex);
-			}
+			if (leftRewards.isEmpty())
+				break;
+			randomRewards.add(leftRewards.remove(random.nextInt(leftRewards.size())));
 		}
 
-		return msg;
+		new RewardList(randomRewards).giveSubrewards(player, context);
 	}
 
 	@Override
 	public boolean isAsync() {
-		return rewards.stream().anyMatch(AbstractReward::isAsync);
+		return rewards.hasAsync();
 	}
 
 	@Override

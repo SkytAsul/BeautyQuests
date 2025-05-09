@@ -13,6 +13,7 @@ import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
+import io.lumine.mythic.bukkit.utils.text.Text;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -66,7 +67,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	public MythicMob fromValue(String value) {
 		return MythicBukkit.inst().getMobManager().getMythicMob(value).orElse(null);
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
 		return MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId())
@@ -87,7 +88,11 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	@Override
 	public String getName(MythicMob data) {
 		PlaceholderString displayName = data.getDisplayName();
-		if (displayName != null) return displayName.get();
+		if (displayName != null) {
+			return QuestsPlugin.getPlugin().isRunningPaper()
+					? Text.toLegacy(Text.parse(displayName.get()))
+					: displayName.get();
+		}
 		return data.getInternalName();
 	}
 
@@ -133,5 +138,5 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 		if (!(e.getKiller() instanceof Player)) return;
 		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
 	}
-	
+
 }

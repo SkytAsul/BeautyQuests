@@ -1,12 +1,12 @@
 package fr.skytasul.quests.api.events.accounts;
 
+import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.PlayerAccount;
 
 public class PlayerAccountResetEvent extends PlayerAccountEvent {
 	
-	public PlayerAccountResetEvent(@NotNull PlayerAccount account) {
+	public PlayerAccountResetEvent(@NotNull Quester account) {
 		super(account);
 	}
 	

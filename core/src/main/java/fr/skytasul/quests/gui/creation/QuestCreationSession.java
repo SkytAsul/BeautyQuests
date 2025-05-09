@@ -1,8 +1,10 @@
 package fr.skytasul.quests.gui.creation;
 
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.gui.creation.quest.QuestCreationGuiImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.structure.QuestImplementation;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +26,10 @@ public class QuestCreationSession {
 
 	public @NotNull Player getPlayer() {
 		return player;
+	}
+
+	public @NotNull Audience getPlayerAudience() {
+		return QuestsPlugin.getPlugin().getAudiences().player(player);
 	}
 
 	public boolean hasCustomID() {

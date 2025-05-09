@@ -5,13 +5,13 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.gui.npc.NpcCreateGUI;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.types.BQLocation;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import java.util.List;
 
 public class TeleportationReward extends AbstractReward {
 
@@ -25,9 +25,11 @@ public class TeleportationReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player player) {
-		QuestUtils.runOrSync(() -> player.teleport(teleportation));
-		return null;
+	public void give(RewardGiveContext context) {
+		QuestUtils.runOrSync(() -> {
+			for (Player player : context.getQuester().getOnlinePlayers())
+				player.teleport(teleportation);
+		});
 	}
 
 	@Override

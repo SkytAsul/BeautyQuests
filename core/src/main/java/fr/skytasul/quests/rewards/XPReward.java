@@ -6,12 +6,11 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import java.util.Arrays;
-import java.util.List;
 
 public class XPReward extends AbstractReward {
 
@@ -25,21 +24,22 @@ public class XPReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		p.giveExp(exp);
-		return Arrays.asList(getXpAmountString());
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers())
+			player.giveExp(exp);
+		context.addEarning(this);
 	}
 
 	@Override
 	public AbstractReward clone() {
 		return new XPReward(getCustomDescription(), exp);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
 		return getXpAmountString();
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -55,7 +55,7 @@ public class XPReward extends AbstractReward {
 	private @NotNull String getXpAmountString() {
 		return Lang.AmountXp.quickFormat("xp_amount", exp);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.XP_GAIN.send(event.getPlayer(), this);
@@ -66,17 +66,17 @@ public class XPReward extends AbstractReward {
 			event.reopenGUI();
 		}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("xp", exp);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
 		exp = section.getInt("xp");
 	}
-	
+
 }

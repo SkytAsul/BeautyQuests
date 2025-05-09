@@ -28,27 +28,27 @@ public class NpcCreateGUI extends AbstractGui {
 	private static final ItemStack nameItem = ItemUtils.item(XMaterial.NAME_TAG, Lang.name.toString());
 	private static final ItemStack move = ItemUtils.item(XMaterial.MINECART, Lang.move.toString(), Lang.moveLore.toString());
 	public static ItemStack validMove = ItemUtils.item(XMaterial.EMERALD, Lang.moveItem.toString());
-	
+
 	private final @NotNull BqInternalNpcFactoryCreatable factory;
 	private final @NotNull Consumer<@NotNull BqNpc> end;
 	private final @NotNull Runnable cancel;
-	
+
 	private EntityType en;
 	private String name;
 	private String skin;
-	
+
 	public NpcCreateGUI(@NotNull BqInternalNpcFactoryCreatable factory, @NotNull Consumer<@NotNull BqNpc> end,
 			@NotNull Runnable cancel) {
 		this.factory = factory;
 		this.end = end;
 		this.cancel = cancel;
 	}
-	
+
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
 		return Bukkit.createInventory(null, 9, Lang.INVENTORY_NPC.toString());
 	}
-	
+
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
 		inventory.setItem(0, move.clone());
@@ -59,12 +59,12 @@ public class NpcCreateGUI extends AbstractGui {
 		inventory.setItem(7, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
 		inventory.setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 	}
-	
+
 	private void setName(String name) {
 		this.name = name;
 		ItemUtils.lore(getInventory().getItem(1), QuestOption.formatNullableValue(name));
 	}
-	
+
 	private void setType(EntityType type) {
 		this.en = type;
 		if (en == EntityType.PLAYER) {
@@ -74,7 +74,7 @@ public class NpcCreateGUI extends AbstractGui {
 					ItemUtils.item(Utils.mobItem(en), Lang.npcType.toString(),
 							QuestOption.formatNullableValue(en.getName())));
 	}
-	
+
 	private void setSkin(String skin) {
 		this.skin = skin;
 		getInventory().setItem(3, ItemUtils.skull(Lang.skin.toString(), skin, QuestOption.formatNullableValue(skin)));
@@ -83,7 +83,7 @@ public class NpcCreateGUI extends AbstractGui {
 	@Override
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot()) {
-		
+
 		case 0:
 				new WaitClick(event.getPlayer(), event::reopen, validMove.clone(), event::reopen).start();
 			break;
@@ -103,19 +103,19 @@ public class NpcCreateGUI extends AbstractGui {
 				event.reopen();
 			}).useStrippedMessage().start();
 			break;
-			
+
 		case 5:
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createEntityTypeSelection(en -> {
 				setType(en);
 				event.reopen();
 			}, x -> x != null && factory.isValidEntityType(x)).open(event.getPlayer());
 			break;
-			
+
 		case 7:
 			event.close();
 			cancel.run();
 			break;
-			
+
 		case 8:
 			event.close();
 			try {
@@ -123,11 +123,12 @@ public class NpcCreateGUI extends AbstractGui {
 						name, skin));
 			}catch (Exception ex) {
 				ex.printStackTrace();
-				DefaultErrors.sendGeneric(event.getPlayer(), "npc creation " + ex.getMessage());
+				DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(event.getPlayer()),
+						"npc creation " + ex.getMessage());
 				cancel.run();
 			}
 			break;
-		
+
 		}
 	}
 
@@ -135,5 +136,5 @@ public class NpcCreateGUI extends AbstractGui {
 	public CloseBehavior onClose(Player p) {
 		return new DelayCloseBehavior(cancel);
 	}
-	
+
 }

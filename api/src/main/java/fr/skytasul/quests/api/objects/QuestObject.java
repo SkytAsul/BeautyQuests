@@ -1,11 +1,5 @@
 package fr.skytasul.quests.api.objects;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -16,6 +10,12 @@ import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class QuestObject extends SerializableObject implements Cloneable, HasPlaceholders {
 
@@ -97,7 +97,7 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 			customDescription = section.getString(CUSTOM_DESCRIPTION_KEY);
 	}
 
-	public final @Nullable String getDescription(Player player) {
+	public final @Nullable String getDescription(@Nullable Player player) {
 		String string = customDescription == null ? getDefaultDescription(player) : customDescription;
 		if (string != null)
 			string = MessageUtils.format(string, getPlaceholdersRegistry());
@@ -107,10 +107,10 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 	/**
 	 * Gets the description shown in the GUIs for this quest object.
 	 *
-	 * @param player player to get the description for
+	 * @param player player to get the description for (can be null)
 	 * @return the description of this object (nullable)
 	 */
-	protected @Nullable String getDefaultDescription(@NotNull Player p) {
+	protected @Nullable String getDefaultDescription(@Nullable Player p) {
 		return null;
 	}
 

@@ -12,7 +12,6 @@ import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
@@ -56,6 +55,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	private final FileConfiguration config;
 	private QuestsConfig quests;
+	private DatabaseConfig database;
 	private GuiConfig gui;
 	private DialogsConfig dialogs;
 	private QuestsSelectionConfig selection;
@@ -67,6 +67,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		this.config = config;
 
 		quests = new QuestsConfig();
+		database = new DatabaseConfig(config.getConfigurationSection("database"));
 		gui = new GuiConfig(config.getConfigurationSection("gui"));
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		selection = new QuestsSelectionConfig(config.getConfigurationSection("questsSelection"));
@@ -77,6 +78,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean update() {
 		boolean result = false;
+		result |= database.update();
 		result |= gui.update();
 		result |= dialogs.update();
 		result |= selection.update();
@@ -93,6 +95,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
 		quests.init();
+		database.init();
 		gui.init();
 		dialogs.init();
 		selection.init();
@@ -108,10 +111,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		hookAcounts = config.getBoolean("accountsHook");
-		if (hookAcounts) {
-			Bukkit.getPluginManager().registerEvents(new BqAccountsHook(), BeautyQuests.getInstance());
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
-		}
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
 		if (MinecraftVersion.MAJOR >= 9) {
@@ -221,6 +220,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	@Override
 	public @NotNull Quests getQuestsConfig() {
 		return quests;
+	}
+
+	public @NotNull DatabaseConfig getDatabaseConfig() {
+		return database;
 	}
 
 	@Override
@@ -341,6 +344,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean stageStart = true;
 		private boolean questConfirmGUI = false;
 		private Collection<NpcClickType> npcClicks = Arrays.asList(NpcClickType.RIGHT, NpcClickType.SHIFT_RIGHT);
+		private boolean dontCancelNpcClick = false;
 		private boolean requirementReasonOnMultipleQuests = true;
 		private boolean stageEndRewardsMessage = true;
 
@@ -375,6 +379,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
+			dontCancelNpcClick = config.getBoolean("dont cancel npc click");
 			requirementReasonOnMultipleQuests = config.getBoolean("requirementReasonOnMultipleQuests");
 			stageEndRewardsMessage = config.getBoolean("stageEndRewardsMessage");
 		}
@@ -435,6 +440,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 
 		@Override
+		public boolean dontCancelNpcClick() {
+			return dontCancelNpcClick;
+		}
+
+		@Override
 		public ItemStack getDefaultQuestItem() {
 			return defaultQuestItem;
 		}
@@ -459,6 +469,79 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			return stageEndRewardsMessage;
 		}
 
+	}
+
+	public class DatabaseConfig {
+		private ConfigurationSection config;
+		private boolean enabled;
+		private String host;
+		private int port;
+		private String database;
+		private String username;
+		private String password;
+		private boolean ssl;
+		private String connectionString;
+		private ConfigurationSection tables;
+
+		private DatabaseConfig(@NotNull ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private boolean update() {
+			boolean result = false;
+			result |= migrateEntry(config, "playerAccounts", config, "questers");
+			result |= migrateEntry(config, "playerQuests", config, "questers quests");
+			result |= migrateEntry(config, "playerPools", config, "questers pools");
+			return result;
+		}
+
+		private void init() {
+			enabled = config.getBoolean("enabled");
+			host = config.getString("host");
+			port = config.getInt("port");
+			database = config.getString("database");
+			username = config.getString("username");
+			password = config.getString("password");
+			ssl = config.getBoolean("ssl");
+			connectionString = config.getString("connectionString");
+			tables = config.getConfigurationSection("tables");
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public String getHost() {
+			return host;
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public String getDatabaseName() {
+			return database;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public boolean isSslEnabled() {
+			return ssl;
+		}
+
+		public String getConnectionString() {
+			return connectionString;
+		}
+
+		public ConfigurationSection getTables() {
+			return tables;
+		}
 	}
 
 	public class DialogsConfig implements QuestsConfiguration.Dialogs {

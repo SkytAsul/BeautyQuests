@@ -1,13 +1,21 @@
 package fr.skytasul.quests.api.events.accounts;
 
+import fr.skytasul.quests.api.questers.Quester;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.players.PlayerAccount;
 
 public class PlayerAccountLeaveEvent extends PlayerAccountEvent {
 
-	public PlayerAccountLeaveEvent(@NotNull PlayerAccount account) {
+	private final @NotNull Player player;
+
+	public PlayerAccountLeaveEvent(@NotNull Quester account, @NotNull Player player) {
 		super(account);
+		this.player = player;
+	}
+
+	public @NotNull Player getPlayer() {
+		return player;
 	}
 
 	@Override

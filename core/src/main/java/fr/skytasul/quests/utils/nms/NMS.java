@@ -16,11 +16,12 @@ import java.util.Map;
 
 public abstract class NMS{
 
-	private ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
-	private ReflectUtils craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
+	protected final ReflectUtils nmsReflect = ReflectUtils.fromPackage("net.minecraft.server." + getClass().getSimpleName());
+	protected final ReflectUtils craftReflect =
+			ReflectUtils.fromPackage("org.bukkit.craftbukkit." + getClass().getSimpleName());
 
-	private Field unhandledTags;
-	private Method equalsCommon;
+	protected Field unhandledTags;
+	protected Method equalsCommon;
 
 	public NMS() {
 		if (!(this instanceof NullNMS)) {

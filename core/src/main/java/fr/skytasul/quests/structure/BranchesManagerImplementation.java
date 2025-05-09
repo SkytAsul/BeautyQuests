@@ -2,21 +2,24 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import fr.skytasul.quests.api.stages.StageController;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BranchesManagerImplementation implements QuestBranchesManager {
+
+	private static final Pattern FLOW_PATTERN = Pattern.compile("(\\d+):(E)?(\\d+)");
 
 	private @NotNull Map<Integer, QuestBranchImplementation> branches = new TreeMap<>(Integer::compare);
 
@@ -58,38 +61,58 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	@Override
-	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return null;
-		return branches.get(acc.getQuestDatas(quest).getBranch());
+	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull Quester acc) {
+		return acc.getDataHolder().getQuestDataIfPresent(quest).map(x -> {
+			if (x.getBranch().isPresent())
+				return branches.get(x.getBranch().getAsInt());
+			else
+				return null;
+		}).orElse(null);
 	}
 
 	@Override
-	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
-		if (!acc.hasQuestDatas(quest)) return false;
-		return acc.getQuestDatas(quest).getBranch() == branch.getId();
+	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch) {
+		return acc.getDataHolder().getQuestDataIfPresent(quest)
+				.filter(x -> x.getBranch().orElse(-1) == branch.getId())
+				.isPresent();
 	}
 
-	/**
-	 * Called internally when the quest is updated for the player
-	 *
-	 * @param player Player
-	 */
-	public final void questUpdated(@NotNull Player player) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		if (quest.hasStarted(acc)) {
-			QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(acc, quest));
+	@Override
+	public @Nullable StageController getStageFromFlow(@NotNull String flowId)
+			throws IllegalArgumentException {
+		Matcher matcher = FLOW_PATTERN.matcher(flowId);
+
+		int branchId = Integer.parseInt(matcher.group(1));
+		var branch = getBranch(branchId);
+
+		int stageId = Integer.parseInt(matcher.group(3));
+		if (matcher.group(2) != null) {
+			// means it matched the E meaning it's an ending stage
+			return branch.getEndingStage(stageId);
+		} else {
+			return branch.getRegularStage(stageId);
 		}
 	}
 
-	public void startPlayer(@NotNull PlayerAccount acc) {
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+	/**
+	 * Called internally when the quest is updated for the quester
+	 *
+	 * @param quester quester that got its quest updated
+	 */
+	public final void questUpdated(@NotNull Quester quester) {
+		QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(quester, quest));
+	}
+
+	public void startPlayer(@NotNull Quester acc) {
+		QuesterQuestData datas = acc.getDataHolder().getQuestData(getQuest());
 		datas.resetQuestFlow();
-		datas.setStartingTime(System.currentTimeMillis());
+		datas.setStartingTime(OptionalLong.of(System.currentTimeMillis()));
 		branches.get(0).start(acc);
 	}
 
-	public void remove(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return;
+	public void remove(@NotNull Quester acc) {
+		if (!acc.getDataHolder().hasQuestData(quest))
+			return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
 	}

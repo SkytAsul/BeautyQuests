@@ -1,27 +1,32 @@
 package fr.skytasul.quests.api.editors;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
+import net.kyori.adventure.audience.Audience;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 @AutoRegistered
 public abstract class Editor {
-	
+
 	protected final @NotNull Player player;
 	protected final @NotNull Runnable cancel;
 	private boolean started = false;
-	
+
 	protected Editor(@NotNull Player player, @NotNull Runnable cancel) {
 		this.player = player;
 		this.cancel = cancel;
 	}
-	
+
 	public @NotNull Player getPlayer() {
 		return player;
+	}
+
+	protected @NotNull Audience getPlayerAudience() {
+		return QuestsPlugin.getPlugin().getAudiences().player(player);
 	}
 
 	public void begin() {
@@ -37,7 +42,7 @@ public abstract class Editor {
 
 		started = false;
 	}
-	
+
 	public final void start() {
 		QuestsPlugin.getPlugin().getEditorManager().start(this);
 	}
@@ -50,7 +55,7 @@ public abstract class Editor {
 		cancel.run();
 		QuestsPlugin.getPlugin().getEditorManager().stop(this);
 	}
-	
+
 	/**
 	 * Happens when the player in the editor type somthing in the chat
 	 * @param coloredMessage Message typed
@@ -60,7 +65,7 @@ public abstract class Editor {
 	public boolean chat(String coloredMessage, String strippedMessage) {
 		return false;
 	}
-	
+
 	public final void callChat(String rawText) {
 		rawText = rawText.trim().replaceAll("\\uFEFF", ""); // remove blank characters, remove space at the beginning
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " entered \"" + rawText + "\" ("
@@ -73,7 +78,7 @@ public abstract class Editor {
 			Lang.CHAT_EDITOR.send(player);
 		}
 	}
-	
+
 	protected String cancelWord(){
 		return null;
 	}

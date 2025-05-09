@@ -1,15 +1,18 @@
 package fr.skytasul.quests.gui.quests;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -22,29 +25,29 @@ import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 
-	private final Runnable end;
-	private final Player player;
+	private static Cache<List<StageController>, List<Dialogable>> dialogableCache =
+			CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
-	public DialogHistoryGUI(PlayerAccount acc, Quest quest, Runnable end) {
+	private final Runnable end;
+
+	public DialogHistoryGUI(@NotNull Quester quester, Quest quest, Runnable end) {
 		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
 		this.end = end;
 
-		Validate.isTrue(acc.hasQuestDatas(quest), "Player must have started the quest");
-		Validate.isTrue(acc.isCurrent(), "Player must be online");
-
-		player = acc.getPlayer();
+		Validate.isTrue(quester.getDataHolder().hasQuestData(quest), "Quester must have started the quest");
 
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));
 
-		getDialogableStream(acc.getQuestDatas(quest), quest)
-			.map(WrappedDialogable::new)
-			.forEach(objects::add);
+		for (var dialogable : getDialogable(quester.getDataHolder().getQuestData(quest), false)) {
+			objects.add(new WrappedDialogable(dialogable));
+		}
 	}
 
 	@Override
@@ -59,13 +62,15 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			if (existing.page > 0) {
 				existing.page--;
 				changed = true;
-				QuestUtils.playPluginSound(player, "ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
+				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
+						"ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
 			}
 		}else if (clickType.isRightClick()) {
 			if (existing.page + 1 < existing.pages.size()) {
 				existing.page++;
 				changed = true;
-				QuestUtils.playPluginSound(player, "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
+				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
+						"ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
 			}
 		}
 
@@ -78,12 +83,19 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		return StandardCloseBehavior.NOTHING;
 	}
 
-	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
-		return datas.getQuestFlowStages()
-				.map(StageController::getStage)
-				.filter(Dialogable.class::isInstance)
-				.map(Dialogable.class::cast)
-				.filter(Dialogable::hasDialog);
+	public static List<Dialogable> getDialogable(QuesterQuestData datas, boolean useCache) {
+		var dialogable = dialogableCache.getIfPresent(datas.getQuestFlowStages());
+		if (!useCache || dialogable == null) {
+			dialogable = datas.getQuestFlowStages().stream()
+					.map(StageController::getStage)
+					.filter(Dialogable.class::isInstance)
+					.map(Dialogable.class::cast)
+					.filter(Dialogable::hasDialog)
+					.toList();
+			dialogableCache.put(new ArrayList<>(datas.getQuestFlowStages()), dialogable);
+			// we put in cache a COPY of the quest flow list otherwise even after
+		}
+		return dialogable;
 	}
 
 	class WrappedDialogable {

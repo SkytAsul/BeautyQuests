@@ -6,9 +6,11 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
+import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -17,6 +19,8 @@ import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
+import fr.skytasul.quests.npcs.dialogs.ActionBarMessageSender;
+import fr.skytasul.quests.npcs.dialogs.ChatMessageSender;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +37,14 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
 	private final List<MobStacker> mobStackers = new ArrayList<>();
 
+	private QuesterManager questerManager;
+
 	private QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements;
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 
 	private AbstractHolograms<?> hologramsManager = null;
-	private BossBarManager bossBarManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
+	private MessageSender messageSender;
 
 	private final Set<QuestsHandler> handlers = new HashSet<>();
 
@@ -49,6 +55,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	void setup() {
 		requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
 		rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
+
+		setMessageSender(QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()
+				? new ActionBarMessageSender()
+				: new ChatMessageSender());
 	}
 
 	@Override
@@ -139,22 +149,6 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @Nullable BossBarManager getBossBarManager() {
-		return bossBarManager;
-	}
-
-	@Override
-	public void setBossBarManager(@NotNull BossBarManager newBossBarManager) {
-		Validate.notNull(newBossBarManager);
-		if (bossBarManager != null)
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(newBossBarManager.getClass().getSimpleName()
-					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new boss bar manager.");
-		bossBarManager = newBossBarManager;
-		QuestsPlugin.getPlugin().getLoggerExpanded()
-				.debug("Bossbars manager has been registered: " + newBossBarManager.getClass().getName());
-	}
-
-	@Override
 	public @NotNull BQBlocksManagerImplementation getBlocksManager() {
 		return blocksManager;
 	}
@@ -206,6 +200,18 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
+	public @NotNull MessageSender getMessageSender() {
+		return messageSender;
+	}
+
+	@Override
+	public void setMessageSender(@NotNull MessageSender sender) {
+		this.messageSender = sender;
+		QuestsPlugin.getPlugin().getLoggerExpanded()
+				.debug("Message sender has been registered: " + sender.getClass().getName());
+	}
+
+	@Override
 	public @NotNull QuestsManager getQuestsManager() {
 		return BeautyQuests.getInstance().getQuestsManager();
 	}
@@ -213,6 +219,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public @NotNull QuestPoolsManager getPoolsManager() {
 		return BeautyQuests.getInstance().getPoolsManager();
+	}
+
+	@Override
+	public @NotNull QuesterManager getQuesterManager() {
+		return BeautyQuests.getInstance().getQuesterManager();
 	}
 
 	@Override

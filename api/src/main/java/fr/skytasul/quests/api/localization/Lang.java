@@ -126,8 +126,7 @@ public enum Lang implements Locale {
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	CANCEL_QUEST_UNAVAILABLE("msg.command.cancelQuestUnavailable"),
 	BACKUP_CREATED("msg.command.backupCreated"),
-	BACKUP_PLAYERS_FAILED("msg.command.backupPlayersFailed"),
-	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed"),
+	BACKUP_FAILED("msg.command.backupFailed", ErrorPrefix),
 	ADMIN_MODE_ENTERED("msg.command.adminModeEntered"),
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
 	POOL_RESET_TIMER("msg.command.resetPlayerPool.timer"), // 0: pool ID, 1: player

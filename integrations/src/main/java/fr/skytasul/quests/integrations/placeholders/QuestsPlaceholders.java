@@ -4,9 +4,9 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
 import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
@@ -108,27 +108,32 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (acc == null) return "§cdatas not loaded";
+		Quester quester = PlayersManager.getPlayerAccount(p);
+
+		if (quester == null)
+			return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
+			return Long.toString(
+					quester.getDataHolder().getAllQuestsData().stream().filter(QuesterQuestData::hasStarted).count());
 		if (identifier.equals("player_finished_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
+			return Long.toString(
+					quester.getDataHolder().getAllQuestsData().stream().filter(QuesterQuestData::hasFinishedOnce).count());
 		if (identifier.equals("player_finished_total_amount"))
-			return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
+			return Integer.toString(
+					quester.getDataHolder().getAllQuestsData().stream().mapToInt(QuesterQuestData::getTimesFinished).sum());
 		if (identifier.equals("started_id_list"))
-			return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted)
+			return quester.getDataHolder().getAllQuestsData().stream().filter(QuesterQuestData::hasStarted)
 					.map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 
 		if (identifier.equals("started")) {
-			return acc.getQuestsDatas()
+			return quester.getDataHolder().getAllQuestsData()
 					.stream()
-					.filter(PlayerQuestDatas::hasStarted)
-					.map(PlayerQuestDatas::getQuest)
+					.filter(QuesterQuestData::hasStarted)
+					.map(QuesterQuestData::getQuest)
 					.filter(Objects::nonNull)
 					.filter(Quest::isScoreboardEnabled)
 					.map(quest -> {
-						String desc = quest.getDescriptionLine(acc, DescriptionSource.PLACEHOLDER);
+						String desc = quest.getDescriptionLine(quester, DescriptionSource.PLACEHOLDER);
 						return inlineFormat
 								.replace("{questName}", quest.getName())
 								.replace("{questDescription}", desc);
@@ -145,13 +150,14 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				PlayerPlaceholderData data = players.get(p);
 
 				if (data == null) {
-					data = new PlayerPlaceholderData(acc);
+					data = new PlayerPlaceholderData(quester);
 					players.put(p, data);
 				}
 
 				if (data.left.isEmpty()) {
 					data.left = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(data.acc, false, true);
-				}else QuestsAPI.getAPI().getQuestsManager().updateQuestsStarted(acc, true, data.left);
+				} else
+					QuestsAPI.getAPI().getQuestsManager().updateQuestsStarted(quester, true, data.left);
 
 				try {
 					int i = -1;
@@ -168,7 +174,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
 
 					Quest quest = data.left.get(0);
-					String desc = quest.getDescriptionLine(acc, DescriptionSource.PLACEHOLDER);
+					String desc = quest.getDescriptionLine(quester, DescriptionSource.PLACEHOLDER);
 					String format = noSplit ? inlineFormat : splitFormat;
 					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
 
@@ -193,23 +199,28 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		}
 
 		if (identifier.startsWith("advancement_")) {
-			int rawId = identifier.indexOf("_raw");
-			String sid = rawId == -1 ? identifier.substring(12) : identifier.substring(12, rawId);
+			int rawIndex = identifier.indexOf("_raw");
+			String sid = rawIndex == -1 ? identifier.substring(12) : identifier.substring(12, rawIndex);
 			try {
 				Quest qu = QuestsAPI.getAPI().getQuestsManager().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (rawId == -1) {
-					if (qu.hasStarted(acc)) {
-						return qu.getDescriptionLine(acc, DescriptionSource.PLACEHOLDER);
+				if (rawIndex == -1) {
+					if (qu.hasStarted(quester)) {
+						return qu.getDescriptionLine(quester, DescriptionSource.PLACEHOLDER);
 					}
-					if (qu.hasFinished(acc))
-						return Lang.Finished.quickFormat("times_finished", acc.getQuestDatas(qu).getTimesFinished());
+					if (qu.hasFinished(quester))
+						return Lang.Finished.quickFormat("times_finished",
+								quester.getDataHolder().getQuestData(qu).getTimesFinished());
 					return Lang.Not_Started.toString();
 				}else {
-					if (!acc.hasQuestDatas(qu)) return "-1";
-					PlayerQuestDatas datas = acc.getQuestDatas(qu);
-					if (datas.hasStarted()) return Integer.toString(datas.getStage());
-					return "-1";
+					return quester.getDataHolder().getQuestDataIfPresent(qu).map(data -> {
+						return switch (data.getState()) {
+							case IN_END -> "end";
+							case IN_ENDING_STAGES -> "end_stages";
+							case IN_REGULAR_STAGE -> Integer.toString(data.getStage().orElseThrow());
+							case NOT_STARTED -> "-1";
+						};
+					}).orElse("-1");
 				}
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid + " not a number";
@@ -220,8 +231,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			try {
 				Quest qu = QuestsAPI.getAPI().getQuestsManager().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (!acc.hasQuestDatas(qu)) return "0";
-				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());
+				return quester.getDataHolder().getQuestDataIfPresent(qu).map(data -> data.getTimesFinished()).orElse(0)
+						.toString();
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
 			}
@@ -261,9 +272,9 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	class PlayerPlaceholderData {
 		private List<Quest> left = Collections.emptyList();
-		private PlayerAccount acc;
+		private Quester acc;
 
-		public PlayerPlaceholderData(PlayerAccount acc) {
+		public PlayerPlaceholderData(Quester acc) {
 			this.acc = acc;
 		}
 	}

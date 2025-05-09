@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemsGUI;
@@ -12,8 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ItemReward extends AbstractReward {
@@ -30,11 +29,12 @@ public class ItemReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		Utils.giveItems(p, items);
-		if (items.isEmpty())
-			return Collections.emptyList();
-		return Arrays.asList(getItemsSizeString());
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers()) {
+			Utils.giveItems(player, items);
+		}
+		if (!items.isEmpty())
+			context.addEarning(this);
 	}
 
 	@Override

@@ -10,9 +10,9 @@
 		<artifactId>beautyquests-parent</artifactId>
 		<version>${revision}</version>
 	</parent>
-	
+
 	<properties>
-        <junit.version>5.10.1</junit.version>
+		<junit.version>5.10.1</junit.version>
 	</properties>
 
 	<build>
@@ -58,14 +58,14 @@
 					</execution>
 				</executions>
 			</plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-surefire-plugin</artifactId>
-	            <version>3.2.2</version>
-	            <configuration>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.2</version>
+				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
-        	</plugin>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -118,6 +118,18 @@
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>${xseries.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.kyori</groupId>
+			<artifactId>adventure-platform-bukkit</artifactId>
+			<version>${adventure.bukkit.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.kyori</groupId>
+			<artifactId>adventure-api</artifactId>
+			<version>${adventure.version}</version>
 			<scope>compile</scope>
 		</dependency>
 

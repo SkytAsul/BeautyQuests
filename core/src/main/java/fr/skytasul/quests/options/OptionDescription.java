@@ -56,9 +56,8 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	public List<String> provideDescription(QuestDescriptionContext context) {
 		List<String> description = cachedDescription.getIfPresent(context);
 		if (description == null) {
-			description = Arrays
-					.asList("§7" + MessageUtils.finalFormat(getValue(), null,
-							PlaceholdersContext.of(context.getPlayerAccount().getPlayer(), true, null)));
+			description = Arrays.asList("§7" + MessageUtils.finalFormat(getValue(), null,
+					PlaceholdersContext.of(context.getQuester(), true, null)));
 			cachedDescription.put(context, description);
 		}
 		return description;
