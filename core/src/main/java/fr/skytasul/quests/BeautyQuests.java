@@ -556,7 +556,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		try{
 			questerManager.load();
-			players.loadOnlinePlayers();
 		}catch (Exception ex) {
 			logger.severe("Error while loading player datas.", ex);
 

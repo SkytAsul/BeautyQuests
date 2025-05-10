@@ -37,6 +37,8 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 
 	private @NotNull QuesterManagerImplementation questerManager;
 
+	private boolean playersLoaded = false;
+
 	public PlayerManagerImplementation(@NotNull QuesterManagerImplementation questerManager) {
 		this.questerManager = questerManager;
 	}
@@ -135,10 +137,14 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 	}
 
 	public void loadOnlinePlayers() {
+		if (playersLoaded)
+			throw new IllegalStateException("Online players have already been loaded");
+
 		for (var player : Bukkit.getOnlinePlayers()) {
 			load(player);
 		}
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+		playersLoaded = true;
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

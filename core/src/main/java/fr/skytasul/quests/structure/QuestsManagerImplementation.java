@@ -76,10 +76,16 @@ public class QuestsManagerImplementation implements QuestsManager {
 		return lastID.incrementAndGet();
 	}
 
-	public int updateAll() throws IOException {
+	public int updateAll() {
 		int updated = 0;
 		for (QuestImplementation quest : quests) {
-			if (quest.saveToFile()) updated++;
+			try {
+				if (quest.saveToFile()) {
+					updated++;
+				}
+			} catch (Exception ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to save quest {0}", ex, quest.getId());
+			}
 		}
 		return updated;
 	}

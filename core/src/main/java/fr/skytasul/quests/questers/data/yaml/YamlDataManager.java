@@ -75,7 +75,7 @@ public class YamlDataManager implements QuesterDataManager {
 	}
 
 	private int getNextIndex() {
-		return Collections.max(integerIndex.values()) + 1;
+		return integerIndex.isEmpty() ? 0 : Collections.max(integerIndex.values()) + 1;
 	}
 
 	@Override

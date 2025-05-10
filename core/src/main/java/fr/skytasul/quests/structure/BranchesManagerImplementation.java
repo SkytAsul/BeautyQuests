@@ -82,6 +82,9 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 			throws IllegalArgumentException {
 		Matcher matcher = FLOW_PATTERN.matcher(flowId);
 
+		if (!matcher.matches())
+			throw new IllegalArgumentException("Invalid quest flow item: " + flowId);
+
 		int branchId = Integer.parseInt(matcher.group(1));
 		var branch = getBranch(branchId);
 

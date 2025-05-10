@@ -1,6 +1,7 @@
 package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
@@ -164,7 +165,14 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 			if (questConfig.contains("questFlow") && getQuest() != null) {
 				for (String flowPart : questConfig.getString("questFlow").split(";")) {
-					super.questFlow.add(getQuest().getBranchesManager().getStageFromFlow(flowPart));
+					try {
+						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);
+						super.questFlow.add(stageFlow);
+					} catch (IllegalArgumentException ex) {
+						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, id, questID,
+								flowPart);
+					}
 				}
 			}
 
