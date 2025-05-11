@@ -28,7 +28,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.4.1</version>
 				<configuration>
-					<skip>false</skip>
 					<doclint>none</doclint>
 				</configuration>
 				<executions>
