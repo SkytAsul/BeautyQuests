@@ -269,6 +269,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (QuestsConfiguration.getConfig().getQuestsConfig().playerQuestUpdateMessage()
 				&& questDatas.getStage().isPresent()) // means the player was previously in a stage
 			Lang.QUEST_UPDATED.send(quester, getQuest());
+		questDatas.setState(QuesterQuestData.State.IN_REGULAR_STAGE);
 		questDatas.setStage(OptionalInt.of(getRegularStageId(stage)));
 		quester.getOnlinePlayers().forEach(this::playNextStage);
 		((StageControllerImplementation<?>) stage).start(quester);

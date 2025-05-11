@@ -12,7 +12,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.regex.Pattern;
 
 public class BqLoggerHandler extends FileHandler {
 
@@ -28,6 +32,8 @@ public class BqLoggerHandler extends FileHandler {
 	}
 
 	private class BqLoggerFormatter extends Formatter {
+
+		private static final Pattern NOT_INDEXED_PARAM_PATTERN = Pattern.compile("\\{\\}");
 
 		private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("[HH:mm:ss]");
 
@@ -51,7 +57,7 @@ public class BqLoggerHandler extends FileHandler {
 
 			if (logRecord.getParameters() != null) {
 				if (logRecord.getMessage().contains("{}"))
-					publish(new LogRecord(Level.WARNING, "Bad parameter usage in a log message. Nag the author about it!"));
+					logRecord.setMessage(fillNotIndexedParameters(logRecord.getMessage()));
 			}
 			stb.append(super.formatMessage(logRecord));
 
@@ -81,6 +87,18 @@ public class BqLoggerHandler extends FileHandler {
 
 			stb.append('\n');
 
+			return stb.toString();
+		}
+
+		private String fillNotIndexedParameters(String message) {
+			var matcher = NOT_INDEXED_PARAM_PATTERN.matcher(message);
+			var stb = new StringBuilder();
+			int i = 0;
+			while (matcher.find()) {
+				matcher.appendReplacement(stb, Integer.toString(i));
+				i++;
+			}
+			matcher.appendTail(stb);
 			return stb.toString();
 		}
 

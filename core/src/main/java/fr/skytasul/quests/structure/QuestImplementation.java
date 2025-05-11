@@ -523,7 +523,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questFinish(quester, this));
 				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(quester, this));
 			});
-		});
+		}).whenComplete(
+				QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occured when finishing the quest", quester));
 	}
 
 	@Override

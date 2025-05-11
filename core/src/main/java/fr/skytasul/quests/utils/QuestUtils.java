@@ -130,7 +130,20 @@ public final class QuestUtils {
 			return;
 		if ("none".equals(sound))
 			return;
-		audience.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(sound), Source.MASTER, volume, pitch));
+
+		Key soundKey;
+		if (Key.parseable(sound)) {
+			soundKey = Key.key(sound);
+		} else {
+			try {
+				soundKey = Key.key(Sound.valueOf(sound).getKey().toString());
+			} catch (IllegalArgumentException ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot send sound {0}", ex, sound);
+				return;
+			}
+		}
+
+		audience.playSound(net.kyori.adventure.sound.Sound.sound(soundKey, Source.MASTER, volume, pitch));
 	}
 
 	public static void playPluginSound(Location lc, String sound, float volume) {

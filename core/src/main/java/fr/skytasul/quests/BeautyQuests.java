@@ -446,6 +446,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				players = new PlayerManagerAccountsHookImplementation(questerManager);
 			} else
 				players = new PlayerManagerImplementation(questerManager);
+			questerManager.registerQuesterProvider(players);
 
 			/*				static initialization				*/
 			if (init) {
