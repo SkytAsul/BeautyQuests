@@ -94,6 +94,8 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	public int getRegularStageId(StageController stage) {
+		if (!regularStages.contains(stage))
+			throw new IllegalArgumentException("Stage is not a part of the branch");
 		return regularStages.indexOf(stage);
 	}
 
@@ -103,7 +105,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			if (endingStage.getStage().equals(stage))
 				return i;
 		}
-		return -1;
+		throw new IllegalArgumentException("Stage is not a part of the branch");
 	}
 
 	public boolean isEndingStage(StageController stage) {

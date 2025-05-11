@@ -28,7 +28,7 @@ public class SqlDataManager implements QuesterDataManager {
 		this.sqlHandler = new SqlHandler(db);
 	}
 
-	protected @NotNull SqlHandler getSqlHandler() {
+	public @NotNull SqlHandler getSqlHandler() {
 		return sqlHandler;
 	}
 

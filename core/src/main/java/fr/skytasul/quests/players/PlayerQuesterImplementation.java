@@ -55,7 +55,7 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 	// TODO improve memory usage of lists
 	@Override
 	public @NotNull Collection<Player> getOnlinePlayers() {
-		return getPlayer().map(List::of).orElse(List.of());
+		return getPlayer().filter(Player::isOnline).map(List::of).orElse(List.of());
 	}
 
 	@Override

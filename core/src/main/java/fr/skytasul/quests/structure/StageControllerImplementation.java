@@ -228,7 +228,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		return flow;
 	}
 
-	public int getStorageId() {
+	private int getStorageId() {
 		return branch.isEndingStage(this) ? branch.getEndingStageId(this) : branch.getRegularStageId(this);
 	}
 

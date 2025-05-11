@@ -53,7 +53,7 @@ public final class MessageUtils {
 			if (fullCompo == null) {
 				fullCompo = parsed;
 			} else {
-				fullCompo = fullCompo.appendNewline().append(fullCompo);
+				fullCompo = fullCompo.appendNewline().append(parsed);
 			}
 		}
 		audience.sendMessage(fullCompo);
